@@ -1,0 +1,1555 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al: current full-timeline native release</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al: current full-timeline native release</h1><p>Current 150-source cohort, tracked centers, split roles and native/dense anchor grids. Links to original trajectories and derived physical targets.</p><span class="badge">research</span><p><code>local-predictability-native-release</code> · Al</p><h2>Location and availability</h2><p><a href="../../../output/local_predictability/h100-20260917/technical">/home/infres/vmorozov/PointCloudMaterials/output/local_predictability/h100-20260917/technical</a></p><p>131 owned files · 0.362 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al: current full-timeline native release&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;dataset_release&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;Current 150-source cohort, tracked centers, split roles and native/dense anchor grids. Links to original trajectories and derived physical targets.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;evidence&quot;: [
+    &quot;docs/data_usage/gatr_20260917.md&quot;
+  ]
+}</pre><ul><li><a href="../../data_usage/gatr_20260917.md">docs/data_usage/gatr_20260917.md</a></li></ul><p>Dependencies: <a href="local-predictability-20260917-broad-66446cfa.html">local-predictability-20260917-broad</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>protocol</td><td><code>[&quot;local_crystallization_predictability_v1&quot;]</code></td></tr><tr><td>seed</td><td><code>[20260919]</code></td></tr><tr><td>split</td><td><code>[&quot;test&quot;, &quot;train&quot;, &quot;val&quot;]</code></td></tr><tr><td>lineage</td><td><code>[&quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_135035943&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_139885636&quot;, &quot;independent_melt_142641279&quot;, &quot;independent_melt_144370470&quot;, &quot;independent_melt_146234076&quot;, &quot;independent_melt_147978527&quot;, &quot;independent_melt_151871197&quot;, &quot;independent_melt_15458297&quot;] … (150 values; see JSON)</code></td></tr><tr><td>temperature_K</td><td><code>[400.0, 450.0, 500.0, 510.0, 520.0]</code></td></tr><tr><td>frame_count</td><td><code>[801]</code></td></tr><tr><td>atom_count</td><td><code>[70304]</code></td></tr><tr><td>timestep_fs</td><td><code>[3.0]</code></td></tr><tr><td>cadence_ps</td><td><code>[0.75]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 131,
+    &quot;apparent_bytes&quot;: 674159811,
+    &quot;allocated_bytes&quot;: 389075968,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 76,
+      &quot;.log&quot;: 12,
+      &quot;.npz&quot;: 27,
+      &quot;.pt&quot;: 16
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 2,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;native_rows.npz&quot;,
+      &quot;members&quot;: {
+        &quot;source_id&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_id&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;risk&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;bool&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;onset_frame&quot;: {
+          &quot;shape&quot;: [
+            38400
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-condition/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_H12/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_H3/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_H48/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_plus_center_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_plus_shell25_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/linear-packet_repeat12/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-condition/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_H12/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_H3/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_H48/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_plus_center_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_plus_shell25_H0/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/mlp-packet_repeat12/predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;probability&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;logits&quot;: {
+          &quot;shape&quot;: [
+            191688,
+            6
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;split&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;&lt;U11&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            191688
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-condition/model.npz&quot;,
+      &quot;members&quot;: {
+        &quot;coefficient&quot;: {
+          &quot;shape&quot;: [
+            7,
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;feature_center&quot;: {
+          &quot;shape&quot;: [
+            7
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;feature_scale&quot;: {
+          &quot;shape&quot;: [
+            7
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target_center&quot;: {
+          &quot;shape&quot;: [
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;alpha&quot;: {
+          &quot;shape&quot;: [],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-condition/test_predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;prediction&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H0/model.npz&quot;,
+      &quot;members&quot;: {
+        &quot;coefficient&quot;: {
+          &quot;shape&quot;: [
+            135,
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;feature_center&quot;: {
+          &quot;shape&quot;: [
+            135
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;feature_scale&quot;: {
+          &quot;shape&quot;: [
+            135
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target_center&quot;: {
+          &quot;shape&quot;: [
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;alpha&quot;: {
+          &quot;shape&quot;: [],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H0/test_predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;prediction&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H12/model.npz&quot;,
+      &quot;members&quot;: {
+        &quot;coefficient&quot;: {
+          &quot;shape&quot;: [
+            903,
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;feature_center&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;feature_scale&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target_center&quot;: {
+          &quot;shape&quot;: [
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;alpha&quot;: {
+          &quot;shape&quot;: [],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H12/test_predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;prediction&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H3/model.npz&quot;,
+      &quot;members&quot;: {
+        &quot;coefficient&quot;: {
+          &quot;shape&quot;: [
+            903,
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;feature_center&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;feature_scale&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target_center&quot;: {
+          &quot;shape&quot;: [
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;alpha&quot;: {
+          &quot;shape&quot;: [],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H3/test_predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;prediction&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H48/model.npz&quot;,
+      &quot;members&quot;: {
+        &quot;coefficient&quot;: {
+          &quot;shape&quot;: [
+            903,
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;feature_center&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;feature_scale&quot;: {
+          &quot;shape&quot;: [
+            903
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target_center&quot;: {
+          &quot;shape&quot;: [
+            768
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;alpha&quot;: {
+          &quot;shape&quot;: [],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;descriptors/ridge-packet_H48/test_predictions.npz&quot;,
+      &quot;members&quot;: {
+        &quot;prediction&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;target&quot;: {
+          &quot;shape&quot;: [
+            7680,
+            6,
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;anchor&quot;: {
+          &quot;shape&quot;: [
+            7680
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (2 records)</summary><p><a href="../records/local-predictability-native-release-1a28e8bc.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../output/local_predictability/h100-20260917/technical/cohort.json">cohort.json</a> · metadata · <code>b1b9c1f85b1c5802533df3fdcd54adc70bc7643adecea95377a24fa81b6bea58</code></li><li><a href="../../../output/local_predictability/h100-20260917/technical/release.json">release.json</a> · complete · <code>0cad827dce74165e0ad897d4758593e554cab297ec6143d0c394c28b944f7f41</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

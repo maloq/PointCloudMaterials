@@ -1,0 +1,10 @@
+{
+  "release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "calibration_plan": "${storage:cache}/structural_pretraining/broad-250k-20260917/plan.json",
+  "registry": "docs/datasets/registry.json",
+  "cohort": "output/local_predictability/h100-20260917/technical/cohort.json",
+  "ancestry_plan": "output/relaxed_tda/al-expanded-20260917/technical/plan.json",
+  "seed": 20260919,
+  "rows_per_task": 256,
+  "counts": {"al_native": 62500, "al_shooting": 37500, "al_other": 25000, "mg": 37500, "ti": 37500, "ta": 37500, "zr": 12500}
+}

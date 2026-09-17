@@ -1,0 +1,25 @@
+{
+  "dataset_id": "memory-al-precision-20260917-source004-T500-failed",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source004-T500-failed/status.json",
+      "relative_path": "status.json",
+      "sha256": "a902a2960f82d0d0fb0492292a549264343b3f4ebc49dd34beff694ddfce6fba",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "partial_artifacts_preserved",
+        "pid",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

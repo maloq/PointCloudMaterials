@@ -1,0 +1,16 @@
+{
+  "output": "output/structural_pretraining/gatr-lejepa-history3-20260917",
+  "release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "architecture": "gatr",
+  "method": "lejepa",
+  "history_frames": 3,
+  "seed": 20260919,
+  "batch_size": 128,
+  "microbatch_size": 32,
+  "learning_rate": 0.0003,
+  "updates": 4096,
+  "checkpoint_every": 64,
+  "validate_every": 256,
+  "torch_threads": 2,
+  "deadline_utc": "2026-09-18T03:44:00+00:00"
+}

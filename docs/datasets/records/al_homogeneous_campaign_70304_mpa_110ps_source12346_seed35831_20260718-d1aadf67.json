@@ -1,0 +1,107 @@
+{
+  "dataset_id": "al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718/checkpoints/replica_000/manifest.json",
+      "relative_path": "checkpoints/replica_000/manifest.json",
+      "sha256": "462e90dbb5feee862a0f8f0a032b0372a5ec98fa1cfd152b54b3fb905784f642",
+      "kind": "metadata",
+      "keys": [
+        "campaign_config",
+        "execution_provenance",
+        "identity_sha256",
+        "random_seed",
+        "replica_name",
+        "schema_version"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "campaign_config.homogeneous.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "campaign_config.homogeneous.analysis.ptm_rmsd_cutoff",
+            "occurrences": 2
+          }
+        ],
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "campaign_config.homogeneous.generator.potential.model_name",
+            "occurrences": 2
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "campaign_config.homogeneous.generator.potential.model_path",
+            "occurrences": 2
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1600.0,
+            "first_json_path": "campaign_config.homogeneous.generator.dynamics.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "campaign_config.homogeneous.generator.dynamics.timestep_fs",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718/checkpoints/replica_000/step_000000085000/metadata.json",
+      "relative_path": "checkpoints/replica_000/step_000000085000/metadata.json",
+      "sha256": "bd182fd374220288470a1a98201b4905326096391c63ca343b28d756d81fa53e",
+      "kind": "metadata",
+      "keys": [
+        "calculator_performance",
+        "completed_global_step",
+        "equilibration_steps",
+        "online_event",
+        "planned_measurement_steps",
+        "random_seed",
+        "replica_name",
+        "schema_version",
+        "source_evidence",
+        "termination_target_global_step"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718/checkpoints/replica_000/step_000000086000/metadata.json",
+      "relative_path": "checkpoints/replica_000/step_000000086000/metadata.json",
+      "sha256": "5daff8b5ff6fe86fca6f28bf5a7d2d6e1d3bf390c04a8de710f54c2449b2edb0",
+      "kind": "metadata",
+      "keys": [
+        "calculator_performance",
+        "completed_global_step",
+        "equilibration_steps",
+        "online_event",
+        "planned_measurement_steps",
+        "random_seed",
+        "replica_name",
+        "schema_version",
+        "source_evidence",
+        "termination_target_global_step"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,174 @@
+{
+  "dataset_id": "al_liquid_source_70304_mpa_seed12346_500K",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "c12422f71f5a5eadff8b4284463f3cdb42de5d7088628e39d76bb65ec7ab2da3",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "dataset_name",
+        "environment_dirs",
+        "execution_provenance",
+        "interface_preparation_performed",
+        "potential_sha256",
+        "potential_usage_mode",
+        "random_seeds",
+        "repository_reference_number_densities_per_A3",
+        "schema_version",
+        "scientific_scope",
+        "scientifically_qualified_potential",
+        "source_kind"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "config.potential.model_name",
+            "occurrences": 2
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "config.potential.model_path",
+            "occurrences": 2
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1600.0,
+            "first_json_path": "config.dynamics.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.dynamics.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.validation.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": {
+              "supported_claim": "A reusable pressure- and temperature-equilibrated bulk-liquid starting configuration for independent homogeneous-crystallization replicas under the exactly recorded Hamiltonian and preparation protocol.",
+              "unsupported_claim": "An equilibrium melting point, a nucleation rate, or any solid-liquid interface property. This liquid-only producer deliberately performs no interface preparation."
+            },
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "scientific_scope": {
+          "supported_claim": "A reusable pressure- and temperature-equilibrated bulk-liquid starting configuration for independent homogeneous-crystallization replicas under the exactly recorded Hamiltonian and preparation protocol.",
+          "unsupported_claim": "An equilibrium melting point, a nucleation rate, or any solid-liquid interface property. This liquid-only producer deliberately performs no interface preparation."
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K/replica_000_bulk_liquid/metadata.json",
+      "relative_path": "replica_000_bulk_liquid/metadata.json",
+      "sha256": "1f6ecac4f66ab65af63ee1f6f374cc9121a07aae5e90bea5504e8c2ee77cfc33",
+      "kind": "metadata",
+      "keys": [
+        "diagnostics",
+        "environment_name",
+        "global",
+        "grains",
+        "intermediate_regions",
+        "phase_statistics",
+        "physics",
+        "schema_version",
+        "thermodynamic_trace"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "global.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": [
+              1070.8947519366873,
+              1004.1450808073063,
+              923.7388493487032,
+              850.8014706122104,
+              787.2459388637291,
+              733.2217823002052,
+              686.4330475428907,
+              640.6352515239505,
+              607.1513572911706,
+              574.9108046996232,
+              552.1716364801124,
+              532.0579478857455,
+              511.16750079209703,
+              501.59721568567846,
+              493.6564131354442,
+              492.70814510894076,
+              496.52113975505426,
+              502.3711203076677,
+              503.58988834565514,
+              502.4017396688807,
+              498.5386226722204,
+              499.0529129897633,
+              498.25350035982046,
+              498.9324478803262,
+              499.4523613179271,
+              501.8893663558626,
+              499.85640391242276,
+              500.1902494636752,
+              499.5074839936442,
+              501.52753121282535,
+              499.32423203903187
+            ],
+            "first_json_path": "thermodynamic_trace.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "physics.calculator.model_name",
+            "occurrences": 1
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "physics.calculator.model_path",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isothermal-isobaric (MTK)",
+            "first_json_path": "physics.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "diagnostics.atom_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

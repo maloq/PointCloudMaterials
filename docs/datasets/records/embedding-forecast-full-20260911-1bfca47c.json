@@ -1,0 +1,6145 @@
+{
+  "dataset_id": "embedding-forecast-full-20260911",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "9ccb8c2804b74ed622843e6c100ea1d2ca924b0fc4ccf9d7573c0af61cdeba7d",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "embedding_dim",
+        "neighborhood",
+        "protocol",
+        "representation",
+        "shards",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "protocol.config.cadence_ps",
+            "occurrences": 2
+          }
+        ],
+        "history_ps": [
+          {
+            "value": 6,
+            "first_json_path": "protocol.config.history_ps",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260911,
+            "first_json_path": "protocol.config.seed",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "protocol.config.storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 206158192,
+            "first_json_path": "shards[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 248699045,
+            "first_json_path": "shards[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 235751553,
+            "first_json_path": "shards[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 750494487,
+            "first_json_path": "shards[3].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 378118914,
+            "first_json_path": "shards[4].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 387039544,
+            "first_json_path": "shards[5].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 394685168,
+            "first_json_path": "shards[6].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 648456630,
+            "first_json_path": "shards[7].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 392346167,
+            "first_json_path": "shards[8].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 373247889,
+            "first_json_path": "shards[9].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 319035304,
+            "first_json_path": "shards[10].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 40651136,
+            "first_json_path": "shards[11].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 146234076,
+            "first_json_path": "shards[12].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 472193600,
+            "first_json_path": "shards[13].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 63365650,
+            "first_json_path": "shards[14].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 220809849,
+            "first_json_path": "shards[15].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 142641279,
+            "first_json_path": "shards[16].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 262380798,
+            "first_json_path": "shards[17].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 837421620,
+            "first_json_path": "shards[18].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 553888770,
+            "first_json_path": "shards[19].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 550189933,
+            "first_json_path": "shards[20].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 8461095,
+            "first_json_path": "shards[21].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 197585375,
+            "first_json_path": "shards[22].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 135035943,
+            "first_json_path": "shards[23].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 648618511,
+            "first_json_path": "shards[24].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 760589119,
+            "first_json_path": "shards[25].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 383124119,
+            "first_json_path": "shards[26].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 361693553,
+            "first_json_path": "shards[27].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 699880964,
+            "first_json_path": "shards[28].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827953021,
+            "first_json_path": "shards[29].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 607972874,
+            "first_json_path": "shards[30].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 522035807,
+            "first_json_path": "shards[31].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 884700972,
+            "first_json_path": "shards[32].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 134462729,
+            "first_json_path": "shards[33].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 147978527,
+            "first_json_path": "shards[34].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 700628451,
+            "first_json_path": "shards[35].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 843445030,
+            "first_json_path": "shards[36].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 446448988,
+            "first_json_path": "shards[37].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 638959948,
+            "first_json_path": "shards[38].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 23525568,
+            "first_json_path": "shards[39].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 493123960,
+            "first_json_path": "shards[40].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 866573682,
+            "first_json_path": "shards[41].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 580598490,
+            "first_json_path": "shards[42].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 794706897,
+            "first_json_path": "shards[43].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 622811055,
+            "first_json_path": "shards[44].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 15458297,
+            "first_json_path": "shards[45].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 889862759,
+            "first_json_path": "shards[46].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 630014638,
+            "first_json_path": "shards[47].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 419716698,
+            "first_json_path": "shards[48].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 584489287,
+            "first_json_path": "shards[49].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 726819917,
+            "first_json_path": "shards[50].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 468207512,
+            "first_json_path": "shards[51].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 708791158,
+            "first_json_path": "shards[52].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 856510393,
+            "first_json_path": "shards[53].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 60861487,
+            "first_json_path": "shards[54].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 871840956,
+            "first_json_path": "shards[55].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 301149348,
+            "first_json_path": "shards[56].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 427983136,
+            "first_json_path": "shards[57].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 814816357,
+            "first_json_path": "shards[58].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 825401364,
+            "first_json_path": "shards[59].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 372484460,
+            "first_json_path": "shards[60].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 505713304,
+            "first_json_path": "shards[61].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 876710010,
+            "first_json_path": "shards[62].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 586618377,
+            "first_json_path": "shards[63].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 66157331,
+            "first_json_path": "shards[64].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 210998254,
+            "first_json_path": "shards[65].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 558747183,
+            "first_json_path": "shards[66].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 850903391,
+            "first_json_path": "shards[67].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 254084297,
+            "first_json_path": "shards[68].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 851781959,
+            "first_json_path": "shards[69].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 433626529,
+            "first_json_path": "shards[70].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 630952489,
+            "first_json_path": "shards[71].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 114745743,
+            "first_json_path": "shards[72].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 324310850,
+            "first_json_path": "shards[73].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234173051,
+            "first_json_path": "shards[74].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 13937749,
+            "first_json_path": "shards[75].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 725446415,
+            "first_json_path": "shards[76].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234029248,
+            "first_json_path": "shards[77].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 797323201,
+            "first_json_path": "shards[78].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 850300441,
+            "first_json_path": "shards[79].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 83575882,
+            "first_json_path": "shards[80].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 176364202,
+            "first_json_path": "shards[81].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 379257661,
+            "first_json_path": "shards[82].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 845880246,
+            "first_json_path": "shards[83].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 646059879,
+            "first_json_path": "shards[84].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 277320264,
+            "first_json_path": "shards[85].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 528758061,
+            "first_json_path": "shards[86].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 96154123,
+            "first_json_path": "shards[87].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 228616647,
+            "first_json_path": "shards[88].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 628564803,
+            "first_json_path": "shards[89].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 151871197,
+            "first_json_path": "shards[90].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 681943887,
+            "first_json_path": "shards[91].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 655109113,
+            "first_json_path": "shards[92].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 661426236,
+            "first_json_path": "shards[93].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 564513410,
+            "first_json_path": "shards[94].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 603302271,
+            "first_json_path": "shards[95].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 398617878,
+            "first_json_path": "shards[96].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 83132283,
+            "first_json_path": "shards[97].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 87283751,
+            "first_json_path": "shards[98].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 86832792,
+            "first_json_path": "shards[99].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 745135969,
+            "first_json_path": "shards[100].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 442136159,
+            "first_json_path": "shards[101].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 269696945,
+            "first_json_path": "shards[102].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 561573362,
+            "first_json_path": "shards[103].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 729671835,
+            "first_json_path": "shards[104].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 379031575,
+            "first_json_path": "shards[105].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234122652,
+            "first_json_path": "shards[106].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746727007,
+            "first_json_path": "shards[107].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 129223029,
+            "first_json_path": "shards[108].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 740238344,
+            "first_json_path": "shards[109].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 444631845,
+            "first_json_path": "shards[110].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 387474214,
+            "first_json_path": "shards[111].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 773283105,
+            "first_json_path": "shards[112].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827732877,
+            "first_json_path": "shards[113].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 816360514,
+            "first_json_path": "shards[114].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 653872695,
+            "first_json_path": "shards[115].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 457811864,
+            "first_json_path": "shards[116].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 453777906,
+            "first_json_path": "shards[117].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 502726670,
+            "first_json_path": "shards[118].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 870099266,
+            "first_json_path": "shards[119].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76354933,
+            "first_json_path": "shards[120].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 542619615,
+            "first_json_path": "shards[121].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 259940230,
+            "first_json_path": "shards[122].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 139885636,
+            "first_json_path": "shards[123].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 270739820,
+            "first_json_path": "shards[124].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "shards[0].split",
+            "occurrences": 74
+          },
+          {
+            "value": "val",
+            "first_json_path": "shards[18].split",
+            "occurrences": 24
+          },
+          {
+            "value": "test",
+            "first_json_path": "shards[24].split",
+            "occurrences": 27
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "shards[0].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "shards[30].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "shards[60].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "shards[90].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 520.0,
+            "first_json_path": "shards[120].temperature_K",
+            "occurrences": 5
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/protocol.json",
+      "relative_path": "protocol.json",
+      "sha256": "b55a5ba7a5550061ae758c30ab61845ef168ce7ea2007a5ad02dd456fe4dfd82",
+      "kind": "metadata",
+      "keys": [
+        "campaign_manifests",
+        "checkpoint_config_sha256",
+        "checkpoint_sha256",
+        "config",
+        "producer_sha256",
+        "source_manifests",
+        "sources_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "config.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "history_ps": [
+          {
+            "value": 6,
+            "first_json_path": "config.history_ps",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260911,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "config.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_000_segment_00/manifest.json",
+      "relative_path": "source_000_segment_00/manifest.json",
+      "sha256": "0397978a17a6e72ff5c2a87514cbebc83b0c8d2ad11d88032a36b5c145751dca",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 206158192,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_001_segment_00/manifest.json",
+      "relative_path": "source_001_segment_00/manifest.json",
+      "sha256": "8ce331c1e8f07ab8cd6a0c7add69a97b54818b2ad188c5fc642148c87fb13e23",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 248699045,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_002_segment_00/manifest.json",
+      "relative_path": "source_002_segment_00/manifest.json",
+      "sha256": "79f4785e9a42d4ef67e27ca3cc3568238d2b532337d42061add6ad733c0baf7c",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 235751553,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_003_segment_00/manifest.json",
+      "relative_path": "source_003_segment_00/manifest.json",
+      "sha256": "7c7c84f55ebba5b22d2bd1d5e1e0e09813b277468d8e87f695f0e455e78be3cf",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 750494487,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_004_segment_00/manifest.json",
+      "relative_path": "source_004_segment_00/manifest.json",
+      "sha256": "a4ef6572b6167fcd0aaff78fdff432ad6e1e069664cf3c1eda2b22e252279a26",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 378118914,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_005_segment_00/manifest.json",
+      "relative_path": "source_005_segment_00/manifest.json",
+      "sha256": "235faaff529bdf802b7f265983758b54044de848cda501e99e15b3fb9033c321",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 387039544,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_006_segment_00/manifest.json",
+      "relative_path": "source_006_segment_00/manifest.json",
+      "sha256": "bb2f720df12e5f22ce441fa8a52a9369add447650829ae03b90a15c309ec227e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 394685168,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_007_segment_00/manifest.json",
+      "relative_path": "source_007_segment_00/manifest.json",
+      "sha256": "91a4c8d391fd01def7a79ba000847178e7483579769b9a4740a111c50359a355",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 648456630,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_008_segment_00/manifest.json",
+      "relative_path": "source_008_segment_00/manifest.json",
+      "sha256": "57c6e43ddd7c7c7de361d0e6586b9a0b9b39a506b26c66fb504e0e16ea92353d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 392346167,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_009_segment_00/manifest.json",
+      "relative_path": "source_009_segment_00/manifest.json",
+      "sha256": "be05b6292e7e1ac9694fb94539c45a765617e8471c1c929c0a6b57f604e91c30",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 373247889,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_010_segment_00/manifest.json",
+      "relative_path": "source_010_segment_00/manifest.json",
+      "sha256": "055b47eee503cf76813be36f4e1bffbf14d38a2741a2957274efc209927fa775",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 319035304,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_011_segment_00/manifest.json",
+      "relative_path": "source_011_segment_00/manifest.json",
+      "sha256": "f531843d8444e15ebad970673f655f60a5b4eda0b4a9aaed1b66f5b9f3771253",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 40651136,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_012_segment_00/manifest.json",
+      "relative_path": "source_012_segment_00/manifest.json",
+      "sha256": "343420c6a828ba2d12719d4f1c6dbd1b37f4d2eefa866d65a5d204d9b6a7a32d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 146234076,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_013_segment_00/manifest.json",
+      "relative_path": "source_013_segment_00/manifest.json",
+      "sha256": "2198fe154cd0a37f4fc469dd749882113442c5d216ceb8b8cce508f33e73eb91",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 472193600,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_014_segment_00/manifest.json",
+      "relative_path": "source_014_segment_00/manifest.json",
+      "sha256": "394ca54526064df2da2687d86bd0322ed99e946494d7d02b98a3e43ef96e96a7",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 63365650,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_015_segment_00/manifest.json",
+      "relative_path": "source_015_segment_00/manifest.json",
+      "sha256": "3dfe6122850bc3d715b3ff2e14842e72b25848a3cf90339b95d74325c84b14d0",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 220809849,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_016_segment_00/manifest.json",
+      "relative_path": "source_016_segment_00/manifest.json",
+      "sha256": "7d89d3517204210e753e03666558b323497591e1d70add8c0c971fa27cca8b37",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 142641279,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_017_segment_00/manifest.json",
+      "relative_path": "source_017_segment_00/manifest.json",
+      "sha256": "a00614a80731682abd75834564e3069a820786cfa9973405240ab7509bddee63",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 262380798,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_018_segment_00/manifest.json",
+      "relative_path": "source_018_segment_00/manifest.json",
+      "sha256": "fd1a25270b368d313c1d085cbc94308f6f20f61af37c53e0abb40bc6703cd4b5",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 837421620,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_019_segment_00/manifest.json",
+      "relative_path": "source_019_segment_00/manifest.json",
+      "sha256": "0c45cf1c07554098077ffba07e8c0ad6c6a8611ec0aef6c041521c8aba5addd2",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 553888770,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_020_segment_00/manifest.json",
+      "relative_path": "source_020_segment_00/manifest.json",
+      "sha256": "f6427f57ba8805438bf5ac43f7de090902231dd04ead2a1fe3b00daedafcc177",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 550189933,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_021_segment_00/manifest.json",
+      "relative_path": "source_021_segment_00/manifest.json",
+      "sha256": "0ec3e82cd1b4a5231c6c42fb2ae39007e765062812d2a23e24aa976ae50b221e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 8461095,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_022_segment_00/manifest.json",
+      "relative_path": "source_022_segment_00/manifest.json",
+      "sha256": "f3ee47ec4aaf3f0f9f83ce0205f81d5a72d05880a1cc25189541708cbd6e629e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 197585375,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_023_segment_00/manifest.json",
+      "relative_path": "source_023_segment_00/manifest.json",
+      "sha256": "67ec11de269b13589b65651e77ad568f89e29e81c5fcf10dc29ebe8db51ff0d6",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 135035943,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_024_segment_00/manifest.json",
+      "relative_path": "source_024_segment_00/manifest.json",
+      "sha256": "2153f78859019bf7f72d94cdd90e07d6886ee820ba3e7740eeaefa2242a216a8",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 648618511,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_025_segment_00/manifest.json",
+      "relative_path": "source_025_segment_00/manifest.json",
+      "sha256": "ee6fe9d6e0f0d1c6692e94023cd8909f5d69adce6b8b552afb2e9e6c613aa960",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 760589119,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_026_segment_00/manifest.json",
+      "relative_path": "source_026_segment_00/manifest.json",
+      "sha256": "b3a784ef5e0ea069bca3eb39f22270b8d967fd6fc6f21c0663e916060fdc5630",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 383124119,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_027_segment_00/manifest.json",
+      "relative_path": "source_027_segment_00/manifest.json",
+      "sha256": "1188a3104a727a8cc0912dc34c9c2d5191372cfdb16aa72f8ccdb03a607b215d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 361693553,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_028_segment_00/manifest.json",
+      "relative_path": "source_028_segment_00/manifest.json",
+      "sha256": "f0ef37a35d804305b4ea0f7fc720e2bba52b8282ea950b8c334e589624a22a6e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 699880964,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_029_segment_00/manifest.json",
+      "relative_path": "source_029_segment_00/manifest.json",
+      "sha256": "45c82b5cd5a945975bda783b89a52d793b12a891d53cb3280c7a73336039cdb7",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 827953021,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_030_segment_00/manifest.json",
+      "relative_path": "source_030_segment_00/manifest.json",
+      "sha256": "5f83a2805a2556b6ac5e610c605fcab51ba4d53904ddfdfcb4f17888080bda8e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 607972874,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_031_segment_00/manifest.json",
+      "relative_path": "source_031_segment_00/manifest.json",
+      "sha256": "ceacbbb6e40889c593ac701dbca19c69a884c1e4bc4ea45d32181b9fcf54ab69",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 522035807,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_032_segment_00/manifest.json",
+      "relative_path": "source_032_segment_00/manifest.json",
+      "sha256": "2999ba34472a2ff39fd2294e701caf11d80f74766df0f6e472ad2c01ed972cc7",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 884700972,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_033_segment_00/manifest.json",
+      "relative_path": "source_033_segment_00/manifest.json",
+      "sha256": "7c885e92fa2daf2bd69f0a8ad59295652c9eefb918d892203911341ae4e80b3a",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 134462729,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_034_segment_00/manifest.json",
+      "relative_path": "source_034_segment_00/manifest.json",
+      "sha256": "3ae64089da5ab549543c59116f2e76a0d2446608d2faeb6c42cd5564efdf9a71",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 147978527,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_035_segment_00/manifest.json",
+      "relative_path": "source_035_segment_00/manifest.json",
+      "sha256": "0b082ae6712640e83d47b5a0f73899024e5fe3c20ec024ef6313391a5f33e39d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 700628451,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_036_segment_00/manifest.json",
+      "relative_path": "source_036_segment_00/manifest.json",
+      "sha256": "d172a09e29cb05f29511b35a5f59b216768648734eb703eac083a5b9546f6c5c",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 843445030,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_037_segment_00/manifest.json",
+      "relative_path": "source_037_segment_00/manifest.json",
+      "sha256": "1b394946ef0a034033c907e7d0d482f974e52e569c2ec3433a86b10b004ed9b2",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 446448988,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_038_segment_00/manifest.json",
+      "relative_path": "source_038_segment_00/manifest.json",
+      "sha256": "06d9ab0491b2c43d12f33d415091a3439dcc833fbffba780074dc70e8a051957",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 638959948,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_039_segment_00/manifest.json",
+      "relative_path": "source_039_segment_00/manifest.json",
+      "sha256": "2c7fef8f91b4fa0c9cbc92491b91c46b0b33bfe41c3d1f79adff1defe39499d3",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 23525568,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_040_segment_00/manifest.json",
+      "relative_path": "source_040_segment_00/manifest.json",
+      "sha256": "fa5cd5600b4cb6c8edb65aba088ddcb16639d9e13834f5568a97344e28443f9b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 493123960,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_041_segment_00/manifest.json",
+      "relative_path": "source_041_segment_00/manifest.json",
+      "sha256": "2d91f3aeb42e5b2b6d32f29156b652817c7b8c693b0628ff676924b2cb7cacb3",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 866573682,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_042_segment_00/manifest.json",
+      "relative_path": "source_042_segment_00/manifest.json",
+      "sha256": "8674024737d1b484604f432952c9bc33028ea5d07e1870a39a9a098facdc7a86",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 580598490,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_043_segment_00/manifest.json",
+      "relative_path": "source_043_segment_00/manifest.json",
+      "sha256": "a2dabbbaefb324475e9b0ed3227c1ec22a3a4f616dc28472789071b0131faa72",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 794706897,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_044_segment_00/manifest.json",
+      "relative_path": "source_044_segment_00/manifest.json",
+      "sha256": "4a3f893900bf2385a748760f410147e61744d6a54fdd695af274b2a2f23c29e6",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 622811055,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_045_segment_00/manifest.json",
+      "relative_path": "source_045_segment_00/manifest.json",
+      "sha256": "6114f25941bf0b6d8417369f6f8e3b91a4d6833431aaa940e965956389d39547",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 15458297,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_046_segment_00/manifest.json",
+      "relative_path": "source_046_segment_00/manifest.json",
+      "sha256": "91438ef159d93f465358452df54c638eb1a90cb3da95bb8a9c5a12df4d5fb15b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 889862759,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_047_segment_00/manifest.json",
+      "relative_path": "source_047_segment_00/manifest.json",
+      "sha256": "c0150d27613529860380216575c36d71a20fc7ea133fd590bd7a04751cbeedcb",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 630014638,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_048_segment_00/manifest.json",
+      "relative_path": "source_048_segment_00/manifest.json",
+      "sha256": "f514e9bef0e81392d630170c1d8032b608b2cae20f05d486bb4b4461c653870f",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 419716698,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_049_segment_00/manifest.json",
+      "relative_path": "source_049_segment_00/manifest.json",
+      "sha256": "754188b5874f18d24a219617037e4bfebf2319437b1c8901230a3bf817947495",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 584489287,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_050_segment_00/manifest.json",
+      "relative_path": "source_050_segment_00/manifest.json",
+      "sha256": "9bf42f4987eadaec5f113617d9aa18db81b31b2e90bb69d62364fbd90381c616",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 726819917,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_051_segment_00/manifest.json",
+      "relative_path": "source_051_segment_00/manifest.json",
+      "sha256": "7c418f232035a4c601a31c9725028fe926a29dbb1705b2d5e5072e5e2c54bc14",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 468207512,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_052_segment_00/manifest.json",
+      "relative_path": "source_052_segment_00/manifest.json",
+      "sha256": "590a5dc8eb69e495099e96b0c8eefa691f76f38039f03fa50de293246c4633fd",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 708791158,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_053_segment_00/manifest.json",
+      "relative_path": "source_053_segment_00/manifest.json",
+      "sha256": "700e99ac4f511c754e09d7c37f132a652fe9f24c2821ccc0a1e3e1cc83b28511",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 856510393,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_054_segment_00/manifest.json",
+      "relative_path": "source_054_segment_00/manifest.json",
+      "sha256": "912b258183e2d47283d76f81c951949d97c63b616d13d6699fbb5e03c6968902",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 60861487,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_055_segment_00/manifest.json",
+      "relative_path": "source_055_segment_00/manifest.json",
+      "sha256": "56f085f2c1d04409b0badbf4d449e7c1cc52a61866e23c3e906dc3e2187cf063",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 871840956,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_056_segment_00/manifest.json",
+      "relative_path": "source_056_segment_00/manifest.json",
+      "sha256": "3cbebccb2a9d0d74bf4986e19a799a118fa17be1f32e5c6df0467de23accfbce",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 301149348,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_057_segment_00/manifest.json",
+      "relative_path": "source_057_segment_00/manifest.json",
+      "sha256": "9543dc602631c0224ec4e908be1d5538b74911fc695e80f456681b3ed1d49b4b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 427983136,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_058_segment_00/manifest.json",
+      "relative_path": "source_058_segment_00/manifest.json",
+      "sha256": "bef08076d799ab9c479ab8cbde8fb1fc7ecb6f2aacfe0f30fa946f248c7f85c5",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 814816357,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_059_segment_00/manifest.json",
+      "relative_path": "source_059_segment_00/manifest.json",
+      "sha256": "f6eccf27296712956fa8812a26134cdc564504205e688d30ca1dd4bf27e315ab",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 825401364,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_060_segment_00/manifest.json",
+      "relative_path": "source_060_segment_00/manifest.json",
+      "sha256": "0313f69ec0d8d95b18a238f5853f009ff605e5cbb214ac3119371cedd82ffa92",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 372484460,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_061_segment_00/manifest.json",
+      "relative_path": "source_061_segment_00/manifest.json",
+      "sha256": "f8889b854acd935f486b2af111aa037a63cce944e70cd724107fa371335f9b78",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 505713304,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_062_segment_00/manifest.json",
+      "relative_path": "source_062_segment_00/manifest.json",
+      "sha256": "2c0fa4072d2d4027a5d9d47d4f66a3831f78925d324873118eaeb4c32071fa6c",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 876710010,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_063_segment_00/manifest.json",
+      "relative_path": "source_063_segment_00/manifest.json",
+      "sha256": "5151c7ab6e9029a6338c3eee2472ea072d648d1b2dee8c93b173705ef2a7f984",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 586618377,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_064_segment_00/manifest.json",
+      "relative_path": "source_064_segment_00/manifest.json",
+      "sha256": "83e13318bdee64c911e1523933a72461627633ba652a85f811e52644574036cf",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 66157331,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_065_segment_00/manifest.json",
+      "relative_path": "source_065_segment_00/manifest.json",
+      "sha256": "700617a3e3cf146bba691e72c241d56e1532efa192181d913bb831ecfff01636",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 210998254,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_066_segment_00/manifest.json",
+      "relative_path": "source_066_segment_00/manifest.json",
+      "sha256": "bbd3645e577487a023a5037c234d58d539a5f2f3721ea927b1666ac066005bd1",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 558747183,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_067_segment_00/manifest.json",
+      "relative_path": "source_067_segment_00/manifest.json",
+      "sha256": "a92a188b9fca62e0438c6055b4873b6cc1121f778e8c6295da4e7e0ea047cb6c",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 850903391,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_068_segment_00/manifest.json",
+      "relative_path": "source_068_segment_00/manifest.json",
+      "sha256": "10b76e74a4711890b9e168a2732bfb9252d1a0f0bca6ea201d25ef31a46ae54f",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 254084297,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_069_segment_00/manifest.json",
+      "relative_path": "source_069_segment_00/manifest.json",
+      "sha256": "a1c8ac817bbd01271e6cbe275eade16d6d196e4018f661ac898427f10f4da00e",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 851781959,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_070_segment_00/manifest.json",
+      "relative_path": "source_070_segment_00/manifest.json",
+      "sha256": "bdc0ea6b94d548f212ec6233114e54b26ed13f96fbe53b3119424ef32e503195",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 433626529,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_071_segment_00/manifest.json",
+      "relative_path": "source_071_segment_00/manifest.json",
+      "sha256": "75d6795975a427771a61efbdceca4d7b47e6541b03d9d2c4aca480d91278376d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 630952489,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_072_segment_00/manifest.json",
+      "relative_path": "source_072_segment_00/manifest.json",
+      "sha256": "c3ad80bab9ca9d2ec68a2a5e744e7afaa35f679e030775a228f8ee577be64527",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 114745743,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_073_segment_00/manifest.json",
+      "relative_path": "source_073_segment_00/manifest.json",
+      "sha256": "589c4cb5156fc998feffb2fa385eea041c389871ac24c626cda384c5541d5dde",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 324310850,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_074_segment_00/manifest.json",
+      "relative_path": "source_074_segment_00/manifest.json",
+      "sha256": "b6626d8c69368295c9cc064aadc1478e69324442b74c4d4a5ca1c30ef784af59",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 234173051,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_075_segment_00/manifest.json",
+      "relative_path": "source_075_segment_00/manifest.json",
+      "sha256": "66add1f48acea80a2ebc70343fa2f426cb5c1ca62bc88d6e2615699924107c1b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 13937749,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_076_segment_00/manifest.json",
+      "relative_path": "source_076_segment_00/manifest.json",
+      "sha256": "992d05d18d802f9d2b0f9d8d18cd656a7006956160b4b56996f97871c8dc32c4",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 725446415,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_077_segment_00/manifest.json",
+      "relative_path": "source_077_segment_00/manifest.json",
+      "sha256": "439e0a11378e3741daad8be9628b798ccd6fb6627b131fbd13e2c035f18676ba",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 234029248,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_078_segment_00/manifest.json",
+      "relative_path": "source_078_segment_00/manifest.json",
+      "sha256": "6f1ed6409a907c9a21e2c21b7762127306da4a67da9018d11fd356a6f4501a0b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 797323201,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_079_segment_00/manifest.json",
+      "relative_path": "source_079_segment_00/manifest.json",
+      "sha256": "41435a7482da6bbccb566724baa4d0160251a5d3e9bcad1cbfaeb0f63e61ba86",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 850300441,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_080_segment_00/manifest.json",
+      "relative_path": "source_080_segment_00/manifest.json",
+      "sha256": "e7b909b9978e6f9ffe60ee3436b3e5ea96d110c7869cbc12ccdf17f8249a2ea8",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 83575882,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_081_segment_00/manifest.json",
+      "relative_path": "source_081_segment_00/manifest.json",
+      "sha256": "eb76eeb1a3792b73a0e913502f85228db43e33d299f145d528cde69c55baf19d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 176364202,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_082_segment_00/manifest.json",
+      "relative_path": "source_082_segment_00/manifest.json",
+      "sha256": "a5a7d2960f534e90172dfe8e55248cf860e53be28fa08a73e8f60e20d983dc68",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 379257661,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_083_segment_00/manifest.json",
+      "relative_path": "source_083_segment_00/manifest.json",
+      "sha256": "b4cc2e499ffbba6dfd3c32d078ae8575bcc402aaf51aa8395ea666cb2a9f7f05",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 845880246,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_084_segment_00/manifest.json",
+      "relative_path": "source_084_segment_00/manifest.json",
+      "sha256": "1982c5bc5582e5e0fdd9205d8601f60081a778062ed0888008bfff43c453708c",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 646059879,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_085_segment_00/manifest.json",
+      "relative_path": "source_085_segment_00/manifest.json",
+      "sha256": "f1ffbbaaae79885f82822c9707a4aa7b01f0ff3298eae6f4451fe8c4f94ed56d",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 277320264,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_086_segment_00/manifest.json",
+      "relative_path": "source_086_segment_00/manifest.json",
+      "sha256": "65108f00edcc76d1e19dffcfda215de8c893d3c99ff707ced3f8f42cc5322ead",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 528758061,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_087_segment_00/manifest.json",
+      "relative_path": "source_087_segment_00/manifest.json",
+      "sha256": "5e67d9ccbdd3781a6d3ad31d62ca3e8a412edd10a7a2c88c7de8a69c3b3b293b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 96154123,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_088_segment_00/manifest.json",
+      "relative_path": "source_088_segment_00/manifest.json",
+      "sha256": "195d841b6cc644972bbd868da0b3c2a9377ea9e9758a9c866693607ac01d91af",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 228616647,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_089_segment_00/manifest.json",
+      "relative_path": "source_089_segment_00/manifest.json",
+      "sha256": "c3161b6196e815a540fad54ebef6c4e2e928afc7696de7ecec18df217629a7a4",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 628564803,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_090_segment_00/manifest.json",
+      "relative_path": "source_090_segment_00/manifest.json",
+      "sha256": "c3c32f52fc48498996cf52210c80065382980b34c32a362b0ecff3f3e9eddb58",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 151871197,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_091_segment_00/manifest.json",
+      "relative_path": "source_091_segment_00/manifest.json",
+      "sha256": "b1623c3c3d22e213ddab5693f5fa1f00a32c68c8a9bf7b9cfca68c63739ecdc0",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 681943887,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_092_segment_00/manifest.json",
+      "relative_path": "source_092_segment_00/manifest.json",
+      "sha256": "7c2193c972c20c5ae63095d4f0a570dcdb3dd982187e5d96ee52456bbb4a2755",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 655109113,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_093_segment_00/manifest.json",
+      "relative_path": "source_093_segment_00/manifest.json",
+      "sha256": "2974d31747808907baae019a65c3aad0d60741fa43cb7eb6e6646c14b5cd56f0",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 661426236,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_094_segment_00/manifest.json",
+      "relative_path": "source_094_segment_00/manifest.json",
+      "sha256": "e077e3fc8f95cd6b9375619ff2dbb1320a6ba56c361aa6f1ea6c25ccb407710b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 564513410,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_095_segment_00/manifest.json",
+      "relative_path": "source_095_segment_00/manifest.json",
+      "sha256": "8856eb5e53b20777e249917d9e2b7f4a7b2421837758be0d85c82d06426bf7f2",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 603302271,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_096_segment_00/manifest.json",
+      "relative_path": "source_096_segment_00/manifest.json",
+      "sha256": "e8fe0309cc262d08ff0949ec0fc09408db83a5932004d91df19479ad993269e8",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 398617878,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_097_segment_00/manifest.json",
+      "relative_path": "source_097_segment_00/manifest.json",
+      "sha256": "1c4edd7a88913b5b32165fa67a20c70fb68acf1dda92f8247b65c1ef3cd98767",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 83132283,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_098_segment_00/manifest.json",
+      "relative_path": "source_098_segment_00/manifest.json",
+      "sha256": "c94547ca381290b56d417dbc09217bd0c59f5af327fdc720ec380725ee4bd2cc",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 87283751,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_099_segment_00/manifest.json",
+      "relative_path": "source_099_segment_00/manifest.json",
+      "sha256": "f37007c5829aa5980480482653c07f7a3fb9f36aaef4f9a893e2e99ffece3386",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 86832792,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_100_segment_00/manifest.json",
+      "relative_path": "source_100_segment_00/manifest.json",
+      "sha256": "8d7c4f30191245cbca3ff8d1650b8d76beca92ae1a5f08d37fcab35c82b94e19",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 745135969,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_101_segment_00/manifest.json",
+      "relative_path": "source_101_segment_00/manifest.json",
+      "sha256": "f10fe59d7a422bbaa3c09704c09dd4345af850fcf889232f2dac26fc2a4e72d1",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 442136159,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_102_segment_00/manifest.json",
+      "relative_path": "source_102_segment_00/manifest.json",
+      "sha256": "91933f540b36e801e51a81597c34ff9126c6ac461838d12eb776b597c48b8d80",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 269696945,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_103_segment_00/manifest.json",
+      "relative_path": "source_103_segment_00/manifest.json",
+      "sha256": "2efa6cf5b2baa6137a1acfaf5085a172daf24b2c3ca29691ef6fa3648461c236",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 561573362,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_104_segment_00/manifest.json",
+      "relative_path": "source_104_segment_00/manifest.json",
+      "sha256": "873e609d7a2b12f72a00a7ebed1515bd1ed54c6c97a61ba1108e61e18af7ee8f",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 729671835,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_105_segment_00/manifest.json",
+      "relative_path": "source_105_segment_00/manifest.json",
+      "sha256": "fa181570bbe63dd06860db64364d3ac06c3099804cbadb40ce70c466c0f0ea34",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 379031575,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_106_segment_00/manifest.json",
+      "relative_path": "source_106_segment_00/manifest.json",
+      "sha256": "49ee7f476b279f08eab3c372670592d6900568666092c6ef5310460d1cefe4ba",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 234122652,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_107_segment_00/manifest.json",
+      "relative_path": "source_107_segment_00/manifest.json",
+      "sha256": "eda03a1d10655d5bd7d6609000793e04854d3a47ed10259b338dcd16ccaa13d9",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 746727007,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_108_segment_00/manifest.json",
+      "relative_path": "source_108_segment_00/manifest.json",
+      "sha256": "6618e106305d89fdc1ed547c0ef94f531750b86ceffb11d1e3405b5472771604",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 129223029,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_109_segment_00/manifest.json",
+      "relative_path": "source_109_segment_00/manifest.json",
+      "sha256": "13277d23aa47d739e48f70b3573bdf8aeafb67345c1fefe5f005cc26b39294d9",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 740238344,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_110_segment_00/manifest.json",
+      "relative_path": "source_110_segment_00/manifest.json",
+      "sha256": "5c20747c2a31b5382c2c9129bdbd45ed021e658533b754186b2751a3bab2cbfe",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 444631845,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_111_segment_00/manifest.json",
+      "relative_path": "source_111_segment_00/manifest.json",
+      "sha256": "0964d312ea67be884fb19cdcb81b41116d9771be5757c453f822f8f124c287d6",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 387474214,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_112_segment_00/manifest.json",
+      "relative_path": "source_112_segment_00/manifest.json",
+      "sha256": "52285597b8d0c7126398447be2ce375872ccca97079129a7b5b3416755aa49c9",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 773283105,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_113_segment_00/manifest.json",
+      "relative_path": "source_113_segment_00/manifest.json",
+      "sha256": "bbaab59ffd03a8ac9e3de0d8c01b67a972b3e5b5767ce9731aa12db972cc68d8",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 827732877,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_114_segment_00/manifest.json",
+      "relative_path": "source_114_segment_00/manifest.json",
+      "sha256": "5c34be2ac475b4d70a45a742507d2fbd6818b308cf45e9270cb343befe8272a0",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 816360514,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_115_segment_00/manifest.json",
+      "relative_path": "source_115_segment_00/manifest.json",
+      "sha256": "2832b4ed63f6e7d9c3a420b97809adcb532a5727937182aed4dd7e86c3c6736b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 653872695,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_116_segment_00/manifest.json",
+      "relative_path": "source_116_segment_00/manifest.json",
+      "sha256": "827434d0f18011718501751f32f91129a9811ef097e021c5cccce53dc4afa9f5",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 457811864,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_117_segment_00/manifest.json",
+      "relative_path": "source_117_segment_00/manifest.json",
+      "sha256": "1d48c8c0372d4aa8cb469b0dd044ef419f2592159be2c27f130005f547979825",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 453777906,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_118_segment_00/manifest.json",
+      "relative_path": "source_118_segment_00/manifest.json",
+      "sha256": "2843ea1e2f231810930cec43e140daebf8d5f7c2747113e1a3ef2ce0123da7ee",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 502726670,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_119_segment_00/manifest.json",
+      "relative_path": "source_119_segment_00/manifest.json",
+      "sha256": "38abbc18104fe1c16741a5b35d14cbdddac84e8b462a5766d88ed6ac89eabddd",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 870099266,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_120_segment_00/manifest.json",
+      "relative_path": "source_120_segment_00/manifest.json",
+      "sha256": "a4c385444e3626f963ed4ec1f39832c2ff6731c0d63bcd8032f582b837f25567",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 76354933,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_121_segment_00/manifest.json",
+      "relative_path": "source_121_segment_00/manifest.json",
+      "sha256": "627bf25a9bccbb6347cd6872d1b5b47c5990f208757ceea6b8ba34af463c0fb3",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 542619615,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_122_segment_00/manifest.json",
+      "relative_path": "source_122_segment_00/manifest.json",
+      "sha256": "2e4fe34133f1099567c2b6e26e7f5809e1e65fadddc9515139d4de0cfe1d53ca",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 259940230,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_123_segment_00/manifest.json",
+      "relative_path": "source_123_segment_00/manifest.json",
+      "sha256": "969e702c6e8347269f29ca8373e8bb502f72cea13e577795bba3ae6dd4de0a68",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 139885636,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911/source_124_segment_00/manifest.json",
+      "relative_path": "source_124_segment_00/manifest.json",
+      "sha256": "b51d7fd51645ac6af3e394b21101fc8e01328951cdaf312e12b1e8466b95169b",
+      "kind": "metadata",
+      "keys": [
+        "centers",
+        "checksums",
+        "context",
+        "directory",
+        "frames",
+        "name",
+        "preparation_seed",
+        "source_index",
+        "split",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 270739820,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

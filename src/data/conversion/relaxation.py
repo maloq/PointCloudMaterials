@@ -42,7 +42,7 @@ def read_relaxed(directory):
     return table[:, 2:5], metadata
 
 
-def convert(directory, delete_source=False):
+def convert(directory, delete_source=False, local_cloud_dtype='float16'):
     directory = Path(directory)
     x, metadata = read_relaxed(directory)
     low = np.asarray(metadata['box_low'], dtype=np.float32)
@@ -77,7 +77,7 @@ def convert(directory, delete_source=False):
         quantization=error.report(),
         training_precision=(
             'Training neighborhoods are extracted before global float16'
-            ' storage, then stored as centered float16 offsets.'
+            f' storage, then stored as centered {local_cloud_dtype} offsets.'
         ),
         source_deleted=False,
     )
@@ -94,5 +94,6 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('directory', type=Path)
     parser.add_argument('--delete-source', action='store_true')
+    parser.add_argument('--local-cloud-dtype', choices=('float16', 'float32'), default='float16')
     args = parser.parse_args(argv)
-    print(json.dumps(convert(args.directory, args.delete_source), indent=2))
+    print(json.dumps(convert(args.directory, args.delete_source, args.local_cloud_dtype), indent=2))

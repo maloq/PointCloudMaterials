@@ -1,0 +1,4022 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al · completed 520 K source extension</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al · completed 520 K source extension</h1><p>Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.</p><span class="badge">research</span><span class="badge warning">1 metadata gaps</span><p><code>al_520K_remaining24_20260913T204114Z</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z">/store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z</a></p><p>607 owned files · 21.005 GiB allocated · 24 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al \u00b7 completed 520 K source extension&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:al_520K_remaining24_20260913T204114Z}/manifest.json&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/manifest.json">${dataset:al_520K_remaining24_20260913T204114Z}/manifest.json</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>ensemble</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>atom_count</td><td><code>[70304]</code></td></tr><tr><td>equilibration_duration_ps</td><td><code>[15.0]</code></td></tr><tr><td>measurement_duration_ps</td><td><code>[600.0]</code></td></tr><tr><td>melt_duration_ps</td><td><code>[300.0]</code></td></tr><tr><td>melt_temperature_K</td><td><code>[1325.0]</code></td></tr><tr><td>ptm_rmsd_cutoff</td><td><code>[0.1]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.75]</code></td></tr><tr><td>timestep_fs</td><td><code>[3.0]</code></td></tr><tr><td>preparation_seed</td><td><code>[129223029, 139885636, 144370470, 151871197, 160380922, 184384186, 200290231, 234122652, 24993146, 259940230, 269696945, 270739820] … (60 values; see JSON)</code></td></tr><tr><td>source_split</td><td><code>[&quot;final_validation&quot;, &quot;model_selection&quot;, &quot;optimization&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[510.0, 520.0]</code></td></tr><tr><td>velocity_seed</td><td><code>[118047358, 140564254, 150812759, 178631405, 185894899, 19173877, 192647554, 201750649, 226218785, 240372582, 257766501, 263207168] … (60 values; see JSON)</code></td></tr><tr><td>scientific_contract</td><td><code>[{&quot;screening_futures_reused_for_evaluation&quot;: false, &quot;split_unit&quot;: &quot;source run and every screened parent and future descended from it&quot;, &quot;structural_independence&quot;: &quot;Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history.&quot;}]</code></td></tr><tr><td>split_unit</td><td><code>[&quot;source run and every screened parent and future descended from it&quot;]</code></td></tr><tr><td>structural_independence</td><td><code>[&quot;Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history.&quot;]</code></td></tr><tr><td>temperatures_K</td><td><code>[[510.0, 520.0]]</code></td></tr><tr><td>frame_count</td><td><code>[801]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 607,
+    &quot;apparent_bytes&quot;: 16839415024,
+    &quot;allocated_bytes&quot;: 22554279936,
+    &quot;file_extensions&quot;: {
+      &quot;.data&quot;: 25,
+      &quot;.json&quot;: 99,
+      &quot;.sha256&quot;: 1,
+      &quot;.meam&quot;: 2,
+      &quot;.npz&quot;: 48,
+      &quot;.log&quot;: 120,
+      &quot;.bin&quot;: 48,
+      &quot;.lammps&quot;: 72,
+      &quot;.lammpstrj&quot;: 24,
+      &quot;.npy&quot;: 168
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;complete&quot;: 24
+    },
+    &quot;metadata_records&quot;: 74,
+    &quot;binary_trajectory_records&quot;: 24,
+    &quot;available_complete_binary_records&quot;: 24,
+    &quot;stored_frames&quot;: 19224,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/crystallization_progress.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_names&quot;: {
+          &quot;shape&quot;: [
+            5
+          ],
+          &quot;dtype&quot;: &quot;&lt;U5&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;structure_fractions&quot;: {
+          &quot;shape&quot;: [
+            801,
+            5
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_fraction&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;crystalline_cluster_count&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;largest_crystalline_cluster_atoms&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/thermodynamics.npz&quot;,
+      &quot;members&quot;: {
+        &quot;step&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;temperature_K&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pressure_GPa&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;volume_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;potential_energy_eV_per_atom&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;number_density_atoms_per_A3&quot;: {
+          &quot;shape&quot;: [
+            801
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (74 records)</summary><p><a href="../records/al_520K_remaining24_20260913T204114Z-4a280fe4.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/manifest.json">manifest.json</a> · prepared · <code>12008507d8f92baf0b9e3a5c7de952c00af57f6682c569fe48bbad812a1d3b3f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/status.json">status.json</a> · complete · <code>3721909ef1c1aefd3d5fe5003861c193185f0906c9ecb6a5766df6cf097f9edb</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_033_T520_optimization_melt511618678_velocity185894899/outcome.json">runs/source_033_T520_optimization_melt511618678_velocity185894899/outcome.json</a> · complete · <code>8346c9f1ef323ccc672c84a5b0fc126d7403da4028132319b7d96e8963527939</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_033_T520_optimization_melt511618678_velocity185894899/status.json">runs/source_033_T520_optimization_melt511618678_velocity185894899/status.json</a> · complete · <code>8346c9f1ef323ccc672c84a5b0fc126d7403da4028132319b7d96e8963527939</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/manifest.json">runs/source_033_T520_optimization_melt511618678_velocity185894899/trajectory_binary_float16/manifest.json</a> · complete · <code>eb84ac1ca4c1d44ee2cc70174f360fa416893d6bf61859972a68e4dff6d1541e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_034_T520_optimization_melt455949696_velocity516257445/outcome.json">runs/source_034_T520_optimization_melt455949696_velocity516257445/outcome.json</a> · complete · <code>4d17a03db9409dd1d7c00808bd41a696b16c75daec42fbafd0c794a2b8bebf34</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_034_T520_optimization_melt455949696_velocity516257445/status.json">runs/source_034_T520_optimization_melt455949696_velocity516257445/status.json</a> · complete · <code>4d17a03db9409dd1d7c00808bd41a696b16c75daec42fbafd0c794a2b8bebf34</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/manifest.json">runs/source_034_T520_optimization_melt455949696_velocity516257445/trajectory_binary_float16/manifest.json</a> · complete · <code>1a1e8f1135a4038d296d4e43d5141dc104a90e40cfa10164a4c913965b04c631</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_035_T520_optimization_melt691988874_velocity140564254/outcome.json">runs/source_035_T520_optimization_melt691988874_velocity140564254/outcome.json</a> · complete · <code>802ce9f13c8a8c8cbdb4688137b2e6f878f98eba397418afe5fe6bf27a6d2d7e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_035_T520_optimization_melt691988874_velocity140564254/status.json">runs/source_035_T520_optimization_melt691988874_velocity140564254/status.json</a> · complete · <code>802ce9f13c8a8c8cbdb4688137b2e6f878f98eba397418afe5fe6bf27a6d2d7e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/manifest.json">runs/source_035_T520_optimization_melt691988874_velocity140564254/trajectory_binary_float16/manifest.json</a> · complete · <code>6a1414fc94358a23786bc68130af324c1636eb3256b274087aae027f77ece5ad</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_036_T520_optimization_melt804308644_velocity743188960/outcome.json">runs/source_036_T520_optimization_melt804308644_velocity743188960/outcome.json</a> · complete · <code>0f7702cc88d9e8fd14c8516fbf04a451d804e03a430b945f2cd5f72d36c5f602</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_036_T520_optimization_melt804308644_velocity743188960/status.json">runs/source_036_T520_optimization_melt804308644_velocity743188960/status.json</a> · complete · <code>0f7702cc88d9e8fd14c8516fbf04a451d804e03a430b945f2cd5f72d36c5f602</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/manifest.json">runs/source_036_T520_optimization_melt804308644_velocity743188960/trajectory_binary_float16/manifest.json</a> · complete · <code>fb7fb710b86807fd10a9231532a9d5e2ca7094118f9abd5a09f7aa330a530990</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_037_T520_optimization_melt808961974_velocity893624603/outcome.json">runs/source_037_T520_optimization_melt808961974_velocity893624603/outcome.json</a> · complete · <code>1ed78f72f57b08c8076eb23166d9c85e55ad63a20b592e33a681366cde1a6702</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_037_T520_optimization_melt808961974_velocity893624603/status.json">runs/source_037_T520_optimization_melt808961974_velocity893624603/status.json</a> · complete · <code>1ed78f72f57b08c8076eb23166d9c85e55ad63a20b592e33a681366cde1a6702</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/manifest.json">runs/source_037_T520_optimization_melt808961974_velocity893624603/trajectory_binary_float16/manifest.json</a> · complete · <code>caf7cfe1f703de8fef07724bcc44d82786f8fb31468d03a1d85a033da9230b35</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_038_T520_optimization_melt434160560_velocity305336505/outcome.json">runs/source_038_T520_optimization_melt434160560_velocity305336505/outcome.json</a> · complete · <code>9eadb40e005699cf5df571c44c0dee4c677d27167fc8857890885f6b1139e0f8</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_038_T520_optimization_melt434160560_velocity305336505/status.json">runs/source_038_T520_optimization_melt434160560_velocity305336505/status.json</a> · complete · <code>9eadb40e005699cf5df571c44c0dee4c677d27167fc8857890885f6b1139e0f8</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/manifest.json">runs/source_038_T520_optimization_melt434160560_velocity305336505/trajectory_binary_float16/manifest.json</a> · complete · <code>348e16d50d627d642e9f521b91ffad55ebb75782fdc817a64db950d88971ad8b</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_039_T520_optimization_melt200290231_velocity240372582/outcome.json">runs/source_039_T520_optimization_melt200290231_velocity240372582/outcome.json</a> · complete · <code>6bf0485f272d6c217325995aff2b4bd3f9275227d6a24310c88632e6f5100135</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_039_T520_optimization_melt200290231_velocity240372582/status.json">runs/source_039_T520_optimization_melt200290231_velocity240372582/status.json</a> · complete · <code>6bf0485f272d6c217325995aff2b4bd3f9275227d6a24310c88632e6f5100135</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/manifest.json">runs/source_039_T520_optimization_melt200290231_velocity240372582/trajectory_binary_float16/manifest.json</a> · complete · <code>c30a89bd5680d1195f335ed8c682c72be5e05dedd1ee9a8a5b44892bf80018a3</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_040_T520_optimization_melt144370470_velocity263207168/outcome.json">runs/source_040_T520_optimization_melt144370470_velocity263207168/outcome.json</a> · complete · <code>c4fee20bd636a7d2b766f9a819e750f68fafbe6aea341c1b2bcad7d95e3a88e1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_040_T520_optimization_melt144370470_velocity263207168/status.json">runs/source_040_T520_optimization_melt144370470_velocity263207168/status.json</a> · complete · <code>c4fee20bd636a7d2b766f9a819e750f68fafbe6aea341c1b2bcad7d95e3a88e1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/manifest.json">runs/source_040_T520_optimization_melt144370470_velocity263207168/trajectory_binary_float16/manifest.json</a> · complete · <code>0110e40178381c0c3a32e8e2fa0d089426507ecac4126bbf9d1273455b116694</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_041_T520_optimization_melt76681035_velocity510019800/outcome.json">runs/source_041_T520_optimization_melt76681035_velocity510019800/outcome.json</a> · complete · <code>d45ea9a3ed9d2acce87800d4e73bc9b183ac9d53fc14f76a286e0f45d0cb8b89</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_041_T520_optimization_melt76681035_velocity510019800/status.json">runs/source_041_T520_optimization_melt76681035_velocity510019800/status.json</a> · complete · <code>d45ea9a3ed9d2acce87800d4e73bc9b183ac9d53fc14f76a286e0f45d0cb8b89</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/manifest.json">runs/source_041_T520_optimization_melt76681035_velocity510019800/trajectory_binary_float16/manifest.json</a> · complete · <code>71a1618b881573d99623d8774827346357d2eb5e5e429406d741ffa2992a2ba7</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_042_T520_optimization_melt77880009_velocity38939262/outcome.json">runs/source_042_T520_optimization_melt77880009_velocity38939262/outcome.json</a> · complete · <code>f0cdb1c7fdc61d52dfb4cb868fca83694d84a4027cb9201f63190c575bf1cce9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_042_T520_optimization_melt77880009_velocity38939262/status.json">runs/source_042_T520_optimization_melt77880009_velocity38939262/status.json</a> · complete · <code>f0cdb1c7fdc61d52dfb4cb868fca83694d84a4027cb9201f63190c575bf1cce9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/manifest.json">runs/source_042_T520_optimization_melt77880009_velocity38939262/trajectory_binary_float16/manifest.json</a> · complete · <code>2b5887f8a68ac060330332c279cf670c8f65c10b966143b87fb3bafbf16afae2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_043_T520_optimization_melt746071054_velocity595286749/outcome.json">runs/source_043_T520_optimization_melt746071054_velocity595286749/outcome.json</a> · complete · <code>b73e8ecb125d0aacb1cab23f944f22c89605120206659541d331c3df3d88a934</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_043_T520_optimization_melt746071054_velocity595286749/status.json">runs/source_043_T520_optimization_melt746071054_velocity595286749/status.json</a> · complete · <code>b73e8ecb125d0aacb1cab23f944f22c89605120206659541d331c3df3d88a934</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/manifest.json">runs/source_043_T520_optimization_melt746071054_velocity595286749/trajectory_binary_float16/manifest.json</a> · complete · <code>202f388e206f3257bc6addb10cadf18256901ebc9c9d51ae45f65e2bdf94c9fe</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_044_T520_optimization_melt294342775_velocity265711615/outcome.json">runs/source_044_T520_optimization_melt294342775_velocity265711615/outcome.json</a> · complete · <code>43703b2100b3ecfb6babd6634e725e91ca8498219a8d69df88ef1144fde349be</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_044_T520_optimization_melt294342775_velocity265711615/status.json">runs/source_044_T520_optimization_melt294342775_velocity265711615/status.json</a> · complete · <code>43703b2100b3ecfb6babd6634e725e91ca8498219a8d69df88ef1144fde349be</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/manifest.json">runs/source_044_T520_optimization_melt294342775_velocity265711615/trajectory_binary_float16/manifest.json</a> · complete · <code>9844ab3a6d167f368dde08d40ce80422278b7e73c0cca7078bcd004bf7c0dca4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_045_T520_optimization_melt184384186_velocity150812759/outcome.json">runs/source_045_T520_optimization_melt184384186_velocity150812759/outcome.json</a> · complete · <code>806f2f82edaed5e61281ceb9ab02eaeaf3a7352fc76a0999607738ce76072897</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_045_T520_optimization_melt184384186_velocity150812759/status.json">runs/source_045_T520_optimization_melt184384186_velocity150812759/status.json</a> · complete · <code>806f2f82edaed5e61281ceb9ab02eaeaf3a7352fc76a0999607738ce76072897</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/manifest.json">runs/source_045_T520_optimization_melt184384186_velocity150812759/trajectory_binary_float16/manifest.json</a> · complete · <code>286fac4bff84339fc49dd2e7a54b7e189aeda719e4c1fd27cb45eece8eccafc9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_046_T520_optimization_melt160380922_velocity670053733/outcome.json">runs/source_046_T520_optimization_melt160380922_velocity670053733/outcome.json</a> · complete · <code>c3e6e7a7fa9529a857b23e7230caedefe15b998058a5fae800d6c7edd9a4c8cd</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_046_T520_optimization_melt160380922_velocity670053733/status.json">runs/source_046_T520_optimization_melt160380922_velocity670053733/status.json</a> · complete · <code>c3e6e7a7fa9529a857b23e7230caedefe15b998058a5fae800d6c7edd9a4c8cd</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/manifest.json">runs/source_046_T520_optimization_melt160380922_velocity670053733/trajectory_binary_float16/manifest.json</a> · complete · <code>3e8fc819a7b5d8ae78664e798a4e5a90696aaa91aec7f4e32d459cfbbb53b247</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_047_T520_optimization_melt330985692_velocity822714510/outcome.json">runs/source_047_T520_optimization_melt330985692_velocity822714510/outcome.json</a> · complete · <code>5f062c070d65304b373b1f7b4d9ba522ae2afb3adae8574df809ba632ef7b88f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_047_T520_optimization_melt330985692_velocity822714510/status.json">runs/source_047_T520_optimization_melt330985692_velocity822714510/status.json</a> · complete · <code>5f062c070d65304b373b1f7b4d9ba522ae2afb3adae8574df809ba632ef7b88f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/manifest.json">runs/source_047_T520_optimization_melt330985692_velocity822714510/trajectory_binary_float16/manifest.json</a> · complete · <code>570f66b613255956c77864e93868ca7c2f70529f671c163a0d9486f2a8447f1a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_048_T520_model_selection_melt556912370_velocity688155550/outcome.json">runs/source_048_T520_model_selection_melt556912370_velocity688155550/outcome.json</a> · complete · <code>2c4acaadc9421d33fc55849b408badef3ca6723e510d30cb989bddb22da30343</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_048_T520_model_selection_melt556912370_velocity688155550/status.json">runs/source_048_T520_model_selection_melt556912370_velocity688155550/status.json</a> · complete · <code>2c4acaadc9421d33fc55849b408badef3ca6723e510d30cb989bddb22da30343</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/manifest.json">runs/source_048_T520_model_selection_melt556912370_velocity688155550/trajectory_binary_float16/manifest.json</a> · complete · <code>553e12062781331b663cf7bceb904ec3ea0e794c230aac866ff9993641f79892</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_049_T520_model_selection_melt780540798_velocity611405491/outcome.json">runs/source_049_T520_model_selection_melt780540798_velocity611405491/outcome.json</a> · complete · <code>bece84ba8430a006e52f03e938b3b90d4757f2167ab7fe295cab1417ae8db31c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_049_T520_model_selection_melt780540798_velocity611405491/status.json">runs/source_049_T520_model_selection_melt780540798_velocity611405491/status.json</a> · complete · <code>bece84ba8430a006e52f03e938b3b90d4757f2167ab7fe295cab1417ae8db31c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/manifest.json">runs/source_049_T520_model_selection_melt780540798_velocity611405491/trajectory_binary_float16/manifest.json</a> · complete · <code>aadf48427d665b6255029070b982ce171d2051df60b4ebeb318635307ea154ec</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_050_T520_model_selection_melt480262437_velocity812362246/outcome.json">runs/source_050_T520_model_selection_melt480262437_velocity812362246/outcome.json</a> · complete · <code>007eceefbaafa9abce2ccc7e3fe3180d34e12d8437783d7cee9e20885af2788d</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_050_T520_model_selection_melt480262437_velocity812362246/status.json">runs/source_050_T520_model_selection_melt480262437_velocity812362246/status.json</a> · complete · <code>007eceefbaafa9abce2ccc7e3fe3180d34e12d8437783d7cee9e20885af2788d</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/manifest.json">runs/source_050_T520_model_selection_melt480262437_velocity812362246/trajectory_binary_float16/manifest.json</a> · complete · <code>fe36a73edcdc8dd42e70859c99a46ac6da1ffccd2d43592034f88b4df5e3333a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_051_T520_model_selection_melt24993146_velocity316704962/outcome.json">runs/source_051_T520_model_selection_melt24993146_velocity316704962/outcome.json</a> · complete · <code>830931b9d54f7a5501fed7ff904dd4e100c5d215d58e5803a4c63b0769648904</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_051_T520_model_selection_melt24993146_velocity316704962/status.json">runs/source_051_T520_model_selection_melt24993146_velocity316704962/status.json</a> · complete · <code>830931b9d54f7a5501fed7ff904dd4e100c5d215d58e5803a4c63b0769648904</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/manifest.json">runs/source_051_T520_model_selection_melt24993146_velocity316704962/trajectory_binary_float16/manifest.json</a> · complete · <code>9e2a66d4492e6500f791f78abb48ad45d22cf69f2002cbbcf9480c244f4bdc7a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_052_T520_model_selection_melt340453041_velocity42266601/outcome.json">runs/source_052_T520_model_selection_melt340453041_velocity42266601/outcome.json</a> · complete · <code>d87d39162ee2b20e972a11367406ca474d9e758bd422c22167f0111a2b4f088c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_052_T520_model_selection_melt340453041_velocity42266601/status.json">runs/source_052_T520_model_selection_melt340453041_velocity42266601/status.json</a> · complete · <code>d87d39162ee2b20e972a11367406ca474d9e758bd422c22167f0111a2b4f088c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/manifest.json">runs/source_052_T520_model_selection_melt340453041_velocity42266601/trajectory_binary_float16/manifest.json</a> · complete · <code>01cb7d02b4a6d34e73ec0e8fb27e493d04da1aa212cde02a2a4e69eb48403576</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_053_T520_model_selection_melt871735562_velocity409964290/outcome.json">runs/source_053_T520_model_selection_melt871735562_velocity409964290/outcome.json</a> · complete · <code>09263a78a100a2bc111444a5d47286ce15200e79be86cb475a3bb92b5519bef3</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_053_T520_model_selection_melt871735562_velocity409964290/status.json">runs/source_053_T520_model_selection_melt871735562_velocity409964290/status.json</a> · complete · <code>09263a78a100a2bc111444a5d47286ce15200e79be86cb475a3bb92b5519bef3</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/manifest.json">runs/source_053_T520_model_selection_melt871735562_velocity409964290/trajectory_binary_float16/manifest.json</a> · complete · <code>70de6f52df7f7c8a61fafaeb491b179eff4b66fabd7fc0d0c2e0aa2983815cd1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_054_T520_final_validation_melt410549883_velocity508004026/outcome.json">runs/source_054_T520_final_validation_melt410549883_velocity508004026/outcome.json</a> · complete · <code>d46fd1d47de75b3c6e33db33747ef4103cea14536ada1b576ddc95c6ec95d565</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_054_T520_final_validation_melt410549883_velocity508004026/status.json">runs/source_054_T520_final_validation_melt410549883_velocity508004026/status.json</a> · complete · <code>d46fd1d47de75b3c6e33db33747ef4103cea14536ada1b576ddc95c6ec95d565</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/manifest.json">runs/source_054_T520_final_validation_melt410549883_velocity508004026/trajectory_binary_float16/manifest.json</a> · complete · <code>1f84a0d56c1f30ed4625c3ebff71d6ebb25a6e2fd2f480cce993eb0b15916405</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_055_T520_final_validation_melt617047783_velocity733922557/outcome.json">runs/source_055_T520_final_validation_melt617047783_velocity733922557/outcome.json</a> · complete · <code>80ccdd245ff87433ca33d17d92f50172198278fef69699d65044912a74d12b79</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_055_T520_final_validation_melt617047783_velocity733922557/status.json">runs/source_055_T520_final_validation_melt617047783_velocity733922557/status.json</a> · complete · <code>80ccdd245ff87433ca33d17d92f50172198278fef69699d65044912a74d12b79</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/manifest.json">runs/source_055_T520_final_validation_melt617047783_velocity733922557/trajectory_binary_float16/manifest.json</a> · complete · <code>aab95d7579a9a8a5f3f57d97d43ed6f0ed0eb4f37e9df735748f36cf20100139</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_056_T520_final_validation_melt82221119_velocity86318490/outcome.json">runs/source_056_T520_final_validation_melt82221119_velocity86318490/outcome.json</a> · complete · <code>59d13a58072d4a1d70c333161a55dd8d0a9bafed5ed3f7b79c7f0e45b10d4cf9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_056_T520_final_validation_melt82221119_velocity86318490/status.json">runs/source_056_T520_final_validation_melt82221119_velocity86318490/status.json</a> · complete · <code>59d13a58072d4a1d70c333161a55dd8d0a9bafed5ed3f7b79c7f0e45b10d4cf9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al_520K_remaining24_20260913T204114Z/runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/manifest.json">runs/source_056_T520_final_validation_melt82221119_velocity86318490/trajectory_binary_float16/manifest.json</a> · complete · <code>b79893b150c05aa595878c88b8324520f84764d3b804731ad01212dd30367c44</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

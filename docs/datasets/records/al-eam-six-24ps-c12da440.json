@@ -1,0 +1,1415 @@
+{
+  "dataset_id": "al-eam-six-24ps",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/166ps/metadata.json",
+      "relative_path": "166ps/metadata.json",
+      "sha256": "a1ae61e061e00ad3419d1610c44650767c13080927aeef1930730ae71fa08c4e",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 891021440,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/166ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "166ps/trajectory_binary_float16/manifest.json",
+      "sha256": "63af33de4d5c940311772b90ea3f0fb1ce8e15a0c7312aa4833f61a5afe5a13e",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.02254902613024582,
+          "rmse_A": 0.03046123677941355,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "eb7e01abc000170e619bc714d0c453c6b7cd0b5fcfbc828df251b12ef7a34f08",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "29deaa1205eba932b8a66fe4fc59c87acfaaeb9845f60d65cc9775cf106cf41e",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "21bcd1922e85bf4d96b731947cafcb37fc0ee6d82d6d233028b294c42838979e",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "6c906a946baf3b722a9810aef6ef597fdbe2340b90863d8e4517c1bef6945104",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/170ps/metadata.json",
+      "relative_path": "170ps/metadata.json",
+      "sha256": "e4af46e578afe78b8c9991dfb4b72bedb14a38284e47249e0d47dbd7b0209137",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 699107707,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/170ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "170ps/trajectory_binary_float16/manifest.json",
+      "sha256": "83f4955b96756267209af49af65c66a498504d09b67aaf7c320d3fe3c4b296af",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.02253391478605377,
+          "rmse_A": 0.030425371309683792,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "231fcdf0930e694418502c8fa0b45d3b2ca3df7d6d77545ecb30bf92b1da1b33",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e49118a6931d9d4ca17f8ea0c57d156bcde9b42ffd0319afd56ff83434e02f2f",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "f69e168cc2cf8d18bc8d4babd38f7347ebbcdafba27b8674f281223c52d01d8a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "b1810a2378bec540378b9d9d04e035fdcb3ce457c4b61ef397a3921f9736156a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/174ps/metadata.json",
+      "relative_path": "174ps/metadata.json",
+      "sha256": "c0521eb2557d8496fa4a53fd1dcfcc46aeb36f2e4dc0ceb92ff7339d67430ad8",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 829122842,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/174ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "174ps/trajectory_binary_float16/manifest.json",
+      "sha256": "3583df5582516f655ca70e030a602608d01f1432e18e493f80dd0a4fb3ad6d16",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.022452759488687437,
+          "rmse_A": 0.030263149318953214,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a33e613bedc62af1870c975e21ab2eddc93da95dfb17a9fa054dfaf6ba82438b",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "996bf9568b99a8e1540e1d8df4b838023dd722f327e6d52b28c5c102de162df0",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0b3453dd477f3fb95c081cf3decfbff9965c69f68b20cd77ca9d198b9cec6342",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "364338e8a8f2880489346c29bfa21602b4f99cc6d52f7897555253a074d46214",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/175ps/metadata.json",
+      "relative_path": "175ps/metadata.json",
+      "sha256": "be7c647e915a79f03845529b3d54549bd59469bc763e31b3f59b017b67a432b3",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 602978450,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/175ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "175ps/trajectory_binary_float16/manifest.json",
+      "sha256": "9ba3917f1abbacde4a36c1f27fa4ec53a5a8f7bb5251d3a89fa9239eee5ae3da",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.02241061105108369,
+          "rmse_A": 0.03018427793479739,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ca84d45aebb3c9f658d79033cda0a467c0b268808b39df09b0b527d1ca6f1e2e",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a7af78a8f1536e42be6ffcea215f12c3459c59e1a3a27d8cc5c81fdb57fbb9e9",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d32ba40dbe2319e2500ab43a8369a19876a40093a72be62dc50d24e898c2aefa",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "1ccb83e1325a791d6acc721a50050aadd9f185bd87ba54cc7ff7f12358cc68fd",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/177ps/metadata.json",
+      "relative_path": "177ps/metadata.json",
+      "sha256": "94626c4af18b3a25353c4a1397d143b7bea3731d6658acd5d93ca56bb71755d0",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 176387760,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/177ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "177ps/trajectory_binary_float16/manifest.json",
+      "sha256": "4410acf2a5436e8126ddd28b31eaab2df8082a35d271c5278eb54e17da205f46",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.022287411854110453,
+          "rmse_A": 0.02996002233466806,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "df8e122eb8b52c2f89ca88c919dabfedc949e4d01664efe6feaff5239d85c6fe",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3f3695b5f4923529dd9aec33cef02d911d8dc91f5b38e00245249dc334515967",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "affd49a656cfae6f6897a31900a18cb58235b7035c817b1528327fa8d3cfb365",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "9dbd8029253ea9cf68ece2eaca52cc316839cd132a6fd78133b5caa9f80d5ca5",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/240ps/metadata.json",
+      "relative_path": "240ps/metadata.json",
+      "sha256": "5e229e072ede9a4abda38cd816aa875cd521499021b2787b0a264c77f3bf7f61",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "command",
+        "completed_at_utc",
+        "duration_ps",
+        "duration_steps",
+        "elapsed_seconds",
+        "estimated_runtime_seconds",
+        "estimated_trajectory_bytes",
+        "expected_frames",
+        "lammps_loop_seconds",
+        "material",
+        "prepared_at_utc",
+        "restart",
+        "sample_interval_ps",
+        "sample_interval_steps",
+        "schema_version",
+        "snapshot",
+        "source",
+        "source_box_bounds_A",
+        "source_sha256",
+        "source_timestep",
+        "started_at_utc",
+        "state",
+        "temperature_K",
+        "timestep_fs",
+        "trajectory",
+        "velocity_seed"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 728143657,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "trajectory.scan.frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Al/240ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "240ps/trajectory_binary_float16/manifest.json",
+      "sha256": "78a1e8efcc028c653d18de64385a4acb23a78fee53f4c3af72f39a65e443966d",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "quantization",
+        "schema_version",
+        "semantic_float32_sha256",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1048576,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "maximum_absolute_error_A": 0.125,
+          "mean_absolute_error_A": 0.02198481362473055,
+          "rmse_A": 0.029449301433494664,
+          "value_count": 758120448
+        }
+      },
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1048576,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "284e1737fc27c11ca2b4baf091d5e5918c4ff5f7d9afc19a5212ba60f2a52375",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1048576
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "0abd34e81866c56a09904565070e9e929e0ae889e79b6dd186510030f6e1478c",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "7d41771e8f02ad4afcb0c6d5bc68d4125c427333248b9f404c49e8ad8a7e62df",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a80ee40fb95a52648c91dc159ff0e59eec420bea0ac63c2714ee3d990212bc42",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1048576,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "4b1cb7857a84dc9f83fbc29bc26e63fdd21c24169371e33e3cdbaabd799f3ae2",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3ae1027383df7b8d9e664c3bbc439cfc7a459256cf49518188ab7bf43aec9e12",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "be004f3d2506ad691cd63f1f9a41c211e4ba41a4796fe58a02269b746aefd204",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

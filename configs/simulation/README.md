@@ -9,6 +9,7 @@ Training and analysis loaders for existing data belong in `../data/loaders/`.
 | `ti_crystallization.json` | Ti MEAM source generation and position-conditioned branches. |
 | `ta_crystallization.json` | Ta EAM branches from recorded initial configurations. |
 | `predictive_memory_precision.json` | Twelve fresh Al melt lineages, fixed 192 ps histories at 0.075 ps cadence, paired float32/float16 observations and preassigned sealed test sources. |
+| `relaxed_tda_al.json` | Full-cell fixed-box FIRE targets for denser existing training windows and all completed Al shooting collections; no new MD. Use `python -m src.data.relaxed_targets prepare|run|status`; [details](../../docs/relaxed_tda_targets.md). |
 
 Launch with `python scripts/run_lammps_campaign.py elemental run --config CONFIG
 --run-name NAME`. New results use the machine's simulation storage root; completed

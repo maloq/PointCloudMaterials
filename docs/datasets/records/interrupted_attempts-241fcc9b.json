@@ -1,0 +1,942 @@
+{
+  "dataset_id": "interrupted_attempts",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/manifest.json",
+      "sha256": "d26e7a64bed9c9671aebe7219ba256131796c7a7a85ae9f627b7e4f8ec1ad4b7",
+      "kind": "metadata",
+      "keys": [
+        "candidate_parent_configurations_per_nucleated_run",
+        "created_at",
+        "execution",
+        "independence_definition",
+        "protocol",
+        "purpose",
+        "run_count",
+        "runs",
+        "runs_by_temperature",
+        "schema_version",
+        "source_campaign"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "protocol.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "NPT",
+            "first_json_path": "protocol.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "runs[0].temperature_K",
+            "occurrences": 3
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "runs[3].temperature_K",
+            "occurrences": 3
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "runs[6].temperature_K",
+            "occurrences": 3
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 35911,
+            "first_json_path": "runs[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35923,
+            "first_json_path": "runs[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35933,
+            "first_json_path": "runs[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35951,
+            "first_json_path": "runs[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35963,
+            "first_json_path": "runs[4].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35977,
+            "first_json_path": "runs[5].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35993,
+            "first_json_path": "runs[6].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 36007,
+            "first_json_path": "runs[7].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 36013,
+            "first_json_path": "runs[8].velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/status.json",
+      "sha256": "74f5272683e52e20915f47b3c0a648eef38507ccb9f69af1ce52eb162adeaf08",
+      "kind": "metadata",
+      "keys": [
+        "active_array_job_id",
+        "active_array_spec",
+        "schema_version",
+        "state",
+        "successor_job_id",
+        "successor_kind",
+        "updated_at"
+      ],
+      "recorded_state": "submitted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_000_T400_velocity_35911/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_000_T400_velocity_35911/manifest.json",
+      "sha256": "5ce6d7211425a2b825f174209c3526439bdf43da544c489041ced14bd611a7ee",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_000_T400_velocity_35911/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_000_T400_velocity_35911/status.json",
+      "sha256": "bc71ab8a7ac53f7cb69316f042e0b5669b172427d751b87d5046cb5f7b37a50f",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_001_T400_velocity_35923/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_001_T400_velocity_35923/manifest.json",
+      "sha256": "1097b18f00009977ec4bcfadba1e3fcec0dcd59c025622dcbddd51846a4e36c3",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_001_T400_velocity_35923/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_001_T400_velocity_35923/status.json",
+      "sha256": "aa4761596a3181ce053a681a7b24d94f21667c325edca920846b70ebd7026848",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_002_T400_velocity_35933/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_002_T400_velocity_35933/manifest.json",
+      "sha256": "13421eefab0d9bcc773d0a0995c851043d62e3921554f5dc896aab81b7a18371",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_002_T400_velocity_35933/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_002_T400_velocity_35933/status.json",
+      "sha256": "f931444a575353cfce399649e0cabdc85b9b3c09fdb5dc102932faf20ce29076",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_003_T450_velocity_35951/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_003_T450_velocity_35951/manifest.json",
+      "sha256": "1b37ae67a813f7e409bdf9884af58b6c1ef07f2d59ec1a2ef6d08568eb634c6e",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_003_T450_velocity_35951/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_003_T450_velocity_35951/status.json",
+      "sha256": "62b6ce075868fb9d0e9d83d1f420540b4424a74fea30ea513057f39a94c0107f",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_004_T450_velocity_35963/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_004_T450_velocity_35963/manifest.json",
+      "sha256": "7e2c4ef6ef607f279d7fed2aea8f96eeef99bcb16426b076ca46a5e3beb3fca3",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_004_T450_velocity_35963/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_004_T450_velocity_35963/status.json",
+      "sha256": "dd68aec9955a5f88fd72b3226e4693171b3e697011353e433bb6b41bf2d0f8ef",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_005_T450_velocity_35977/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_005_T450_velocity_35977/manifest.json",
+      "sha256": "dc6a9c4bb9e7d6e25d8e51b62f66b26a6558440171dba2159c3ead9e56ea0ed6",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_005_T450_velocity_35977/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_005_T450_velocity_35977/status.json",
+      "sha256": "b465eaa0a444c9b092ef3565f766c7d8ca6f7e4bacd0d9fc5b5f314cf3c3767b",
+      "kind": "metadata",
+      "keys": [
+        "active_replica",
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "replica_index",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "running_replica",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_006_T500_velocity_35993/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_006_T500_velocity_35993/manifest.json",
+      "sha256": "08733a0bca352a367bdba3235fa5e32f193a1bf250dff09f24eb62fab2ef6ebb",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_006_T500_velocity_35993/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_006_T500_velocity_35993/status.json",
+      "sha256": "2c3b76ea74bed4e8bbf84a19097108336703e85a84bebd0482f689dbc50979d6",
+      "kind": "metadata",
+      "keys": [
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "prepared",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_007_T500_velocity_36007/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_007_T500_velocity_36007/manifest.json",
+      "sha256": "7783fb63e3e9f3e3d831dc3adbb041599b15fe7cc80a4cf81e6f387072b44369",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_007_T500_velocity_36007/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_007_T500_velocity_36007/status.json",
+      "sha256": "9256f889bd730524c00750e2945d839e35d04c8b5e7d6fbf7faf57c5a86048a4",
+      "kind": "metadata",
+      "keys": [
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "prepared",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_008_T500_velocity_36013/manifest.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_008_T500_velocity_36013/manifest.json",
+      "sha256": "5b8f16cf580e722d5ad4ddda1efea99122ed6f6423978c04144f21cfec4db816",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "created_at",
+        "crystal_seed",
+        "execution",
+        "potential",
+        "protocol",
+        "purpose",
+        "schema_version",
+        "shared_liquid_source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a",
+          "source": "NIST Interatomic Potentials Repository entry 2003--Lee-B-J-Shim-J-H-Baskes-M-I--Al"
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/interrupted_attempts/al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_008_T500_velocity_36013/status.json",
+      "relative_path": "al_homogeneous_unseeded_2nn_meam_70304_9runs_wave_976390_20260901T1552CEST/runs/run_008_T500_velocity_36013/status.json",
+      "sha256": "8660eb50b6a8d5301ff28b5a9add9918b27f9b880998cba065f8ae8ae74e856e",
+      "kind": "metadata",
+      "keys": [
+        "completed_replicas",
+        "pending_velocity_seeds",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "prepared",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

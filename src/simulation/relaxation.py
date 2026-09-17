@@ -65,7 +65,8 @@ print "RELAXATION_COMPLETE"
     lines=(directory/'log.lammps').read_text().splitlines()
     force=float(next(line.split()[1] for line in reversed(lines) if line.startswith('RELAXED_FORCE ')))
     energy=float(next(line.split()[1] for line in reversed(lines) if line.startswith('RELAXED_ENERGY ')))
-    if 'RELAXATION_COMPLETE' not in lines or force>settings['force_tolerance']:
+    if ('RELAXATION_COMPLETE' not in lines or not np.isfinite(force)
+            or not np.isfinite(energy) or force>settings['force_tolerance']):
         raise RuntimeError(f'Unconverged full-cell relaxation: fmax={force} eV/Å in {directory}')
     result=dict(state='relaxed',source=str(trajectory.root),source_frame=frame,
         source_timestep=int(trajectory.timesteps[frame]),source_manifest_sha256=sha256(trajectory.root/'manifest.json'),

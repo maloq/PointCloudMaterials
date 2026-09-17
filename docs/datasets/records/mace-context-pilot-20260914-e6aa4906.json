@@ -1,0 +1,62 @@
+{
+  "dataset_id": "mace-context-pilot-20260914",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-context-pilot-20260914/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "811af2d9fc8656157d4bd504486450713d9fbf0ac234e650a14ecaf9016f1935",
+      "kind": "metadata",
+      "keys": [
+        "candidate_radius_A",
+        "config",
+        "node_count_quantiles",
+        "provenance",
+        "records",
+        "state",
+        "temporal"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "records[0].split",
+            "occurrences": 54
+          },
+          {
+            "value": "val",
+            "first_json_path": "records[18].split",
+            "occurrences": 18
+          },
+          {
+            "value": "test",
+            "first_json_path": "records[24].split",
+            "occurrences": 18
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260914,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-context-pilot-20260914/status.json",
+      "relative_path": "status.json",
+      "sha256": "6a89e154334866c7dae1317677fae82ed7dca01b4c7d70f17a67ded9801ce0be",
+      "kind": "metadata",
+      "keys": [
+        "contexts",
+        "examples",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

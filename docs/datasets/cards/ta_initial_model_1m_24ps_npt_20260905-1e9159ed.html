@@ -1,0 +1,178 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ta: 1,024,000-atom baseline, 24 ps</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ta: 1,024,000-atom baseline, 24 ps</h1><p>One NPT trajectory from archived model_1m positions at 1900 K; fresh velocities.</p><span class="badge">research</span><p><code>ta_initial_model_1m_24ps_npt_20260905</code> · Ta</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905">/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905</a></p><p>35 owned files · 1.846 GiB allocated · 2 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ta: 1,024,000-atom baseline, 24 ps&quot;,
+  &quot;materials&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;One NPT trajectory from archived model_1m positions at 1900 K; fresh velocities.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;ta-zhong2014-eam&quot;
+  ]
+}</pre><ul></ul><p>Dependencies: None recorded<br>Nested datasets: <a href="potential-ta-zhong2014-5e359ea0.html">potential-ta-zhong2014</a><br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>material</td><td><code>[&quot;Ta&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[1024000]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;isotropic Nose-Hoover NPT&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[1900]</code></td></tr><tr><td>pressure_bar</td><td><code>[0]</code></td></tr><tr><td>duration_ps</td><td><code>[1, 24]</code></td></tr><tr><td>timestep_fs</td><td><code>[2]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>frame_count</td><td><code>[11, 241]</code></td></tr><tr><td>thermostat_damping_ps</td><td><code>[0.2]</code></td></tr><tr><td>barostat_damping_ps</td><td><code>[2.0]</code></td></tr><tr><td>velocity_seed</td><td><code>[891051440]</code></td></tr><tr><td>mass_g_mol</td><td><code>[180.95]</code></td></tr><tr><td>pair_style</td><td><code>[&quot;eam/alloy&quot;]</code></td></tr><tr><td>scientific_scope</td><td><code>[&quot;One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;, &quot;float32&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again&quot;, &quot;positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 35,
+    &quot;apparent_bytes&quot;: 2132002699,
+    &quot;allocated_bytes&quot;: 1981921792,
+    &quot;file_extensions&quot;: {
+      &quot;.md&quot;: 1,
+      &quot;.log&quot;: 5,
+      &quot;.json&quot;: 11,
+      &quot;.bin&quot;: 1,
+      &quot;.lammps&quot;: 4,
+      &quot;.npy&quot;: 12,
+      &quot;.lammpstrj&quot;: 1
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;prepared&quot;: 1,
+      &quot;complete&quot;: 1
+    },
+    &quot;metadata_records&quot;: 6,
+    &quot;binary_trajectory_records&quot;: 2,
+    &quot;available_complete_binary_records&quot;: 2,
+    &quot;stored_frames&quot;: 252,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1024000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/Ta/model_1m/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        11,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        11,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        11,
+        1024000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        11
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../src/data/structural_pretraining/prepare.py">src/data/structural_pretraining/prepare.py</a></li></ul></details><details><summary>Producer evidence (6 records)</summary><p><a href="../records/ta_initial_model_1m_24ps_npt_20260905-1e9159ed.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/manifest.json">manifest.json</a> · complete · <code>32f5aef8d2228c68360572b01ea1a2e0e0281ca03016d67136c294a714d0cdae</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/status.json">status.json</a> · complete · <code>3ec9dda860f469ba2098c8eeca58476da6f52ffa8afd60c0c478dc120259a6d0</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/metadata.json">branches/Ta/model_1m/metadata.json</a> · prepared · <code>d846e3a61e6cb25f23dac4320f438bc5d30a984d58a496ece3f5a2ff43671f22</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/outcome.json">branches/Ta/model_1m/outcome.json</a> · complete · <code>25299676b648cd68fecb46cfb715f0c1bef14db497e8eab1b7e2a54630db8d8b</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/manifest.json">branches/Ta/model_1m/trajectory_binary_float16/manifest.json</a> · complete · <code>aa42346bf357f984100d41206ec87fb3ecfff38d6672c974a391ee253c86d92a</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/manifest.json">preflight/trajectory_binary_float16/manifest.json</a> · complete · <code>df644ecff193d2cf4cee2c604e9c681b9e749203e6962e0efd8741971eea4405</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

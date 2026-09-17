@@ -1,0 +1,358 @@
+{
+  "dataset_id": "al_phase_context_70304x1",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "548d3452635b876938373ccaeea258af6ecd60a71864bac05c7b498f04a3d5f1",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "dataset_name",
+        "environment_dirs",
+        "execution_provenance",
+        "potential_sha256",
+        "potential_usage_mode",
+        "random_seeds",
+        "repository_reference_number_densities_per_A3",
+        "schema_version",
+        "scientific_scope",
+        "scientifically_qualified_potential"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "config.potential.model_name",
+            "occurrences": 2
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "config.potential.model_path",
+            "occurrences": 2
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1600.0,
+            "first_json_path": "config.dynamics.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.dynamics.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.validation.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": {
+              "supported_claim": "Comparison of learned local environments across physically simulated bulk solid, metastable/supercooled liquid, and solid-liquid interfacial contexts.",
+              "unsupported_claim": "Quantitative real-Al thermodynamics or kinetics, equilibrium phase identification from cluster identity alone, or application-specific MLIP accuracy without a qualification report for this exact model SHA and head."
+            },
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "scientific_scope": {
+          "supported_claim": "Comparison of learned local environments across physically simulated bulk solid, metastable/supercooled liquid, and solid-liquid interfacial contexts.",
+          "unsupported_claim": "Quantitative real-Al thermodynamics or kinetics, equilibrium phase identification from cluster identity alone, or application-specific MLIP accuracy without a qualification report for this exact model SHA and head."
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_bulk_liquid/metadata.json",
+      "relative_path": "replica_000_bulk_liquid/metadata.json",
+      "sha256": "11ee2fda687f7e3591716dd42cd91860b10ccafed95e60355023612cfbb131e6",
+      "kind": "metadata",
+      "keys": [
+        "diagnostics",
+        "environment_name",
+        "global",
+        "grains",
+        "intermediate_regions",
+        "phase_statistics",
+        "physics",
+        "schema_version",
+        "thermodynamic_trace"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "global.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": [
+              1143.7162622153123,
+              1095.970133423984,
+              1021.5420610768343,
+              955.4939979609375,
+              896.364399979385,
+              844.6889011615943,
+              807.0841577527754,
+              761.0254399492181,
+              727.8068836970934,
+              701.8957786851896,
+              677.6628585349628,
+              659.2380756052944,
+              650.6735075448466,
+              640.8907048388235,
+              643.9906956961759,
+              647.4789866959154,
+              651.5242802020342,
+              655.0851020965704,
+              654.3310468358965,
+              650.8775697106705,
+              643.0317888786035,
+              647.5200858043851,
+              648.5219436838004,
+              653.3820105401728,
+              656.6938920375472,
+              652.1564364530641,
+              649.1451920428908,
+              648.0196104032134,
+              648.8404653499954,
+              650.3513262100395,
+              651.2646307324238
+            ],
+            "first_json_path": "thermodynamic_trace.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "physics.calculator.model_name",
+            "occurrences": 1
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "physics.calculator.model_path",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isothermal-isobaric (MTK)",
+            "first_json_path": "physics.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "diagnostics.atom_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_bulk_solid/metadata.json",
+      "relative_path": "replica_000_bulk_solid/metadata.json",
+      "sha256": "40e034607bd7aed510dc146d8f549ae8fe1786a3664debcfafca6e066b0a6619",
+      "kind": "metadata",
+      "keys": [
+        "diagnostics",
+        "environment_name",
+        "global",
+        "grains",
+        "intermediate_regions",
+        "phase_statistics",
+        "physics",
+        "schema_version",
+        "thermodynamic_trace"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "global.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": [
+              648.9189451000269,
+              330.2395611720643,
+              344.8844649050776,
+              388.552883913627,
+              403.31260035409565,
+              437.67249821976105,
+              466.6888444161072,
+              495.6731506942053,
+              530.5717667572058,
+              560.9826418596178,
+              587.7019846427537,
+              613.4142537694872,
+              637.2808809385816,
+              653.4399203053807,
+              660.038722286884,
+              658.0579450360647,
+              652.3314930155689,
+              645.2793292563457,
+              642.4093411001669,
+              641.6987073161579,
+              653.7959614006859,
+              654.7891330560783,
+              654.1697106201301,
+              648.3232211484209,
+              643.8763045672239,
+              642.5100327084642,
+              645.8845221419326,
+              654.3928059012273,
+              657.6774990543076,
+              655.3684410352506,
+              649.3604952329085,
+              645.8400909731095,
+              646.9059781034686,
+              648.5197414538001,
+              652.738709121405,
+              655.1156274440085,
+              652.1343427426121,
+              650.5113575182437,
+              646.0613987014461,
+              646.7368585867956,
+              649.9194354241113,
+              652.8027354077411,
+              651.6231256298195,
+              652.2587924223267,
+              653.3319767727123,
+              645.0107731057955,
+              648.1205351958025,
+              650.5800058722333,
+              650.2686618137523,
+              654.2188697359643,
+              653.1721844653409
+            ],
+            "first_json_path": "thermodynamic_trace.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "physics.calculator.model_name",
+            "occurrences": 1
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "physics.calculator.model_path",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isothermal-isobaric (MTK)",
+            "first_json_path": "physics.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "diagnostics.atom_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_solid_liquid_interface/metadata.json",
+      "relative_path": "replica_000_solid_liquid_interface/metadata.json",
+      "sha256": "10d8ccf8e5098909e5d625fe8b496afb1c99173f9248ec16cc35a2274fd8a2a8",
+      "kind": "metadata",
+      "keys": [
+        "diagnostics",
+        "environment_name",
+        "global",
+        "grains",
+        "intermediate_regions",
+        "phase_statistics",
+        "physics",
+        "schema_version",
+        "thermodynamic_trace"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 650.0,
+            "first_json_path": "global.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": [
+              650.058188732191,
+              726.8839469308217,
+              680.9382501039007,
+              666.903278036999,
+              659.2559609625479,
+              650.6293674404359,
+              651.0999027505466,
+              652.6307460445493,
+              653.7596814826477,
+              651.5214567558924,
+              652.8552057237557
+            ],
+            "first_json_path": "thermodynamic_trace.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "physics.calculator.model_name",
+            "occurrences": 1
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "physics.calculator.model_path",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "constant-temperature (Langevin) transient at a volume derived from the validated bulk endpoint volumes",
+            "first_json_path": "physics.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "diagnostics.atom_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

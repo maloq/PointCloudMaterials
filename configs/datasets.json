@@ -9,7 +9,23 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/Al",
         "/work/PERSO/vmorozov/datasets/Al"
-      ]
+      ],
+      "metadata": {
+        "title": "Al static structures",
+        "materials": [
+          "Al"
+        ],
+        "role": "static_structures",
+        "classification": "research",
+        "description": "Archived inherent configurations and representative local structures; inspect file headers for current contents.",
+        "evidence": [
+          "${dataset:Al}"
+        ],
+        "potential_ids": [],
+        "limitations": [
+          "A material label does not establish the exact generating potential. Static snapshots do not provide a sampled trajectory or velocities."
+        ]
+      }
     },
     "Al50Ni50": {
       "root": "datasets",
@@ -19,7 +35,28 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/Al50Ni50",
         "/work/PERSO/vmorozov/datasets/Al50Ni50"
-      ]
+      ],
+      "metadata": {
+        "title": "Al\u2013Ni alloy static structures",
+        "materials": [
+          "Al",
+          "Ni"
+        ],
+        "role": "static_structures",
+        "classification": "research",
+        "description": "Archived inherent configurations and representative local structures; inspect file headers for current contents.",
+        "evidence": [
+          "${dataset:Al50Ni50}/READ_ME.txt"
+        ],
+        "potential_ids": [],
+        "limitations": [
+          "A material label does not establish the exact generating potential. Static snapshots do not provide a sampled trajectory or velocities."
+        ],
+        "atom_type_mapping": {
+          "1": "Ni",
+          "2": "Al"
+        }
+      }
     },
     "Mg": {
       "root": "datasets",
@@ -29,7 +66,23 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/Mg",
         "/work/PERSO/vmorozov/datasets/Mg"
-      ]
+      ],
+      "metadata": {
+        "title": "Mg static structures",
+        "materials": [
+          "Mg"
+        ],
+        "role": "static_structures",
+        "classification": "research",
+        "description": "Archived inherent configurations and representative local structures; inspect file headers for current contents.",
+        "evidence": [
+          "${dataset:Mg}"
+        ],
+        "potential_ids": [],
+        "limitations": [
+          "A material label does not establish the exact generating potential. Static snapshots do not provide a sampled trajectory or velocities."
+        ]
+      }
     },
     "Ta": {
       "root": "datasets",
@@ -39,7 +92,23 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/Ta",
         "/work/PERSO/vmorozov/datasets/Ta"
-      ]
+      ],
+      "metadata": {
+        "title": "Ta static structures",
+        "materials": [
+          "Ta"
+        ],
+        "role": "static_structures",
+        "classification": "research",
+        "description": "Archived inherent configurations and representative local structures; inspect file headers for current contents.",
+        "evidence": [
+          "${dataset:Ta}"
+        ],
+        "potential_ids": [],
+        "limitations": [
+          "A material label does not establish the exact generating potential. Static snapshots do not provide a sampled trajectory or velocities."
+        ]
+      }
     },
     "Zr": {
       "root": "datasets",
@@ -49,7 +118,24 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/Zr",
         "/work/PERSO/vmorozov/datasets/Zr"
-      ]
+      ],
+      "metadata": {
+        "title": "Zr static structures",
+        "materials": [
+          "Zr"
+        ],
+        "role": "static_structures",
+        "classification": "research",
+        "description": "Archived inherent configurations and representative local structures; inspect file headers for current contents.",
+        "evidence": [
+          "${dataset:Zr}"
+        ],
+        "potential_ids": [],
+        "limitations": [
+          "Original static Zr data are retained. Reconstructed-potential Zr dynamics in the later Al/Mg branch campaign were rejected and removed; do not confuse them with these static inputs.",
+          "Exact original generating-potential files are not established by local metadata."
+        ]
+      }
     },
     "potentials": {
       "root": "datasets",
@@ -59,7 +145,17 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials",
         "/work/PERSO/vmorozov/datasets/potentials"
-      ]
+      ],
+      "metadata": {
+        "title": "potentials",
+        "materials": [],
+        "role": "potential",
+        "classification": "reference",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:potentials}"
+        ]
+      }
     },
     "zr_al_mg_initial_6x24ps": {
       "root": "datasets",
@@ -69,237 +165,754 @@
       "aliases": [
         "/home/infres/vmorozov/PointCloudMaterials/datasets/zr_al_mg_initial_6x24ps",
         "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps"
-      ]
+      ],
+      "metadata": {
+        "title": "Al/Mg 24 ps parent collection",
+        "materials": [
+          "Al",
+          "Mg"
+        ],
+        "role": "container",
+        "classification": "research",
+        "description": "Twelve retained NPT continuations: six Al and six Mg. Historical directory name includes Zr, whose reconstructed-potential trajectories were removed.",
+        "evidence": [
+          "${dataset:zr_al_mg_initial_6x24ps}/manifest.json"
+        ],
+        "lineage": "Position-conditioned branches from archived thermal snapshots; no source velocities or thermostat state; not exact restarts.",
+        "removed_materials": [
+          "Zr"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830": {
       "root": "simulations",
       "path": "al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 12temps 390-500K 600ps 1ps positions velocities 6seeds 20260830",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_12temps_390-500K_600ps_1ps_positions_velocities_6seeds_20260830}"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901": {
       "root": "simulations",
       "path": "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 400-500K 600ps 9independent runs 20260901",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}"
+        ]
+      }
     },
     "al_independent_sources_recovery_20260909T203221Z": {
       "root": "simulations",
       "path": "al_independent_sources_recovery_20260909T203221Z",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al independent sources recovery 20260909T203221Z",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_independent_sources_recovery_20260909T203221Z}"
+        ]
+      }
     },
     "al_meam_crystallization_100k_450K_20260911": {
       "root": "simulations",
       "path": "al_meam_crystallization_100k_450K_20260911",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 stopped 100,000-atom crystallization source",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_crystallization_100k_450K_20260911}"
+        ]
+      }
     },
     "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902": {
       "root": "simulations",
       "path": "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 independent melts, 400\u2013500 K",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.",
+        "evidence": [
+          "${dataset:al_meam_independent_sources_70304_400-500K_30perT_float16_20260902}/manifest.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903": {
       "root": "simulations",
       "path": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 independent melts, 510\u2013520 K",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.",
+        "evidence": [
+          "${dataset:al_meam_independent_sources_70304_510-520K_30perT_float16_20260903}/manifest.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum": {
       "root": "simulations",
       "path": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam independent sources 70304 510-520K 30perT float16 20260903 prepared before manifest checksum",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "prepared",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum}"
+        ]
+      }
     },
     "al_meam_nested_shooting_pilot_70304_400-500K_20260902": {
       "root": "simulations",
       "path": "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 event-stopped nested shooting",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_nested_shooting_pilot_70304_400-500K_20260902}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible": {
       "root": "simulations",
       "path": "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 fixed-24 ps nested continuations",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 accepted 15 ps shooting top-up",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 48 ps shooting, one-shot supplement",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 48 ps shooting, two-shot supplement",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 48 ps shooting, 40-branch supplement",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 partially completed 48 ps top-up",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam position shooting 70304 400-500K 48ps 4shot topup to16 20260903 prepared protocol flag correction",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "prepared",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam position shooting 70304 400-500K 48ps 4shot topup to16 20260903 prepared without legacy window spec",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "prepared",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830": {
       "root": "simulations",
       "path": "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 original 48 ps shooting, eight shots per parent",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904": {
       "root": "simulations",
       "path": "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam predictive dynamics fixed15 smoke 1parent 16branches float32 20260904",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "fixture",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903": {
       "root": "simulations",
       "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam predictive dynamics fixed48 smoke 1parent 16branches float32 20260903",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "fixture",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation": {
       "root": "simulations",
       "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al meam predictive dynamics fixed48 smoke 1parent 16branches float32 20260903 invalid endpoint descriptor preparation",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "fixture",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+      }
     },
     "interrupted_attempts": {
       "root": "simulations",
       "path": "interrupted_attempts",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "interrupted attempts",
+        "materials": [],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:interrupted_attempts}"
+        ]
+      }
     },
     "local_overnight_lamedell11_20260905": {
       "root": "simulations",
       "path": "local_overnight_lamedell11_20260905",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "local overnight lamedell11 20260905",
+        "materials": [],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:local_overnight_lamedell11_20260905}"
+        ]
+      }
     },
     "local_overnight_lamedell11_20260905.startup_attempt_010736": {
       "root": "simulations",
       "path": "local_overnight_lamedell11_20260905.startup_attempt_010736",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "local overnight lamedell11 20260905.startup attempt 010736",
+        "materials": [],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}"
+        ]
+      }
     },
     "nested_shooting_prepare_logs": {
       "root": "simulations",
       "path": "nested_shooting_prepare_logs",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "nested shooting prepare logs",
+        "materials": [],
+        "role": "administrative",
+        "classification": "administrative",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:nested_shooting_prepare_logs}"
+        ]
+      }
     },
     "nonshooting_float32_migration_20260901": {
       "root": "simulations",
       "path": "nonshooting_float32_migration_20260901",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "nonshooting float32 migration 20260901",
+        "materials": [],
+        "role": "administrative",
+        "classification": "administrative",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:nonshooting_float32_migration_20260901}"
+        ]
+      }
     },
     "restart_boundary_audit_20260905": {
       "root": "simulations",
       "path": "restart_boundary_audit_20260905",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "restart boundary audit 20260905",
+        "materials": [],
+        "role": "administrative",
+        "classification": "administrative",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:restart_boundary_audit_20260905}"
+        ]
+      }
     },
     "shooting_float32_migration_20260901": {
       "root": "simulations",
       "path": "shooting_float32_migration_20260901",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "shooting float32 migration 20260901",
+        "materials": [],
+        "role": "administrative",
+        "classification": "administrative",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:shooting_float32_migration_20260901}"
+        ]
+      }
     },
     "superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z": {
       "root": "simulations",
       "path": "superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "superseded preparation al meam position shooting 15ps topup manifest metadata 20260904T0955Z",
+        "materials": [],
+        "role": "raw_dynamics",
+        "classification": "prepared",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z}"
+        ]
+      }
     },
     "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z": {
       "root": "simulations",
       "path": "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "superseded preparation al meam predictive dynamics fixed15 smoke wave979929 20260904T0955Z",
+        "materials": [],
+        "role": "raw_dynamics",
+        "classification": "fixture",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z}"
+        ]
+      }
     },
     "ta_initial_model_1m_24ps_npt_20260905": {
       "root": "simulations",
       "path": "ta_initial_model_1m_24ps_npt_20260905",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Ta: 1,024,000-atom baseline, 24 ps",
+        "materials": [
+          "Ta"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "One NPT trajectory from archived model_1m positions at 1900 K; fresh velocities.",
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ]
+      }
     },
     "ti_ta_crystallization_20260907": {
       "root": "simulations",
       "path": "ti_ta_crystallization_20260907",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Ti/Ta dynamics and recovery records",
+        "materials": [
+          "Ti",
+          "Ta"
+        ],
+        "role": "container",
+        "classification": "mixed",
+        "description": "Parent container for separately registered Ti source/branches, duplicate exports, additional shooting and Ta branches.",
+        "evidence": [
+          "docs/simulations/ti_ta_crystallization/README.md"
+        ]
+      }
     },
     "mace-full": {
       "root": "cache",
       "path": "mace-full",
       "kind": "cache",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al/Mg/Ta/Ti \u00b7 mixed relaxed-MACE training views",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ta",
+          "Ti"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Mixed-material derived MACE inputs/targets; original thermal Al/Mg/Ta data plus Ti/Ta branch additions. Source paths and transformations are recorded in manifest.json.",
+        "evidence": [
+          "${dataset:mace-full}/manifest.json"
+        ],
+        "potential_ids": [
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ]
+      }
     },
     "mace-meam": {
       "root": "cache",
       "path": "mace-meam",
       "kind": "cache",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "Al \u00b7 earlier relaxed-MEAM training views",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "evidence": [
+          "${dataset:mace-meam}/manifest.json",
+          "output/mace_al_denoising_20260910/fire/data/manifest.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "temporal": {
       "root": "cache",
       "path": "temporal",
       "kind": "cache",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "temporal",
+        "materials": [],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "evidence": [
+          "${dataset:temporal}"
+        ]
+      }
     },
     "embedding-forecast-full-20260911": {
       "root": "cache",
       "path": "embedding-forecast-full-20260911",
       "kind": "cache",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "embedding-forecast-full-20260911",
+        "materials": [],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "evidence": [
+          "${dataset:embedding-forecast-full-20260911}"
+        ]
+      }
     },
     "potential-ti-kavousi2019": {
       "root": "repo",
       "path": "configs/simulation/potentials/ti_kavousi2019",
       "kind": "potential",
       "dependencies": [],
-      "citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c; pure Ti mapping"
+      "citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c; pure Ti mapping",
+      "metadata": {
+        "title": "potential-ti-kavousi2019",
+        "materials": [],
+        "role": "potential",
+        "classification": "reference",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:potential-ti-kavousi2019}"
+        ]
+      }
     },
     "potential-ta-zhong2014": {
       "root": "simulations",
       "path": "ta_initial_model_1m_24ps_npt_20260905/potential",
       "kind": "potential",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "potential-ta-zhong2014",
+        "materials": [],
+        "role": "potential",
+        "classification": "reference",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:potential-ta-zhong2014}"
+        ]
+      }
     },
     "portability-smoke-forecast": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache",
       "kind": "test_fixture",
       "dependencies": [],
-      "description": "Synthetic linear embeddings from tests/test_embedding_forecast.py:cache_fixture; environment check, not scientific data."
+      "description": "Synthetic linear embeddings from tests/test_embedding_forecast.py:cache_fixture; environment check, not scientific data.",
+      "metadata": {
+        "title": "portability-smoke-forecast",
+        "materials": [],
+        "role": "administrative",
+        "classification": "fixture",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:portability-smoke-forecast}"
+        ]
+      }
     },
     "portability-ti-smoke-20260913": {
       "root": "archive",
@@ -313,163 +926,479 @@
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/portability-ti-smoke-20260913"
       ],
       "description": "128-atom, 20-step pure-Ti integration/storage smoke, not crystallization research data.",
-      "simulation_fixture": true
+      "simulation_fixture": true,
+      "metadata": {
+        "title": "portability-ti-smoke-20260913",
+        "materials": [],
+        "role": "administrative",
+        "classification": "fixture",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:portability-ti-smoke-20260913}"
+        ]
+      }
     },
     ".al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": ".al liquid source 70304 mpa seed12345 500K.generation-2b3c58f003ec",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec}"
+        ]
+      }
     },
     ".al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": ".al liquid source 70304 mpa seed12346 500K.generation-6d03498342ff",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:.al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff}"
+        ]
+      }
     },
     ".al_phase_context_70304x1.generation-5016671fb856": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1.generation-5016671fb856",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": ".al phase context 70304x1.generation-5016671fb856",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:.al_phase_context_70304x1.generation-5016671fb856}"
+        ]
+      }
     },
     ".al_phase_context_70304x1_seed_12346.generation-559b40e8ef01": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": ".al phase context 70304x1 seed 12346.generation-559b40e8ef01",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:.al_phase_context_70304x1_seed_12346.generation-559b40e8ef01}"
+        ]
+      }
     },
     "al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 16384 compiled mpa 110ps multiseed 20260717",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717}"
+        ]
+      }
     },
     "al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 16384 compiled mpa test 4h 20260715",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa 110ps source12345 seed35803 20260718",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa 110ps source12346 seed35831 20260718",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa 130ps source12345 seed35803 20260720",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa 130ps source12346 seed35831 20260720",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa bf16 130ps source12345 seed35803 20260724",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa bf16 130ps source12346 seed35831 20260724",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724}"
+        ]
+      }
     },
     "al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous campaign 70304 mpa bf16 comparison 20260724",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_campaign_70304_mpa_bf16_comparison_20260724}"
+        ]
+      }
     },
     "al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous lammps eam 70304 110ps 4seeds 20260826",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826}"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 4temps 400-600K 600ps 6seeds 20260828",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828}"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 4temps 510-540K 600ps 1ps positions velocities 6seeds 20260830",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830}"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 500K 600ps 7velocityseeds 20260827",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827}"
+        ]
+      }
     },
     "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al homogeneous unseeded 2nn meam 70304 500K 999ps velocity35803 20260827",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827}"
+        ]
+      }
     },
     "al_liquid_source_70304_mpa_seed12345_500K": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12345_500K",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al liquid source 70304 mpa seed12345 500K",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_liquid_source_70304_mpa_seed12345_500K}"
+        ]
+      }
     },
     "al_liquid_source_70304_mpa_seed12346_500K": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al liquid source 70304 mpa seed12346 500K",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_liquid_source_70304_mpa_seed12346_500K}"
+        ]
+      }
     },
     "al_mpa_70304_bf16_validation_20260724": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_mpa_70304_bf16_validation_20260724",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al mpa 70304 bf16 validation 20260724",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_mpa_70304_bf16_validation_20260724}"
+        ]
+      }
     },
     "al_phase_context_70304x1": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al phase context 70304x1",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_phase_context_70304x1}"
+        ]
+      }
     },
     "al_phase_context_70304x1_seed_12346": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "al phase context 70304x1 seed 12346",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_phase_context_70304x1_seed_12346}"
+        ]
+      }
     },
     "polycrystalline_balanced_geometries": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "polycrystalline balanced geometries",
+        "materials": [],
+        "role": "synthetic",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:polycrystalline_balanced_geometries}"
+        ]
+      }
     },
     "polycrystalline_balanced_geometries_v2": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries_v2",
       "kind": "simulation",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "polycrystalline balanced geometries v2",
+        "materials": [],
+        "role": "synthetic",
+        "classification": "research",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:polycrystalline_balanced_geometries_v2}"
+        ]
+      }
     },
     "research-records-20260913": {
       "root": "archive",
       "path": "projects/PointCloudMaterials-retention-20260913",
       "kind": "research_archive",
-      "dependencies": []
+      "dependencies": [],
+      "metadata": {
+        "title": "research-records-20260913",
+        "materials": [],
+        "role": "administrative",
+        "classification": "archive",
+        "description": "Registered reference or supporting artifact.",
+        "evidence": [
+          "${dataset:research-records-20260913}"
+        ]
+      }
     },
     "al_520K_remaining24_20260913T204114Z": {
       "root": "archive",
@@ -479,7 +1408,22 @@
       "dependencies": [],
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_520K_remaining24_20260913T204114Z"
-      ]
+      ],
+      "metadata": {
+        "title": "Al \u00b7 completed 520 K source extension",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.",
+        "evidence": [
+          "${dataset:al_520K_remaining24_20260913T204114Z}/manifest.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "al_meam_1m_450K_400ps_with_melt_20260913T205405Z": {
       "root": "archive",
@@ -491,7 +1435,19 @@
       ],
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z"
-      ]
+      ],
+      "metadata": {
+        "title": "Al \u00b7 million-atom source and melt history",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:al_meam_1m_450K_400ps_with_melt_20260913T205405Z}"
+        ]
+      }
     },
     "mace-causal-physical-20260916": {
       "root": "cache",
@@ -499,7 +1455,22 @@
       "kind": "training_cache",
       "state": "complete",
       "dependencies": [],
-      "aliases": []
+      "aliases": [],
+      "metadata": {
+        "title": "Al \u00b7 causal-MACE physical training cache",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "evidence": [
+          "${dataset:mace-causal-physical-20260916}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "predictive-memory-al-r17-20260917": {
       "root": "cache",
@@ -507,7 +1478,22 @@
       "kind": "training_cache",
       "state": "complete",
       "dependencies": [],
-      "aliases": []
+      "aliases": [],
+      "metadata": {
+        "title": "Al \u00b7 predictive-memory partial-observation cache",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "evidence": [
+          "${dataset:predictive-memory-al-r17-20260917}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
     },
     "memory-al-precision-20260917-source000-T500": {
       "root": "archive",
@@ -519,7 +1505,19 @@
       ],
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source000-T500"
-      ]
+      ],
+      "metadata": {
+        "title": "memory-al-precision-20260917-source000-T500",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:memory-al-precision-20260917-source000-T500}"
+        ]
+      }
     },
     "memory-al-precision-20260917-source001-T500": {
       "root": "archive",
@@ -531,7 +1529,19 @@
       ],
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source001-T500"
-      ]
+      ],
+      "metadata": {
+        "title": "memory-al-precision-20260917-source001-T500",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:memory-al-precision-20260917-source001-T500}"
+        ]
+      }
     },
     "memory-al-precision-20260917-source002-T500": {
       "root": "archive",
@@ -543,7 +1553,19 @@
       ],
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source002-T500"
-      ]
+      ],
+      "metadata": {
+        "title": "memory-al-precision-20260917-source002-T500",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:memory-al-precision-20260917-source002-T500}"
+        ]
+      }
     },
     "memory-al-precision-20260917-source003-T500-failed": {
       "root": "archive",
@@ -553,7 +1575,19 @@
       "dependencies": [
         "potentials"
       ],
-      "aliases": []
+      "aliases": [],
+      "metadata": {
+        "title": "memory-al-precision-20260917-source003-T500-failed",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:memory-al-precision-20260917-source003-T500-failed}"
+        ]
+      }
     },
     "memory-al-precision-20260917-source004-T500-failed": {
       "root": "archive",
@@ -563,7 +1597,951 @@
       "dependencies": [
         "potentials"
       ],
-      "aliases": []
+      "aliases": [],
+      "metadata": {
+        "title": "memory-al-precision-20260917-source004-T500-failed",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "evidence": [
+          "${dataset:memory-al-precision-20260917-source004-T500-failed}"
+        ]
+      }
+    },
+    "al_relaxed_cells_expanded_20260917": {
+      "root": "archive",
+      "path": "relaxed_tda/al-expanded-20260917",
+      "kind": "simulation",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+        "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+        "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+        "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+        "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+        "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+        "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+        "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+        "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+        "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al: expanded full-cell relaxed configurations",
+        "materials": [
+          "Al"
+        ],
+        "role": "relaxed_configurations",
+        "classification": "building",
+        "description": "Active fixed-box FIRE target campaign; completed cells, convergence and failure records are preserved.",
+        "evidence": [
+          "docs/relaxed_tda_targets.md",
+          "configs/simulation/relaxed_tda_al.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
+    },
+    "al_relaxed_tda_expanded_20260917": {
+      "root": "cache",
+      "path": "relaxed_tda/al-expanded-20260917",
+      "kind": "training_cache",
+      "dependencies": [
+        "al_relaxed_cells_expanded_20260917",
+        "al_520K_remaining24_20260913T204114Z",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+        "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+        "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+        "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+        "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+        "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+        "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+        "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+        "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+        "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al: expanded relaxed/instantaneous TDA pairs",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_targets",
+        "classification": "building",
+        "description": "Observed nearest-80 atom IDs retained after full-cell minimization; raw 144D TDA and centered float32 clouds. Respect training_eligible and shared ancestry.",
+        "evidence": [
+          "docs/relaxed_tda_targets.md",
+          "output/relaxed_tda/al-expanded-20260917/technical/plan.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
+    },
+    "al-eam-six-24ps": {
+      "root": "datasets",
+      "path": "zr_al_mg_initial_6x24ps/branches/Al",
+      "kind": "simulation",
+      "dependencies": [
+        "Al",
+        "zr_al_mg_initial_6x24ps"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al: six 24 ps EAM continuations",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Six 1,048,576-atom trajectories at 650 K, 0.1 ps frames; positions only.",
+        "potential_ids": [
+          "al-mendelev2008-eam"
+        ],
+        "evidence": [
+          "${dataset:zr_al_mg_initial_6x24ps}/manifest.json"
+        ],
+        "lineage": "Shared archived source; position-conditioned, not exact restarts."
+      }
+    },
+    "mg-eam-six-24ps": {
+      "root": "datasets",
+      "path": "zr_al_mg_initial_6x24ps/branches/Mg",
+      "kind": "simulation",
+      "dependencies": [
+        "Mg",
+        "zr_al_mg_initial_6x24ps"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Mg: six 24 ps EAM continuations",
+        "materials": [
+          "Mg"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Six 1,048,576-atom trajectories at 600 K, 0.1 ps frames; positions only.",
+        "potential_ids": [
+          "mg-wilson2016-eam"
+        ],
+        "evidence": [
+          "${dataset:zr_al_mg_initial_6x24ps}/manifest.json"
+        ],
+        "lineage": "Shared archived source; position-conditioned, not exact restarts."
+      }
+    },
+    "ti-meam-source-and-six-branches": {
+      "root": "simulations",
+      "path": "ti_ta_crystallization_20260907/Ti",
+      "kind": "simulation",
+      "dependencies": [
+        "ti_ta_crystallization_20260907"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Ti: source and six 240 ps branches",
+        "materials": [
+          "Ti"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Pure Ti under the Ti component of the Ni/Ti potential, 100,000 atoms, 1250 K. All six branches descend from one source.",
+        "potential_ids": [
+          "ti-kavousi2019-meam"
+        ],
+        "evidence": [
+          "docs/simulations/ti_ta_crystallization/README.md",
+          "${dataset:ti-meam-source-and-six-branches}/config.json"
+        ],
+        "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping."
+      }
+    },
+    "ti-meam-early-slurm-copies": {
+      "root": "simulations",
+      "path": "ti_ta_crystallization_20260907/Ti_early_slurm",
+      "kind": "simulation",
+      "dependencies": [
+        "ti_ta_crystallization_20260907"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Ti: duplicate Slurm branch exports",
+        "materials": [
+          "Ti"
+        ],
+        "role": "raw_dynamics",
+        "classification": "duplicate",
+        "description": "Six reported copies of the original Ti branches. Current manifest signatures expose exact duplicate groups; do not count copies as independent trajectories.",
+        "potential_ids": [
+          "ti-kavousi2019-meam"
+        ],
+        "evidence": [
+          "docs/simulations/ti_ta_crystallization/README.md",
+          "${dataset:ti-meam-early-slurm-copies}/config.json"
+        ],
+        "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping."
+      }
+    },
+    "ti-meam-shooting-round2": {
+      "root": "simulations",
+      "path": "ti_ta_crystallization_20260907/Ti_shooting_round2_20260909",
+      "kind": "simulation",
+      "dependencies": [
+        "ti_ta_crystallization_20260907"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Ti: second shooting preparation",
+        "materials": [
+          "Ti"
+        ],
+        "role": "raw_dynamics",
+        "classification": "review_required",
+        "description": "Separate later shooting preparation. Use observed outcomes and current arrays; a submitted job does not imply completed data.",
+        "potential_ids": [
+          "ti-kavousi2019-meam"
+        ],
+        "evidence": [
+          "docs/simulations/ti_ta_crystallization/README.md",
+          "${dataset:ti-meam-shooting-round2}/config.json"
+        ],
+        "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping."
+      }
+    },
+    "ta-eam-five-24ps": {
+      "root": "simulations",
+      "path": "ti_ta_crystallization_20260907/Ta",
+      "kind": "simulation",
+      "dependencies": [
+        "ti_ta_crystallization_20260907"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Ta: five 10-million-atom branches",
+        "materials": [
+          "Ta"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "description": "Five 10,000,422-atom NPT branches at 1900 K, 24 ps, 0.1 ps frames, initialized from archived positions.",
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "evidence": [
+          "docs/simulations/ti_ta_crystallization/README.md",
+          "${dataset:ta-eam-five-24ps}/config.json"
+        ],
+        "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping."
+      }
+    },
+    "embedding-forecast-center-geometry-20260914": {
+      "root": "cache",
+      "path": "embedding-forecast-center-geometry-20260914",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "embedding-forecast-center-geometry-20260914",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:embedding-forecast-center-geometry-20260914}"
+        ]
+      }
+    },
+    "embedding-forecast-spatial-context-20260913": {
+      "root": "cache",
+      "path": "embedding-forecast-spatial-context-20260913",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "embedding-forecast-spatial-context-20260913",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:embedding-forecast-spatial-context-20260913}"
+        ]
+      }
+    },
+    "local-predictability-20260917-broad": {
+      "root": "cache",
+      "path": "local-predictability-20260917-broad",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "Al \u00b7 full-timeline physical descriptors",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:local-predictability-20260917-broad}"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
+    },
+    "local-predictability-tda-20260917": {
+      "root": "cache",
+      "path": "local-predictability-tda-20260917",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "Al \u00b7 instantaneous TDA readout targets",
+        "role": "training_targets",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Instantaneous nearest-80 TDA targets for the frozen MACE/GATr comparison. These are not the new relaxed-TDA targets.",
+        "evidence": [
+          "docs/backbone_tda.md"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ]
+      }
+    },
+    "mace-causal-implementation-smoke-20260916": {
+      "root": "cache",
+      "path": "mace-causal-implementation-smoke-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-causal-implementation-smoke-20260916",
+        "role": "training_cache",
+        "classification": "fixture",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-causal-implementation-smoke-20260916}"
+        ]
+      }
+    },
+    "mace-causal-physical-smoke-20260916": {
+      "root": "cache",
+      "path": "mace-causal-physical-smoke-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-causal-physical-smoke-20260916",
+        "role": "training_cache",
+        "classification": "fixture",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-causal-physical-smoke-20260916}"
+        ]
+      }
+    },
+    "mace-causal-verified-smoke-20260916": {
+      "root": "cache",
+      "path": "mace-causal-verified-smoke-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-causal-verified-smoke-20260916",
+        "role": "training_cache",
+        "classification": "fixture",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-causal-verified-smoke-20260916}"
+        ]
+      }
+    },
+    "mace-context-pilot-20260914": {
+      "root": "cache",
+      "path": "mace-context-pilot-20260914",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-context-pilot-20260914",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-context-pilot-20260914}"
+        ]
+      }
+    },
+    "mace-local-motion-sequences-20260916": {
+      "root": "cache",
+      "path": "mace-local-motion-sequences-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-local-motion-sequences-20260916",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-local-motion-sequences-20260916}"
+        ]
+      }
+    },
+    "mace-local-motion-smoke-20260916": {
+      "root": "cache",
+      "path": "mace-local-motion-smoke-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-local-motion-smoke-20260916",
+        "role": "training_cache",
+        "classification": "fixture",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-local-motion-smoke-20260916}"
+        ]
+      }
+    },
+    "mace-local-smooth-velocity-20260915": {
+      "root": "cache",
+      "path": "mace-local-smooth-velocity-20260915",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-local-smooth-velocity-20260915",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-local-smooth-velocity-20260915}"
+        ]
+      }
+    },
+    "mace-native-data-amount-20260916": {
+      "root": "cache",
+      "path": "mace-native-data-amount-20260916",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-native-data-amount-20260916",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-native-data-amount-20260916}"
+        ]
+      }
+    },
+    "mace-velocity-all-20260915": {
+      "root": "cache",
+      "path": "mace-velocity-all-20260915",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "mace-velocity-all-20260915",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [
+          "Al"
+        ],
+        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "evidence": [
+          "${dataset:mace-velocity-all-20260915}"
+        ]
+      }
+    },
+    "repository-derived-data-caches": {
+      "root": "cache",
+      "path": "repository-datasets",
+      "kind": "training_cache",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "Repository dataset preprocessing caches",
+        "role": "training_cache",
+        "classification": "derived",
+        "materials": [],
+        "description": "Shared preprocessing caches behind datasets/cache; source and transformation metadata vary by child.",
+        "evidence": [
+          "docs/data_storage.md"
+        ]
+      }
+    },
+    "local-predictability-native-release": {
+      "root": "output",
+      "path": "local_predictability/h100-20260917/technical",
+      "kind": "training_cache",
+      "dependencies": [
+        "local-predictability-20260917-broad"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al: current full-timeline native release",
+        "materials": [
+          "Al"
+        ],
+        "role": "dataset_release",
+        "classification": "research",
+        "description": "Current 150-source cohort, tracked centers, split roles and native/dense anchor grids. Links to original trajectories and derived physical targets.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "docs/data_usage/gatr_20260917.md"
+        ]
+      }
+    },
+    "al_meam_1m_450K_400ps_20260913T205149Z": {
+      "root": "simulation_runs",
+      "path": "al_meam_1m_450K_400ps_20260913T205149Z",
+      "kind": "simulation",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "al meam 1m 450K 400ps 20260913T205149Z",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "${dataset:al_meam_1m_450K_400ps_20260913T205149Z}/status.json"
+        ]
+      }
+    },
+    "al_meam_crystallization_1m_450K_20260913T203458Z": {
+      "root": "simulation_runs",
+      "path": "al_meam_crystallization_1m_450K_20260913T203458Z",
+      "kind": "simulation",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "al meam crystallization 1m 450K 20260913T203458Z",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "${dataset:al_meam_crystallization_1m_450K_20260913T203458Z}/status.json"
+        ]
+      }
+    },
+    "al_meam_crystallization_1m_source_only_450K_20260913T203616Z": {
+      "root": "simulation_runs",
+      "path": "al_meam_crystallization_1m_source_only_450K_20260913T203616Z",
+      "kind": "simulation",
+      "dependencies": [],
+      "aliases": [],
+      "metadata": {
+        "title": "al meam crystallization 1m source only 450K 20260913T203616Z",
+        "materials": [
+          "Al"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "${dataset:al_meam_crystallization_1m_source_only_450K_20260913T203616Z}/status.json"
+        ]
+      }
+    },
+    "memory-al-precision-campaign-20260917": {
+      "root": "simulation_runs",
+      "path": "memory-al-precision-20260917",
+      "kind": "simulation",
+      "dependencies": [
+        "memory-al-precision-20260917-source000-T500",
+        "memory-al-precision-20260917-source001-T500",
+        "memory-al-precision-20260917-source002-T500"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al: precision campaign and unfinished sources",
+        "materials": [
+          "Al"
+        ],
+        "role": "container",
+        "classification": "mixed",
+        "description": "Stopped 12-source preparation; three completed sources and retained failures are registered separately on STORE. This is not twelve completed independent trajectories.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "docs/simulations/predictive_memory_precision_20260917.md"
+        ]
+      }
+    },
+    "structural-neighbors-250k-20260917": {
+      "root": "cache",
+      "path": "structural_pretraining/broad-250k-v2-20260917",
+      "kind": "cache",
+      "dependencies": [
+        "Al",
+        "Mg",
+        "Ta",
+        "Zr",
+        "al-eam-six-24ps",
+        "mg-eam-six-24ps",
+        "ta-eam-five-24ps",
+        "ti-meam-source-and-six-branches",
+        "al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "metadata": {
+        "title": "Al/Mg/Ti/Ta/Zr structural neighbors: 250,000 training anchors",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta",
+          "Zr"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Frozen five-metal positions-only structural pretraining release: 250,000 training anchor records and 480 Al selection records. Dynamic observations include three causal frames, a separate next-frame target and a nearby-center view. Per-material fixed cutoff normalization, geometry85, and masked instantaneous TDA144. Plan records every native/shooting ancestry, source manifest, target producer, calibrated radius and extraction task.",
+        "evidence": [
+          "${dataset:structural-neighbors-250k-20260917}/manifest.json",
+          "${dataset:structural-neighbors-250k-20260917}/plan.json",
+          "experiments/structural_pretraining_20260917/README.md"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "limitations": [
+          "Static Al/Mg/Ta/Zr generating potentials are not established; their batches carry unknown-static provenance.",
+          "Anchor records and shooting descendants are correlated; counts are not independent sources. Only the native Al cohort provides independent selection/test roles.",
+          "No velocities or relaxed-TDA targets. Irregular saved-frame intervals retain their measured physical time offsets.",
+          "The immutable plan contains the full native/shooting source lineage inventory beyond the top-level collection dependencies."
+        ]
+      }
+    },
+    "shared-causal-38400-20260918": {
+      "root": "cache",
+      "path": "shared-causal-38400-20260918",
+      "kind": "cache",
+      "dependencies": [
+        "structural-neighbors-250k-20260917",
+        "local-predictability-20260917-broad",
+        "local-predictability-native-release"
+      ],
+      "metadata": {
+        "title": "Al shared causal pretraining: 38,400 windows, geometry and instantaneous TDA",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Fixed 150-source Al cohort with 16 centers and 16 origins per source; three causal position frames and fixed physical/TDA targets at 0, 0.75, 3 and 9 ps. Exact 90/15/15/30 source split, 23,040 training windows, source-held-out selection/calibration/test. Parent structural cutoff and physical scale are preserved.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "${dataset:shared-causal-38400-20260918}/plan.json",
+          "${dataset:shared-causal-38400-20260918}/manifest.json"
+        ],
+        "limitations": [
+          "Positions only; no velocities or relaxed topology.",
+          "Windows within one source are correlated. All confidence intervals resample whole independent test sources.",
+          "Causal input history spans 1.5 ps; 3 and 9 ps targets exceed the observation history."
+        ]
+      }
     }
-  }
+  },
+  "registry_discovery_roots": [
+    "${storage:datasets}",
+    "${storage:simulations}",
+    "${storage:simulation_runs}",
+    "${storage:archive}/simulations",
+    "${storage:cache}",
+    "${storage:output}/synthetic_data"
+  ],
+  "potential_registry": {
+    "al-lee2003-meam": {
+      "name": "Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM",
+      "family": "MEAM",
+      "elements": [
+        "Al"
+      ],
+      "pair_style": "meam",
+      "mapping": "Al",
+      "citation": "Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests",
+      "files": [
+        {
+          "path": "${dataset:potentials}/Lee2003_Al.library.meam",
+          "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+        },
+        {
+          "path": "${dataset:potentials}/Lee2003_Al.meam",
+          "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        }
+      ],
+      "evidence": [
+        "docs/simulations/inventory_20260913.md"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "ti-kavousi2019-meam": {
+      "name": "Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component",
+      "family": "MEAM",
+      "elements": [
+        "Ni",
+        "Ti"
+      ],
+      "pair_style": "meam",
+      "mapping": "Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.",
+      "citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+      "files": [
+        {
+          "path": "${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam",
+          "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d"
+        },
+        {
+          "path": "${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam",
+          "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe"
+        }
+      ],
+      "evidence": [
+        "configs/simulation/ti_crystallization.json"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "ta-zhong2014-eam": {
+      "name": "Zhong 2014 Ta EAM",
+      "family": "EAM",
+      "elements": [
+        "Ta"
+      ],
+      "pair_style": "eam/alloy",
+      "mapping": "Ta",
+      "citation": "Zhong et al., Nature 512, 177\u2013180 (2014)",
+      "files": [
+        {
+          "path": "${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam",
+          "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+        }
+      ],
+      "evidence": [
+        "${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "al-mendelev2008-eam": {
+      "name": "Mendelev 2008 Al EAM (Al1.eam.fs)",
+      "family": "EAM/FS",
+      "elements": [
+        "Al"
+      ],
+      "pair_style": "eam/fs",
+      "mapping": "Al",
+      "citation": "Mendelev et al. (2008), DOI 10.1080/14786430802206482",
+      "files": [
+        {
+          "path": "${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs",
+          "sha256": "768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3"
+        }
+      ],
+      "evidence": [
+        "${dataset:zr_al_mg_initial_6x24ps}/manifest.json"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "mg-wilson2016-eam": {
+      "name": "Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)",
+      "family": "EAM/FS",
+      "elements": [
+        "Mg"
+      ],
+      "pair_style": "eam/fs",
+      "mapping": "Mg",
+      "citation": "Wilson and Mendelev (2016), DOI 10.1063/1.4946032",
+      "files": [
+        {
+          "path": "${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs",
+          "sha256": "0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2"
+        }
+      ],
+      "evidence": [
+        "${dataset:zr_al_mg_initial_6x24ps}/manifest.json"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "al-mishin1999-eam": {
+      "name": "Mishin 1999 Al EAM (Al99.eam.alloy)",
+      "family": "EAM",
+      "elements": [
+        "Al"
+      ],
+      "pair_style": "eam/alloy",
+      "mapping": "Al",
+      "citation": "Phys. Rev. B 59, 3393 (1999); file header records Becker conversion",
+      "files": [
+        {
+          "path": "${dataset:potentials}/Al99.eam.alloy",
+          "sha256": "60c8a085be79d273324ab421f5b1447578fef55c1acfc6492c0999f15ee8a284"
+        }
+      ],
+      "evidence": [
+        "${dataset:potentials}/Al99.eam.alloy"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "mace-mpa-0-medium": {
+      "name": "MACE-MPA-0 medium checkpoint",
+      "family": "MLIP",
+      "elements": [],
+      "pair_style": null,
+      "mapping": "See generating campaign; checkpoint availability alone does not establish use.",
+      "citation": null,
+      "files": [
+        {
+          "path": "${dataset:potentials}/mace-mpa-0-medium.model",
+          "sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+        }
+      ],
+      "evidence": [
+        "${dataset:potentials}/mace-mpa-0-medium.model"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    },
+    "mace-mh-1": {
+      "name": "MACE-MH-1 checkpoint",
+      "family": "MLIP",
+      "elements": [],
+      "pair_style": null,
+      "mapping": "See generating campaign; checkpoint availability alone does not establish use.",
+      "citation": null,
+      "files": [
+        {
+          "path": "${dataset:potentials}/mace-mh-1.model",
+          "sha256": "a522eb7f59c7879963d41586528f4980baf33e086c94aa92e3eafdeccad3be47"
+        }
+      ],
+      "evidence": [
+        "${dataset:potentials}/mace-mh-1.model"
+      ],
+      "license": "Not recorded here; consult the original distribution before redistribution."
+    }
+  },
+  "remote_holdings": [
+    {
+      "machine": "H200 server",
+      "evidence": "User-reported upload inventory in this task, before 2026-09-17",
+      "verification": "Reported only; server/path not available to this local scan.",
+      "items": [
+        {
+          "collection": "Al MD histories and shooting branches",
+          "reported_GiB": 171.78
+        },
+        {
+          "collection": "Static Al and Zr structures",
+          "reported_MiB": 142
+        },
+        {
+          "collection": "Synthetic point-cloud archive",
+          "reported_GiB": 4.13
+        },
+        {
+          "collection": "Causal MACE dataset",
+          "reported_GiB": 3.8
+        },
+        {
+          "collection": "Predictive-memory dataset",
+          "reported_GiB": 2.46
+        },
+        {
+          "collection": "Ti full-precision starting state, PTM references and stopped MLIP trajectory/restart at 6.5 ps",
+          "reported_MiB": 369
+        },
+        {
+          "collection": "Older MACE coordinate/velocity and frozen-feature training caches",
+          "reported_GiB": 1.02
+        },
+        {
+          "collection": "Older MACE results/checkpoints",
+          "reported_GiB": 1.54,
+          "kind": "results"
+        },
+        {
+          "collection": "Causal MACE results, 18 fits and 48 probes",
+          "reported_MiB": 793,
+          "kind": "results"
+        },
+        {
+          "collection": "Predictive-memory results and matched references",
+          "reported_MiB": 576,
+          "kind": "results"
+        },
+        {
+          "collection": "Earlier forecasting/local-crystallization results",
+          "reported_GiB": 6.36,
+          "kind": "results"
+        },
+        {
+          "collection": "Hardware benchmark logs",
+          "reported_MiB": 1.38,
+          "kind": "operational"
+        }
+      ],
+      "note": "Reported copies, not additional independent datasets. Exact file correspondence and omitted older caches/results need remote verification."
+    }
+  ]
 }

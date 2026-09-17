@@ -1,0 +1,3005 @@
+{
+  "dataset_id": "ti-meam-early-slurm-copies",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/config.json",
+      "relative_path": "branches/parent_000000000/config.json",
+      "sha256": "64fa09063215488e7e9e1507b26dae89eb1b1f28bcc797bda008dbb05016f4ab",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/metadata.json",
+      "relative_path": "branches/parent_000000000/metadata.json",
+      "sha256": "3948de7d123ec3913dfe0b047aede62fed0bb20812e91a444a4a7a37b8fed194",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917101,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/outcome.json",
+      "relative_path": "branches/parent_000000000/outcome.json",
+      "sha256": "c241412f91f64cabc1e5adcef774ca158cd258eb202629c1e87811977109f585",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917101,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000000000/trajectory_binary_float16/manifest.json",
+      "sha256": "baa5a8b2a14e91bf9878f5433a800d974661760631d521258ed338a725d38bf1",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917101,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "867f5edc758f93b65eea7e2771041b43cb0abdef7c7330ee7615482d2eb24806",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9a7edd83303481ffd34dc90d4a93614ea1703c6cf5f3fe0e044cf2be5d3e3a89",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "3ca717e8a7398d612fd910fcd27c94b977d9bc2d5b1b85dd044fe937146d146a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "5cce9fb961a09dba021072ef1f8ce8aea2372c9ee29385d9652678df3e0dc551",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/config.json",
+      "relative_path": "branches/parent_000008000/config.json",
+      "sha256": "d6400c503a910888a926c7172def440d6cc46eb8a897311a92b9fa3c15c7ab66",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/metadata.json",
+      "relative_path": "branches/parent_000008000/metadata.json",
+      "sha256": "6bcdda09b62330f55ea4d9f0299e703db9746538dcb86da5bd0c296a2242ba90",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917103,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/outcome.json",
+      "relative_path": "branches/parent_000008000/outcome.json",
+      "sha256": "db1a39e0a5af918341dc90e920e806721966222f0a32cfe779a3638a18e91d50",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917103,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000008000/trajectory_binary_float16/manifest.json",
+      "sha256": "8a809962a930ddf7eaa56f22657ab2320003eac61abcccd8ed1e4430e3b0f6a0",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917103,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "20559218bf069947aca40d7f20a78efb4ed613936c71ad546245bb7724a6f504",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "56c2d0f53b8dd719e01249905a9aceff5267cf1b0f30e0d9ebf7dbbcb738abf8",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "631c968988bdc7d141335e7283017b3f942e069a1e4c0d1bda8a03ece3747d2d",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "2b458cb655817bacdb6eecac79b6d2dcb8b8debd55afcaba8c1ac61632dd3556",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/config.json",
+      "relative_path": "branches/parent_000032000/config.json",
+      "sha256": "4d65a0aac22131dac71cd38393ae7a6b64c70e3903060eac9d14dced8d38e1e5",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/metadata.json",
+      "relative_path": "branches/parent_000032000/metadata.json",
+      "sha256": "970912846f68f56b17ef9f4aa32dd0b448be5b55fccce67d20b37088eb6198bc",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917107,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/outcome.json",
+      "relative_path": "branches/parent_000032000/outcome.json",
+      "sha256": "db58797157609b751d92198d921a6a26c1aea683a6b9954e1d676b9cb4d940e4",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917107,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000032000/trajectory_binary_float16/manifest.json",
+      "sha256": "5ae436be7c35c6c50365362db54098d0d7908eb8e78b10a9b627e845340a13f3",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917107,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "759b55cdbdf55c28ecc4109f5be054b03e05e49c1369d2e7f0c58579ca851640",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9080d2ab738ea7a5fa7e2556f11d7b207de7f9aa2227b986f77abd965b109b2f",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7072b2dcc716ca052a0a000108160b3401f187eb3c032b070b17a21da4738d52",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "ec5ecc1b13dd3976d5df0c7f5149b90d245a861d672b225e24214140a00b554b",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/config.json",
+      "relative_path": "branches/parent_000040000/config.json",
+      "sha256": "48ff5e7a23b00b028b305e3c69746afa758f1a707c274e3020d7017e91379b64",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/metadata.json",
+      "relative_path": "branches/parent_000040000/metadata.json",
+      "sha256": "14db2e65afb87b9222a8f0652b1a375edaded7f32cce9056d0e9db8f1fcfdf11",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917111,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/outcome.json",
+      "relative_path": "branches/parent_000040000/outcome.json",
+      "sha256": "d6351612c608ab3ea1b6f1fcba7e1b4506c974a4d595d2723ba0cfc2540b6557",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917111,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000040000/trajectory_binary_float16/manifest.json",
+      "sha256": "0c2dac1a01d73ce97bce0e0c31c4157428c2e29a62b5f8f0fd9869cccc70de79",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917111,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9aee2d55ea905b1d88d4c2cc0ba9c00ceea21fb72a22e769d012a386a8ffac80",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "1930be29580a97067f50515f0edb34199cd0ffade9c1c80e7689f4e51bde251e",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "fb14ab7f384abb592a4008aaedaa97aa2d1496418b674cba2106569c574c3b63",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "48689a30826dc7ccbca874797ca2160fa97d6583e6da60feac6331562a5c8ba3",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/config.json",
+      "relative_path": "branches/parent_000056000/config.json",
+      "sha256": "610fbcaa524d2aba4607a565bdae69328dae1b3c270296054834ab87a61c46cd",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/metadata.json",
+      "relative_path": "branches/parent_000056000/metadata.json",
+      "sha256": "8fff259ca16d9940dc28eb3fe3b1ea157437c4bee92588119dd16614910dd4a1",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917117,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/outcome.json",
+      "relative_path": "branches/parent_000056000/outcome.json",
+      "sha256": "be44b63f0863dbdae0bd0cb2a98e7155afad8de9fb9161a86c4a5144cb1f8235",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917117,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000056000/trajectory_binary_float16/manifest.json",
+      "sha256": "2e0454f30fad6c5c1e8a1524099cf3aca2606a0f86a85d556aa61c55817bb865",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917117,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "01e2a845d1edb6f18a774569afbfad7da48d23dc59847730e4384d9c33b075dc",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "b5421d8325e019ea5d2560d7cc628e7369eaa6b8f1c1354a42d8881b9fc8cdcd",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d8d64fcd3be6f8afd0a40a21d54e3f9c005d80a27cdf2e0a28dca827f56767e6",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "9170aa4e647b6d2e73947dc52c70d38c3e89260818d7d3571e2785b8c1bf47f4",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/config.json",
+      "relative_path": "branches/parent_000192000/config.json",
+      "sha256": "46159c2afe6d2bd82ac55f99a8b38284dad90ffc74e8032e3b12d95de8e9ae7e",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "lammps",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "mpiexec",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ti-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1250,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 47.88,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 3000,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 917001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
+        "potential_files": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/metadata.json",
+      "relative_path": "branches/parent_000192000/metadata.json",
+      "sha256": "ccc542d92a626c0959d429001f1742a51d0625e48b83e252d45e53e36fb0e066",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917123,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/outcome.json",
+      "relative_path": "branches/parent_000192000/outcome.json",
+      "sha256": "cea2fc261ac8d16e67dcdd964c6d0a927ee056be395a4776bc1d1a3102288b2b",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917123,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "origin.root_lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/parent_000192000/trajectory_binary_float16/manifest.json",
+      "sha256": "90c47b14e757d7faa0e738494a365860d2c3c4d901c8ce46c7a227e2597a91b0",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 100000,
+            "first_json_path": "atom_count",
+            "occurrences": 3
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2401,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.17,
+            "first_json_path": "provenance.metadata.origin.observed_structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source",
+            "first_json_path": "provenance.metadata.origin.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 917123,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 100000,
+        "frame_count": 2401,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "46c1d3e1ed10ac809c8790abfd2420f7fb54c4944ba9548c2a23c0944315d2e8",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              100000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "e678db309e09e4a68daa69ac292b0d9ba7b1b7cb3a684fb2a323c921e082219f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6d3c9e1f27ff0c4f1bacdf6a17e71c440587f7024b736f7b7f309ad7b81f29e8",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2401,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3c8adca8b0c34097e386a52ecb1b300bb806d1ccbeb7c952618b58d0fa380a80",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2401,
+              100000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ce575a23811d91d6f71dba051ea57039a7bff40a0eef6673144a68bab689c2e5",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2401
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c91219ab0033014e42393f86cfad1c903f11da78befed935fbaa62d00d0b5249",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 240000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "db84b69babd29edfc80f0f0ae8a1b0f9f3b1ad3c633d628b79640360519d93ee",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

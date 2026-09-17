@@ -1,6 +1,6 @@
 # Pytorch Implementation of PointNet
 
-[Experiment & simulation dashboard](output/registry/index.html) ·
+[**Dataset registry**](DATASETS.md) · [Experiment & simulation dashboard](output/registry/index.html) ·
 [Ideas backlog](experiments/ideas.json) · [Run organization guide](docs/output_registry.md)
 
 Maintained commands are indexed in [scripts/README.md](scripts/README.md).

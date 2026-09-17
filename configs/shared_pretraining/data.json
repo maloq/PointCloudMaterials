@@ -1,0 +1,7 @@
+{
+  "release": "${storage:cache}/shared-causal-38400-20260918",
+  "structural_release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "cohort": "output/local_predictability/h100-20260917/technical/cohort.json",
+  "packet_release": "output/local_predictability/h100-20260917/technical/release.json",
+  "packet_cache": "${storage:cache}/local-predictability-20260917-broad"
+}

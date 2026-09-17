@@ -1,0 +1,28 @@
+{
+  "output": "output/shared_pretraining/gatr-vicreg-structural-20260918",
+  "release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "phase": "structural",
+  "architecture": "gatr",
+  "method": "vicreg",
+  "history_frames": 1,
+  "seed": 20260919,
+  "epochs": 12,
+  "batch_size": 512,
+  "microbatch_size": 416,
+  "memory_limit_GiB": 40,
+  "schedule": {
+    "peak": 0.02,
+    "warmup_fraction": 0.1,
+    "minimum_ratio": 0.01
+  },
+  "log_every": 10,
+  "checkpoint_every": 32,
+  "validate_every": 128,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "gatr-vicreg-structural-20260918",
+    "id": "ede1f8b70d44",
+    "group": "shared-12ep-20260918"
+  }
+}

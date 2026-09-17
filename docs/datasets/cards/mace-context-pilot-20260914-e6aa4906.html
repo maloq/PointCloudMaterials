@@ -1,0 +1,2201 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>mace-context-pilot-20260914</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>mace-context-pilot-20260914</h1><p>Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.</p><span class="badge">derived</span><span class="badge warning">2 metadata gaps</span><p><code>mace-context-pilot-20260914</code> · Materials unknown</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/mace-context-pilot-20260914">/home/ids/vmorozov/training-cache/mace-context-pilot-20260914</a></p><p>110 owned files · 0.231 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;mace-context-pilot-20260914&quot;,
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;materials&quot;: [],
+  &quot;description&quot;: &quot;Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:mace-context-pilot-20260914}&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-context-pilot-20260914">${dataset:mace-context-pilot-20260914}</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><p>Not established from the inspected metadata. Do not infer a potential from the material name.</p><h2>Missing metadata and integrity</h2><p>materials, generating potential identity</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>split</td><td><code>[&quot;test&quot;, &quot;train&quot;, &quot;val&quot;]</code></td></tr><tr><td>seed</td><td><code>[20260914]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 110,
+    &quot;apparent_bytes&quot;: 331474947,
+    &quot;allocated_bytes&quot;: 247935488,
+    &quot;file_extensions&quot;: {
+      &quot;.npz&quot;: 108,
+      &quot;.json&quot;: 2
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 2,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;context-000.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265966,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-001.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266074,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-002.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265464,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-003.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266309,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-004.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266038,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-005.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            269401,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-006.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266151,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-007.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            267045,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-008.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            277175,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-009.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266098,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-010.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266112,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-011.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            267489,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-012.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266429,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-013.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266199,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-014.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265671,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-015.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266205,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-016.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266194,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-017.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274690,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-018.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266160,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-019.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266442,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-020.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265937,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-021.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266247,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-022.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266180,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-023.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265943,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-024.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266194,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-025.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266271,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-026.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            271832,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-027.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266169,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-028.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266099,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-029.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274623,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-030.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265017,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-031.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            270653,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-032.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273631,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-033.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265147,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-034.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266553,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-035.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274748,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-036.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265012,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-037.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275045,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-038.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            276291,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-039.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265119,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-040.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275272,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-041.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            276054,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-042.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            264890,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-043.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            267397,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-044.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274199,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-045.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265189,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-046.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            268471,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-047.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            276095,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-048.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            264665,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-049.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275225,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-050.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            276004,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-051.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265176,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-052.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266746,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-053.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274431,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-054.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            265034,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-055.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            266589,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-056.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273360,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-057.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            264894,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-058.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            270465,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-059.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275795,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-060.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263041,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-061.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273720,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-062.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275286,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-063.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262982,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-064.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262589,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-065.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275889,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-066.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262979,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-067.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263512,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-068.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274046,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-069.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263098,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-070.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273780,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-071.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            274755,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-072.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262917,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-073.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262997,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-074.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            272955,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-075.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262997,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-076.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262843,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-077.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275822,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-078.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263078,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-079.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273014,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-080.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            275473,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-081.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263251,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-082.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            272539,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-083.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            273579,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-084.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262920,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-085.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262590,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-086.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            272716,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-087.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            263061,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-088.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262733,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;context-089.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            272991,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            193
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-18-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            187895,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-18-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            188381,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-18-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            193969,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-19-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            187723,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-19-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            191623,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-19-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            195469,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-28-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            186244,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-28-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            186000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-28-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            193737,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-29-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            186107,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-29-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            186060,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-29-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            193307,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-8-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            188710,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-8-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            188611,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-8-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            191708,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-9-0.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            188464,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-9-1.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            188861,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;temporal-9-2.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            194119,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pointers&quot;: {
+          &quot;shape&quot;: [
+            137
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (2 records)</summary><p><a href="../records/mace-context-pilot-20260914-e6aa4906.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-context-pilot-20260914/manifest.json">manifest.json</a> · complete · <code>811af2d9fc8656157d4bd504486450713d9fbf0ac234e650a14ecaf9016f1935</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/mace-context-pilot-20260914/status.json">status.json</a> · complete · <code>6a89e154334866c7dae1317677fae82ed7dca01b4c7d70f17a67ded9801ce0be</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

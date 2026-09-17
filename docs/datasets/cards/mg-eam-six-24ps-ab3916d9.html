@@ -1,0 +1,387 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mg: six 24 ps EAM continuations</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Mg: six 24 ps EAM continuations</h1><p>Six 1,048,576-atom trajectories at 600 K, 0.1 ps frames; positions only.</p><span class="badge">research</span><span class="badge warning">1 metadata gaps</span><p><code>mg-eam-six-24ps</code> · Mg</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg">/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg</a></p><p>84 owned files · 8.506 GiB allocated · 6 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Mg: six 24 ps EAM continuations&quot;,
+  &quot;materials&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;Six 1,048,576-atom trajectories at 600 K, 0.1 ps frames; positions only.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;mg-wilson2016-eam&quot;
+  ],
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;lineage&quot;: &quot;Shared archived source; position-conditioned, not exact restarts.&quot;
+}</pre><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/manifest.json">${dataset:zr_al_mg_initial_6x24ps}/manifest.json</a></li></ul><p>Dependencies: <a href="Mg-180d88b4.html">Mg</a>, <a href="zr_al_mg_initial_6x24ps-f64244b6.html">zr_al_mg_initial_6x24ps</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>ensemble</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>material</td><td><code>[&quot;Mg&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[1048576]</code></td></tr><tr><td>temperature_K</td><td><code>[600.0]</code></td></tr><tr><td>timestep_fs</td><td><code>[1.0]</code></td></tr><tr><td>duration_ps</td><td><code>[24.0]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>velocity_seed</td><td><code>[282514210, 324971279, 369006494, 668414018, 770041865, 81121196]</code></td></tr><tr><td>frame_count</td><td><code>[241]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions decode to float32 wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 84,
+    &quot;apparent_bytes&quot;: 9173627668,
+    &quot;allocated_bytes&quot;: 9132785664,
+    &quot;file_extensions&quot;: {
+      &quot;.md&quot;: 6,
+      &quot;.json&quot;: 18,
+      &quot;.lammps&quot;: 12,
+      &quot;.log&quot;: 12,
+      &quot;.npy&quot;: 36
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;complete&quot;: 6
+    },
+    &quot;metadata_records&quot;: 12,
+    &quot;binary_trajectory_records&quot;: 6,
+    &quot;available_complete_binary_records&quot;: 6,
+    &quot;stored_frames&quot;: 1446,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1000ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1500ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;960ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;980ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1048576
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        241,
+        1048576,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;990ps/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        241
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../src/data/structural_pretraining/prepare.py">src/data/structural_pretraining/prepare.py</a></li></ul></details><details><summary>Producer evidence (12 records)</summary><p><a href="../records/mg-eam-six-24ps-ab3916d9.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/1000ps/metadata.json">1000ps/metadata.json</a> · complete · <code>e8f2ff9667da453426d59c8c0a420353e06e114492e271d361942a64e3dc6cf8</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/1000ps/trajectory_binary_float16/manifest.json">1000ps/trajectory_binary_float16/manifest.json</a> · complete · <code>d4c4cb0fed27e422c931823433e8410ebe483b9bcc3d786823c306d244eb6df7</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/1500ps/metadata.json">1500ps/metadata.json</a> · complete · <code>95232dfa968cdf85cfb4b2bffadbaf9f9b26567b6a167118d81090051f7b3a78</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/1500ps/trajectory_binary_float16/manifest.json">1500ps/trajectory_binary_float16/manifest.json</a> · complete · <code>e93ab63424b269e46aecf1ed3b5bb90df99697f8038b874c386fe3c6c99d24b5</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/940ps/metadata.json">940ps/metadata.json</a> · complete · <code>cf6298897602c8348d36e555cfa5980e654ab38ee6bedf8aa27f9dea8597cc15</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/940ps/trajectory_binary_float16/manifest.json">940ps/trajectory_binary_float16/manifest.json</a> · complete · <code>eeddb3da5bbd4154abb8f0819ca6932e0cd4b641a394b64d742579d3eefd83d0</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/960ps/metadata.json">960ps/metadata.json</a> · complete · <code>609c807693a37a38e54912b57dbf9de9df61f313ac1ef4fab414815839f3d99d</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/960ps/trajectory_binary_float16/manifest.json">960ps/trajectory_binary_float16/manifest.json</a> · complete · <code>ddb2b1dc828972486eb2512180076557c01a152183b7342834138a74db9f174a</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/980ps/metadata.json">980ps/metadata.json</a> · complete · <code>c3c0d8edda5ff8e172131594ce844d5139fbea74d5a2dc63aaada544143e2828</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/980ps/trajectory_binary_float16/manifest.json">980ps/trajectory_binary_float16/manifest.json</a> · complete · <code>81c600a13e731cbfb9907131f20adb2fb824c3efa35445b00c1463bab4a516b0</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/990ps/metadata.json">990ps/metadata.json</a> · complete · <code>27332024f1c6ce9f49078a3f5b7d81a43c39564b64a07b01caf18cd43c1b4026</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/branches/Mg/990ps/trajectory_binary_float16/manifest.json">990ps/trajectory_binary_float16/manifest.json</a> · complete · <code>ee3d13fe6a35da11433fd8375cda943191102d7ff8c804ab8894a7ac7522ed84</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

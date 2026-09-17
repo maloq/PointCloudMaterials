@@ -1,0 +1,135 @@
+{
+  "dataset_id": "local_overnight_lamedell11_20260905.startup_attempt_010736",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905.startup_attempt_010736/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "d65cd7d628e9f17f7efbe8334276bd659fd10ac75a4e9fdcb8a37f3574020b9e",
+      "kind": "metadata",
+      "keys": [
+        "campaign_root",
+        "cutoff_policy",
+        "deadline",
+        "estimated_seconds_per_source",
+        "host",
+        "manifest_sha256",
+        "mpi_ranks",
+        "sources",
+        "submission_check",
+        "task_indices"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 139885636,
+            "first_json_path": "sources[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 870099266,
+            "first_json_path": "sources[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 259940230,
+            "first_json_path": "sources[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 502726670,
+            "first_json_path": "sources[3].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "sources[0].source_split",
+            "occurrences": 4
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[1].temperature_K",
+            "occurrences": 2
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 553075734,
+            "first_json_path": "sources[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 118047358,
+            "first_json_path": "sources[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 95929037,
+            "first_json_path": "sources[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 350404648,
+            "first_json_path": "sources[3].velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905.startup_attempt_010736/status.json",
+      "relative_path": "status.json",
+      "sha256": "b609b944d98a35b44b2466bfaa6e30e54cbc9246f1a2b4bc4fb8ed765523d331",
+      "kind": "metadata",
+      "keys": [
+        "deadline",
+        "error",
+        "finished_at",
+        "host",
+        "pid",
+        "started_at",
+        "state",
+        "tasks",
+        "traceback",
+        "updated_at"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905.startup_attempt_010736/source_058_partial/status.json",
+      "relative_path": "source_058_partial/status.json",
+      "sha256": "2544094654a02ca4e7881f226872090c594b29c6b55a78c8b0b7dce68ec4f88a",
+      "kind": "metadata",
+      "keys": [
+        "execution_mode",
+        "hostname",
+        "mpi_ranks",
+        "partial_artifacts_preserved",
+        "pid",
+        "reason",
+        "recovery_note",
+        "restart_files",
+        "schema_version",
+        "slurm_array_task_id",
+        "slurm_job_id",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "interrupted",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

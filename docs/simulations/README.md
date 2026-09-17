@@ -3,6 +3,11 @@
 Simulation production and inventories belong here. `experiments/` is reserved for
 scientific comparisons using the data.
 
+**[Dataset registry: all materials, potentials and current schemas](../../DATASETS.md)**
+is the main discovery entry point. Refresh with
+`python scripts/project.py datasets --refresh`. The CSVs below retain their
+distinct role as producer-outcome indexes.
+
 Deferred launcher retirement and compatibility exclusions are listed in the
 [post-queue cleanup checklist](../src_refactor.md#post-queue-cleanup-checklist).
 
@@ -43,6 +48,9 @@ configs/simulation/ti_crystallization.json --run-name NAME`; choose Al/Ta explic
 - [Predictive-memory precision sources, 2026-09-17](predictive_memory_precision_20260917.md):
   12 fresh Al lineages, 192 ps at 0.075 ps cadence, retained float32/float16 pairs
   and four preassigned sealed test sources; separate CPU production.
+- [Expanded Al relaxed-TDA targets](../relaxed_tda_targets.md): fixed-cell
+  minimization of denser existing training frames and completed shooting data,
+  with verified relaxed cells archived on STORE and target caches on IDS.
 
 Historical campaign documentation and exact configurations:
 

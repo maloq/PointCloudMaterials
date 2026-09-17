@@ -1,0 +1,131 @@
+{
+  "dataset_id": "polycrystalline_balanced_geometries_v2",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries_v2/metadata.json",
+      "relative_path": "metadata.json",
+      "sha256": "afc01e7850ccb18e53d7f62cbb5e85ea6d3608eb6e415970e0b6f6faad91c4f8",
+      "kind": "metadata",
+      "keys": [
+        "global",
+        "grains",
+        "nn_diagnostics",
+        "perturbations",
+        "phase_statistics"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 10.0,
+            "first_json_path": "perturbations.rotation_bubbles[0].radius",
+            "occurrences": 6
+          },
+          {
+            "value": 10.5,
+            "first_json_path": "perturbations.rotation_bubbles[5].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 10.2,
+            "first_json_path": "perturbations.rotation_bubbles[6].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 7.2,
+            "first_json_path": "perturbations.rotation_bubbles[7].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 5.2,
+            "first_json_path": "perturbations.rotation_bubbles[13].radius",
+            "occurrences": 5
+          },
+          {
+            "value": 4.5,
+            "first_json_path": "perturbations.density_bubbles[0].radius",
+            "occurrences": 6
+          },
+          {
+            "value": 3.5,
+            "first_json_path": "perturbations.density_bubbles[5].radius",
+            "occurrences": 4
+          },
+          {
+            "value": 2.3,
+            "first_json_path": "perturbations.density_bubbles[7].radius",
+            "occurrences": 1
+          },
+          {
+            "value": 5.5,
+            "first_json_path": "perturbations.density_bubbles[8].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 4.2,
+            "first_json_path": "perturbations.density_bubbles[11].radius",
+            "occurrences": 4
+          },
+          {
+            "value": 4.0,
+            "first_json_path": "perturbations.density_bubbles[20].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 4.3,
+            "first_json_path": "perturbations.density_bubbles[22].radius",
+            "occurrences": 1
+          },
+          {
+            "value": 5.3,
+            "first_json_path": "perturbations.density_bubbles[23].radius",
+            "occurrences": 4
+          },
+          {
+            "value": 4.1,
+            "first_json_path": "perturbations.density_bubbles[27].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 4.4,
+            "first_json_path": "perturbations.density_bubbles[30].radius",
+            "occurrences": 1
+          },
+          {
+            "value": 2.6,
+            "first_json_path": "perturbations.density_bubbles[33].radius",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 350.0,
+            "first_json_path": "perturbations.thermal_noise.bcc_iron.temperature_K",
+            "occurrences": 3
+          },
+          {
+            "value": 0.0,
+            "first_json_path": "perturbations.thermal_noise.amorphous_pure.temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 520.0,
+            "first_json_path": "perturbations.thermal_noise.bcc_iron_perturbed.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "perturbations.thermal_noise.fcc_iron_perturbed.temperature_K",
+            "occurrences": 1
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "perturbations.thermal_noise.hcp_iron_perturbed.temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

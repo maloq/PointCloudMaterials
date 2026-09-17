@@ -1,0 +1,811 @@
+{
+  "dataset_id": "al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/config.json",
+      "relative_path": "config.json",
+      "sha256": "9528238c7440a90a6336539ea4184731f9401232f273087f7000b596dcf8d704",
+      "kind": "metadata",
+      "keys": [
+        "assessment_steps",
+        "atom_count",
+        "barostat_ps",
+        "branch_semantics",
+        "branch_steps",
+        "branch_target_fractions",
+        "branch_velocity_seeds",
+        "checkpoint_steps",
+        "complete_crystal_fraction",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "execution",
+        "lattice_constant_A",
+        "mass_g_mol",
+        "material",
+        "max_liquid_crystal_fraction",
+        "max_source_steps",
+        "melt_seed",
+        "melt_steps",
+        "melt_temperature_K",
+        "minimum_liquid_msd_growth_A2",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_citation",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "repetitions_xyz",
+        "required_free_bytes",
+        "run_id",
+        "sample_interval_ps",
+        "save_melt_trajectory",
+        "schema_version",
+        "source_limit_policy",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al-source-then-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 26.9815,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325,
+            "first_json_path": "melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 911001,
+            "first_json_path": "melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "branch_semantics": [
+          {
+            "value": "No branches: one continuous liquid-to-crystal source only.",
+            "first_json_path": "branch_semantics",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam Al /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam Al"
+        ],
+        "potential_files": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ],
+        "potential_citation": "Lee, Shim and Baskes (2003), Al 2NN-MEAM; exact files from Al shooting campaign"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/selected_branches.json",
+      "relative_path": "selected_branches.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "kind": "list_metadata",
+      "entries": 0
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/source_progress.json",
+      "relative_path": "source_progress.json",
+      "sha256": "e097c196bd57932373ec1c745cba46fc31eb4b8750135dbe9e280f9fd08dfe37",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "crystal_fraction",
+        "crystallization_complete",
+        "fractions",
+        "ptm_rmsd_cutoff",
+        "step",
+        "stop_reason",
+        "time_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/status.json",
+      "relative_path": "status.json",
+      "sha256": "a9d9b3c54d5308522b954a44c0c08b54e4f28c6a7a9d6d8ef4e24c11d964b143",
+      "kind": "metadata",
+      "keys": [
+        "completed_at_utc",
+        "completed_branches",
+        "crystallization_complete",
+        "host",
+        "pid",
+        "started_at_utc",
+        "state",
+        "stop_reason"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/melt/metadata.json",
+      "relative_path": "melt/metadata.json",
+      "sha256": "f1ddd34ef518a649196ad6c3ca2b8d3e1f06c32726e6a2b68bc6e62c78f44e25",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 3001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt preparation",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/melt/outcome.json",
+      "relative_path": "melt/outcome.json",
+      "sha256": "629ff005f981565688fb5d4b39dbc970d15a20d61a875e26b73b9e8240bbcd56",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 3001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt preparation",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/melt/trajectory_binary_float16/manifest.json",
+      "relative_path": "melt/trajectory_binary_float16/manifest.json",
+      "sha256": "74ebf28636ee893db71c221d363cf294194703f3951041c734e6bdd16645a3be",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 3001,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt preparation",
+            "first_json_path": "provenance.metadata.origin.protocol",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 3001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              3001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "bca5eae6a2379547519145e9891dc609336d3a4509037cbc444f16cdbe009b6a",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              3001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2a1336ab372de8d063266c442738e126b1cf502473f60b3e135d1c1ae01b06c0",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              3001,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b15cb3311183161ec06618ef2fcd2cb4dd42279e8125af3226e2cf87e5634f64",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              3001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f300fda9686a3fe12412f7225e54d8fcf233ed88e777bbe97bc311f49fe6d87f",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 300000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "5a96282209df75111d228cded22c7a75f1062284791e228c7942e8d73b98fed6",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/source/metadata.json",
+      "relative_path": "source/metadata.json",
+      "sha256": "7e8c84c482bca6c9916de37a3c7df63bfc7cbf56dec44f1dbb0774da6ffba095",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 4001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt-quench source",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/source/outcome.json",
+      "relative_path": "source/outcome.json",
+      "sha256": "158c9ca4a5697fe1a3dc2dbc086c7bfa2b690cf3d7c284479ff89bbf1f84bb6b",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 4001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt-quench source",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z/source/trajectory_binary_float16/manifest.json",
+      "relative_path": "source/trajectory_binary_float16/manifest.json",
+      "sha256": "bb3c1e2fffc9487eb23023df20e17cb47e764762cdb1b7faa8cdde533577799d",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 4001,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "continuous melt-quench source",
+            "first_json_path": "provenance.metadata.origin.protocol",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 4001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              4001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "351bd6c05cd8d110fe3c02a32221e84608b2092150e04a3a0c0504d4e841c75c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              4001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "c8a5b4e351c4f10aaf700d13afb21012d158c3e220fd48bfab6ec09d8cf14a29",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              4001,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d42437c74649120451ee24a0844d31b93972e218cba0cc219ce3b27fcf26933e",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              4001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b1f05c816a55a77357f039e6eacb64ecebaa4bad78b48bf92ef6edec4da0bc74",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 400000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "7aa3910f511bc57fa96db06f3bf97b8eb527d6f731f7572e8f966823594f06eb",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

@@ -15,6 +15,25 @@ Scientific implementations belong in `src/`. Experiment-specific recipes live in
 
 ## Simulation and data
 
+[Shared 12-epoch training and continuation](shared_pretraining_20260918.md) records
+the current W&B-enabled structural → causal → frozen-evaluation queue on existing
+allocations and newly submitted H100/RTX6000PRO/L40S jobs.
+The [H200 batch-1,024 handoff](h200_shared_pretraining_task_20260918.md) supplies
+an independent serial queue, exact prepared-data transfer requirements and a
+detached launch command with an explicit wall-clock deadline.
+
+[Shared structural pretraining: execution and reproduction](structural_pretraining_20260917.md)
+records the prepared five-metal release and three detached H100/RTX6000 fits:
+MACE/GATr neighbor VICReg and three-frame GATr temporal JEPA with SIGReg.
+
+Consult [the dataset registry](../DATASETS.md) before selecting inputs or planning
+new collection. `python scripts/project.py datasets --refresh` regenerates its
+browser, cards and evidence from the location catalog.
+
+Expanded Al relaxed-topology targets use `python -m src.data.relaxed_targets
+prepare|run|status --config configs/simulation/relaxed_tda_al.json`.
+See [the source, precision and resume contract](relaxed_tda_targets.md).
+
 | Command | Purpose / implementation |
 | --- | --- |
 | `run_lammps_campaign.py WORKFLOW` | Campaign preparation, execution, continuation and summaries; `src/simulation/campaigns/` |

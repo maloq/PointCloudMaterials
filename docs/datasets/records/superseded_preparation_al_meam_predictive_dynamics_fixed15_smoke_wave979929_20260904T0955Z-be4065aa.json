@@ -1,0 +1,1533 @@
+{
+  "dataset_id": "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "a172ccb9174f6e0da84f8786e8bee10df721fd4acb12845da8eedb46a6b30bab",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "basins",
+        "branches",
+        "campaign_type",
+        "counts",
+        "created_at",
+        "design_kind",
+        "design_name",
+        "execution",
+        "extension_contract",
+        "parents",
+        "potential",
+        "protocol",
+        "schema_version",
+        "scientific_contract",
+        "smoke_test",
+        "source_config",
+        "window_index"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "basins.ptm_rmsd_cutoff",
+            "occurrences": 2
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "branches[0].parent_id",
+            "occurrences": 17
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "branches[0].source_run_id",
+            "occurrences": 17
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "branches[0].source_split",
+            "occurrences": 17
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "branches[0].temperature_K",
+            "occurrences": 17
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 524937898,
+            "first_json_path": "branches[0].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 594947822,
+            "first_json_path": "branches[2].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 548560715,
+            "first_json_path": "branches[4].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 238906586,
+            "first_json_path": "branches[6].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 872881233,
+            "first_json_path": "branches[8].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 449133463,
+            "first_json_path": "branches[10].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 353135530,
+            "first_json_path": "branches[12].velocity_seed",
+            "occurrences": 2
+          },
+          {
+            "value": 28418216,
+            "first_json_path": "branches[14].velocity_seed",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "parents[0].history_artifact.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "parents[0].history_artifact.storage_dtype",
+            "occurrences": 2
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "fixed-cell stochastic canonical NVT",
+            "first_json_path": "protocol.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.3,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "scientific_contract": [
+          {
+            "value": {
+              "bootstrap_unit": "root_source_lineage",
+              "exact_extension_requires_same_mpi_ranks": 24,
+              "exact_short_to_extension_restart": true,
+              "exact_source_restart": false,
+              "first_passage_does_not_stop_fixed_trajectory": true,
+              "interpretation": "Fixed-cell stochastic canonical futures conditioned on immutable positions, cell, history, shooting temperature, sampled momentum, and thermostat stream.",
+              "no_equilibration_after_branching": true,
+              "overlapping_windows_are_correlated": true
+            },
+            "first_json_path": "scientific_contract",
+            "occurrences": 1
+          }
+        ],
+        "temperatures_K": [
+          {
+            "value": [
+              400.0
+            ],
+            "first_json_path": "source_config.temperatures_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "library_file": "potential/Lee2003_Al.library.meam",
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "name": "Lee-Shim-Baskes 2003 Al 2NN-MEAM",
+          "parameter_file": "potential/Lee2003_Al.meam",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        },
+        "scientific_contract": {
+          "bootstrap_unit": "root_source_lineage",
+          "exact_extension_requires_same_mpi_ranks": 24,
+          "exact_short_to_extension_restart": true,
+          "exact_source_restart": false,
+          "first_passage_does_not_stop_fixed_trajectory": true,
+          "interpretation": "Fixed-cell stochastic canonical futures conditioned on immutable positions, cell, history, shooting temperature, sampled momentum, and thermostat stream.",
+          "no_equilibration_after_branching": true,
+          "overlapping_windows_are_correlated": true
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/status.json",
+      "relative_path": "status.json",
+      "sha256": "fdea793468ef739ffcbfcc96c5484565cabca7f1ab4918bf9b2fe4a51e8cce66",
+      "kind": "metadata",
+      "keys": [
+        "branch_count",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "prepared",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0000_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_00/metadata.json",
+      "relative_path": "branches/branch_0000_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_00/metadata.json",
+      "sha256": "e4c5b44e7c5a869c15f9a69fe2debba3e27ffe8be6ed472deddab743490bdcb3",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 524937898,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0000_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_00/interrupted_attempt_wave_979929_inherited_gpu_step_gres_20260904T095324Z/status.json",
+      "relative_path": "branches/branch_0000_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_00/interrupted_attempt_wave_979929_inherited_gpu_step_gres_20260904T095324Z/status.json",
+      "sha256": "99d4093ee70cbe8d10c41218d5014b1cd0d30d146c57a2fe53d6ca239ac879e0",
+      "kind": "metadata",
+      "keys": [
+        "branch_id",
+        "error",
+        "error_type",
+        "partial_artifacts_are_not_data",
+        "partial_artifacts_preserved",
+        "schema_version",
+        "state",
+        "traceback",
+        "updated_at"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0001_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_01/metadata.json",
+      "relative_path": "branches/branch_0001_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_00_noise_01/metadata.json",
+      "sha256": "da611e5c327e898a58b680a795989b606899598bd49a3b829a9d079414aa2019",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 524937898,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0002_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_01_noise_00/metadata.json",
+      "relative_path": "branches/branch_0002_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_01_noise_00/metadata.json",
+      "sha256": "13acde821be7a5984efdc76df1e9f971ee87079216c1450b02ed2fde8bd73472",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 594947822,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0003_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_01_noise_01/metadata.json",
+      "relative_path": "branches/branch_0003_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_01_noise_01/metadata.json",
+      "sha256": "458ce08ef3d8e05f730e5947cfa9d5d739cece89fbbd9ed7e041314546a3063b",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 594947822,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0004_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_02_noise_00/metadata.json",
+      "relative_path": "branches/branch_0004_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_02_noise_00/metadata.json",
+      "sha256": "914cbac0a2852b8a69ce83bfc953380573b49818e1c28602245285814b37be3e",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 548560715,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0005_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_02_noise_01/metadata.json",
+      "relative_path": "branches/branch_0005_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_02_noise_01/metadata.json",
+      "sha256": "3b424c38a3ca88f5c8ec8ef08e572e895e92971576c021f7262237cbca3f7eeb",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 548560715,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0006_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_03_noise_00/metadata.json",
+      "relative_path": "branches/branch_0006_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_03_noise_00/metadata.json",
+      "sha256": "3ec9b4d3534aafd65d4dc28a23449229d2df3e9dc0f892e5cfa514479cd73b39",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 238906586,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0007_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_03_noise_01/metadata.json",
+      "relative_path": "branches/branch_0007_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_03_noise_01/metadata.json",
+      "sha256": "61946e45b569cf09b86d0d6fd2444bf624de2ab1e7688c76551e8922257507ac",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 238906586,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0008_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_04_noise_00/metadata.json",
+      "relative_path": "branches/branch_0008_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_04_noise_00/metadata.json",
+      "sha256": "f122af7966d9df44f924d519d33420b879e89a5d52e8eef24e8d1a82968e317d",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 872881233,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0009_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_04_noise_01/metadata.json",
+      "relative_path": "branches/branch_0009_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_04_noise_01/metadata.json",
+      "sha256": "2038a315c11c9a65381923a552aad964e07de8161eac45230f74a07edc0d7b35",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 872881233,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0010_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_05_noise_00/metadata.json",
+      "relative_path": "branches/branch_0010_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_05_noise_00/metadata.json",
+      "sha256": "2a4f513013144fea97d6a42ec7bc5345fbf3b7799ed54857c7b7f174533d9a92",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 449133463,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0011_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_05_noise_01/metadata.json",
+      "relative_path": "branches/branch_0011_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_05_noise_01/metadata.json",
+      "sha256": "296357a6cf3d436e1c149d672fd1935cebe9b46f82f20a80a68aebfbcf741280",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 449133463,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0012_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_06_noise_00/metadata.json",
+      "relative_path": "branches/branch_0012_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_06_noise_00/metadata.json",
+      "sha256": "402ff5917b34fca16b33ac4e6cd0b50996ad1e3da14afc5dfba7b59c8985ea68",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 353135530,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0013_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_06_noise_01/metadata.json",
+      "relative_path": "branches/branch_0013_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_06_noise_01/metadata.json",
+      "sha256": "9a96e69d70a62774cdeee47093baec53b482f18a19842b98b3cb84b79dc26363",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 353135530,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0014_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_07_noise_00/metadata.json",
+      "relative_path": "branches/branch_0014_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_07_noise_00/metadata.json",
+      "sha256": "2d0b07b88b28b1d464037b6bb3d4e372466d235119a059e81f25fd2078540a10",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 28418216,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/branches/branch_0015_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_07_noise_01/metadata.json",
+      "relative_path": "branches/branch_0015_smoke_shifted_parent_T400_ancestor_branch004_t12ps_momentum_07_noise_01/metadata.json",
+      "sha256": "414f9fc3e3ac7074dec15974351338232eea15228ca0e5e3d0d77d3a5098e525",
+      "kind": "metadata",
+      "keys": [
+        "basin_role",
+        "branch_dir",
+        "branch_id",
+        "branch_index",
+        "canonical_shot_index",
+        "momentum_group_id",
+        "momentum_index",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "shot_index",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K",
+        "thermostat_replica_index",
+        "thermostat_seed",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 28418216,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/metadata.json",
+      "relative_path": "parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/metadata.json",
+      "sha256": "e72f77b4a13ad88b3f0d2f4160e0af54ae8e25c2a904bc2a5de8b8d2dd8a5da9",
+      "kind": "metadata",
+      "keys": [
+        "ancestor_branch_relative_time_ps",
+        "ancestor_branch_uid",
+        "basin_role",
+        "data_file",
+        "data_sha256",
+        "history_artifact",
+        "history_available",
+        "parent_id",
+        "parent_index",
+        "phase",
+        "root_source_lineage_id",
+        "shooting_temperature_K",
+        "source_crystalline_fraction",
+        "source_descriptor",
+        "source_largest_crystalline_cluster_atoms",
+        "source_physical_time_ps",
+        "source_run_id",
+        "source_split",
+        "source_temperature_K",
+        "source_velocity_seed",
+        "temperature_K"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "history_artifact.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "history_artifact.storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "smoke_shifted_parent_T400_ancestor_branch004_t12ps",
+            "first_json_path": "parent_id",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "source_descriptor.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "source_run_id",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/history_binary_float32/manifest.json",
+      "relative_path": "parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/history_binary_float32/manifest.json",
+      "sha256": "edb0f036527d51d25b31ea11caee483c168bf23805cdc70564e3d9e9be64daa8",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 70304,
+        "frame_count": 41,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cad8a1e3dd9e074f085e92c013b87817fa2fe21c939a33a0820fd20041a0ae90",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "aaf4a48db8af6b0cb05bff1b3b4847cb6235f0de26ccc6c56aa184032dba0063",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "e9b6c899f10e26a9377b6e8f6a6b4f8ab88e8cf842f08ac52235ac2ace6d3055",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 4000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "7d931620839c6bb89261f2de0fb37a81c36ac797a57b91fbfb293618b436b5e8",
+        "issues": [
+          "Missing array: /work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/history_binary_float32/positions.npy",
+          "Missing array: /work/PERSO/vmorozov/simulations/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z/parents/smoke_shifted_parent_T400_ancestor_branch004_t12ps/history_binary_float32/velocities.npy",
+          "Missing required fields: ['positions', 'velocities']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

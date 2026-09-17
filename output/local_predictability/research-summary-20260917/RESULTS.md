@@ -22,6 +22,11 @@ user-reported status; unavailable test results are not counted as negative resul
 
 ## What is complete, and what each experiment tests
 
+Here, [native MACE](../../../docs/research_glossary.md#native-mace-in-the-current-experiments)
+means our custom encoder that learns directly from atomic positions, velocities
+and optional history using MACE blocks. Its parent starts from random weights.
+Physical and onset objectives train separate copies of this architecture.
+
 | Study | Completed evidence | Question |
 | --- | --- | --- |
 | Broad descriptor study | 16 onset classifiers and five physical ridge fits | Is useful information accessible directly from physical summaries, history or wider context? |

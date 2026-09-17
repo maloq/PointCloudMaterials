@@ -108,7 +108,8 @@ def publish_report(source, destination, *, checkpoint_sha256=None, update_index=
                          f'<figcaption>{html.escape(label)}</figcaption></figure>')
         elif name.endswith('.html'):
             links.append(f'<li><a href="{html.escape(name)}">{html.escape(name)}</a></li>')
-    umap_status = 'UMAP available.' if 'plots/umap.png' in published else 'UMAP has not been generated for this report yet.'
+    umap_available = any(name in published for name in ('plots/umap.png', 'plots/md-umap.png'))
+    umap_status = 'UMAP available.' if umap_available else 'UMAP has not been generated for this report yet.'
     title = destination.name
     page = ('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
         f'<title>{html.escape(title)}</title><style>body{{font:16px system-ui;margin:2rem;background:#f5f6f8;color:#202530}}'

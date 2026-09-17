@@ -40,7 +40,9 @@ def main(argv=None):
     sub = parser.add_subparsers(dest='command', required=True)
     p = sub.add_parser('doctor'); p.add_argument('--lammps', action='store_true')
     sub.add_parser('paths')
-    sub.add_parser('datasets')
+    p = sub.add_parser('datasets')
+    p.add_argument('--refresh', action='store_true', help='Build the evidence-backed dataset browser, cards, JSON and CSV.')
+    p.add_argument('--output', type=Path, default=Path('docs/datasets'))
     p = sub.add_parser('simulations'); p.add_argument('--output', required=True, type=Path)
     p = sub.add_parser('resolve'); p.add_argument('config', type=Path)
     p = sub.add_parser('snapshot'); p.add_argument('destination', type=Path)
@@ -56,8 +58,14 @@ def main(argv=None):
     elif args.command == 'paths':
         result = machine()
     elif args.command == 'datasets':
-        result = {key: dict(entry, location=str(dataset_path(key)), available=dataset_path(key).exists())
-                  for key, entry in catalog().items()}
+        if args.refresh:
+            from .dataset_registry import build_registry
+            result = build_registry(args.output)
+        else:
+            settings = machine()
+            result = {key: dict(entry, location=str(Path(settings['roots'][entry['root']])/entry['path']),
+                      available=(Path(settings['roots'][entry['root']])/entry['path']).exists())
+                      for key, entry in catalog().items()}
     elif args.command == 'resolve':
         result = load_json(args.config)
     elif args.command == 'simulations':

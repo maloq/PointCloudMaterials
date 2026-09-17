@@ -1,0 +1,51 @@
+{
+  "dataset_id": "polycrystalline_balanced_geometries",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries/metadata.json",
+      "relative_path": "metadata.json",
+      "sha256": "b0f368f669da432bed70034fcaec7c5aaa5828bb8650cd814139a4f8ecae41b9",
+      "kind": "metadata",
+      "keys": [
+        "global",
+        "grains",
+        "nn_diagnostics",
+        "perturbations",
+        "phase_statistics"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 7.0,
+            "first_json_path": "perturbations.rotation_bubbles[0].radius",
+            "occurrences": 4
+          },
+          {
+            "value": 4.5,
+            "first_json_path": "perturbations.density_bubbles[0].radius",
+            "occurrences": 3
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "perturbations.density_bubbles[3].radius",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 325.0,
+            "first_json_path": "perturbations.thermal_noise.bcc_iron.temperature_K",
+            "occurrences": 3
+          },
+          {
+            "value": 0.0,
+            "first_json_path": "perturbations.thermal_noise.amorphous_pure.temperature_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

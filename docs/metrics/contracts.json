@@ -33,7 +33,7 @@
   },
   "analysis": {
     "files": {
-      "docs/metrics/analysis.md": "aa93747f8dd8ecaf33dc97a5b895e9186a1738c76844141412a6c24e5818b459",
+      "docs/metrics/analysis.md": "7d8155d45b4c2a875d1b5d85da3462727b0f668a911c2dca086e22c0f360dc95",
       "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
       "src/analysis/topology.py": "c1c61cc47b278530000f2614c149d61c5b854477a1cba590a85eb8c75383d840",
       "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
@@ -45,7 +45,9 @@
       "docs/mace_context_static.md": "296d7c3c49d224df7831214bb6e4515c5fc3d082e5437c1e88e4106ec5813951",
       "src/research/mace_context/cluster_diagnosis.py": "e9323e7ce1cda8f46aa86fe284dc846e1c24db0e732435d44eb8713307caaea2",
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
-      "src/research/mace_context/cluster_probe.py": "0b428b6602812ee60c7e385128ac2e98675f8adf72a99d9a0426ea5d195942c4"
+      "src/research/mace_context/cluster_probe.py": "0b428b6602812ee60c7e385128ac2e98675f8adf72a99d9a0426ea5d195942c4",
+      "docs/structural_static_analysis.md": "96e5b0bf96dafb1808c3bf4ecc9b19a27bf301139b9087c5263e98d77bf62ec4",
+      "src/analysis/structural_adapter.py": "b9ed18f350195099063f9958d882216e44581a3e74817a8054b98035d81a58f4"
     }
   },
   "forecast_context": {
@@ -391,6 +393,24 @@
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
       "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432",
       "configs/analysis/local_predictability_report.json": "30f7961d3620f1d86d908781dfc599bf016ee3d00e8d4553fca529ff710725d3"
+    }
+  },
+  "structural_pretraining": {
+    "files": {
+      "docs/metrics/structural_pretraining.md": "555585220be1b9265d11636a987d54449a76417b372c009c8aad230e5c3e3e9a",
+      "src/data/structural_pretraining/prepare.py": "d11a8e963044b7d446b19b5ce7244042cfbd9d84a78bd73a36b71f63fe94e9b0",
+      "src/training_methods/structural_pretraining/objective.py": "204047b63541742df66f3a6cffeee850268661ca09085d543c93216e3452b964",
+      "src/training_methods/structural_pretraining/train.py": "731a9ea0481f6970d03dc3b932f601371559470d2dd8071c62885aaa8a5a284a"
+    }
+  },
+  "shared_pretraining": {
+    "files": {
+      "docs/metrics/shared_pretraining.md": "d9f7ddb5a2dfbb0faa9e405085b38b3fad535ab237f472b06ae29c0f2a97e59b",
+      "src/training_methods/shared_pretraining/runtime.py": "7eca02a9f5bad52ecd824a83bb774be9daf46acb54b0ac6656580289936785f1",
+      "src/training_methods/shared_pretraining/data.py": "de640dadbd0ac4cb0c5536eeb6ce2cc881e33df1b9c9bc2bb721e71cff92307f",
+      "src/training_methods/shared_pretraining/analysis.py": "0f7f398a7b865616f3e74a458964457f4c3041979dea0b2687af0371ff039255",
+      "src/training_methods/structural_pretraining/objective.py": "204047b63541742df66f3a6cffeee850268661ca09085d543c93216e3452b964",
+      "src/data/structural_pretraining/prepare.py": "d11a8e963044b7d446b19b5ce7244042cfbd9d84a78bd73a36b71f63fe94e9b0"
     }
   }
 }

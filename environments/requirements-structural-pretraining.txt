@@ -1,0 +1,2 @@
+# Install with --no-deps into pointnet, alongside requirements-backbone-v2.txt.
+lejepa @ git+https://github.com/galilai-group/lejepa.git@c293d291ca87cd4fddee9d3fffe4e914c7272052

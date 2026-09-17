@@ -1,0 +1,322 @@
+{
+  "dataset_id": "memory-al-precision-campaign-20260917",
+  "records": [
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "91b426e4f6baf923ea08cc221a57a6c777ebd9377443494581902066675984b7",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "counts",
+        "created_at",
+        "excluded_source_manifest_sha256",
+        "initial_fcc_sha256",
+        "precision_policy",
+        "protocol",
+        "runs",
+        "schema_version",
+        "sealed_test_policy",
+        "simulator"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "predictive_memory_precision_sources_v1",
+            "first_json_path": "protocol",
+            "occurrences": 2
+          }
+        ],
+        "temperatures_K": [
+          {
+            "value": [
+              500.0,
+              520.0
+            ],
+            "first_json_path": "config.temperatures_K",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_860878647",
+            "first_json_path": "runs[0].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_407215734",
+            "first_json_path": "runs[1].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746219836",
+            "first_json_path": "runs[2].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_126814323",
+            "first_json_path": "runs[3].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76476585",
+            "first_json_path": "runs[4].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_696676085",
+            "first_json_path": "runs[5].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_46641549",
+            "first_json_path": "runs[6].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_346665285",
+            "first_json_path": "runs[7].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_840271448",
+            "first_json_path": "runs[8].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_384688017",
+            "first_json_path": "runs[9].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_817843753",
+            "first_json_path": "runs[10].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580020242",
+            "first_json_path": "runs[11].root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "parent_trajectory_id": [
+          {
+            "value": null,
+            "first_json_path": "runs[0].parent_trajectory_id",
+            "occurrences": 12
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "runs[0].temperature_K",
+            "occurrences": 6
+          },
+          {
+            "value": 520.0,
+            "first_json_path": "runs[6].temperature_K",
+            "occurrences": 6
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "runs[0].split",
+            "occurrences": 6
+          },
+          {
+            "value": "val",
+            "first_json_path": "runs[3].split",
+            "occurrences": 2
+          },
+          {
+            "value": "sealed_test",
+            "first_json_path": "runs[4].split",
+            "occurrences": 4
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 860878647,
+            "first_json_path": "runs[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 407215734,
+            "first_json_path": "runs[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746219836,
+            "first_json_path": "runs[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 126814323,
+            "first_json_path": "runs[3].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76476585,
+            "first_json_path": "runs[4].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 696676085,
+            "first_json_path": "runs[5].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 46641549,
+            "first_json_path": "runs[6].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 346665285,
+            "first_json_path": "runs[7].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 840271448,
+            "first_json_path": "runs[8].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 384688017,
+            "first_json_path": "runs[9].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 817843753,
+            "first_json_path": "runs[10].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 580020242,
+            "first_json_path": "runs[11].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 112005714,
+            "first_json_path": "runs[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 612992447,
+            "first_json_path": "runs[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 622469642,
+            "first_json_path": "runs[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827508800,
+            "first_json_path": "runs[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 840962199,
+            "first_json_path": "runs[4].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 816449419,
+            "first_json_path": "runs[5].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 607567658,
+            "first_json_path": "runs[6].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 138027857,
+            "first_json_path": "runs[7].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 30147642,
+            "first_json_path": "runs[8].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 103667006,
+            "first_json_path": "runs[9].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 342374706,
+            "first_json_path": "runs[10].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 826723107,
+            "first_json_path": "runs[11].velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/status.json",
+      "relative_path": "status.json",
+      "sha256": "883db0198f26554db404eb11c889945eb72a09133f74e5035577ac86c452c569",
+      "kind": "metadata",
+      "keys": [
+        "completed_runs",
+        "runs",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source003-T500/status.json",
+      "relative_path": "runs/memory-al-precision-20260917-source003-T500/status.json",
+      "sha256": "614bee1832109d65fca4a965ca7e67b52768084af6645867b4e91e27b0214e94",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "partial_artifacts_preserved",
+        "pid",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source004-T500/status.json",
+      "relative_path": "runs/memory-al-precision-20260917-source004-T500/status.json",
+      "sha256": "a902a2960f82d0d0fb0492292a549264343b3f4ebc49dd34beff694ddfce6fba",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "partial_artifacts_preserved",
+        "pid",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

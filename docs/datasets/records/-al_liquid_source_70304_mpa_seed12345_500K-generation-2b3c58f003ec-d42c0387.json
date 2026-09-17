@@ -1,0 +1,57 @@
+{
+  "dataset_id": ".al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "955211a7241ffcb97f9e754fd2e2cefb3bdb329ea12ad8bec97e8861c0f8801e",
+      "kind": "metadata",
+      "keys": [
+        "checkpoint_identity_sha256",
+        "config",
+        "config_sha256",
+        "execution_provenance",
+        "schema_version"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "model_name": [
+          {
+            "value": "mace-mpa-0-medium",
+            "first_json_path": "config.potential.model_name",
+            "occurrences": 2
+          }
+        ],
+        "model_path": [
+          {
+            "value": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/mace-mpa-0-medium.model",
+            "first_json_path": "config.potential.model_path",
+            "occurrences": 2
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1600.0,
+            "first_json_path": "config.dynamics.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.dynamics.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.validation.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

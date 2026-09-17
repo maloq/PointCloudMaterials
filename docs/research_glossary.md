@@ -170,6 +170,95 @@ It trains on computed present and future physical targets. Its separate onset
 models use event/survival likelihood only; its TDA probes freeze the physical
 encoder. See the [current training/data audit](data_usage/gatr_20260917.md).
 
+### Shared structural pretraining
+
+The first stage learns one exported structural state from multiple
+materials using same-time geometry and species, with physical and topology
+prediction heads attached to that state. Frozen evaluations use its unchanged
+weights; task-specific fine-tuned copies have separate checkpoint identities.
+Causal predictive pretraining is a subsequent continuation that adds observed
+motion and multi-horizon physical supervision while retaining structural
+anchors. The structural stage tests snapshot MACE/GATr with spatial/temporal
+VICReg and GATr with three causal position frames predicting the next separately
+encoded snapshot. Instantaneous TDA is the only topology target in this wave. See
+the [September 17 protocol](../experiments/structural_pretraining_20260917/README.md).
+
+The [September 18 continuation](../experiments/shared_pretraining_20260918/README.md)
+uses twelve epoch equivalents (anchor draws divided by the training population)
+with batch 512 and warmup/cosine decay. Its causal phase retains present and
+representation anchors, predicts fixed physical/TDA values at 0.75/3/9 ps,
+and replays broad structural batches every fourth update. Causal epoch counts
+exclude replay draws. Frozen probes compare unchanged selected structural and
+causal checkpoints on the same whole-source test split; allocation continuation
+is resuming a fit, whereas causal continuation is a new scientific phase.
+
+### Physical decoder
+
+A learned head that reconstructs explicitly calculated physical descriptors
+from the exported embedding. The native physical protocol uses a small MLP for
+the present 128-channel geometry/motion packet and a separate future head.
+This is not an MD integrator or an energy/force model. The structural
+stage instead uses 85 geometry-only channels: 32 radial, 32 pair-distance,
+16 angular and five count/radial moments. That is a new target contract, not
+the old 128-channel metric with missing velocities filled by zero.
+
+### LeJEPA and SIGReg in the structural-pretraining proposal
+
+LeJEPA combines related-view agreement with Sketched Isotropic Gaussian
+Regularization (SIGReg), which compares random one-dimensional projections of
+embeddings with a Gaussian target. It is not inherently next-time prediction.
+The revised atomic adaptation predicts the same center's next temporal
+projector embedding using a three-frame causal embedding and actual time delta, with
+SIGReg on encoder/projector outputs. This is temporal JEPA with SIGReg rather
+than the paper's original view-agreement loss. Physical and instantaneous-TDA
+heads decode each view's own exported state. View construction and regularizer
+weight must be tested on this domain; the paper's results do not establish an
+advantage for atomic encoders. [Original paper](https://arxiv.org/html/2511.08544v3).
+
+### Fixed material-cutoff normalization
+
+In the structural-pretraining protocol, each material has one cutoff
+R_m fitted from training-only neighborhoods. Centered coordinates are divided
+by R_m and expressed in a common model reference unit; edge cutoffs, observation
+support and pooling boundaries convert consistently. This differs from dividing
+every material by the same constant or rescaling each patch to its instantaneous
+maximum radius. The fixed scale also enters the encoder so its exported state
+can retain absolute size. Physical and instantaneous-TDA targets stay in physical
+length units. See the [normalization protocol](../experiments/structural_pretraining_20260917/README.md#normalization-observations-and-encoders).
+
+### Within-material representation statistics
+
+VICReg's variance floor can be satisfied by different material means even when
+features vary little inside any one material. Cutoff normalization alone does
+not exclude that solution. The revised proposal uses full 128-anchor batches
+from one material/potential family for variance, covariance and SIGReg, with
+material balance across updates. This preserves the statistical batch size and
+excludes between-material means from the regularizer. It does not establish
+independence of nearby observations or eliminate within-material phase shortcuts.
+
+### Native MACE in the current experiments
+
+Our project label for a custom MACE-based encoder trained directly on atomic
+positions and velocities, with optional observed history. The current
+[NativeEncoder](../src/research/local_predictability/native_model.py) uses the
+MACE library's interaction and many-body product blocks, plus our motion inputs,
+atom-level temporal attention and smooth multiscale pooling. The parent model
+starts from random weights; matched continuations inherit its trained weights.
+There is no pretrained foundation-model checkpoint in this protocol.
+
+The tested configuration has two spatial blocks, width 16 in each scalar, vector
+and rank-two tensor channel family, a 17 Å observation radius, 5 Å spatial edge
+cutoff and one rotation-invariant 128-dimensional output. The snapshot uses the
+current frame; history12 uses 17 frames over 12 ps at 0.75 ps cadence, with
+temporal updates between spatial blocks; repeat12 fills those time slots with
+the current observation. Pooling happens after atom-level processing.
+
+Physical-target and onset-target studies train separate copies of this
+architecture. A **native prediction head** is the decoder fitted jointly with
+its encoder; a **frozen-state readout** is fitted afterward while holding that
+encoder fixed. cuEquivariance is an execution backend for the tensor operations,
+not another scientific objective or the meaning of "native."
+
 ### Physical packet in the native predictability protocol
 
 The fixed 128-channel target calculated from neighbors around a tracked center:

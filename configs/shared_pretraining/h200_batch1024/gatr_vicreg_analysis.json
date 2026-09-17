@@ -1,0 +1,26 @@
+{
+  "output": "output/shared_pretraining/h200-b1024-gatr-vicreg-analysis-20260918",
+  "release": "${storage:cache}/shared-causal-38400-20260918",
+  "seed": 20260919,
+  "microbatch_size": 32,
+  "checkpoints": {
+    "structural": "output/shared_pretraining/h200-b1024-gatr-vicreg-structural-20260918/technical/best.pt",
+    "causal": "output/shared_pretraining/h200-b1024-gatr-vicreg-causal-20260918/technical/best.pt"
+  },
+  "ridge_alphas": [
+    0.1,
+    1.0,
+    10.0,
+    100.0
+  ],
+  "probe_updates": 1000,
+  "probe_batch_size": 1024,
+  "probe_peak_lr": 0.02,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "h200-b1024-gatr-vicreg-analysis-20260918",
+    "id": "7450ce8cdeeb",
+    "group": "shared-12ep-b1024-h200-20260918"
+  }
+}

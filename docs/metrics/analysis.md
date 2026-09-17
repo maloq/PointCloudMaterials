@@ -1,5 +1,12 @@
 # Standard checkpoint analysis metrics — 2026-09-12
 
+The structural GATr–VICReg static adapter uses the same metric calculations on
+raw trained 128-channel center states. It reconstructs full trained neighborhoods
+with fixed material scaling and taper, using verified interior centers on the
+six Al snapshots. These frames overlap training inputs: metrics describe the
+representation and fitted clusters, not held-out accuracy. Input and export
+checks are documented in [the static protocol](../structural_static_analysis.md).
+
 Metric CSVs preserve the nested keys from `analysis_metrics.json`. Counts, seeds,
 cluster K, dimensions and elapsed times are metadata, not quality scores. Optional
 stages contribute only the metrics they actually calculated. Arrays, identities,

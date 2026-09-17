@@ -1,0 +1,521 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ti/Ta dynamics and recovery records</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ti/Ta dynamics and recovery records</h1><p>Parent container for separately registered Ti source/branches, duplicate exports, additional shooting and Ta branches.</p><span class="badge">mixed</span><p><code>ti_ta_crystallization_20260907</code> · Al, Mg, Ta, Ti, Zr</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907">/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907</a></p><p>242 owned files · 3.296 GiB allocated · 7 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ti/Ta dynamics and recovery records&quot;,
+  &quot;materials&quot;: [
+    &quot;Ti&quot;,
+    &quot;Ta&quot;
+  ],
+  &quot;role&quot;: &quot;container&quot;,
+  &quot;classification&quot;: &quot;mixed&quot;,
+  &quot;description&quot;: &quot;Parent container for separately registered Ti source/branches, duplicate exports, additional shooting and Ta branches.&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/ti_ta_crystallization/README.md&quot;
+  ]
+}</pre><ul><li><a href="../../simulations/ti_ta_crystallization/README.md">docs/simulations/ti_ta_crystallization/README.md</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: <a href="ti-meam-source-and-six-branches-f88310ea.html">ti-meam-source-and-six-branches</a>, <a href="ti-meam-early-slurm-copies-6395c863.html">ti-meam-early-slurm-copies</a>, <a href="ti-meam-shooting-round2-82e9a189.html">ti-meam-shooting-round2</a>, <a href="ta-eam-five-24ps-0b8a1ae4.html">ta-eam-five-24ps</a><br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>pressure_bar</td><td><code>[0, 0.0]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>protocol</td><td><code>[&quot;continuous melt-quench source&quot;, &quot;ta-position-branches&quot;, &quot;ti-source-then-branches&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;, &quot;Zr&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[1250, 1250.0, 1900]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.001, 0.002]</code></td></tr><tr><td>thermostat_ps</td><td><code>[0.1, 0.2]</code></td></tr><tr><td>barostat_ps</td><td><code>[1.0, 2.0]</code></td></tr><tr><td>mass_g_mol</td><td><code>[180.95, 47.88]</code></td></tr><tr><td>atom_count</td><td><code>[10000422, 1024000, 128]</code></td></tr><tr><td>velocity_seed</td><td><code>[189980460, 293653075, 533319719, 674707733, 80245850, 889339747, 891071441, 891072441, 891073441, 891074441, 891075441, 917101] … (17 values; see JSON)</code></td></tr><tr><td>melt_temperature_K</td><td><code>[3000]</code></td></tr><tr><td>melt_seed</td><td><code>[917001]</code></td></tr><tr><td>ptm_rmsd_cutoff</td><td><code>[0.15, 0.17]</code></td></tr><tr><td>branch_semantics</td><td><code>[&quot;Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.&quot;]</code></td></tr><tr><td>frame_count</td><td><code>[241, 3, 7]</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float32&quot;]</code></td></tr><tr><td>material_order</td><td><code>[[&quot;Al&quot;, &quot;Mg&quot;, &quot;Zr&quot;]]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;isotropic Nose-Hoover NPT&quot;]</code></td></tr><tr><td>duration_ps</td><td><code>[24.0]</code></td></tr><tr><td>material_temperature_K</td><td><code>[{&quot;Al&quot;: 650.0, &quot;Mg&quot;: 600.0, &quot;Zr&quot;: 1250.0}]</code></td></tr><tr><td>material_timestep_fs</td><td><code>[{&quot;Al&quot;: 1.0, &quot;Mg&quot;: 1.0, &quot;Zr&quot;: 2.0}]</code></td></tr><tr><td>scientific_scope</td><td><code>[&quot;New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.&quot;]</code></td></tr><tr><td>timestep_fs</td><td><code>[2.0]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 242,
+    &quot;apparent_bytes&quot;: 3810117413,
+    &quot;allocated_bytes&quot;: 3538628096,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 83,
+      &quot;.log&quot;: 23,
+      &quot;.service&quot;: 5,
+      &quot;.txt&quot;: 1,
+      &quot;.conf&quot;: 1,
+      &quot;.lammps&quot;: 37,
+      &quot;.gz&quot;: 1,
+      &quot;.dat&quot;: 3,
+      &quot;.bin&quot;: 21,
+      &quot;.lammpstrj&quot;: 18,
+      &quot;.npy&quot;: 42,
+      &quot;.md&quot;: 7
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;dynamics_complete&quot;: 7,
+      &quot;complete&quot;: 13
+    },
+    &quot;metadata_records&quot;: 38,
+    &quot;binary_trajectory_records&quot;: 7,
+    &quot;available_complete_binary_records&quot;: 7,
+    &quot;stored_frames&quot;: 25,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        3,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        3
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        128
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        7,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        7,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        7,
+        128,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;preflight/workflow_v2/source/trajectory_binary_float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        7
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (38 records)</summary><p><a href="../records/ti_ta_crystallization_20260907-2bcfd479.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/interrupted_attempts/initial_24rank_campaigns/Ta/config.json">interrupted_attempts/initial_24rank_campaigns/Ta/config.json</a> · metadata · <code>eb1e23a9b623383504aff673c66132fb55f7f200e968eae8e988108c67d31b97</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/interrupted_attempts/initial_24rank_campaigns/Ta/status.json">interrupted_attempts/initial_24rank_campaigns/Ta/status.json</a> · interrupted_by_user_reconfiguration · <code>d98517e1bccfad5d8752daf9226b4739c38c29ad03a61b23410bcc12980a3d4d</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/interrupted_attempts/initial_24rank_campaigns/Ti/config.json">interrupted_attempts/initial_24rank_campaigns/Ti/config.json</a> · metadata · <code>bb69d5e0c3b75326c9d1996cf87b8e73e83140fe3d35be9d7a2d658133ed1f90</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/interrupted_attempts/initial_24rank_campaigns/Ti/status.json">interrupted_attempts/initial_24rank_campaigns/Ti/status.json</a> · interrupted_by_user_reconfiguration · <code>69dfcdadd60421297a1bc4aa56031a1bda36c8226e0e2398698c833424e9e0a6</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow/config.json">preflight/workflow/config.json</a> · metadata · <code>0a0334987116bafc7f88144187433e69f86770019f3cbfe7f2c4f8260454292c</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow/status.json">preflight/workflow/status.json</a> · failed · <code>572d8be4eee6e1a0c474cbc01f4a1ad94fdc9ef0de0dd90f46961bfb73a25b58</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/config.json">preflight/workflow_v2/config.json</a> · metadata · <code>6d3fea1bdecc1f280fd08b1f0b5653d644c25dda7faa01ac7a7d9040eec40d23</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/selected_branches.json">preflight/workflow_v2/selected_branches.json</a> · list_metadata · <code>8301efec11c7281e560778cd5ebe1280acb62c7215706c155b9ceafed1501b84</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source_progress.json">preflight/workflow_v2/source_progress.json</a> · metadata · <code>b6334cb75f4550e679022bfc06f8a793283908af081e8fd2bad45ce64f65f306</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/status.json">preflight/workflow_v2/status.json</a> · complete · <code>97858e019a935bf9c416145ee0788d337d600d0c728b1b931f665c4d3f096011</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000000/metadata.json">preflight/workflow_v2/branches/parent_000000000/metadata.json</a> · dynamics_complete · <code>5c181717a8146f61f9f807481af8aa3a073d2f6f2b1fab4ecdd1afd33fdea9ef</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000000/outcome.json">preflight/workflow_v2/branches/parent_000000000/outcome.json</a> · complete · <code>5c627d17ce86f34a03b4ccfc293c525567a6dd8be0e9404067aaad97dd6eec65</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000000/trajectory_binary_float32/manifest.json</a> · complete · <code>663e05f2083e97bdd3a2dfe59c562a8cb75296061446c5c86d0c5ce9a3ed9852</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000100/metadata.json">preflight/workflow_v2/branches/parent_000000100/metadata.json</a> · dynamics_complete · <code>0edea9b5a839adc1e585a71084740a4d199db569ccf83434fdd3bb09d0d433c2</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000100/outcome.json">preflight/workflow_v2/branches/parent_000000100/outcome.json</a> · complete · <code>f37a6520f0a7ed9fc6dd1848160b6cad4fa3f18e2e1353429a579851f45ec9b9</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000100/trajectory_binary_float32/manifest.json</a> · complete · <code>4e6e2da86a148762114cb4f4e961de1243dd93c0768777706ceef2d8157b4544</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000300/metadata.json">preflight/workflow_v2/branches/parent_000000300/metadata.json</a> · dynamics_complete · <code>56275ea1f06cfc1ddf643b35afd3c8f54d978fa846a486e7dce2f2f774cef584</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000300/outcome.json">preflight/workflow_v2/branches/parent_000000300/outcome.json</a> · complete · <code>6aefe2653be70d5369a81af59018eab3e36e061d5773e5347a16fdb91da7a024</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000300/trajectory_binary_float32/manifest.json</a> · complete · <code>110a348d6e97ae7026d5942c3cbe55c801af889629909ae76cf3bb90d6c13063</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000400/metadata.json">preflight/workflow_v2/branches/parent_000000400/metadata.json</a> · dynamics_complete · <code>c4da5925da54ac3d663628b3cf21cc943b7ab5df979dd9d987a110911283128a</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000400/outcome.json">preflight/workflow_v2/branches/parent_000000400/outcome.json</a> · complete · <code>3af63208f49e03c93f35b86d17b5fed26b3898a533be43abf30ee862d70d1399</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000400/trajectory_binary_float32/manifest.json</a> · complete · <code>7d4bce837495e4e5711f680024f608991f45996471f95787c5be1ee0e5fffa33</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000500/metadata.json">preflight/workflow_v2/branches/parent_000000500/metadata.json</a> · dynamics_complete · <code>cf4081ed63eb1557d19a0f1d355bd961de821d0dd87a8595160267730508a750</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000500/outcome.json">preflight/workflow_v2/branches/parent_000000500/outcome.json</a> · complete · <code>eec21fc2afd11467e4ab6513abde513b0e85f757e5df0e575af2e33f1119d4ac</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000500/trajectory_binary_float32/manifest.json</a> · complete · <code>fa853b6384af47ecb58b213ae227f857ee7569395e1d7309d9d95fe93839e7b9</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000600/metadata.json">preflight/workflow_v2/branches/parent_000000600/metadata.json</a> · dynamics_complete · <code>dd72f9297d24e70038dce89ba1d7fa1f47abaa9d6b31eda925a055497b9b38a4</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000600/outcome.json">preflight/workflow_v2/branches/parent_000000600/outcome.json</a> · complete · <code>d616006ecd62fd77b3f61d7e156f6852432abacd6203d4b0533c106defd25ae5</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/manifest.json">preflight/workflow_v2/branches/parent_000000600/trajectory_binary_float32/manifest.json</a> · complete · <code>cda99b04adf5d98b9e05ba0d207157dc93b0681117c5abf0f192541f23e991ec</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/metadata.json">preflight/workflow_v2/source/metadata.json</a> · dynamics_complete · <code>b9c4f681e921370f08989c89b2ad658573a7692dd1aaf64643b3e7c44be28655</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/outcome.json">preflight/workflow_v2/source/outcome.json</a> · complete · <code>70e5a32d6db522d978313d7ac318064e9465087da12cf66d31ff96518fc29ff8</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/trajectory_binary_float32/manifest.json">preflight/workflow_v2/source/trajectory_binary_float32/manifest.json</a> · complete · <code>2ffb1b37e029f288a5c2219cc7b1443f07dddd5abadd26d111b302a007128421</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/manifest.json">zr_removal_audit/manifest.json</a> · complete · <code>0041b5bfebe8ac2cb999116e38c4efbd1f8dd07624d1653b81679eccba78e71c</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/1560ps/metadata.json">zr_removal_audit/branches/Zr/1560ps/metadata.json</a> · complete · <code>6b386a7664914a7aec8a242d9ed0130d87caa90f6670396d62e3455dd88888b3</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/160ps/metadata.json">zr_removal_audit/branches/Zr/160ps/metadata.json</a> · complete · <code>fd96879cdccfaad724b107b7d22303444980fbbbc210c0660f47f0e0a7407c2d</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/200ps/metadata.json">zr_removal_audit/branches/Zr/200ps/metadata.json</a> · complete · <code>c63424ff2cfbea67fc58fcc31e4181ca56956953a3db555c2b21be6145e83f49</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/240ps/metadata.json">zr_removal_audit/branches/Zr/240ps/metadata.json</a> · complete · <code>c4a9f20322f911970a0f19acae6f05d891a19a3689fc955beb1ac77bd18d0588</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/280ps/metadata.json">zr_removal_audit/branches/Zr/280ps/metadata.json</a> · complete · <code>1dba44f2d773ed93badc9a1dba20ffb6d44d58428fc745ed5d1b46ac717c32c5</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit/branches/Zr/310ps/metadata.json">zr_removal_audit/branches/Zr/310ps/metadata.json</a> · complete · <code>65302748b8452d33c986e31f8ffeb9b840ac897bb9839ac0faf5be0c776eab6f</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

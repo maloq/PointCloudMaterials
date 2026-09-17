@@ -1,0 +1,1529 @@
+{
+  "dataset_id": "mace-local-motion-smoke-20260916",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "14c296a0359676ae599574d627e2c8e2276f22432726ac9ac64897eb23f81f3e",
+      "kind": "metadata",
+      "keys": [
+        "by_split",
+        "excluded",
+        "identity",
+        "observations",
+        "records",
+        "sequences",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "mace_local_motion_v1",
+            "first_json_path": "identity.protocol",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "records[0].source_identity.storage_dtype",
+            "occurrences": 20
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "02182c4d25daa337d50b80ff8d8b182d30ca10f4d9cf9fcf306db24f09b619c4",
+      "kind": "metadata",
+      "keys": [
+        "excluded",
+        "identity",
+        "records",
+        "source_inventory_counts"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "mace_local_motion_v1",
+            "first_json_path": "identity.protocol",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "records[0].source.split",
+            "occurrences": 12
+          },
+          {
+            "value": "val",
+            "first_json_path": "records[2].source.split",
+            "occurrences": 4
+          },
+          {
+            "value": "test",
+            "first_json_path": "records[3].source.split",
+            "occurrences": 4
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "records[0].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "records[1].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "records[2].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "records[3].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "records[4].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "records[5].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "records[6].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "records[7].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "records[8].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "records[9].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "records[10].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "records[11].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "records[12].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "records[13].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "records[14].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "records[15].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "records[16].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "records[17].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "records[18].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "records[19].source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "records[0].source.timestep_fs",
+            "occurrences": 20
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "records[0].source.frame_count",
+            "occurrences": 20
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "records[0].source.temperature_K",
+            "occurrences": 6
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "records[4].source.temperature_K",
+            "occurrences": 4
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "records[8].source.temperature_K",
+            "occurrences": 3
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "records[11].source.temperature_K",
+            "occurrences": 4
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "records[15].source.temperature_K",
+            "occurrences": 3
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "records[0].source.atom_count",
+            "occurrences": 20
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0860.json",
+      "relative_path": "source-0860.json",
+      "sha256": "8c20e65bf65bd9ada34337e45e2c25dfb0c409e891b065bb892e2d567f41ff00",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0868.json",
+      "relative_path": "source-0868.json",
+      "sha256": "c710d44da39981bfe7282539489cf46aa60179733b1e418baf5a68470eb2084a",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0875.json",
+      "relative_path": "source-0875.json",
+      "sha256": "de7eba0162178ce433fd97b9129ee6977d846d9e8d75af12ca3b3a5be957584f",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0881.json",
+      "relative_path": "source-0881.json",
+      "sha256": "0d2679ffa54795985e41ce02b9d406618b3e5210b4fdc176de18e4e08d1927b7",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0885.json",
+      "relative_path": "source-0885.json",
+      "sha256": "5d23d36b7a84d7c220806fb93fafc19ac53b8bf166aa3e59e2f62c1a20960b26",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0893.json",
+      "relative_path": "source-0893.json",
+      "sha256": "cadbca9a8381ddf59e5d85cd896bd334fa89ea3320fd7556bd8e58331a530f22",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0901.json",
+      "relative_path": "source-0901.json",
+      "sha256": "c7484c0da3eb81b1173f8d4023a787d2f38aaa47fe3c4e329c7e91f2968f81f8",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0905.json",
+      "relative_path": "source-0905.json",
+      "sha256": "8d4b18c2d4089cf81607034a7fb3d685ad0cecd4ac5656524204bd4acd85385e",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0921.json",
+      "relative_path": "source-0921.json",
+      "sha256": "9998217747d1e624269a46ffafd57d02e8a1fbfc7d908093738ddc892c84b2e5",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0929.json",
+      "relative_path": "source-0929.json",
+      "sha256": "b9bcb3d0c3fc9738a543c07f8e651c4a7764aebc8b49176f821596cb0f03e1e4",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0938.json",
+      "relative_path": "source-0938.json",
+      "sha256": "7b800d56a8ab9e3598ea4e76ce5b26ca785f87ea3951457c3cda68706bdce475",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0949.json",
+      "relative_path": "source-0949.json",
+      "sha256": "642e71702d5d96068765c9aaa4525446718af83840c8514f28938e655d595faf",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0957.json",
+      "relative_path": "source-0957.json",
+      "sha256": "6684e466a9ad9a990ed33755e5adadd1d687107f1ad6e425eda8a35ba5271a39",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0963.json",
+      "relative_path": "source-0963.json",
+      "sha256": "fa05d8e4dab178797429e4ac6d728d221931b2b48971b3944a5edc92bae77e5c",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0972.json",
+      "relative_path": "source-0972.json",
+      "sha256": "ec3c63407c0f3e12fe41668a0a450617ecd27c0374fa32c814abaf9cbcd2d10c",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0977.json",
+      "relative_path": "source-0977.json",
+      "sha256": "e2e654f0680538ff8d4073678702a30a0eb8fdac0b9f94393b2793e086861b02",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0985.json",
+      "relative_path": "source-0985.json",
+      "sha256": "bea21eb2ba85b11bf0eed49961a3f8192e40a32f84d8a96541505057a9161158",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-0997.json",
+      "relative_path": "source-0997.json",
+      "sha256": "73f0b931ffd5cbe5ce8182bb4a7e6265a487bfecf70edbd4294f0f58c857db7b",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "val",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-1006.json",
+      "relative_path": "source-1006.json",
+      "sha256": "bc4c94b717f180e84f9be81c559faaffc0e3e0aac38dcaf2346243bbe1d54746",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-local-motion-smoke-20260916/source-1009.json",
+      "relative_path": "source-1009.json",
+      "sha256": "ec324ecb8c8fa90d28b531d4b74cb30985acf963bd8b0fc866d683a7c2dee678",
+      "kind": "metadata",
+      "keys": [
+        "precision",
+        "record",
+        "sha256",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "record.source.split",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "record.source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "record.source.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "record.source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "record.source.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "record.source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source_identity.storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

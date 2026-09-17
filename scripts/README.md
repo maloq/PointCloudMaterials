@@ -15,6 +15,7 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 | Command | Workflows / implementation |
 | --- | --- |
+| `project.py datasets --refresh [--output docs/datasets]` | Searchable dataset registry, metadata cards, potentials, current schemas and discovery audit; [start here](../DATASETS.md), `src/project_runtime/dataset_registry.py`. |
 | `benchmark_hardware.py [storage,cpu,gpu,all]` | Defaults to all; prints/saves a standard results table. Optional `--cpu-ranks 1 8 24` runs a CPU sweep. Synthetic inputs; `src/hardware_benchmark/`; [usage](../docs/hardware_benchmark.md). |
 | `experiment_registry.py build` | Refresh the searchable experiment, simulation and ideas dashboard; `src/experiment_runner/registry.py` |
 | `experiment_registry.py storage` | Human-readable size report and large-file CSV; `src/experiment_runner/storage.py` |
@@ -42,6 +43,42 @@ and refuses to overwrite an existing report. It does not fit models. See the
 | `plot_homogeneous_checkpoint.py`, `render_shooting_dynamics_gifs.py` | Simulation visualization. |
 
 Current training and analysis use existing module entry points:
+
+`python -m src.training_methods.shared_pretraining.queue submit --plan
+configs/shared_pretraining/campaign.json` starts the approved 12-epoch structural
+fits, initialized causal continuations and frozen analyses, with detached local
+workers and dependent Slurm jobs. It freezes executable code, uses online W&B,
+cosine warmup and allocation-aware exact resume. Its data command is
+`python -m src.training_methods.shared_pretraining.data --config
+configs/shared_pretraining/data.json --workers 6`; see the
+[shared campaign workflow](../docs/shared_pretraining_20260918.md).
+
+`python -m src.training_methods.shared_pretraining.queue serial --plan
+configs/shared_pretraining/h200_batch1024/campaign.json --deadline-utc ISO_TIME`
+runs the batch-1,024 H200 pipelines sequentially without Slurm, checkpoints at
+the deadline and resumes completed/partial stages. See the
+[H200 handoff](../docs/h200_shared_pretraining_task_20260918.md). Its separate
+`shared_pretraining.profile` preflight accepts `--memory-limit-gib 80`; scientific
+training never runs hardware benchmarks.
+
+`python -m src.data.structural_pretraining.prepare --config
+configs/structural_pretraining/data.json --workers 6` freezes a training-only
+multi-material radius calibration and prepares raw snapshot/three-frame inputs,
+spatial/temporal neighbor pairs and instantaneous physical/TDA anchors. See the
+[structural pretraining workflow](../docs/structural_pretraining_20260917.md).
+
+`python -m src.training_methods.structural_pretraining.train --config
+configs/structural_pretraining/mace_vicreg.json [--resume]` trains a shared
+structural encoder with physical/instantaneous-TDA anchors. The same command
+accepts `gatr_vicreg.json` or `gatr_lejepa.json` for the other requested fits.
+It uses full-batch representation statistics, exact gradient caching, checkpoint
+selection and deadline-aware resume; see the workflow above.
+
+`python -m src.data.relaxed_targets prepare|run|status --config
+configs/simulation/relaxed_tda_al.json` produces resumable full-cell relaxed-TDA
+labels on denser native training windows and completed Al shooting trajectories.
+CPU workers share an immutable, ancestry-aware queue; see
+[target generation and resume](../docs/relaxed_tda_targets.md).
 
 `python -m src.research.backbone_tda --config
 configs/local_predictability/backbone_v2/tda_snapshot.json` compares frozen physical
@@ -147,6 +184,13 @@ Joint MACE context checkpoints use the existing `src.research.mace_context.run`
 stages `static-export` and `static-verify`, followed by `src.analysis.pipeline`
 with `configs/analysis/static_mace_context_al.yaml` or `static_mace_context_zr.yaml`.
 See [static context analysis](../docs/mace_context_static.md).
+
+Selected snapshot structural GATr–VICReg encoders use
+`python -m src.analysis.structural_adapter --config configs/analysis/structural_gatr_static.json
+--stage export|verify`, then the same `src.analysis.pipeline` command with
+`configs/analysis/static_structural_gatr_al.yaml`. The adapter preserves the
+native full neighborhood, species and fixed material scale; see
+[structural static analysis](../docs/structural_static_analysis.md).
 
 `python -m src.research.mace_context.cluster_diagnosis --config
 configs/analysis/mace_context_clusters.json` runs saved-feature clustering

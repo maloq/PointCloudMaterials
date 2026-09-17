@@ -1,0 +1,268 @@
+{
+  "dataset_id": "mace-causal-verified-smoke-20260916",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-causal-verified-smoke-20260916/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "0d420da2368b7f42c82ec63269035f79541d90f2dcec027cc1445efac914b30c",
+      "kind": "metadata",
+      "keys": [
+        "plan_sha256",
+        "protocol",
+        "units"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "mace_causal_physical_state_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "units": [
+          {
+            "value": [
+              {
+                "source_id": 860,
+                "path": "source-0860.pt",
+                "sha256": "80097414f4837fad883263e8be09b2aef95685e2dd3e90f33674a1fe94ed67b3",
+                "samples": 8,
+                "label_sha256": "49e7c932f56ed2cd2b7c052c9a1ab3c4ea077dbc6bbe2f57cfb38fa6d8c3a6c3",
+                "source_identity": {
+                  "manifest_sha256": "eb84ac1ca4c1d44ee2cc70174f360fa416893d6bf61859972a68e4dff6d1541e",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "ab285119b3fc45b74f72917bbc09a071080707d0e13d079b629b2bb6d3301adb"
+                }
+              },
+              {
+                "source_id": 861,
+                "path": "source-0861.pt",
+                "sha256": "9b1eaf89f5e03f87ad4e99b0a2ccac14c1b083310c4a2c294fbe4323fb89c8c0",
+                "samples": 8,
+                "label_sha256": "be28401e2bf6522c230304713b0759dced661dc68ee6b2bc4204bc3f67fda56f",
+                "source_identity": {
+                  "manifest_sha256": "1a1e8f1135a4038d296d4e43d5141dc104a90e40cfa10164a4c913965b04c631",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "9b3c16856e92570f2800ebe827389ee9cb0287cb152b3bb3798cd0a66ec3e870"
+                }
+              },
+              {
+                "source_id": 875,
+                "path": "source-0875.pt",
+                "sha256": "cac85d5111935917aff7f9efbd0bdac9ac7c44467df869712edfea7ea91d6da7",
+                "samples": 8,
+                "label_sha256": "c7a66d98605291fdeea5c6d3087d6c77c789197a639a3e81d7299e8e7d83683f",
+                "source_identity": {
+                  "manifest_sha256": "553e12062781331b663cf7bceb904ec3ea0e794c230aac866ff9993641f79892",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "62ab52bb5313f871f73bdafa07e84030843ccf1a8481c2ca4ae2c8800f3ef312"
+                }
+              },
+              {
+                "source_id": 876,
+                "path": "source-0876.pt",
+                "sha256": "62dc019db70ee8f8a53191e87eb8f06cb2b83ca6f175ec1152e9d092a28b2c2f",
+                "samples": 8,
+                "label_sha256": "0ae9a5f5c03c6cbf5ff4af2fa5d2f3cf48c49615579e6279c7a6a839bd401cc8",
+                "source_identity": {
+                  "manifest_sha256": "aadf48427d665b6255029070b982ce171d2051df60b4ebeb318635307ea154ec",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "4fcdb5bf5edb6bc436c588ce392179b29708c0a0ea99d3b4c466d440af7c0831"
+                }
+              },
+              {
+                "source_id": 881,
+                "path": "source-0881.pt",
+                "sha256": "5b5a5b91b017ce8f0c9eee532789558514e6cfce787c9619ee0eadf4d6d63980",
+                "samples": 8,
+                "label_sha256": "e53bab1cef97cc4cd1881ea92ef8b2ce9ab2d2ad4420081dfe4ecfb664897b87",
+                "source_identity": {
+                  "manifest_sha256": "1f84a0d56c1f30ed4625c3ebff71d6ebb25a6e2fd2f480cce993eb0b15916405",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "92cdc4ea7b677036202db6738dd8e02272c7268d2615819a3dfcbfd472e64c52"
+                }
+              },
+              {
+                "source_id": 882,
+                "path": "source-0882.pt",
+                "sha256": "415aa7e8d03530d87aa0622c8bb188d451e3aea150ca426c8115ee71c4f9f129",
+                "samples": 8,
+                "label_sha256": "b3eae8aaa0f8b9eecf05d856b39e74561f18f3c93b4633677deb17a14ddb77ee",
+                "source_identity": {
+                  "manifest_sha256": "aab95d7579a9a8a5f3f57d97d43ed6f0ed0eb4f37e9df735748f36cf20100139",
+                  "storage_dtype": "float16",
+                  "selected_arrays_sha256": "ae5588f30e56b97c365b37efadc0a827ce66fb63c3f469a2cde4ff78b11baba3"
+                }
+              }
+            ],
+            "first_json_path": "units",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "units[0].source_identity.storage_dtype",
+            "occurrences": 6
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-causal-verified-smoke-20260916/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "81f871f4cdee8343a65573c25094f5ed7c1fe67ec9779e19d51192e97e2fa537",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "implementation",
+        "protocol",
+        "records",
+        "sequence_plan_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "mace_causal_physical_state_v1",
+            "first_json_path": "protocol",
+            "occurrences": 2
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260916,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ],
+        "history_offsets_ps": [
+          {
+            "value": [
+              -2.25,
+              -1.5,
+              -0.75,
+              0.0
+            ],
+            "first_json_path": "config.history_offsets_ps",
+            "occurrences": 1
+          }
+        ],
+        "future_lags_ps": [
+          {
+            "value": [
+              0.75,
+              1.5,
+              3.0
+            ],
+            "first_json_path": "config.future_lags_ps",
+            "occurrences": 1
+          }
+        ],
+        "cutoff_A": [
+          {
+            "value": 5.0,
+            "first_json_path": "config.encoder.cutoff_A",
+            "occurrences": 1
+          }
+        ],
+        "atomic_numbers": [
+          {
+            "value": [
+              13
+            ],
+            "first_json_path": "config.encoder.atomic_numbers",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.events.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "records[0].source.split",
+            "occurrences": 2
+          },
+          {
+            "value": "val",
+            "first_json_path": "records[2].source.split",
+            "occurrences": 2
+          },
+          {
+            "value": "test",
+            "first_json_path": "records[4].source.split",
+            "occurrences": 2
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "records[0].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "records[1].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "records[2].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "records[3].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "records[4].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "records[5].source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "records[0].source.timestep_fs",
+            "occurrences": 6
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "records[0].source.frame_count",
+            "occurrences": 6
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "records[0].source.temperature_K",
+            "occurrences": 6
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "records[0].source.atom_count",
+            "occurrences": 6
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

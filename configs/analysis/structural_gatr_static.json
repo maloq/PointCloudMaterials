@@ -1,0 +1,7 @@
+{
+  "checkpoint": "output/structural_pretraining/gatr-vicreg-20260917/technical/encoder.pt",
+  "checkpoint_sha256": "f118a84cf28358c2a10176a71e83cea54715e86a1b28ff3826d8166661145309",
+  "output": "output/structural_static/gatr-vicreg-step3072-al-20260918",
+  "data_config": "configs/data/loaders/static_al_structural_gatr.yaml",
+  "device": "cuda:0"
+}

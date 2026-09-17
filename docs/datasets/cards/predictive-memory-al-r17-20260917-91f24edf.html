@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al · predictive-memory partial-observation cache</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al · predictive-memory partial-observation cache</h1><p>Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.</p><span class="badge">derived</span><p><code>predictive-memory-al-r17-20260917</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917">/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917</a></p><p>160 owned files · 1.772 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al \u00b7 predictive-memory partial-observation cache&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:predictive-memory-al-r17-20260917}&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917">${dataset:predictive-memory-al-r17-20260917}</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>protocol</td><td><code>[&quot;predictive_memory_partial_observation_v1&quot;]</code></td></tr><tr><td>trajectory_id</td><td><code>[1000, 1001, 1002, 1003, 1004, 1005, 1006, 1007, 1008, 1009, 860, 861] … (150 values; see JSON)</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_135035943&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_139885636&quot;, &quot;independent_melt_142641279&quot;, &quot;independent_melt_144370470&quot;, &quot;independent_melt_146234076&quot;, &quot;independent_melt_147978527&quot;, &quot;independent_melt_151871197&quot;, &quot;independent_melt_15458297&quot;] … (150 values; see JSON)</code></td></tr><tr><td>parent_trajectory_id</td><td><code>[null]</code></td></tr><tr><td>split</td><td><code>[&quot;test&quot;, &quot;train&quot;, &quot;val&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;]</code></td></tr><tr><td>atomic_numbers</td><td><code>[[13]]</code></td></tr><tr><td>temperature_K</td><td><code>[400.0, 450.0, 500.0, 510.0, 520.0]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;NPT&quot;]</code></td></tr><tr><td>thermostat</td><td><code>[&quot;Nose-Hoover&quot;]</code></td></tr><tr><td>thermostat_damping_ps</td><td><code>[0.3]</code></td></tr><tr><td>barostat</td><td><code>[&quot;isotropic Nose-Hoover&quot;]</code></td></tr><tr><td>barostat_damping_ps</td><td><code>[3.0]</code></td></tr><tr><td>pressure_bar</td><td><code>[0.0]</code></td></tr><tr><td>units</td><td><code>[&quot;metal&quot;]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.003]</code></td></tr><tr><td>melt_seed</td><td><code>[114745743, 129223029, 134462729, 135035943, 13937749, 139885636, 142641279, 144370470, 146234076, 147978527, 151871197, 15458297] … (150 values; see JSON)</code></td></tr><tr><td>melt_duration_ps</td><td><code>[300.0]</code></td></tr><tr><td>equilibration_duration_ps</td><td><code>[15.0]</code></td></tr><tr><td>simulator_version</td><td><code>[&quot;LAMMPS (22 Jul 2025 - Update 4)&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;wrapped relative to box_low; orthorhombic box_low/high arrays hashed above&quot;]</code></td></tr><tr><td>future_lags_ps</td><td><code>[[0.75, 3.0, 12.0, 48.0, 96.0]]</code></td></tr><tr><td>radius_A</td><td><code>[17.0]</code></td></tr><tr><td>cutoff_A</td><td><code>[5.0]</code></td></tr><tr><td>seed</td><td><code>[20260917]</code></td></tr><tr><td>position_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr><tr><td>velocity_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 160,
+    &quot;apparent_bytes&quot;: 2644172277,
+    &quot;allocated_bytes&quot;: 1902504960,
+    &quot;file_extensions&quot;: {
+      &quot;.md&quot;: 2,
+      &quot;.json&quot;: 7,
+      &quot;.parquet&quot;: 1,
+      &quot;.pt&quot;: 150
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 5,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (2)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/predictive_memory/h200/width32-seed20260917.json">configs/predictive_memory/h200/width32-seed20260917.json</a></li><li><a href="../../../configs/predictive_memory/h200/width32-seed20260918.json">configs/predictive_memory/h200/width32-seed20260918.json</a></li></ul></details><details><summary>Producer evidence (5 records)</summary><p><a href="../records/predictive-memory-al-r17-20260917-91f24edf.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/DATA_CARD_ERRATA.md">DATA_CARD_ERRATA.md</a> · data_card · <code>485eb71816c21b4eaea9291d6117cc4f25a4a1cab3f4c3224b21a7c376307440</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/complete.json">complete.json</a> · complete · <code>0113ed18b37916b8910a52ed71c349b7e56a72c39d3bbf695659e010e57ea16c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/dataset_release.json">dataset_release.json</a> · metadata · <code>c021aaa00d000dc3993982683e1ee44675afd4680506be77416b1e7508774b15</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/precision_audit.json">precision_audit.json</a> · limited_existing_float16 · <code>f30f4b7535961077877b8ab179434d59511678b3b44c0a7df97cf10ea75e941e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/preparation.json">preparation.json</a> · metadata · <code>709885044412bd38b8330bfec2c32ab7f8a895e2e9153c795e8a3e563823f24a</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

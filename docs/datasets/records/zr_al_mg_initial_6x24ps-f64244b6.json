@@ -1,0 +1,234 @@
+{
+  "dataset_id": "zr_al_mg_initial_6x24ps",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "97f7a09d4055e9d8919520077fd25f7343f9da275fcd0a9883750814817a773a",
+      "kind": "metadata",
+      "keys": [
+        "branch_count",
+        "branches",
+        "completed_at_utc",
+        "completed_branch_count",
+        "execution",
+        "material_order",
+        "output_root",
+        "potentials",
+        "preflight",
+        "prepared_at_utc",
+        "protocol",
+        "protocol_provenance",
+        "runner_script",
+        "schema_version",
+        "scientific_scope",
+        "started_at_utc",
+        "state",
+        "zr_removal"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material_order": [
+          {
+            "value": [
+              "Al",
+              "Mg"
+            ],
+            "first_json_path": "material_order",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic Nose-Hoover NPT",
+            "first_json_path": "protocol.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0.0,
+            "first_json_path": "protocol.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24.0,
+            "first_json_path": "protocol.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "material_temperature_K": [
+          {
+            "value": {
+              "Al": 650.0,
+              "Mg": 600.0
+            },
+            "first_json_path": "protocol.material_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "material_timestep_fs": [
+          {
+            "value": {
+              "Al": 1.0,
+              "Mg": 1.0
+            },
+            "first_json_path": "protocol.material_timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "branches[0].material",
+            "occurrences": 6
+          },
+          {
+            "value": "Mg",
+            "first_json_path": "branches[6].material",
+            "occurrences": 6
+          }
+        ]
+      },
+      "provenance": {
+        "potentials": {
+          "Al": {
+            "files": [
+              "Al1.eam.fs"
+            ],
+            "sha256": [
+              "768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3"
+            ],
+            "provenance": "Mendelev, Kramer, Becker, and Asta, Philosophical Magazine 88, 1723-1750 (2008), DOI 10.1080/14786430802206482; NIST Al1.eam.fs."
+          },
+          "Mg": {
+            "files": [
+              "Mg1.eam.fs"
+            ],
+            "sha256": [
+              "0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2"
+            ],
+            "provenance": "Wilson and Mendelev, Journal of Chemical Physics 144, 144707 (2016), DOI 10.1063/1.4946032; NIST Mg1.eam.fs."
+          }
+        },
+        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304.",
+        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
+        "zr_removal": {
+          "removed_at_utc": "2026-09-06T22:17:24.026705+00:00",
+          "reason": "User rejected reconstructed-potential Zr simulations; replace with author-supplied Kavousi 2019 pure Ti simulations.",
+          "removed_directory": "datasets/zr_al_mg_initial_6x24ps/branches/Zr",
+          "file_count": 84,
+          "bytes": 8958644641,
+          "historical_metadata": "/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/zr_removal_audit",
+          "preserved": [
+            "Al and Mg branches",
+            "original datasets/Zr source data",
+            "external historical raw archive"
+          ],
+          "files": [
+            "branches/Zr/1560ps/README.md",
+            "branches/Zr/1560ps/binary_conversion_float16.json",
+            "branches/Zr/1560ps/in.lammps",
+            "branches/Zr/1560ps/lammps.log",
+            "branches/Zr/1560ps/log.lammps",
+            "branches/Zr/1560ps/metadata.json",
+            "branches/Zr/1560ps/stdout.log",
+            "branches/Zr/1560ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/1560ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/1560ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/1560ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/1560ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/1560ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/1560ps/trajectory_binary_float16/timesteps.npy",
+            "branches/Zr/160ps/README.md",
+            "branches/Zr/160ps/binary_conversion_float16.json",
+            "branches/Zr/160ps/in.lammps",
+            "branches/Zr/160ps/lammps.log",
+            "branches/Zr/160ps/log.lammps",
+            "branches/Zr/160ps/metadata.json",
+            "branches/Zr/160ps/stdout.log",
+            "branches/Zr/160ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/160ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/160ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/160ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/160ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/160ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/160ps/trajectory_binary_float16/timesteps.npy",
+            "branches/Zr/200ps/README.md",
+            "branches/Zr/200ps/binary_conversion_float16.json",
+            "branches/Zr/200ps/in.lammps",
+            "branches/Zr/200ps/lammps.log",
+            "branches/Zr/200ps/log.lammps",
+            "branches/Zr/200ps/metadata.json",
+            "branches/Zr/200ps/stdout.log",
+            "branches/Zr/200ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/200ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/200ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/200ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/200ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/200ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/200ps/trajectory_binary_float16/timesteps.npy",
+            "branches/Zr/240ps/README.md",
+            "branches/Zr/240ps/binary_conversion_float16.json",
+            "branches/Zr/240ps/in.lammps",
+            "branches/Zr/240ps/lammps.log",
+            "branches/Zr/240ps/log.lammps",
+            "branches/Zr/240ps/metadata.json",
+            "branches/Zr/240ps/stdout.log",
+            "branches/Zr/240ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/240ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/240ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/240ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/240ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/240ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/240ps/trajectory_binary_float16/timesteps.npy",
+            "branches/Zr/280ps/README.md",
+            "branches/Zr/280ps/binary_conversion_float16.json",
+            "branches/Zr/280ps/in.lammps",
+            "branches/Zr/280ps/lammps.log",
+            "branches/Zr/280ps/log.lammps",
+            "branches/Zr/280ps/metadata.json",
+            "branches/Zr/280ps/stdout.log",
+            "branches/Zr/280ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/280ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/280ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/280ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/280ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/280ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/280ps/trajectory_binary_float16/timesteps.npy",
+            "branches/Zr/310ps/README.md",
+            "branches/Zr/310ps/binary_conversion_float16.json",
+            "branches/Zr/310ps/in.lammps",
+            "branches/Zr/310ps/lammps.log",
+            "branches/Zr/310ps/log.lammps",
+            "branches/Zr/310ps/metadata.json",
+            "branches/Zr/310ps/stdout.log",
+            "branches/Zr/310ps/trajectory_binary_float16/atom_ids.npy",
+            "branches/Zr/310ps/trajectory_binary_float16/atom_types.npy",
+            "branches/Zr/310ps/trajectory_binary_float16/box_high.npy",
+            "branches/Zr/310ps/trajectory_binary_float16/box_low.npy",
+            "branches/Zr/310ps/trajectory_binary_float16/manifest.json",
+            "branches/Zr/310ps/trajectory_binary_float16/positions.npy",
+            "branches/Zr/310ps/trajectory_binary_float16/timesteps.npy"
+          ]
+        }
+      }
+    }
+  ]
+}

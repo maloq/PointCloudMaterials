@@ -1,0 +1,3781 @@
+{
+  "dataset_id": "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "a8e1e7bdd2387ee5a17154a15a359d26fe1bb9197dff203355b2c9942c05b46c",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "campaign_type",
+        "candidate_interval_status",
+        "counts",
+        "created_at",
+        "execution",
+        "potential",
+        "production_parent_selection_from_future_outcomes",
+        "protocol",
+        "runs",
+        "schema_version",
+        "scientific_contract",
+        "state",
+        "temperatures_K"
+      ],
+      "recorded_state": "prepared",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "protocol.equilibration_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 600.0,
+            "first_json_path": "protocol.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "melt_duration_ps": [
+          {
+            "value": 300.0,
+            "first_json_path": "protocol.melt_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "protocol.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "protocol.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 151871197,
+            "first_json_path": "runs[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 681943887,
+            "first_json_path": "runs[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 655109113,
+            "first_json_path": "runs[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 661426236,
+            "first_json_path": "runs[3].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 564513410,
+            "first_json_path": "runs[4].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 603302271,
+            "first_json_path": "runs[5].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 398617878,
+            "first_json_path": "runs[6].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 83132283,
+            "first_json_path": "runs[7].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 87283751,
+            "first_json_path": "runs[8].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 86832792,
+            "first_json_path": "runs[9].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 745135969,
+            "first_json_path": "runs[10].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 442136159,
+            "first_json_path": "runs[11].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 269696945,
+            "first_json_path": "runs[12].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 561573362,
+            "first_json_path": "runs[13].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 729671835,
+            "first_json_path": "runs[14].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 379031575,
+            "first_json_path": "runs[15].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234122652,
+            "first_json_path": "runs[16].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746727007,
+            "first_json_path": "runs[17].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 129223029,
+            "first_json_path": "runs[18].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 740238344,
+            "first_json_path": "runs[19].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 444631845,
+            "first_json_path": "runs[20].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 387474214,
+            "first_json_path": "runs[21].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 773283105,
+            "first_json_path": "runs[22].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827732877,
+            "first_json_path": "runs[23].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 816360514,
+            "first_json_path": "runs[24].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 653872695,
+            "first_json_path": "runs[25].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 457811864,
+            "first_json_path": "runs[26].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 453777906,
+            "first_json_path": "runs[27].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 502726670,
+            "first_json_path": "runs[28].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 870099266,
+            "first_json_path": "runs[29].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76354933,
+            "first_json_path": "runs[30].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 542619615,
+            "first_json_path": "runs[31].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 298754492,
+            "first_json_path": "runs[32].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 511618678,
+            "first_json_path": "runs[33].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 455949696,
+            "first_json_path": "runs[34].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 691988874,
+            "first_json_path": "runs[35].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 804308644,
+            "first_json_path": "runs[36].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 808961974,
+            "first_json_path": "runs[37].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 434160560,
+            "first_json_path": "runs[38].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 200290231,
+            "first_json_path": "runs[39].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 144370470,
+            "first_json_path": "runs[40].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76681035,
+            "first_json_path": "runs[41].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 77880009,
+            "first_json_path": "runs[42].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746071054,
+            "first_json_path": "runs[43].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 294342775,
+            "first_json_path": "runs[44].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 184384186,
+            "first_json_path": "runs[45].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 160380922,
+            "first_json_path": "runs[46].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 330985692,
+            "first_json_path": "runs[47].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 556912370,
+            "first_json_path": "runs[48].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 780540798,
+            "first_json_path": "runs[49].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 480262437,
+            "first_json_path": "runs[50].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 24993146,
+            "first_json_path": "runs[51].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 340453041,
+            "first_json_path": "runs[52].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 871735562,
+            "first_json_path": "runs[53].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 410549883,
+            "first_json_path": "runs[54].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 617047783,
+            "first_json_path": "runs[55].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 82221119,
+            "first_json_path": "runs[56].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 259940230,
+            "first_json_path": "runs[57].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 139885636,
+            "first_json_path": "runs[58].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 270739820,
+            "first_json_path": "runs[59].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "runs[0].source_split",
+            "occurrences": 36
+          },
+          {
+            "value": "model_selection",
+            "first_json_path": "runs[18].source_split",
+            "occurrences": 12
+          },
+          {
+            "value": "final_validation",
+            "first_json_path": "runs[24].source_split",
+            "occurrences": 12
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "runs[0].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 520.0,
+            "first_json_path": "runs[30].temperature_K",
+            "occurrences": 30
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 769248691,
+            "first_json_path": "runs[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 226218785,
+            "first_json_path": "runs[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 711963353,
+            "first_json_path": "runs[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 201750649,
+            "first_json_path": "runs[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 693065731,
+            "first_json_path": "runs[4].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 45594483,
+            "first_json_path": "runs[5].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 345519274,
+            "first_json_path": "runs[6].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 86630364,
+            "first_json_path": "runs[7].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 19173877,
+            "first_json_path": "runs[8].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 884581988,
+            "first_json_path": "runs[9].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 775893815,
+            "first_json_path": "runs[10].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 861328542,
+            "first_json_path": "runs[11].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 805734861,
+            "first_json_path": "runs[12].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 192647554,
+            "first_json_path": "runs[13].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 337609745,
+            "first_json_path": "runs[14].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 772545022,
+            "first_json_path": "runs[15].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 874085168,
+            "first_json_path": "runs[16].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 64212989,
+            "first_json_path": "runs[17].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 82017738,
+            "first_json_path": "runs[18].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 787544456,
+            "first_json_path": "runs[19].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 44078540,
+            "first_json_path": "runs[20].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 634528391,
+            "first_json_path": "runs[21].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 572623480,
+            "first_json_path": "runs[22].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 62126331,
+            "first_json_path": "runs[23].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 93893603,
+            "first_json_path": "runs[24].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 543827511,
+            "first_json_path": "runs[25].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 566853511,
+            "first_json_path": "runs[26].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 178631405,
+            "first_json_path": "runs[27].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 350404648,
+            "first_json_path": "runs[28].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 118047358,
+            "first_json_path": "runs[29].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 607680983,
+            "first_json_path": "runs[30].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 257766501,
+            "first_json_path": "runs[31].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 805053994,
+            "first_json_path": "runs[32].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 185894899,
+            "first_json_path": "runs[33].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 516257445,
+            "first_json_path": "runs[34].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 140564254,
+            "first_json_path": "runs[35].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 743188960,
+            "first_json_path": "runs[36].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 893624603,
+            "first_json_path": "runs[37].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 305336505,
+            "first_json_path": "runs[38].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 240372582,
+            "first_json_path": "runs[39].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 263207168,
+            "first_json_path": "runs[40].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 510019800,
+            "first_json_path": "runs[41].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 38939262,
+            "first_json_path": "runs[42].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 595286749,
+            "first_json_path": "runs[43].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 265711615,
+            "first_json_path": "runs[44].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 150812759,
+            "first_json_path": "runs[45].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 670053733,
+            "first_json_path": "runs[46].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 822714510,
+            "first_json_path": "runs[47].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 688155550,
+            "first_json_path": "runs[48].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 611405491,
+            "first_json_path": "runs[49].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 812362246,
+            "first_json_path": "runs[50].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 316704962,
+            "first_json_path": "runs[51].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 42266601,
+            "first_json_path": "runs[52].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 409964290,
+            "first_json_path": "runs[53].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 508004026,
+            "first_json_path": "runs[54].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 733922557,
+            "first_json_path": "runs[55].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 86318490,
+            "first_json_path": "runs[56].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 95929037,
+            "first_json_path": "runs[57].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 553075734,
+            "first_json_path": "runs[58].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 484920826,
+            "first_json_path": "runs[59].velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "scientific_contract": [
+          {
+            "value": {
+              "screening_futures_reused_for_evaluation": false,
+              "split_unit": "source run and every screened parent and future descended from it",
+              "structural_independence": "Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history."
+            },
+            "first_json_path": "scientific_contract",
+            "occurrences": 1
+          }
+        ],
+        "split_unit": [
+          {
+            "value": "source run and every screened parent and future descended from it",
+            "first_json_path": "scientific_contract.split_unit",
+            "occurrences": 1
+          }
+        ],
+        "structural_independence": [
+          {
+            "value": "Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history.",
+            "first_json_path": "scientific_contract.structural_independence",
+            "occurrences": 1
+          }
+        ],
+        "temperatures_K": [
+          {
+            "value": [
+              510.0,
+              520.0
+            ],
+            "first_json_path": "temperatures_K",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "library_sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameter_sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        },
+        "scientific_contract": {
+          "screening_futures_reused_for_evaluation": false,
+          "split_unit": "source run and every screened parent and future descended from it",
+          "structural_independence": "Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history."
+        }
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/status.json",
+      "relative_path": "status.json",
+      "sha256": "f220a3786981d251e86335a2f765383ad9c0d3a67789b469cfc52587cc76b206",
+      "kind": "metadata",
+      "keys": [
+        "complete_run_count",
+        "pending_run_count",
+        "schema_version",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "prepared",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_000_T510_optimization_melt151871197_velocity769248691/metadata.json",
+      "relative_path": "runs/source_000_T510_optimization_melt151871197_velocity769248691/metadata.json",
+      "sha256": "c3c81cc252dfd347aa01344c1f5b8add5935b552f6f561f3d7f1462401308d92",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 151871197,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 769248691,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_001_T510_optimization_melt681943887_velocity226218785/metadata.json",
+      "relative_path": "runs/source_001_T510_optimization_melt681943887_velocity226218785/metadata.json",
+      "sha256": "6bf8ac03bf6b05ab4ae222ab4b7e787f99cd28b8f347df42fe5d098b0652e755",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 681943887,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 226218785,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_002_T510_optimization_melt655109113_velocity711963353/metadata.json",
+      "relative_path": "runs/source_002_T510_optimization_melt655109113_velocity711963353/metadata.json",
+      "sha256": "d572faa9e80e6b3939a492c8cb87cd8fafffc2f5ce5e4d36eceb7251b0d6c267",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 655109113,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 711963353,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_003_T510_optimization_melt661426236_velocity201750649/metadata.json",
+      "relative_path": "runs/source_003_T510_optimization_melt661426236_velocity201750649/metadata.json",
+      "sha256": "ae6baffbd00796d15d97a8c6e8339c063023a7894e1c1856a0fe58098998b9de",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 661426236,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 201750649,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_004_T510_optimization_melt564513410_velocity693065731/metadata.json",
+      "relative_path": "runs/source_004_T510_optimization_melt564513410_velocity693065731/metadata.json",
+      "sha256": "5f2efa4846d40a1fdc3bd391fa2190d66c6514bfd134878775bfb172c9eee18b",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 564513410,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 693065731,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_005_T510_optimization_melt603302271_velocity45594483/metadata.json",
+      "relative_path": "runs/source_005_T510_optimization_melt603302271_velocity45594483/metadata.json",
+      "sha256": "bbbdb9678a48b4402bfb663f485eb3139804a3b8f1b2e200cb4c9e4c061e0fa6",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 603302271,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 45594483,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_006_T510_optimization_melt398617878_velocity345519274/metadata.json",
+      "relative_path": "runs/source_006_T510_optimization_melt398617878_velocity345519274/metadata.json",
+      "sha256": "5172e1a02a293aa7c0cb3efab750a28a4d5b9ef188685dcbe24a5799090c845f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 398617878,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 345519274,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_007_T510_optimization_melt83132283_velocity86630364/metadata.json",
+      "relative_path": "runs/source_007_T510_optimization_melt83132283_velocity86630364/metadata.json",
+      "sha256": "637876c09d5de48471d342f1a33c1be02de64e18e5499c5b19c5f55f659188e2",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 83132283,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 86630364,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_008_T510_optimization_melt87283751_velocity19173877/metadata.json",
+      "relative_path": "runs/source_008_T510_optimization_melt87283751_velocity19173877/metadata.json",
+      "sha256": "2a5e6c92695ec7d3ce46147c8c0b27234bd37e5f885e5affdfd9b084c7e94228",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 87283751,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 19173877,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_009_T510_optimization_melt86832792_velocity884581988/metadata.json",
+      "relative_path": "runs/source_009_T510_optimization_melt86832792_velocity884581988/metadata.json",
+      "sha256": "ebd998c1e0eb6b15dc6f61d711c5f8225ccc21b4e4167d897124ed1be660ed42",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 86832792,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 884581988,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_010_T510_optimization_melt745135969_velocity775893815/metadata.json",
+      "relative_path": "runs/source_010_T510_optimization_melt745135969_velocity775893815/metadata.json",
+      "sha256": "cf8ffee7134375be85f581ef440bef5a1141311c98c7976b460c6d607eb39f81",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 745135969,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 775893815,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_011_T510_optimization_melt442136159_velocity861328542/metadata.json",
+      "relative_path": "runs/source_011_T510_optimization_melt442136159_velocity861328542/metadata.json",
+      "sha256": "25b13e9bd73803226b50433f12fad14d55e4d771c19bb1b0f53e7a78e62efd3e",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 442136159,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 861328542,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_012_T510_optimization_melt269696945_velocity805734861/metadata.json",
+      "relative_path": "runs/source_012_T510_optimization_melt269696945_velocity805734861/metadata.json",
+      "sha256": "4194f0d20d59e2acb1a0179a6975d8ca104ceae632d0d20cb35c290b16543d2b",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 269696945,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 805734861,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_013_T510_optimization_melt561573362_velocity192647554/metadata.json",
+      "relative_path": "runs/source_013_T510_optimization_melt561573362_velocity192647554/metadata.json",
+      "sha256": "9581d0655c6e15f111a3708b26153ea86fe81022e5ec7257dff346f00cd8fcce",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 561573362,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 192647554,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_014_T510_optimization_melt729671835_velocity337609745/metadata.json",
+      "relative_path": "runs/source_014_T510_optimization_melt729671835_velocity337609745/metadata.json",
+      "sha256": "20cce5e71d46bbb8bcbefda0e8d496d43b839668b4f792e5c16e91ebd632807f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 729671835,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 337609745,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_015_T510_optimization_melt379031575_velocity772545022/metadata.json",
+      "relative_path": "runs/source_015_T510_optimization_melt379031575_velocity772545022/metadata.json",
+      "sha256": "d2684104ec87adaadeecca9ca4f327fe80f3292b1a968b071bfd5d4bbd801966",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 379031575,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 772545022,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_016_T510_optimization_melt234122652_velocity874085168/metadata.json",
+      "relative_path": "runs/source_016_T510_optimization_melt234122652_velocity874085168/metadata.json",
+      "sha256": "765e9a5666eab9cce35fc15f731055859c77b9bb3b527609e043607c7d05887c",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 234122652,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 874085168,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_017_T510_optimization_melt746727007_velocity64212989/metadata.json",
+      "relative_path": "runs/source_017_T510_optimization_melt746727007_velocity64212989/metadata.json",
+      "sha256": "cbfa3e5ad44c922ab0dd79d441e84cb3844ab42e55fe9e787c0f656d96561476",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 746727007,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 64212989,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_018_T510_model_selection_melt129223029_velocity82017738/metadata.json",
+      "relative_path": "runs/source_018_T510_model_selection_melt129223029_velocity82017738/metadata.json",
+      "sha256": "cc08103e7c37172572ec3caf37ebdd3ecb937eda31f471e3ead914ebcdc02250",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 129223029,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 82017738,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_019_T510_model_selection_melt740238344_velocity787544456/metadata.json",
+      "relative_path": "runs/source_019_T510_model_selection_melt740238344_velocity787544456/metadata.json",
+      "sha256": "e41fa6a07f550d504dcd5df5be98333717c75d1b6e105673176ff57ed7348ed1",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 740238344,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 787544456,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_020_T510_model_selection_melt444631845_velocity44078540/metadata.json",
+      "relative_path": "runs/source_020_T510_model_selection_melt444631845_velocity44078540/metadata.json",
+      "sha256": "0bf23a15536c56d389893941c8f1d5585f06afa475e5b635f458f7bf52b311d5",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 444631845,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 44078540,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_021_T510_model_selection_melt387474214_velocity634528391/metadata.json",
+      "relative_path": "runs/source_021_T510_model_selection_melt387474214_velocity634528391/metadata.json",
+      "sha256": "bd2f41a905e741385133c79af231b29909f79ce0913d6ef7d56ccd9547e7c941",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 387474214,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 634528391,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_022_T510_model_selection_melt773283105_velocity572623480/metadata.json",
+      "relative_path": "runs/source_022_T510_model_selection_melt773283105_velocity572623480/metadata.json",
+      "sha256": "d72cb14fc302f3337335e819be5045e021d556da7dfe10c0acd67398130ddbed",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 773283105,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 572623480,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_023_T510_model_selection_melt827732877_velocity62126331/metadata.json",
+      "relative_path": "runs/source_023_T510_model_selection_melt827732877_velocity62126331/metadata.json",
+      "sha256": "c9d1b348edd9658fe7c42815778697cd6979f69caf3dd5491e33a7154b85ef55",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 827732877,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 62126331,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_024_T510_final_validation_melt816360514_velocity93893603/metadata.json",
+      "relative_path": "runs/source_024_T510_final_validation_melt816360514_velocity93893603/metadata.json",
+      "sha256": "d5c9da01070d0219717d5e8a8ea1b38d084e4ff3ed9cf645337d0bd8151b2e23",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 816360514,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 93893603,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_025_T510_final_validation_melt653872695_velocity543827511/metadata.json",
+      "relative_path": "runs/source_025_T510_final_validation_melt653872695_velocity543827511/metadata.json",
+      "sha256": "8de5fea2c521448113ce1f5e9d1905ba7f56504711c005cf40ebd3dad822e77f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 653872695,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 543827511,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_026_T510_final_validation_melt457811864_velocity566853511/metadata.json",
+      "relative_path": "runs/source_026_T510_final_validation_melt457811864_velocity566853511/metadata.json",
+      "sha256": "54d55943ce8cb5f20092bd89618ef82fa7971f8a00b325fd893f5395eee6f17c",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 457811864,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 566853511,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_027_T510_final_validation_melt453777906_velocity178631405/metadata.json",
+      "relative_path": "runs/source_027_T510_final_validation_melt453777906_velocity178631405/metadata.json",
+      "sha256": "9631d7070e69fecf1bdb74ea90b3c77846eae329125e45b282e9b50877df3391",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 453777906,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 178631405,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_028_T510_final_validation_melt502726670_velocity350404648/metadata.json",
+      "relative_path": "runs/source_028_T510_final_validation_melt502726670_velocity350404648/metadata.json",
+      "sha256": "dcda3432740f8b993b1ad7a534b89cf5a048a6f5b2749c0721571093ffdcea4c",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 502726670,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 350404648,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_029_T510_final_validation_melt870099266_velocity118047358/metadata.json",
+      "relative_path": "runs/source_029_T510_final_validation_melt870099266_velocity118047358/metadata.json",
+      "sha256": "ae5bbf2f4c0601d57a1a5d5a65ff214be5258317aa355a1ad14845707cb267c2",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 870099266,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 118047358,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_030_T520_optimization_melt76354933_velocity607680983/metadata.json",
+      "relative_path": "runs/source_030_T520_optimization_melt76354933_velocity607680983/metadata.json",
+      "sha256": "e813e64f65791006412d068c494276b624655acb488061c38c303d13f14be09d",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 76354933,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 607680983,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_031_T520_optimization_melt542619615_velocity257766501/metadata.json",
+      "relative_path": "runs/source_031_T520_optimization_melt542619615_velocity257766501/metadata.json",
+      "sha256": "79f84d1f018a5784e0517dc1d1d94737f99e557dc58ef0a7266533b370fa6506",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 542619615,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 257766501,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_032_T520_optimization_melt298754492_velocity805053994/metadata.json",
+      "relative_path": "runs/source_032_T520_optimization_melt298754492_velocity805053994/metadata.json",
+      "sha256": "433dd7fcc2b5524533907badd7d4a00d2a279fe0ba2310e6f8ed4342726048b7",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 298754492,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 805053994,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_033_T520_optimization_melt511618678_velocity185894899/metadata.json",
+      "relative_path": "runs/source_033_T520_optimization_melt511618678_velocity185894899/metadata.json",
+      "sha256": "d9b6407947d1a5c41d9f1ff6900ad35f9268e0f2f2c69d67df2b93b8b2a61c3a",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 511618678,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 185894899,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_034_T520_optimization_melt455949696_velocity516257445/metadata.json",
+      "relative_path": "runs/source_034_T520_optimization_melt455949696_velocity516257445/metadata.json",
+      "sha256": "91734a72447c6592cbde74344cdd43105417f39e6f70781bbb746b605cccd3f8",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 455949696,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 516257445,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_035_T520_optimization_melt691988874_velocity140564254/metadata.json",
+      "relative_path": "runs/source_035_T520_optimization_melt691988874_velocity140564254/metadata.json",
+      "sha256": "e19f94cfe3d23de9ad1f39772becafe84a8c490a94ce9d18764e4d3f6f7de5a4",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 691988874,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 140564254,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_036_T520_optimization_melt804308644_velocity743188960/metadata.json",
+      "relative_path": "runs/source_036_T520_optimization_melt804308644_velocity743188960/metadata.json",
+      "sha256": "5c4880b492f59679e405a40df8bb7dba9a2690bf4b515742b4232135afd6cd07",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 804308644,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 743188960,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_037_T520_optimization_melt808961974_velocity893624603/metadata.json",
+      "relative_path": "runs/source_037_T520_optimization_melt808961974_velocity893624603/metadata.json",
+      "sha256": "414e7e72c7160d33521bee2ca3a56fd1adb1b044561322eb74180c3e535da07f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 808961974,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 893624603,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_038_T520_optimization_melt434160560_velocity305336505/metadata.json",
+      "relative_path": "runs/source_038_T520_optimization_melt434160560_velocity305336505/metadata.json",
+      "sha256": "d0a05499adf69d02fabb62b8f498deb2d5103084b3cbe72779d7366b202efa57",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 434160560,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 305336505,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_039_T520_optimization_melt200290231_velocity240372582/metadata.json",
+      "relative_path": "runs/source_039_T520_optimization_melt200290231_velocity240372582/metadata.json",
+      "sha256": "26a4829c6d63f61810d0449275d48d3ae351fd0954694a6c96a60bb31db5ceb0",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 200290231,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 240372582,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_040_T520_optimization_melt144370470_velocity263207168/metadata.json",
+      "relative_path": "runs/source_040_T520_optimization_melt144370470_velocity263207168/metadata.json",
+      "sha256": "a5d6414862324fcb6afa464f71b6a2e491bafc480595dc029071d917d06990fa",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 144370470,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 263207168,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_041_T520_optimization_melt76681035_velocity510019800/metadata.json",
+      "relative_path": "runs/source_041_T520_optimization_melt76681035_velocity510019800/metadata.json",
+      "sha256": "36d847c6163dc243fb61f9f0b046b81095a104be34aeab5315e4d819c4a4d554",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 76681035,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 510019800,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_042_T520_optimization_melt77880009_velocity38939262/metadata.json",
+      "relative_path": "runs/source_042_T520_optimization_melt77880009_velocity38939262/metadata.json",
+      "sha256": "aa0429d16bf8f089aa0d033884a3ce7e3bda31cab8ecc744f5fc07f89907def2",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 77880009,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 38939262,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_043_T520_optimization_melt746071054_velocity595286749/metadata.json",
+      "relative_path": "runs/source_043_T520_optimization_melt746071054_velocity595286749/metadata.json",
+      "sha256": "a8d16dc74f34d9ec437a98ad82a1ab285f7a29638c5f9207684b02ed90b5d9db",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 746071054,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 595286749,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_044_T520_optimization_melt294342775_velocity265711615/metadata.json",
+      "relative_path": "runs/source_044_T520_optimization_melt294342775_velocity265711615/metadata.json",
+      "sha256": "cd76e0ea9cee782381eb94032a481ac5558dcd0ad1906ba08e722f5730939244",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 294342775,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 265711615,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_045_T520_optimization_melt184384186_velocity150812759/metadata.json",
+      "relative_path": "runs/source_045_T520_optimization_melt184384186_velocity150812759/metadata.json",
+      "sha256": "5a966f4707c7d538256ba67857d414119478eaf850148b8bed0890858d4e51b7",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 184384186,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 150812759,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_046_T520_optimization_melt160380922_velocity670053733/metadata.json",
+      "relative_path": "runs/source_046_T520_optimization_melt160380922_velocity670053733/metadata.json",
+      "sha256": "b84c5f50d6d0654aaf2534e0d4c418b4f15447dd2585b3bf73cb9513b1eb9da1",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 160380922,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 670053733,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_047_T520_optimization_melt330985692_velocity822714510/metadata.json",
+      "relative_path": "runs/source_047_T520_optimization_melt330985692_velocity822714510/metadata.json",
+      "sha256": "026ec4b1f50abdf0ecd0c569ab74a33c961bc8fdedc8a0c1aace91dccd833977",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 330985692,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "optimization",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 822714510,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_048_T520_model_selection_melt556912370_velocity688155550/metadata.json",
+      "relative_path": "runs/source_048_T520_model_selection_melt556912370_velocity688155550/metadata.json",
+      "sha256": "10916a27c5c17b231400e8f65d3afe8d5817fcca2bbd9d104993beafc13aa939",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 556912370,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 688155550,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_049_T520_model_selection_melt780540798_velocity611405491/metadata.json",
+      "relative_path": "runs/source_049_T520_model_selection_melt780540798_velocity611405491/metadata.json",
+      "sha256": "cf47884e5760021a6a727718c8fc86ac4771b196fbbf9b4135a74227dbedb500",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 780540798,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 611405491,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_050_T520_model_selection_melt480262437_velocity812362246/metadata.json",
+      "relative_path": "runs/source_050_T520_model_selection_melt480262437_velocity812362246/metadata.json",
+      "sha256": "4e52253ebaddeeecefb9f5b40505cf89ae80b690d8bb63ba9deec7e5775a94f3",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 480262437,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 812362246,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_051_T520_model_selection_melt24993146_velocity316704962/metadata.json",
+      "relative_path": "runs/source_051_T520_model_selection_melt24993146_velocity316704962/metadata.json",
+      "sha256": "7539bb665b3c5cfd6947a28124d3039efb9030fd8c59a367845223eb01e96b5f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 24993146,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 316704962,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_052_T520_model_selection_melt340453041_velocity42266601/metadata.json",
+      "relative_path": "runs/source_052_T520_model_selection_melt340453041_velocity42266601/metadata.json",
+      "sha256": "8b8d1d67413447cada306d13a7e8b72c0873dca5be59c12d5de826d65d9b6d1a",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 340453041,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 42266601,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_053_T520_model_selection_melt871735562_velocity409964290/metadata.json",
+      "relative_path": "runs/source_053_T520_model_selection_melt871735562_velocity409964290/metadata.json",
+      "sha256": "6ce5418c5dfdf85c97cb0d3ead5485b9b1dcfc24f8f2e7f859a5dec450138f0c",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 871735562,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "model_selection",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 409964290,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_054_T520_final_validation_melt410549883_velocity508004026/metadata.json",
+      "relative_path": "runs/source_054_T520_final_validation_melt410549883_velocity508004026/metadata.json",
+      "sha256": "d7831f28b5d7f8c08619463f486585111ca79e1cfd1d6a6ffd64436db5d4da6f",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 410549883,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 508004026,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_055_T520_final_validation_melt617047783_velocity733922557/metadata.json",
+      "relative_path": "runs/source_055_T520_final_validation_melt617047783_velocity733922557/metadata.json",
+      "sha256": "9e93aee3e9a0d63f3c6f18f52884283242cb2b802242fd548e0cb609738af0dc",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 617047783,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 733922557,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_056_T520_final_validation_melt82221119_velocity86318490/metadata.json",
+      "relative_path": "runs/source_056_T520_final_validation_melt82221119_velocity86318490/metadata.json",
+      "sha256": "62f39549bb40cf048c60e3e781e7e15be5a2994dd69b3cb1fe4ad82f8e286737",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 82221119,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 86318490,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_057_T520_final_validation_melt259940230_velocity95929037/metadata.json",
+      "relative_path": "runs/source_057_T520_final_validation_melt259940230_velocity95929037/metadata.json",
+      "sha256": "39e4e91c23b478b395c9b3ae61c2a75837575ea5d5f69527654ea14bcff0718e",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 259940230,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 95929037,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_058_T520_final_validation_melt139885636_velocity553075734/metadata.json",
+      "relative_path": "runs/source_058_T520_final_validation_melt139885636_velocity553075734/metadata.json",
+      "sha256": "e3e617c1853ccdc39bbaa720584d76d1846b318e3f3f6e39160d8ea5af1a231e",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 139885636,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 553075734,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903_prepared_before_manifest_checksum/runs/source_059_T520_final_validation_melt270739820_velocity484920826/metadata.json",
+      "relative_path": "runs/source_059_T520_final_validation_melt270739820_velocity484920826/metadata.json",
+      "sha256": "1dc2243ac3233343d48a936db042eae8c406bdacd584f24a7bf0b5dd3ad6dca9",
+      "kind": "metadata",
+      "keys": [
+        "boundary_cluster_max_atoms",
+        "boundary_cluster_min_atoms",
+        "preparation_seed",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "source_index_within_temperature",
+        "source_split",
+        "temperature_K",
+        "velocity_seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 270739820,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "source_split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 484920826,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

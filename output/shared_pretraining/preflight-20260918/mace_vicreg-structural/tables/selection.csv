@@ -1,0 +1,15 @@
+metric,value
+step,2
+physical,0.44098034501075745
+instantaneous_tda,0.23049741983413696
+physical_blocks.radial,0.4631401002407074
+physical_blocks.pair,0.32043635845184326
+physical_blocks.angular,0.5928425192832947
+physical_blocks.moments,0.3875023424625397
+tda_blocks.h0,0.09923618286848068
+tda_blocks.h1,0.1591937094926834
+tda_blocks.h2,0.4330623745918274
+selection_sources,15
+selection_rows,480
+state_std_mean,0.0007832466508261859
+score,0.4986046999692917

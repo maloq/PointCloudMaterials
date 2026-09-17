@@ -1,0 +1,175 @@
+{
+  "dataset_id": "repository-derived-data-caches",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/repository-datasets/data_ae_Al_80_analysis_coords/metadata.json",
+      "relative_path": "data_ae_Al_80_analysis_coords/metadata.json",
+      "sha256": "bd35bd4f584016e9117a7e057ce2ac73bec107c11d54827bf677c8470147a8eb",
+      "kind": "metadata",
+      "keys": [
+        "fingerprint",
+        "request",
+        "schema_version",
+        "shards",
+        "source_counts",
+        "total_samples"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 9.186229173717608,
+            "first_json_path": "request.sources[0].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.204253524761874,
+            "first_json_path": "request.sources[1].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.193133389167969,
+            "first_json_path": "request.sources[2].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.186201570883831,
+            "first_json_path": "request.sources[3].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.177864417190632,
+            "first_json_path": "request.sources[4].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.03644895139096,
+            "first_json_path": "request.sources[5].radius",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/repository-datasets/data_ae_multi_material_ready_samples/metadata.json",
+      "relative_path": "data_ae_multi_material_ready_samples/metadata.json",
+      "sha256": "b419bb154d5ed4269b03474fc40dc21e9b2b4989009b2f34984f7e51de8ae55b",
+      "kind": "metadata",
+      "keys": [
+        "fingerprint",
+        "request",
+        "schema_version",
+        "shards",
+        "source_counts",
+        "total_samples"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 9.192189,
+            "first_json_path": "request.sources[0].radius",
+            "occurrences": 7
+          },
+          {
+            "value": 10.169428,
+            "first_json_path": "request.sources[1].radius",
+            "occurrences": 7
+          },
+          {
+            "value": 9.388275,
+            "first_json_path": "request.sources[2].radius",
+            "occurrences": 6
+          },
+          {
+            "value": 10.415006,
+            "first_json_path": "request.sources[3].radius",
+            "occurrences": 7
+          },
+          {
+            "value": 8.221465,
+            "first_json_path": "request.sources[4].radius",
+            "occurrences": 7
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/repository-datasets/static_al_context_interior_20260915/metadata.json",
+      "relative_path": "static_al_context_interior_20260915/metadata.json",
+      "sha256": "3b167eeb451882ddec5b47efe1e1d98df7c65ab7a3db0f21004f8c061e1ea7e5",
+      "kind": "metadata",
+      "keys": [
+        "fingerprint",
+        "request",
+        "schema_version",
+        "shards",
+        "source_counts",
+        "total_samples"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 9.186229173717608,
+            "first_json_path": "request.sources[0].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.204253524761874,
+            "first_json_path": "request.sources[1].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.193133389167969,
+            "first_json_path": "request.sources[2].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.186201570883831,
+            "first_json_path": "request.sources[3].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.177864417190632,
+            "first_json_path": "request.sources[4].radius",
+            "occurrences": 2
+          },
+          {
+            "value": 9.03644895139096,
+            "first_json_path": "request.sources[5].radius",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/repository-datasets/static_zr_context_interior_20260915/metadata.json",
+      "relative_path": "static_zr_context_interior_20260915/metadata.json",
+      "sha256": "babfcb7792abe35d65202ccc22646be23769d60d43feeaff1feee710239402a4",
+      "kind": "metadata",
+      "keys": [
+        "fingerprint",
+        "request",
+        "schema_version",
+        "shards",
+        "source_counts",
+        "total_samples"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 10.415006,
+            "first_json_path": "request.sources[0].radius",
+            "occurrences": 12
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

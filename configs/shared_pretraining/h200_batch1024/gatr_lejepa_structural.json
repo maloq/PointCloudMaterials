@@ -1,0 +1,28 @@
+{
+  "output": "output/shared_pretraining/h200-b1024-gatr-lejepa-structural-20260918",
+  "release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "phase": "structural",
+  "architecture": "gatr",
+  "method": "lejepa",
+  "history_frames": 3,
+  "seed": 20260919,
+  "epochs": 12,
+  "batch_size": 1024,
+  "microbatch_size": 96,
+  "memory_limit_GiB": 80,
+  "schedule": {
+    "peak": 0.02,
+    "warmup_fraction": 0.1,
+    "minimum_ratio": 0.01
+  },
+  "log_every": 5,
+  "checkpoint_every": 16,
+  "validate_every": 64,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "h200-b1024-gatr-lejepa-structural-20260918",
+    "id": "21fc1e808611",
+    "group": "shared-12ep-b1024-h200-20260918"
+  }
+}

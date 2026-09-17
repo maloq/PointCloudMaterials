@@ -1,0 +1,398 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ti: duplicate Slurm branch exports</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ti: duplicate Slurm branch exports</h1><p>Six reported copies of the original Ti branches. Current manifest signatures expose exact duplicate groups; do not count copies as independent trajectories.</p><span class="badge">duplicate</span><span class="badge warning">1 metadata gaps</span><p><code>ti-meam-early-slurm-copies</code> · Ti</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm">/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm</a></p><p>164 owned files · 8.454 GiB allocated · 6 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ti: duplicate Slurm branch exports&quot;,
+  &quot;materials&quot;: [
+    &quot;Ti&quot;
+  ],
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;duplicate&quot;,
+  &quot;description&quot;: &quot;Six reported copies of the original Ti branches. Current manifest signatures expose exact duplicate groups; do not count copies as independent trajectories.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;ti-kavousi2019-meam&quot;
+  ],
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/ti_ta_crystallization/README.md&quot;,
+    &quot;${dataset:ti-meam-early-slurm-copies}/config.json&quot;
+  ],
+  &quot;lineage&quot;: &quot;Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping.&quot;
+}</pre><ul><li><a href="../../simulations/ti_ta_crystallization/README.md">docs/simulations/ti_ta_crystallization/README.md</a></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/config.json">${dataset:ti-meam-early-slurm-copies}/config.json</a> (missing here)</li></ul><p>Dependencies: <a href="ti_ta_crystallization_20260907-2bcfd479.html">ti_ta_crystallization_20260907</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>ensemble</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>pressure_bar</td><td><code>[0]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>protocol</td><td><code>[&quot;ti-source-then-branches&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Ti&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[1250]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.001]</code></td></tr><tr><td>thermostat_ps</td><td><code>[0.1]</code></td></tr><tr><td>barostat_ps</td><td><code>[1.0]</code></td></tr><tr><td>mass_g_mol</td><td><code>[47.88]</code></td></tr><tr><td>melt_temperature_K</td><td><code>[3000]</code></td></tr><tr><td>melt_seed</td><td><code>[917001]</code></td></tr><tr><td>atom_count</td><td><code>[100000]</code></td></tr><tr><td>ptm_rmsd_cutoff</td><td><code>[0.17]</code></td></tr><tr><td>branch_semantics</td><td><code>[&quot;Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations.&quot;]</code></td></tr><tr><td>frame_count</td><td><code>[2401]</code></td></tr><tr><td>velocity_seed</td><td><code>[917101, 917103, 917107, 917111, 917117, 917123]</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 164,
+    &quot;apparent_bytes&quot;: 9237898512,
+    &quot;allocated_bytes&quot;: 9077368832,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 37,
+      &quot;.log&quot;: 12,
+      &quot;.sbatch&quot;: 1,
+      &quot;.bin&quot;: 66,
+      &quot;.lammps&quot;: 12,
+      &quot;.npy&quot;: 36
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;dynamics_complete&quot;: 6,
+      &quot;complete&quot;: 6
+    },
+    &quot;metadata_records&quot;: 24,
+    &quot;binary_trajectory_records&quot;: 6,
+    &quot;available_complete_binary_records&quot;: 6,
+    &quot;stored_frames&quot;: 14406,
+    &quot;binary_records_in_duplicate_groups&quot;: 6
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000000000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000008000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000032000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000040000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000056000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        100000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        2401,
+        100000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;branches/parent_000192000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        2401
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (24 records)</summary><p><a href="../records/ti-meam-early-slurm-copies-6395c863.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/config.json">branches/parent_000000000/config.json</a> · metadata · <code>64fa09063215488e7e9e1507b26dae89eb1b1f28bcc797bda008dbb05016f4ab</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/metadata.json">branches/parent_000000000/metadata.json</a> · dynamics_complete · <code>3948de7d123ec3913dfe0b047aede62fed0bb20812e91a444a4a7a37b8fed194</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/outcome.json">branches/parent_000000000/outcome.json</a> · complete · <code>c241412f91f64cabc1e5adcef774ca158cd258eb202629c1e87811977109f585</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/manifest.json">branches/parent_000000000/trajectory_binary_float16/manifest.json</a> · complete · <code>baa5a8b2a14e91bf9878f5433a800d974661760631d521258ed338a725d38bf1</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/config.json">branches/parent_000008000/config.json</a> · metadata · <code>d6400c503a910888a926c7172def440d6cc46eb8a897311a92b9fa3c15c7ab66</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/metadata.json">branches/parent_000008000/metadata.json</a> · dynamics_complete · <code>6bcdda09b62330f55ea4d9f0299e703db9746538dcb86da5bd0c296a2242ba90</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/outcome.json">branches/parent_000008000/outcome.json</a> · complete · <code>db1a39e0a5af918341dc90e920e806721966222f0a32cfe779a3638a18e91d50</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/manifest.json">branches/parent_000008000/trajectory_binary_float16/manifest.json</a> · complete · <code>8a809962a930ddf7eaa56f22657ab2320003eac61abcccd8ed1e4430e3b0f6a0</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/config.json">branches/parent_000032000/config.json</a> · metadata · <code>4d65a0aac22131dac71cd38393ae7a6b64c70e3903060eac9d14dced8d38e1e5</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/metadata.json">branches/parent_000032000/metadata.json</a> · dynamics_complete · <code>970912846f68f56b17ef9f4aa32dd0b448be5b55fccce67d20b37088eb6198bc</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/outcome.json">branches/parent_000032000/outcome.json</a> · complete · <code>db58797157609b751d92198d921a6a26c1aea683a6b9954e1d676b9cb4d940e4</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/manifest.json">branches/parent_000032000/trajectory_binary_float16/manifest.json</a> · complete · <code>5ae436be7c35c6c50365362db54098d0d7908eb8e78b10a9b627e845340a13f3</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/config.json">branches/parent_000040000/config.json</a> · metadata · <code>48ff5e7a23b00b028b305e3c69746afa758f1a707c274e3020d7017e91379b64</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/metadata.json">branches/parent_000040000/metadata.json</a> · dynamics_complete · <code>14db2e65afb87b9222a8f0652b1a375edaded7f32cce9056d0e9db8f1fcfdf11</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/outcome.json">branches/parent_000040000/outcome.json</a> · complete · <code>d6351612c608ab3ea1b6f1fcba7e1b4506c974a4d595d2723ba0cfc2540b6557</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/manifest.json">branches/parent_000040000/trajectory_binary_float16/manifest.json</a> · complete · <code>0c2dac1a01d73ce97bce0e0c31c4157428c2e29a62b5f8f0fd9869cccc70de79</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/config.json">branches/parent_000056000/config.json</a> · metadata · <code>610fbcaa524d2aba4607a565bdae69328dae1b3c270296054834ab87a61c46cd</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/metadata.json">branches/parent_000056000/metadata.json</a> · dynamics_complete · <code>8fff259ca16d9940dc28eb3fe3b1ea157437c4bee92588119dd16614910dd4a1</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/outcome.json">branches/parent_000056000/outcome.json</a> · complete · <code>be44b63f0863dbdae0bd0cb2a98e7155afad8de9fb9161a86c4a5144cb1f8235</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/manifest.json">branches/parent_000056000/trajectory_binary_float16/manifest.json</a> · complete · <code>2e0454f30fad6c5c1e8a1524099cf3aca2606a0f86a85d556aa61c55817bb865</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/config.json">branches/parent_000192000/config.json</a> · metadata · <code>46159c2afe6d2bd82ac55f99a8b38284dad90ffc74e8032e3b12d95de8e9ae7e</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/metadata.json">branches/parent_000192000/metadata.json</a> · dynamics_complete · <code>ccc542d92a626c0959d429001f1742a51d0625e48b83e252d45e53e36fb0e066</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/outcome.json">branches/parent_000192000/outcome.json</a> · complete · <code>cea2fc261ac8d16e67dcdd964c6d0a927ee056be395a4776bc1d1a3102288b2b</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/manifest.json">branches/parent_000192000/trajectory_binary_float16/manifest.json</a> · complete · <code>90c47b14e757d7faa0e738494a365860d2c3c4d901c8ce46c7a227e2597a91b0</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

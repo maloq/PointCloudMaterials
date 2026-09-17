@@ -10,6 +10,9 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Twelve-epoch shared and causal pretraining](shared_pretraining_20260918/README.md) | Three fresh structural parents and three causal continuations; batch 512, peak LR 0.02 with warmup/cosine, instantaneous physical/TDA targets and matched frozen probes. |
+| [Shared structural pretraining](structural_pretraining_20260917/README.md) | Three implemented five-metal fits: MACE/GATr neighbor VICReg and three-frame GATr temporal JEPA/SIGReg, with physical/instantaneous-TDA anchors. Fixed material cutoffs; 250,000 training records, one seed; launched detached on H100/RTX6000. |
+| [GATr–VICReg static Al](structural_pretraining_20260917/STATIC_AL.md) | Selected RTX6000 checkpoint, native full-neighborhood z128, six standard Al snapshots and the full seven-cluster static workflow. |
 | [Backbone TDA retention](local_predictability_20260917/TDA.md) | Frozen physical MACE/GATr snapshot states; matched linear/nonlinear instantaneous topology readouts, one seed |
 | [Native backbone v2](local_predictability_20260917/BACKBONE_V2.md) | Fresh gated MACE/cuEquivariance versus axial GATr snapshot screen; all-state physical targets; one seed |
 | [Local predictability](local_predictability_20260917/README.md) | Completed local descriptor, native onset and observability studies; [all available results](../output/local_predictability/research-summary-20260917/RESULTS.md), including physical/TDA screens; H200 training reported complete, validation nearly tied, test comparisons pending |

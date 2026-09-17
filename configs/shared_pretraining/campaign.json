@@ -1,0 +1,37 @@
+{
+  "output": "output/shared_pretraining/campaign-20260918",
+  "partition": "H100,RTX6000PRO,L40S",
+  "structural_slots": 3,
+  "structural_hours": 16,
+  "causal_hours": 16,
+  "analysis_hours": 8,
+  "runs": [
+    {
+      "name": "mace_vicreg",
+      "configs": {
+        "structural": "configs/shared_pretraining/mace_vicreg_structural.json",
+        "causal": "configs/shared_pretraining/mace_vicreg_causal.json",
+        "analysis": "configs/shared_pretraining/mace_vicreg_analysis.json"
+      },
+      "allocation": 995957
+    },
+    {
+      "name": "gatr_vicreg",
+      "configs": {
+        "structural": "configs/shared_pretraining/gatr_vicreg_structural.json",
+        "causal": "configs/shared_pretraining/gatr_vicreg_causal.json",
+        "analysis": "configs/shared_pretraining/gatr_vicreg_analysis.json"
+      },
+      "allocation": 997207
+    },
+    {
+      "name": "gatr_lejepa",
+      "configs": {
+        "structural": "configs/shared_pretraining/gatr_lejepa_structural.json",
+        "causal": "configs/shared_pretraining/gatr_lejepa_causal.json",
+        "analysis": "configs/shared_pretraining/gatr_lejepa_analysis.json"
+      },
+      "allocation": null
+    }
+  ]
+}

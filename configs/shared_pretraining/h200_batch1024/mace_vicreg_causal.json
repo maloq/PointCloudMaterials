@@ -1,0 +1,30 @@
+{
+  "output": "output/shared_pretraining/h200-b1024-mace-vicreg-causal-20260918",
+  "release": "${storage:cache}/shared-causal-38400-20260918",
+  "phase": "causal",
+  "architecture": "mace",
+  "method": "vicreg",
+  "history_frames": 1,
+  "seed": 20260919,
+  "epochs": 12,
+  "batch_size": 1024,
+  "microbatch_size": 352,
+  "memory_limit_GiB": 80,
+  "schedule": {
+    "peak": 0.02,
+    "warmup_fraction": 0.1,
+    "minimum_ratio": 0.01
+  },
+  "log_every": 5,
+  "checkpoint_every": 16,
+  "validate_every": 64,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "h200-b1024-mace-vicreg-causal-20260918",
+    "id": "361d81864b2c",
+    "group": "shared-12ep-b1024-h200-20260918"
+  },
+  "parent": "output/shared_pretraining/h200-b1024-mace-vicreg-structural-20260918/technical/best.pt",
+  "replay_release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917"
+}

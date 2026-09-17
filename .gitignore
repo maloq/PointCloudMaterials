@@ -1,4 +1,7 @@
 datasets
+# The registry contains versioned metadata and documentation, not raw datasets.
+!/docs/datasets/
+!/docs/datasets/**
 machine.local.yaml
 /data/
 /tmp/

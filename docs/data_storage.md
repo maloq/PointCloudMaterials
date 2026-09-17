@@ -1,5 +1,8 @@
 # Data and result storage
 
+Start with [the dataset registry](../DATASETS.md) to find datasets, generating
+potentials, current array schemas and provenance across these storage roles.
+
 | Contents | Location on this cluster |
 | --- | --- |
 | Existing datasets and simulation inputs | `/work/PERSO/vmorozov/{datasets,simulations}` |

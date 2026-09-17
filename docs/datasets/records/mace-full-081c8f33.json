@@ -1,0 +1,155 @@
+{
+  "dataset_id": "mace-full",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-full/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "5700a54b48c261a37c59566dc02a04897226d8a9b6ee22af658d919513d9df93",
+      "kind": "metadata",
+      "keys": [
+        "cache_storage_dtype",
+        "checksums",
+        "cutoff_estimation",
+        "duplicate_trajectories_excluded",
+        "num_points",
+        "pair_columns",
+        "protocol",
+        "selected_lag_samples",
+        "shards",
+        "sources",
+        "split_note",
+        "state",
+        "temporal_lags_ps",
+        "views"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "seed": [
+          {
+            "value": 20260910,
+            "first_json_path": "protocol.config.seed",
+            "occurrences": 1
+          },
+          {
+            "value": 42,
+            "first_json_path": "protocol.config.cutoff_estimation.Ti.seed",
+            "occurrences": 2
+          }
+        ],
+        "materials": [
+          {
+            "value": [
+              "Al",
+              "Mg",
+              "Ta",
+              "Ti"
+            ],
+            "first_json_path": "protocol.config.materials",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "protocol.config.sources[0].material",
+            "occurrences": 23
+          },
+          {
+            "value": "Ti",
+            "first_json_path": "protocol.config.sources[5].material",
+            "occurrences": 24
+          },
+          {
+            "value": "Al",
+            "first_json_path": "sources[0].material",
+            "occurrences": 18
+          },
+          {
+            "value": "Mg",
+            "first_json_path": "sources[6].material",
+            "occurrences": 18
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "protocol.config.sources[0].storage_dtype",
+            "occurrences": 34
+          },
+          {
+            "value": "float32",
+            "first_json_path": "sources[12].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "radius": [
+          {
+            "value": 9.388275,
+            "first_json_path": "protocol.config.sources[0].radius",
+            "occurrences": 11
+          },
+          {
+            "value": 9.247764279105562,
+            "first_json_path": "protocol.config.sources[5].radius",
+            "occurrences": 12
+          },
+          {
+            "value": 9.192189,
+            "first_json_path": "sources[0].radius",
+            "occurrences": 6
+          },
+          {
+            "value": 10.169428,
+            "first_json_path": "sources[6].radius",
+            "occurrences": 6
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "protocol.config.sources[0].frame_count",
+            "occurrences": 10
+          },
+          {
+            "value": 2401,
+            "first_json_path": "protocol.config.sources[5].frame_count",
+            "occurrences": 12
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "protocol.config.sources[0].splits[0].split",
+            "occurrences": 46
+          },
+          {
+            "value": "val",
+            "first_json_path": "protocol.config.sources[0].splits[1].split",
+            "occurrences": 46
+          }
+        ],
+        "periodic": [
+          {
+            "value": true,
+            "first_json_path": "protocol.config.cutoff_estimation.Ti.periodic",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-full/status.json",
+      "relative_path": "status.json",
+      "sha256": "aec96b319d97b962d278dbf1fdba4df79ba7a53efe43ee17fd1e8dd45a01dc12",
+      "kind": "metadata",
+      "keys": [
+        "selected_lag_samples",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,2584 @@
+{
+  "dataset_id": "predictive-memory-al-r17-20260917",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/DATA_CARD_ERRATA.md",
+      "relative_path": "DATA_CARD_ERRATA.md",
+      "sha256": "485eb71816c21b4eaea9291d6117cc4f25a4a1cab3f4c3224b21a7c376307440",
+      "kind": "data_card"
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "0113ed18b37916b8910a52ed71c349b7e56a72c39d3bbf695659e010e57ea16c",
+      "kind": "metadata",
+      "keys": [
+        "release_sha256",
+        "samples",
+        "seconds",
+        "sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/dataset_release.json",
+      "relative_path": "dataset_release.json",
+      "sha256": "c021aaa00d000dc3993982683e1ee44675afd4680506be77416b1e7508774b15",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "independent_claim",
+        "label_policy",
+        "protocol",
+        "schema_version",
+        "source_plan_sha256",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "predictive_memory_partial_observation_v1",
+            "first_json_path": "protocol",
+            "occurrences": 2
+          }
+        ],
+        "trajectory_id": [
+          {
+            "value": 860,
+            "first_json_path": "sources[0].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 861,
+            "first_json_path": "sources[1].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 862,
+            "first_json_path": "sources[2].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 863,
+            "first_json_path": "sources[3].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 864,
+            "first_json_path": "sources[4].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 865,
+            "first_json_path": "sources[5].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 866,
+            "first_json_path": "sources[6].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 867,
+            "first_json_path": "sources[7].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 868,
+            "first_json_path": "sources[8].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 869,
+            "first_json_path": "sources[9].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 870,
+            "first_json_path": "sources[10].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 871,
+            "first_json_path": "sources[11].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 872,
+            "first_json_path": "sources[12].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 873,
+            "first_json_path": "sources[13].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 874,
+            "first_json_path": "sources[14].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 875,
+            "first_json_path": "sources[15].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 876,
+            "first_json_path": "sources[16].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 877,
+            "first_json_path": "sources[17].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 878,
+            "first_json_path": "sources[18].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 879,
+            "first_json_path": "sources[19].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 880,
+            "first_json_path": "sources[20].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 881,
+            "first_json_path": "sources[21].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 882,
+            "first_json_path": "sources[22].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 883,
+            "first_json_path": "sources[23].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 884,
+            "first_json_path": "sources[24].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 885,
+            "first_json_path": "sources[25].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 886,
+            "first_json_path": "sources[26].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 887,
+            "first_json_path": "sources[27].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 888,
+            "first_json_path": "sources[28].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 889,
+            "first_json_path": "sources[29].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 890,
+            "first_json_path": "sources[30].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 891,
+            "first_json_path": "sources[31].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 892,
+            "first_json_path": "sources[32].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 893,
+            "first_json_path": "sources[33].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 894,
+            "first_json_path": "sources[34].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 895,
+            "first_json_path": "sources[35].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 896,
+            "first_json_path": "sources[36].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 897,
+            "first_json_path": "sources[37].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 898,
+            "first_json_path": "sources[38].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 899,
+            "first_json_path": "sources[39].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 900,
+            "first_json_path": "sources[40].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 901,
+            "first_json_path": "sources[41].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 902,
+            "first_json_path": "sources[42].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 903,
+            "first_json_path": "sources[43].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 904,
+            "first_json_path": "sources[44].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 905,
+            "first_json_path": "sources[45].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 906,
+            "first_json_path": "sources[46].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 907,
+            "first_json_path": "sources[47].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 908,
+            "first_json_path": "sources[48].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 909,
+            "first_json_path": "sources[49].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 910,
+            "first_json_path": "sources[50].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 911,
+            "first_json_path": "sources[51].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 912,
+            "first_json_path": "sources[52].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 913,
+            "first_json_path": "sources[53].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 914,
+            "first_json_path": "sources[54].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 915,
+            "first_json_path": "sources[55].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 916,
+            "first_json_path": "sources[56].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 917,
+            "first_json_path": "sources[57].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 918,
+            "first_json_path": "sources[58].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 919,
+            "first_json_path": "sources[59].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 920,
+            "first_json_path": "sources[60].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 921,
+            "first_json_path": "sources[61].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 922,
+            "first_json_path": "sources[62].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 923,
+            "first_json_path": "sources[63].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 924,
+            "first_json_path": "sources[64].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 925,
+            "first_json_path": "sources[65].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 926,
+            "first_json_path": "sources[66].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 927,
+            "first_json_path": "sources[67].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 928,
+            "first_json_path": "sources[68].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 929,
+            "first_json_path": "sources[69].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 930,
+            "first_json_path": "sources[70].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 931,
+            "first_json_path": "sources[71].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 932,
+            "first_json_path": "sources[72].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 933,
+            "first_json_path": "sources[73].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 934,
+            "first_json_path": "sources[74].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 935,
+            "first_json_path": "sources[75].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 936,
+            "first_json_path": "sources[76].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 937,
+            "first_json_path": "sources[77].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 938,
+            "first_json_path": "sources[78].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 939,
+            "first_json_path": "sources[79].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 940,
+            "first_json_path": "sources[80].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 941,
+            "first_json_path": "sources[81].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 942,
+            "first_json_path": "sources[82].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 943,
+            "first_json_path": "sources[83].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 944,
+            "first_json_path": "sources[84].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 945,
+            "first_json_path": "sources[85].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 946,
+            "first_json_path": "sources[86].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 947,
+            "first_json_path": "sources[87].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 948,
+            "first_json_path": "sources[88].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 949,
+            "first_json_path": "sources[89].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 950,
+            "first_json_path": "sources[90].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 951,
+            "first_json_path": "sources[91].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 952,
+            "first_json_path": "sources[92].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 953,
+            "first_json_path": "sources[93].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 954,
+            "first_json_path": "sources[94].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 955,
+            "first_json_path": "sources[95].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 956,
+            "first_json_path": "sources[96].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 957,
+            "first_json_path": "sources[97].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 958,
+            "first_json_path": "sources[98].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 959,
+            "first_json_path": "sources[99].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 960,
+            "first_json_path": "sources[100].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 961,
+            "first_json_path": "sources[101].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 962,
+            "first_json_path": "sources[102].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 963,
+            "first_json_path": "sources[103].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 964,
+            "first_json_path": "sources[104].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 965,
+            "first_json_path": "sources[105].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 966,
+            "first_json_path": "sources[106].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 967,
+            "first_json_path": "sources[107].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 968,
+            "first_json_path": "sources[108].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 969,
+            "first_json_path": "sources[109].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 970,
+            "first_json_path": "sources[110].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 971,
+            "first_json_path": "sources[111].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 972,
+            "first_json_path": "sources[112].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 973,
+            "first_json_path": "sources[113].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 974,
+            "first_json_path": "sources[114].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 975,
+            "first_json_path": "sources[115].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 976,
+            "first_json_path": "sources[116].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 977,
+            "first_json_path": "sources[117].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 978,
+            "first_json_path": "sources[118].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 979,
+            "first_json_path": "sources[119].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 980,
+            "first_json_path": "sources[120].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 981,
+            "first_json_path": "sources[121].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 982,
+            "first_json_path": "sources[122].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 983,
+            "first_json_path": "sources[123].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 984,
+            "first_json_path": "sources[124].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 985,
+            "first_json_path": "sources[125].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 986,
+            "first_json_path": "sources[126].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 987,
+            "first_json_path": "sources[127].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 988,
+            "first_json_path": "sources[128].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 989,
+            "first_json_path": "sources[129].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 990,
+            "first_json_path": "sources[130].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 991,
+            "first_json_path": "sources[131].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 992,
+            "first_json_path": "sources[132].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 993,
+            "first_json_path": "sources[133].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 994,
+            "first_json_path": "sources[134].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 995,
+            "first_json_path": "sources[135].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 996,
+            "first_json_path": "sources[136].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 997,
+            "first_json_path": "sources[137].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 998,
+            "first_json_path": "sources[138].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 999,
+            "first_json_path": "sources[139].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1000,
+            "first_json_path": "sources[140].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1001,
+            "first_json_path": "sources[141].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1002,
+            "first_json_path": "sources[142].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1003,
+            "first_json_path": "sources[143].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1004,
+            "first_json_path": "sources[144].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1005,
+            "first_json_path": "sources[145].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1006,
+            "first_json_path": "sources[146].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1007,
+            "first_json_path": "sources[147].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1008,
+            "first_json_path": "sources[148].trajectory_id",
+            "occurrences": 1
+          },
+          {
+            "value": 1009,
+            "first_json_path": "sources[149].trajectory_id",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "parent_trajectory_id": [
+          {
+            "value": null,
+            "first_json_path": "sources[0].parent_trajectory_id",
+            "occurrences": 150
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "sources[0].split",
+            "occurrences": 90
+          },
+          {
+            "value": "val",
+            "first_json_path": "sources[15].split",
+            "occurrences": 30
+          },
+          {
+            "value": "test",
+            "first_json_path": "sources[21].split",
+            "occurrences": 30
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "sources[0].material",
+            "occurrences": 150
+          }
+        ],
+        "atomic_numbers": [
+          {
+            "value": [
+              13
+            ],
+            "first_json_path": "sources[0].atomic_numbers",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].temperature_K",
+            "occurrences": 30
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "NPT",
+            "first_json_path": "sources[0].ensemble",
+            "occurrences": 150
+          }
+        ],
+        "thermostat": [
+          {
+            "value": "Nose-Hoover",
+            "first_json_path": "sources[0].thermostat",
+            "occurrences": 150
+          }
+        ],
+        "thermostat_damping_ps": [
+          {
+            "value": 0.3,
+            "first_json_path": "sources[0].thermostat_damping_ps",
+            "occurrences": 150
+          }
+        ],
+        "barostat": [
+          {
+            "value": "isotropic Nose-Hoover",
+            "first_json_path": "sources[0].barostat",
+            "occurrences": 150
+          }
+        ],
+        "barostat_damping_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].barostat_damping_ps",
+            "occurrences": 150
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0.0,
+            "first_json_path": "sources[0].pressure_bar",
+            "occurrences": 150
+          }
+        ],
+        "units": [
+          {
+            "value": "metal",
+            "first_json_path": "sources[0].units",
+            "occurrences": 150
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "sources[0].timestep_ps",
+            "occurrences": 150
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 511618678,
+            "first_json_path": "sources[0].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 455949696,
+            "first_json_path": "sources[1].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 691988874,
+            "first_json_path": "sources[2].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 804308644,
+            "first_json_path": "sources[3].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 808961974,
+            "first_json_path": "sources[4].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 434160560,
+            "first_json_path": "sources[5].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 200290231,
+            "first_json_path": "sources[6].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 144370470,
+            "first_json_path": "sources[7].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76681035,
+            "first_json_path": "sources[8].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 77880009,
+            "first_json_path": "sources[9].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746071054,
+            "first_json_path": "sources[10].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 294342775,
+            "first_json_path": "sources[11].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 184384186,
+            "first_json_path": "sources[12].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 160380922,
+            "first_json_path": "sources[13].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 330985692,
+            "first_json_path": "sources[14].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 556912370,
+            "first_json_path": "sources[15].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 780540798,
+            "first_json_path": "sources[16].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 480262437,
+            "first_json_path": "sources[17].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 24993146,
+            "first_json_path": "sources[18].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 340453041,
+            "first_json_path": "sources[19].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 871735562,
+            "first_json_path": "sources[20].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 410549883,
+            "first_json_path": "sources[21].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 617047783,
+            "first_json_path": "sources[22].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 82221119,
+            "first_json_path": "sources[23].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 206158192,
+            "first_json_path": "sources[24].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 248699045,
+            "first_json_path": "sources[25].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 235751553,
+            "first_json_path": "sources[26].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 750494487,
+            "first_json_path": "sources[27].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 378118914,
+            "first_json_path": "sources[28].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 387039544,
+            "first_json_path": "sources[29].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 394685168,
+            "first_json_path": "sources[30].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 648456630,
+            "first_json_path": "sources[31].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 392346167,
+            "first_json_path": "sources[32].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 373247889,
+            "first_json_path": "sources[33].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 319035304,
+            "first_json_path": "sources[34].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 40651136,
+            "first_json_path": "sources[35].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 146234076,
+            "first_json_path": "sources[36].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 472193600,
+            "first_json_path": "sources[37].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 63365650,
+            "first_json_path": "sources[38].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 220809849,
+            "first_json_path": "sources[39].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 142641279,
+            "first_json_path": "sources[40].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 262380798,
+            "first_json_path": "sources[41].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 837421620,
+            "first_json_path": "sources[42].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 553888770,
+            "first_json_path": "sources[43].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 550189933,
+            "first_json_path": "sources[44].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 8461095,
+            "first_json_path": "sources[45].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 197585375,
+            "first_json_path": "sources[46].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 135035943,
+            "first_json_path": "sources[47].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 648618511,
+            "first_json_path": "sources[48].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 760589119,
+            "first_json_path": "sources[49].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 383124119,
+            "first_json_path": "sources[50].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 361693553,
+            "first_json_path": "sources[51].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 699880964,
+            "first_json_path": "sources[52].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827953021,
+            "first_json_path": "sources[53].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 607972874,
+            "first_json_path": "sources[54].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 522035807,
+            "first_json_path": "sources[55].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 884700972,
+            "first_json_path": "sources[56].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 134462729,
+            "first_json_path": "sources[57].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 147978527,
+            "first_json_path": "sources[58].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 700628451,
+            "first_json_path": "sources[59].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 843445030,
+            "first_json_path": "sources[60].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 446448988,
+            "first_json_path": "sources[61].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 638959948,
+            "first_json_path": "sources[62].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 23525568,
+            "first_json_path": "sources[63].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 493123960,
+            "first_json_path": "sources[64].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 866573682,
+            "first_json_path": "sources[65].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 580598490,
+            "first_json_path": "sources[66].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 794706897,
+            "first_json_path": "sources[67].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 622811055,
+            "first_json_path": "sources[68].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 15458297,
+            "first_json_path": "sources[69].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 889862759,
+            "first_json_path": "sources[70].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 630014638,
+            "first_json_path": "sources[71].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 419716698,
+            "first_json_path": "sources[72].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 584489287,
+            "first_json_path": "sources[73].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 726819917,
+            "first_json_path": "sources[74].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 468207512,
+            "first_json_path": "sources[75].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 708791158,
+            "first_json_path": "sources[76].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 856510393,
+            "first_json_path": "sources[77].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 60861487,
+            "first_json_path": "sources[78].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 871840956,
+            "first_json_path": "sources[79].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 301149348,
+            "first_json_path": "sources[80].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 427983136,
+            "first_json_path": "sources[81].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 814816357,
+            "first_json_path": "sources[82].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 825401364,
+            "first_json_path": "sources[83].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 372484460,
+            "first_json_path": "sources[84].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 505713304,
+            "first_json_path": "sources[85].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 876710010,
+            "first_json_path": "sources[86].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 586618377,
+            "first_json_path": "sources[87].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 66157331,
+            "first_json_path": "sources[88].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 210998254,
+            "first_json_path": "sources[89].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 558747183,
+            "first_json_path": "sources[90].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 850903391,
+            "first_json_path": "sources[91].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 254084297,
+            "first_json_path": "sources[92].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 851781959,
+            "first_json_path": "sources[93].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 433626529,
+            "first_json_path": "sources[94].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 630952489,
+            "first_json_path": "sources[95].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 114745743,
+            "first_json_path": "sources[96].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 324310850,
+            "first_json_path": "sources[97].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234173051,
+            "first_json_path": "sources[98].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 13937749,
+            "first_json_path": "sources[99].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 725446415,
+            "first_json_path": "sources[100].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234029248,
+            "first_json_path": "sources[101].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 797323201,
+            "first_json_path": "sources[102].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 850300441,
+            "first_json_path": "sources[103].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 83575882,
+            "first_json_path": "sources[104].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 176364202,
+            "first_json_path": "sources[105].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 379257661,
+            "first_json_path": "sources[106].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 845880246,
+            "first_json_path": "sources[107].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 646059879,
+            "first_json_path": "sources[108].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 277320264,
+            "first_json_path": "sources[109].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 528758061,
+            "first_json_path": "sources[110].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 96154123,
+            "first_json_path": "sources[111].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 228616647,
+            "first_json_path": "sources[112].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 628564803,
+            "first_json_path": "sources[113].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 151871197,
+            "first_json_path": "sources[114].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 681943887,
+            "first_json_path": "sources[115].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 655109113,
+            "first_json_path": "sources[116].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 661426236,
+            "first_json_path": "sources[117].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 564513410,
+            "first_json_path": "sources[118].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 603302271,
+            "first_json_path": "sources[119].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 398617878,
+            "first_json_path": "sources[120].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 83132283,
+            "first_json_path": "sources[121].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 87283751,
+            "first_json_path": "sources[122].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 86832792,
+            "first_json_path": "sources[123].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 745135969,
+            "first_json_path": "sources[124].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 442136159,
+            "first_json_path": "sources[125].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 269696945,
+            "first_json_path": "sources[126].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 561573362,
+            "first_json_path": "sources[127].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 729671835,
+            "first_json_path": "sources[128].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 379031575,
+            "first_json_path": "sources[129].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 234122652,
+            "first_json_path": "sources[130].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 746727007,
+            "first_json_path": "sources[131].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 129223029,
+            "first_json_path": "sources[132].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 740238344,
+            "first_json_path": "sources[133].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 444631845,
+            "first_json_path": "sources[134].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 387474214,
+            "first_json_path": "sources[135].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 773283105,
+            "first_json_path": "sources[136].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827732877,
+            "first_json_path": "sources[137].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 816360514,
+            "first_json_path": "sources[138].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 653872695,
+            "first_json_path": "sources[139].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 457811864,
+            "first_json_path": "sources[140].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 453777906,
+            "first_json_path": "sources[141].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 502726670,
+            "first_json_path": "sources[142].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 870099266,
+            "first_json_path": "sources[143].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 76354933,
+            "first_json_path": "sources[144].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 542619615,
+            "first_json_path": "sources[145].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 298754492,
+            "first_json_path": "sources[146].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 259940230,
+            "first_json_path": "sources[147].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 139885636,
+            "first_json_path": "sources[148].melt_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 270739820,
+            "first_json_path": "sources[149].melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "melt_duration_ps": [
+          {
+            "value": 300.0,
+            "first_json_path": "sources[0].melt_duration_ps",
+            "occurrences": 150
+          }
+        ],
+        "equilibration_duration_ps": [
+          {
+            "value": 15.0,
+            "first_json_path": "sources[0].equilibration_duration_ps",
+            "occurrences": 150
+          }
+        ],
+        "simulator_version": [
+          {
+            "value": "LAMMPS (22 Jul 2025 - Update 4)",
+            "first_json_path": "sources[0].simulator_version",
+            "occurrences": 150
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped relative to box_low; orthorhombic box_low/high arrays hashed above",
+            "first_json_path": "sources[0].coordinate_convention",
+            "occurrences": 150
+          }
+        ],
+        "future_lags_ps": [
+          {
+            "value": [
+              0.75,
+              3.0,
+              12.0,
+              48.0,
+              96.0
+            ],
+            "first_json_path": "config.future_lags_ps",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 17.0,
+            "first_json_path": "config.radius_A",
+            "occurrences": 1
+          }
+        ],
+        "cutoff_A": [
+          {
+            "value": 5.0,
+            "first_json_path": "config.cutoff_A",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260917,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/precision_audit.json",
+      "relative_path": "precision_audit.json",
+      "sha256": "f30f4b7535961077877b8ab179434d59511678b3b44c0a7df97cf10ea75e941e",
+      "kind": "metadata",
+      "keys": [
+        "box_dtype",
+        "cache_dtype",
+        "limitation",
+        "local_calculation_dtype",
+        "matched_full_precision_comparison",
+        "measured_quantization_errors",
+        "position_dtype",
+        "state",
+        "velocity_dtype"
+      ],
+      "recorded_state": "limited_existing_float16",
+      "facts": {
+        "position_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "position_dtype",
+            "occurrences": 1
+          }
+        ],
+        "velocity_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "velocity_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-memory-al-r17-20260917/preparation.json",
+      "relative_path": "preparation.json",
+      "sha256": "709885044412bd38b8330bfec2c32ab7f8a895e2e9153c795e8a3e563823f24a",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "source_plan_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "predictive_memory_partial_observation_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "future_lags_ps": [
+          {
+            "value": [
+              0.75,
+              3.0,
+              12.0,
+              48.0,
+              96.0
+            ],
+            "first_json_path": "config.future_lags_ps",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 17.0,
+            "first_json_path": "config.radius_A",
+            "occurrences": 1
+          }
+        ],
+        "cutoff_A": [
+          {
+            "value": 5.0,
+            "first_json_path": "config.cutoff_A",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260917,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

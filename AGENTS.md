@@ -1,5 +1,10 @@
 # Working rules
 
+- Before choosing training data or planning new data collection, consult
+  [DATASETS.md](DATASETS.md). Refresh with `python scripts/project.py datasets
+  --refresh` when availability matters. Register new collections and their
+  known materials, generating potential, provenance and ancestry in
+  `configs/datasets.json`; keep unknown metadata explicit.
 - Use conda `pointnet` when available.
 - Research correctness comes first: fail loudly with useful context. Trace values
   to their repository producer; use its actual types, shapes and fields. Avoid

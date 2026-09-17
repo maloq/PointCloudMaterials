@@ -1,0 +1,84 @@
+{
+  "dataset_id": "portability-smoke-forecast",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "e594e055b727e0c6d9d56da5d40a7da0050212a623ef83bb52f9f562d042efdf",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "embedding_dim",
+        "shards",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 0,
+            "first_json_path": "shards[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 1,
+            "first_json_path": "shards[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 2,
+            "first_json_path": "shards[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 3,
+            "first_json_path": "shards[3].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 4,
+            "first_json_path": "shards[4].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 5,
+            "first_json_path": "shards[5].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "shards[0].split",
+            "occurrences": 2
+          },
+          {
+            "value": "val",
+            "first_json_path": "shards[2].split",
+            "occurrences": 2
+          },
+          {
+            "value": "test",
+            "first_json_path": "shards[4].split",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "shards[0].temperature_K",
+            "occurrences": 6
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

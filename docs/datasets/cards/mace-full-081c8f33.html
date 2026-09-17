@@ -1,0 +1,853 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al/Mg/Ta/Ti · mixed relaxed-MACE training views</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al/Mg/Ta/Ti · mixed relaxed-MACE training views</h1><p>Mixed-material derived MACE inputs/targets; original thermal Al/Mg/Ta data plus Ti/Ta branch additions. Source paths and transformations are recorded in manifest.json.</p><span class="badge">derived</span><p><code>mace-full</code> · Al, Mg, Ta, Ti</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/mace-full">/home/ids/vmorozov/training-cache/mace-full</a></p><p>57 owned files · 0.259 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al/Mg/Ta/Ti \u00b7 mixed relaxed-MACE training views&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;,
+    &quot;Mg&quot;,
+    &quot;Ta&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;Mixed-material derived MACE inputs/targets; original thermal Al/Mg/Ta data plus Ti/Ta branch additions. Source paths and transformations are recorded in manifest.json.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:mace-full}/manifest.json&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-mendelev2008-eam&quot;,
+    &quot;mg-wilson2016-eam&quot;,
+    &quot;ta-zhong2014-eam&quot;,
+    &quot;ti-kavousi2019-meam&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-full/manifest.json">${dataset:mace-full}/manifest.json</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>seed</td><td><code>[20260910, 42]</code></td></tr><tr><td>materials</td><td><code>[[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;]]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;, &quot;float32&quot;]</code></td></tr><tr><td>radius</td><td><code>[10.169428, 9.192189, 9.247764279105562, 9.388275]</code></td></tr><tr><td>frame_count</td><td><code>[2401, 241]</code></td></tr><tr><td>split</td><td><code>[&quot;train&quot;, &quot;val&quot;]</code></td></tr><tr><td>periodic</td><td><code>[true]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 57,
+    &quot;apparent_bytes&quot;: 281965521,
+    &quot;allocated_bytes&quot;: 278123520,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 13,
+      &quot;.npy&quot;: 44
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 2,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;Ta_new_2.7ns_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.7ns_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.7ns_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.7ns_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.8ns_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.8ns_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.8ns_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.8ns_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.9ns_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.9ns_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.9ns_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_2.9ns_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.0ns_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.0ns_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.0ns_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.0ns_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.60ns_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.60ns_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.60ns_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ta_new_3.60ns_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000000000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000000000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000000000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000000000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000008000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000008000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000008000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000008000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000032000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000032000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000032000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000032000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000040000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000040000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000040000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000040000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000056000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000056000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000056000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000056000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000192000_train.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000192000_train.views.npy&quot;,
+      &quot;shape&quot;: [
+        16384,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000192000_val.pairs.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        4
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;Ti_new_parent_000192000_val.views.npy&quot;,
+      &quot;shape&quot;: [
+        1024,
+        3,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: [
+    {
+      &quot;path&quot;: &quot;Al_166ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_166ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_166ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_166ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_166ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_166ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_166ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_166ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_170ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_170ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_170ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_170ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_170ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_170ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_170ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_170ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_174ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_174ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_174ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_174ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_174ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_174ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_174ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_174ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_175ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_175ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_175ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_175ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_175ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_175ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_175ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_175ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_177ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_177ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_177ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_177ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_177ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_177ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_177ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_177ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_240ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_240ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_240ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_240ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_240ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_240ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Al_240ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Al_240ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1000ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1000ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1000ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1000ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1000ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1000ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1000ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1000ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1500ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1500ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1500ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1500ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1500ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1500ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_1500ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_1500ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_940ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_940ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_940ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_940ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_940ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_940ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_940ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_940ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_960ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_960ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_960ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_960ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_960ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_960ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_960ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_960ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_980ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_980ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_980ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_980ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_980ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_980ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_980ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_980ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_990ps_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_990ps_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_990ps_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_990ps_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_990ps_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_990ps_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Mg_990ps_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Mg_990ps_val.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Ta_model_1m_train.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Ta_model_1m_train.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Ta_model_1m_train.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Ta_model_1m_train.views.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Ta_model_1m_val.pairs.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Ta_model_1m_val.pairs.npy&quot;,
+      &quot;available&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;Ta_model_1m_val.views.npy&quot;,
+      &quot;target&quot;: &quot;/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/views/Ta_model_1m_val.views.npy&quot;,
+      &quot;available&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/vicreg_mace_full.yaml">configs/vicreg_mace_full.yaml</a></li></ul></details><details><summary>Producer evidence (2 records)</summary><p><a href="../records/mace-full-081c8f33.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-full/manifest.json">manifest.json</a> · complete · <code>5700a54b48c261a37c59566dc02a04897226d8a9b6ee22af658d919513d9df93</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/mace-full/status.json">status.json</a> · complete · <code>aec96b319d97b962d278dbf1fdba4df79ba7a53efe43ee17fd1e8dd45a01dc12</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

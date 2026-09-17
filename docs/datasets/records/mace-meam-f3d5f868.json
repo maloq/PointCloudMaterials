@@ -1,0 +1,99 @@
+{
+  "dataset_id": "mace-meam",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-meam/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "f101e25bf5e2715da639684b953f84aac23ce4c80e988783dbcd8fffb3cd1274",
+      "kind": "metadata",
+      "keys": [
+        "checksums",
+        "input_definition",
+        "protocol",
+        "scaling_fit",
+        "shards",
+        "state",
+        "target_definition"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "radius_A": [
+          {
+            "value": 9.192189,
+            "first_json_path": "protocol.radius_A",
+            "occurrences": 1
+          }
+        ],
+        "frame_offsets_ps": [
+          {
+            "value": [
+              -3.0,
+              -2.25,
+              -1.5,
+              -0.75,
+              0.0
+            ],
+            "first_json_path": "protocol.frame_offsets_ps",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260910,
+            "first_json_path": "protocol.seed",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "shards[0].split",
+            "occurrences": 54
+          },
+          {
+            "value": "val",
+            "first_json_path": "shards[18].split",
+            "occurrences": 18
+          },
+          {
+            "value": "test",
+            "first_json_path": "shards[24].split",
+            "occurrences": 18
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "shards[0].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "shards[30].temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "shards[60].temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-meam/status.json",
+      "relative_path": "status.json",
+      "sha256": "f36b7ab78145f63a6863d2aea856d4b57352a226dcfe050ed9bdc55b830a246a",
+      "kind": "metadata",
+      "keys": [
+        "contexts",
+        "examples",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

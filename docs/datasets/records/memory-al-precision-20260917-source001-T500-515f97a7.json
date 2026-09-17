@@ -1,0 +1,551 @@
+{
+  "dataset_id": "memory-al-precision-20260917-source001-T500",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500/metadata.json",
+      "relative_path": "metadata.json",
+      "sha256": "724a977d3123d936f02c266c64c0f9bb0bab6551fcebd2d3b39981d36126e8ec",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "barostat_ps",
+        "ensemble",
+        "equilibration_steps",
+        "measurement_interventions",
+        "measurement_steps",
+        "melt_steps",
+        "momentum_removal_interval_ps",
+        "parent_trajectory_id",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "root_lineage",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "sample_interval_steps",
+        "source_sha256",
+        "split",
+        "state",
+        "stopping_rule",
+        "temperature_K",
+        "thermostat",
+        "thermostat_ps",
+        "timestep_ps",
+        "velocity_reset_before_equilibration",
+        "velocity_seed"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "predictive_memory_precision_sources_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "thermostat": [
+          {
+            "value": "Nose-Hoover",
+            "first_json_path": "thermostat",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.3,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0.0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_407215734",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "parent_trajectory_id": [
+          {
+            "value": null,
+            "first_json_path": "parent_trajectory_id",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 500.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 407215734,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 612992447,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500/outcome.json",
+      "relative_path": "outcome.json",
+      "sha256": "b6fe965495701d0c3b495497cd0d006714781314a57a2e019c8279c1cf356c19",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "frame_count",
+        "host",
+        "manifest_sha256",
+        "measurement_seconds",
+        "melt_seconds",
+        "native_restart_sha256",
+        "pid",
+        "prepared_liquid_sha256",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 2561,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500/status.json",
+      "relative_path": "status.json",
+      "sha256": "b6fe965495701d0c3b495497cd0d006714781314a57a2e019c8279c1cf356c19",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "frame_count",
+        "host",
+        "manifest_sha256",
+        "measurement_seconds",
+        "melt_seconds",
+        "native_restart_sha256",
+        "pid",
+        "prepared_liquid_sha256",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 2561,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500/trajectory_binary_float16/manifest.json",
+      "relative_path": "trajectory_binary_float16/manifest.json",
+      "sha256": "df1d0ffe25fca44fa5be5af83a036de4cfb1c3938a4065850db0e2013ddeea52",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2561,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "predictive_memory_precision_sources_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_407215734",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 2561,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2561,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "d43bd49eeeb813276b622e2b15069f639005eeac39086653d2154d92aae03f87",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2561,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "eb20a7ce3c022b74cc3b21d754bbdce853da8ae1b6034721de2a000f8acac8fb",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2561,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0aff45856157169c61fd0ea73d0408212a8cfa3a94422258057aa7c4966e0a1e",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2561
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3bf9d28ba77302c9dd5f91d0b00d7253fc6648213d199be08663c56abfe3ab8b",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              2561,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "c9c9c1a9bf9b8da3effaf2e99ecd47314eb701f1518760cbeb78ee590ecd1e1c",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 64000,
+          "step_intervals": [
+            25
+          ]
+        },
+        "content_signature_from_manifest": "f21ddd2b16bc5790ae46fedc4b30c6b9fb3454900312ce46c44523ba52f4de3c",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500/trajectory_binary_float32/manifest.json",
+      "relative_path": "trajectory_binary_float32/manifest.json",
+      "sha256": "23918dd914334efb13061d6a0a27a9cade58fc03547fc4fd3c954c01ace013d0",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2561,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "predictive_memory_precision_sources_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_407215734",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 2561,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2561,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "d43bd49eeeb813276b622e2b15069f639005eeac39086653d2154d92aae03f87",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2561,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "eb20a7ce3c022b74cc3b21d754bbdce853da8ae1b6034721de2a000f8acac8fb",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2561,
+              70304,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cfe2a5bb3a8967416e997d360b7d5d1dc24f90bf2b5673fe2a1e27eadbbf7dd6",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2561
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3bf9d28ba77302c9dd5f91d0b00d7253fc6648213d199be08663c56abfe3ab8b",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              2561,
+              70304,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "09dd8c100ebcacafc2660b3078a393ef526837385156175a5783b61f12e334ee",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 64000,
+          "step_intervals": [
+            25
+          ]
+        },
+        "content_signature_from_manifest": "773709a61cd2b728bc22950bc6bcfa821bd49bd1502cd011af92fc7edd4192c7",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

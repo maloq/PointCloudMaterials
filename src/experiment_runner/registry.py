@@ -301,7 +301,7 @@ a{color:#17528d;overflow-wrap:anywhere}summary{cursor:pointer;padding:7px 0}li{m
 .plots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;list-style:none;padding:0}.plots img{width:100%;height:190px;object-fit:contain}
 pre{white-space:pre-wrap;max-height:400px;overflow:auto;font-size:12px}article[hidden]{display:none}
 </style><header><h1>Materials experiment registry</h1>
-<p>Configs, results, checkpoints and plots at their original paths. <a href="tables/experiments.csv">Experiment table</a> · <a href="technical/experiments.json">Technical inventory</a> · <a href="../../docs/output_registry.md">Retention &amp; reproduction guide</a></p>
+<p><a href="../../docs/datasets/index.html"><strong>Dataset registry: materials, potentials and provenance</strong></a> · Configs, results, checkpoints and plots at their original paths. <a href="tables/experiments.csv">Experiment table</a> · <a href="technical/experiments.json">Technical inventory</a> · <a href="../../docs/output_registry.md">Retention &amp; reproduction guide</a></p>
 <input id="search" type="search" placeholder="Search experiment, model, metric or artifact…">
 <select id="kind"><option value="experiment">Experiments</option><option value="simulation">Simulations</option><option value="idea">Ideas</option><option value="">Everything</option><option value="dataset">Datasets &amp; caches</option><option value="maintenance">Maintenance</option></select>
 <span id="count"></span></header>'''

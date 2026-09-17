@@ -25,6 +25,17 @@ and output location through the existing config/CLI. Do not copy a runner.
 
 ## Supporting configs
 
+- `shared_pretraining/campaign.json`: approved local 12-epoch structural,
+  initialized causal and frozen-evaluation campaign, batch 512.
+  `shared_pretraining/h200_batch1024/campaign.json`: separate one-H200 serial
+  queue with batch 1,024 for both encoder-training stages; see the
+  [H200 task](../docs/h200_shared_pretraining_task_20260918.md).
+
+- `analysis/structural_gatr_static.json`, `analysis/static_structural_gatr_al.yaml`
+  and `data/loaders/static_al_structural_gatr.yaml`: selected RTX6000 structural
+  GATr–VICReg export, verification and full standard Al static analysis;
+  [input contract and commands](../docs/structural_static_analysis.md).
+
 - `local_predictability/two_gpu_16h.json`: planning-only one-seed H100/H200
   predictability queue; requires new assay/batched-training adapters before
   execution. [Protocol](../experiments/local_predictability_20260917/README.md)

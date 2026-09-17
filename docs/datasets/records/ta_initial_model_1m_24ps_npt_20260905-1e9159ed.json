@@ -1,0 +1,703 @@
+{
+  "dataset_id": "ta_initial_model_1m_24ps_npt_20260905",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "32f5aef8d2228c68360572b01ea1a2e0e0281ca03016d67136c294a714d0cdae",
+      "kind": "metadata",
+      "keys": [
+        "branch_count",
+        "branch_path",
+        "completed_at_utc",
+        "created_at_utc",
+        "execution",
+        "material",
+        "potential",
+        "protocol",
+        "protocol_source",
+        "runner_script",
+        "schema_version",
+        "scientific_scope",
+        "source",
+        "state",
+        "storage"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic Nose-Hoover NPT",
+            "first_json_path": "protocol.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1900,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "protocol.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24,
+            "first_json_path": "protocol.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "protocol.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_damping_ps": [
+          {
+            "value": 0.2,
+            "first_json_path": "protocol.thermostat_damping_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_damping_ps": [
+          {
+            "value": 2.0,
+            "first_json_path": "protocol.barostat_damping_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 891051440,
+            "first_json_path": "protocol.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 180.95,
+            "first_json_path": "protocol.mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "pair_style": [
+          {
+            "value": "eam/alloy",
+            "first_json_path": "potential.pair_style",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+          "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386",
+          "pair_style": "eam/alloy",
+          "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
+          "source_page": "https://sites.google.com/site/eampotentials/ta",
+          "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
+        },
+        "protocol_source": "https://arxiv.org/html/2109.06797",
+        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/status.json",
+      "relative_path": "status.json",
+      "sha256": "3ec9dda860f469ba2098c8eeca58476da6f52ffa8afd60c0c478dc120259a6d0",
+      "kind": "metadata",
+      "keys": [
+        "branch_path",
+        "command",
+        "completed_at_utc",
+        "conversion",
+        "dynamics_finished_at_utc",
+        "dynamics_seconds",
+        "elapsed_seconds",
+        "final_restart_sha256",
+        "host",
+        "pid",
+        "preflight",
+        "stage",
+        "started_at_utc",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1,
+            "first_json_path": "preflight.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "preflight.atom_count",
+            "occurrences": 3
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "preflight.binary_conversion.frame_count",
+            "occurrences": 1
+          },
+          {
+            "value": 241,
+            "first_json_path": "conversion.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "preflight.binary_conversion.storage_dtype",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/metadata.json",
+      "relative_path": "branches/Ta/model_1m/metadata.json",
+      "sha256": "d846e3a61e6cb25f23dac4320f438bc5d30a984d58a496ece3f5a2ff43671f22",
+      "kind": "metadata",
+      "keys": [
+        "branch_count",
+        "branch_path",
+        "created_at_utc",
+        "execution",
+        "material",
+        "potential",
+        "protocol",
+        "protocol_source",
+        "schema_version",
+        "scientific_scope",
+        "source",
+        "state",
+        "storage"
+      ],
+      "recorded_state": "prepared",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic Nose-Hoover NPT",
+            "first_json_path": "protocol.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1900,
+            "first_json_path": "protocol.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "protocol.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 24,
+            "first_json_path": "protocol.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2,
+            "first_json_path": "protocol.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "protocol.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "protocol.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_damping_ps": [
+          {
+            "value": 0.2,
+            "first_json_path": "protocol.thermostat_damping_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_damping_ps": [
+          {
+            "value": 2.0,
+            "first_json_path": "protocol.barostat_damping_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 891051440,
+            "first_json_path": "protocol.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 180.95,
+            "first_json_path": "protocol.mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "pair_style": [
+          {
+            "value": "eam/alloy",
+            "first_json_path": "potential.pair_style",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": {
+          "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+          "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386",
+          "pair_style": "eam/alloy",
+          "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
+          "source_page": "https://sites.google.com/site/eampotentials/ta",
+          "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
+        },
+        "protocol_source": "https://arxiv.org/html/2109.06797",
+        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/outcome.json",
+      "relative_path": "branches/Ta/model_1m/outcome.json",
+      "sha256": "25299676b648cd68fecb46cfb715f0c1bef14db497e8eab1b7e2a54630db8d8b",
+      "kind": "metadata",
+      "keys": [
+        "branch_path",
+        "command",
+        "completed_at_utc",
+        "conversion",
+        "dynamics_finished_at_utc",
+        "dynamics_seconds",
+        "elapsed_seconds",
+        "final_restart_sha256",
+        "host",
+        "pid",
+        "preflight",
+        "stage",
+        "started_at_utc",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1,
+            "first_json_path": "preflight.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "preflight.atom_count",
+            "occurrences": 3
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "preflight.binary_conversion.frame_count",
+            "occurrences": 1
+          },
+          {
+            "value": 241,
+            "first_json_path": "conversion.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "preflight.binary_conversion.storage_dtype",
+            "occurrences": 2
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/Ta/model_1m/trajectory_binary_float16/manifest.json",
+      "sha256": "aa42346bf357f984100d41206ec87fb3ecfff38d6672c974a391ee253c86d92a",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          },
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "provenance.float32_manifest.coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.float32_manifest.provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1024000,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1024000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "db3a7ed8368bf16ff2bef8573459a9d2357ea5d6cccd125b25c620a4a5914b4a",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1024000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "a2627e312d3fb2b5727bbf71ad1d5f568cccba8015873826ade26c051dfe4a3b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6cb2d34c0f5cce5da73a225f69359447312d6f3443a0712091ba8fcc330e249c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "307782f111b2c4f9c9e9617f3b84f71425d339837968301fe465fc6220e82be6",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              1024000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "61b553858fcac44421bcd1fe951dd36b84abaa29fd85b61215bf0ad5e1de44d1",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1b862db124b880b6a6236b923e63bd1b3dde8b917deecc19f5d0bc09425a5ba9",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 12000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "76802cc009c7cbd984484b61c7e5eea85ea27c732c3a7862c36c44a55d4e382f",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/manifest.json",
+      "relative_path": "preflight/trajectory_binary_float16/manifest.json",
+      "sha256": "df644ecff193d2cf4cee2c604e9c681b9e749203e6962e0efd8741971eea4405",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          },
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "provenance.float32_manifest.coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.float32_manifest.provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1024000,
+        "frame_count": 11,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1024000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "db3a7ed8368bf16ff2bef8573459a9d2357ea5d6cccd125b25c620a4a5914b4a",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1024000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "a2627e312d3fb2b5727bbf71ad1d5f568cccba8015873826ade26c051dfe4a3b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "41a7aea3453905e5e852345aea54a6623d9d971e6f7689711d6f4224e8754ffe",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a11191ab4348d717084b1ebbcf2df28c80b73094a43af58cf5ba26e57241e9f9",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              1024000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "f1452b3695a4ec8489f40c9b98326965bf22a41feee5912f3ce5cbf23bba9ff9",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "05d45bbc6ffcd4f1ba51768ee3793416b01c15d12c8a21fc583726742cfcd4c3",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 500,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "80ebc9d3b6789d3d2f5da0e036c6fabf0a421450bc81922864c1ebe300ceeda9",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

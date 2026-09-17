@@ -1,0 +1,310 @@
+{
+  "dataset_id": "portability-ti-smoke-20260913",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/portability-ti-smoke-20260913/status.json",
+      "relative_path": "status.json",
+      "sha256": "24d3f3cbe871e3babc61e414775e6ea1c1a28bcab3a791a950d0228f3ef5ffd2",
+      "kind": "metadata",
+      "keys": [
+        "purpose",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/portability-ti-smoke-20260913/integration/metadata.json",
+      "relative_path": "integration/metadata.json",
+      "sha256": "3eede027a77b9434723a232c8184c5a70df65c6dd2e2f027ce455e3935572492",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 128,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "integration/storage validation only",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/portability-ti-smoke-20260913/integration/outcome.json",
+      "relative_path": "integration/outcome.json",
+      "sha256": "8cc0eedd02aaab972466db394a326932c66a2d9b3b4de3ee4094f5de8828996f",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 128,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "integration/storage validation only",
+            "first_json_path": "origin.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
+            "sha256": "9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/library.meam"
+          },
+          {
+            "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam",
+            "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
+            "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/portability-ti-smoke-20260913/integration/trajectory_binary_float16/manifest.json",
+      "relative_path": "integration/trajectory_binary_float16/manifest.json",
+      "sha256": "76985d5ed7b59c20865b513011f0b67676f0f0cb080e15aa43cade841823197b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 128,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ti",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "integration/storage validation only",
+            "first_json_path": "provenance.metadata.origin.protocol",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 128,
+        "frame_count": 5,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              128
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "2e57ad6a5b7a6afe5606f67a7460097f5c9ca125c6b3e4e097e5aa5b11964bbf",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              128
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "d585e10d1e2240e9af79fc1cf8d11e11420b5306480b469b587e85630fcb0c9f",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "aaecdb06fffb438ee357950a55c2388680ee7fd6e552c3ed3de7107344989e8a",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6401c02ed609d58daed23867a93e4a4ba10233676fe93b7dd9246f609e634836",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5,
+              128,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "3f419da0587e90dca5ae1e264a2c9f504699a41001f1dae5a4ab6df8ecf8e77a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "d9c8cb582db210d4ecfcab3713cedbcfad8041783911c6e282e8366f11eea3ca",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 20,
+          "step_intervals": [
+            5
+          ]
+        },
+        "content_signature_from_manifest": "766064b397d593c03b583556a77e6c92024d7eaab71d2071c6c4aedde6ccc625",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

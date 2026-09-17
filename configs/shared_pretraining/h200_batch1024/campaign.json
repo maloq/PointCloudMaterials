@@ -1,0 +1,29 @@
+{
+  "output": "output/shared_pretraining/h200-b1024-campaign-20260918",
+  "runs": [
+    {
+      "name": "mace_vicreg",
+      "configs": {
+        "structural": "configs/shared_pretraining/h200_batch1024/mace_vicreg_structural.json",
+        "causal": "configs/shared_pretraining/h200_batch1024/mace_vicreg_causal.json",
+        "analysis": "configs/shared_pretraining/h200_batch1024/mace_vicreg_analysis.json"
+      }
+    },
+    {
+      "name": "gatr_vicreg",
+      "configs": {
+        "structural": "configs/shared_pretraining/h200_batch1024/gatr_vicreg_structural.json",
+        "causal": "configs/shared_pretraining/h200_batch1024/gatr_vicreg_causal.json",
+        "analysis": "configs/shared_pretraining/h200_batch1024/gatr_vicreg_analysis.json"
+      }
+    },
+    {
+      "name": "gatr_lejepa",
+      "configs": {
+        "structural": "configs/shared_pretraining/h200_batch1024/gatr_lejepa_structural.json",
+        "causal": "configs/shared_pretraining/h200_batch1024/gatr_lejepa_causal.json",
+        "analysis": "configs/shared_pretraining/h200_batch1024/gatr_lejepa_analysis.json"
+      }
+    }
+  ]
+}

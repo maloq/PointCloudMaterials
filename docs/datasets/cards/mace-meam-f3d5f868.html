@@ -1,0 +1,1222 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al · earlier relaxed-MEAM training views</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al · earlier relaxed-MEAM training views</h1><p>Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.</p><span class="badge">derived</span><p><code>mace-meam</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/mace-meam">/home/ids/vmorozov/training-cache/mace-meam</a></p><p>94 owned files · 0.167 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al \u00b7 earlier relaxed-MEAM training views&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:mace-meam}/manifest.json&quot;,
+    &quot;output/mace_al_denoising_20260910/fire/data/manifest.json&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-meam/manifest.json">${dataset:mace-meam}/manifest.json</a></li><li><a href="../../../output/mace_al_denoising_20260910/fire/data/manifest.json">output/mace_al_denoising_20260910/fire/data/manifest.json</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>radius_A</td><td><code>[9.192189]</code></td></tr><tr><td>frame_offsets_ps</td><td><code>[[-3.0, -2.25, -1.5, -0.75, 0.0]]</code></td></tr><tr><td>seed</td><td><code>[20260910]</code></td></tr><tr><td>split</td><td><code>[&quot;test&quot;, &quot;train&quot;, &quot;val&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[400.0, 450.0, 510.0]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 94,
+    &quot;apparent_bytes&quot;: 179235571,
+    &quot;allocated_bytes&quot;: 179604480,
+    &quot;file_extensions&quot;: {
+      &quot;.npy&quot;: 91,
+      &quot;.json&quot;: 2,
+      &quot;.npz&quot;: 1
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 2,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;000.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;001.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;002.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;003.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;004.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;005.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;006.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;007.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;008.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;009.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;010.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;011.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;012.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;013.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;014.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;015.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;016.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;017.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;018.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;019.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;020.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;021.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;022.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;023.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;024.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;025.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;026.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;027.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;028.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;029.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;030.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;031.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;032.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;033.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;034.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;035.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;036.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;037.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;038.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;039.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;040.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;041.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;042.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;043.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;044.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;045.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;046.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;047.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;048.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;049.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;050.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;051.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;052.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;053.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;054.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;055.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;056.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;057.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;058.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;059.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;060.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;061.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;062.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;063.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;064.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;065.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;066.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;067.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;068.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;069.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;070.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;071.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;072.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;073.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;074.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;075.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;076.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;077.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;078.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;079.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;080.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;081.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;082.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;083.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;084.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;085.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;086.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;087.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;088.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;089.views.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        3,
+        5,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;scaling.npz&quot;,
+      &quot;members&quot;: {
+        &quot;tda_mean&quot;: {
+          &quot;shape&quot;: [
+            144
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tda_components&quot;: {
+          &quot;shape&quot;: [
+            32,
+            144
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;tda_std&quot;: {
+          &quot;shape&quot;: [
+            32
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pixel_scale&quot;: {
+          &quot;shape&quot;: [
+            144
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;block_std&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;block_scale&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;pca_variance_ratio&quot;: {
+          &quot;shape&quot;: [
+            32
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;targets.npy&quot;,
+      &quot;shape&quot;: [
+        23040,
+        144
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (8)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/vicreg_mace_relaxed.yaml">configs/vicreg_mace_relaxed.yaml</a></li><li><a href="../../../configs/analysis/mace_context.json">configs/analysis/mace_context.json</a></li><li><a href="../../../configs/analysis/relaxed_histories.yaml">configs/analysis/relaxed_histories.yaml</a></li><li><a href="../../../configs/analysis/mace_tda_ridge_audit.json">configs/analysis/mace_tda_ridge_audit.json</a></li><li><a href="../../../configs/analysis/static_topology.yaml">configs/analysis/static_topology.yaml</a></li><li><a href="../../../configs/analysis/mace_tda_initialization.json">configs/analysis/mace_tda_initialization.json</a></li><li><a href="../../../configs/analysis/mace_encoder_diagnostics.json">configs/analysis/mace_encoder_diagnostics.json</a></li><li><a href="../../../configs/analysis/mace_tda_direct.json">configs/analysis/mace_tda_direct.json</a></li></ul></details><details><summary>Producer evidence (2 records)</summary><p><a href="../records/mace-meam-f3d5f868.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/mace-meam/manifest.json">manifest.json</a> · complete · <code>f101e25bf5e2715da639684b953f84aac23ce4c80e988783dbcd8fffb3cd1274</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/mace-meam/status.json">status.json</a> · complete · <code>f36b7ab78145f63a6863d2aea856d4b57352a226dcfe050ed9bdc55b830a246a</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

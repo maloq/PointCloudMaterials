@@ -1,0 +1,109 @@
+{
+  "dataset_id": "local_overnight_lamedell11_20260905",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "8f8a1c9d80593cb6988403bde32ebe1940cd7edff7903f2c93a0f36eb56e250a",
+      "kind": "metadata",
+      "keys": [
+        "campaign_root",
+        "cutoff_policy",
+        "deadline",
+        "estimated_seconds_per_source",
+        "host",
+        "manifest_sha256",
+        "mpi_ranks",
+        "sources",
+        "submission_check",
+        "task_indices"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "preparation_seed": [
+          {
+            "value": 139885636,
+            "first_json_path": "sources[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 870099266,
+            "first_json_path": "sources[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 259940230,
+            "first_json_path": "sources[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 502726670,
+            "first_json_path": "sources[3].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "source_split": [
+          {
+            "value": "final_validation",
+            "first_json_path": "sources[0].source_split",
+            "occurrences": 4
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[1].temperature_K",
+            "occurrences": 2
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 553075734,
+            "first_json_path": "sources[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 118047358,
+            "first_json_path": "sources[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 95929037,
+            "first_json_path": "sources[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 350404648,
+            "first_json_path": "sources[3].velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905/status.json",
+      "relative_path": "status.json",
+      "sha256": "f0fc7bfc93e09c2ee4bf178687ce01d5f1a56808b95ae271aa80914c38331859",
+      "kind": "metadata",
+      "keys": [
+        "deadline",
+        "finished_at",
+        "host",
+        "pid",
+        "started_at",
+        "state",
+        "tasks",
+        "updated_at"
+      ],
+      "recorded_state": "stopped_at_deadline",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

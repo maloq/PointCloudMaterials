@@ -1,0 +1,20 @@
+{
+  "dataset_id": "restart_boundary_audit_20260905",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/status.json",
+      "relative_path": "boundary_001/status.json",
+      "sha256": "ee2d05d4f20928eb6a3a7a860154c3902cf7cfde6bd351e6d641a638507eb719",
+      "kind": "metadata",
+      "keys": [
+        "finished_at",
+        "stage",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

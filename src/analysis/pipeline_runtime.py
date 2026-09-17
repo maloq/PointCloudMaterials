@@ -376,7 +376,11 @@ def _collect_main_inference_cache(
             raise RuntimeError(
                 "Internal error: model must be loaded before gathering inference batches."
             )
-        if str(cfg.model_type).strip().lower() == 'mace_context_encoder':
+        if str(cfg.model_type).strip().lower() == 'structural_gatr_encoder':
+            from .structural_adapter import collect_structural_inference
+            cache = collect_structural_inference(model, dataloader, cfg, out_dir,
+                max_batches=max_batches_latent, max_samples=max_samples_total)
+        elif str(cfg.model_type).strip().lower() == 'mace_context_encoder':
             from .mace_context_adapter import collect_context_inference
             cache = collect_context_inference(model, dataloader, cfg, out_dir,
                 max_batches=max_batches_latent, max_samples=max_samples_total)
@@ -506,6 +510,9 @@ def load_vicreg_model(
 
 def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
+    if model_type == 'structural_gatr_encoder':
+        from .structural_adapter import StructuralGATrAnalysis
+        return StructuralGATrAnalysis
     if model_type == 'mace_context_encoder':
         from .mace_context_adapter import MACEContextAnalysis
         return MACEContextAnalysis
@@ -530,7 +537,7 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     raise ValueError(
         "Unsupported checkpoint model_type for analysis. "
         "Expected one of ['vicreg', 'visreg', 'temporal_vicreg', "
-        "'density_encoder', 'pretrained_mace_encoder', 'mace_context_encoder'], "
+        "'density_encoder', 'pretrained_mace_encoder', 'mace_context_encoder', 'structural_gatr_encoder'], "
         f"got {model_type!r}."
     )
 

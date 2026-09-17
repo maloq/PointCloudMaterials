@@ -1,0 +1,96 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al/Mg 24 ps parent collection</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al/Mg 24 ps parent collection</h1><p>Twelve retained NPT continuations: six Al and six Mg. Historical directory name includes Zr, whose reconstructed-potential trajectories were removed.</p><span class="badge">research</span><p><code>zr_al_mg_initial_6x24ps</code> · Al, Mg</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps">/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps</a></p><p>13 owned files · 0.001 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al/Mg 24 ps parent collection&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;,
+    &quot;Mg&quot;
+  ],
+  &quot;role&quot;: &quot;container&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;Twelve retained NPT continuations: six Al and six Mg. Historical directory name includes Zr, whose reconstructed-potential trajectories were removed.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;lineage&quot;: &quot;Position-conditioned branches from archived thermal snapshots; no source velocities or thermostat state; not exact restarts.&quot;,
+  &quot;removed_materials&quot;: [
+    &quot;Zr&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/manifest.json">${dataset:zr_al_mg_initial_6x24ps}/manifest.json</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: <a href="al-eam-six-24ps-c12da440.html">al-eam-six-24ps</a>, <a href="mg-eam-six-24ps-ab3916d9.html">mg-eam-six-24ps</a><br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>material_order</td><td><code>[[&quot;Al&quot;, &quot;Mg&quot;]]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;isotropic Nose-Hoover NPT&quot;]</code></td></tr><tr><td>pressure_bar</td><td><code>[0.0]</code></td></tr><tr><td>duration_ps</td><td><code>[24.0]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>material_temperature_K</td><td><code>[{&quot;Al&quot;: 650.0, &quot;Mg&quot;: 600.0}]</code></td></tr><tr><td>material_timestep_fs</td><td><code>[{&quot;Al&quot;: 1.0, &quot;Mg&quot;: 1.0}]</code></td></tr><tr><td>scientific_scope</td><td><code>[&quot;New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 13,
+    &quot;apparent_bytes&quot;: 1656809,
+    &quot;allocated_bytes&quot;: 1025024,
+    &quot;file_extensions&quot;: {
+      &quot;.md&quot;: 1,
+      &quot;.json&quot;: 5,
+      &quot;.log&quot;: 3,
+      &quot;.fs&quot;: 2,
+      &quot;.meam&quot;: 2
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 1,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (1 records)</summary><p><a href="../records/zr_al_mg_initial_6x24ps-f64244b6.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/manifest.json">manifest.json</a> · complete · <code>97f7a09d4055e9d8919520077fd25f7343f9da275fcd0a9883750814817a773a</code></li></ul></details><p class="muted">Observed 2026-09-17T22:51:50.502756+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>
