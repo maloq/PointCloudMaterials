@@ -7,6 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.command_line import dispatch
 
 COMMANDS = {
+    'memory-sources': 'src.simulation.campaigns.memory_sources',
     'elemental': 'src.simulation.campaigns.elemental',
     'homogeneous': 'src.simulation.campaigns.homogeneous',
     'independent-meam-source': 'src.simulation.campaigns.independent_meam_source',

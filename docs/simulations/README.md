@@ -40,6 +40,10 @@ Maintained workflows: [scripts](../../scripts/README.md),
 New elemental runs use `scripts/run_lammps_campaign.py elemental run --config
 configs/simulation/ti_crystallization.json --run-name NAME`; choose Al/Ta explicitly.
 
+- [Predictive-memory precision sources, 2026-09-17](predictive_memory_precision_20260917.md):
+  12 fresh Al lineages, 192 ps at 0.075 ps cadence, retained float32/float16 pairs
+  and four preassigned sealed test sources; separate CPU production.
+
 Historical campaign documentation and exact configurations:
 
 - [Al source and branches](al_crystallization/README.md)

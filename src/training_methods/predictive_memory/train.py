@@ -97,6 +97,7 @@ def fit(config, *, history_ps, velocity, repeat_anchor=False, resume=False, dead
     deadline = datetime.fromisoformat(deadline_utc).timestamp() if deadline_utc else float('inf')
     start = time.monotonic()
     log = (technical/'training.jsonl').open('a' if resume else 'x')
+    validation_log = (technical/'validation.jsonl').open('a' if resume else 'x')
     for step in range(step+1, training['steps']+1):
         if time.time() > deadline-120:
             save_checkpoint(latest, model, optimizer, step-1, best, config, variant, normalizer, dataset, sampler)
@@ -130,8 +131,13 @@ def fit(config, *, history_ps, velocity, repeat_anchor=False, resume=False, dead
                 best = selection
                 save_checkpoint(technical/'best.pt', model, optimizer, step, best, config, variant, normalizer, dataset, sampler)
             save_checkpoint(latest, model, optimizer, step, best, config, variant, normalizer, dataset, sampler)
+            print(json.dumps(dict(step=step, joint_nll=selection, best=best,
+                present_mse=float(np.mean([r['present_mse'] for r in scores])),
+                future_mse=float(np.mean([r['future_mse'] for r in scores])),
+                elapsed_seconds=time.monotonic()-start)), file=validation_log, flush=True)
             print(f'{name} validation step={step} joint_nll={selection:.6g} best={best:.6g}', flush=True)
     log.close()
+    validation_log.close()
     checkpoint = torch.load(technical/'best.pt', map_location='cpu', weights_only=False)
     model.load_state_dict(checkpoint['model'])
     metrics = dict(selected_step=checkpoint['step'], trained_steps=training['steps'], history_ps=history_ps,

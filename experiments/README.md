@@ -10,8 +10,8 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
-| [Predictive memory](predictive_memory_20260917/README.md) | Active partial-observation pilot: geometry/motion future targets, 0/12/48 ps history, no crystallization supervision or smoothness loss |
-| [Causal native MACE](mace_causal_20260916/README.md) | Atom-level geometry/motion/history interaction with fixed multi-horizon physical tasks; implementation and smoke tests, no established comparative advantage |
+| [Predictive memory](predictive_memory_20260917/README.md) | Completed H100/H200 pilot; objective follow-up active. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) distinguish reported remote evidence and pending replication |
+| [Causal native MACE](mace_causal_20260916/README.md) | Completed short/long-budget studies and H200 width comparison; small conditional history benefit. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
 | [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | **Discarded** frozen-map approach; first sweep failed the retention gate; capacity fits retained without an established final evaluation |
 | [Frozen local-group states](mace_local_state_20260915/README.md) | **Discarded** approach; [completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |
 | [MACE liquid-cluster diagnosis](mace_context_clusters_20260915/README.md) | Matched GeoFrame V2 comparison, eight saved-feature ablations, physical readouts, and a [literature review](mace_context_clusters_20260915/LITERATURE_REVIEW.md) on coherent liquid representations |

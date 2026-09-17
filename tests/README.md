@@ -2,7 +2,9 @@
 
 `test_hardware_benchmark.py` verifies synthetic storage integrity and cleanup,
 LAMMPS timing/shape validation, immutable exports and failure reports, and real
-PointNet/MACE/forecast optimizer steps without datasets or checkpoints. CPU model
+PointNet/MACE/forecast optimizer steps without datasets or checkpoints. It also
+checks final-table rate/latency units and observed ranges, CSV fidelity, failure
+labels, and isolated rank-sweep reports. CPU model
 tests validate correctness; the GPU command itself requires CUDA.
 
 `test_mace_causal.py` checks native tensor MACE gradients, O(3)/boost/ID invariance,

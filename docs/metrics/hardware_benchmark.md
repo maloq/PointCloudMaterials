@@ -1,4 +1,4 @@
-# Synthetic hardware benchmark metrics (v1)
+# Synthetic hardware benchmark metrics (v2 report format)
 
 These are operational hardware measurements, not scientific accuracy scores.
 All inputs are generated with the saved seed; no checkpoint or dataset is loaded.
@@ -16,6 +16,33 @@ precision and process/thread placement across machines; use idle allocated resou
 duration, not a mean of rates. Trials are sequential repeats, not independent
 machines or uncertainty intervals. Arrays remain in JSON; scalar summaries go to CSV.
 MiB = 2^20 bytes; GiB = 2^30 bytes. Blank CSV values never mean zero.
+
+## Final table
+
+`RESULTS.md` is printed at the end of each invocation. `tables/summary.csv`
+contains the same measurement rows at full precision, with these columns:
+`benchmark`, `label`, `workload`, `trials`, `unit`, `median`, `minimum`, `maximum`,
+`ms_per_update`. `median` is the producer's throughput at median trial duration.
+`minimum = units_per_trial / seconds_max`; `maximum = units_per_trial / seconds_min`.
+The displayed min–max is an observed trial range, not a confidence interval.
+For GPU rows, `ms_per_update` is the producer's `step_ms`; CPU/storage leave it
+blank because their work units differ from a training update. Values are rounded
+only in Markdown; the CSV and JSON preserve their original floating-point values.
+No cross-run speedups or aggregate hardware score are calculated.
+
+CPU sweeps retain a separate producer result and settings for every requested
+rank/thread pair. Schema-2 JSON uses `results.cpu.runs.rN_tT`, and the detailed
+CSV uses `cpu.rN_tT.METRIC`. Each case keeps the same physical system size and
+timing settings. Cases exceeding the process CPU affinity fail before timing;
+the default remains one rank/thread. Smoke and failed runs are explicitly labeled.
+Old exports are not rewritten. Workload calculations are unchanged from v1.
+
+The final report records CPU/GPU identity, Python/NumPy and GPU software versions,
+storage mount/type and file size, CPU MPI/thread settings, GPU batch/model/backend
+settings, warmup and measured update counts. Raw JSON additionally retains CPU
+load averages, CPU affinity, GPU activity snapshots, LAMMPS build information and
+launcher details. Background activity and actual filesystem cache eviction remain
+uncontrolled; these observations do not certify an idle machine or cold media.
 
 ## Storage
 

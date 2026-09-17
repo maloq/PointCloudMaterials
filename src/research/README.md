@@ -71,6 +71,11 @@ interleaves atom-level spatial/temporal messages before its one pooling stage.
 frozen probes, verifies physical target pairing, and exports whole-source paired
 intervals and plots. Recipe: `configs/mace_causal/comparison.json`.
 
+`memory_report.py` freezes completed causal-state and partial-observation results
+without pooling their distinct metrics. It verifies matched seed completeness,
+preserves user-reported H200 evidence separately, and exports source hashes,
+metric definitions, tables and figures. Recipe: `configs/analysis/memory_research_report.json`.
+
 Causal runtime benchmarking uses the existing `mace_velocity causal-benchmark`
 dispatch to `training_methods/mace_causal/benchmark.py`; packing is implemented in
 `models/encoders/mace_causal_batch.py`, with residency and batching in `runtime.py`.

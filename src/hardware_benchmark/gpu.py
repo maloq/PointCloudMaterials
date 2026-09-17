@@ -181,6 +181,7 @@ def run(settings, device_name):
                   torch_version=torch.__version__, cuda_version=torch.version.cuda,
                   cudnn_version=torch.backends.cudnn.version(),
                   matmul_precision=settings.matmul_precision, cudnn_tf32=False,
+                  driver=command_info(["nvidia-smi", "--query-gpu=driver_version", "--format=csv,noheader"]),
                   nvidia_smi_before=command_info(["nvidia-smi"]), workloads={})
     for name in settings.workloads:
         print(f"gpu: building {name} with synthetic inputs", flush=True)

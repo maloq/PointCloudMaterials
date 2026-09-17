@@ -1,0 +1,42 @@
+{
+  "provenance": "User-supplied H200 summaries in this task on 2026-09-17. Raw H200 checkpoints, paired source tables and numerical interval endpoints have not been received here.",
+  "causal_state": {
+    "encoder_fits": 18,
+    "probe_fits": 48,
+    "seeds": 3,
+    "updates": 5000,
+    "batch_sources": 8,
+    "probe_updates": 2000,
+    "budget_provenance": "Declared receiving-server recipes and handoff; execution details not independently re-audited.",
+    "history_ps": 2.25,
+    "forecast_ps": 9.0,
+    "population": "predeclared low_order subset: current group qbar6 < 0.30; not a phase assignment",
+    "sources": 17,
+    "metric": "standardized physical MSE, equal six-block and source weighting, averaged across three training seeds",
+    "width16": {"snapshot": 0.4009, "history": 0.3990, "repeated_anchor": 0.3963},
+    "width32": {"snapshot": 0.4028, "history": 0.3946, "repeated_anchor": 0.4056},
+    "persistence": 0.7209,
+    "reported_findings": [
+      "Width-32 history improves over snapshot by about 2.0% and repeated frames by about 2.7%; both paired source-bootstrap intervals exclude zero.",
+      "Width-32 history improves over width-16 history by about 1.1%; its interval spans zero.",
+      "History beats snapshot in two of three seeds; its advantage is less clear over all 30 test sources.",
+      "Intervals quantify source uncertainty, not training-seed uncertainty."
+    ]
+  },
+  "partial_observation": {
+    "encoder_fits": 8,
+    "seeds": 2,
+    "updates": 3000,
+    "reported_wall_minutes": 95,
+    "future_lags_ps": [0.75, 3.0, 12.0, 48.0, 96.0],
+    "metric": "test joint physical-path negative log likelihood per standardized coordinate and lag, averaged across two seeds",
+    "width16_h100_reported": {"xv-H0": 0.9247, "xv-H12": 0.9254, "xv-H48": 0.9256, "xv-H48-repeat": 0.9236},
+    "width32_h200": {"xv-H0": 0.9354, "xv-H12": 0.9369, "xv-H48": 0.9302, "xv-H48-repeat": 0.9405},
+    "reported_findings": [
+      "Width 32 is worse in all eight matched per-seed point estimates; six source-bootstrap comparisons favor width 16.",
+      "12 ps history has no clear benefit; 48 ps history does not consistently beat both controls across seeds.",
+      "48 ps history reduces H200 mean prediction error by only 0.54% relative to snapshot; this is an MSE statement, distinct from the displayed NLL table.",
+      "No clear width benefit at the 96 ps forecast horizon. Two seeds and a fixed 3000-update budget do not establish the outcome under longer training."
+    ]
+  }
+}

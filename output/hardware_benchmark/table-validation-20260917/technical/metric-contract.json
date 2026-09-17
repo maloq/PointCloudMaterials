@@ -1,0 +1,17 @@
+{
+  "family": "hardware_benchmark",
+  "exported_at": "2026-09-17T10:18:52.678588+00:00",
+  "files": {
+    "docs/metrics/hardware_benchmark.md": "960a1e1a2afe7102342db3d7e7de5b708e83e83ef98dbb527cafd7f408728cb7",
+    "src/hardware_benchmark/common.py": "1801afc826b011b191ba38efeb40d55a8bf36d05398dea381ba3bf1c7dfd27fd",
+    "src/hardware_benchmark/storage.py": "7b51ab00c28e852bce67afa959fdae1daba998831c0a9afaeefb630d5e27e182",
+    "src/hardware_benchmark/cpu.py": "72f336eb95915269e91acef00ed2e92f381b1e50d44443fd972b913a237ae21c",
+    "src/hardware_benchmark/gpu.py": "372a2d9f05337dab57e737103c470cf1de63b6d38205ad83fe50296428289b97",
+    "src/hardware_benchmark/cli.py": "3e692b0bde4b68c0eba53c3b4714b7f4d5250794c46513d0d3b02b6d654ce70b",
+    "src/models/encoders/pointnet.py": "2185fcb60b68af7bf2958fa8b638c4366fa8f60e940887673dbe528472f4bd66",
+    "src/models/encoders/atomic_graph.py": "f82443a36ee47220de08173b9fd730dbb4b63bc656a3256862806778922713d7",
+    "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63",
+    "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
+    "src/hardware_benchmark/report.py": "b04728531f5fb5ec47150aad834894773b524292497e18ea2a13dd5302fcc2f7"
+  }
+}

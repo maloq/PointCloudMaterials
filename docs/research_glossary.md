@@ -174,6 +174,12 @@ The reported RMS is the square root of the mean squared normalized lengths.
 Thus 0.10 means one tenth of the training-reference RMS independent-pair distance
 scale.
 
+The native causal-state protocol uses a distinct denominator: covariance is
+computed within each evaluated source, and source-level J values are averaged
+equally. Its declared lag is 0.75 ps. Do not substitute the training-reference
+normalization above when interpreting those tables; see its
+[frozen metric definition](metrics/mace_causal.md).
+
 ### Temporal smoothness
 
 Regularity of the path traced by an embedding through time, including changes of

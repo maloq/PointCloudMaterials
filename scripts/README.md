@@ -8,7 +8,7 @@ and [the output layout](../docs/research_layout.md).
 
 | Command | Workflows / implementation |
 | --- | --- |
-| `benchmark_hardware.py {storage,cpu,gpu,all}` | Synthetic storage, LAMMPS CPU and actual-model GPU benchmarks; `src/hardware_benchmark/`; [usage](../docs/hardware_benchmark.md). No datasets/checkpoints required. |
+| `benchmark_hardware.py [storage,cpu,gpu,all]` | Defaults to all; prints/saves a standard results table. Optional `--cpu-ranks 1 8 24` runs a CPU sweep. Synthetic inputs; `src/hardware_benchmark/`; [usage](../docs/hardware_benchmark.md). |
 | `experiment_registry.py build` | Refresh the searchable experiment, simulation and ideas dashboard; `src/experiment_runner/registry.py` |
 | `experiment_registry.py storage` | Human-readable size report and large-file CSV; `src/experiment_runner/storage.py` |
 | `experiment_registry.py clean [--root output/RUN]` | Preview removable inference caches; add `--apply --inactive` only for inactive runs. Metadata and reconstruction evidence are preserved. |
@@ -36,6 +36,13 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
+`run_lammps_campaign.py memory-sources prepare --config
+configs/simulation/predictive_memory_precision.json --run-name NAME` stages fresh,
+split-assigned independent Al sources. `memory-sources run-worker --campaign-root
+ROOT --worker-index INDEX --workers COUNT` runs a fixed shard in a 48-rank CPU
+allocation. Its paired exports use `convert_trajectory.py memory-pair RUN_DIR`.
+See the [simulation record](../docs/simulations/predictive_memory_precision_20260917.md).
+
 `python -m src.data.predictive_memory.prepare --config configs/predictive_memory/pilot.json`
 audits existing trajectories and caches strictly partial observations and continuous
 physical targets. `python -m src.training_methods.predictive_memory.train --config
@@ -45,6 +52,19 @@ label-free memory pilot. `python -m src.training_methods.predictive_memory.compa
 fits. See [workflow and resume](../docs/predictive_memory.md).
 The comparison's `--modalities xv` option evaluates the four-fit velocity-input
 replicate from `configs/predictive_memory/replicate-xv-seed20260918.json`.
+`python -m src.training_methods.predictive_memory.diagnose --config CONFIG
+--modalities xv` audits frozen heads under constant-state interventions and fits
+train-only ridge controls for physical future/present prediction. It writes
+separate diagnostics and does not retrain or replace the native encoder.
+The `configs/predictive_memory/optimization/` recipes use the same trainer for
+matched 12,000-update original/stronger-present-loss fits across two seeds.
+
+`python -m src.research.memory_report --config configs/analysis/memory_research_report.json
+--output output/predictive_memory/NEW-SNAPSHOT` freezes completed causal/memory
+results, reported H200 means, diagnostic tables and plots without retraining.
+It refuses to overwrite a prior snapshot and does not average incomplete seed
+cohorts. The dated interpretation is reviewed separately; see the
+[consolidated report](../output/predictive_memory/research-summary-20260917/RESULTS.md).
 
 `python -m src.research.mace_velocity causal-prepare --config configs/mace_causal/pilot.json`
 prepares identity-preserving physical history/future examples.

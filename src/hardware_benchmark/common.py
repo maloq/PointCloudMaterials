@@ -24,7 +24,7 @@ def summarize(seconds, units, unit_name):
 def command_info(command):
     try:
         result = subprocess.run(command, cwd=REPO, capture_output=True, text=True,
-                                timeout=10, check=False)
+                                timeout=10, check=False, env={**os.environ, "LC_ALL": "C"})
     except (FileNotFoundError, subprocess.TimeoutExpired) as error:
         return dict(error=str(error))
     return dict(returncode=result.returncode, stdout=result.stdout.strip(),
@@ -33,14 +33,23 @@ def command_info(command):
 
 def metadata():
     packages = {}
-    for name in ("numpy", "torch", "lammps", "mace-torch", "e3nn", "cuequivariance-torch"):
+    for name in ("numpy", "torch", "lammps", "mace-torch", "e3nn", "cuequivariance",
+                 "cuequivariance-torch", "cuequivariance-ops-torch-cu12", "opt-einsum"):
         try:
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:
             packages[name] = None
+    cpu = command_info(["lscpu", "--json"])
+    cpu_model = "unavailable"
+    if cpu.get("returncode") == 0:
+        import json
+        fields = {row["field"].rstrip(":"): row["data"] for row in json.loads(cpu["stdout"])["lscpu"]}
+        cpu_model = fields.get("Model name", "unavailable")
     return dict(host=platform.node(), platform=platform.platform(), python=sys.version,
+                python_version=platform.python_version(), cpu_model=cpu_model,
                 executable=sys.executable, logical_cpus=os.cpu_count(),
                 cpu_affinity=sorted(os.sched_getaffinity(0)), packages=packages,
+                load_average=list(os.getloadavg()),
                 git_commit=command_info(["git", "rev-parse", "HEAD"]),
                 git_status=command_info(["git", "status", "--short"]),
                 cpu=command_info(["lscpu"]),

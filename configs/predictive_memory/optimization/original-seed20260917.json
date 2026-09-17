@@ -1,0 +1,48 @@
+{
+  "protocol": "predictive_memory_partial_observation_v1",
+  "source_plan": "${storage:cache}/mace-causal-physical-20260916/plan.json",
+  "cache": "${storage:cache}/predictive-memory-al-r17-20260917",
+  "output": "output/predictive_memory/optimization-original-seed20260917",
+  "prepare_workers": 6,
+  "anchor_frames": [
+    399,
+    400,
+    401
+  ],
+  "maximum_history_ps": 48.0,
+  "future_lags_ps": [
+    0.75,
+    3.0,
+    12.0,
+    48.0,
+    96.0
+  ],
+  "radius_A": 17.0,
+  "cutoff_A": 5.0,
+  "seed": 20260917,
+  "encoder": {
+    "channels": 16,
+    "output_dim": 128,
+    "num_layers": 2,
+    "correlation": 2,
+    "frame_chunk": 65,
+    "activation_checkpoint": false
+  },
+  "mixture": {
+    "components": 4,
+    "rank": 2,
+    "hidden": 128,
+    "minimum_std": 0.05
+  },
+  "training": {
+    "steps": 12000,
+    "batch_size": 1,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "gradient_clip": 5.0,
+    "present_weight": 0.05,
+    "validation_every": 250,
+    "log_every": 25
+  },
+  "bootstrap_draws": 500
+}

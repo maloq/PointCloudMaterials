@@ -1,5 +1,11 @@
 # Does early geometry–velocity–history interaction improve a local predictive state?
 
+**Results update, 17 September:** the three-seed pilot and longer H100 comparison
+are complete. The [consolidated report](../../output/predictive_memory/research-summary-20260917/RESULTS.md)
+also incorporates user-reported H200 width results, Gaussian-head diagnostics and
+the separate newer partial-observation protocol. The older status statements
+below describe the original launch; use the dated report for completed findings.
+
 Train one native tensor MACE encoder whose spatial messages receive temporally
 informed atom features before a single multiscale pooling stage. Reconstruct
 fixed present physical targets and predict fixed physical futures from the

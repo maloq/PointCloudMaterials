@@ -32,7 +32,12 @@ repeats the observed current physical packet at all future offsets. This is a
 physical-target baseline, with access to the full current packet, including
 velocities; it is not a positions-only observation-matched baseline. All MSEs
 are in the common training-standardized coordinate system. The training loss is
-joint NLL + 0.05 present MSE; no slowness, bending, whitening or teacher penalty.
+joint NLL + `training.present_weight` times present MSE (0.05 in the original
+pilot, 0.05 versus 1.0 in the optimization follow-up); no slowness, bending,
+whitening or teacher penalty. Each configuration declares its update budget;
+checkpoint selection still uses validation NLL only. The optimization follow-up
+uses 12,000 updates, with validation every 250, and retains validation NLL,
+present MSE and future MSE in `technical/validation.jsonl`.
 
 Reported means first average the three anchors of each source, then weight
 sources equally. `ci95` is a percentile interval from 500 whole-source bootstrap
@@ -57,3 +62,37 @@ no matched full-precision memory comparison is available in this pilot.
 Runtime fields are wall seconds including validation/export after dataset load,
 peak allocated GPU GiB (2^30 bytes), parameter count including allocated but
 unused control pathways, trained updates, and selected checkpoint update.
+
+## State-use and linear-readout diagnostics
+
+These diagnostics freeze completed encoders and heads. For each model, replace
+the state with its mean over training windows while keeping the actual temperature
+condition and trained head fixed. `mean_state_*` reports this intervention's NLL,
+future MSE and present MSE. `mean_state_*_increase` subtracts the original score,
+so a positive value means removing sample-specific state information hurts.
+Report validation and exploratory test separately with the same paired source
+bootstrap. A nonpositive increase is evidence that this intervention does not
+harm this fitted predictor; it is not proof of an exactly constant function,
+a retrained condition-only likelihood, an entropy estimate, or state sufficiency.
+
+Linear diagnostic readouts predict the full standardized physical path from
+temperature only, current 128-coordinate physical packet plus temperature, or
+exported state plus temperature. A fourth readout reconstructs the present
+packet from the state alone. The packet input includes relative velocities; it
+is observation-matched to xv, and only an information reference for x. These
+readouts neither alter nor replace the native encoder. No past-packet readout
+or full-history sufficiency test is implemented in this diagnostic.
+
+Input feature means and population standard deviations (floored at 1e-8), output
+intercepts and coefficients use training windows only. Ridge solves sum-squared
+error + alpha times squared coefficient norm, with an unpenalized intercept,
+using a float64 SVD. Alpha is selected from 0.001,0.01,0.1,1,10,100,1000,10000 by
+MSE on the middle anchor of each validation source; ties take the first value.
+Future-readout selection averages all 640 coordinates; present-readout selection
+averages 128. Test values never select normalization, coefficients or alpha.
+Readout predictions use the same per-block, per-lag and overall MSE definitions
+as mixture means, but have no likelihood score. `future_mse_gain` subtracts
+the candidate readout MSE from temperature-only readout MSE on paired test rows;
+positive favors the candidate. Report source intervals separately for each
+training seed. Saved coefficients, predictions, intervention scores, input
+artifact hashes and release checksum accompany the exported summary.

@@ -47,3 +47,26 @@ The separate [H200 capacity task](predictive_memory_h200.md) assigns eight
 width-32 velocity-input fits across two seeds, using a portable bundle of the
 same observations. It supersedes the previous crystallization-oriented H200
 assignment for new work.
+
+The H100 optimization follow-up uses the four recipes in
+`configs/predictive_memory/optimization/`: original versus 1.0 present loss
+weight, each at seeds 20260917 and 20260918. Each recipe fits velocity-input
+H=0,12,48 and the H=48 repeated-anchor control from scratch for 12,000 updates.
+It reuses the completed immutable observation cache; do not rerun preparation.
+The earlier 3,000-update checkpoints and configurations remain unchanged.
+
+After a recipe's four fits complete, run both collectors:
+
+```bash
+python -m src.training_methods.predictive_memory.compare --config configs/predictive_memory/optimization/original-seed20260917.json --modalities xv
+python -m src.training_methods.predictive_memory.diagnose --config configs/predictive_memory/optimization/original-seed20260917.json --modalities xv
+```
+
+`diagnose` also accepts the original pilot or replicate configuration. It uses
+saved embeddings and heads on CPU, checks release and source/center/anchor
+identity, and writes a separate `diagnostics/` result without rewriting old fit
+metrics. It refuses to overwrite completed diagnostics. The readouts remain
+diagnostic predictors; the native trainable encoder remains the research model.
+Each fit now records validation trajectories in `technical/validation.jsonl`.
+The detached H100 controller for allocation 995957 records its plan, logs and
+progress under `output/predictive_memory/optimization-20260917/technical/`.

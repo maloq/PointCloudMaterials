@@ -1,0 +1,25 @@
+{
+  "protocol": "predictive_memory_precision_sources_v1",
+  "campaign_seed": 2026091702,
+  "excluded_source_datasets": [
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903"
+  ],
+  "temperatures_K": [500.0, 520.0],
+  "sources_per_temperature": {"train": 3, "val": 1, "sealed_test": 2},
+  "measurement_steps": 64000,
+  "sample_interval_steps": 25,
+  "mpi_ranks": 48,
+  "required_free_bytes": 300000000000,
+  "delete_verified_source_text": true,
+  "potential_files": [
+    {
+      "path": "${dataset:potentials}/Lee2003_Al.library.meam",
+      "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+    },
+    {
+      "path": "${dataset:potentials}/Lee2003_Al.meam",
+      "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+    }
+  ]
+}

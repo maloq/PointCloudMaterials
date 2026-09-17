@@ -508,6 +508,30 @@
       "state": "complete",
       "dependencies": [],
       "aliases": []
+    },
+    "memory-al-precision-20260917-source000-T500": {
+      "root": "archive",
+      "path": "simulations/memory-al-precision-20260917-source000-T500",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source000-T500"
+      ]
+    },
+    "memory-al-precision-20260917-source001-T500": {
+      "root": "archive",
+      "path": "simulations/memory-al-precision-20260917-source001-T500",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source001-T500"
+      ]
     }
   }
 }

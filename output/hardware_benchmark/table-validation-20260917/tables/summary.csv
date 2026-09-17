@@ -1,0 +1,12 @@
+benchmark,label,workload,trials,unit,median,minimum,maximum,ms_per_update
+storage.write_generate_hash_fsync,Storage: generation + hash + write + fsync,0.008000 GiB; float16; 80 points/cloud,1,MiB/s,196.80297296376,196.80297296376,196.80297296376,
+storage.write_syscalls_fsync,Storage: write calls + fsync (diagnostic),0.008000 GiB; float16; 80 points/cloud,1,MiB/s,1514.1762056363348,1514.1762056363348,1514.1762056363348,
+storage.sequential_eviction_advised,"Storage: sequential read, eviction advised",0.008000 GiB; float16; 80 points/cloud,1,MiB/s,1279.4355661324842,1279.4355661324842,1279.4355661324842,
+storage.sequential_warm,"Storage: sequential read, warm",0.008000 GiB; float16; 80 points/cloud,1,MiB/s,10092.367287226414,10092.367287226414,10092.367287226414,
+storage.mmap_eviction_advised,"Storage: random mmap, eviction advised",0.008000 GiB; float16; 80 points/cloud; batch=4; 4 batches,1,clouds/s,3749.87718054672,3749.87718054672,3749.87718054672,
+storage.mmap_warm,"Storage: random mmap, warm",0.008000 GiB; float16; 80 points/cloud; batch=4; 4 batches,1,clouds/s,601525.5049456417,601525.5049456417,601525.5049456417,
+cpu.r1_t1,CPU: LAMMPS,256 atoms; 1 MPI ranks x 1 threads; 3 steps/trial; warmup=2; lj/cut,1,MD steps/s,7007.397475935429,7007.397475935429,7007.397475935429,
+cpu.r2_t1,CPU: LAMMPS,256 atoms; 2 MPI ranks x 1 threads; 3 steps/trial; warmup=2; lj/cut,1,MD steps/s,12982.235973775883,12982.235973775883,12982.235973775883,
+gpu.pointnet,GPU: PointNet,batch=2; 80 points; 2 views/example,1,examples/s,167.6966735696141,167.6966735696141,167.6966735696141,11.926295002922416
+gpu.mace,GPU: MACE,batch=2; 80 points; 2 views/example; channels=8; e3nn,1,examples/s,7.554574272695435,7.554574272695435,7.554574272695435,264.74026567302644
+gpu.forecast,GPU: forecast transformer,batch=2; history/future=3/2; dim=256; width=32,1,examples/s,374.2947156286227,374.2947156286227,374.2947156286227,5.343382945284247

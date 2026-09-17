@@ -10,12 +10,17 @@ from src.data.predictive_memory.prepare import write_json
 from .train import bootstrap_sources
 
 
-def compare(config, modalities=('x', 'xv')):
+def fit_names(modalities):
     if not modalities or len(set(modalities)) != len(modalities) or set(modalities)-{'x', 'xv'}:
         raise ValueError('Comparison modalities must be a nonempty unique selection of x and xv')
-    root = Path(config['output'])
     names = [f'{modality}-H{history}' for modality in modalities for history in (0, 12, 48)]
     names += [f'{modality}-H48-repeat' for modality in modalities]
+    return names
+
+
+def compare(config, modalities=('x', 'xv')):
+    root = Path(config['output'])
+    names = fit_names(modalities)
     records, scores = {}, {}
     for name in names:
         technical = root/name/'technical'
@@ -46,7 +51,7 @@ def compare(config, modalities=('x', 'xv')):
     write_json(destination/'technical'/'metrics.json', metrics)
     write_metric_table(metrics, destination, family='predictive_memory')
     lines = ['# Exploratory predictive-memory pilot', '',
-        'All fits use the same 3,000-update budget and one training seed. Lower physical-path NLL is better.', '',
+        f"All fits use the same {config['training']['steps']:,}-update budget and one training seed. Lower physical-path NLL is better.", '',
         '| Model | Selected update | Test joint NLL | Test future MSE |', '|---|---:|---:|---:|']
     for name, result in scores.items():
         lines.append(f"| {name} | {result['selected_step']} | {result['test']['joint_nll']['mean']:.5f} | {result['test']['future_mse']['mean']:.5f} |")

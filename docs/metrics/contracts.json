@@ -232,16 +232,17 @@
   },
   "hardware_benchmark": {
     "files": {
-      "docs/metrics/hardware_benchmark.md": "2120aa884b2bd8a92c757ffc715f51c3889795bae4538901d651a9932b72a581",
-      "src/hardware_benchmark/common.py": "fd160084995358e858977257a4c0d6a95f75ef8cb775ef28221127b97ade80d5",
-      "src/hardware_benchmark/storage.py": "813356005b035b0d78d9b9c6b0c348a2f4535fff29c8cd7731df1f112fc81265",
-      "src/hardware_benchmark/cpu.py": "ce6df04a0590990540572fc6301fea1cec0f77e9f1c5c5320d5500d781a2bc5f",
-      "src/hardware_benchmark/gpu.py": "e6b75df9b6af9e3ba67af4f14a161c2ec79e848e6b1f7418efd22d4b01b427ed",
-      "src/hardware_benchmark/cli.py": "6c17f17218ae4d132420cd954f4efe0659a30395519fbc2c5549983d0bfcb19c",
+      "docs/metrics/hardware_benchmark.md": "960a1e1a2afe7102342db3d7e7de5b708e83e83ef98dbb527cafd7f408728cb7",
+      "src/hardware_benchmark/common.py": "1801afc826b011b191ba38efeb40d55a8bf36d05398dea381ba3bf1c7dfd27fd",
+      "src/hardware_benchmark/storage.py": "7b51ab00c28e852bce67afa959fdae1daba998831c0a9afaeefb630d5e27e182",
+      "src/hardware_benchmark/cpu.py": "72f336eb95915269e91acef00ed2e92f381b1e50d44443fd972b913a237ae21c",
+      "src/hardware_benchmark/gpu.py": "372a2d9f05337dab57e737103c470cf1de63b6d38205ad83fe50296428289b97",
+      "src/hardware_benchmark/cli.py": "3e692b0bde4b68c0eba53c3b4714b7f4d5250794c46513d0d3b02b6d654ce70b",
       "src/models/encoders/pointnet.py": "2185fcb60b68af7bf2958fa8b638c4366fa8f60e940887673dbe528472f4bd66",
       "src/models/encoders/atomic_graph.py": "f82443a36ee47220de08173b9fd730dbb4b63bc656a3256862806778922713d7",
       "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63",
-      "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c"
+      "src/training_methods/embedding_forecast/model.py": "d4cf9817471b516d55e001ad044da245a442f1ec3ad31d603c066afc806c632c",
+      "src/hardware_benchmark/report.py": "b04728531f5fb5ec47150aad834894773b524292497e18ea2a13dd5302fcc2f7"
     }
   },
   "mace_causal_runtime": {
@@ -273,14 +274,24 @@
   },
   "predictive_memory": {
     "files": {
-      "docs/metrics/predictive_memory.md": "3db91f9ccfb7976b63ef1e0a2cd64a872230215ea10c4eba04192f0f1e04760e",
+      "docs/metrics/predictive_memory.md": "304f5cc299175badf66bc377a8e2e836dd85a94736b605bc326fc7ee28fd28cd",
       "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
       "src/data/predictive_memory/observations.py": "040c0bd808a5343ca775164fdcd8286f686ef8338bf61ba592e3fef952c6657d",
       "src/data/predictive_memory/windows.py": "2eddab24875fd1954bdd72bcef05d5a78db7788e371e94b6b69a345510b4fe7d",
       "src/models/encoders/predictive_memory/model.py": "ca53f8f302aa344bc70cff1a466190e94feb0fcda75f28e9f35baa04c29d8d97",
-      "src/training_methods/predictive_memory/objective.py": "6f3c129e277498b4a9d6e48ab3ed5355792a08f294cd66f5ba165b7eba6d657f",
-      "src/training_methods/predictive_memory/train.py": "fd7b66a4ed046e51385f7d846bb00e463fd1cec001676c6979cd69d72b90494d",
-      "src/training_methods/predictive_memory/compare.py": "29eced30349174443dcf265ef76ee938d3ac9916687325c05c922be83bd18ef3"
+      "src/training_methods/predictive_memory/objective.py": "7da5099865b94263f3c0ce9f49a0a57cb7ceb04d978e2bba4488a1127134a4d8",
+      "src/training_methods/predictive_memory/train.py": "80c019ad14a1882d00800690cdae586c93e6aedc04e27c59113411ebb9398e6a",
+      "src/training_methods/predictive_memory/compare.py": "b20c1ff2cfc49f99ca086b301779a80928c249b4dd278424e489b8db4e3cd4cf",
+      "src/training_methods/predictive_memory/diagnose.py": "b6ad542f66cb96563c55f315650646273d0c4a761c6c1ceb4618a9775f6b0ff0"
+    }
+  },
+  "memory_research_summary": {
+    "files": {
+      "docs/metrics/memory_research_summary.md": "4653ac43f8afcd2ad00d6d8698d634849ffa2ff7549ea091c4c27883fa7c6841",
+      "src/research/memory_report.py": "9abc4bbbb3c94448fac285c1b455e33be212c48ec9e441c7aba29a2b5ac144e4",
+      "src/research/mace_causal_comparison.py": "e27b2b39745bc85d02d536f1a618593294f3abb8f069bb08d0e27a8e9835e1f0",
+      "experiments/predictive_memory_20260917/h200_reported_results.json": "0740a1ab851a8dcec5c316918c3380a1298fe120bf16bc96c48ad8389404b978",
+      "configs/analysis/memory_research_report.json": "cc9699c002899253a21c19cb580f4ccd51a2027ef1ed3e81fea7044f0cd480ab"
     }
   }
 }

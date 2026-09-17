@@ -42,14 +42,19 @@ def fit_scaler(present, future):
     return values.mean(0), values.std(0, unbiased=False).clamp_min(1e-4)
 
 
-def physical_scores(prediction, present, future):
-    mean = mixture_mean(prediction).reshape_as(future)
-    scores = dict(joint_nll=joint_nll(prediction, future),
-        future_mse=(mean-future).square().mean((1, 2)),
-        present_mse=(prediction['present']-present).square().mean(1),
-        persistence_mse=(present[:, None]-future).square().mean((1, 2)))
+def mean_path_scores(mean, future):
+    """Common physical-coordinate errors for mixture means and diagnostic readouts."""
+    scores = dict(future_mse=(mean-future).square().mean((1, 2)))
     for name, (start, end) in BLOCKS.items():
         scores[f'future_mse_{name}'] = (mean[..., start:end]-future[..., start:end]).square().mean((1, 2))
     for lag in range(future.shape[1]):
         scores[f'future_mse_lag{lag}'] = (mean[:, lag]-future[:, lag]).square().mean(1)
+    return scores
+
+
+def physical_scores(prediction, present, future):
+    scores = dict(joint_nll=joint_nll(prediction, future),
+        present_mse=(prediction['present']-present).square().mean(1),
+        persistence_mse=(present[:, None]-future).square().mean((1, 2)))
+    scores.update(mean_path_scores(mixture_mean(prediction).reshape_as(future), future))
     return scores

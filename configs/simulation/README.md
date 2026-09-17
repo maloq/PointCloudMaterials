@@ -8,6 +8,7 @@ Training and analysis loaders for existing data belong in `../data/loaders/`.
 | `al_crystallization.json` | Al MEAM source generation and position-conditioned branches. |
 | `ti_crystallization.json` | Ti MEAM source generation and position-conditioned branches. |
 | `ta_crystallization.json` | Ta EAM branches from recorded initial configurations. |
+| `predictive_memory_precision.json` | Twelve fresh Al melt lineages, fixed 192 ps histories at 0.075 ps cadence, paired float32/float16 observations and preassigned sealed test sources. |
 
 Launch with `python scripts/run_lammps_campaign.py elemental run --config CONFIG
 --run-name NAME`. New results use the machine's simulation storage root; completed
@@ -27,3 +28,9 @@ live in `tests/fixtures/simulation/`; do not use them to launch production runs.
 `al_crystallization_1m.json` is the requested million-atom source-only variant: 300 ps melt, up to 400 ps crystallization, no branches, with the melt restart retained. `source_limit_policy: save_state` records duration-limited completion separately from attaining the crystal-fraction threshold.
 
 The million-atom recipe also enables `save_melt_trajectory: true`: the full melt is sampled at 0.1 ps, converted to verified float16, and kept alongside its native liquid restart.
+
+The distinct memory-source recipe uses `run_lammps_campaign.py memory-sources
+prepare --config CONFIG --run-name NAME`, then `memory-sources run-worker` inside
+48-rank CPU allocations. It reuses the retained source family's NPT dynamics,
+does no outcome-based stopping or measurement PTM screening, and publishes each
+completed source to STORE. See the [production record](../../docs/simulations/predictive_memory_precision_20260917.md).

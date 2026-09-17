@@ -124,6 +124,16 @@ Gaussian future head under the same update budget, retaining MSE/NLL/coverage.
 `mace_causal/h200/` defines the separate longer-budget C/D/repeated-anchor study
 at tensor widths 16 and 32. See [H200 handoff](../docs/mace_causal_h200.md).
 
+`predictive_memory/optimization/` contains the current partial-observation
+H100 follow-up: 12,000 updates at present-loss weights 0.05 and 1.0, each with
+two seeds. Use the existing immutable predictive-memory cache and H=0,12,48 plus
+repeated-anchor controls. See [workflow](../docs/predictive_memory.md).
+
 `mace_causal/runtime-benchmark.json` measures actual-graph FP32 throughput;
 `mace_causal/h100-packed/` uses resident, packed batches for the longer matched
 C/D/repeated-anchor cohort. H200 recipes use the same runtime.
+
+`analysis/memory_research_report.json` selects completed causal/memory cohorts,
+reported H200 summaries and simulation-status inputs for a dated cross-study
+evidence snapshot. Run `python -m src.research.memory_report --config CONFIG
+--output NEW_OUTPUT`; this analysis does not launch training or simulation.

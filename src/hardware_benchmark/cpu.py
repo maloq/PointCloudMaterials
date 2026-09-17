@@ -1,5 +1,6 @@
 """LAMMPS CPU Lennard-Jones dynamics without potential or trajectory files."""
 import math
+import hashlib
 import os
 import re
 import shlex
@@ -11,7 +12,7 @@ import time
 from dataclasses import dataclass
 from pathlib import Path
 
-from .common import summarize
+from .common import command_info, summarize
 
 
 @dataclass
@@ -95,7 +96,8 @@ def run(settings, technical, executable, launcher):
         command += ["-sf", "omp", "-pk", "omp", str(settings.threads)]
     environment = os.environ.copy()
     environment.update(OMP_NUM_THREADS=str(settings.threads), CUDA_VISIBLE_DEVICES="",
-                       OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1")
+                       OPENBLAS_NUM_THREADS="1", MKL_NUM_THREADS="1",
+                       LC_ALL="C")
     # Same conda MPI library setup as src/simulation/atomistic/lammps_shooting.py.
     environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
         ":" + environment["LD_LIBRARY_PATH"] if environment.get("LD_LIBRARY_PATH") else "")
@@ -126,7 +128,14 @@ def run(settings, technical, executable, launcher):
     metrics = summarize(samples, settings.steps, "steps")
     metrics["atom_steps_per_second"] = 4 * settings.cells**3 * metrics["steps_per_second"]
     metrics["process_wall_seconds"] = wall
+    # Keep build details separate from the measured interval.
+    help_result = subprocess.run([resolved, "-help"], env=environment, capture_output=True,
+                                 text=True, timeout=30, check=True)
+    (technical / "lammps-build.txt").write_text(help_result.stdout)
     return dict(metrics=metrics, atoms=4 * settings.cells**3, command=command,
-                version=output.splitlines()[0], environment={key: environment[key] for key in (
-                    "OMP_NUM_THREADS", "CUDA_VISIBLE_DEVICES", "LD_LIBRARY_PATH")},
+                executable_sha256=hashlib.sha256(Path(resolved).read_bytes()).hexdigest(),
+                build_info=help_result.stdout, launcher=prefix,
+                launcher_version=command_info([prefix[0], "--version"]) if prefix else None,
+                version=output.splitlines()[0], environment={key: environment.get(key) for key in (
+                    "OMP_NUM_THREADS", "CUDA_VISIBLE_DEVICES", "LD_LIBRARY_PATH", "OMP_PROC_BIND", "OMP_PLACES")},
                 protocol="lj/cut NVE; initialization and warmup excluded from loop timings")

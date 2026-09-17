@@ -150,6 +150,17 @@ means retained text plus new binaries occupy more space than the original text.
 
 ## Float16 simulation positions
 
+The predictive-memory precision producer uses `memory-pair RUN_DIRECTORY` for
+its exact sorted xyz/velocity dump contract. It retains a checksum-verified
+float32 reference and writes the canonical float16 pair using the existing
+shooting-binary converter/composer. Every stored rounding value, atom ID, type,
+timestamp and box is checked; `paired_conversion.json` records coordinate and
+velocity maximum/RMS errors and hashes. `--delete-source` removes only the newly
+generated text after both variants verify. The paired float32 reference is
+required research data and must be retained alongside native MD restarts.
+This is a format/rounding check, not the later local-feature or memory-gain
+precision audit. It does not turn legacy float16 observations into full precision.
+
 New elemental trajectories default to float16 positions; use
 `elemental BRANCH --storage-dtype float16 --delete-source`. Existing verified
 binaries use `temporal-storage BINARY_DIR... --delete-source`. This is lossy

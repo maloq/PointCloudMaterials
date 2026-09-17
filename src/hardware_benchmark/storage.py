@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .common import summarize
+from .common import command_info, summarize
 
 
 @dataclass
@@ -145,7 +145,9 @@ def run(settings, target):
                 metrics[name] = summarize(samples, settings.batches * settings.batch_size, "clouds")
                 metrics[name]["logical_MiB_per_second"] = (
                     metrics[name]["clouds_per_second"] * record_bytes / 2**20)
-    return dict(metrics=metrics, target=str(target), file_bytes=size_bytes,
+    filesystem = command_info(["findmnt", "--json", "--target", str(target),
+                               "--output", "TARGET,SOURCE,FSTYPE,OPTIONS"])
+    return dict(metrics=metrics, target=str(target), filesystem=filesystem, file_bytes=size_bytes,
                 shape=[records, settings.points, 3], dtype="<f2", sha256=digest,
                 sampled_checksum=reference_checksum, temporary_files_removed=True,
                 cache_policy="POSIX_FADV_DONTNEED is advisory; warm mmap replays the same indices. "
