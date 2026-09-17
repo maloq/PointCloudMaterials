@@ -31,4 +31,4 @@ sampler and Python/NumPy/Torch/CUDA RNG states. Native model mean physical fitti
 checks are a separate training-only architecture gate, not a pretrained core parent.
 
 
-Table export: 2026-09-17T14:56:03.576464+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.
+Table export: 2026-09-17T15:33:21.434296+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.

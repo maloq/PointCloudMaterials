@@ -10,6 +10,8 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Backbone TDA retention](local_predictability_20260917/TDA.md) | Frozen physical MACE/GATr snapshot states; matched linear/nonlinear instantaneous topology readouts, one seed |
+| [Native backbone v2](local_predictability_20260917/BACKBONE_V2.md) | Fresh gated MACE/cuEquivariance versus axial GATr snapshot screen; all-state physical targets; one seed |
 | [Local predictability](local_predictability_20260917/README.md) | **Planned, not run:** accessible onset information and native retention; one seed, complementary H100/H200 comparisons, shared 16-hour ceiling |
 | [Predictive memory](predictive_memory_20260917/README.md) | Completed H100/H200 pilot; objective follow-up stopped after 10/16 fits. [Latest update](../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md) and [consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
 | [Causal native MACE](mace_causal_20260916/README.md) | Completed short/long-budget studies and H200 width comparison; small conditional history benefit. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |

@@ -1,0 +1,12 @@
+metric,value
+effective_batch,8
+microbatch,1
+parameters,899170
+windows_per_second,16.077456846487625
+cold_preparation_seconds,2.229524563997984
+input_wait_seconds,0.7358291810378432
+validation_seconds,0.12202746100956574
+validation_windows_per_second,65.55901379749989
+validation_input_wait_seconds,3.7956167943775654e-05
+peak_allocated_bytes,3343571456
+peak_reserved_bytes,3888119808

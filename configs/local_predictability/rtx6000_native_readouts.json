@@ -33,5 +33,10 @@
     "snapshot",
     "repeat12",
     "history12"
-  ]
+  ],
+  "variant_dependencies": {
+    "history12": [
+      "output/local_predictability/h100-native-onset-20260917/technical/execution-h100-split/execution/run_record.json"
+    ]
+  }
 }

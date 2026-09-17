@@ -14,8 +14,9 @@ The detached queue now assigns:
 1. H100: finish snapshot evaluation, then train/evaluate history12.
 2. RTX6000: train/evaluate repeat12 from the same parent (4,096 updates).
 3. RTX6000, after its continuation: raw-atom current-state diagnostic (8,192 updates).
-4. RTX6000, after the raw diagnostic and H100 continuation: frozen linear/MLP
-   onset readouts for the three completed encoders (six fits).
+4. RTX6000, after the raw diagnostic: frozen linear/MLP onset readouts for the
+   completed snapshot and repeat12 encoders (four fits). Only the history12
+   readouts wait for the H100 continuation (two fits).
 
 Core stage outputs stay in `output/local_predictability/h100-native-onset-20260917`;
 worker records are `technical/execution-h100-split/execution/run_record.json` and
@@ -33,6 +34,12 @@ fit maps the seeded initial weights before creating a fresh AdamW optimizer.
 Each frozen encoder is checked against the original checkpoint on retained inputs
 before CuEq extraction. Original checkpoints and optimizer states stay intact;
 the active H100/RTX core fits finish on their existing backend.
+
+After raw-state training/export completed, the idle whole-queue readout waiter
+was replaced by `technical/execution-ready-first/`. It starts the ready snapshot
+and repeat12 variants immediately; `variant_dependencies.history12` retains the
+H100 prerequisite. Tracked failure/deadline checks still apply at that boundary.
+The six-fit budget, output locations, checkpoint identities and seed are unchanged.
 
 Queued diagnostics also use three CPU input workers and one-batch lookahead on a
 separate CUDA copy stream. Each CPU worker owns its trajectory handles and a share

@@ -1,0 +1,9 @@
+metric,value
+step,4096
+examples_seen,32768
+elapsed_seconds,2074.456734812353
+score,1.077043924584157
+hazard_nll,1.077043924584157
+validation_seconds,12.603253897279501
+input_wait_seconds,0.000794372521340847
+windows,932

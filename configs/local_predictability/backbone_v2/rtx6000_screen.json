@@ -1,0 +1,29 @@
+{
+  "protocol": "local_predictability_backbone_v2",
+  "seed": 20260919,
+  "plan": "configs/local_predictability/two_gpu_16h.json",
+  "data_output": "output/local_predictability/h100-20260917",
+  "cache": "${storage:cache}/local-predictability-20260917-broad",
+  "shared": "output/local_predictability/shared-20260917/technical/exchange",
+  "output": "output/local_predictability/rtx-backbone-v2-20260917",
+  "training_deadline_utc": "2026-09-17T18:02:01+00:00",
+  "hard_deadline_utc": "2026-09-17T19:02:01+00:00",
+  "precision": "float32",
+  "mace_backend": "cueq",
+  "mace": {"channels": 16, "num_layers": 2, "output_dim": 128, "max_spatial_edges": 1000000, "activation_checkpoint": false},
+  "axial_gatr": {"mv_channels": 8, "scalar_channels": 128, "num_layers": 2, "activation_checkpoint": false},
+  "microbatch": {
+    "mace": {"snapshot": 8, "history12": 4, "repeat12": 4},
+    "axial_gatr": {"snapshot": 8, "history12": 1, "repeat12": 1}
+  },
+  "cpu_cache_gib": 8,
+  "gpu_cache_gib": 8,
+  "torch_threads": 2,
+  "prefetch_workers": 3,
+  "learning_rate": 0.0003,
+  "gate_updates": 2000,
+  "gate_evaluate_every": 25,
+  "training_updates": 2048,
+  "evaluate_every": 256,
+  "profile_updates": 4
+}

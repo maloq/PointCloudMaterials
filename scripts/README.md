@@ -36,6 +36,26 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.backbone_tda --config
+configs/local_predictability/backbone_v2/tda_snapshot.json` compares frozen physical
+MACE/GATr snapshot states with matched source-held-out instantaneous-TDA readouts.
+See [execution/resume](../docs/backbone_tda.md) and the
+[scientific protocol](../experiments/local_predictability_20260917/TDA.md).
+
+`python -m src.research.local_predictability.backbone_v2 --config
+configs/local_predictability/backbone_v2/rtx6000_screen.json --stage screen`
+runs fresh MACE/cuEquivariance and axial GATr gates, explicit workload profiles,
+and a matched one-seed physical snapshot screen. The `fit` stage uses the common
+physical/onset trainer without profiling. See [execution/resume](../docs/backbone_v2.md)
+and the [scientific protocol](../experiments/local_predictability_20260917/BACKBONE_V2.md).
+
+`python -m src.research.backbone_repeats --config
+configs/local_predictability/backbone_v2/h100_repeats.json --stage run` follows the
+H100 screen with matched GATr onset parent/snapshot/history/repeated-frame fits,
+using the existing v2 trainer and completed MACE reference. `--stage compare-screen`
+only checks and exports the completed H100 speed/physical comparison. See the
+[H100 extension](../docs/backbone_v2.md#h100-comparison-and-onset-repeats).
+
 `python -m src.research.local_predictability.plan --config
 configs/local_predictability/two_gpu_16h.json --output /tmp/local-predictability-queue.json`
 validates the one-seed, two-worker 16-hour **planning specification** and writes

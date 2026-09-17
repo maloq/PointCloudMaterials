@@ -1,0 +1,13 @@
+{
+  "family": "backbone_comparison",
+  "exported_at": "2026-09-17T17:50:55.523120+00:00",
+  "files": {
+    "docs/metrics/backbone_comparison.md": "39691a3acccec31b207071c72dbea7262c5a223eb33bf348953f343225fd3c17",
+    "src/research/backbone_repeats.py": "f33bf145551c1fdf50f757f6d70b65f22136c808b021a4a5a22ca79e04e83a1d",
+    "docs/metrics/local_predictability_backbone_v2.md": "47b74ecacf147ff94abf5700edfe033067ddb93a0d6123bc4302b8c636faedf5",
+    "docs/metrics/local_predictability_native_onset.md": "0082513580d53f6d122d546f8d60340bb07e1c8f2416de0e6dd0cdd62b9654af",
+    "docs/metrics/local_predictability.md": "c3ce04f40dc69fc009e7cd13b783e0643533644116a41622fc5ecf35fb8032db",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432"
+  }
+}

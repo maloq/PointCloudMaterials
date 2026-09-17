@@ -1,5 +1,6 @@
 """Frozen native onset states with fresh linear and nonlinear hazard readouts."""
 import argparse
+from datetime import datetime
 import json
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from .onset_model import OnsetModel
 from .supervised import prepare_rows
 from .native_runtime import evaluate
 from src.models.encoders.mace_backend import with_mace_backend, mace_backend_metadata
+from src.experiment_runner.tracking import wait_for_dependencies
 
 
 def run(config):
@@ -40,6 +42,9 @@ def run(config):
         native_root = resolve_path(config['native_output']) / 'technical'
         for variant in config['variants']:
             check_deadline(config)
+            wait_for_dependencies(config.get('variant_dependencies', {}).get(variant, []),
+                until=datetime.fromisoformat(config['training_deadline_utc']).timestamp(),
+                status_path=root / f'{variant}-dependencies.json')
             checkpoint = native_root / variant / 'best.pt'
             complete = json.loads((native_root / variant / 'complete.json').read_text())
             state = torch.load(checkpoint, map_location='cpu', weights_only=False)

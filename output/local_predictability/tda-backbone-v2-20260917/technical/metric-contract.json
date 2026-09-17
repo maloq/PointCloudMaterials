@@ -1,0 +1,19 @@
+{
+  "family": "backbone_tda",
+  "exported_at": "2026-09-17T17:11:18.277527+00:00",
+  "files": {
+    "docs/metrics/backbone_tda.md": "1ad3ad72f731dac65e778cf6f5e31aa7cb753cfd505ba23f6c8150ae1d3242f0",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
+    "src/research/mace_tda_ridge_audit/math.py": "a261a33fa0c211570d3510bc5ab2da30cec9f0afb31b3f3b655a2c64b55bfb32",
+    "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
+    "src/data/predictive_memory/observations.py": "040c0bd808a5343ca775164fdcd8286f686ef8338bf61ba592e3fef952c6657d",
+    "src/research/local_predictability/native_data.py": "726074324ce5045e4ced3183240093ed1cc07243fbbc968a3b1e5a2e547b87ae",
+    "src/research/local_predictability/backbone_data.py": "4dc6ece764eab073ae6f4c36ebbb8410dd934aa6b6f6ebdb9e7a306df6b4b70d",
+    "src/research/backbone_tda/__init__.py": "c4a9af3a855ed05beaa2db4eb7c6a9e700e5836763e63507155f3608cac175f6",
+    "src/research/backbone_tda/__main__.py": "8ab825509a729a879ce8f23976f5a3d6a34496eaabe278f34ac23619d8008a1e",
+    "src/research/backbone_tda/data.py": "58f67d8686fa76da1fb38196f4a86a39d457c46b2727e32588ab7a8c6a23a5ad",
+    "src/research/backbone_tda/probes.py": "4d2e657da2af16584c645e577bb2f12ba674834cc1cbf2784be0ed9536e42ec9",
+    "src/research/backbone_tda/run.py": "0b46c7cc9f26a75102d6060d4eec8675107d008b402893d1036431f88876038a"
+  }
+}

@@ -106,7 +106,7 @@ def test_cleanup_rejects_redirected_storage(tmp_path):
 
 
 def test_metric_documents_match_implementation_and_travel_with_table(tmp_path):
-    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_velocity', 'mace_data_amount', 'mace_causal', 'mace_causal_comparison', 'hardware_benchmark', 'mace_causal_runtime', 'predictive_memory', 'memory_research_summary', 'local_predictability', 'local_predictability_comparison', 'local_predictability_native_onset'}
+    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_velocity', 'mace_data_amount', 'mace_causal', 'mace_causal_comparison', 'hardware_benchmark', 'mace_causal_runtime', 'predictive_memory', 'memory_research_summary', 'local_predictability', 'local_predictability_comparison', 'local_predictability_native_onset', 'local_predictability_backbone_v2', 'backbone_comparison', 'backbone_tda'}
     path = write_metric_table({'test': {'balanced_mse': 0.125, 'undefined': None, 'ci95': [0.1, 0.2]}},
                               tmp_path, family='topology')
     with path.open() as stream:

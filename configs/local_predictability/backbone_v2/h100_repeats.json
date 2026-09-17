@@ -1,0 +1,7 @@
+{
+  "output": "output/local_predictability/h100-backbone-comparison-20260917",
+  "screen_output": "output/local_predictability/h100-backbone-v2-20260917",
+  "parent_config": "configs/local_predictability/backbone_v2/h100_onset_parent.json",
+  "controls_config": "configs/local_predictability/backbone_v2/h100_onset_controls.json",
+  "mace_reference": "output/local_predictability/h100-native-onset-20260917"
+}

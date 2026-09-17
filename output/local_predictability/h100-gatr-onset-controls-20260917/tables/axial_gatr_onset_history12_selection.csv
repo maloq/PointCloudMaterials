@@ -1,0 +1,6 @@
+metric,value
+score,1.0823206162169126
+hazard_nll,1.0823206162169126
+validation_seconds,68.53393014986068
+input_wait_seconds,25.707328939810395
+windows,2220

@@ -1,0 +1,16 @@
+{
+  "family": "local_predictability_backbone_v2",
+  "exported_at": "2026-09-17T15:59:35.818030+00:00",
+  "files": {
+    "docs/metrics/local_predictability_backbone_v2.md": "47b74ecacf147ff94abf5700edfe033067ddb93a0d6123bc4302b8c636faedf5",
+    "src/research/local_predictability/backbone_data.py": "4dc6ece764eab073ae6f4c36ebbb8410dd934aa6b6f6ebdb9e7a306df6b4b70d",
+    "src/research/local_predictability/backbone_v2.py": "31d8688a0474194985cb0dc11746d352b0c2f7f04fe0c7eb5cb75c3434a3b3ca",
+    "src/research/local_predictability/backbone_profile.py": "7ac7ead9510e3dd021ab5d69ccbe8a7d4949151e4203733ce9001989d7c4860f",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+    "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "docs/metrics/local_predictability.md": "c3ce04f40dc69fc009e7cd13b783e0643533644116a41622fc5ecf35fb8032db",
+    "docs/metrics/local_predictability_native_onset.md": "0082513580d53f6d122d546f8d60340bb07e1c8f2416de0e6dd0cdd62b9654af"
+  }
+}

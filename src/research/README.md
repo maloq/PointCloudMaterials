@@ -1,5 +1,14 @@
 # Implementations of recorded research protocols
 
+`backbone_tda/` prepares instantaneous nearest-80 persistence images and matches
+frozen physical MACE/GATr readouts on the native source splits. It is separate
+from active encoder source identities. See [workflow](../../docs/backbone_tda.md).
+
+`local_predictability.backbone_v2` owns the fresh common physical/onset trainer
+for accelerated native MACE and upstream axial GATr. It preserves v1 and uses
+immutable packet joins, new fitting receipts and explicit workload profiling.
+See the [v2 protocol](../../experiments/local_predictability_20260917/BACKBONE_V2.md).
+
 `local_predictability.plan` validates/materializes the planned single-seed H100/H200
 queue, including paired controls and confirmation padding. It does not implement
 or launch the new training/assay adapters. See the
