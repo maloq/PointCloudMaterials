@@ -36,6 +36,16 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
+`python -m src.data.predictive_memory.prepare --config configs/predictive_memory/pilot.json`
+audits existing trajectories and caches strictly partial observations and continuous
+physical targets. `python -m src.training_methods.predictive_memory.train --config
+configs/predictive_memory/pilot.json --history-ps 48 --velocity` trains the new
+label-free memory pilot. `python -m src.training_methods.predictive_memory.compare
+--config configs/predictive_memory/pilot.json` compares the eight completed matched
+fits. See [workflow and resume](../docs/predictive_memory.md).
+The comparison's `--modalities xv` option evaluates the four-fit velocity-input
+replicate from `configs/predictive_memory/replicate-xv-seed20260918.json`.
+
 `python -m src.research.mace_velocity causal-prepare --config configs/mace_causal/pilot.json`
 prepares identity-preserving physical history/future examples.
 `causal-train --config configs/mace_causal/pilot.json --variant D --device cuda:0`

@@ -201,6 +201,19 @@ messages between spatial MACE layers, before its final pooling. Future observati
 are supervision only. A separately trained repeated-anchor control receives the
 current frame at every historical offset, retaining the same architecture.
 
+### Predictive memory in partial observations
+
+In `predictive_memory_partial_observation_v1`, memory gain is the reduction in
+held-out negative log probability of a fixed continuous physical future path
+when a model receives observed atom history instead of a matched snapshot.
+Both models use the same physical targets, source split, radius and optimizer
+budget. A separately trained repeated-anchor control tests whether real history
+helps beyond extra temporal computation. The total observation radius includes
+all message-passing context; there is no additional hidden halo. Crystallization
+and topology labels do not train or select these encoders. This predictive score
+is neither exact mutual information nor proof of a Markov state. See the
+[protocol-specific metric definition](metrics/predictive_memory.md).
+
 ### State sufficiency diagnostic
 
 In the causal MACE protocol, compare matched physical predictors given frozen z

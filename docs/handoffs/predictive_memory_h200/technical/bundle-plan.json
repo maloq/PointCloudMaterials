@@ -1,0 +1,11 @@
+{
+  "datasets": [
+    "predictive-memory-al-r17-20260917"
+  ],
+  "files": [
+    "AGENTS.md",
+    ".gitignore",
+    "tests",
+    "experiments/predictive_memory_20260917"
+  ]
+}

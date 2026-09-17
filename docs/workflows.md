@@ -243,6 +243,13 @@ its diagnostics were retired on 2026-09-09; old checkpoint inference requires
 that run's recorded source snapshot. Results and checkpoint artifacts remain.
 For interactive MD rendering, use `python -m src.vis_tools.md_cluster_plot ANALYSIS_DIR`.
 
+## Predictive memory in partial observations
+
+The [predictive-memory workflow](predictive_memory.md) audits existing Al
+trajectories and trains joint native MACE history encoders using continuous
+physical targets. Its release, observation-radius contract, objective and
+checkpoint selection are separate from the earlier causal crystallization pilot.
+
 ## Temporary active-job launchers
 
 `run_lammps_independent_meam_source_campaign.py` and

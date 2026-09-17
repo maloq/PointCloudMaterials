@@ -1,0 +1,23 @@
+{
+  "release_sha256": "c021aaa00d000dc3993982683e1ee44675afd4680506be77416b1e7508774b15",
+  "sources": 150,
+  "samples": 450,
+  "splits": {
+    "train": {
+      "sources": 90,
+      "windows": 270
+    },
+    "val": {
+      "sources": 30,
+      "windows": 90
+    },
+    "test": {
+      "sources": 30,
+      "windows": 90
+    }
+  },
+  "source_plan_sha256": "24acb9748f52424233d05a43f37362fdadcf7fd44e5ba691f1008b85017cb2b3",
+  "cache_logical_bytes": 2644172277,
+  "source_input_precision": "full-box float16 positions and velocities",
+  "cache_precision": "centered float32 derived from float16 observations"
+}

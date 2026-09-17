@@ -1,0 +1,7 @@
+{
+  "base_commit": "2b7f77f8021edfdeacf68cbf2159723c0e8985b5",
+  "working_tree_dirty": true,
+  "source_includes_uncommitted_changes": true,
+  "protocol": "predictive_memory_partial_observation_v1",
+  "h200_run_started": false
+}
