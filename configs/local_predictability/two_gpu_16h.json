@@ -1,0 +1,314 @@
+{
+  "protocol": "local_crystallization_predictability_v1",
+  "status": "planning_only_requires_new_adapters",
+  "wall_hours": 16,
+  "start_policy": "Explicit later launch; keep stopped experiments and simulations stopped",
+  "workers": [
+    "local_h100",
+    "remote_h200"
+  ],
+  "source_manifest": "docs/handoffs/local_predictability_16h/technical/source_manifest.json",
+  "sampling": {
+    "source_counts": {
+      "train": 90,
+      "val": 30,
+      "test": 30
+    },
+    "temperatures_K": [
+      400,
+      450,
+      500,
+      510,
+      520
+    ],
+    "cadence_ps": 0.75,
+    "end_ps": 600,
+    "selection_seed": 20260919,
+    "census_centers_per_source": 64,
+    "descriptor_centers_per_source": 16,
+    "native_centers_per_source": 16,
+    "native_anchors_per_center": 16,
+    "population_origin_stride_ps": 3,
+    "dense_alarm_origin_stride_ps": 0.75,
+    "maximum_history_ps": 48,
+    "horizons_ps": [
+      0.75,
+      3,
+      9,
+      24,
+      48,
+      96
+    ],
+    "primary_horizons_ps": [
+      9,
+      48
+    ],
+    "validation_selection_sources": 15,
+    "validation_calibration_sources": 15,
+    "legacy_centers": "Reuse only exact lineage/trajectory-matched outcome-independent 64-center selections; otherwise sample uniformly before labels",
+    "native_anchors": "16 evenly spaced integer indices in the matched origin grid, never selected by outcomes",
+    "test_policy": "Exploratory inherited sources; outcomes do not select cohorts, checkpoints, hyperparameters, time budgets or extension jobs",
+    "census_policy": "Label the preselected 16 core centers first; reuse verified legacy 64-center labels where available; expand census to 64 only without delaying core results",
+    "empty_source_policy": "Report sources with no eligible at-risk rows by fold and temperature; normalize event metrics over eligible sources only; physical all-state cohort remains unchanged"
+  },
+  "assay": {
+    "ptm_rmsd_cutoff": 0.1,
+    "crystal_structure_types": [
+      1,
+      2,
+      3
+    ],
+    "persistence_frames": 3,
+    "sensitivity_persistence_frames": [
+      5,
+      9
+    ],
+    "negative_history_frames": 3,
+    "event": "First sustained local episode at the tracked atom; start of run, not confirmation time",
+    "nearby_crystal_radius_A": 25,
+    "weak_order_qbar6_upper": 0.3,
+    "maximum_window_false_positive_rate": 0.05,
+    "maximum_false_alarm_episodes_per_center_ns": 1,
+    "bootstrap_source_draws": 1000,
+    "population_weighting": "Equal source weight; natural eligible-window prevalence within each source",
+    "primary_hazard_bins_ps": [
+      0.75,
+      3,
+      9,
+      24,
+      48,
+      96
+    ],
+    "alarm_refractory_ps": 9,
+    "nearby_crystal_policy": "Requires PTM labels for all neighbors inside 25 A at audited origins; otherwise report stratum unavailable, never infer absence from sampled centers",
+    "nearby_crystal_definition": "Any PTM-crystalline neighbor other than the center within 25 A; report neighbor count/fraction too; this is context stratification, not a nucleation label"
+  },
+  "descriptors": {
+    "worker": "local_h100",
+    "observations": [
+      "condition",
+      "packet_H0",
+      "packet_H3",
+      "packet_H12",
+      "packet_H48",
+      "packet_repeat12",
+      "packet_plus_center_H0",
+      "packet_plus_shell25_H0"
+    ],
+    "linear_hazard": {
+      "regularization_grid": [
+        0.01,
+        0.1,
+        1,
+        10
+      ],
+      "repeats": 1
+    },
+    "mlp_hazard": {
+      "hidden": [
+        256,
+        128
+      ],
+      "seeds": [
+        20260919
+      ],
+      "maximum_updates": 2000,
+      "batch_size": 1024,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "validation_every": 100,
+      "early_stop_validation_patience": 5
+    },
+    "history_summary": [
+      "current",
+      "oldest",
+      "mean",
+      "standard_deviation",
+      "physical_time_slope",
+      "minimum",
+      "maximum"
+    ],
+    "histories_use_every_observed_frame": true,
+    "physical_ridge_inputs": [
+      "condition",
+      "packet_H0",
+      "packet_H3",
+      "packet_H12",
+      "packet_H48"
+    ],
+    "physical_ridge_alpha": [
+      0.01,
+      0.1,
+      1,
+      10,
+      100,
+      1000
+    ],
+    "normalization": "Train-only; no crystal label or future-derived feature in forecasting inputs",
+    "condition_features": [
+      "temperature_one_hot",
+      "time_since_quench_scaled",
+      "time_since_quench_scaled_squared"
+    ],
+    "auxiliary_observation_policy": "Center-feature and shell comparisons require validated producers; unresolved definitions are blocked jobs, not silent replacement features"
+  },
+  "native": {
+    "workers_by_objective": {
+      "supervised_onset": "local_h100",
+      "physical_means": "remote_h200"
+    },
+    "seeds": [
+      20260919
+    ],
+    "channels": 16,
+    "embedding_dim": 128,
+    "layers": 2,
+    "radius_A": 17,
+    "cutoff_A": 5,
+    "variants": [
+      {
+        "name": "snapshot",
+        "history_ps": 0,
+        "repeat_anchor": false
+      },
+      {
+        "name": "history12",
+        "history_ps": 12,
+        "repeat_anchor": false
+      },
+      {
+        "name": "repeat12",
+        "history_ps": 12,
+        "repeat_anchor": true
+      }
+    ],
+    "warm_start": "One newly trained xv snapshot parent per objective/seed; all three children, including snapshot continuation, receive the same additional K updates",
+    "effective_batch_sources": 8,
+    "updates_per_stage_candidates": [
+      1024,
+      2048,
+      4096
+    ],
+    "choose_budget": "Largest shared K fitting both workers' single-seed groups within the first-result target, using measured p90 training, validation and export costs; freeze before core fits",
+    "validation_every": 256,
+    "selection_windows_per_source": 64,
+    "present_weight": 1,
+    "physical_future_head": "Linear z+condition to six conditional means, no mixture/covariance head",
+    "present_head": "One hidden layer, width 128",
+    "supervised_head": "Six-bin discrete hazard, no crystal labels in general-encoder loss",
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "gradient_clip": 5,
+    "dtype": "FP32 reference; any faster execution needs output/gradient validation before freezing",
+    "sampler": "Uniform train source, then uniform eligible row within source; no event enrichment",
+    "physical_selection": "Equal mean standardized future MSE across six lags; present and per-block errors are gates/diagnostics",
+    "supervised_selection": "Source-weighted event-time negative log likelihood on selection sources",
+    "small_set": {
+      "training_sources": 8,
+      "windows_per_source": 4,
+      "maximum_updates": 2000,
+      "target_present_mse": 0.1,
+      "maximum_block_mse": 0.25
+    },
+    "core_requires": [
+      "source_integrity",
+      "assay_integrity",
+      "coverage",
+      "nested_initialization",
+      "small_set_fit",
+      "budget_feasible"
+    ],
+    "history_expansion_requires": [
+      "demonstrated_signal",
+      "mean_prediction_competence"
+    ]
+  },
+  "phases": [
+    {
+      "id": "setup",
+      "start_hour": 0,
+      "end_hour": 2,
+      "local_h100": "Reproduce frozen positive control; identity/split audit; freeze centers and window plan",
+      "remote_h200": "Verify uploaded sources; implement/test batched simple-head/gated-history pathway; tiny train-only fit/profile"
+    },
+    {
+      "id": "prepare",
+      "start_hour": 2,
+      "end_hour": 4,
+      "local_h100": "Coverage, corrected assay, 16-center dense descriptor release, current/future observability audit",
+      "remote_h200": "Prepare matched raw-window index and bounded graph cache; train-only fitting checks; exchange release identities"
+    },
+    {
+      "id": "baselines",
+      "start_hour": 4,
+      "end_hour": 6,
+      "local_h100": "Descriptor event/physical baselines; calibrate/check signal; freeze shared K",
+      "remote_h200": "If gates pass, start physical-mean parent plus matched triplet for seed 20260919"
+    },
+    {
+      "id": "core",
+      "start_hour": 6,
+      "end_hour": 10,
+      "local_h100": "Supervised-onset parent plus matched triplet for seed 20260919",
+      "remote_h200": "Finish physical-mean triplet, frozen-state physical and event diagnostics; publish immediately when complete"
+    },
+    {
+      "id": "evaluate",
+      "start_hour": 10,
+      "end_hour": 12,
+      "local_h100": "Natural-population metrics, event alarms, calibration and source intervals; publish first complete report",
+      "remote_h200": "Return core artifacts/code; no extra fits solely to fill the allocation"
+    },
+    {
+      "id": "reserve",
+      "start_hour": 12,
+      "end_hour": 15,
+      "local_h100": "Contingency for core preparation/evaluation overruns; optional extensions only after core report",
+      "remote_h200": "Contingency for core preparation/evaluation overruns; optional extensions only after core report"
+    },
+    {
+      "id": "finalize",
+      "start_hour": 15,
+      "end_hour": 16,
+      "local_h100": "Hard checkpoint/package reserve; finish earlier whenever possible",
+      "remote_h200": "Hard checkpoint/package reserve; finish earlier whenever possible"
+    }
+  ],
+  "gates": {
+    "source_integrity": "Exact manifests/arrays, 150 unique lineages, original 90/30/30 folds, full 0--600 ps cadence; legacy reproduction keeps its own 74/24/27 folds",
+    "assay_integrity": "Finite patch/full-cell PTM agreement; censor/endpoint tests; future-leakage and split tests; reproducible legacy scores",
+    "coverage": "On train/validation only: at least 20 event-bearing train lineages, 5 in selection and 5 in calibration, and 50 distinct center episodes in each validation half for the primary matched population; otherwise coverage-limited",
+    "nested_initialization": "Gates off reproduces parent current-state outputs and shared gradients; gates have finite nonzero learning signal",
+    "small_set_fit": "Train-only 32-window present-information fit reaches declared average and block errors; diagnose before generalizing if it fails",
+    "budget_feasible": "Both workers can finish each reserved matched group, final evaluation and one-hour checkpoint reserve using measured costs",
+    "demonstrated_signal": "Validation improvement over condition-only reference at a primary horizon on log loss and Brier; report source intervals conditional on the single training seed; failure does not establish zero physical signal",
+    "mean_prediction_competence": "Physical native mean or frozen-z ridge is within 5% of current-packet ridge validation MSE on identical observations; no material single-block failure hidden by the mean"
+  },
+  "optional_priority": [
+    "Finish missing member of an already launched core matched group",
+    "Native H48 plus separately trained repeat48, with equal-budget snapshot continuation; one objective only",
+    "Raw-observation-access matched sufficiency predictors",
+    "One wider-radius snapshot/history comparison if descriptor-shell results warrant it",
+    "Existing shooting-family ensemble audit; three completed precision-training-source numerical audit if already present"
+  ],
+  "prohibited_automatic_work": [
+    "additional training seeds",
+    "restart stopped simulations",
+    "new simulations",
+    "width/compression/smoothness sweep",
+    "tune on test results",
+    "mix NPT and Langevin shooting kernels",
+    "reinterpret incomplete fits as full comparisons"
+  ],
+  "outputs": [
+    "coverage report",
+    "legacy reproduction audit",
+    "descriptor predictability map",
+    "native matched comparisons",
+    "information-loss table",
+    "runtime and incomplete-work ledger",
+    "frozen metric definitions and implementation hashes"
+  ],
+  "first_report_target_hours": 12,
+  "optional_extensions_enabled": false
+}

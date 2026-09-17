@@ -1,0 +1,16 @@
+{
+  "protocol": "local_crystallization_predictability_v1",
+  "plan": "configs/local_predictability/two_gpu_16h.json",
+  "output": "output/local_predictability/h100-20260917",
+  "cache": "${storage:cache}/local-predictability-20260917-broad",
+  "legacy_output": "output/embedding_forecast/local-crystallization-20260913",
+  "workers": 8,
+  "seed": 20260919,
+  "shared_start_utc": "2026-09-17T12:53:56+00:00",
+  "preparation_deadline_utc": "2026-09-17T23:59:30+00:00",
+  "training_deadline_utc": "2026-09-17T18:02:01+00:00",
+  "hard_deadline_utc": "2026-09-17T19:02:01+00:00",
+  "device": "cuda",
+  "native_dependency": "H200 tested native implementation, source snapshot and feasible matched budget",
+  "execution_worker": "node58 RTX PRO 6000 Blackwell / allocation 996727; descriptor/ridge offload only"
+}

@@ -1,0 +1,16 @@
+{
+  "family": "local_predictability_comparison",
+  "exported_at": "2026-09-17T13:27:11.775487+00:00",
+  "files": {
+    "docs/metrics/local_predictability.md": "c3ce04f40dc69fc009e7cd13b783e0643533644116a41622fc5ecf35fb8032db",
+    "src/research/local_predictability/data.py": "b414ac8f681d43c4996658302c392761873e07df6241059b149ad8c1582997d2",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/local_predictability/baselines.py": "208b8c61b82e1115affaf6d80bd091d79106a9867324a64ac41c138418c72432",
+    "src/research/local_predictability/audit.py": "d8178fffb568b82ad21569ead14bad5fc9ba7bb8298e611d9d080f4b81950e5d",
+    "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "docs/metrics/local_predictability_comparison.md": "3689a3ea5b91dcd6948e7f8f9a25fbd9100200106f5f8b144ce81efac589cfaa",
+    "src/research/local_predictability/compare.py": "98f4603ca928b734080ce81a1d6ea367940661255c0fdb2de7deb5b158aeb775"
+  }
+}

@@ -1,0 +1,13 @@
+run_id,split,temperature_K,state,published,frame_count,position_rms_A,position_max_A
+memory-al-precision-20260917-source000-T500,train,500.0,complete,True,2561,0.012632407413855167,0.03125
+memory-al-precision-20260917-source001-T500,train,500.0,complete,True,2561,0.012638537754530327,0.03125
+memory-al-precision-20260917-source002-T500,train,500.0,complete,True,2561,0.01262902032691417,0.03125
+memory-al-precision-20260917-source003-T500,val,500.0,failed,False,,,
+memory-al-precision-20260917-source004-T500,sealed_test,500.0,failed,False,,,
+memory-al-precision-20260917-source005-T500,sealed_test,500.0,not_started,False,,,
+memory-al-precision-20260917-source006-T520,train,520.0,not_started,False,,,
+memory-al-precision-20260917-source007-T520,train,520.0,not_started,False,,,
+memory-al-precision-20260917-source008-T520,train,520.0,not_started,False,,,
+memory-al-precision-20260917-source009-T520,val,520.0,not_started,False,,,
+memory-al-precision-20260917-source010-T520,sealed_test,520.0,not_started,False,,,
+memory-al-precision-20260917-source011-T520,sealed_test,520.0,not_started,False,,,

@@ -1,0 +1,7 @@
+left,right,readout,population,metric,seeds,value,ci95_low,ci95_high,sources
+state_history,state_constant,D,all,future/0.75ps/block_mean,1,0.005471778164307278,-0.00010278808573882811,0.011313400900819238,30
+state_history,state_constant,D,all,future/3ps/block_mean,1,0.007138767838478097,-0.0003305960824299062,0.015399967876469939,30
+state_history,state_constant,D,all,future/9ps/block_mean,1,-0.0009476685068673542,-0.007686035369212426,0.005456183212809258,30
+state_history,state_constant,D,low_order,future/0.75ps/block_mean,1,0.008636778220534321,-0.000641722182798047,0.01831287705047312,17
+state_history,state_constant,D,low_order,future/3ps/block_mean,1,0.004510637080552541,-0.00952263046603868,0.017253819995504946,17
+state_history,state_constant,D,low_order,future/9ps/block_mean,1,-0.005036527984866905,-0.013213496063561996,0.003136760659296711,17

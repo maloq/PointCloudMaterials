@@ -29,6 +29,9 @@ def compare(config, modalities=('x', 'xv')):
             raise RuntimeError(f'Comparison requires completed equal-budget fits: {name}: {state}')
         records[name] = torch.load(technical/'evaluation.pt', weights_only=True)
         scores[name] = json.loads((technical/'metrics.json').read_text())
+        if (scores[name]['batch_size'] != config['training']['batch_size'] or
+                scores[name]['trained_windows'] != config['training']['steps']*config['training']['batch_size']):
+            raise ValueError(f'Comparison requires equal effective batches and sampled-window budgets: {name}')
     paired = {}
     for modality in modalities:
         for history in (12, 48):
@@ -51,7 +54,8 @@ def compare(config, modalities=('x', 'xv')):
     write_json(destination/'technical'/'metrics.json', metrics)
     write_metric_table(metrics, destination, family='predictive_memory')
     lines = ['# Exploratory predictive-memory pilot', '',
-        f"All fits use the same {config['training']['steps']:,}-update budget and one training seed. Lower physical-path NLL is better.", '',
+        f"All fits use the same {config['training']['steps']:,}-update budget, batch size {config['training']['batch_size']}, "
+        f"and one training seed. Lower physical-path NLL is better.", '',
         '| Model | Selected update | Test joint NLL | Test future MSE |', '|---|---:|---:|---:|']
     for name, result in scores.items():
         lines.append(f"| {name} | {result['selected_step']} | {result['test']['joint_nll']['mean']:.5f} | {result['test']['future_mse']['mean']:.5f} |")

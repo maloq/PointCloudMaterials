@@ -39,6 +39,36 @@ checkpoint selection still uses validation NLL only. The optimization follow-up
 uses 12,000 updates, with validation every 250, and retains validation NLL,
 present MSE and future MSE in `technical/validation.jsonl`.
 
+The current trainer supports independent-window batches. `training.batch_size`
+is the number of source-balanced window draws per optimizer update, with
+replacement. Uniform row draws require equal numbers of training rows per source;
+the runtime checks this condition. `micro_batch_size` limits windows held
+in one differentiable forward pass. Each microbatch loss is multiplied by its
+window count divided by the effective batch size, including a smaller final
+microbatch. Gradients are clipped once and AdamW steps once per effective batch.
+Spatial graphs are disjoint; temporal attention and pooling remain per window.
+The per-window physical losses and selection population above are unchanged.
+
+`trained_windows` and `selected_windows` count sampled windows (with repetitions)
+through the final and selected updates. Larger batches at fixed update counts
+change the scientific optimization budget; comparisons require equal effective
+batches and sampled-window budgets. `evaluation_batch_size` changes execution
+only; exported per-window keys/order and source-bootstrap definitions are fixed.
+Runtime cache fields count immutable observation storage in bytes and cache hits,
+misses and entries; train-only residency keeps validation from evicting training
+observations. Target tensors reside on the device and use training-only scales.
+There is no automatic hardware benchmark, mixed precision or precision change.
+
+New batched fits explicitly select `encoder.mace_backend: cueq`; an explicit
+`e3nn` reference remains available. MACE's cuEquivariance spatial operations keep
+the e3nn `mul_ir` layout and O(3) conventions used by velocity/history layers.
+The backend does not change physical targets or metric formulas. Runtime JSON
+records the backend and library versions. Its symmetric-product parameter basis
+differs, so matching a random seed alone does not imply identical initialized
+functions across backends. All variants within a new comparison should use the
+same backend. Exact resume requires the same backend/configuration; historical
+checkpoints and exported metric definitions are not converted or rewritten.
+
 Reported means first average the three anchors of each source, then weight
 sources equally. `ci95` is a percentile interval from 500 whole-source bootstrap
 resamples, using the run seed. Paired history gain is snapshot NLL minus history

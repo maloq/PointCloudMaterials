@@ -36,6 +36,34 @@ and [the output layout](../docs/research_layout.md).
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.local_predictability.plan --config
+configs/local_predictability/two_gpu_16h.json --output /tmp/local-predictability-queue.json`
+validates the one-seed, two-worker 16-hour **planning specification** and writes
+job identities. It never trains, submits or resumes jobs. Execution uses
+`python -m src.research.local_predictability.data --config configs/local_predictability/h100_execution.json`
+for the outcome-independent full-timeline release, followed by `audit` with the
+same configuration and `baselines --config configs/local_predictability/rtx6000_baselines.json`
+in that package. The maintained tracking wrapper waits for explicit stage records.
+Native integration follows the H200 tested implementation; see the
+[H100/H200 handoff](../docs/local_predictability_16h.md).
+
+`python -m src.research.local_predictability.observability --config
+configs/local_predictability/rtx6000_observability.json` fits current-state and
+true-future packet diagnostics on the frozen native window grid. It saves model
+checkpoints and predictions for later analysis; future inputs are diagnostic only.
+See the [observability protocol](../experiments/local_predictability_20260917/OBSERVABILITY.md).
+
+`python -m src.research.local_predictability.native_queue --config CONFIG
+--stages snapshot history12 --worker h100 --resume` assigns disjoint frozen
+continuations to workers and raises the process open-file limit for all 150
+memory-mapped sources. The RTX worker uses `--stages repeat12 --worker rtx6000`.
+`raw_observability --config configs/local_predictability/rtx6000_raw_observability.json`
+in the same package trains the all-state raw-atom current-label check.
+`native_readouts --config configs/local_predictability/rtx6000_native_readouts.json`
+extracts completed onset states and fits fresh linear/MLP predictors. These
+diagnostics preserve predictions for later interpretation. The
+[operational queue](../docs/local_predictability_16h.md) uses explicit dependencies.
+
 `run_lammps_campaign.py memory-sources prepare --config
 configs/simulation/predictive_memory_precision.json --run-name NAME` stages fresh,
 split-assigned independent Al sources. `memory-sources run-worker --campaign-root
@@ -50,6 +78,10 @@ configs/predictive_memory/pilot.json --history-ps 48 --velocity` trains the new
 label-free memory pilot. `python -m src.training_methods.predictive_memory.compare
 --config configs/predictive_memory/pilot.json` compares the eight completed matched
 fits. See [workflow and resume](../docs/predictive_memory.md).
+For new batched training, use `configs/predictive_memory/batched.json` with the
+cuEquivariance backend enabled and the same CLI. It exposes effective/micro/evaluation
+batch sizes and bounded GPU input
+residency. Current checkpoints use format 2; earlier runs use their original commit.
 The comparison's `--modalities xv` option evaluates the four-fit velocity-input
 replicate from `configs/predictive_memory/replicate-xv-seed20260918.json`.
 `python -m src.training_methods.predictive_memory.diagnose --config CONFIG

@@ -532,6 +532,38 @@
       "aliases": [
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source001-T500"
       ]
+    },
+    "memory-al-precision-20260917-source002-T500": {
+      "root": "archive",
+      "path": "simulations/memory-al-precision-20260917-source002-T500",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/memory-al-precision-20260917/runs/memory-al-precision-20260917-source002-T500"
+      ]
+    },
+    "memory-al-precision-20260917-source003-T500-failed": {
+      "root": "archive",
+      "path": "simulations/memory-al-precision-20260917-source003-T500-failed",
+      "kind": "simulation",
+      "state": "failed",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": []
+    },
+    "memory-al-precision-20260917-source004-T500-failed": {
+      "root": "archive",
+      "path": "simulations/memory-al-precision-20260917-source004-T500-failed",
+      "kind": "simulation",
+      "state": "failed",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": []
     }
   }
 }

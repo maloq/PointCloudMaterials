@@ -10,7 +10,8 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
-| [Predictive memory](predictive_memory_20260917/README.md) | Completed H100/H200 pilot; objective follow-up active. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) distinguish reported remote evidence and pending replication |
+| [Local predictability](local_predictability_20260917/README.md) | **Planned, not run:** accessible onset information and native retention; one seed, complementary H100/H200 comparisons, shared 16-hour ceiling |
+| [Predictive memory](predictive_memory_20260917/README.md) | Completed H100/H200 pilot; objective follow-up stopped after 10/16 fits. [Latest update](../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md) and [consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
 | [Causal native MACE](mace_causal_20260916/README.md) | Completed short/long-budget studies and H200 width comparison; small conditional history benefit. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
 | [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | **Discarded** frozen-map approach; first sweep failed the retention gate; capacity fits retained without an established final evaluation |
 | [Frozen local-group states](mace_local_state_20260915/README.md) | **Discarded** approach; [completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |

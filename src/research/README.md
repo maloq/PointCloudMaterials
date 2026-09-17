@@ -1,5 +1,10 @@
 # Implementations of recorded research protocols
 
+`local_predictability.plan` validates/materializes the planned single-seed H100/H200
+queue, including paired controls and confirmation padding. It does not implement
+or launch the new training/assay adapters. See the
+[protocol](../../experiments/local_predictability_20260917/README.md).
+
 `mace_encoder_diagnostics` tests the exact frozen forecast encoder's invariance,
 geometry/membership sensitivity, storage precision, physical evolution and TDA
 generalization. See the [protocol](../../experiments/mace_encoder_diagnostics_20260914/README.md).
@@ -79,3 +84,13 @@ metric definitions, tables and figures. Recipe: `configs/analysis/memory_researc
 Causal runtime benchmarking uses the existing `mace_velocity causal-benchmark`
 dispatch to `training_methods/mace_causal/benchmark.py`; packing is implemented in
 `models/encoders/mace_causal_batch.py`, with residency and batching in `runtime.py`.
+
+`local_predictability/observability.py` builds all-state packet recognition and
+at-risk true-future sequence datasets, reusing the fixed descriptor trainer.
+It saves predictions without scientific analysis. See the
+[observability protocol](../../experiments/local_predictability_20260917/OBSERVABILITY.md).
+
+The adjacent `native_queue.py` partitions existing onset stages across workers
+without changing checkpoint identities. `raw_observability.py` trains a separate
+all-state binary current-label model; `native_readouts.py` uses frozen onset states
+for fresh linear/MLP readouts. Both retain predictions for deferred interpretation.

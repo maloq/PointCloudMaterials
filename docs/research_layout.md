@@ -57,6 +57,11 @@ normalization, train/test separation, seed spread and the source bootstrap. Raw 
 stays available under `technical/`. Each export saves the exact source/doc hashes in
 `technical/metric-contract.json`; old exports retain their old documents.
 
+An export validates only its requested metric family's declared files. An
+unrelated hardware-benchmark edit must not block a training-result export.
+The separate `experiment_registry.py metrics-docs` audit and layout tests still
+validate every family. Changes to an export's own dependencies remain errors.
+
 When changing a metric, update its description in `docs/metrics/` in the same change.
 Update the matching SHA-256 entries in `docs/metrics/contracts.json` after reviewing
 both code and documentation (e.g. compute each with `sha256sum PATH`). The

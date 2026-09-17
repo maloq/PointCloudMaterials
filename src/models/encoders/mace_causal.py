@@ -7,6 +7,7 @@ from e3nn import o3
 
 from src.data_utils.causal_history import AtomicHistory
 from .mace_causal_batch import PackedHistory, graph_sum
+from .mace_backend import mace_backend_config
 
 
 def taper(value, inner, outer):
@@ -117,7 +118,7 @@ class CausalMACEEncoder(nn.Module):
                  atomic_numbers=(13,), correlation=2, num_bessel=6,
                  radial_width=32, avg_num_neighbors=12., history_duration_ps=2.25,
                  velocity_scale_A_per_ps=4., scales_A=((0., 3.), (5., 7.), (7., 9.)),
-                 use_velocity=True, use_history=True, repeat_anchor=False):
+                 use_velocity=True, use_history=True, repeat_anchor=False, mace_backend='e3nn'):
         super().__init__()
         if (num_layers < 2 or channels < 1 or output_dim < 1 or cutoff_A <= 0
                 or history_duration_ps <= 0 or velocity_scale_A_per_ps <= 0):
@@ -128,16 +129,19 @@ class CausalMACEEncoder(nn.Module):
         self.velocity_scale = velocity_scale_A_per_ps
         self.use_velocity, self.use_history = use_velocity, use_history
         self.repeat_anchor = repeat_anchor
+        self.mace_backend = mace_backend
+        cueq_config = mace_backend_config(mace_backend)
         irreps = o3.Irreps(f'{channels}x0e + {channels}x1o + {channels}x2e')
         # Keep tensor channels even in the last product, rather than using the
         # scalar-only reshape of PretrainedMACEEncoder.
-        backbone = modules.MACE(r_max=cutoff_A, num_bessel=num_bessel, num_polynomial_cutoff=5,
+        self._mace_kwargs = dict(r_max=cutoff_A, num_bessel=num_bessel, num_polynomial_cutoff=5,
             max_ell=2, interaction_cls=modules.RealAgnosticResidualInteractionBlock,
             interaction_cls_first=modules.RealAgnosticInteractionBlock, num_interactions=num_layers,
             num_elements=len(atomic_numbers), hidden_irreps=irreps, MLP_irreps=o3.Irreps(f'{channels}x0e'),
             atomic_energies=np.zeros(len(atomic_numbers)), avg_num_neighbors=avg_num_neighbors,
             atomic_numbers=list(atomic_numbers), correlation=correlation, gate=torch.nn.functional.silu,
-            radial_MLP=[radial_width], keep_last_layer_irreps=True).float()
+            radial_MLP=[radial_width], keep_last_layer_irreps=True)
+        backbone = modules.MACE(**self._mace_kwargs, cueq_config=cueq_config).float()
         # Energy heads are not part of the state encoder.
         self.node_embedding = backbone.node_embedding
         self.radial_embedding = backbone.radial_embedding

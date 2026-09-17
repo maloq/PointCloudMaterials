@@ -1,0 +1,18 @@
+{
+  "protocol": "local_crystallization_packet_observability_v1",
+  "plan": "configs/local_predictability/two_gpu_16h.json",
+  "output": "output/local_predictability/rtx-observability-20260917",
+  "cache": "${storage:cache}/local-predictability-20260917-broad",
+  "seed": 20260919,
+  "device": "cuda",
+  "training_deadline_utc": "2026-09-17T18:02:01+00:00",
+  "hard_deadline_utc": "2026-09-17T19:02:01+00:00",
+  "model_kinds": ["linear", "mlp"],
+  "cases": [
+    {"name": "current-state", "task": "state", "horizon_ps": 0},
+    {"name": "future-state-9ps", "task": "state", "horizon_ps": 9},
+    {"name": "future-state-48ps", "task": "state", "horizon_ps": 48},
+    {"name": "future-sequence-onset-9ps", "task": "onset_sequence", "horizon_ps": 9},
+    {"name": "future-sequence-onset-48ps", "task": "onset_sequence", "horizon_ps": 48}
+  ]
+}

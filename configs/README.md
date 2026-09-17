@@ -25,6 +25,11 @@ and output location through the existing config/CLI. Do not copy a runner.
 
 ## Supporting configs
 
+- `local_predictability/two_gpu_16h.json`: planning-only one-seed H100/H200
+  predictability queue; requires new assay/batched-training adapters before
+  execution. [Protocol](../experiments/local_predictability_20260917/README.md)
+  and [handoff](../docs/local_predictability_16h.md).
+
 - `benchmarks/hardware.json`: dataset-free storage, LAMMPS CPU and GPU training
   workloads; [commands and comparison protocol](../docs/hardware_benchmark.md).
 
@@ -137,3 +142,19 @@ C/D/repeated-anchor cohort. H200 recipes use the same runtime.
 reported H200 summaries and simulation-status inputs for a dated cross-study
 evidence snapshot. Run `python -m src.research.memory_report --config CONFIG
 --output NEW_OUTPUT`; this analysis does not launch training or simulation.
+
+`local_predictability/rtx6000_observability.json` defines the single-seed packet
+recognition/onset diagnostics on the frozen broad release, with a fixed training
+deadline. See [protocol](../experiments/local_predictability_20260917/OBSERVABILITY.md).
+
+`local_predictability/rtx6000_native_onset.json` offloads the existing repeated-frame
+continuation, keeping its parent and scientific identity. The adjacent
+`rtx6000_raw_observability.json` and `rtx6000_native_readouts.json` recipes fill the
+raw-state and frozen-predictor diagnostics, respectively, within the same allocation.
+Their remaining MACE work uses CuEq and bounded parallel input lookahead; current
+core optimizers retain their original backend.
+
+`predictive_memory/batched.json` is the fresh-run optimized memory recipe:
+cuEquivariance spatial kernels (`encoder.mace_backend: cueq`),
+effective batch 8, microbatch 2, evaluation batch 4, bounded train-observation GPU
+residency. Use the existing training CLI; see [workflow](../docs/predictive_memory.md).

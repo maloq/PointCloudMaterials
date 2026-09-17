@@ -1,5 +1,11 @@
 # Predictive memory in partial atomic observations
 
+**Latest findings:** the [stopped-study update](../../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md)
+adds the completed original-loss seed-20260918 H12 comparison. Its mean forecast
+error improves by 1.1% over the matched snapshot, while the primary NLL comparison
+is unresolved. Stronger-loss history remains a first-seed result; its second seed
+was not run. Ten of 16 follow-up fits are complete; the study is stopped.
+
 The [17 September consolidated report](../../output/predictive_memory/research-summary-20260917/RESULTS.md)
 includes the completed local pilot, user-reported H200 width results, frozen-head
 diagnostics, and the first completed stronger-present-loss seed. The original

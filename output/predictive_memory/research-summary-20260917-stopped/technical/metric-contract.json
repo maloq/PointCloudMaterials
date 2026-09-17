@@ -1,0 +1,11 @@
+{
+  "family": "memory_research_summary",
+  "exported_at": "2026-09-17T11:48:20.983879+00:00",
+  "files": {
+    "docs/metrics/memory_research_summary.md": "4653ac43f8afcd2ad00d6d8698d634849ffa2ff7549ea091c4c27883fa7c6841",
+    "src/research/memory_report.py": "9abc4bbbb3c94448fac285c1b455e33be212c48ec9e441c7aba29a2b5ac144e4",
+    "src/research/mace_causal_comparison.py": "e27b2b39745bc85d02d536f1a618593294f3abb8f069bb08d0e27a8e9835e1f0",
+    "experiments/predictive_memory_20260917/h200_reported_results.json": "0740a1ab851a8dcec5c316918c3380a1298fe120bf16bc96c48ad8389404b978",
+    "configs/analysis/memory_research_report.json": "cc9699c002899253a21c19cb580f4ccd51a2027ef1ed3e81fea7044f0cd480ab"
+  }
+}

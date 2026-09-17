@@ -1,0 +1,5 @@
+model,seeds,updates,width16_local_nll,width32_user_reported_nll,width32_minus_width16,width32_evidence
+xv-H0,2,3000,0.924679191244973,0.9354,0.010720808755027011,user-reported rounded mean; raw H200 artifacts unavailable
+xv-H12,2,3000,0.9253660312957235,0.9369,0.011533968704276476,user-reported rounded mean; raw H200 artifacts unavailable
+xv-H48,2,3000,0.9256148502230646,0.9302,0.004585149776935471,user-reported rounded mean; raw H200 artifacts unavailable
+xv-H48-repeat,2,3000,0.923583684530523,0.9405,0.016916315469477028,user-reported rounded mean; raw H200 artifacts unavailable

@@ -1,5 +1,10 @@
 # Causal MACE runtime benchmark
 
+The shared encoder now supports an explicitly selected cuEquivariance backend.
+This benchmark's existing recipes still use e3nn; its historical timings do not
+measure cuEquivariance. New backend validation is separate from training and
+must declare backend, precision, mapped-weight agreement and GPU contention.
+
 Uses hash-verified physical cache examples and the actual D model/task objective.
 At each tensor width and effective batch, reference, packed host and packed device
 start with identical parameters and examples. FP32/TF32-disabled throughout.

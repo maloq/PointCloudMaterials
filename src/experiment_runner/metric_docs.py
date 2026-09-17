@@ -16,8 +16,11 @@ def fingerprint(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def check_metric_docs():
+def check_metric_docs(*, family=None):
+    """Validate one export's dependencies, or all families for the repository audit."""
     contracts = json.loads((DOCUMENTS / 'contracts.json').read_text())
+    if family is not None:
+        contracts = {family: contracts[family]}
     for family, contract in contracts.items():
         for relative, expected in contract['files'].items():
             if fingerprint(REPO / relative) != expected:
@@ -27,8 +30,8 @@ def check_metric_docs():
 
 
 def snapshot_metric_docs(root, family):
+    contract = check_metric_docs(family=family)[family]
     root = result_folders(root)
-    contract = check_metric_docs()[family]
     description = (DOCUMENTS / f'{family}.md').read_text()
     captured = datetime.now(timezone.utc).isoformat()
     (root / 'tables/METRICS.md').write_text(description + '\n\n'

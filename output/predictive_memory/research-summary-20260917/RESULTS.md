@@ -1,5 +1,10 @@
 # Atomic predictive state and memory: consolidated results
 
+**Later update, 17 September, 13:47 CEST:** the user stopped the runs. One
+additional fit and one additional simulation source completed since this
+snapshot. See the [stop update and new comparison](../research-summary-20260917-stopped/RESULTS.md).
+The historical results and capture time below are preserved.
+
 **Evidence captured 17 September 2026, 11:54 CEST (09:54 UTC).** This report covers the native causal-state and partial-observation memory experiments undertaken in this task, including the supplied H200 results. It includes completed comparisons and explicitly identifies ongoing work. Earlier pretrained-encoder studies remain in the [research index](../../../experiments/README.md).
 
 ## Main findings

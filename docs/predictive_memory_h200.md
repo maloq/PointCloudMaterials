@@ -1,5 +1,9 @@
 # H200 task: capacity of the partial-observation memory encoder
 
+**Historical completed task.** New work follows the
+[one-seed H100/H200 predictability queue](local_predictability_16h.md), with a
+shared 16-hour ceiling. Do not restart this width study for the new request.
+
 This handoff replaces the **scientific assignment** in `docs/mace_causal_h200.md`.
 That older bundle implements a different target and must not be used for these
 runs. The new archive is `predictive-memory-h200-20260917.tar.zst`; copy its
@@ -27,8 +31,10 @@ For **each seed 20260917 and 20260918**, run:
 This is eight fits, in addition to the H100's existing width-16 experiments.
 Prioritize a complete four-model comparison for seed 20260917, then replicate
 with seed 20260918. Test outcomes must not determine which recipes are run.
-Source-balanced batch size stays **1**; changing it would alter the controlled
-training budget, and this trainer explicitly rejects larger batches.
+This historical cohort used source-balanced batch size **1**. Reproduce it with
+its original commit. The current trainer supports larger independent-window
+batches and GPU input residency; see [optimized training](predictive_memory.md).
+Increasing batch size changes the optimization budget and requires a fresh run.
 
 The radius is **17 A total**, including every graph atom; target support is
 unchanged at 5--7 A. Future offsets remain 0.75,3,12,48,96 ps. Present/future targets

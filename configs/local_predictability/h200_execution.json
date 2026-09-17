@@ -1,0 +1,19 @@
+{
+  "protocol": "local_crystallization_predictability_v1",
+  "output": "output/local_predictability/h200-20260917",
+  "plan": "configs/local_predictability/two_gpu_16h.json",
+  "seed": 20260919,
+  "shared_start_utc": "2026-09-17T12:53:56+00:00",
+  "training_deadline_utc": "2026-09-18T02:59:30+00:00",
+  "hard_deadline_utc": "2026-09-18T03:59:30+00:00",
+  "first_report_target_utc": "2026-09-18T00:53:56+00:00",
+  "torch_threads": 4,
+  "cpu_cache_gib": 8,
+  "gpu_cache_gib": 16,
+  "max_spatial_edges": 1000000,
+  "activation_checkpoint": false,
+  "microbatch": {"snapshot": 8, "history12": 8, "repeat12": 8},
+  "profile_updates": 4,
+  "shared_release_required": true,
+  "optional_extensions_enabled": false
+}

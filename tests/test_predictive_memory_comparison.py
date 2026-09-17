@@ -12,7 +12,7 @@ def completed_fits(root, modalities, steps=3000):
             technical = root/f'{modality}-{suffix}'/'technical'
             technical.mkdir(parents=True)
             (technical/'status.json').write_text(json.dumps(dict(state='complete', step=steps)))
-            (technical/'metrics.json').write_text(json.dumps(dict(selected_step=2500,
+            (technical/'metrics.json').write_text(json.dumps(dict(selected_step=2500, batch_size=8, trained_windows=steps*8,
                 test=dict(joint_nll=dict(mean=score), future_mse=dict(mean=score)))))
             rows = [dict(source_id=s, center_id=10, anchor=a, joint_nll=score)
                     for s in (1, 2) for a in (399, 400, 401)]
@@ -23,7 +23,7 @@ def completed_fits(root, modalities, steps=3000):
 @pytest.mark.parametrize('steps', [3000, 12000])
 def test_complete_paired_comparison_for_selected_modalities(tmp_path, modalities, steps):
     completed_fits(tmp_path, modalities, steps)
-    config = dict(output=str(tmp_path), training=dict(steps=steps), bootstrap_draws=50, seed=18)
+    config = dict(output=str(tmp_path), training=dict(steps=steps, batch_size=8), bootstrap_draws=50, seed=18)
     compare(config, modalities=modalities)
     root = tmp_path/'comparison'
     result = json.loads((root/'technical/metrics.json').read_text())
@@ -39,7 +39,7 @@ def test_complete_paired_comparison_for_selected_modalities(tmp_path, modalities
 
 def test_replicate_rejects_unmatched_windows_and_incomplete_budgets(tmp_path):
     completed_fits(tmp_path, ('xv',))
-    config = dict(output=str(tmp_path), training=dict(steps=3000), bootstrap_draws=50, seed=18)
+    config = dict(output=str(tmp_path), training=dict(steps=3000, batch_size=8), bootstrap_draws=50, seed=18)
     status = tmp_path/'xv-H48/technical/status.json'
     status.write_text(json.dumps(dict(state='complete', step=2000)))
     with pytest.raises(RuntimeError, match='equal-budget'):
@@ -51,3 +51,14 @@ def test_replicate_rejects_unmatched_windows_and_incomplete_budgets(tmp_path):
     torch.save(payload, path)
     with pytest.raises(ValueError, match='source/center/anchor'):
         compare(config, modalities=('xv',))
+
+
+def test_comparison_rejects_larger_batches_at_the_same_update_count(tmp_path):
+    completed_fits(tmp_path, ('xv',))
+    path = tmp_path/'xv-H12/technical/metrics.json'
+    metrics = json.loads(path.read_text())
+    metrics.update(batch_size=16,trained_windows=48000)
+    path.write_text(json.dumps(metrics))
+    config = dict(output=str(tmp_path),training=dict(steps=3000,batch_size=8),bootstrap_draws=50,seed=18)
+    with pytest.raises(ValueError,match='effective batches'):
+        compare(config,modalities=('xv',))

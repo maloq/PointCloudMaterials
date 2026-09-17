@@ -1,5 +1,17 @@
 # Predictive-memory precision sources — 17 September 2026
 
+**Stopped at the user's request on 17 September, about 13:45 CEST.** Three
+500 K training sources (000–002) completed and were verified in STORE. Source
+003 stopped during melt preparation and source 004 during measurement; both
+partial runs and available native restart files were copied and hash-verified
+under their `-failed` STORE records. Seven sources never started. Worker status
+uses `failed` for the interrupted LAMMPS subprocesses (exit 143); the explicit
+user-requested stop is recorded in `user-stop.json` beside the durable launch
+records. Both CPU workers have exited. Do not restart this campaign automatically.
+The [stop update](../../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md)
+records the new research results and preservation state. The description below
+retains the original campaign plan.
+
 The user authorized new simulations on 17 September, superseding the earlier
 existing-data-only restriction. The active H100 optimization comparison continues
 on its original immutable data; none of these new sources enter that comparison.

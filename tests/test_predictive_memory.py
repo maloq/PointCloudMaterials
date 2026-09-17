@@ -50,19 +50,19 @@ def test_rigid_transform_boost_permutation_and_outside_radius():
     motion = u.copy(); motion[:, -1] = 1000
     variants.append(observe(changed, motion))
     with torch.no_grad():
-        expected = model(observe())
+        expected = model([observe()])
         for observed in variants:
-            torch.testing.assert_close(model(observed), expected, atol=2e-6, rtol=2e-5)
+            torch.testing.assert_close(model([observed]), expected, atol=2e-6, rtol=2e-5)
     # Atom IDs are correspondence keys, never numerical features.
     observed = observe()
-    torch.testing.assert_close(model(replace(observed, atom_ids=observed.atom_ids*7)), model(observed))
+    torch.testing.assert_close(model([replace(observed, atom_ids=observed.atom_ids*7)]), model([observed]))
 
 
 def test_missing_atom_zero_influence_and_oldest_gradient():
     observed = observe()
     model = encoder().train()
     observed.positions.requires_grad_(); observed.velocities.requires_grad_()
-    model(observed).square().sum().backward()
+    model([observed]).square().sum().backward()
     assert (observed.positions.grad.abs().sum((1, 2)) > 0).all()
     assert (observed.velocities.grad.abs().sum((1, 2)) > 0).all()
     for module in [*model.interactions, *model.products, *model.temporal, *model.edge_motion, model.pool]:
@@ -99,8 +99,8 @@ def test_checkpointed_spatial_matches_outputs_and_gradients():
     checkpointed = encoder(activation_checkpoint=True).train()
     reference = copy.deepcopy(checkpointed); reference.activation_checkpoint = False
     for model in (checkpointed, reference):
-        model(observe()).square().sum().backward()
-    torch.testing.assert_close(checkpointed(observe()), reference(observe()), atol=0, rtol=0)
+        model([observe()]).square().sum().backward()
+    torch.testing.assert_close(checkpointed([observe()]), reference([observe()]), atol=0, rtol=0)
     for p, q in zip(checkpointed.parameters(), reference.parameters()):
         if p.grad is not None:
             torch.testing.assert_close(p.grad, q.grad, atol=1e-7, rtol=1e-5)
@@ -140,10 +140,10 @@ def test_snapshot_positions_only_and_separate_target_object():
     history = observe()
     snapshot = replace(history, positions=history.positions[-1:], velocities=history.velocities[-1:],
                        weights=history.weights[-1:], offsets_ps=history.offsets_ps[-1:], edges=history.edges[-1:])
-    torch.testing.assert_close(model(snapshot), model(replace(snapshot, velocities=snapshot.velocities+10)))
+    torch.testing.assert_close(model([snapshot]), model([replace(snapshot, velocities=snapshot.velocities+10)]))
     assert not {'future', 'present', 'labels', 'targets'} & vars(snapshot).keys()
     with pytest.raises(ValueError, match='snapshot'):
-        model(history)
+        model([history])
 
 
 def test_train_only_scaler_reproducible():

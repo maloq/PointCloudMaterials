@@ -1,5 +1,100 @@
 # Predictive-memory pilot workflow
 
+Current optimized training uses one batched encoder implementation. For a fresh
+run use `configs/predictive_memory/batched.json`; historical runs belong to their
+original commit. Checkpoint format 2 supports exact continuation of new runs and
+deliberately rejects earlier checkpoint formats.
+
+```bash
+python -m src.training_methods.predictive_memory.train --config configs/predictive_memory/batched.json --history-ps 12 --velocity
+```
+
+`training.batch_size` counts independent windows per optimizer step.
+`micro_batch_size` controls activation memory; gradients are averaged over the
+full batch and clipped once, including uneven final microbatches.
+`evaluation_batch_size` controls validation/export packing independently.
+`encoder.frame_chunk` limits total spatial frames processed in a packed kernel.
+Temporal attention, identities and pooling never cross windows.
+
+The fresh batched recipe enables `encoder.mace_backend: cueq`. MACE's supported
+cuEquivariance wrappers replace spatial linear maps, channel-wise tensor products,
+fully connected tensor products and many-body symmetric contractions. Custom
+motion and temporal layers keep their existing e3nn operations. We use `mul_ir`
+layout and `O3_e3nn` conventions so invariant contractions, parity and the
+scalar/vector/tensor channel ordering remain consistent. Convolution fusion is
+disabled; cuEquivariance's symmetric and channel-wise product kernels are active.
+See [MACE's backend documentation](https://mace-docs.readthedocs.io/en/latest/guide/cuda_acceleration.html).
+
+The pinned GPU requirements already include MACE 0.3.16 and cuEquivariance 0.10.0
+with its CUDA 12 extension. Missing cuEquivariance raises an error; there is no
+automatic e3nn fallback. `technical/runtime.json` records the backend, layout and
+package versions. Set `encoder.mace_backend: e3nn` only for a deliberate reference
+run. Backend changes require fresh fits: resume requires identical configuration
+and optimizer state, and CuEq symmetric-product parameters use a different basis.
+
+On another H100/H200 server, use the updated source, pinned
+`environments/requirements-predictive-memory-gpu.txt` and the batched recipe with
+its existing cache. No new simulation or data transfer is required if that cache
+is already present. Choose memory limits before fitting; the backend does not
+run a hardware benchmark. Active local-predictability fits retain their e3nn
+optimizer state. The queued raw-state fit uses CuEq from initialization; frozen
+readouts map copies of completed encoder weights into CuEq and verify outputs
+before extraction. Original checkpoints and the cohort's hash-locked native
+constructor remain unchanged. AdamW moments are not migrated between the
+symmetric-product bases.
+
+CuEq validation on the allocated RTX PRO 6000 used mapped e3nn/CuEq weights.
+On actual Al snapshots and 12 ps histories, the maximum absolute output error
+was 4.8e-7 and the maximum parameter-gradient error was 9.6e-7, including the
+many-body weight-basis projection. CUDA profiling captured forward and backward
+`segmented_polynomial` kernels. Alternating complete training updates at effective
+batch 4/microbatch 2 measured about 1.95x speedup for 12 ps histories; snapshot
+timings varied substantially between trials. These shared-GPU measurements are
+provisional. Raw checks and kernel names are in
+`output/predictive_memory/cueq-validation-20260917/technical/real_validation.json`.
+A separate four-update CuEq smoke fit completed validation, checkpointing and
+export of all 450 windows under `output/predictive_memory/cueq-smoke-20260917`.
+
+The example uses effective batch 8, microbatch 2, evaluation batch 4 and up to
+8 GiB of immutable observations cached on the GPU. `runtime.cache_scope: train`
+prevents validation from evicting training inputs; `all` permits every split.
+The limit excludes model parameters, activations and temporary allocations.
+Tune these explicit limits for the available GPU before starting a run; there
+is no automatic hardware benchmark. Learned atom features are never cached.
+Targets and train-normalized targets remain resident on the device.
+
+The old pilot's 3,000 updates at batch 1 are not the same budget as 3,000 updates
+at batch 8. Logs and metric tables record both updates and sampled windows, and
+the collector checks matching batch/window budgets. Existing experiment configs
+and results retain their original settings; this recipe launches a fresh output.
+
+Validation on the allocated RTX PRO 6000 checked independent windows against the
+pre-change encoder on actual Al snapshots and 12 ps histories: maximum absolute
+output difference below 6e-7 and parameter-gradient difference below 1e-6.
+The 45 focused tests cover ragged batches, isolation, 48 ps histories, positions-only
+and repeated-frame controls, checkpointing, uneven microbatches, cache bounds,
+sample budgets and resume. CUDA reductions permit ordinary last-bit variation
+after restoring identical checkpoint tensors; CPU continuation is checked exactly.
+
+A four-update real-data smoke run (batch 3, microbatch 2) completed validation,
+checkpoints, metric export and all 450 train/validation/test windows. Initial
+interleaved timings at effective batch 4 measured microbatch 2 versus 1: about
+1.49x throughput for 12 ps histories and 0.98x for snapshots. The GPU was shared
+with active research runs, so these are illustrative timings. Raw numerical and
+timing evidence lives in
+`output/predictive_memory/batching-validation-20260917/technical/real_validation.json`;
+the full smoke output is `output/predictive_memory/batched-smoke-20260917`.
+
+**17 September stop update:** the user stopped the active follow-up. Ten of its
+16 planned fits completed; six never started. The last completed fit (original
+loss, seed 20260918, H12) had finished training and evaluation before an unrelated
+hardware-benchmark metric-contract mismatch blocked table export. The saved
+per-window scores, checkpoint budget/configuration and unchanged predictive
+metric implementation were verified; table export was completed on CPU without
+retraining. Its `technical/export-recovery.json` preserves the original status
+and audit. The failed allocation controller was not restarted. See the
+[updated results](../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md).
+
 Use conda `pointnet` from the repository root. The module entry points reuse the
 existing experiment tracker and allocation queue; no new simulations are needed.
 

@@ -1,6 +1,7 @@
 """Output readability, frozen metric definitions and destructive cleanup boundaries."""
 
 import csv
+import hashlib
 import json
 from pathlib import Path
 
@@ -9,6 +10,50 @@ import pytest
 from src.experiment_runner.artifacts import analysis_artifacts
 from src.experiment_runner.metric_docs import check_metric_docs, write_metric_table
 from src.experiment_runner.storage import clean_caches
+
+
+@pytest.fixture
+def independent_metric_families(tmp_path, monkeypatch):
+    from src.experiment_runner import metric_docs
+
+    documents = tmp_path / 'docs/metrics'
+    documents.mkdir(parents=True)
+    contracts = {}
+    for family in ('predictive_memory', 'hardware_benchmark'):
+        implementation = tmp_path / f'{family}.py'
+        implementation.write_text(f'# {family} metric implementation\n')
+        description = documents / f'{family}.md'
+        description.write_text(f'# {family} metric definition\n')
+        contracts[family] = {'files': {
+            str(path.relative_to(tmp_path)): hashlib.sha256(path.read_bytes()).hexdigest()
+            for path in (implementation, description)}}
+    (documents / 'contracts.json').write_text(json.dumps(contracts))
+    monkeypatch.setattr(metric_docs, 'REPO', tmp_path)
+    monkeypatch.setattr(metric_docs, 'DOCUMENTS', documents)
+    return tmp_path
+
+
+def test_training_export_ignores_unrelated_metric_drift_but_global_audit_rejects_it(independent_metric_families):
+    repo = independent_metric_families
+    (repo / 'hardware_benchmark.py').write_text('# unrelated benchmark edit\n')
+    output = repo / 'training-result'
+    path = write_metric_table({'test': {'nll': 0.9}}, output, family='predictive_memory')
+    with path.open() as stream:
+        assert list(csv.DictReader(stream)) == [{'metric': 'test.nll', 'value': '0.9'}]
+    frozen = json.loads((output / 'technical/metric-contract.json').read_text())
+    assert frozen['family'] == 'predictive_memory'
+    assert 'hardware_benchmark.py' not in frozen['files']
+    with pytest.raises(RuntimeError, match='Metric contract hardware_benchmark changed'):
+        check_metric_docs()
+
+
+def test_training_export_still_rejects_its_own_metric_drift(independent_metric_families):
+    repo = independent_metric_families
+    (repo / 'predictive_memory.py').write_text('# changed score calculation\n')
+    output = repo / 'training-result'
+    with pytest.raises(RuntimeError, match='Metric contract predictive_memory changed'):
+        write_metric_table({'test': {'nll': 0.9}}, output, family='predictive_memory')
+    assert not output.exists()
 
 
 def cache_fixture(repo):
@@ -61,7 +106,7 @@ def test_cleanup_rejects_redirected_storage(tmp_path):
 
 
 def test_metric_documents_match_implementation_and_travel_with_table(tmp_path):
-    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_velocity', 'mace_data_amount', 'mace_causal', 'mace_causal_comparison', 'hardware_benchmark', 'mace_causal_runtime', 'predictive_memory', 'memory_research_summary'}
+    assert set(check_metric_docs()) == {'analysis', 'topology', 'forecast', 'forecast_context', 'forecast_crystallization', 'forecast_spatial_mixture', 'aggregation', 'mace_encoder_diagnostics', 'mace_tda_ridge_audit', 'mace_context', 'mace_context_smoothness', 'mace_context_recovery', 'mace_velocity', 'mace_data_amount', 'mace_causal', 'mace_causal_comparison', 'hardware_benchmark', 'mace_causal_runtime', 'predictive_memory', 'memory_research_summary', 'local_predictability', 'local_predictability_comparison', 'local_predictability_native_onset'}
     path = write_metric_table({'test': {'balanced_mse': 0.125, 'undefined': None, 'ci95': [0.1, 0.2]}},
                               tmp_path, family='topology')
     with path.open() as stream:

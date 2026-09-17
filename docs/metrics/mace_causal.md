@@ -1,5 +1,12 @@
 # Causal MACE physical-state protocol v1
 
+The shared encoder accepts explicit `mace_backend: cueq` for new training runs,
+using MACE's cuEquivariance wrappers with `mul_ir`/`O3_e3nn` conventions. Existing
+causal recipes retain their e3nn backend. Physical targets and metric formulas
+are unchanged; backend parameter bases and random initialization differ, so
+backend comparisons require mapped weights for numerical checks and separate
+fits for scientific evaluation. Historical exported definitions stay frozen.
+
 This is a new native scalar/vector/rank-two MACE architecture initialized from
 scratch. It does not inherit the old scalar MLIP weights or their normalization.
 All variants use identical source splits, anchors, physical targets, parameter
