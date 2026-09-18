@@ -1,5 +1,16 @@
 # Twelve-epoch shared structural and causal pretraining
 
+September 18 follow-up: a fresh five-epoch **mixed-material MACE + equivariant
+bond-order** fit uses the same dynamic-only release, B=2048, grouped VICReg,
+present/TDA anchors and temporal-only curvature as the latest GATr protocol.
+It adds q4m/q6m prediction from MACE's learned atom tensors before pooling.
+The auxiliary is not decoded from the invariant state; its performance alone
+cannot establish information retention in z. The existing physical/TDA decoder
+continues to constrain z. It is an augmented-objective MACE comparison, not a
+controlled backbone-only ablation against the twelve-epoch GATr fit. See the
+[recipe](../../docs/shared_pretraining_mace_bond_order_20260918.md) and
+[metric definitions](../../docs/metrics/shared_pretraining.md).
+
 **Outcome, September 18:** the batch-512 campaign failed its intended learning
 objectives. The [failure diagnosis](../../output/shared_pretraining/diagnosis-20260918/RESULTS.md)
 documents unstable updates, saturated heads, GATr collapse, the unsafe causal-head

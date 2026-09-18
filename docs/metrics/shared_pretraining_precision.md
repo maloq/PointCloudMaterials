@@ -82,3 +82,9 @@ coefficient using separate FP32 encoder-gradient norms under the same selective
 BF16 forward arithmetic, outside production training. No kernel precision or
 hardware-benchmark equation changes. Workload reductions alone are not measured
 precision speedups; see [v8](shared_pretraining.md#temporal-only-calibrated-backtracking-v8).
+
+Mixed MACE v9 additionally caches central atom tensors for an FP32 equivariant
+bond-order head. Its separate run-local preflight records actual mixed updates
+and exposed input-wait time, with compilation warmup identified separately.
+The older homogeneous `profile` command does not measure this mixed objective.
+Production training does not invoke that profiler or any hardware benchmark.

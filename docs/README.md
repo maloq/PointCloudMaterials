@@ -18,6 +18,7 @@
 - [Maintained workflow details](workflows.md)
 - [Shared-pretraining W&B metric layout](shared_pretraining_logging.md)
 - [Temporal-only backtracking continuation](shared_pretraining_temporal_backtracking_20260918.md)
+- [Five-epoch mixed MACE with equivariant bond-order supervision](shared_pretraining_mace_bond_order_20260918.md)
 - [Source refactor scope and validation](src_refactor.md)
 
 Scientific experiment records belong in [experiments/](../experiments/README.md).

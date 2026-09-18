@@ -221,3 +221,7 @@ It supersedes the failed broad continuation. See [execution and normalization](.
 update 250 with a training-calibrated fixed curvature weight and backtracking
 on temporal updates only. It preserves optimizer/schedule progress and uses
 compact W&B logging. See [transition protocol](../docs/shared_pretraining_temporal_backtracking_20260918.md).
+
+`shared_pretraining/mace_mixed_bond_order/` trains a fresh five-epoch MACE on
+the same dynamic mixed-material data, with q4m/q6m supervised from learned
+equivariant atom features. See [execution and tests](../docs/shared_pretraining_mace_bond_order_20260918.md).

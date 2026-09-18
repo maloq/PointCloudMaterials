@@ -1,5 +1,6 @@
 """Memory-mapped source shards, persistent atom histories and homogeneous batches."""
 from collections import OrderedDict, defaultdict
+from threading import Lock
 from pathlib import Path
 import json
 import numpy as np
@@ -29,6 +30,7 @@ class Release:
                 normalization='subset_training_endpoints_v1')
         self.rows=[]; self.groups=defaultdict(list); self.selection=[]; self.arrays={}
         self.graphs=OrderedDict(); self.graph_bytes=0; self.max_graph_bytes=2*2**30
+        self.graph_lock=Lock()
         for shard in self.manifest['shards']:
             name=shard['task']['id']; folder=self.root/'shards'/name
             self.arrays[name]={p.stem:np.load(p,mmap_mode='r',allow_pickle=False) for p in folder.glob('*.npy')}
@@ -61,9 +63,6 @@ class Release:
                     std=np.maximum(a.std(0),1e-4).tolist())
 
     def view(self,name,index,mace):
-        key=(name,index,mace)
-        if key in self.graphs:
-            self.graphs.move_to_end(key);return self.graphs[key]
         a=self.arrays[name]; lo,hi=a['offsets'][index:index+2]
         x=np.array(a['positions'][lo:hi],copy=True)
         ids=np.array(a['atom_ids'][lo:hi],copy=True)
@@ -73,9 +72,10 @@ class Release:
 
     def observation(self,index,which,history,mace):
         cache_key=(index,which,history,mace)
-        if cache_key in self.graphs:
-            self.graphs.move_to_end(cache_key)
-            return self.graphs[cache_key]
+        with self.graph_lock:
+            if cache_key in self.graphs:
+                self.graphs.move_to_end(cache_key)
+                return self.graphs[cache_key]
         name,row,record=self.rows[index]; a=self.arrays[name]; mapping=a['views'][row]
         slot={'anchor':2,'spatial':4,'future':3,'previous':1}[which]
         if which in ('future','previous') and record['static']:raise ValueError('Static structures have no temporal neighbors')
@@ -104,9 +104,15 @@ class Release:
                 raise ValueError('Coincident atoms in the normalized MACE graph')
             result['edges']=np.concatenate((pairs,pairs[:,::-1]),axis=0).T.astype(np.int64)
         size=sum(a.nbytes for a in result.values() if isinstance(a,np.ndarray)); result['cache_bytes']=size
-        while self.graphs and self.graph_bytes+size>self.max_graph_bytes:
-            _,removed=self.graphs.popitem(last=False);self.graph_bytes-=removed['cache_bytes']
-        self.graphs[cache_key]=result;self.graph_bytes+=size
+        # Workers build observations independently; only LRU mutations serialize.
+        # Validation may request the same view as the next prefetched update.
+        with self.graph_lock:
+            if cache_key in self.graphs:
+                self.graphs.move_to_end(cache_key)
+                return self.graphs[cache_key]
+            while self.graphs and self.graph_bytes+size>self.max_graph_bytes:
+                _,removed=self.graphs.popitem(last=False);self.graph_bytes-=removed['cache_bytes']
+            self.graphs[cache_key]=result;self.graph_bytes+=size
         return result
 
 

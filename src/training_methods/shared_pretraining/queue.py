@@ -146,7 +146,7 @@ print("Frozen code verified; stage inputs are checked when the dependent worker 
         command=[python,'-u','-m','src.training_methods.shared_pretraining.queue','worker','--phase',phase,'--config',str(code/config)]
         if final:command.append('--final-slot')
         script='\n'.join(['#!/bin/bash',f'#SBATCH --job-name=shared-{name}-{phase}',f'#SBATCH --partition={plan["partition"]}',
-          '#SBATCH --gres=gpu:1','#SBATCH --cpus-per-task=8','#SBATCH --mem=96G',f'#SBATCH --time={hours}:00:00',
+          '#SBATCH --gres=gpu:1',f'#SBATCH --cpus-per-task={plan.get("cpus_per_task",8)}','#SBATCH --mem=96G',f'#SBATCH --time={hours}:00:00',
           f'#SBATCH --output={log}/%j.log',f'#SBATCH --chdir={code}',
           *([f'#SBATCH --dependency={dependency}'] if dependency else []),'#SBATCH --signal=USR1@300','set -euo pipefail',
           'exec env '+' '.join(shlex.quote(v) for v in environment)+' '+shlex.join(command),''])
@@ -157,7 +157,7 @@ print("Frozen code verified; stage inputs are checked when the dependent worker 
         name=item['name'];allocation=item['allocation'];configs=item['configs']
         if allocation is not None:
             paths=root/f'{name}-pipeline.json';save_json(paths,{p:str(code/v) for p,v in configs.items()})
-            command=['srun',f'--jobid={allocation}','--overlap','-N1','-n1','--cpus-per-task=4','env',*environment,python,'-u','-m',
+            command=['srun',f'--jobid={allocation}','--overlap','-N1','-n1',f'--cpus-per-task={plan.get("cpus_per_task",4)}','env',*environment,python,'-u','-m',
                 'src.training_methods.shared_pretraining.queue','worker','--configs',str(paths)]
             with (root/f'{name}-local.log').open('ab',buffering=0) as log:
                 process=subprocess.Popen(command,cwd=code,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)

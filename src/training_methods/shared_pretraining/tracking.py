@@ -16,6 +16,7 @@ def training_metrics(row):
         values['loss/jepa']=.1*row['representation']
         values.update({f'jepa/{key}':row[key] for key in ('next_latent_mse','sigreg')})
     for key,name in (('physical_correlation_weighted','physical_correlation'),
+                     ('bond_order_weighted','bond_order'),
                      ('backtracking_weighted','backtracking'),('future','future')):
         if key in row:values[f'loss/{name}']=row[key]
     return values
@@ -61,6 +62,7 @@ class Dashboard:
         values={'validation/score':metrics['score'],
                 'validation/present_physical':metrics['physical'],
                 'validation/present_tda':metrics['instantaneous_tda']}
+        if 'bond_order' in metrics:values['validation/bond_order']=metrics['bond_order']
         if 'future' in metrics:
             horizons=list(metrics['future'].values())
             for name in ('physical','tda'):

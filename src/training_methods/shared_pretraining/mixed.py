@@ -1,4 +1,5 @@
 """Mixed-domain snapshot batches, within-domain VICReg and three-frame curvature."""
+from concurrent.futures import ThreadPoolExecutor
 import numpy as np
 import torch
 
@@ -32,8 +33,9 @@ def group_ids(release,indices):
 
 
 def prepare(release,step,config):
-    if config['architecture']!='gatr' or config['history_frames']!=1 or config['method']!='vicreg':
-        raise ValueError('Mixed triplets are a snapshot GATr VICReg protocol')
+    if config['architecture'] not in ('gatr','mace') or config['history_frames']!=1 or config['method']!='vicreg':
+        raise ValueError('Mixed triplets require snapshot MACE/GATr and VICReg')
+    architecture=config['architecture'];mace=architecture=='mace'
     rng=np.random.default_rng(np.random.SeedSequence([config['seed'],step]))
     counts=quotas(release.group_weights,config['batch_size'],config['minimum_group_size'])
     indices=[]
@@ -57,12 +59,19 @@ def prepare(release,step,config):
         extra['triplet_dt']=gaps;delta=gaps[:,1]
         # The past frame is encoder-only curvature context, never a zero label.
         endpoints=['anchor','future','previous']
-    batches=[];micro=config['microbatch_size']
-    for which in endpoints:
-        for start in range(0,len(indices),micro):
-            samples=[release.observation(i,which,False,False) for i in indices[start:start+micro]]
-            batch=collate(samples,'gatr')
-            batches.append({k:v.pin_memory() if torch.cuda.is_available() else v for k,v in batch.items()})
+    micro=config['microbatch_size'];workers=config.get('preparation_workers',1)
+    if workers<1:raise ValueError('preparation_workers must be positive')
+    chunks=[(which,start) for which in endpoints for start in range(0,len(indices),micro)]
+    def pack(chunk):
+        which,start=chunk
+        samples=[release.observation(i,which,False,mace) for i in indices[start:start+micro]]
+        batch=collate(samples,architecture,bond_order=mace)
+        return {k:v.pin_memory() if torch.cuda.is_available() else v for k,v in batch.items()}
+    if workers==1:batches=[pack(chunk) for chunk in chunks]
+    else:
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            # map preserves endpoint and row order, regardless of completion order.
+            batches=list(pool.map(pack,chunks))
     return batches,temporal,delta.tolist(),indices,['mixed','material-potential',False],False,extra
 
 
@@ -119,6 +128,25 @@ class MixedObjective(Objective):
         return loss,terms
 
 
+class MACEBondObjective(MixedObjective):
+    def __init__(self,normalization,group_keys,correlation_weight,backtracking_weight,bond_order_weight):
+        super().__init__(normalization,group_keys,correlation_weight,backtracking_weight)
+        if bond_order_weight<=0:raise ValueError('MACE bond-order objective requires a positive weight')
+        self.bond_order_weight=bond_order_weight
+
+    def forward(self,model,features,targets,temporal,delta):
+        from src.data.structural_pretraining.bond_order import bond_order_errors
+        n=2*len(targets['domain'])
+        loss,terms=super().forward(model,features[:,:128],targets,temporal,delta)
+        prediction=model.bond_order(features[:n,128:])
+        errors=bond_order_errors(prediction,targets['bond_order'][:n])
+        weighted=self.bond_order_weight*errors.mean();loss=loss+weighted
+        terms.update(loss=loss,bond_order=errors.mean(),bond_order_q4=errors[:,0].mean(),
+            bond_order_q6=errors[:,1].mean(),bond_order_weighted=weighted,
+            backtracking_loss_fraction=terms['backtracking_weighted']/loss.detach().clamp_min(1e-12))
+        return loss,terms
+
+
 def calibration_indices(release,seed,per_group):
     if per_group<2:raise ValueError('At least two training calibration anchors per group are required')
     indices=[]
@@ -138,7 +166,8 @@ def calibrate(model,release,config):
     for which in ('anchor','spatial','future'):
         for start in range(0,len(indices),micro):
             rows=indices[start:start+micro]
-            batch=move(collate([release.observation(i,which,False,False) for i in rows],'gatr'),device)
+            architecture=config['architecture']
+            batch=move(collate([release.observation(i,which,False,architecture=='mace') for i in rows],architecture),device)
             with torch.autocast(device.type,dtype=torch.bfloat16,enabled=config['precision']=='bf16'):
                 states.append(model.encoder(batch).float())
             domains.extend(group_ids(release,rows).tolist())

@@ -154,6 +154,20 @@ def test_vicreg_cannot_use_between_material_variation_to_avoid_variance_penalty(
     assert within==pytest.approx(.99)
 
 
+def test_parallel_preparation_preserves_sampler_order_and_cache_accounting(tmp_path):
+    release=make_release(tmp_path)
+    config=dict(architecture='gatr',history_frames=1,method='vicreg',seed=17,batch_size=8,
+        minimum_group_size=2,microbatch_size=3)
+    serial=prepare(release,2,config)
+    # Eviction and duplicated concurrent requests must preserve exact LRU bytes.
+    release.max_graph_bytes=1000
+    parallel=prepare(release,2,dict(config,preparation_workers=4))
+    assert serial[1:6]==parallel[1:6]
+    for a,b in zip(serial[0],parallel[0],strict=True):
+        for key in a:torch.testing.assert_close(a[key],b[key],equal_nan=True,rtol=0,atol=0)
+    assert release.graph_bytes==sum(v['cache_bytes'] for v in release.graphs.values())
+
+
 def test_objective_transition_preserves_weights_optimizer_rng_and_schedule(tmp_path):
     from src.models.encoders.mixed_gatr import MIXED_ARCHITECTURE_REVISION
     from src.training_methods.shared_pretraining.runtime import atomic_checkpoint

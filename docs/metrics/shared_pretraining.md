@@ -367,3 +367,48 @@ cosine warmup/decay retain the original total exposure budget. The new run has
 its own identity, checkpoint hash ancestry and W&B history; it is not an exact
 resume of the old objective. See the
 [execution record](../shared_pretraining_temporal_backtracking_20260918.md).
+
+## Mixed MACE with equivariant bond order (v9)
+
+`shared_pretraining_mixed_mace_bond_v9` uses the same dynamic-only, mixed-domain
+snapshot sampling and within-domain VICReg as v8. It trains from scratch. The
+bond-order auxiliary head consumes the tracked center's learned MACE l=2 atom
+features before invariant pooling. Learned equivariant tensor products form
+l=4 and l=6 outputs. It has no access to coordinates, target harmonics or the
+128-channel invariant state. The exported encoder remains a snapshot-to-128
+invariant encoder; auxiliary weights are retained in full training checkpoints.
+
+Targets are central q4m/q6m averages over the 12 nearest noncoincident supported
+atoms of each supervised snapshot, using the real e3nn `component` spherical
+harmonics. Uniform coordinate normalization does not change them. The neighbor
+definition matches `analysis.liquid_structure.bond_order` for its central atom;
+that producer uses complex integral-normalized harmonics. The real targets are
+sqrt(4*pi) times an orthogonal basis conversion. Therefore the ordinary scalar
+bond order is `Q_l = sqrt(mean_m(q_lm**2))`. Hard nearest-neighbor selection can
+change membership at ties; no claim of a smooth bond-order target is made.
+
+For each observation and l, `bond_order_errors = 12*mean_m((prediction-target)^2)`.
+The fixed factor 12 makes the zero predictor's expected error one for independent
+isotropic random bonds. It is not an empirical or material-specific whitening.
+`bond_order` is the mean across both l values and supervised observations;
+`bond_order_q4`, `bond_order_q6` are its per-order terms. The additional training
+contribution is `bond_order_weighted = 0.1*bond_order`, shown once in W&B as
+`loss/bond_order`. Past context is not bond-supervised. FP32 tensor contractions
+are enforced under BF16 autocast, and no per-m normalization is permitted.
+
+Validation reports source-balanced `bond_order`, `bond_order_blocks.q4/q6`,
+`bond_order_zero_baseline`, and the unscaled scalar magnitude MSEs
+`bond_order_magnitude_mse.Q4/Q6`. Per-observation predictions, targets and errors
+are exported with the selected candidate. W&B adds only `validation/bond_order`.
+Checkpoint selection remains physical + 0.25*TDA, preserving the GATr comparison;
+bond-order skill is an additional diagnostic, not evidence that orientation is
+encoded in the invariant exported state. Native-Al validation remains the only
+held-out material assay in this recipe.
+
+Backtracking uses only the first 128 invariant features and only temporal
+updates. Its fixed coefficient is calibrated at fresh MACE initialization using
+the v8 training-only scalar/encoder-gradient policy; L_base includes bond order.
+Calibration and throughput measurements are a separate disposable preflight,
+never a production training stage. Five epoch equivalents mean
+ceil(5*254520/2048)=622 independently sampled updates, not exhaustive shuffled
+passes over the release. The 10% warmup and cosine schedule span these 622 updates.

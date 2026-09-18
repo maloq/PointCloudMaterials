@@ -398,12 +398,12 @@
   },
   "structural_pretraining": {
     "files": {
-      "docs/metrics/structural_pretraining.md": "e67f8c9b00a0d76f3ef5fc1ddd78937c1e74dda51e86a187a6c774cd36370df6",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "docs/metrics/structural_pretraining.md": "b9cb011f786d56eb5e6619c8b6ded6aac7f70ddd61cccc8a285f1c664c5cc674",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/data/structural_pretraining/expand.py": "e34b6cc939dfcb4eac5379c9ab872257621de32fb3cdd455a211e8048d62f042",
       "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
       "src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
-      "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+      "src/models/encoders/structural.py": "b1573a8280ab3ceb787d728e985eb8d7a3a93a8e1a506c46ac9e9ed3fb03358e",
       "src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
       "src/training_methods/shared_pretraining/normalization.py": "f8341462937f5134519b0e4f6f699d8132b8b81c0af41c0c36e05755150333c4",
       "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
@@ -412,12 +412,12 @@
   },
   "shared_pretraining": {
     "files": {
-      "docs/metrics/shared_pretraining.md": "795959178e712e8403255509b68518d6f33ff85af296a2ae072fa818fbd8c78b",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "docs/metrics/shared_pretraining.md": "fecb76863a58141d60848bfcb9b64856abbdeb7b163d0e1e72090a03a75d0022",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/data/structural_pretraining/expand.py": "e34b6cc939dfcb4eac5379c9ab872257621de32fb3cdd455a211e8048d62f042",
       "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
       "src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
-      "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+      "src/models/encoders/structural.py": "b1573a8280ab3ceb787d728e985eb8d7a3a93a8e1a506c46ac9e9ed3fb03358e",
       "src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
       "src/training_methods/shared_pretraining/analysis.py": "dc5988b64f99f666da8ef0615e16c50956e6fdc0140fc21a68361bd8df8901dc",
       "src/training_methods/shared_pretraining/compilation.py": "55aa01fd538e11c59f7d9a358ce0244ef5829010749162829fb0bf06b0b432ba",
@@ -425,29 +425,31 @@
       "src/training_methods/shared_pretraining/health.py": "52329440f140b8f30dad74364479baf388132fb22f67e518a492e68980bd1012",
       "src/training_methods/shared_pretraining/initialization.py": "468becb8bd1a86c21da7d6424526e7cfef0d81fc373181f1311cb7d831c44dee",
       "src/training_methods/shared_pretraining/normalization.py": "f8341462937f5134519b0e4f6f699d8132b8b81c0af41c0c36e05755150333c4",
-      "src/training_methods/shared_pretraining/runtime.py": "16b7ec060f2171592e9264e44c9cb08b1ff696b3b41bf8cc2eb0091081fd7b79",
+      "src/training_methods/shared_pretraining/runtime.py": "c22faf3084f06ca7660f376294324c24913b328903b34fcbed577762128a7177",
       "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
       "src/training_methods/structural_pretraining/train.py": "d626b6b22f21ef68fcd0bcb944f66ecbab07668c55fc417ff7a8cb3e99fd7fab",
       "src/models/encoders/mixed_gatr.py": "ee17fbb2b66e031cf2f2f5c4c40ff783b4ff1340b1ea87b933be048a623a5aaa",
-      "src/training_methods/shared_pretraining/mixed.py": "0da14191909b6c7550d407dd66ad333e76d80332782c42af18c6647dcbb591ef",
-      "src/training_methods/shared_pretraining/tracking.py": "37a237e5b4d8cc77fc30af397d971fbc7a1c1cfa8d0fc152460d46dd9a593322"
+      "src/training_methods/shared_pretraining/mixed.py": "fe2d1af5734c65f19a383b81da24528bb9501b54a7dd5f5a52939c72ed835e31",
+      "src/training_methods/shared_pretraining/tracking.py": "7ec966d93fd2ed967bc82aaed93322c373ae21b71275b04aaeb0a9d11adf19b6",
+      "src/data/structural_pretraining/bond_order.py": "7350ed7a2afa47f1daaba057b589e361ee156acfe01b08384855c5b7cbee36a6",
+      "src/models/encoders/mixed_mace.py": "9230bcaf37dac82bdaa259eaaa1df637e905d11640718b134cf16341ec459865"
     }
   },
   "shared_pretraining_precision": {
     "files": {
-      "docs/metrics/shared_pretraining_precision.md": "3ad1e75974c7e86ab146ac2c7cb0e1a032002c745259c35b071c264218134904",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "docs/metrics/shared_pretraining_precision.md": "3aa0787784c7a2ccfe7a3cd23ce63f32df607e6f32cb4114cc0fd455fc09e9da",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
-      "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+      "src/models/encoders/structural.py": "b1573a8280ab3ceb787d728e985eb8d7a3a93a8e1a506c46ac9e9ed3fb03358e",
       "src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
       "src/training_methods/shared_pretraining/compilation.py": "55aa01fd538e11c59f7d9a358ce0244ef5829010749162829fb0bf06b0b432ba",
       "src/training_methods/shared_pretraining/initialization.py": "468becb8bd1a86c21da7d6424526e7cfef0d81fc373181f1311cb7d831c44dee",
       "src/training_methods/shared_pretraining/normalization.py": "f8341462937f5134519b0e4f6f699d8132b8b81c0af41c0c36e05755150333c4",
       "src/training_methods/shared_pretraining/profile.py": "7cdb5bf0867dd2a507c4d0d18edac324a2714181f8d886bb523f47a206866cd6",
-      "src/training_methods/shared_pretraining/runtime.py": "16b7ec060f2171592e9264e44c9cb08b1ff696b3b41bf8cc2eb0091081fd7b79",
+      "src/training_methods/shared_pretraining/runtime.py": "c22faf3084f06ca7660f376294324c24913b328903b34fcbed577762128a7177",
       "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
       "src/training_methods/structural_pretraining/train.py": "d626b6b22f21ef68fcd0bcb944f66ecbab07668c55fc417ff7a8cb3e99fd7fab",
-      "src/training_methods/shared_pretraining/tracking.py": "37a237e5b4d8cc77fc30af397d971fbc7a1c1cfa8d0fc152460d46dd9a593322"
+      "src/training_methods/shared_pretraining/tracking.py": "7ec966d93fd2ed967bc82aaed93322c373ae21b71275b04aaeb0a9d11adf19b6"
     }
   },
   "trajectory_stability": {
@@ -458,7 +460,7 @@
       "src/research/trajectory_stability/metrics.py": "2d7022fb4f62da5b2e68007a37d4a50f741aea25e4f940c5efa3cc7757dbfca3",
       "src/research/trajectory_stability/report.py": "9bb54e4553737c8a162695b520febb6d2f33946230becac2ac2eabb08cd5e084",
       "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
       "src/research/trajectory_stability/explore.py": "debaa98aa2ba69427548fc2ce2d45a85f1ebe009df20c7e0effa32f2c4002281"
@@ -468,9 +470,9 @@
     "files": {
       "docs/metrics/gatr_equivariant.md": "37731e5c335f9ba985d57e79d75be3b57378314794a9f18f3d58f7abdd57093b",
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
-      "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+      "src/models/encoders/structural.py": "b1573a8280ab3ceb787d728e985eb8d7a3a93a8e1a506c46ac9e9ed3fb03358e",
       "src/research/gatr_equivariant/__init__.py": "18af4c022779dccf12c0ae9840db77315ee2c172ad315fff6469be656b7ad8b9",
       "src/research/gatr_equivariant/__main__.py": "74811197a141a08ba742a306095bd5d7aff05d541e954d6e6a4309161746bab2",
       "src/research/gatr_equivariant/controls.py": "179f3bd7a2b2f88453b765d19455658b9db55fd199bfeed07040c0d00983cb56",
@@ -488,9 +490,9 @@
       "docs/metrics/gatr_conditional_information.md": "9bf82acddd80e3345609e771829348390390c2fc5445f1f164aeddda9831f31f",
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
       "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
-      "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+      "src/data/structural_pretraining/batches.py": "e0502b66f32263319429cfaeb6ea8a2bdb2c844b91356b7d1578d636e4768da3",
       "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
-      "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+      "src/models/encoders/structural.py": "b1573a8280ab3ceb787d728e985eb8d7a3a93a8e1a506c46ac9e9ed3fb03358e",
       "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
       "src/research/gatr_conditional_information/__init__.py": "97341e644a9457544ebaa07a81f189dd40787199f63f732d02a5cbfe18b73e66",
       "src/research/gatr_conditional_information/__main__.py": "b37b72f4cbb58e4af14d803601e1accdd038cfe89bc3f6fb79531494cf34b8af",

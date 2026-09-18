@@ -110,3 +110,8 @@ arrays and refits the same target moments on included dynamic training endpoints
 The cache's context-only previous frame is available as an independent snapshot;
 its placeholder descriptor is never a supervision target. Existing structural
 protocols keep their declared populations. See [v7 definitions](shared_pretraining.md#mixed-material-dynamic-triplets-v7).
+
+The optional central bond-order targets and equivariant MACE cache interface are
+used only by the mixed v9 shared-pretraining protocol, documented in
+[shared_pretraining.md](shared_pretraining.md). Existing structural calculations
+and the default 128-dimensional encoder output are unchanged.
