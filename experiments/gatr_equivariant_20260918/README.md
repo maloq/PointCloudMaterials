@@ -64,3 +64,8 @@ checkpoint, source receipts, metric implementation hashes and numerical controls
 Follow-up research: train a physically targeted, symmetry-aware covariant readout
 and norm-aware temporal consistency; test noncollapse and angular sensitivity.
 Direct-z smoothing of the current invariant embedding remains a separate task.
+
+[Concrete architecture and training proposal](MEANINGFUL_EQUIVARIANCE.md):
+l=4/6 bond-orientation tensors, their invariant connection to z, and a controlled
+comparison against direct harmonic descriptors. Includes the cubic-symmetry
+reason that a stable center arrow is the wrong target for ideal FCC.

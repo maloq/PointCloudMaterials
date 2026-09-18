@@ -1,5 +1,35 @@
 # Static Al analysis of structural MACE/GATr–VICReg
 
+## Active mixed GATr: frozen latest checkpoint
+
+The temporal-backtracking run's latest available optimizer checkpoint was copied
+at update 400 while training continued. Its recipe pins the copied `last.pt`
+and release manifest hashes. This is an intermediate training state, not a
+best-selected checkpoint, so its export has no checkpoint-selection score.
+
+```bash
+python -m src.analysis.structural_adapter --config configs/analysis/structural_gatr_backtracking_static.json --stage export
+python -m src.analysis.structural_adapter --config configs/analysis/structural_gatr_backtracking_static.json --stage verify
+python -m src.analysis.pipeline configs/analysis/static_structural_gatr_backtracking_al.yaml
+```
+
+Output: `output/structural_static/gatr-temporal-backtracking-latest-20260918T1936/`.
+Inference uses node58's RTX PRO 6000 in `pointnet-torch214`. The
+`shared_pretraining_mixed_v8` protocol has grouped auxiliary heads; its actual
+exported encoder remains `StructuralGATr(history=False)`. Export validates the
+mixed architecture revision and producer hashes, and extracts only `encoder.*`
+from the immutable optimizer checkpoint. Group-normalized heads are excluded.
+
+Static verification reconstructs a native Al example from the full release,
+using its unchanged Al scale. The current mixed fit uses dynamic observations;
+that static example verifies the shared input producer, not training membership.
+Since latest states have no saved best-selection features, verification also
+loads the exact latest encoder independently, compiles it with the training
+policy and compares 64 native dynamic selection observations with the static
+adapter. This checks numerical fidelity, not checkpoint quality. Every full
+static frame retains its batch replay check. All six Al frames, interior
+centers, clustering settings and corrected raw PCA match the earlier analysis.
+
 ## Matched Al-only v6 MACE checkpoint
 
 The completed September 18 Al-only MACE run selects its final update 1,465,

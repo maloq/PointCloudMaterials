@@ -1,0 +1,6 @@
+{
+  "parent_config": "configs/analysis/gatr_conditional_information.json",
+  "spatial_audit": "output/gatr_equivariant/al-v6-node07-20260918",
+  "methods": ["radial_control", "plus_gatr", "plus_angular_delta", "plus_soap"],
+  "purpose": "Expand outcome-independent same-frame matching after the four-track primary 0.05 A match yielded only three pairs; reuse frozen probe hyperparameters."
+}

@@ -110,7 +110,7 @@ class Release:
         return result
 
 
-def collate(samples,architecture):
+def collate(samples,architecture,bond_order=False):
     lengths={len(s['times']) for s in samples}
     if len(lengths)!=1:raise ValueError('One packed batch must have one temporal grid length')
     t=lengths.pop(); b=len(samples); n=max(s['positions'].shape[1] for s in samples)
@@ -126,14 +126,28 @@ def collate(samples,architecture):
         tda_valid=torch.tensor([s['tda_valid'] for s in samples]))
     if architecture=='mace':
         if t!=1:raise ValueError('This structural MACE run is snapshot-only')
-        xs=[];ws=[];zs=[];edges=[];graphs=[];offset=0
+        xs=[];ws=[];zs=[];edges=[];graphs=[];centers=[];bonds=[];offset=0
         for i,s in enumerate(samples):
             p=s['positions'][0]; e=s['edges']+offset
+            centers.append(offset+s['center'])
+            if bond_order:
+                d2=np.square(p-p[s['center']]).sum(-1)
+                candidates=np.flatnonzero((d2>0)&(s['weights'][0]>0))
+                if len(candidates)<12:
+                    raise ValueError('Bond order requires 12 distinct supported neighbors of the tracked center')
+                neighbors=candidates[np.argsort(d2[candidates],kind='stable')[:12]]
+                bonds.append(neighbors+offset)
             xs.append(p);ws.append(s['weights'][0]);zs.append(np.full(len(p),s['species'],np.int64));edges.append(e)
             graphs.append(np.full(len(p),i,np.int64));offset+=len(p)
         batch.update(packed_positions=torch.from_numpy(np.concatenate(xs)),packed_weights=torch.from_numpy(np.concatenate(ws)),
             packed_species=torch.from_numpy(np.concatenate(zs)),node_graph=torch.from_numpy(np.concatenate(graphs)),
-            edges=torch.from_numpy(np.concatenate(edges,axis=1)))
+            edges=torch.from_numpy(np.concatenate(edges,axis=1)),packed_centers=torch.tensor(centers))
+        if bond_order:
+            from .bond_order import bond_order_targets
+            vectors=batch['packed_positions'][torch.tensor(np.stack(bonds))]-batch['packed_positions'][batch['packed_centers']][:,None]
+            batch['bond_order']=bond_order_targets(vectors)
+    elif bond_order:
+        raise ValueError('Equivariant bond-order training is implemented for MACE only')
     return batch
 
 

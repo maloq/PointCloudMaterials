@@ -1,0 +1,25 @@
+{
+  "family": "gatr_conditional_information",
+  "exported_at": "2026-09-18T20:57:22.785055+00:00",
+  "files": {
+    "docs/metrics/gatr_conditional_information.md": "9bf82acddd80e3345609e771829348390390c2fc5445f1f164aeddda9831f31f",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+    "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+    "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
+    "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/research/gatr_conditional_information/__init__.py": "97341e644a9457544ebaa07a81f189dd40787199f63f732d02a5cbfe18b73e66",
+    "src/research/gatr_conditional_information/__main__.py": "b37b72f4cbb58e4af14d803601e1accdd038cfe89bc3f6fb79531494cf34b8af",
+    "src/research/gatr_conditional_information/data.py": "d6ad2259fc9667e4d64d6462c91e96770a56df416aa7be52a4cbbd8aadec8ec2",
+    "src/research/gatr_conditional_information/metrics.py": "961fc45fb08d10e27f91cbdc926de053011f8b03cfc79a796641ec47e3188f31",
+    "src/research/gatr_conditional_information/plots.py": "ce5598077118bc3b2864aae3785c10a8fe4770916e282d2297a77c71cf3d7625",
+    "src/research/gatr_conditional_information/probe.py": "2f66fd864b9360620ca8b98e05f82d3da2e24e185a664c2882dd4bbb512c7284",
+    "src/research/gatr_conditional_information/report.py": "ab4c9f9178a6dd058a1b3171bc73d457eae1758120b66be1d139bf34195c53cf",
+    "src/research/gatr_conditional_information/spatial.py": "c510e0a4535705600d57b0cea3a125901049d795ee6e8a5586d99cb151f7cbfb",
+    "src/research/gatr_equivariant/model.py": "c0c6f5da4c02c9cbda9832e17dd5b3652fde902d4fc4c9391cb229e1976d77a6",
+    "src/research/gatr_equivariant/run.py": "5e03ffe27f2522ff6c29f875d69618b18a01ce7754ca7e17193fa94770ec9ab7",
+    "src/research/trajectory_stability/encode.py": "751a3035de2b3d43993749eb8a905fa0dcb61e7033a90a1d2f755683c57f9851",
+    "src/research/trajectory_stability/metrics.py": "2d7022fb4f62da5b2e68007a37d4a50f741aea25e4f940c5efa3cc7757dbfca3"
+  }
+}

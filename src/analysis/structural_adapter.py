@@ -18,12 +18,14 @@ from src.data.structural_pretraining.prepare import ELEMENTS, REFERENCE_RADIUS, 
 from src.experiment_runner.artifacts import write_json
 from src.experiment_runner.registry import sha256
 from src.models.encoders.structural import ATOMIC_NUMBERS, ARCHITECTURE_REVISION, StructuralGATr, StructuralMACE
+from src.models.encoders.mixed_gatr import MIXED_ARCHITECTURE_REVISION
 from src.utils.model_utils import load_model_from_checkpoint
 
 
 PROTOCOL = 'structural_gatr_snapshot_static_v1'
 SHARED_PROTOCOL = 'structural_gatr_snapshot_static_v6'
 MACE_PROTOCOL = 'structural_mace_snapshot_static_v6'
+MIXED_PROTOCOL = 'structural_gatr_snapshot_static_mixed_v8'
 
 
 def _training_contraction_order():
@@ -51,12 +53,13 @@ class StructuralGATrAnalysis(StructuralSnapshotAnalysis):
 
     def __init__(self, cfg):
         super().__init__()
-        if cfg.protocol not in (PROTOCOL, SHARED_PROTOCOL):
+        if cfg.protocol not in (PROTOCOL, SHARED_PROTOCOL, MIXED_PROTOCOL):
             raise ValueError(f'Unsupported structural analysis protocol: {cfg.protocol}')
         self.protocol = cfg.protocol
         self.precision = 'float32'
-        if cfg.protocol == SHARED_PROTOCOL:
-            if cfg.architecture_revision != ARCHITECTURE_REVISION:
+        if cfg.protocol in (SHARED_PROTOCOL, MIXED_PROTOCOL):
+            revision = MIXED_ARCHITECTURE_REVISION if cfg.protocol == MIXED_PROTOCOL else ARCHITECTURE_REVISION
+            if cfg.architecture_revision != revision:
                 raise ValueError(f'Checkpoint architecture differs from current implementation: {cfg.architecture_revision}')
             self.precision = cfg.structural_precision
             if self.precision not in ('float32', 'bf16'):
@@ -226,34 +229,64 @@ def collect_structural_inference(model, dataloader, cfg, out_dir, *, max_batches
                 phases=np.empty(0), instance_ids=np.empty(0), anchor_frame_indices=np.empty(0))
 
 
-def export(config):
+def _checkpoint_encoder(config):
+    """Read an explicitly selected export or a pinned latest mixed-training state."""
     source = Path(config['checkpoint'])
     if sha256(source) != config['checkpoint_sha256']:
-        raise ValueError(f'Selected structural checkpoint checksum mismatch: {source}')
+        raise ValueError(f'Structural checkpoint checksum mismatch: {source}')
     saved = torch.load(source, map_location='cpu', weights_only=False)
+    kind = config.get('checkpoint_kind', 'selected')
+    if kind == 'selected':
+        return saved
+    if kind != 'latest' or saved['identity']['protocol'] != 'shared_pretraining_mixed_v8':
+        raise ValueError(f'Unsupported checkpoint kind/protocol: {kind}, {saved["identity"]["protocol"]}')
+    from src.project_runtime.paths import resolve_path
+    training = saved['identity']['config']
+    manifest_path = resolve_path(training['release'])/'manifest.json'
+    if sha256(manifest_path) != config['release_manifest_sha256']:
+        raise ValueError('Latest-checkpoint release manifest changed after capture')
+    manifest = json.loads(manifest_path.read_text())
+    return dict(architecture=training['architecture'], input_frames=training['history_frames'],
+        state_dim=128, atomic_numbers=ATOMIC_NUMBERS, scales=manifest['scales'],
+        identity=saved['identity'], step=saved['step'],
+        encoder={key.removeprefix('encoder.'): value for key, value in saved['model'].items()
+                 if key.startswith('encoder.')})
+
+
+def export(config):
+    source = Path(config['checkpoint'])
+    saved = _checkpoint_encoder(config)
     architecture = saved['architecture']
     if architecture not in ('gatr', 'mace') or (saved['input_frames'], saved['state_dim'], saved['identity']['config']['method']) != (1, 128, 'vicreg'):
         raise ValueError('This static export requires a native snapshot MACE/GATr–VICReg encoder')
     if tuple(saved['atomic_numbers']) != ATOMIC_NUMBERS:
         raise ValueError('Checkpoint species vocabulary differs from the native producer')
     training_protocol = saved['identity']['protocol']
-    if training_protocol not in ('structural_neighbors_v1', 'shared_pretraining_v6'):
+    if training_protocol not in ('structural_neighbors_v1', 'shared_pretraining_v6', 'shared_pretraining_mixed_v8'):
         raise ValueError(f'Unsupported structural training protocol: {training_protocol}')
-    shared = training_protocol == 'shared_pretraining_v6'
+    mixed = training_protocol == 'shared_pretraining_mixed_v8'
+    shared = training_protocol in ('shared_pretraining_v6', 'shared_pretraining_mixed_v8')
+    if mixed and architecture != 'gatr':
+        raise ValueError('The mixed-training protocol requires snapshot GATr')
     if architecture == 'mace' and not shared:
         raise ValueError('Static structural MACE export requires the shared v6 training protocol')
-    if shared and saved['identity']['architecture_revision'] != ARCHITECTURE_REVISION:
+    revision = MIXED_ARCHITECTURE_REVISION if mixed else ARCHITECTURE_REVISION
+    if shared and saved['identity']['architecture_revision'] != revision:
         raise ValueError('Selected encoder architecture revision differs from the current producer')
     for filename, expected in saved['identity']['implementation']['files'].items():
         if sha256(Path(filename)) != expected:
             raise ValueError(f'Training implementation changed; inspect before export: {filename}')
-    best = torch.load(source.with_name('best.pt'), map_location='cpu', weights_only=False)
-    if best['step'] != saved['step']:
-        raise ValueError('Selected encoder and best checkpoint disagree on update')
-    for key, value in saved['encoder'].items():
-        torch.testing.assert_close(value, best['model']['encoder.'+key], rtol=0, atol=0)
+    kind = config.get('checkpoint_kind', 'selected')
+    selection_score = None
+    if kind == 'selected':
+        best = torch.load(source.with_name('best.pt'), map_location='cpu', weights_only=False)
+        if best['step'] != saved['step']:
+            raise ValueError('Selected encoder and best checkpoint disagree on update')
+        for key, value in saved['encoder'].items():
+            torch.testing.assert_close(value, best['model']['encoder.'+key], rtol=0, atol=0)
+        selection_score = best['best']
     data = OmegaConf.load(config['data_config'])
-    protocol = MACE_PROTOCOL if architecture == 'mace' else SHARED_PROTOCOL if shared else PROTOCOL
+    protocol = MIXED_PROTOCOL if mixed else MACE_PROTOCOL if architecture == 'mace' else SHARED_PROTOCOL if shared else PROTOCOL
     cfg = OmegaConf.create(dict(model_type=f'structural_{architecture}_encoder', protocol=protocol,
         representation_source='encoder', structural_scales=saved['scales'], batch_size=128,
         num_workers=2, max_samples=0, split_seed=123, data=OmegaConf.to_container(data, resolve=True)))
@@ -271,14 +304,14 @@ def export(config):
     OmegaConf.save(cfg, output/'.hydra/config.yaml')
     write_json(output/'provenance.json', dict(source=str(source), source_sha256=sha256(source),
         exported_sha256=sha256(output/'encoder.ckpt'), step=saved['step'], identity=saved['identity'],
-        selection_score=best['best'], scales=saved['scales'], representation='Raw encoder z128'))
+        checkpoint_kind=kind, selection_score=selection_score, scales=saved['scales'], representation='Raw encoder z128'))
 
 
 @torch.no_grad()
 def verify(config):
     from src.data.structural_pretraining.batches import Release, collate, move
     from src.project_runtime.paths import resolve_path
-    source = torch.load(config['checkpoint'], map_location='cpu', weights_only=False)
+    source = _checkpoint_encoder(config)
     root = Path(config['output'])/'technical'
     cfg = OmegaConf.load(root/'encoder/.hydra/config.yaml')
     module = {'gatr': StructuralGATrAnalysis, 'mace': StructuralMACEAnalysis}[source['architecture']]
@@ -292,7 +325,7 @@ def verify(config):
     resource.setrlimit(resource.RLIMIT_NOFILE, (hard, hard))
     training = source['identity']['config']
     release = Release(resolve_path(training['release']),
-        materials=training['materials'] if model.protocol in (SHARED_PROTOCOL, MACE_PROTOCOL) else None)
+        materials=training['materials'] if model.protocol in (SHARED_PROTOCOL, MACE_PROTOCOL, MIXED_PROTOCOL) else None)
     index = next(i for i, (_, _, r) in enumerate(release.rows) if r['static'] and r['material'] == 'Al')
     name, row, record = release.rows[index]
     observation = release.observation(index, 'anchor', False, model.architecture == 'mace')
@@ -322,6 +355,28 @@ def verify(config):
     zz, _ = encode_frame(model, frame, frame[ids[::-1]], dict(settings, batch_size=1))
     np.testing.assert_allclose(z, zz[::-1], rtol=2e-5, atol=2e-6)
     selected_replay = None
+    compiled_latest_replay = None
+    if model.protocol == MIXED_PROTOCOL:
+        # Latest optimizer states have no saved best-selection predictions.
+        # Independently load that exact encoder and run the training compiler
+        # on native dynamic observations, with the training-only row indexing.
+        from src.training_methods.shared_pretraining.compilation import compile_encoder
+        dynamic = Release(resolve_path(training['release']), materials=training['materials'], dynamic_only=True)
+        indices = np.asarray(dynamic.selection)[np.linspace(0, len(dynamic.selection)-1, 64, dtype=int)]
+        samples = [dynamic.observation(int(i), 'anchor', False, False) for i in indices]
+        inputs = move(collate(samples, 'gatr'), config['device'])
+        reference = StructuralGATr(history=False).to(config['device']).eval()
+        reference.load_state_dict(source['encoder'], strict=True)
+        compile_encoder(reference, inputs, model.precision)
+        with torch.autocast('cuda', dtype=torch.bfloat16, enabled=model.precision == 'bf16'):
+            compiled = reference(inputs).float().cpu().numpy()
+        eager = model.encode(inputs).cpu().numpy()
+        np.testing.assert_allclose(eager, compiled, rtol=2e-5, atol=2e-6,
+            err_msg='Latest-checkpoint static adapter disagrees with the native compiled encoder')
+        np.savez(root/'latest-compiled-reference.npz', indices=indices, compiled=compiled, eager=eager)
+        compiled_latest_replay = dict(rows=len(indices), checkpoint_step=source['step'],
+            max_absolute_error=float(np.max(np.abs(eager-compiled))),
+            reference='Independently loaded latest encoder, native dynamic inputs, training compiler and precision policy.')
     if model.protocol in (SHARED_PROTOCOL, MACE_PROTOCOL):
         # The trainer saved these states from its compiled best-checkpoint
         # selection pass, in evaluate() order with microbatch size 64.
@@ -338,13 +393,15 @@ def verify(config):
             max_absolute_error=float(np.max(np.abs(replay-cached['state']))),
             reference_sha256=sha256(Path(config['checkpoint']).with_name('selection_predictions.npz')))
     write_json(root/'static-verification.json', dict(state='complete', step=source['step'],
-        exported_tensors='Exact match to selected encoder and best training checkpoint.',
+        exported_tensors=('Exact match to frozen latest training checkpoint.' if config.get('checkpoint_kind') == 'latest'
+                          else 'Exact match to selected encoder and best training checkpoint.'),
         native_training_input=f'All {len(batch)} input tensors exactly match Release.observation + collate.',
         native_training_output_max_absolute_error=float(np.max(np.abs(result-expected))),
         repeated_native_output_max_absolute_error=float(np.max(np.abs(repeated-expected))),
         native_output_tolerance=native_tolerance,
         reordered_batch_max_absolute_error=float(np.max(np.abs(z-zz[::-1]))),
         native_example=record, static_example=timing, compiled_selection_replay=selected_replay,
+        compiled_latest_replay=compiled_latest_replay,
         precision=model.precision, execution=model.execution, torch_version=torch.__version__))
 
 

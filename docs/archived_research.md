@@ -1,5 +1,12 @@
 # Archived research
 
+The [restored FactorVAE analysis galleries](../output/factor_vae_archive/index.html)
+contain four historical static-Al analysis sets for three FactorVAE-trained
+GeoFrame models, including a later reanalysis of the epoch-034 checkpoint.
+Each restored run retains its original analysis files, saved training config,
+cache metadata and a SHA-256 copy manifest. These are copies of archived results;
+the archived originals and historical metric values remain unchanged.
+
 Older experiment records, source code and results are in the
 [STORE repository copy](/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/).
 Browse its `experiments/`, `output/` and `outputs/`; `.git/` preserves repository history.

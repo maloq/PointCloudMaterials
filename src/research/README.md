@@ -34,6 +34,7 @@ for a dataset/seed/output-path change that an existing command can express.
 
 | Package | Record |
 | --- | --- |
+| `gatr_conditional_information` | [Information beyond radial structure](../../experiments/gatr_conditional_information_20260918/README.md): radial-only counterfactual, source-held-out bond/angular and prospective probes, redundant-input controls and dense matched environments |
 | `mace_velocity` | [Local coordinate/velocity encoder](../../experiments/mace_velocity_20260915/README.md): smooth structure, time-even activity and time-odd motion, source-isolated holdouts and velocity interventions; no forecasting objective |
 | `mace_local_state/physics.py` | Shared local-group physical observables used by native encoder training; frozen-map workflows [discarded](../../docs/discarded_frozen_encoder_maps.md) |
 | `mace_tda_ridge_audit` | [mace_tda_ridge_audit_20260914](../../experiments/mace_tda_ridge_audit_20260914/README.md); fresh six-checkpoint inference, topology-loss interventions and independent ridge calculations in projector and encoder spaces; frozen MLIP/random initialization controls and direct comparisons without a readout |

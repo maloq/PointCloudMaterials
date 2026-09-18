@@ -1,5 +1,11 @@
 # Configuration index
 
+[`analysis/gatr_conditional_information.json`](analysis/gatr_conditional_information.json)
+and [`analysis/gatr_conditional_spatial.json`](analysis/gatr_conditional_spatial.json)
+pin frozen GATr radial controls, source-held-out structure/future probes and the
+dense spatial matching extension on node07/A100; see
+[protocol and findings](../experiments/gatr_conditional_information_20260918/README.md).
+
 [`analysis/gatr_equivariant.json`](analysis/gatr_equivariant.json) pins the
 frozen GATr directional trajectory and spatial-order audit on node07/A100;
 see [protocol and results](../experiments/gatr_equivariant_20260918/README.md).
@@ -36,6 +42,10 @@ and output location through the existing config/CLI. Do not copy a runner.
 - `analysis/structural_gatr_v6_static.json`, `analysis/static_structural_gatr_v6_al.yaml`
   and `data/loaders/static_al_structural_gatr_v6.yaml`: selected Al-only v6
   GATr–VICReg checkpoint with native precision, on the unchanged static Al grid.
+- `analysis/structural_gatr_backtracking_static.json`,
+  `analysis/static_structural_gatr_backtracking_al.yaml` and
+  `data/loaders/static_al_structural_gatr_mixed.yaml`: frozen latest update 400
+  from the active mixed GATr temporal-backtracking run, on the same static grid.
 - `analysis/structural_mace_v6_static.json`, `analysis/static_structural_mace_v6_al.yaml`
   and `data/loaders/static_al_structural_mace_v6.yaml`: selected Al-only v6
   MACE–VICReg checkpoint with native packed graphs and precision on the same grid.

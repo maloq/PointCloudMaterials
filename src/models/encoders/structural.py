@@ -47,6 +47,7 @@ class StructuralMACE(nn.Module):
         self.register_buffer('atomic_numbers',base.atomic_numbers)
         self.scale_input=nn.Linear(1,channels)
         self.backend=backend
+        self.channels=channels
         for name in ('node_embedding','radial_embedding','spherical_harmonics','pool','scale_input'):
             setattr(self,name,FullPrecision(getattr(self,name)))
         for interaction in self.interactions:
@@ -57,7 +58,7 @@ class StructuralMACE(nn.Module):
                 setattr(interaction,name,FullPrecision(getattr(interaction,name)))
         self.products=nn.ModuleList([FullPrecision(product) for product in self.products])
 
-    def forward(self,batch):
+    def forward(self,batch,return_equivariant=False):
         x=batch['packed_positions'].float(); graph=batch['node_graph']; edges=batch['edges']
         attrs=F.one_hot(batch['packed_species'],len(ATOMIC_NUMBERS)).to(x.dtype)
         h=self.node_embedding(attrs)+self.scale_input(batch['log_scale'][graph,None])
@@ -70,7 +71,12 @@ class StructuralMACE(nn.Module):
             h,sc=interaction(node_attrs=attrs,node_feats=h,edge_attrs=angular,
                 edge_feats=radial,edge_index=edges,cutoff=cutoff,first_layer=i==0)
             h=normalize_atom_features(product(h,sc=sc,node_attrs=attrs))*w[:,None]
-        return self.output_norm(self.pool(h,x,graph,len(batch['log_scale'])))
+        state=self.output_norm(self.pool(h,x,graph,len(batch['log_scale'])))
+        if return_equivariant:
+            # Training-only cache interface. The default exported snapshot stays
+            # 128-dimensional and contains no auxiliary prediction head.
+            return torch.cat((state,h[batch['packed_centers']]),-1)
+        return state
 
 
 def causal_bias(weights,times):

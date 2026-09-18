@@ -46,6 +46,14 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.gatr_conditional_information --config configs/analysis/gatr_conditional_information.json`
+tests the frozen exported GATr state beyond radial structure and density on
+node07/A100. Stages `prepare`, `probe`, `report` resume verified extraction,
+nested source-held-out readouts and figure/table export. The separate command
+`python -m src.research.gatr_conditional_information.spatial --config configs/analysis/gatr_conditional_spatial.json`
+extends same-frame radial matching to the existing dense snapshots with frozen
+probe settings; see the [scientific protocol](../experiments/gatr_conditional_information_20260918/README.md).
+
 `python -m src.research.gatr_equivariant --config configs/analysis/gatr_equivariant.json`
 audits frozen GATr multivector directions on the requested node07/A100. Stages
 `temporal`, `spatial`, `report` support resuming extraction; default `all` also
@@ -228,6 +236,12 @@ The newest Al-only v6 GATr uses the same commands with
 `configs/analysis/structural_gatr_v6_static.json` and
 `configs/analysis/static_structural_gatr_v6_al.yaml`, in `pointnet-torch214`.
 Verification includes replay of the saved compiled selection features.
+
+The frozen latest mixed GATr checkpoint uses the same stages with
+`configs/analysis/structural_gatr_backtracking_static.json`, then the pipeline
+with `configs/analysis/static_structural_gatr_backtracking_al.yaml`. The recipe
+pins an immutable `last.pt`; verification compares its own native compiled
+encoder, since a latest optimizer checkpoint is distinct from a selected best.
 
 The matching Al-only v6 MACE checkpoint uses those same export/verify stages
 with `configs/analysis/structural_mace_v6_static.json`, then the pipeline with

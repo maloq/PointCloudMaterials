@@ -9,6 +9,32 @@ from src.data.structural_pretraining.prepare import REFERENCE_RADIUS
 from src.models.encoders.structural import ATOMIC_NUMBERS
 
 
+def test_latest_checkpoint_extracts_exact_encoder_and_rejects_manifest_drift(tmp_path):
+    import hashlib
+    import json
+    import torch
+    from src.analysis.structural_adapter import _checkpoint_encoder
+    release = tmp_path/'release'
+    release.mkdir()
+    manifest = release/'manifest.json'
+    manifest.write_text(json.dumps({'scales': {'Al': 9.1}}))
+    checkpoint = tmp_path/'last.pt'
+    weight = torch.arange(6).reshape(2, 3)
+    torch.save({'step': 400, 'identity': {'protocol': 'shared_pretraining_mixed_v8',
+        'config': {'release': str(release), 'architecture': 'gatr', 'history_frames': 1}},
+        'model': {'encoder.test.weight': weight, 'physical.test.weight': weight+1}}, checkpoint)
+    config = {'checkpoint': str(checkpoint), 'checkpoint_kind': 'latest',
+        'checkpoint_sha256': hashlib.sha256(checkpoint.read_bytes()).hexdigest(),
+        'release_manifest_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest()}
+    saved = _checkpoint_encoder(config)
+    assert saved['step'] == 400 and saved['scales'] == {'Al': 9.1}
+    assert set(saved['encoder']) == {'test.weight'}
+    torch.testing.assert_close(saved['encoder']['test.weight'], weight, rtol=0, atol=0)
+    manifest.write_text(json.dumps({'scales': {'Al': 10.}}))
+    with pytest.raises(ValueError, match='release manifest changed'):
+        _checkpoint_encoder(config)
+
+
 def test_physical_support_center_species_and_fixed_scaling():
     points = np.array([[-40,-40,-40], [8,0,0], [0,0,0], [16,0,0],
                        [18,0,0], [40,40,40]], dtype=np.float32)

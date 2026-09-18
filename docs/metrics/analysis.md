@@ -1,5 +1,15 @@
 # Standard checkpoint analysis metrics — 2026-09-12
 
+The active mixed GATr static export can use an immutable latest optimizer state.
+This uses unchanged static metric calculations and the raw snapshot encoder,
+excluding grouped auxiliary heads. Its pinned source is labelled `latest` and
+has no selection score; a historical best score in optimizer state is not the
+score of that update. Verification compares an independently loaded native
+compiled encoder on 64 dynamic selection inputs, rather than using predictions
+saved for a different best checkpoint. The current mixed fit excludes static
+observations; this descriptive analysis does not establish ancestry-independent
+generalization. See [the protocol](../structural_static_analysis.md).
+
 The structural GATr–VICReg static adapter uses the same metric calculations on
 raw trained 128-channel center states. It reconstructs full trained neighborhoods
 with fixed material scaling and taper, using verified interior centers on the
