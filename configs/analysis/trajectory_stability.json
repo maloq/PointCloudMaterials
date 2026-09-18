@@ -1,0 +1,20 @@
+{
+  "output": "output/trajectory_stability/al-v6-20260918",
+  "cohort": "output/local_predictability/h100-20260917/technical/cohort.json",
+  "physical_cache": "${storage:cache}/local-predictability-20260917-broad",
+  "checkpoints": {
+    "mace": {"path": "output/shared_pretraining/mace-vicreg-al-stable-20260918/technical/encoder.pt", "sha256": "656a0ceebe9b709bacb8222f37cf747b7ba2fb834aa6f4fa31f9669eb07d4075"},
+    "gatr": {"path": "output/shared_pretraining/gatr-vicreg-al-stable-20260918/technical/encoder.pt", "sha256": "3534c3cd6065d41ca32d6ed3e77534a79429d80ad3e195c0b14beb8ce36e42eb"}
+  },
+  "temperatures_K": [400, 450, 500, 510, 520],
+  "test_sources_per_temperature": 2,
+  "reference_sources_per_temperature": 1,
+  "centers_per_source": 4,
+  "reference_stride": 40,
+  "lag_frames": [1, 2, 4, 8, 16, 32, 64, 128, 256],
+  "seed": 20260918,
+  "bootstrap_draws": 2000,
+  "workers": 5,
+  "batch_size": 32,
+  "device": "cuda:0"
+}

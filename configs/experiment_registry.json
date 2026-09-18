@@ -20,6 +20,11 @@
       "id": "forecast_analysis",
       "kind": "experiment",
       "path": "${storage:analysis}/embedding_forecast"
+    },
+    {
+      "id": "structural_static_analysis",
+      "kind": "experiment",
+      "path": "${storage:analysis}/structural_static"
     }
   ]
 }

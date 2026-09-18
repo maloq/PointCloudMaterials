@@ -49,3 +49,22 @@ def test_expired_deadline_cannot_launch_and_failures_block_queue(tmp_path,monkey
         queue.serial(plan_path,'2099-01-01T00:00:00+00:00')
     state=json.loads((tmp_path/'output/technical/queue-state.json').read_text())
     assert state['state']=='failed' and 'Nonfinite objective' in state['error']
+
+
+def test_gpu_submission_waits_for_successful_cpu_target_preparation(tmp_path,monkeypatch):
+    plan=dict(output=str(tmp_path/'campaign'),partition='RTX6000PRO,H100,L40S',
+        structural_slots=1,structural_hours=8,
+        data_preparation=dict(config='data.json',partition='CPU',workers=16,memory_GiB=96,hours=4),
+        runs=[dict(name='gatr',allocation=None,configs={'structural':'train.json'})])
+    path=tmp_path/'plan.json';path.write_text(json.dumps(plan));scripts=[]
+    monkeypatch.setattr(queue,'snapshot',lambda root:tmp_path/'frozen')
+    monkeypatch.setattr(queue.subprocess,'run',lambda *a,**kw:None)
+    def submit(script,path):
+        scripts.append(script);return str(100+len(scripts))
+    monkeypatch.setattr(queue,'submit_sbatch',submit)
+    queue.submit(path)
+    assert len(scripts)==2
+    assert '--partition=CPU' in scripts[0] and '--gres' not in scripts[0]
+    assert 'src.data.structural_pretraining.prepare' in scripts[0]
+    assert '--dependency=afterok:101' in scripts[1]
+    assert '--final-slot' in scripts[1]

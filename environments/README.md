@@ -2,8 +2,11 @@
 
 Validated interpreter: Python 3.12.13. `requirements-core.txt` contains pinned shared
 scientific packages. Choose `requirements-cpu.txt` or `requirements-gpu.txt`; do not
-install both. The Linux CPU profile uses PyTorch 2.11.0+cpu; the NVIDIA profile retains
-PyTorch 2.11.0+cu128 and the cluster's optional equivariance kernels.
+install both. The historical Linux CPU profile uses PyTorch 2.11.0+cpu; the current
+NVIDIA profile selects PyTorch 2.14.0+cu130, TorchVision 0.29.0+cu130 and the CUDA 13
+cuEquivariance kernels. The GPU environment is `pointnet-torch214`; existing runs
+and exact resumes retain their original `pointnet` interpreter. See
+[upgrade and validation](../docs/pytorch214_upgrade.md).
 
 `requirements-cpu.lock.txt` captures all installed distributions from the clean CPU
 venv tested on 2026-09-13. Install it with the CPU wheel index:

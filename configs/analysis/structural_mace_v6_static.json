@@ -1,0 +1,7 @@
+{
+  "checkpoint": "output/shared_pretraining/mace-vicreg-al-stable-20260918/technical/encoder.pt",
+  "checkpoint_sha256": "656a0ceebe9b709bacb8222f37cf747b7ba2fb834aa6f4fa31f9669eb07d4075",
+  "output": "output/structural_static/mace-vicreg-v6-step1465-al-20260918",
+  "data_config": "configs/data/loaders/static_al_structural_mace_v6.yaml",
+  "device": "cuda:0"
+}

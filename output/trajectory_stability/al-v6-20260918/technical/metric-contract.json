@@ -1,0 +1,16 @@
+{
+  "family": "trajectory_stability",
+  "exported_at": "2026-09-18T16:27:59.656955+00:00",
+  "files": {
+    "docs/metrics/trajectory_stability.md": "40e4c13f832bfe5fdf0606ba195ecfd7ba5027a2b8828ba0b1f3cc6d8fe508ad",
+    "src/research/trajectory_stability/prepare.py": "447ee196cb93d4fd0fc19395df0aa15e5821781c2a59677eeafc5974019b840f",
+    "src/research/trajectory_stability/encode.py": "751a3035de2b3d43993749eb8a905fa0dcb61e7033a90a1d2f755683c57f9851",
+    "src/research/trajectory_stability/metrics.py": "2d7022fb4f62da5b2e68007a37d4a50f741aea25e4f940c5efa3cc7757dbfca3",
+    "src/research/trajectory_stability/report.py": "9bb54e4553737c8a162695b520febb6d2f33946230becac2ac2eabb08cd5e084",
+    "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
+    "src/data/structural_pretraining/batches.py": "ee00fdebab98661414cf31b5c82df2630ec478cb7ac1d41710759b715a4264ef",
+    "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/research/trajectory_stability/explore.py": "debaa98aa2ba69427548fc2ce2d45a85f1ebe009df20c7e0effa32f2c4002281"
+  }
+}

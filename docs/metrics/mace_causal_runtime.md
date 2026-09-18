@@ -26,3 +26,7 @@ CPU copies on the declared validation prefix; it excludes physical metric tables
 No model selection is performed. GPU process snapshots before/after disclose
 contention but cannot prove exclusivity between snapshots. Speeds measured with
 other jobs running are provisional, not isolated hardware peak throughput.
+
+Environment update (2026-09-18): new GPU runs record the CUDA 13 cuEquivariance
+package with PyTorch 2.14. Metric calculations are unchanged; historical exports
+retain their original environment and implementation hashes.

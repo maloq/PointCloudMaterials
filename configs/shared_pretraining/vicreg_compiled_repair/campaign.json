@@ -1,0 +1,22 @@
+{
+  "output": "output/shared_pretraining/compiled-repair-campaign-20260918",
+  "partition": "H100,RTX6000PRO,L40S",
+  "structural_slots": 0,
+  "structural_hours": 16,
+  "runs": [
+    {
+      "name": "mace_vicreg",
+      "allocation": 997799,
+      "configs": {
+        "structural": "configs/shared_pretraining/vicreg_compiled_repair/mace_vicreg_structural.json"
+      }
+    },
+    {
+      "name": "gatr_vicreg",
+      "allocation": 997864,
+      "configs": {
+        "structural": "configs/shared_pretraining/vicreg_compiled_repair/gatr_vicreg_structural.json"
+      }
+    }
+  ]
+}

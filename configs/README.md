@@ -1,5 +1,13 @@
 # Configuration index
 
+[`analysis/gatr_equivariant.json`](analysis/gatr_equivariant.json) pins the
+frozen GATr directional trajectory and spatial-order audit on node07/A100;
+see [protocol and results](../experiments/gatr_equivariant_20260918/README.md).
+
+[`analysis/trajectory_stability.json`](analysis/trajectory_stability.json) pins
+the selected MACE/GATr checkpoints and matched Al trajectory sampling for the
+[temporal stability comparison](../experiments/trajectory_stability_20260918/README.md).
+
 Keep active recipes and their dependencies here. Simulation recipes belong only in
 `simulation/`; keep analysis templates in `analysis/`. Run-specific research plans
 stay with their scientific record in `experiments/`.
@@ -24,6 +32,22 @@ Training requires an explicit `--config-name NAME`. Choose dataset, seed, checkp
 and output location through the existing config/CLI. Do not copy a runner.
 
 ## Supporting configs
+
+- `analysis/structural_gatr_v6_static.json`, `analysis/static_structural_gatr_v6_al.yaml`
+  and `data/loaders/static_al_structural_gatr_v6.yaml`: selected Al-only v6
+  GATr–VICReg checkpoint with native precision, on the unchanged static Al grid.
+- `analysis/structural_mace_v6_static.json`, `analysis/static_structural_mace_v6_al.yaml`
+  and `data/loaders/static_al_structural_mace_v6.yaml`: selected Al-only v6
+  MACE–VICReg checkpoint with native packed graphs and precision on the same grid.
+
+- `shared_pretraining/geometry_fp32_2x/{mace,gatr}_vicreg_structural.json`:
+  enlarged snapshot encoders with FP32 geometry and scalar BF16 computation;
+  prepared, unsubmitted 12-epoch runs. See [architecture and validation](../docs/shared_pretraining_geometry_fp32_2x.md).
+
+- `shared_pretraining/restart_b1024_lr002_bf16/campaign.json`: fresh MACE/GATr
+  VICReg structural runs after the failure audit, batch 1,024, peak LR 0.002,
+  BF16, normalized readouts and learning-health gates. Existing v3 jobs use their frozen code;
+  [launch and precision measurements](../docs/shared_pretraining_restart_20260918.md).
 
 - `shared_pretraining/campaign.json`: approved local 12-epoch structural,
   initialized causal and frozen-evaluation campaign, batch 512.
@@ -169,3 +193,21 @@ core optimizers retain their original backend.
 cuEquivariance spatial kernels (`encoder.mace_backend: cueq`),
 effective batch 8, microbatch 2, evaluation batch 4, bounded train-observation GPU
 residency. Use the existing training CLI; see [workflow](../docs/predictive_memory.md).
+
+Current compiled VICReg restart: [`shared_pretraining/vicreg_compiled_repair`](shared_pretraining/vicreg_compiled_repair), with the [operational recipe](../docs/shared_pretraining_compiled_repair_20260918.md).
+
+`shared_pretraining/al_stable/` is the active Al-only MACE/GATr VICReg recipe.
+It supersedes the stopped v5 compiled repair; see [scope and normalization](../docs/shared_pretraining_al_stability_20260918.md).
+
+`shared_pretraining/broad_full_tda/` expands shooting to 75,000 anchors, restores
+five-metal data with complete instantaneous TDA, and continues the Al-trained
+GATr for three epochs. See [preparation and GPU dependencies](../docs/shared_pretraining_broad_full_tda_20260918.md).
+
+`shared_pretraining/gatr_mixed_triplets/` starts fresh dynamic-only GATr on four
+metals with mixed batches of 2,048 and a three-snapshot backtracking penalty.
+It supersedes the failed broad continuation. See [execution and normalization](../docs/shared_pretraining_mixed_triplets_20260918.md).
+
+`shared_pretraining/gatr_temporal_backtracking/` continues the mixed GATr at
+update 250 with a training-calibrated fixed curvature weight and backtracking
+on temporal updates only. It preserves optimizer/schedule progress and uses
+compact W&B logging. See [transition protocol](../docs/shared_pretraining_temporal_backtracking_20260918.md).

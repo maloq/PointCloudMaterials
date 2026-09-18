@@ -12,9 +12,21 @@ from src.models.encoders.structural import ATOMIC_NUMBERS
 
 
 class Release:
-    def __init__(self,root):
+    def __init__(self,root,materials=None,dynamic_only=False):
         self.root=Path(root); self.manifest=json.loads((self.root/'manifest.json').read_text())
         if self.manifest['state']!='complete':raise ValueError('Structural release is incomplete')
+        if dynamic_only:
+            self.manifest['shards']=[s for s in self.manifest['shards'] if not s['static']]
+            self.manifest['identity']=dict(parent=self.manifest['identity'],dynamic_only=True,
+                normalization='subset_training_endpoints_v1')
+        if materials is not None:
+            materials=sorted(set(materials))
+            available={s['material'] for s in self.manifest['shards']}
+            if not materials or not set(materials)<=available:
+                raise ValueError(f'Requested materials {materials}; release contains {sorted(available)}')
+            self.manifest['shards']=[s for s in self.manifest['shards'] if s['material'] in materials]
+            self.manifest['identity']=dict(parent=self.manifest['identity'],materials=materials,
+                normalization='subset_training_endpoints_v1')
         self.rows=[]; self.groups=defaultdict(list); self.selection=[]; self.arrays={}
         self.graphs=OrderedDict(); self.graph_bytes=0; self.max_graph_bytes=2*2**30
         for shard in self.manifest['shards']:
@@ -23,11 +35,30 @@ class Release:
             for row in range(shard['anchors']):
                 index=len(self.rows); self.rows.append((name,row,shard))
                 if shard['task']['split']=='selection':self.selection.append(index)
-                else:
+                elif shard['task']['split']=='train':
                     self.groups[(shard['material'],shard['potential'],shard['static'])].append(index)
+                elif shard['task']['split'] not in ('calibration','test'):
+                    raise ValueError(f'Unexpected structural split {shard["task"]["split"]} in {name}; '
+                        'expected train, selection, calibration or test')
         self.group_keys=sorted(self.groups,key=str)
         self.group_weights=np.array([len(self.groups[k]) for k in self.group_keys],dtype=float)
         self.group_weights/=self.group_weights.sum()
+        if materials is not None or dynamic_only:
+            # Same endpoint/label population and std floor as prepare.finalize.
+            # Do not retain moments from excluded materials, even though the
+            # underlying immutable cache is shared with the broad study.
+            parts={'physical':[],'tda':[]}
+            for shard in self.manifest['shards']:
+                if shard['task']['split']!='train':continue
+                arrays=self.arrays[shard['task']['id']]
+                views=arrays['views'][:,[2,4] if shard['static'] else [2,3,4]].ravel()
+                parts['physical'].append(arrays['physical'][views])
+                parts['tda'].append(arrays['tda'][arrays['tda_valid']])
+            self.manifest['normalization']={}
+            for name,values in parts.items():
+                a=np.concatenate(values).astype(np.float64)
+                self.manifest['normalization'][name]=dict(mean=a.mean(0).tolist(),
+                    std=np.maximum(a.std(0),1e-4).tolist())
 
     def view(self,name,index,mace):
         key=(name,index,mace)
@@ -46,8 +77,8 @@ class Release:
             self.graphs.move_to_end(cache_key)
             return self.graphs[cache_key]
         name,row,record=self.rows[index]; a=self.arrays[name]; mapping=a['views'][row]
-        slot={'anchor':2,'spatial':4,'future':3}[which]
-        if which=='future' and record['static']:raise ValueError('Static structures have no temporal successor')
+        slot={'anchor':2,'spatial':4,'future':3,'previous':1}[which]
+        if which in ('future','previous') and record['static']:raise ValueError('Static structures have no temporal neighbors')
         slots=[0,1,2] if history and not record['static'] and which=='anchor' else [slot]
         if any(mapping[i]<0 for i in slots):raise ValueError('Missing declared temporal observation')
         frames=[self.view(name,int(mapping[i]),mace) for i in slots]

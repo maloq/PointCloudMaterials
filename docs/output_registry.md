@@ -24,8 +24,8 @@ Updates retain a small decision history. Rebuild the dashboard to display them.
 
 Current research is listed in the [retention review](research_retention.md).
 Older results live in [the STORE archive](archived_research.md). Registry settings
-are in `configs/experiment_registry.json`; WORK forecast analysis roots are included
-so active fits reached through output symlinks remain discoverable. The separate
+are in `configs/experiment_registry.json`; WORK forecast and structural static
+analysis roots are included so runs reached through output symlinks remain discoverable. The separate
 [simulation catalog](simulations/README.md) records collection locations and producer
 outcomes without claiming that duplicate records are independent trajectories.
 

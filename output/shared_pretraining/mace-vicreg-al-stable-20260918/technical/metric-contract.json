@@ -1,0 +1,20 @@
+{
+  "family": "shared_pretraining",
+  "exported_at": "2026-09-18T13:27:35.884690+00:00",
+  "files": {
+    "docs/metrics/shared_pretraining.md": "c92203deaf95519494b0a9a7d4de6b342758426e99e6520dba17bedfa13267fd",
+    "src/training_methods/shared_pretraining/runtime.py": "3cd298c531d228ca50d243f659148754f551f63dd4058fd323f3a709cb2a7ed6",
+    "src/training_methods/shared_pretraining/data.py": "cc6b275cfc64c2684c66f87b68063645156ae073d9933cbf1707bb7be7ccc858",
+    "src/training_methods/shared_pretraining/analysis.py": "dc5988b64f99f666da8ef0615e16c50956e6fdc0140fc21a68361bd8df8901dc",
+    "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
+    "src/data/structural_pretraining/prepare.py": "d11a8e963044b7d446b19b5ce7244042cfbd9d84a78bd73a36b71f63fe94e9b0",
+    "src/training_methods/shared_pretraining/health.py": "52329440f140b8f30dad74364479baf388132fb22f67e518a492e68980bd1012",
+    "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+    "src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
+    "src/training_methods/structural_pretraining/train.py": "d626b6b22f21ef68fcd0bcb944f66ecbab07668c55fc417ff7a8cb3e99fd7fab",
+    "src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
+    "src/training_methods/shared_pretraining/compilation.py": "55aa01fd538e11c59f7d9a358ce0244ef5829010749162829fb0bf06b0b432ba",
+    "src/training_methods/shared_pretraining/normalization.py": "f8341462937f5134519b0e4f6f699d8132b8b81c0af41c0c36e05755150333c4",
+    "src/data/structural_pretraining/batches.py": "ee00fdebab98661414cf31b5c82df2630ec478cb7ac1d41710759b715a4264ef"
+  }
+}

@@ -1,7 +1,8 @@
---extra-index-url https://download.pytorch.org/whl/cu128
+--extra-index-url https://download.pytorch.org/whl/cu130
 -r requirements-core.txt
-torch==2.11.0+cu128
+torch==2.14.0+cu130
+torchvision==0.29.0+cu130
 cuequivariance==0.10.0
 cuequivariance-torch==0.10.0
-cuequivariance-ops-torch-cu12==0.10.0
+cuequivariance-ops-torch-cu13==0.10.0
 openequivariance==0.6.8

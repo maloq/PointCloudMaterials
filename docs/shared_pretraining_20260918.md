@@ -1,5 +1,16 @@
 # Shared pretraining campaign: execution and continuation
 
+**Stopped September 18:** the local runs showed decoder saturation and
+representation collapse. MACE/GATr VICReg completed their budgets and analyses;
+JEPA was stopped at update 3,495. Keep the queue paused pending the fixes and
+learning checks in the [failure diagnosis](../output/shared_pretraining/diagnosis-20260918/RESULTS.md).
+The allocation/job records below are historical, not a current running status.
+
+The new [VICReg restart](shared_pretraining_restart_20260918.md) is separate:
+fresh MACE/GATr weights, batch 1,024, corrected peak LR 0.002 and BF16, with
+normalized interfaces and explicit learning checks. Use that recipe for current
+training; the stopped campaign and H200 handoff below retain their frozen code.
+
 The [scientific protocol](../experiments/shared_pretraining_20260918/README.md)
 defines three fresh 12-epoch structural fits, three initialized causal fits and
 three paired structural/causal frozen evaluations. Peak learning rate is 0.02,
@@ -89,9 +100,14 @@ Online W&B project: [teshbek / PointCloudMaterials](https://wandb.ai/teshbek/Poi
 Campaign group: `shared-12ep-20260918`; diagnostic runs use a separate preflight
 group. Each phase has a stable W&B ID, recorded with its URL in
 `technical/wandb_run.json`. The run resumes that ID across allocation changes.
-Logs include learning rate, epoch equivalents, each loss, gradient norm,
-allocated/reserved memory, timing and selection metrics. Raw trajectories and
-checkpoint weights are not uploaded as artifacts.
+Online logs include learning rate, epoch equivalents, each loss, gradient norm,
+input waiting and selection metrics. Current code adds `train/vicreg` for the
+raw 25 I + 25 V + C total and `train/vicreg_weighted` for its actual contribution
+to the combined loss (0.1 * total / 51), preserving the training objective.
+Per-update duration and peak allocated/reserved memory stay in local traces;
+W&B supplies system monitoring. Frozen campaign code and historical W&B series
+are unchanged. Raw trajectories and checkpoint weights are not uploaded as
+artifacts.
 
 Each stage has its own `output/shared_pretraining/<variant>-<stage>-20260918/`:
 

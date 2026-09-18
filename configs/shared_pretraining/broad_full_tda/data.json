@@ -1,0 +1,7 @@
+{
+  "release": "${storage:cache}/structural_pretraining/broad-287500-full-tda-20260918",
+  "parent_release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "additional_shooting_anchors": 37500,
+  "rows_per_task": 256,
+  "seed": 20260920
+}

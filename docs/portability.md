@@ -6,7 +6,9 @@ machine does not require editing scientific configs or data manifests.
 
 ## Setup
 
-Use Python 3.12. On this cluster, activate `conda activate pointnet`.
+Use Python 3.12. For new GPU work on this cluster, activate
+`conda activate pointnet-torch214`. Existing runs and exact resumes retain their
+original `pointnet` environment; see [the GPU upgrade](pytorch214_upgrade.md).
 For a fresh Linux CPU installation:
 
 ```bash
@@ -18,7 +20,7 @@ python scripts/project.py doctor
 
 `requirements-cpu.txt` records the direct requirements; the CPU lock also pins
 transitive dependencies. `requirements-gpu.txt` selects the cluster's PyTorch
-2.11.0 / CUDA 12.8 implementation and optional equivariance kernels. Install it
+2.14.0 / CUDA 13.0 implementation and optional equivariance kernels. Install it
 instead for a compatible NVIDIA machine. A matching GPU driver and a LAMMPS build
 with the requested potentials/MPI are separate system dependencies.
 

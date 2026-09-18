@@ -1,0 +1,15 @@
+{
+  "family": "shared_pretraining_precision",
+  "exported_at": "2026-09-18T10:08:38.064250+00:00",
+  "files": {
+    "docs/metrics/shared_pretraining_precision.md": "5c61077b3ebf591f7991daa1b9f1dbdc40dd2fd1b9abed7d31e02c79872fd3de",
+    "src/training_methods/shared_pretraining/profile.py": "a886d2405bce8fc4e83c7bdc6d27aeb7747f061d954100a1d3f0588dbfbe870b",
+    "src/training_methods/shared_pretraining/runtime.py": "cc4bb7c3782a7557a8478aa3f218f94d2a7aaeae14d45de49bf74c1e9f9a4b2d",
+    "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
+    "src/models/encoders/structural.py": "27041a6dc24c67d3e7ba2cb798ba11c01ae07a80aeb20d955d944d522ff626b5",
+    "src/models/encoders/structural_precision.py": "1b7786ca3c880d9077f80842565f32a008488c7a2fdded1aeec715da8b78b940",
+    "src/training_methods/structural_pretraining/train.py": "1d76fa5b05d9a355da8a1b4680d927434e7abf1d5b3f72bd898aca91a9052d69",
+    "src/models/encoders/compensated_bf16.py": "e3d5618e4d67e05a2fde8c19bf77866732a79385d41bb82094835bdae38b4738",
+    "src/training_methods/shared_pretraining/compilation.py": "907e6197529c727854ea67c5b7b3b1655022285db8a97a615ebbdb240af6675c"
+  }
+}

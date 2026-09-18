@@ -12,7 +12,7 @@ def mace_backend_config(backend):
         from mace.modules.wrapper_ops import CUET_AVAILABLE, CuEquivarianceConfig
     except ImportError as error:
         raise RuntimeError('The cueq backend requires cuequivariance, cuequivariance-torch '
-                           'and cuequivariance-ops-torch-cu12 in the training environment') from error
+                           'and cuequivariance-ops-torch-cu13 in the training environment') from error
     if not CUET_AVAILABLE:
         raise RuntimeError('MACE could not import cuEquivariance; refusing an e3nn fallback')
     # Invariants, velocity injections and temporal attention consume mul_ir.
@@ -27,7 +27,7 @@ def mace_backend_metadata(backend):
     if backend == 'cueq':
         result.update(cuequivariance_version=version('cuequivariance'),
                       cuequivariance_torch_version=version('cuequivariance-torch'),
-                      cuda_ops_version=version('cuequivariance-ops-torch-cu12'))
+                      cuda_ops_version=version('cuequivariance-ops-torch-cu13'))
     return result
 
 

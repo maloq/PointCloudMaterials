@@ -31,7 +31,7 @@ def implementation_identity():
     files = sorted(p for folder in folders for p in (REPO/folder).rglob('*.py'))
     versions = {name: importlib.metadata.version(name) for name in
         ('torch', 'mace-torch', 'e3nn', 'cuequivariance', 'cuequivariance-torch',
-         'cuequivariance-ops-torch-cu12', 'GATr', 'einops', 'xformers', 'opt_einsum', 'numpy')}
+         'cuequivariance-ops-torch-cu13', 'GATr', 'einops', 'xformers', 'opt_einsum', 'numpy')}
     from src.models.encoders.axial_gatr import GATR_REVISION
     distribution = importlib.metadata.distribution('GATr')
     direct = json.loads(distribution.read_text('direct_url.json'))

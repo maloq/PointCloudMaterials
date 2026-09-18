@@ -373,7 +373,12 @@ def run(config, workers):
 
 def main():
     parser=argparse.ArgumentParser(); parser.add_argument('--config',required=True); parser.add_argument('--workers',type=int,default=4)
-    args=parser.parse_args(); config=json.loads(Path(args.config).read_text()); run(config,args.workers)
+    args=parser.parse_args(); config=json.loads(Path(args.config).read_text())
+    if 'parent_release' in config:
+        from .expand import run as expand
+        expand(config,args.workers)
+    else:
+        run(config,args.workers)
 
 
 if __name__=='__main__':

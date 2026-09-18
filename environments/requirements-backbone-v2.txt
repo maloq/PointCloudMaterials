@@ -1,6 +1,7 @@
-# Install on the existing pointnet GPU environment with --no-deps. Upstream
+# Install on pointnet-torch214 with --no-deps. Upstream
 # GATr's historical numpy/opt_einsum constraints predate this tested stack.
 # Tensor masks dispatch to upstream PyTorch SDPA, not xformers custom kernels.
 GATr @ git+https://github.com/Qualcomm-AI-research/geometric-algebra-transformer.git@6afc26f26b8fcf51136ae8c1d264a36e14b6e497
 einops==0.8.2
-xformers==0.0.35
+# Pin the CUDA 13 Linux wheel; PyPI's same-version wheel targets CUDA 12.
+xformers @ https://download.pytorch.org/whl/cu130/xformers-0.0.35-py39-none-manylinux_2_28_x86_64.whl#sha256=962eb73f7243fb6a6b68ed85ed8f97780070ee35c1be464eefe3299b0382391d

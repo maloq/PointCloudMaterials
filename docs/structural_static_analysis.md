@@ -1,4 +1,73 @@
-# Static Al analysis of structural GATr–VICReg
+# Static Al analysis of structural MACE/GATr–VICReg
+
+## Matched Al-only v6 MACE checkpoint
+
+The completed September 18 Al-only MACE run selects its final update 1,465,
+with selection score 0.24064353108406067. Use `pointnet-torch214` and the
+checkpoint's native cuEquivariance backend on the available H100:
+
+```bash
+python -m src.analysis.structural_adapter --config configs/analysis/structural_mace_v6_static.json --stage export
+python -m src.analysis.structural_adapter --config configs/analysis/structural_mace_v6_static.json --stage verify
+python -m src.analysis.pipeline configs/analysis/static_structural_mace_v6_al.yaml
+```
+
+Output: `output/structural_static/mace-vicreg-v6-step1465-al-20260918/`.
+This retains the v6 GATr analysis's six snapshots, 684,723 interior centers,
+seven-cluster settings, corrected float64 raw PCA and complete plot workflow.
+Only the selected encoder changes. Each MACE observation reconstructs the same
+full support and fixed Al scaling as training; its directed 5-model-unit edges
+are generated on the unpadded, normalized local coordinates. Packed graphs have
+no edges between observations. The observation's taper enters both edges and
+node features exactly as in training, so atom states are not reused across
+different centers. Multiscale pooling uses the trained 0–3, 5–7 and 15–17 model
+unit ranges. Protected geometry/tensor operations remain FP32 and the trained
+scalar operations use BF16. Only the raw z128 encoder state is exported.
+The MACE encoder uses the training full-graph compiler with dynamic shapes and
+preserved precision casts. Eager execution failed the saved-selection check
+(maximum absolute difference about 2.52e-5), so it is not used for this report.
+
+Verification matches every native input tensor (including packed edges),
+selected checkpoint tensors, single-observation output, batch/reorder replay
+and all 480 saved compiled selection states. CuEquivariance CUDA reductions
+are not bitwise repeatable: inputs/weights match exactly, while MACE output
+checks use rtol 2e-5 and atol 2e-6 and record repeated-native error separately.
+These frames overlap training;
+the clusters are descriptive groups and their IDs are specific to each fit.
+
+## Newest Al-only v6 checkpoint
+
+The completed September 18 Al-only run selects update 1,216 out of 1,465,
+with selection score 0.22607703506946564. Its normalization differs from the
+earlier broad-material run, so the selection scores do not rank the two models.
+Use conda `pointnet-torch214` for this analysis:
+
+```bash
+python -m src.analysis.structural_adapter --config configs/analysis/structural_gatr_v6_static.json --stage export
+python -m src.analysis.structural_adapter --config configs/analysis/structural_gatr_v6_static.json --stage verify
+python -m src.analysis.pipeline configs/analysis/static_structural_gatr_v6_al.yaml
+```
+
+Output: `output/structural_static/gatr-vicreg-v6-step1216-al-20260918/`, with its
+data on the configured WORK analysis root. The same six snapshots, 684,723
+centers and analysis settings are retained. The model has the explicit
+`structural_v6_conditioned_heads` architecture and uses its trained selective
+BF16 policy: protected geometry, residual streams and exported z128 stay FP32;
+scalar maps use the model's compensated arithmetic. Head normalization buffers
+are excluded because this analysis uses only the encoder. Eager inference uses
+the training contraction order and is verified against all 480 saved states
+from the compiled best-checkpoint selection pass. No training is resumed.
+
+The raw PCA diagnostic uses float64 full SVD. This avoids cancellation in
+float32 covariance calculations when small structural differences sit on large
+channel means. Latent summary statistics also accumulate in float64. The
+standardized clustering calculation is unchanged. Pre-correction diagnostics
+are preserved in the new run's `technical/pre-correction-diagnostics.tar.gz`.
+
+The previous model and its archived outputs keep their own versioned source
+and metric definitions. The protocol below records that earlier analysis.
+
+## Original September 17 checkpoint
 
 The RTX PRO 6000 run completed 4,096 updates. Its selected encoder is update
 3,072, with source-balanced selection score 0.4045023210346699. The export

@@ -16,6 +16,8 @@
 - [Research/result layout and metric definitions](research_layout.md)
 - [Run registry and retention commands](output_registry.md)
 - [Maintained workflow details](workflows.md)
+- [Shared-pretraining W&B metric layout](shared_pretraining_logging.md)
+- [Temporal-only backtracking continuation](shared_pretraining_temporal_backtracking_20260918.md)
 - [Source refactor scope and validation](src_refactor.md)
 
 Scientific experiment records belong in [experiments/](../experiments/README.md).

@@ -1,0 +1,21 @@
+{
+  "family": "gatr_equivariant",
+  "exported_at": "2026-09-18T19:07:43.341147+00:00",
+  "files": {
+    "docs/metrics/gatr_equivariant.md": "37731e5c335f9ba985d57e79d75be3b57378314794a9f18f3d58f7abdd57093b",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/data/structural_pretraining/batches.py": "10bd52b122848f7161f0128c40cbab0eced0576484043d8c87dd3c721926086e",
+    "src/data/structural_pretraining/prepare.py": "e2e6726f486a7ce7d2d911aaddcc4853f5cb17c1c9c12a9d28fe6db8e47d7f15",
+    "src/models/encoders/structural.py": "86d9d2d00c50922b0834c3a4b6fef7be285f3f26b3be341a08666f1f3011d82a",
+    "src/research/gatr_equivariant/__init__.py": "18af4c022779dccf12c0ae9840db77315ee2c172ad315fff6469be656b7ad8b9",
+    "src/research/gatr_equivariant/__main__.py": "74811197a141a08ba742a306095bd5d7aff05d541e954d6e6a4309161746bab2",
+    "src/research/gatr_equivariant/controls.py": "179f3bd7a2b2f88453b765d19455658b9db55fd199bfeed07040c0d00983cb56",
+    "src/research/gatr_equivariant/metrics.py": "1bc3c38fda4df1ce8cd0476f3745e8bdae63559d6af7136f1cd607803a647a60",
+    "src/research/gatr_equivariant/model.py": "c0c6f5da4c02c9cbda9832e17dd5b3652fde902d4fc4c9391cb229e1976d77a6",
+    "src/research/gatr_equivariant/plots.py": "bfdf9540b61c562b8332449b4cf5686c091f6a2aa60b12fecac6816bc8b7f631",
+    "src/research/gatr_equivariant/report.py": "34f1aadce2dace358211ca96139d757e156d973867595945ceb806cc86493deb",
+    "src/research/gatr_equivariant/run.py": "5e03ffe27f2522ff6c29f875d69618b18a01ce7754ca7e17193fa94770ec9ab7",
+    "src/research/smooth_temporal_encoder/prepare.py": "6f3975ab75f83fd5561ddfdf5c64557ff9790a5577d4223a226f2e0c4565746a",
+    "src/research/trajectory_stability/encode.py": "751a3035de2b3d43993749eb8a905fa0dcb61e7033a90a1d2f755683c57f9851"
+  }
+}

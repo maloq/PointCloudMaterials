@@ -15,7 +15,7 @@ import torch
 
 from src.data.structural_pretraining.prepare import save_json,file_hash,digest
 from src.data.structural_pretraining.batches import Release,collate,move
-from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS
+from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS,ARCHITECTURE_REVISION
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.metric_docs import write_metric_table
 from .objective import Objective,PHYSICAL_BLOCKS,TDA_BLOCKS
@@ -25,9 +25,11 @@ def implementation():
     paths=[p for folder in ('src/data/structural_pretraining','src/training_methods/structural_pretraining')
            for p in Path(folder).glob('*.py')]
     paths += [Path(p) for p in ('src/models/encoders/structural.py','src/models/encoders/mace_causal.py',
-        'src/models/encoders/axial_gatr.py','src/models/encoders/mace_backend.py')]
+        'src/models/encoders/axial_gatr.py','src/models/encoders/mace_backend.py','src/models/encoders/structural_precision.py',
+        'src/models/encoders/compensated_bf16.py','src/training_methods/shared_pretraining/normalization.py')]
     return dict(files={str(p):file_hash(p) for p in paths},
-        versions={name:importlib.metadata.version(name) for name in ('torch','mace-torch','cuequivariance','GATr','lejepa')},
+        versions={name:importlib.metadata.version(name) for name in ('torch','triton','mace-torch','cuequivariance',
+            'cuequivariance-torch','cuequivariance-ops-torch-cu13','GATr','lejepa')},
         dependencies={name:json.loads(importlib.metadata.distribution(name).read_text('direct_url.json')) for name in ('GATr','lejepa')})
 
 
@@ -95,6 +97,8 @@ def cached_update(model,objective,batches,optimizer,temporal,delta):
 
 @torch.no_grad()
 def evaluate(model,objective,release,config):
+    from src.training_methods.shared_pretraining.normalization import calibrate_heads
+    calibrate_heads(model,release,dict(config,precision='float32'))
     model.eval();device=next(model.parameters()).device;p=[];h=[];z=[];sources=[]
     indices=release.selection
     for start in range(0,len(indices),config['microbatch_size']):
@@ -127,10 +131,11 @@ def run(config,resume=False):
     soft,hard=resource.getrlimit(resource.RLIMIT_NOFILE);resource.setrlimit(resource.RLIMIT_NOFILE,(min(hard,65536),hard))
     torch.set_num_threads(config['torch_threads']);torch.backends.cuda.matmul.allow_tf32=False;torch.backends.cudnn.allow_tf32=False
     device=torch.device('cuda:0');torch.manual_seed(config['seed']);np.random.seed(config['seed'])
-    release=Release(resolve_path(config['release']));model=StructuralModel(config['architecture']).to(device)
+    release=Release(resolve_path(config['release']),materials=config['materials']);model=StructuralModel(config['architecture'],history=config['history_frames']>1).to(device)
     objective=Objective(release.manifest['normalization'],config['method']).to(device)
     optimizer=torch.optim.AdamW(model.parameters(),lr=config['learning_rate'],weight_decay=1e-4)
-    identity=dict(protocol='structural_neighbors_v1',data=release.manifest['identity'],implementation=implementation(),
+    identity=dict(protocol='structural_neighbors_v2',architecture_revision=ARCHITECTURE_REVISION,
+        data=release.manifest['identity'],implementation=implementation(),
         config={k:v for k,v in config.items() if k not in ('output','deadline_utc')})
     if (technical/'identity.json').exists() and json.loads((technical/'identity.json').read_text())!=identity:
         raise ValueError('Existing output belongs to a different scientific identity')
@@ -183,6 +188,9 @@ def run(config,resume=False):
 def main():
     p=argparse.ArgumentParser();p.add_argument('--config',required=True);p.add_argument('--resume',action='store_true')
     args=p.parse_args();config=json.loads(Path(args.config).read_text())
+    if 'materials' not in config or 'head_calibration_rows' not in config:
+        raise ValueError('Current structural heads require explicit materials and head_calibration_rows; '
+            'use the active shared_pretraining/al_stable recipes. Historical exact resumes require their frozen source.')
     if config['batch_size']%config['microbatch_size'] or config['batch_size']<2:
         raise ValueError('Full batch must be divisible by positive microbatch')
     if config['architecture']=='mace' and config['history_frames']!=1:raise ValueError('Requested MACE run is snapshot-only')

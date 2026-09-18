@@ -65,4 +65,4 @@ operational diagnostics, not independent research observations. Peak VRAM
 varies with observation size; a 40 GiB allocator budget bounds cached memory.
 
 
-Table export: 2026-09-17T23:26:05.155823+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.
+Table export: 2026-09-18T02:34:56.214658+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.

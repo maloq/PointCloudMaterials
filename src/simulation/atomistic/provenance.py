@@ -333,8 +333,8 @@ def _runtime_provenance(calculator: CalculatorProvenance) -> dict[str, object]:
         if bool(calculator.settings["enable_cueq"]):
             result["cuequivariance"] = version("cuequivariance")
             result["cuequivariance_torch"] = version("cuequivariance-torch")
-            result["cuequivariance_ops_torch_cu12"] = version(
-                "cuequivariance-ops-torch-cu12"
+            result["cuequivariance_ops_torch_cu13"] = version(
+                "cuequivariance-ops-torch-cu13"
             )
         if bool(calculator.settings["enable_oeq"]):
             result["openequivariance"] = version("openequivariance")
@@ -728,11 +728,17 @@ def validate_configured_source_manifest(
         "cudnn",
     }
     if config.potential.enable_cueq:
+        # Validate the source's recorded runtime, not this reader's environment.
+        # Existing CUDA 12 trajectories retain their immutable provenance.
+        source_cuda = runtime.get("torch_cuda")
+        if not isinstance(source_cuda, str) or source_cuda.split(".")[0] not in {"12", "13"}:
+            raise RuntimeError(f"{manifest_path}: invalid cuEquivariance source torch_cuda={source_cuda!r}")
+        source_cuda_major = source_cuda.split(".")[0]
         required_runtime_fields.update(
             {
                 "cuequivariance",
                 "cuequivariance_torch",
-                "cuequivariance_ops_torch_cu12",
+                f"cuequivariance_ops_torch_cu{source_cuda_major}",
             }
         )
     if config.potential.enable_oeq:

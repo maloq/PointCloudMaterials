@@ -1,5 +1,12 @@
 # H200 task: shared pretraining with batch size 1,024
 
+**On hold, September 18:** the local batch-512 parent recipe suffered optimization
+failure and collapse. Do not launch or resume this batch-1,024 replication before
+the training recipe is corrected and checked. See the
+[checkpoint and loss diagnosis](../output/shared_pretraining/diagnosis-20260918/RESULTS.md).
+The archive and instructions below preserve the original proposal; no H200
+failure is inferred without that server's artifacts.
+
 Run the following on **one H200**, independently of the local batch-512 campaign.
 Use the supplied source archive and nine configs in
 [`configs/shared_pretraining/h200_batch1024/`](../configs/shared_pretraining/h200_batch1024/).

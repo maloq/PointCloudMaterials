@@ -1,0 +1,13 @@
+metric,value
+mace.Original objective.vicreg_last16_mean,16.761070251464844
+mace.Original objective.selection_score,0.3490659110248089
+mace.Original objective.state_std,0.0969262584294151
+mace.Correlation auxiliary.vicreg_last16_mean,17.945125579833984
+mace.Correlation auxiliary.selection_score,0.35246938467025757
+mace.Correlation auxiliary.state_std,0.11009382211616538
+gatr.Original objective.vicreg_last16_mean,24.74999725818634
+gatr.Original objective.selection_score,0.4051995687186718
+gatr.Original objective.state_std,2.0514372132887226e-05
+gatr.Correlation auxiliary.vicreg_last16_mean,18.701391339302063
+gatr.Correlation auxiliary.selection_score,0.4038736931979656
+gatr.Correlation auxiliary.state_std,0.008870388640731811

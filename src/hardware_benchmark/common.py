@@ -34,7 +34,7 @@ def command_info(command):
 def metadata():
     packages = {}
     for name in ("numpy", "torch", "lammps", "mace-torch", "e3nn", "cuequivariance",
-                 "cuequivariance-torch", "cuequivariance-ops-torch-cu12", "opt-einsum"):
+                 "cuequivariance-torch", "cuequivariance-ops-torch-cu13", "opt-einsum"):
         try:
             packages[name] = importlib.metadata.version(name)
         except importlib.metadata.PackageNotFoundError:

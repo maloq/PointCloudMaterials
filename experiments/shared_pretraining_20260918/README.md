@@ -1,5 +1,11 @@
 # Twelve-epoch shared structural and causal pretraining
 
+**Outcome, September 18:** the batch-512 campaign failed its intended learning
+objectives. The [failure diagnosis](../../output/shared_pretraining/diagnosis-20260918/RESULTS.md)
+documents unstable updates, saturated heads, GATr collapse, the unsafe causal-head
+initialization and information retained by some early checkpoints. Further runs
+of this recipe, including batch 1,024, are on hold pending short controlled checks.
+
 September 18, 2026. This supersedes the short-budget launch as the main training
 campaign; the [pilots](../structural_pretraining_20260917/README.md) remain separate.
 The user approved fresh initialization for three structural variants followed
@@ -114,6 +120,24 @@ fine-tuning is a later stage outside this submitted matrix.
 
 ## Validation and reproduction
 
+### Corrected VICReg restart
+
+The [second loss/rotation audit](../../output/shared_pretraining/restart-diagnosis-20260918/RESULTS.md)
+finds retained structural information, weak trained readouts and precision-dependent
+rotation errors. See the [mixed-precision architecture proposal](MIXED_PRECISION_PROPOSAL.md)
+for the next controlled comparison and candidate efficiency improvements.
+
+Fresh MACE and GATr VICReg runs retain the same broad data, physical/TDA targets,
+one seed and 12-epoch exposure, with batch 1,024 and corrected peak LR 0.002.
+BF16 mixed precision and normalized scalar readout/head interfaces address the
+failure audit; objective weights and spatial/temporal view definitions remain.
+Both use snapshot inputs. The selection protocol additionally monitors actual
+state/projector/decoder variation and a train-only group-mean baseline. This is
+a repaired recipe with several changes, not an isolated LR or batch-size ablation.
+The separate matched FP32/BF16 timing comparison measures compute speed only.
+See [execution and checks](../../docs/shared_pretraining_restart_20260918.md)
+and [metric definitions](../../docs/metrics/shared_pretraining.md).
+
 ### H200 batch-size comparison
 
 The additional H200 arm doubles encoder-training batches to **1,024** for all
@@ -139,3 +163,54 @@ uneven-chunk gradient equivalence and exact optimizer/schedule/SIGReg resume.
 Real-data integration covers both stages, online W&B, selection, checkpoint
 export and the frozen-analysis pipeline. See [execution and continuation](../../docs/shared_pretraining_20260918.md)
 for the concrete recipes, allocation receipts and launch state.
+# Geometry-protected capacity update
+
+The [2× snapshot architecture implementation](../../docs/shared_pretraining_geometry_fp32_2x.md)
+and [validation results](../../output/shared_pretraining/geometry-fp32-2x-20260918/RESULTS.md)
+cover enlarged MACE/GATr, selective precision, real-observation rotation checks
+and runtime measurements. They establish implementation correctness, not improved
+trained prediction. The prepared v4 fits have not been submitted.
+
+The September 18 VICReg-plateau investigation, controlled repair pilots and kernel validation are recorded in [the repair report](../../output/shared_pretraining/vicreg-repair-20260918/RESULTS.md). New training retains the physical/TDA anchors and tests an additional physical-correlation anchor; changes in training loss do not establish downstream improvement.
+
+The [Al-only stability diagnosis](../../output/shared_pretraining/stability-20260918/RESULTS.md)
+separates compiler failure, poorly conditioned readouts, and stale normalization
+statistics. Its validation remains source-held-out native Al; results are not
+claims of other-material or future-prediction improvement.
+
+## Broad full-TDA continuation
+
+The follow-up asks whether the Al-trained GATr can adapt to Al/Mg/Ti/Ta/Zr
+while retaining native Al information. It doubles shooting anchors to 75,000,
+retains all other parent samples, supplies instantaneous TDA to every supervised
+view, and fits three epochs from the validated Al checkpoint. These changes
+are bundled; this experiment cannot isolate data quantity from material coverage
+or label density. Step-zero and later selection use identical new normalization
+and the same 15 held-out Al sources. Other-metal held-out performance remains
+unmeasured. The [recipe](../../configs/shared_pretraining/broad_full_tda/campaign.json)
+and [metric definitions](../../docs/metrics/shared_pretraining.md#broad-full-tda-structural-continuation)
+specify the comparison.
+
+## Dynamic-only mixed-material GATr
+
+The next fit tests whether a shared snapshot representation can retain physical
+and instantaneous-TDA information across Al/Mg/Ti/Ta while penalizing temporal
+backtracking. It fixes the broad continuation's pooled evaluation-moment mismatch
+using domain-specific head moments consistently in training and evaluation.
+VICReg remains within-domain even though computational batches mix materials.
+Static inputs are removed. Previous/current/next snapshots share encoder weights
+and receive a small time-corrected second-difference penalty, leaving deployment
+snapshot-based. The run starts from scratch for twelve epoch equivalents at batch
+2,048. See [recipe and limitations](../../docs/shared_pretraining_mixed_triplets_20260918.md).
+
+These bundled changes are not an isolated ablation of temporal curvature.
+Selection remains fifteen native-Al sources; per-material training losses alone
+cannot establish cross-material generalization or improved future prediction.
+
+The mixed-material fit transitions at update 250 to temporal-only curvature,
+with a fixed coefficient calibrated against scalar loss and encoder-gradient
+norms on training batches. Spatial pairs return to two encoder views. This
+preserves the total twelve-epoch exposure budget and optimization state, but
+changes the training objective partway through the fit; it is not a matched
+from-scratch curvature ablation. The original checkpoint and curves remain
+separate. See [coefficient selection and transition](../../docs/shared_pretraining_temporal_backtracking_20260918.md).

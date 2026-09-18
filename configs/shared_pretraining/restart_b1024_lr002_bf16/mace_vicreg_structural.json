@@ -1,0 +1,33 @@
+{
+  "output": "output/shared_pretraining/mace-vicreg-b1024-lr002-bf16-20260918",
+  "release": "${storage:cache}/structural_pretraining/broad-250k-v2-20260917",
+  "phase": "structural",
+  "architecture": "mace",
+  "method": "vicreg",
+  "history_frames": 1,
+  "seed": 20260919,
+  "epochs": 12,
+  "batch_size": 1024,
+  "microbatch_size": 176,
+  "memory_limit_GiB": 40,
+  "schedule": {
+    "peak": 0.002,
+    "warmup_fraction": 0.1,
+    "minimum_ratio": 0.01
+  },
+  "log_every": 10,
+  "checkpoint_every": 16,
+  "validate_every": 64,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "mace-vicreg-b1024-lr002-bf16-20260918",
+    "id": "mace-v3-1024-bf16-0918",
+    "group": "shared-vicreg-restart-b1024-lr002-bf16-20260918"
+  },
+  "precision": "bf16",
+  "health": {
+    "minimum_std": 1e-06,
+    "baseline_after_updates": 640
+  }
+}

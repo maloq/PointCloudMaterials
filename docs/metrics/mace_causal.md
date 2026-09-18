@@ -143,3 +143,7 @@ FP32 is retained. Normalized labels can reside on device but never enter the enc
 Constant-history diagnostics reuse the one identical branch output in a batch;
 there is no stochastic or batch-dependent encoder layer. `--probe-modes` explicitly
 selects diagnostics, with all four modes remaining the default.
+
+Environment update (2026-09-18): new GPU runs record the CUDA 13 cuEquivariance
+package with PyTorch 2.14. Metric calculations are unchanged; historical exports
+retain their original environment and implementation hashes.

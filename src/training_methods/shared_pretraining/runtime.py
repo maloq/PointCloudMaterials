@@ -16,13 +16,19 @@ import torch
 from torch import nn
 from src.data.structural_pretraining.batches import Release,collate,move
 from src.data.structural_pretraining.prepare import save_json,file_hash,digest
-from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS
+from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS,normalized_readout,ARCHITECTURE_REVISION
 from src.project_runtime.paths import resolve_path
 from src.training_methods.structural_pretraining.objective import Objective,PHYSICAL_BLOCKS,TDA_BLOCKS,block_errors
 from src.training_methods.structural_pretraining.train import implementation,selection_rows,prepare_batch,target_batch
-from src.training_methods.shared.mace_logging import flatten_metrics
 from src.experiment_runner.metric_docs import write_metric_table
 from .data import CausalRelease
+from .health import spread,training_means,check_learning,check_regression
+from .compilation import compile_encoder,compilation_counters
+from .normalization import calibrate_heads
+from .initialization import initialize_structural,require_complete_tda,continue_mixed_objective
+from .tracking import Dashboard
+from . import mixed as mixed_training
+from src.models.encoders.mixed_gatr import MixedSnapshotGATr,MIXED_ARCHITECTURE_REVISION
 
 
 def configure():
@@ -48,15 +54,26 @@ def update_budget(config,train_rows):
     return batches
 
 
+def make_optimizer(model,peak,encoder_lr_multiplier):
+    if not 0<encoder_lr_multiplier<=1:
+        raise ValueError('Encoder LR multiplier must be in (0,1]')
+    encoder=list(model.encoder.parameters());owned={id(p) for p in encoder}
+    heads=[p for p in model.parameters() if id(p) not in owned]
+    return torch.optim.AdamW([
+        dict(params=encoder,lr=peak*encoder_lr_multiplier,lr_scale=encoder_lr_multiplier),
+        dict(params=heads,lr=peak,lr_scale=1.)],weight_decay=1e-4)
+
+
 class CausalModel(StructuralModel):
-    def __init__(self,architecture,backend='cueq'):
-        super().__init__(architecture,backend)
-        self.future=nn.Sequential(nn.Linear(128,256),nn.SiLU(),nn.Linear(256,3*229))
+    def __init__(self,architecture,backend='cueq',history=False):
+        super().__init__(architecture,backend,history=history)
+        self.future=normalized_readout(128,256,3*229)
+        nn.init.zeros_(self.future[-1].weight);nn.init.zeros_(self.future[-1].bias)
 
 
 class CausalObjective(Objective):
-    def __init__(self,manifest,method):
-        super().__init__(manifest['normalization'],method)
+    def __init__(self,manifest,method,physical_correlation_weight=0.):
+        super().__init__(manifest['normalization'],method,physical_correlation_weight)
         self.register_buffer('future_mean',torch.tensor(manifest['forecast_normalization']['mean'],dtype=torch.float32))
         self.register_buffer('future_std',torch.tensor(manifest['forecast_normalization']['std'],dtype=torch.float32))
 
@@ -77,23 +94,27 @@ class CausalObjective(Objective):
         return loss,terms
 
 
-def cached_update(model,objective,batches,optimizer,temporal,delta,extra=None):
+def cached_update(model,objective,batches,optimizer,temporal,delta,extra=None,precision='float32'):
     device=next(model.parameters()).device;optimizer.zero_grad(set_to_none=True)
     resident=[move(b,device) for b in batches];states=[];rngs=[]
     with torch.no_grad():
         for batch in resident:
             rngs.append((torch.get_rng_state(),torch.cuda.get_rng_state(device) if device.type=='cuda' else None))
-            states.append(model.encoder(batch))
+            with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
+                states.append(model.encoder(batch).float())
     z=torch.cat(states).detach().requires_grad_(True);target=target_batch(resident,device)
     if extra is not None:target.update({k:torch.as_tensor(v,device=device) for k,v in extra.items()})
-    loss,terms=objective(model,z,target,temporal,torch.as_tensor(delta,dtype=z.dtype,device=device))
+    with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
+        loss,terms=objective(model,z,target,temporal,torch.as_tensor(delta,dtype=z.dtype,device=device))
     if not torch.isfinite(loss):raise FloatingPointError(f'Nonfinite shared loss: {terms}')
     loss.backward();derivative=z.grad.detach();offset=0
     for batch,(cpu,cuda) in zip(resident,rngs,strict=True):
         with torch.random.fork_rng(devices=[device.index] if device.type=='cuda' else []):
             torch.set_rng_state(cpu)
             if cuda is not None:torch.cuda.set_rng_state(cuda,device)
-            current=model.encoder(batch);current.backward(derivative[offset:offset+len(current)]);offset+=len(current)
+            with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
+                current=model.encoder(batch).float()
+            current.backward(derivative[offset:offset+len(current)]);offset+=len(current)
     norm=torch.nn.utils.clip_grad_norm_(model.parameters(),5.,error_if_nonfinite=True);optimizer.step()
     return {k:float(v.detach()) for k,v in terms.items()}|dict(gradient_norm=float(norm))
 
@@ -109,20 +130,37 @@ def selected_rows(release,seed):
 
 
 @torch.no_grad()
-def evaluate(model,objective,release,config):
-    model.eval();p=[];h=[];states=[];fp=[];fh=[];sources=[]
+def evaluate(model,objective,release,config,means=None):
+    model.eval();p=[];h=[];states=[];fp=[];fh=[];sources=[];bp=[];bh=[]
+    predictions={name:[] for name in ('q','physical','tda')}
     ids=selected_rows(release,config['seed']);device=next(model.parameters()).device
     micro=min(config['microbatch_size'],64)
     for start in range(0,len(ids),micro):
         indices=ids[start:start+micro]
         samples=[release.observation(i,'anchor',config['history_frames']==3,config['architecture']=='mace') for i in indices]
-        batch=move(collate(samples,config['architecture']),device);z=model.encoder(batch)
-        pe,he=objective.physical_errors(model.heads(z),batch)
+        batch=move(collate(samples,config['architecture']),device)
+        with torch.autocast(device.type,dtype=torch.bfloat16,enabled=config['precision']=='bf16'):
+            z=model.encoder(batch).float()
+            if config.get('batch_mode')=='mixed_triplets':
+                domains=torch.as_tensor(mixed_training.group_ids(release,indices),device=device)
+                heads={k:v.float() for k,v in model.heads(z,domains).items()}
+            else:heads={k:v.float() for k,v in model.heads(z).items()}
+        pe,he=objective.physical_errors(heads,batch)
+        for name in predictions:predictions[name].append(heads[name].cpu().numpy())
+        if means is not None:
+            keys=[(release.rows[i][2]['material'],release.rows[i][2]['potential'],release.rows[i][2]['static']) for i in indices]
+            baseline={name:torch.as_tensor(np.stack([means[k][name] for k in keys]),device=device,dtype=z.dtype)
+                for name in ('physical','tda')}
+            baseline={name:(values-getattr(objective,f'{name}_mean'))/getattr(objective,f'{name}_std')
+                for name,values in baseline.items()}
+            a,b=objective.physical_errors(baseline,batch);bp.append(a.cpu().numpy());bh.append(b.cpu().numpy())
         if not batch['tda_valid'].all():raise ValueError('Selection requires complete instantaneous TDA')
         p.append(pe.cpu().numpy());h.append(he.cpu().numpy());states.append(z.cpu().numpy())
         if config['phase']=='causal':
             f=release.futures(indices);raw=torch.as_tensor(np.concatenate((f['future_physical'],f['future_tda']),-1),device=device)
-            a,b=objective.future_errors(model.future(z).reshape(-1,3,229),raw);fp.append(a.cpu().numpy());fh.append(b.cpu().numpy())
+            with torch.autocast(device.type,dtype=torch.bfloat16,enabled=config['precision']=='bf16'):
+                prediction=model.future(z).float().reshape(-1,3,229)
+            a,b=objective.future_errors(prediction,raw);fp.append(a.cpu().numpy());fh.append(b.cpu().numpy())
         sources.extend(release.rows[i][2]['source'] for i in indices)
     sources=np.array(sources)
     def balanced(parts):
@@ -130,8 +168,15 @@ def evaluate(model,objective,release,config):
     pv,hv=balanced(p),balanced(h)
     metrics=dict(physical=float(pv.mean()),instantaneous_tda=float(hv.mean()),physical_blocks=dict(zip(PHYSICAL_BLOCKS,map(float,pv))),
         tda_blocks=dict(zip(TDA_BLOCKS,map(float,hv))),selection_sources=len(np.unique(sources)),selection_rows=len(ids),
-        state_std_mean=float(np.concatenate(states).std(0).mean()))
+        state_std_mean=spread(np.concatenate(states)),projector_std_mean=spread(np.concatenate(predictions['q'])),
+        physical_prediction_std_mean=spread(np.concatenate(predictions['physical'])),
+        tda_prediction_std_mean=spread(np.concatenate(predictions['tda'])))
     metrics['score']=metrics['physical']+.25*metrics['instantaneous_tda']
+    metrics['present_score']=metrics['score']
+    if bp:
+        a,b=balanced(bp),balanced(bh)
+        metrics['training_mean_score']=float(a.mean()+.25*b.mean())
+        metrics['gain_over_training_mean']=metrics['training_mean_score']-metrics['present_score']
     if fp:
         a,b=balanced(fp),balanced(fh);metrics['future']={str(lag):dict(physical=float(a[k].mean()),tda=float(b[k].mean())) for k,lag in enumerate([.75,3.,9.])}
         metrics['score']+=float(a.mean()+.25*b.mean())
@@ -146,10 +191,19 @@ def atomic_checkpoint(path,model,objective,optimizer,step,best,identity,total):
         torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state_all()),temp);temp.replace(path)
 
 
-def identity_for(config,release,replay,parent):
-    code=implementation();code['files'].update({p:file_hash(p) for p in [__file__,'src/training_methods/shared_pretraining/data.py']})
-    return dict(protocol='shared_pretraining_v2',data=release.manifest['identity'],replay=None if replay is None else replay.manifest['identity'],
+def identity_for(config,release,replay,parent,continuation=None):
+    code=implementation();code['files'].update({p:file_hash(p) for p in [__file__,'src/training_methods/shared_pretraining/data.py',
+        'src/training_methods/shared_pretraining/health.py','src/training_methods/shared_pretraining/compilation.py',
+        'src/training_methods/shared_pretraining/normalization.py',
+        'src/training_methods/shared_pretraining/initialization.py',
+        'src/training_methods/shared_pretraining/tracking.py',
+        'src/training_methods/shared_pretraining/mixed.py','src/models/encoders/mixed_gatr.py']})
+    mixed=config.get('batch_mode')=='mixed_triplets'
+    return dict(protocol='shared_pretraining_mixed_v8' if mixed else 'shared_pretraining_v6',
+        architecture_revision=MIXED_ARCHITECTURE_REVISION if mixed else ARCHITECTURE_REVISION,
+        data=release.manifest['identity'],replay=None if replay is None else replay.manifest['identity'],
         implementation=code,parent_checkpoint_sha256=None if parent is None else file_hash(parent),
+        continuation_checkpoint_sha256=None if continuation is None else file_hash(continuation),
         config={k:v for k,v in config.items() if k not in ('output','microbatch_size','wandb')})
 
 
@@ -169,83 +223,142 @@ def execute(config,deadline,root,technical):
         value=dict(state=state,step=step,updated_at=datetime.now(timezone.utc).isoformat(),pid=os.getpid(),allocation=os.environ.get('SLURM_JOB_ID'),**extra)
         save_json(technical/'status.json',value);print(json.dumps(value),flush=True)
     try:
+        if config['precision'] not in ('float32','bf16'):raise ValueError('Precision must be float32 or bf16')
+        if config['precision']=='bf16' and not torch.cuda.is_bf16_supported():raise RuntimeError('Selected GPU does not support BF16')
         torch.cuda.set_per_process_memory_fraction(config['memory_limit_GiB']*2**30/torch.cuda.get_device_properties(0).total_memory)
         torch.manual_seed(config['seed']);np.random.seed(config['seed'])
         causal=config['phase']=='causal'
-        release=(CausalRelease if causal else Release)(resolve_path(config['release']))
-        replay=Release(resolve_path(config['replay_release'])) if causal else None
-        parent=resolve_path(config['parent']) if causal else None
+        mixed=config.get('batch_mode')=='mixed_triplets'
+        if mixed and (causal or config['architecture']!='gatr' or config['history_frames']!=1 or 'parent' in config):
+            raise ValueError('Mixed triplet run requires structural snapshot GATr; use continue_from for an objective transition')
+        if 'continue_from' in config and not mixed:raise ValueError('Objective continuation is defined only for mixed GATr')
+        release=(CausalRelease(resolve_path(config['release'])) if causal else
+                 Release(resolve_path(config['release']),materials=config['materials'],dynamic_only=mixed))
+        if config.get('require_full_tda',False):require_complete_tda(release)
+        replay=Release(resolve_path(config['replay_release']),materials=config['materials']) if causal else None
+        means=training_means(replay if causal else release)
+        parent=resolve_path(config['parent']) if 'parent' in config else None
+        continuation=resolve_path(config['continue_from']) if 'continue_from' in config else None
         if causal:
             parent_status=json.loads((parent.parent/'status.json').read_text())
             if parent_status['state']!='complete':raise ValueError('Causal initialization requires a completed structural fit')
-        identity=identity_for(config,release,replay,parent)
+        identity=identity_for(config,release,replay,parent,continuation)
         if (technical/'identity.json').exists() and json.loads((technical/'identity.json').read_text())!=identity:
             raise ValueError('Changed scientific identity; use a new run')
         save_json(technical/'identity.json',identity)
         if (technical/'status.json').exists() and json.loads((technical/'status.json').read_text())['state']=='complete':return True
-        model=(CausalModel if causal else StructuralModel)(config['architecture']).cuda()
-        objective=(CausalObjective(release.manifest,config['method']) if causal else Objective(release.manifest['normalization'],config['method'])).cuda()
+        if mixed:
+            model=MixedSnapshotGATr(release.group_keys).cuda()
+            objective=mixed_training.MixedObjective(release.manifest['normalization'],release.group_keys,
+                config['physical_correlation_weight'],config['backtracking_weight']).cuda()
+            save_json(technical/'sampling.json',dict(group_keys=[list(k) for k in release.group_keys],
+                group_counts=mixed_training.quotas(release.group_weights,config['batch_size'],config['minimum_group_size']).tolist(),
+                train_rows=[len(release.groups[k]) for k in release.group_keys],dynamic_only=True,
+                curvature_frame_slots=[1,2,3],backtracking_updates='temporal_only',
+                snapshot_views=dict(temporal=3,spatial=2),supervised_views=['anchor','spatial_or_future']))
+        else:
+            model=(CausalModel if causal else StructuralModel)(config['architecture'],history=config['history_frames']>1).cuda()
+            objective=(CausalObjective(release.manifest,config['method'],config['physical_correlation_weight']) if causal else
+                Objective(release.manifest['normalization'],config['method'],config['physical_correlation_weight'])).cuda()
         if causal:
             saved=torch.load(parent,map_location='cpu',weights_only=False)
             missing,unexpected=model.load_state_dict(saved['model'],strict=False)
             if unexpected or set(missing)!={f'future.{k}' for k in model.future.state_dict()}:raise ValueError('Parent encoder/head schema differs')
             if saved['identity']['data']!=replay.manifest['identity']:raise ValueError('Causal replay differs from structural parent data')
-        optimizer=torch.optim.AdamW(model.parameters(),lr=config['schedule']['peak'],weight_decay=1e-4)
+        elif parent is not None:
+            saved=torch.load(parent,map_location='cpu',weights_only=False)
+            parent_release=resolve_path(saved['identity']['config']['release'])
+            parent_manifest=json.loads((parent_release/'manifest.json').read_text())
+            if parent_manifest['scales']!=release.manifest['scales']:
+                raise ValueError('Structural continuation changed fixed material coordinate scales')
+            transfer=initialize_structural(model,objective,saved,config)
+            save_json(technical/'initialization.json',dict(parent_sha256=file_hash(parent),**transfer))
+        optimizer=make_optimizer(model,config['schedule']['peak'],config['encoder_lr_multiplier'])
         train_rows=sum(map(len,release.groups.values()));total=update_budget(config,train_rows);best=float('inf')
-        if (technical/'last.pt').exists():
+        resuming=(technical/'last.pt').exists()
+        if resuming:
             saved=torch.load(technical/'last.pt',map_location='cuda:0',weights_only=False)
             if saved['identity']!=identity:raise ValueError('Exact resume identity mismatch')
             model.load_state_dict(saved['model']);objective.load_state_dict(saved['objective']);optimizer.load_state_dict(saved['optimizer'])
             step=saved['step'];best=saved['best'];torch.set_rng_state(saved['torch_rng'].cpu());torch.cuda.set_rng_state_all([v.cpu() for v in saved['cuda_rng']])
             if saved['scheduler']['next_update']!=step+1 or saved['scheduler']['total_updates']!=total:raise ValueError('Scheduler/checkpoint step mismatch')
+        elif continuation is not None:
+            saved=torch.load(continuation,map_location='cpu',weights_only=False)
+            transfer=continue_mixed_objective(model,objective,optimizer,saved,identity,total)
+            step=saved['step']
+            save_json(technical/'initialization.json',dict(parent_sha256=file_hash(continuation),**transfer))
+        if config['compile_encoder']:
+            sample=release.observation(release.groups[release.group_keys[0]][0],
+                'anchor',config['history_frames']>1,config['architecture']=='mace')
+            compile_encoder(model.encoder,move(collate([sample],config['architecture']),'cuda'),config['precision'])
         import wandb
         settings=config['wandb']
         tracking=wandb.init(entity=settings['entity'],project=settings['project'],id=settings['id'],name=settings['name'],group=settings['group'],
             resume='allow',mode='online',dir=str(technical),config=identity['config'],save_code=False,settings=wandb.Settings(init_timeout=60))
         if tracking.offline:raise RuntimeError('Online W&B logging is required')
-        tracking.define_metric('training_step');tracking.define_metric('train/*',step_metric='training_step');tracking.define_metric('selection/*',step_metric='training_step')
+        dashboard=Dashboard(tracking)
         save_json(technical/'wandb_run.json',dict(id=tracking.id,url=tracking.url,entity=tracking.entity,project=tracking.project))
         def prepare(k):
+            if mixed:return mixed_training.prepare(release,k,config)
             is_replay=causal and k%4==3
             chosen=replay if is_replay else release
             cfg=config if not causal or is_replay else dict(config,method='lejepa')
             indices,temporal,delta,group=selection_rows(chosen,k,cfg)
             packed,*_=prepare_batch(chosen,indices,temporal,delta,config)
             return packed,temporal,delta,indices,group,is_replay,None if not causal or is_replay else release.futures(indices)
+        best_present=float('inf')
+        present_scores=[]
+        if (technical/'validation.jsonl').exists():
+            present_scores=[json.loads(line)['present_score'] for line in (technical/'validation.jsonl').read_text().splitlines()]
+            best_present=min(present_scores)
         def save_selection():
-            nonlocal best
-            metrics,predictions=evaluate(model,objective,release,config)
+            nonlocal best,best_present
+            calibration=(mixed_training.calibrate(model,release,config) if mixed else
+                         calibrate_heads(model,replay if causal else release,config))
+            save_json(technical/'head_calibration.json',dict(step=step,**calibration))
+            metrics,predictions=evaluate(model,objective,release,config,means)
+            best_present=min(best_present,metrics['present_score'])
+            present_scores.append(metrics['present_score'])
             with (technical/'validation.jsonl').open('a') as stream:stream.write(json.dumps(dict(step=step,**metrics))+'\n')
             write_metric_table(dict(step=step,**metrics),root,family='shared_pretraining',name='selection')
-            tracking.log(dict(training_step=step,**flatten_metrics('selection',metrics)))
+            native_updates=step-step//4 if causal else step
+            dashboard.validation(step,native_updates*config['batch_size']/train_rows,metrics)
             if metrics['score']<best:
                 best=metrics['score'];atomic_checkpoint(technical/'best.pt',model,objective,optimizer,step,best,identity,total)
                 np.savez(technical/'selection_predictions.npz',**predictions)
                 torch.save(dict(architecture=config['architecture'],input_frames=config['history_frames'],atomic_numbers=ATOMIC_NUMBERS,
                     scales=release.manifest['scales'],state_dim=128,encoder=model.encoder.state_dict(),identity=identity,step=step),technical/'encoder.pt')
+            check_learning(metrics,metrics['training_mean_score'],best_present,step,config['health'])
+            check_regression(present_scores,metrics['training_mean_score'],step,config['health'])
         status('running',total_updates=total,train_rows=train_rows,device=torch.cuda.get_device_name(),microbatch=config['microbatch_size'],wandb=tracking.url)
         started=time.monotonic();last_validation=-1
+        if not resuming and config.get('evaluate_initial',False):
+            save_selection();last_validation=step
         with ThreadPoolExecutor(max_workers=1) as pool:
             future=pool.submit(prepare,step)
             while step<total and not stop and time.time()<deadline-180:
                 wait=time.monotonic();batches,temporal,delta,indices,group,is_replay,extra=future.result();wait=time.monotonic()-wait
                 if step+1<total:future=pool.submit(prepare,step+1)
                 rate=learning_rate(step+1,total,**config['schedule'])
-                for param in optimizer.param_groups:param['lr']=rate
+                for param in optimizer.param_groups:param['lr']=rate*param['lr_scale']
                 torch.cuda.reset_peak_memory_stats();tick=time.monotonic()
-                terms=cached_update(model,objective,batches,optimizer,temporal,delta,extra);step+=1
+                terms=cached_update(model,objective,batches,optimizer,temporal,delta,extra,config['precision']);step+=1
                 native_batches=step-step//4 if causal else step
                 row=dict(step=step,epoch_equivalent=native_batches*config['batch_size']/train_rows,group=list(group),temporal=temporal,replay=is_replay,
-                    lr=rate,seconds=time.monotonic()-tick,input_wait_seconds=wait,peak_allocated_GiB=torch.cuda.max_memory_allocated()/2**30,
+                    lr=rate,encoder_lr=rate*config['encoder_lr_multiplier'],seconds=time.monotonic()-tick,input_wait_seconds=wait,peak_allocated_GiB=torch.cuda.max_memory_allocated()/2**30,
                     peak_reserved_GiB=torch.cuda.max_memory_reserved()/2**30,indices=indices,**terms)
                 with (technical/'updates.jsonl').open('a') as stream:stream.write(json.dumps(row)+'\n')
+                dashboard.record(row)
                 if step%config['log_every']==0 or step==1:
-                    tracking.log(dict(training_step=step,**{f'train/{k}':v for k,v in row.items() if k not in ('indices','group','step')}))
+                    dashboard.flush()
                 if step%config['checkpoint_every']==0 or step==1:
                     atomic_checkpoint(technical/'last.pt',model,objective,optimizer,step,best,identity,total)
+                    if config['compile_encoder']:save_json(technical/'compilation.json',compilation_counters())
                     status('running',total_updates=total,**{k:v for k,v in row.items() if k not in ('step','indices','group')})
                 if step%config['validate_every']==0 or step==total:
+                    dashboard.flush()
                     save_selection();last_validation=step
+        dashboard.flush()
         atomic_checkpoint(technical/'last.pt',model,objective,optimizer,step,best,identity,total)
         # Export a validated candidate even if an allocation ends before the first interval.
         if step>0 and last_validation!=step and time.time()<deadline-90:save_selection()

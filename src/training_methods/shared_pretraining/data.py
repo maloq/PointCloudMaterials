@@ -122,8 +122,8 @@ def prepare(config,workers):
 class CausalRelease(Release):
     def __init__(self,root):
         super().__init__(root)
-        # The structural loader has only train/selection; rebuild explicit
-        # four-way roles before any causal sampler can see these records.
+        # The base loader never puts held-out roles in training groups;
+        # retain the explicit four-way index required by causal evaluation.
         self.groups=defaultdict(list);self.splits={s:[] for s in ['train','selection','calibration','test']}
         for i,(_,_,r) in enumerate(self.rows):
             split=r['task']['split'];self.splits[split].append(i)

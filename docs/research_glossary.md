@@ -67,6 +67,45 @@ means nearby in time, whereas spatial neighbor means nearby in space. In the
 velocity protocol, the two observations are encoded independently and compared
 in a training loss; they are not jointly fed into a history encoder.
 
+In the September 18 Al-only structural VICReg runs, a temporal pair uses the
+same atom at saved frame `k` and the next saved frame `k+1`. Each observation
+rebuilds its radius neighborhood and centers coordinates on that atom, with
+periodic minimum-image displacements for dynamics. Both encoders use one
+snapshot per forward pass (`history_frames=1`). The two projected outputs are
+matched by VICReg; this is not a next-state forecasting objective. Physical/TDA
+heads reconstruct each endpoint's own targets. The stored time difference is
+derived from simulation steps and timestep, but VICReg does not condition on or
+reweight by it. In the frozen `broad-250k-v2-20260917` Al training subset, the gaps
+are 0.75 ps for native sources, 0.1 ps for the million-atom MEAM/EAM sources, and
+0.03, 0.099, 0.102 or 0.3 ps for shooting sources. These are consecutive saved
+frames, not a common physical lag.
+
+### Spatial pair and static views in structural pretraining
+
+A spatial pair consists of two different atom-centered neighborhoods from the
+same configuration. The producer samples a partner uniformly among other atoms
+within one quarter of the observation radius, then constructs a full,
+separately centered neighborhood around each atom. In the frozen Al release,
+the physical observation radius is approximately 16.869 angstrom and the maximum
+center separation is 4.217 angstrom. The overlapping crops are rescaled by the
+fixed material scale; outer support weights taper from model radius 15 to 17.
+The partner is not necessarily the nearest atom and is not selected by embedding
+similarity. Static inputs use nonperiodic coordinates and interior anchors;
+dynamic inputs use periodic distances. Each anchor's frame and spatial partner
+are fixed during cache preparation, not redrawn each training epoch.
+
+For the Al-only snapshot VICReg runs, each update chooses one
+material/potential/static group, weighted by its anchor count, and samples
+1,024 anchors without replacement within that update. Dynamic groups choose
+spatial versus temporal pairing with probability one half for the entire batch.
+Static groups always use spatial pairs; they have no temporal successor and a
+request for one raises an error. Both types receive physical supervision and
+instantaneous-TDA supervision where labels exist (a fixed approximately 25% of
+training anchors). This mixes spatial and temporal objectives across updates;
+it does not require every observation to have both kinds of view. See the
+[sampler](../src/training_methods/structural_pretraining/train.py) and
+[view producer](../src/data/structural_pretraining/prepare.py).
+
 ### Observed history and causal input
 
 A sequence ending at the time being described. Causal input uses current and past
@@ -201,6 +240,22 @@ This is not an MD integrator or an energy/force model. The structural
 stage instead uses 85 geometry-only channels: 32 radial, 32 pair-distance,
 16 angular and five count/radial moments. That is a new target contract, not
 the old 128-channel metric with missing velocities filled by zero.
+
+### Representation collapse and decoder saturation in shared pretraining
+
+**Representation collapse** means different observations receive the same
+exported state. In the September 18 diagnosis, the selected causal GATr encoder
+mapped all 38,400 evaluation observations to one identical vector. A collapsed
+projector is distinct: z may still vary while the regularized q becomes constant.
+Use coordinate ranges and float64 variance, since float32 reductions can report
+small nonzero variance even for identical rows.
+
+**Decoder saturation** in this campaign means the physical or topology head's
+SiLU preactivations became strongly negative, producing nearly zero hidden
+responses and gradients. Its output can then become constant while z continues
+to vary. Low next-embedding MSE can also reflect constant representations on
+both sides, rather than successful prediction. See the
+[checkpoint diagnosis and paired learning-rate replay](../output/shared_pretraining/diagnosis-20260918/RESULTS.md).
 
 ### LeJEPA and SIGReg in the structural-pretraining proposal
 

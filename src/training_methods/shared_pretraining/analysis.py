@@ -48,8 +48,8 @@ def fit_ridge(features,target,train,selection,sources,alphas):
 
 
 def fit_nonlinear(features,target,ridge,train,selection,config,deadline):
-    torch.manual_seed(config['seed']);mean=features[train].mean(0);scale=np.maximum(features[train].std(0),1e-6)
-    x=torch.tensor((features-mean)/scale,device='cuda');y=torch.tensor(target,device='cuda');base=torch.tensor(ridge,device='cuda')
+    torch.manual_seed(config['seed']);mean=features[train].mean(0,dtype=np.float64);scale=np.maximum(features[train].std(0,dtype=np.float64),1e-6)
+    x=torch.tensor((features-mean)/scale,device='cuda',dtype=torch.float32);y=torch.tensor(target,device='cuda');base=torch.tensor(ridge,device='cuda')
     net=nn.Sequential(nn.Linear(128,256),nn.SiLU(),nn.Linear(256,256),nn.SiLU(),nn.Linear(256,4*229)).cuda()
     nn.init.zeros_(net[-1].weight);nn.init.zeros_(net[-1].bias)
     optimizer=torch.optim.AdamW(net.parameters(),lr=.02,weight_decay=1e-4)
@@ -77,7 +77,7 @@ def fit_nonlinear(features,target,ridge,train,selection,config,deadline):
 @torch.no_grad()
 def extract(checkpoint,phase,release,config,root,deadline):
     saved=torch.load(checkpoint,map_location='cpu',weights_only=False)
-    cfg=saved['identity']['config'];model=(CausalModel if phase=='causal' else StructuralModel)(cfg['architecture']).cuda()
+    cfg=saved['identity']['config'];model=(CausalModel if phase=='causal' else StructuralModel)(cfg['architecture'],history=cfg['history_frames']>1).cuda()
     model.load_state_dict(saved['model']);model.eval()
     ids_by_source={}
     for i,(_,_,r) in enumerate(release.rows):ids_by_source.setdefault(r['source'],[]).append(i)

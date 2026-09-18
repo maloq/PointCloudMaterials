@@ -126,3 +126,7 @@ the candidate readout MSE from temperature-only readout MSE on paired test rows;
 positive favors the candidate. Report source intervals separately for each
 training seed. Saved coefficients, predictions, intervention scores, input
 artifact hashes and release checksum accompany the exported summary.
+
+Environment update (2026-09-18): new GPU runs record the CUDA 13 cuEquivariance
+package with PyTorch 2.14. Metric calculations are unchanged; historical exports
+retain their original environment and implementation hashes.

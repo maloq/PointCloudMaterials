@@ -1,6 +1,8 @@
 # Maintained commands
 
-Run from the repository root with `conda run -n pointnet python …`.
+Run from the repository root with `conda run -n pointnet-torch214 python …` for new
+GPU work. Exact resumes of existing jobs retain their recorded `pointnet`
+environment; see [the PyTorch upgrade](../docs/pytorch214_upgrade.md).
 Commands contain argument parsing and forwarding only; scientific implementation
 belongs in `src/`. Run-specific settings belong in configuration, not copied runners.
 See [workflow details](../docs/workflows.md), [experiment records](../experiments/README.md)
@@ -44,6 +46,35 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.gatr_equivariant --config configs/analysis/gatr_equivariant.json`
+audits frozen GATr multivector directions on the requested node07/A100. Stages
+`temporal`, `spatial`, `report` support resuming extraction; default `all` also
+runs readout interventions. It exports source-level angular and spatial-order
+metrics and an offline 3D viewer; see the
+[scientific protocol](../experiments/gatr_equivariant_20260918/README.md).
+
+`python -m src.research.trajectory_stability --config configs/analysis/trajectory_stability.json`
+compares the latest selected MACE/GATr states with TDA, SOAP, bond-order, radial
+and angular descriptors on matched, identity-preserving Al trajectories. Stages
+`prepare`, `encode` and `report` support separate CPU/GPU execution. It exports
+source intervals, full trajectories and exact metric definitions; see the
+[scientific protocol](../experiments/trajectory_stability_20260918/README.md).
+
+New geometry-protected 2× snapshot encoders use the prepared recipes in
+`configs/shared_pretraining/geometry_fp32_2x/`; see
+[architecture, precision and validation](../docs/shared_pretraining_geometry_fp32_2x.md).
+These recipes have not been submitted. Reuse the existing `shared_pretraining`
+profiler and runtime; no additional training entry point is needed.
+
+The existing v3 VICReg restart uses its frozen code and the command `python -m src.training_methods.shared_pretraining.queue
+submit --plan configs/shared_pretraining/restart_b1024_lr002_bf16/campaign.json`.
+It starts only the two fresh structural fits in the recorded existing allocations;
+see [the restart workflow](../docs/shared_pretraining_restart_20260918.md).
+The separate `shared_pretraining.profile` command requires `--precision float32|bf16`
+and measures actual batch updates after warmup. It is never called by training.
+The original shared-campaign/H200 recipes below are paused historical recipes;
+reproduce them with their frozen code, not the current normalized architecture.
+
 `python -m src.training_methods.shared_pretraining.queue submit --plan
 configs/shared_pretraining/campaign.json` starts the approved 12-epoch structural
 fits, initialized causal continuations and frozen analyses, with detached local
@@ -67,12 +98,13 @@ multi-material radius calibration and prepares raw snapshot/three-frame inputs,
 spatial/temporal neighbor pairs and instantaneous physical/TDA anchors. See the
 [structural pretraining workflow](../docs/structural_pretraining_20260917.md).
 
-`python -m src.training_methods.structural_pretraining.train --config
-configs/structural_pretraining/mace_vicreg.json [--resume]` trains a shared
-structural encoder with physical/instantaneous-TDA anchors. The same command
-accepts `gatr_vicreg.json` or `gatr_lejepa.json` for the other requested fits.
-It uses full-batch representation statistics, exact gradient caching, checkpoint
-selection and deadline-aware resume; see the workflow above.
+New structural fits use `src.training_methods.shared_pretraining.queue` and
+`configs/shared_pretraining/al_stable/`, with physical/instantaneous-TDA anchors,
+full-batch representation statistics and training-only head calibration.
+The earlier `configs/structural_pretraining/{mace_vicreg,gatr_vicreg,gatr_lejepa}.json`
+are immutable historical run recipes; exact resumes require their frozen source.
+The standalone trainer now also requires explicit `materials` and
+`head_calibration_rows` for newly created recipes.
 
 `python -m src.data.relaxed_targets prepare|run|status --config
 configs/simulation/relaxed_tda_al.json` produces resumable full-cell relaxed-TDA
@@ -191,6 +223,16 @@ Selected snapshot structural GATr–VICReg encoders use
 `configs/analysis/static_structural_gatr_al.yaml`. The adapter preserves the
 native full neighborhood, species and fixed material scale; see
 [structural static analysis](../docs/structural_static_analysis.md).
+
+The newest Al-only v6 GATr uses the same commands with
+`configs/analysis/structural_gatr_v6_static.json` and
+`configs/analysis/static_structural_gatr_v6_al.yaml`, in `pointnet-torch214`.
+Verification includes replay of the saved compiled selection features.
+
+The matching Al-only v6 MACE checkpoint uses those same export/verify stages
+with `configs/analysis/structural_mace_v6_static.json`, then the pipeline with
+`configs/analysis/static_structural_mace_v6_al.yaml`. It preserves MACE's native
+per-observation graphs and cuEquivariance/BF16 execution in `pointnet-torch214`.
 
 `python -m src.research.mace_context.cluster_diagnosis --config
 configs/analysis/mace_context_clusters.json` runs saved-feature clustering
@@ -370,3 +412,19 @@ measures original versus packed/resident execution on verified histories.
 `causal-probe --probe-modes linear nonlinear` selects cheap frozen readouts;
 `--probe-modes state_constant state_history` selects the matched history-access pair.
 See [execution and data handoff](../docs/mace_causal_runtime.md).
+
+The compiled VICReg restart uses the existing shared-pretraining queue and separate profiler; see [the recipe](../docs/shared_pretraining_compiled_repair_20260918.md). No benchmark runs inside training.
+
+The active Al-only VICReg repair uses `configs/shared_pretraining/al_stable/`
+with the existing shared-pretraining queue; see [stability and calibrated
+checkpoint export](../docs/shared_pretraining_al_stability_20260918.md).
+
+The GATr continuation uses the same `shared_pretraining.queue submit --plan
+configs/shared_pretraining/broad_full_tda/campaign.json`. It submits CPU expansion
+through the existing `src.data.structural_pretraining.prepare --config` command,
+then a GPU job dependent on successful target completion. See the
+[full-TDA workflow](../docs/shared_pretraining_broad_full_tda_20260918.md).
+
+The dynamic-only mixed-material GATr recipe reuses `shared_pretraining.queue
+submit --plan configs/shared_pretraining/gatr_mixed_triplets/campaign.json`.
+See [grouped normalization and detached execution](../docs/shared_pretraining_mixed_triplets_20260918.md).

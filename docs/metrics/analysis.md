@@ -7,6 +7,22 @@ six Al snapshots. These frames overlap training inputs: metrics describe the
 representation and fitted clusters, not held-out accuracy. Input and export
 checks are documented in [the static protocol](../structural_static_analysis.md).
 
+The v6 Al-only GATr export retains these calculations and the same static grid.
+It uses the checkpoint's protected-geometry/BF16-scalar execution policy and
+compares eager encoder states with the saved compiled selection states before
+analysis. Only raw z128 enters clustering; calibrated prediction heads are not
+used. Its checkpoint-selection score uses Al-only training target moments and
+must not be directly compared with the earlier broad-material selection score.
+
+The matched v6 MACE static export uses the same grid and metric definitions,
+with its native cuEquivariance encoder, per-observation packed graphs and
+protected-FP32/selective-BF16 arithmetic. Its directed edges use the training
+5-model-unit cutoff after fixed material scaling, with the trained taper and
+multiscale pooling. Native packed inputs and saved compiled selection states
+are verified before analysis; no calibrated prediction head enters clustering.
+MACE retains the training full-graph compiler and precision-cast preservation;
+its eager execution failed the saved-selection tolerance and is not used.
+
 Metric CSVs preserve the nested keys from `analysis_metrics.json`. Counts, seeds,
 cluster K, dimensions and elapsed times are metadata, not quality scores. Optional
 stages contribute only the metrics they actually calculated. Arrays, identities,
@@ -24,6 +40,15 @@ configuration and raw machine results remain under `technical/`.
 | Invariant latent mean/std/min/max | Statistics of the sampled latent entries; std is population std (`ddof=0`). |
 | Latent `norm_mean`, `norm_std` | Mean and population std of Euclidean row norms. |
 | Cluster counts/proportions | Number/fraction of analyzed samples assigned to each cluster, for the stated frame or population. |
+
+Raw latent PCA diagnostics now center their selected sample in float64 and use
+full SVD. The previous float32 covariance solver could invent dominant variance
+by subtracting large second moments when states varied little around their
+channel means. Diagnostic latent moments/norms also use float64. Sampling,
+metric formulas and standardized clustering preprocessing are unchanged.
+The v6 static rerun preserves its original diagnostic export in
+`technical/pre-correction-diagnostics.tar.gz` and records the numerical audit;
+historical analyses are not rewritten by this correction.
 
 Clustering scores use the saved feature preparation (standardization, optional PCA
 and L2 normalization), fit population, sample selection and random seed. They are

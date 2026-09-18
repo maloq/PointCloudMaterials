@@ -1,0 +1,13 @@
+metric,value
+diagnostic_pilot.mace.projector_only,0.8578568398952484
+diagnostic_pilot.mace.stale,1.7372230291366577
+diagnostic_pilot.mace.refreshed,0.3219742737710476
+diagnostic_pilot.mace.constant,0.8598394952714443
+diagnostic_pilot.mace.stale_mean_in_native_std,6.55551815032959
+diagnostic_pilot.gatr.projector_only,0.8603013344109058
+diagnostic_pilot.gatr.stale,1.0356312617659569
+diagnostic_pilot.gatr.refreshed,0.30110981687903404
+diagnostic_pilot.gatr.constant,0.8598394952714443
+diagnostic_pilot.gatr.stale_mean_in_native_std,28.289424896240234
+live.mace.step,32
+live.gatr.step,32

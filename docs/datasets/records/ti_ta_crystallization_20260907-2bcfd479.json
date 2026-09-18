@@ -313,6 +313,7 @@
           "pair_style meam",
           "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -324,8 +325,7 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+        ]
       }
     },
     {
@@ -498,6 +498,7 @@
           "pair_style meam",
           "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.meam Ti"
         ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.library.meam",
@@ -507,8 +508,7 @@
             "path": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.meam",
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+        ]
       }
     },
     {
@@ -679,6 +679,7 @@
           "pair_style meam",
           "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.meam Ti"
         ],
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.library.meam",
@@ -688,8 +689,7 @@
             "path": "/home/infres/vmorozov/PointCloudMaterials/datasets/potentials/Kavousi2019_NiTi.meam",
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+        ]
       }
     },
     {
@@ -3136,6 +3136,7 @@
         ]
       },
       "provenance": {
+        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
         "potentials": {
           "Al": {
             "files": [
@@ -3167,8 +3168,7 @@
             "provenance": "2NN-MEAM reconstructed from Becker et al., Physical Review B 102, 104205 (2020), DOI 10.1103/PhysRevB.102.104205. The original machine-readable potential was unavailable."
           }
         },
-        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304.",
-        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts."
+        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304."
       }
     },
     {

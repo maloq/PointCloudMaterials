@@ -2304,6 +2304,45 @@
           "Causal input history spans 1.5 ps; 3 and 9 ps targets exceed the observation history."
         ]
       }
+    },
+    "structural-neighbors-287500-full-tda-20260918": {
+      "root": "cache",
+      "path": "structural_pretraining/broad-287500-full-tda-20260918",
+      "kind": "cache",
+      "dependencies": [
+        "structural-neighbors-250k-20260917"
+      ],
+      "metadata": {
+        "title": "Al/Mg/Ti/Ta/Zr: 287,500 anchors with complete instantaneous TDA",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta",
+          "Zr"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Immutable extension of the five-metal structural release: shooting anchors increase from 37,500 to 75,000, sampling every one of 456 training-eligible trajectories across 17 ancestral lineages. All supervised anchor/spatial/next-frame views have instantaneous TDA144. All parent observations, source splits and fixed material scales are retained; no new MD.",
+        "evidence": [
+          "${dataset:structural-neighbors-287500-full-tda-20260918}/plan.json",
+          "${dataset:structural-neighbors-287500-full-tda-20260918}/manifest.json",
+          "configs/shared_pretraining/broad_full_tda/data.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "limitations": [
+          "Static Al/Mg/Ta/Zr generating potentials are not established; their batches carry unknown-static provenance.",
+          "Anchor records and shooting descendants are correlated; counts are not independent sources. Only the native Al cohort provides independent selection/test roles.",
+          "No velocities or relaxed-TDA targets. Irregular saved-frame intervals retain their measured physical time offsets.",
+          "The immutable plan contains the full native/shooting source lineage inventory beyond the top-level collection dependencies."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

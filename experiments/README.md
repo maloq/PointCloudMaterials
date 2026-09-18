@@ -10,8 +10,12 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
-| [Twelve-epoch shared and causal pretraining](shared_pretraining_20260918/README.md) | Three fresh structural parents and three causal continuations; batch 512, peak LR 0.02 with warmup/cosine, instantaneous physical/TDA targets and matched frozen probes. |
+| [GATr internal directional embeddings](gatr_equivariant_20260918/README.md) | Frozen v6 geometric streams on A100/node07: directional turns, cage correction, phase-conditioned spatial order, rotation controls and readout interventions; interactive 3D explorer. |
+| [Encoder and descriptor trajectory stability](trajectory_stability_20260918/README.md) | Latest selected MACE/GATr versus instantaneous TDA, SOAP and local structural descriptors; matched full Al trajectories, training-reference normalization and source bootstrap. |
+| [Twelve-epoch shared and causal pretraining](shared_pretraining_20260918/README.md) | **Paused after optimization failure.** Batch-512/LR-0.02 fits developed saturated heads and collapse; [diagnosis and retained information](../output/shared_pretraining/diagnosis-20260918/RESULTS.md). |
 | [Shared structural pretraining](structural_pretraining_20260917/README.md) | Three implemented five-metal fits: MACE/GATr neighbor VICReg and three-frame GATr temporal JEPA/SIGReg, with physical/instantaneous-TDA anchors. Fixed material cutoffs; 250,000 training records, one seed; launched detached on H100/RTX6000. |
+| [Newest GATr v6 static Al](shared_pretraining_20260918/STATIC_AL.md) | Selected Al-only v6 checkpoint; same six snapshots, interior grid and seven-cluster static analysis. |
+| [Newest MACE v6 static Al](shared_pretraining_20260918/STATIC_AL_MACE.md) | Selected Al-only v6 MACE checkpoint on the same six snapshots, interior grid and analysis settings as GATr. |
 | [GATr–VICReg static Al](structural_pretraining_20260917/STATIC_AL.md) | Selected RTX6000 checkpoint, native full-neighborhood z128, six standard Al snapshots and the full seven-cluster static workflow. |
 | [Backbone TDA retention](local_predictability_20260917/TDA.md) | Frozen physical MACE/GATr snapshot states; matched linear/nonlinear instantaneous topology readouts, one seed |
 | [Native backbone v2](local_predictability_20260917/BACKBONE_V2.md) | Fresh gated MACE/cuEquivariance versus axial GATr snapshot screen; all-state physical targets; one seed |

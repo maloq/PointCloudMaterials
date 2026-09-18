@@ -22,9 +22,9 @@ def sample(seed,t=1,n=12):
         tda_valid=True,edges=np.concatenate((pairs,pairs[:,::-1]),axis=0).T)
 
 
-def model(architecture):
+def model(architecture,history=False):
     torch.manual_seed(18)
-    return StructuralModel(architecture,backend='cueq' if DEVICE.type=='cuda' else 'e3nn').to(DEVICE)
+    return StructuralModel(architecture,backend='cueq' if DEVICE.type=='cuda' else 'e3nn',history=history).to(DEVICE)
 
 
 def objective(method):
@@ -50,7 +50,7 @@ def test_symmetry_packing_and_species(architecture):
 
 
 def test_gatr_causality_and_use_of_history():
-    net=model('gatr').eval();batch=move(collate([sample(2,t=3)],'gatr'),DEVICE)
+    net=model('gatr',history=True).eval();batch=move(collate([sample(2,t=3)],'gatr'),DEVICE)
     changed={k:v.clone() for k,v in batch.items()};changed['positions'][:,2,1:]+=2
     with torch.no_grad():
         a=net.encoder.atom_features(batch);b=net.encoder.atom_features(changed)
@@ -64,7 +64,7 @@ def test_gatr_causality_and_use_of_history():
 @pytest.mark.parametrize('architecture,method',[('gatr','vicreg'),('gatr','lejepa'),('mace','vicreg')])
 def test_cached_gradient_matches_true_full_batch(architecture,method):
     # cuEquivariance kernel state must be constructed on its target device.
-    a=model(architecture);b=model(architecture);b.load_state_dict(a.state_dict())
+    a=model(architecture,history=method=='lejepa');b=model(architecture,history=method=='lejepa');b.load_state_dict(a.state_dict())
     oa=objective(method);ob=copy.deepcopy(oa)
     optim_a=torch.optim.SGD(a.parameters(),lr=.01);optim_b=torch.optim.SGD(b.parameters(),lr=.01)
     samples=[sample(i,t=3 if method=='lejepa' and i<4 else 1) for i in range(8)]
@@ -74,8 +74,14 @@ def test_cached_gradient_matches_true_full_batch(architecture,method):
     loss,_=oa(a,z,target,True,torch.full((4,),.1,device=DEVICE));loss.backward()
     torch.nn.utils.clip_grad_norm_(a.parameters(),5.,error_if_nonfinite=True);optim_a.step()
     cached_update(b,ob,chunks,optim_b,True,[.1]*4)
+    # Full-batch conditioning can amplify tiny FP32 scatter differences from
+    # packing the same graphs into different microbatches. Bound the update's
+    # whole gradient as well as the individual parameter differences.
+    ga=torch.cat([p.grad.flatten() for p in a.parameters() if p.grad is not None])
+    gb=torch.cat([p.grad.flatten() for p in b.parameters() if p.grad is not None])
+    assert (ga-gb).norm()/ga.norm()<.002
     for (name,p),(_,q) in zip(a.named_parameters(),b.named_parameters(),strict=True):
-        torch.testing.assert_close(p,q,rtol=3e-4,atol=2e-6,msg=name)
+        torch.testing.assert_close(p,q,rtol=3e-4,atol=5e-6,msg=name)
     assert int(oa.sigreg.global_step)==int(ob.sigreg.global_step)
 
 
@@ -94,6 +100,30 @@ def test_sigreg_detects_collapsed_representation():
 
 
 def test_export_reload_matches():
-    net=model('gatr');other=model('gatr');other.load_state_dict(net.state_dict())
+    net=model('gatr',history=True);other=model('gatr',history=True);other.load_state_dict(net.state_dict())
     batch=move(collate([sample(1,t=3)],'gatr'),DEVICE)
     torch.testing.assert_close(net.encoder(batch),other.encoder(batch),rtol=0,atol=0)
+
+
+@pytest.mark.skipif(DEVICE.type!='cuda',reason='BF16 training uses CUDA kernels')
+@pytest.mark.parametrize('architecture',['mace','gatr'])
+def test_bf16_cached_gradient_and_float32_statistics(architecture):
+    from src.training_methods.shared_pretraining.runtime import cached_update as mixed_update
+    a=model(architecture);b=model(architecture);b.load_state_dict(a.state_dict())
+    oa=objective('vicreg');ob=copy.deepcopy(oa)
+    samples=[sample(i) for i in range(8)]
+    full=[move(collate(samples[:4],architecture),DEVICE),move(collate(samples[4:],architecture),DEVICE)]
+    chunks=[collate(samples[i:i+2],architecture) for i in range(0,8,2)]
+    with torch.autocast('cuda',dtype=torch.bfloat16):
+        z=torch.cat([a.encoder(x).float() for x in full])
+        assert all(v.dtype==torch.float32 for v in a.heads(z).values())
+        loss,terms=oa(a,z,target_batch(full,DEVICE),True,torch.full((4,),.75,device=DEVICE))
+    assert all(terms[k].dtype==torch.float32 for k in ('loss','vicreg','variance','covariance'))
+    loss.backward();torch.nn.utils.clip_grad_norm_(a.parameters(),5.,error_if_nonfinite=True)
+    optimizer=torch.optim.SGD(b.parameters(),lr=0.)
+    mixed_update(b,ob,chunks,optimizer,True,[.75]*4,precision='bf16')
+    reference=torch.cat([p.grad.flatten() for p in a.parameters() if p.grad is not None])
+    actual=torch.cat([p.grad.flatten() for p in b.parameters() if p.grad is not None])
+    assert reference.norm()>0
+    assert (reference-actual).norm()/reference.norm()<.05
+    assert all(p.dtype==torch.float32 for p in b.parameters())

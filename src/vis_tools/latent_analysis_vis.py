@@ -1595,10 +1595,17 @@ def save_pca_visualization(
             gt_labels = gt_labels[idx]
 
     n_components = min(latents.shape[1], 50)
-    pca = PCA(n_components=n_components)
+    # Small structural-state differences can sit on large channel means.
+    # Float32 covariance_eigh subtracts two large second moments and can
+    # invent variance inconsistent with its projected scores. Center in
+    # float64 and use full SVD on the diagnostic sample instead.
+    latents = np.asarray(latents, dtype=np.float64)
+    pca = PCA(n_components=n_components, svd_solver="full")
     pca_coords = pca.fit_transform(latents)
 
     pca_stats = {
+        "calculation_dtype": "float64",
+        "svd_solver": "full",
         "explained_variance_ratio": pca.explained_variance_ratio_.tolist(),
         "cumulative_variance_ratio": np.cumsum(pca.explained_variance_ratio_).tolist(),
         "n_components_95_var": int(np.searchsorted(np.cumsum(pca.explained_variance_ratio_), 0.95) + 1),
@@ -1750,6 +1757,8 @@ def save_latent_statistics(
         if sample_idx is not None and eq_latents_total.shape[0:1] == (total_samples,)
         else eq_latents_total
     )
+    inv_latents_sample = np.asarray(inv_latents_sample, dtype=np.float64)
+    eq_latents_sample = np.asarray(eq_latents_sample, dtype=np.float64)
 
     stats: Dict[str, Any] = {}
     has_phases = phases_sample.size == len(inv_latents_sample)

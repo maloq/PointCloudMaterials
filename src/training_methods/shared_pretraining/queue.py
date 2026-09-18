@@ -109,6 +109,11 @@ def snapshot(root):
 
 def submit(plan_path):
     plan=json.loads(Path(plan_path).read_text());root=resolve_path(plan['output'])/'technical';root.mkdir(parents=True,exist_ok=True)
+    for item in plan['runs']:
+        if 'data_preparation' in plan and item['allocation'] is not None:
+            raise ValueError('Data preparation dependencies require a queued GPU allocation')
+        if plan['structural_slots']==0 and (item['allocation'] is None or set(item['configs'])!={'structural'}):
+            raise ValueError('Zero continuation slots require an existing allocation and a structural-only pipeline')
     if (root/'submissions.json').exists():raise FileExistsError('Campaign already submitted; inspect recorded jobs')
     code=snapshot(root);python=sys.executable;records=[]
     environment=['PYTORCH_ALLOC_CONF=expandable_segments:True','OPENBLAS_NUM_THREADS=1','OMP_NUM_THREADS=1','MKL_NUM_THREADS=1',f'PCM_PROJECT_ROOT={code}']
@@ -118,11 +123,24 @@ from src.project_runtime.paths import resolve_path
 from src.training_methods.shared_pretraining import runtime
 assert Path(runtime.__file__).resolve().is_relative_to(Path.cwd())
 check_metric_docs(family="shared_pretraining")
-assert (resolve_path("${storage:cache}/shared-causal-38400-20260918")/"manifest.json").is_file()
-assert (resolve_path("${storage:cache}/structural_pretraining/broad-250k-v2-20260917")/"manifest.json").is_file()
-print("Frozen code and data paths verified",flush=True)
+print("Frozen code verified; stage inputs are checked when the dependent worker starts",flush=True)
 '''
     subprocess.run(['env',*environment,python,'-c',verification],cwd=code,check=True)
+    preparation_dependency=None
+    if 'data_preparation' in plan:
+        prep=plan['data_preparation'];log=root/'preparation';log.mkdir(exist_ok=True)
+        command=[python,'-u','-m','src.data.structural_pretraining.prepare','--config',
+                 str(code/prep['config']),'--workers',str(prep['workers'])]
+        script='\n'.join(['#!/bin/bash','#SBATCH --job-name=structural-full-tda',
+            f'#SBATCH --partition={prep["partition"]}',f'#SBATCH --cpus-per-task={prep["workers"]}',
+            f'#SBATCH --mem={prep["memory_GiB"]}G',f'#SBATCH --time={prep["hours"]}:00:00',
+            f'#SBATCH --output={log}/%j.log',f'#SBATCH --chdir={code}','set -euo pipefail',
+            'exec env '+' '.join(shlex.quote(v) for v in environment)+' '+shlex.join(command),''])
+        job=submit_sbatch(script,log/'job.sbatch')
+        records.append(dict(kind='sbatch',name='data',phase='preparation',job_id=job,
+            script=str(log/'job.sbatch'),config=str(code/prep['config'])))
+        save_json(root/'submissions.json',dict(code=str(code),records=records,plan=plan))
+        preparation_dependency=f'afterok:{job}'
     def batch(name,phase,config,dependency,hours,final):
         log=root/f'{name}-{phase}-{len(records)}';log.mkdir(exist_ok=True)
         command=[python,'-u','-m','src.training_methods.shared_pretraining.queue','worker','--phase',phase,'--config',str(code/config)]
@@ -145,12 +163,15 @@ print("Frozen code and data paths verified",flush=True)
                 process=subprocess.Popen(command,cwd=code,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
             records.append(dict(kind='local',name=name,phase='pipeline',allocation=allocation,pid=process.pid,command=command))
             dependency=f'afterany:{allocation}'
-        else:dependency=None
+        else:dependency=preparation_dependency
         for slot in range(plan['structural_slots']):
             job=batch(name,'structural',configs['structural'],dependency,plan['structural_hours'],slot==plan['structural_slots']-1)
             dependency=f'afterany:{job}'
-        causal=batch(name,'causal',configs['causal'],f'afterok:{job}',plan['causal_hours'],True)
-        batch(name,'analysis',configs['analysis'],f'afterok:{causal}',plan['analysis_hours'],True)
+        if 'causal' in configs:
+            causal=batch(name,'causal',configs['causal'],f'afterok:{job}',plan['causal_hours'],True)
+            job=causal
+        if 'analysis' in configs:
+            batch(name,'analysis',configs['analysis'],f'afterok:{job}',plan['analysis_hours'],True)
     save_json(root/'submissions.json',dict(submitted_at=datetime.now(timezone.utc).isoformat(),code=str(code),records=records,plan=plan))
     print(json.dumps(records,indent=2))
 

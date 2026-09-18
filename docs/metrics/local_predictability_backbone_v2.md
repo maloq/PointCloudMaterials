@@ -59,3 +59,7 @@ Elapsed-time curves describe these configured implementations on the same GPU;
 they are not an equal-wall-clock training-budget comparison. One seed does not
 estimate initialization uncertainty. Failed fitting gates establish no comparative
 predictive conclusion.
+
+Environment update (2026-09-18): new GPU runs record the CUDA 13 cuEquivariance
+package with PyTorch 2.14. Metric calculations are unchanged; historical exports
+retain their original environment and implementation hashes.

@@ -151,3 +151,7 @@ not paired views. `cloud_views_per_second` is twice that for PointNet and MACE.
 peaks since warmup ended, including resident inputs, model, optimizer and current
 step storage. They are not total GPU usage. Raw `nvidia-smi` snapshots record
 other visible GPU activity; the command never stops other processes.
+
+Environment update (2026-09-18): new GPU runs record the CUDA 13 cuEquivariance
+package with PyTorch 2.14. Metric calculations are unchanged; historical exports
+retain their original environment and implementation hashes.
