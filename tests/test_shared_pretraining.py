@@ -80,7 +80,7 @@ def test_heldout_roles_never_enter_causal_sampling(tmp_path):
     for i,split in enumerate(['train','selection','calibration','test']):
         (tmp_path/'shards'/str(i)).mkdir(parents=True)
         shards.append(dict(task=dict(id=str(i),split=split),material='Al',potential='al-lee2003-meam',static=False,anchors=3))
-    (tmp_path/'manifest.json').write_text(json.dumps(dict(state='complete',shards=shards)))
+    (tmp_path/'manifest.json').write_text(json.dumps(dict(state='complete',identity={'id':'test'},shards=shards)))
     release=CausalRelease(tmp_path)
     assert list(release.groups.values())==[[0,1,2]]
     assert release.selection==[3,4,5]

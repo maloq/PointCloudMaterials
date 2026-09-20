@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-18T18:40:33.535128+00:00
+Observed: 2026-09-20T01:13:02.416719+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -64,6 +64,8 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [al phase context 70304x1 seed 12346](cards/al_phase_context_70304x1_seed_12346-77b8c6af.md) | Al | review_required | yes | 0 | MACE-MPA-0 medium checkpoint |
 | [Al: expanded full-cell relaxed configurations](cards/al_relaxed_cells_expanded_20260917-d6275785.md) | Al | building | yes | 780 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al: expanded relaxed/instantaneous TDA pairs](cards/al_relaxed_tda_expanded_20260917-0465ee2c.md) | Al | building | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Future-center MACE trajectories for local crystallization path forecasts](cards/crystallization-paths-mace-20260919-1db371a4.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Dense local onset transfer: 150 Al sources, 362400 candidate windows](cards/crystallization-transfer-mace-20260919-55cdb4ac.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [embedding-forecast-center-geometry-20260914](cards/embedding-forecast-center-geometry-20260914-746e8c57.md) | Al | derived | yes | 0 | Unknown / not applicable |
 | [embedding-forecast-full-20260911](cards/embedding-forecast-full-20260911-1bfca47c.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
 | [embedding-forecast-spatial-context-20260913](cards/embedding-forecast-spatial-context-20260913-6f05ff98.md) | Al | derived | yes | 0 | Unknown / not applicable |
@@ -92,6 +94,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [memory-al-precision-20260917-source004-T500-failed](cards/memory-al-precision-20260917-source004-T500-failed-2eb6bdda.md) | Al | incomplete_or_rejected | yes | 0 | Unknown / not applicable |
 | [Al: precision campaign and unfinished sources](cards/memory-al-precision-campaign-20260917-c8104deb.md) | Al | mixed | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Mg: six 24 ps EAM continuations](cards/mg-eam-six-24ps-ab3916d9.md) | Mg | research | yes | 6 | Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs) |
+| [Tracked six-neighbor space-time JEPA: 65,536 mixed-material training anchors](cards/neighborhood-jepa-tracked-six-65536-20260920-77d70ca1.md) | Al, Mg, Ta, Ti | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [nested shooting prepare logs](cards/nested_shooting_prepare_logs-19b5e996.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [nonshooting float32 migration 20260901](cards/nonshooting_float32_migration_20260901-88986f1b.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [polycrystalline balanced geometries](cards/polycrystalline_balanced_geometries-612b5caf.md) | Unknown | research | yes | 0 | Unknown / not applicable |
@@ -109,6 +112,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [shooting float32 migration 20260901](cards/shooting_float32_migration_20260901-ab3f5054.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [Al/Mg/Ti/Ta/Zr structural neighbors: 250,000 training anchors](cards/structural-neighbors-250k-20260917-caca88b3.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Al/Mg/Ti/Ta/Zr: 287,500 anchors with complete instantaneous TDA](cards/structural-neighbors-287500-full-tda-20260918-799b001d.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
+| [Fourfold dynamic structural expansion: 1,018,080 Al/Mg/Ti/Ta anchors](cards/structural-neighbors-dynamic-1018080-20260919-338e6838.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [superseded preparation al meam position shooting 15ps topup manifest metadata 20260904T0955Z](cards/superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z-3b234b41.md) | Unknown | prepared | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [superseded preparation al meam predictive dynamics fixed15 smoke wave979929 20260904T0955Z](cards/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z-be4065aa.md) | Unknown | fixture | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Ta: five 10-million-atom branches](cards/ta-eam-five-24ps-0b8a1ae4.md) | Ta | research | yes | 5 | Zhong 2014 Ta EAM |
@@ -122,4 +126,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-9 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+10 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

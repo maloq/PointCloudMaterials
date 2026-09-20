@@ -1,4 +1,5 @@
 """Dense spatial extension: strict radial matches with frozen trajectory probes."""
+from src.data.structural_pretraining.support import OUTER_RADIUS
 import argparse
 import json
 from pathlib import Path
@@ -26,7 +27,7 @@ def prepare(extension,config):
     if audit_config['checkpoint_sha256']!=config['checkpoint_sha256']:raise ValueError('Spatial audit used a different checkpoint')
     model=Capture(Path(config['parent_audit'])/'technical/gatr.pt',config['checkpoint_sha256']).cuda().eval()
     soap=SOAP(species=['Al'],periodic=False,r_cut=7.,n_max=8,l_max=6,sigma=.3,sparse=False,dtype='float64')
-    radius=17*model.scale/REFERENCE_RADIUS
+    radius=OUTER_RADIUS*model.scale/REFERENCE_RADIUS
     for source in parent['sources']:
         if source['split']!='test':continue
         raw=source_arrays(dict(source,kind='dynamic'))

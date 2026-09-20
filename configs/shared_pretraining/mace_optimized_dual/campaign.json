@@ -1,0 +1,17 @@
+{
+  "output": "output/shared_pretraining/mace-dual-optimized-campaign-20260919",
+  "partition": "RTX6000PRO",
+  "structural_slots": 0,
+  "structural_hours": 8,
+  "cpus_per_task": 16,
+  "gpus_per_task": 2,
+  "runs": [
+    {
+      "name": "mace_optimized_dual",
+      "allocation": 999611,
+      "configs": {
+        "structural": "configs/shared_pretraining/mace_optimized_dual/mace.json"
+      }
+    }
+  ]
+}

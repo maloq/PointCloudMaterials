@@ -26,7 +26,7 @@ def implementation():
            for p in Path(folder).glob('*.py')]
     paths += [Path(p) for p in ('src/models/encoders/structural.py','src/models/encoders/mace_causal.py',
         'src/models/encoders/axial_gatr.py','src/models/encoders/mace_backend.py','src/models/encoders/structural_precision.py',
-        'src/models/encoders/compensated_bf16.py','src/training_methods/shared_pretraining/normalization.py')]
+        'src/models/encoders/compensated_bf16.py','src/models/encoders/equivariant_bond.py','src/training_methods/shared_pretraining/normalization.py')]
     return dict(files={str(p):file_hash(p) for p in paths},
         versions={name:importlib.metadata.version(name) for name in ('torch','triton','mace-torch','cuequivariance',
             'cuequivariance-torch','cuequivariance-ops-torch-cu13','GATr','lejepa')},
@@ -134,7 +134,7 @@ def run(config,resume=False):
     release=Release(resolve_path(config['release']),materials=config['materials']);model=StructuralModel(config['architecture'],history=config['history_frames']>1).to(device)
     objective=Objective(release.manifest['normalization'],config['method']).to(device)
     optimizer=torch.optim.AdamW(model.parameters(),lr=config['learning_rate'],weight_decay=1e-4)
-    identity=dict(protocol='structural_neighbors_v2',architecture_revision=ARCHITECTURE_REVISION,
+    identity=dict(protocol='structural_neighbors_local_v10',architecture_revision=ARCHITECTURE_REVISION,
         data=release.manifest['identity'],implementation=implementation(),
         config={k:v for k,v in config.items() if k not in ('output','deadline_utc')})
     if (technical/'identity.json').exists() and json.loads((technical/'identity.json').read_text())!=identity:

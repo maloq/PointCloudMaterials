@@ -8,13 +8,13 @@ from src.research.gatr_conditional_information.probe import predict_path
 
 def test_radial_control_forgets_angles_and_neighbor_order():
     rng=np.random.default_rng(21)
-    radius=np.linspace(2.,16.,100)
+    radius=np.r_[np.linspace(2.,7.8,90),np.linspace(8.,16.,10)]
     x=rng.normal(size=(100,3));x=x/np.linalg.norm(x,axis=1,keepdims=True)*radius[:,None]
     y=rng.normal(size=(100,3));y=y/np.linalg.norm(y,axis=1,keepdims=True)*radius[:,None]
     x=np.vstack((np.zeros((1,3)),x));y=np.vstack((np.zeros((1,3)),y))[rng.permutation(101)]
     a=radial_control(x,9.121389139452193,33);b=radial_control(y,9.121389139452193,33)
     np.testing.assert_allclose(a[0],b[0],atol=1e-12)
-    np.testing.assert_allclose(np.sort(np.linalg.norm(a[0],axis=1))[1:],radius,atol=2e-6)
+    np.testing.assert_allclose(np.sort(np.linalg.norm(a[0],axis=1))[1:],radius[:90],atol=2e-6)
 
 
 def test_future_excludes_existing_crystal_and_unobserved_confirmation():

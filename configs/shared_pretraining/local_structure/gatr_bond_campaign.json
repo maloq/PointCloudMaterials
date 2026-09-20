@@ -1,0 +1,16 @@
+{
+  "output": "output/shared_pretraining/gatr-local-bond-campaign-20260918",
+  "partition": "H100",
+  "structural_slots": 0,
+  "structural_hours": 5,
+  "cpus_per_task": 8,
+  "runs": [
+    {
+      "name": "gatr_local_bond",
+      "allocation": 997799,
+      "configs": {
+        "structural": "configs/shared_pretraining/local_structure/gatr.json"
+      }
+    }
+  ]
+}

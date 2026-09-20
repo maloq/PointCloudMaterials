@@ -12,7 +12,7 @@ from src.data.structural_pretraining.bond_order import (
     BOND_IRREPS,bond_order_targets,bond_order_magnitudes,bond_order_errors)
 from src.models.encoders.mixed_mace import MixedSnapshotMACE,EquivariantBondOrder,training_encode
 from e3nn import o3
-from src.training_methods.shared_pretraining.mixed import MACEBondObjective
+from src.training_methods.shared_pretraining.mixed import BondObjective
 from src.training_methods.shared_pretraining.runtime import cached_update
 
 
@@ -77,7 +77,7 @@ def test_bond_gradient_cache_matches_full_batch_and_past_is_not_supervised(tempo
     torch.manual_seed(17);keys=[('Al','a',False),('Mg','b',False)]
     model=MixedSnapshotMACE(keys,backend='e3nn');model.encoder=CacheEncoder();other=copy.deepcopy(model)
     normalization={k:dict(mean=[0.]*n,std=[1.]*n) for k,n in [('physical',85),('tda',144)]}
-    objective=MACEBondObjective(normalization,keys,.1,.001,.1)
+    objective=BondObjective(normalization,keys,.1,.001,.1)
     n=4;count=(3 if temporal else 2)*n
     batch=dict(features=torch.randn(count,5),physical=torch.randn(count,85),tda=torch.randn(count,144),
         tda_valid=torch.ones(count,dtype=torch.bool),bond_order=torch.randn(count,22))

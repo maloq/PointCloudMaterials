@@ -1,0 +1,65 @@
+{
+  "output": "output/crystallization_transfer/mace-adaptive-20260919",
+  "cache": "${storage:cache}/crystallization-transfer-mace-20260919",
+  "seed": 20260919,
+  "origin_stride_frames": 4,
+  "batch_size": 64,
+  "microbatch_size": 16,
+  "evaluate_every": 256,
+  "selection_per_source": 64,
+  "preparation_processes": 2,
+  "prefetch_batches": 4,
+  "allocations": [
+    {
+      "job": 999611,
+      "gpu": 0,
+      "lane": 0,
+      "cpus": 8,
+      "gpu_count": 2
+    },
+    {
+      "job": 999611,
+      "gpu": 1,
+      "lane": 1,
+      "cpus": 8,
+      "gpu_count": 2
+    },
+    {
+      "job": 999702,
+      "gpu": 0,
+      "lane": 2,
+      "cpus": 8,
+      "gpu_count": 1
+    }
+  ],
+  "reuse_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "wait_for_previous_lanes": false,
+  "normalization_per_source": 8,
+  "refinement": {
+    "screen_epochs": 6,
+    "long_epochs": [
+      12,
+      24
+    ],
+    "promote_per_mode": 2,
+    "encoder_lrs": {
+      "finetune": [
+        3e-07,
+        1e-06,
+        3e-06
+      ],
+      "scratch": [
+        3e-06,
+        1e-05,
+        3e-05,
+        0.0001
+      ]
+    },
+    "head_lrs": [
+      0.0001,
+      0.0005,
+      0.001
+    ]
+  },
+  "encoder_backward": "direct"
+}

@@ -1,0 +1,9 @@
+{
+  "checkpoint": "/work/PERSO/vmorozov/analysis/structural_static/gatr-local-step622-al-20260919/technical/source-checkpoint/last.pt",
+  "checkpoint_sha256": "c360ad7eb7b4e5ddcb4ca2f30114e821f171373d6e619705e619fdcfbbab2246",
+  "checkpoint_kind": "latest",
+  "release_manifest_sha256": "06b6b78d7f18d109a27a88dd8b25a6f54926d6f4b0ee6a5b55f1774963ec7736",
+  "output": "/work/PERSO/vmorozov/analysis/structural_static/gatr-local-step622-al-20260919",
+  "data_config": "/home/infres/vmorozov/PointCloudMaterials/configs/data/loaders/static_al_structural_gatr_local.yaml",
+  "device": "cuda:0"
+}

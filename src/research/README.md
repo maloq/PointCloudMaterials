@@ -1,5 +1,10 @@
 # Implementations of recorded research protocols
 
+`gatr_conditional_information.comparison` repeats the conditional-information and
+trajectory-stability assays for pinned native MACE/GATr checkpoints, with exact
+training-code extraction and symmetric radial-only controls. See the
+[latest comparison](../../experiments/gatr_conditional_information_20260918/LOCAL_LAST622.md).
+
 `backbone_tda/` prepares instantaneous nearest-80 persistence images and matches
 frozen physical MACE/GATr readouts on the native source splits. It is separate
 from active encoder source identities. See [workflow](../../docs/backbone_tda.md).
@@ -104,3 +109,17 @@ The adjacent `native_queue.py` partitions existing onset stages across workers
 without changing checkpoint identities. `raw_observability.py` trains a separate
 all-state binary current-label model; `native_readouts.py` uses frozen onset states
 for fresh linear/MLP readouts. Both retain predictions for deferred interpretation.
+
+`crystallization_transfer` owns the expanded local MACE onset comparison: immutable graph/feature preparation, frozen/fine-tuned/scratch hazard fits, tensor-aware context and source-held-out event/spatial evaluation.
+
+`crystallization_transfer.report` collects completed initial/scaling queues,
+verifies paired test identities, and exports source-bootstrap comparisons and
+scientific scaling plots without training new models.
+
+The crystallization `adaptive`, `attention` and `refinement` modules implement
+full-batch trainable normalization, controlled spatial/temporal context heads and
+selection-only promotion to longer runs, through the existing transfer queue.
+
+`crystallization_paths/` compares direct, autoregressive, mixture and diffusion local structural-state trajectories, reusing the crystallization-transfer source split and frozen MACE. [Protocol](../../experiments/crystallization_transfer_20260919/PATHS.md).
+
+The path study's `diagnose`, `refined_model` and `refinement` modules implement selection-only failure diagnosis, revised trajectory models and physical-error-constrained promotion through the existing path queue.

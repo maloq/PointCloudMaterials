@@ -46,6 +46,13 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.gatr_conditional_information.comparison --config configs/analysis/conditional_information_local_last.json`
+repeats the assay for a pinned pair of final native MACE/GATr checkpoints, using
+each model's frozen training implementation and common radial controls. Stages
+`prepare`, `extract`, `probe`, `report` preserve separate extraction and scoring;
+the same run also repeats trajectory stability. See the
+[latest-checkpoint protocol](../experiments/gatr_conditional_information_20260918/LOCAL_LAST622.md).
+
 `python -m src.research.gatr_conditional_information --config configs/analysis/gatr_conditional_information.json`
 tests the frozen exported GATr state beyond radial structure and density on
 node07/A100. Stages `prepare`, `probe`, `report` resume verified extraction,
@@ -242,6 +249,12 @@ The frozen latest mixed GATr checkpoint uses the same stages with
 with `configs/analysis/static_structural_gatr_backtracking_al.yaml`. The recipe
 pins an immutable `last.pt`; verification compares its own native compiled
 encoder, since a latest optimizer checkpoint is distinct from a selected best.
+
+The final local MACE/GATr step-622 reruns use the same stages with
+`configs/analysis/structural_{mace,gatr}_local_latest_static.json` and
+`configs/analysis/static_structural_{mace,gatr}_local_latest_al.yaml`.
+Execute in each result's frozen `technical/runtime`; see the
+[local static protocol](../experiments/shared_pretraining_20260918/STATIC_AL_LOCAL.md).
 
 The matching Al-only v6 MACE checkpoint uses those same export/verify stages
 with `configs/analysis/structural_mace_v6_static.json`, then the pipeline with
@@ -442,3 +455,34 @@ then a GPU job dependent on successful target completion. See the
 The dynamic-only mixed-material GATr recipe reuses `shared_pretraining.queue
 submit --plan configs/shared_pretraining/gatr_mixed_triplets/campaign.json`.
 See [grouped normalization and detached execution](../docs/shared_pretraining_mixed_triplets_20260918.md).
+
+`python -m src.research.crystallization_transfer.queue submit --config configs/crystallization_transfer/mace_20260919.json` freezes and detaches four existing GPU lanes for the expanded MACE onset study; [protocol](../experiments/crystallization_transfer_20260919/README.md), [execution](../docs/crystallization_transfer_20260919.md).
+
+For context-radius and training/data-size sweeps, use the same crystallization
+transfer queue with `--config configs/crystallization_transfer/mace_scaling_20260919.json`.
+It waits for the original GPU lanes and reuses their immutable cache; see the
+[scaling protocol](../experiments/crystallization_transfer_20260919/README.md).
+
+Completed crystallization queues can be compared without further fitting:
+`python -m src.research.crystallization_transfer.report --initial INITIAL_OUTPUT
+--scaling SCALING_OUTPUT --output SUMMARY_OUTPUT`. This verifies paired test
+identities and exports all fits, horizons, source-bootstrap NLL differences and
+scaling curves; [metric definitions](../docs/metrics/crystallization_transfer_summary.md).
+
+The corrected trainable-encoder attention study uses the same queue with
+`--config configs/crystallization_transfer/mace_adaptive_20260919.json`; see the
+[adaptive protocol](../experiments/crystallization_transfer_20260919/ADAPTIVE.md).
+The transfer queue's `continue` command accepts the separate operational recipe
+`configs/crystallization_transfer/mace_adaptive_continuations_20260919.json` to
+submit dependent slots loading the existing frozen campaign.
+
+`python -m src.research.crystallization_paths.queue submit --config
+configs/crystallization_transfer/mace_paths_20260919.json` adds frozen-MACE direct,
+autoregressive, mixture and diffusion trajectory forecasts on the same source
+split. It uses existing simulation data, GPU-resident timelines and an independent
+detached queue; see [execution](../docs/crystallization_paths_20260919.md) and the
+[scientific protocol](../experiments/crystallization_transfer_20260919/PATHS.md).
+
+The same path queue accepts `configs/crystallization_transfer/mace_path_refinement_20260919.json` for 30 targeted screens and five promotions. `python -m src.research.crystallization_paths.diagnose` replays completed forecasts on selection sources; see [execution](../docs/crystallization_paths_20260919.md).
+
+`python -m src.training_methods.neighborhood_jepa.prepare --config configs/neighborhood_jepa/data_20260920.json` builds tracked neighbor triplets from existing dynamics. `python -m src.training_methods.neighborhood_jepa.queue submit --config configs/neighborhood_jepa/mace_20260920.json` launches the frozen-code MACE-only two-GPU queue; [execution](../docs/neighborhood_jepa_20260920.md), [scientific protocol](../experiments/neighborhood_jepa_20260920/README.md).

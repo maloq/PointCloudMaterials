@@ -1,0 +1,2855 @@
+{
+  "dataset_id": "crystallization-transfer-mace-20260919",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1000/complete.json",
+      "relative_path": "1000/complete.json",
+      "sha256": "b49395d7a1cf6fa6c6729c9745c6e0df7b335efa3b3dc19874ac276457c9f866",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1001/complete.json",
+      "relative_path": "1001/complete.json",
+      "sha256": "3fd1f5fed955c9e76c2f7fb53fa4936da46b1cc37a341cad61188f628f6eb42c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1002/complete.json",
+      "relative_path": "1002/complete.json",
+      "sha256": "1564a958196f88ef1d6e1575e160075b4051fe6d6ea9d400ab5d79edcf0cb0f3",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1003/complete.json",
+      "relative_path": "1003/complete.json",
+      "sha256": "2649e570c6a1d06da56a84cec9413a8d979d4bead8971700f31d5b2e7cc4b2e7",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1004/complete.json",
+      "relative_path": "1004/complete.json",
+      "sha256": "cbe137de2309ec683713e7c999d9f4966a347d247939b9e419959b9b6d96c964",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1005/complete.json",
+      "relative_path": "1005/complete.json",
+      "sha256": "ae9ff319dd58aec904d41c36c1fa45971cf3dee06c9f5a31f4b0c4a1795b7095",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1006/complete.json",
+      "relative_path": "1006/complete.json",
+      "sha256": "ff4d029a8cf3e271af2c1646042f77de335d92ca5d5b4657ed881cf8bf160829",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1007/complete.json",
+      "relative_path": "1007/complete.json",
+      "sha256": "30aba75e43e0780cda6b6c6a64795392f39fd855d48c548e3769e242e4ce5b3c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1008/complete.json",
+      "relative_path": "1008/complete.json",
+      "sha256": "4fec71a7515aeceba8d16ac38a2648139c94db4f474c9210dabcf7bd6d8c679e",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/1009/complete.json",
+      "relative_path": "1009/complete.json",
+      "sha256": "cc3fc02aa703426d72e7c30ba1c3f98180c2de53788263116ede9d25d3a13fc5",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/860/complete.json",
+      "relative_path": "860/complete.json",
+      "sha256": "c8c2c892a9d6d49c455148c1ce0f1f09c074a06006fa656ba4c32dbdc9a157af",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/861/complete.json",
+      "relative_path": "861/complete.json",
+      "sha256": "ec93268e0c966fa579bcff8ce008d547c367e155212cefc7f68028c3aeb1bc65",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/862/complete.json",
+      "relative_path": "862/complete.json",
+      "sha256": "72d9d806396d43edab63566270a624ad93485debddea1088d52f8d3c986c2259",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/863/complete.json",
+      "relative_path": "863/complete.json",
+      "sha256": "9f088aa4971759c966947640239cc9e6245a757a8d9bf24b975c4c4d5b8be83a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/864/complete.json",
+      "relative_path": "864/complete.json",
+      "sha256": "d6b634103d041948c851c0507d55e7682283cdf282dc79bb275af4f99bb39f6a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/865/complete.json",
+      "relative_path": "865/complete.json",
+      "sha256": "1c7d656192ddad42bccec77a921c91632abcf574f373fc363f2a4b1e43867816",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/866/complete.json",
+      "relative_path": "866/complete.json",
+      "sha256": "614b6142226a51fc2f386dfcdf354d488db2691e7d9713bf41503ad935aba341",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/867/complete.json",
+      "relative_path": "867/complete.json",
+      "sha256": "f6eb5391774656e911e6ddd04430b52a215346d0965354bb8ffa785ebac7a4df",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/868/complete.json",
+      "relative_path": "868/complete.json",
+      "sha256": "349a2727440a575d27aaf8f94ddf465fcdd4ade24f93b9cbca61725ec12cd6d4",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/869/complete.json",
+      "relative_path": "869/complete.json",
+      "sha256": "d0781fc02f7874f6e7bbcd679f5f379005adca43bec93a487f6d69692cdc7686",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/870/complete.json",
+      "relative_path": "870/complete.json",
+      "sha256": "3c5d92bc9edebb8b8647b6581d24f53b28593f774dbefc6512bfe20f8c32e220",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/871/complete.json",
+      "relative_path": "871/complete.json",
+      "sha256": "b70d745db2de71f63d5efd59d14890ed52a7e5be934c686e4c30ba4d3f30fdcb",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/872/complete.json",
+      "relative_path": "872/complete.json",
+      "sha256": "6f25c5a26670f9ea569f3a77eb59f1c5e0cf93ce6ffbadf9690ee9c314120622",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/873/complete.json",
+      "relative_path": "873/complete.json",
+      "sha256": "46a6b44353b55ace04c3b1b273164ccaece26043d00a231ac2fb6afdc064496c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/874/complete.json",
+      "relative_path": "874/complete.json",
+      "sha256": "9fa7b1c2f610573b7e483d192dd8291729987b31eaf7425ef52e32842f061431",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/875/complete.json",
+      "relative_path": "875/complete.json",
+      "sha256": "fca17df1c98464d6df80ab2605bf2c2865b7c44fbbaa4812ac4ff1eea986b890",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/876/complete.json",
+      "relative_path": "876/complete.json",
+      "sha256": "7a1dd12fd794cae1b641343eb03257dcc37480f58b84f1a7b5a8581120158c5a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/877/complete.json",
+      "relative_path": "877/complete.json",
+      "sha256": "00f329ddad462b9d39c1db28e0820378e2c2c5444c7c5b2cb84ba8ed75454ee0",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/878/complete.json",
+      "relative_path": "878/complete.json",
+      "sha256": "18cc2e16771827527bd941014721757d24ddda0e9f0feb04af003f916fd1c942",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/879/complete.json",
+      "relative_path": "879/complete.json",
+      "sha256": "7168e14c4e065294eb6e47dfba06a163e2d7cacddb4e2dd7160c5d973440da45",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/880/complete.json",
+      "relative_path": "880/complete.json",
+      "sha256": "bec3de4d2403617b4d9f6cf05e18879b7d7fa531b2e30b3980f652674ae1300d",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/881/complete.json",
+      "relative_path": "881/complete.json",
+      "sha256": "3fd797a1297b82e2a8a9930121dcd439cd3d2b5f3fe3bd3b8cbb380536fa6edf",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/882/complete.json",
+      "relative_path": "882/complete.json",
+      "sha256": "bcdba38c6613358becf3ad2d4164e289b46e2a3a269fd98f5d4d846aaa578928",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/883/complete.json",
+      "relative_path": "883/complete.json",
+      "sha256": "08d9849c028c115d50b7a3a5278d4e57379bdc5e5a6d4adaaf67598e65f0f8cb",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/884/complete.json",
+      "relative_path": "884/complete.json",
+      "sha256": "4b8b43dd74c04fb107e13e87c8ee6abab283f7de068696014f53542b02a65399",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/885/complete.json",
+      "relative_path": "885/complete.json",
+      "sha256": "afe1c4482f395e2ae4efa735638936e3570547f85724c0ca40d51962aeff71df",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/886/complete.json",
+      "relative_path": "886/complete.json",
+      "sha256": "ebc2384c542f7c17002626808168f9e82ccbc9eeb8a0af02bae8ca80e9cbc473",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/887/complete.json",
+      "relative_path": "887/complete.json",
+      "sha256": "0f103c1d307ad99dea0eb0696976f2ba61c862f7cbc441a2852fe2e01b739a56",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/888/complete.json",
+      "relative_path": "888/complete.json",
+      "sha256": "eeeb5666e5ed7ce31009f729474df194f8ffd54ca88b5337e86deb294995a8ed",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/889/complete.json",
+      "relative_path": "889/complete.json",
+      "sha256": "4a8fe05a9d9756ad9652322da9af10597cde7087ab0a6e7d1aa980825ea92905",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/890/complete.json",
+      "relative_path": "890/complete.json",
+      "sha256": "2b5f30e1e465800d4a1d04ac55d224be1531ccf6e294a952fd4dec408822394b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/891/complete.json",
+      "relative_path": "891/complete.json",
+      "sha256": "6512f255bcf84c689bfe122953c92a62be9130d898e9daac39710d6bda890a11",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/892/complete.json",
+      "relative_path": "892/complete.json",
+      "sha256": "01f43811d45c6ca83718e136d9c72fdf3431a49a5346f728803d899bad0de4bf",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/893/complete.json",
+      "relative_path": "893/complete.json",
+      "sha256": "c906c006ab3df76d0b8651686d2b78c66f3ee667b61a32f559cf7a7f1f85299e",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/894/complete.json",
+      "relative_path": "894/complete.json",
+      "sha256": "24a42837e05dbe057281a27c773fd9fc4fa8636fb425324c3b15c218a6186955",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/895/complete.json",
+      "relative_path": "895/complete.json",
+      "sha256": "08afca73f37eeb2607a864dc85bde9bbcc09fc4fbd0d0e84813a06ee890a2392",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/896/complete.json",
+      "relative_path": "896/complete.json",
+      "sha256": "4663e4a9d061966b34e024d3f5f9a03a10ebd3e49b5d51faecab14b5fa136aca",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/897/complete.json",
+      "relative_path": "897/complete.json",
+      "sha256": "28afdfc449bfa8080d6cea02ca93d7116964f99edec7086d52723c414cfde2dd",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/898/complete.json",
+      "relative_path": "898/complete.json",
+      "sha256": "faa6173744b305dc7e52968faae5166580bd90e5311640d1b1df7f12c2765bdf",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/899/complete.json",
+      "relative_path": "899/complete.json",
+      "sha256": "ecc53c2a56a948a49826d4ef6cd1eee56264b4ad4e7a6ffaf6795ebe91e4362c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/900/complete.json",
+      "relative_path": "900/complete.json",
+      "sha256": "4d6b4acea5b1e08e3b1ad6257689f22189e2148fdb917f95f47b0b7d8b7b4812",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/901/complete.json",
+      "relative_path": "901/complete.json",
+      "sha256": "754712d7fa6a335995318a576326f6a8e04e4dce9c06a604ec804016d78ec314",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/902/complete.json",
+      "relative_path": "902/complete.json",
+      "sha256": "e5b263e75ba354d0f06110cae63acbf8c255af4ae5305c7db6de07321bcd323f",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/903/complete.json",
+      "relative_path": "903/complete.json",
+      "sha256": "ad4d534dc627c2d34ae1f7399927e3195fdbffc757944c1932d80e6191edf9f2",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/904/complete.json",
+      "relative_path": "904/complete.json",
+      "sha256": "0be326ccfa3248d71f8cfc5c0e8bac7526426201b5be75e0c1a090f2e877e00a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/905/complete.json",
+      "relative_path": "905/complete.json",
+      "sha256": "f1e28f4cd68ebcd5fe20383d326a4bbba54807fb018196b068c84b2f430d6b85",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/906/complete.json",
+      "relative_path": "906/complete.json",
+      "sha256": "47730720e545c9a9ff6af5ac1af493f34bbc0024a0eda14d15aa25cdd6301e22",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/907/complete.json",
+      "relative_path": "907/complete.json",
+      "sha256": "045c2f2bb104634e4dae05b3f545a762955f3a3198dd16fddcac53117fdb84d6",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/908/complete.json",
+      "relative_path": "908/complete.json",
+      "sha256": "1b0ceddede7bc88ccbf10b6cdb31aea2cef6145f77bed6c32edb52fb1b737a66",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/909/complete.json",
+      "relative_path": "909/complete.json",
+      "sha256": "bc0100359f6b82a0d37b081566414f179380c706439b6d9c40d72819f186a4f7",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/910/complete.json",
+      "relative_path": "910/complete.json",
+      "sha256": "7f0960aa9242f2012298e3fccc2c470ab37f992bfa330e5b475bee05f66a5f6d",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/911/complete.json",
+      "relative_path": "911/complete.json",
+      "sha256": "13704b7df33b5b6a367f31fee0d5d81850b78ed0045455c41c916ecb41ce6e6b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/912/complete.json",
+      "relative_path": "912/complete.json",
+      "sha256": "b4d144ac70b5e137f7d1db7444a4fd98f07042f9adc57cf29ebd10598dd0084b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/913/complete.json",
+      "relative_path": "913/complete.json",
+      "sha256": "aa1d269644765f4f3936372e813addcfcb88af7a1168c10bf98a9c3602624553",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/914/complete.json",
+      "relative_path": "914/complete.json",
+      "sha256": "f5bb9cd0530fe3271561f9ce18ad7e9a261cd5e567fc38aa556c189bf7e7ce4d",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/915/complete.json",
+      "relative_path": "915/complete.json",
+      "sha256": "330a13be7048fd5311a3a34543667336027bdea52cc53f8278850d1022e77942",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/916/complete.json",
+      "relative_path": "916/complete.json",
+      "sha256": "ec02fdb0107f9b3bed0f2fd4a7daa0399e01e35c29ec149b6ba37b0e3c984ba1",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/917/complete.json",
+      "relative_path": "917/complete.json",
+      "sha256": "0ab9d3cb60c2afda68f0d2e95d88303a277c608a31011fc8e6d70a9d96396ae5",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/918/complete.json",
+      "relative_path": "918/complete.json",
+      "sha256": "a6c377bbb15d80309901a01da064d300fd33c392a2ed60d7d6734d95d51a0f54",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/919/complete.json",
+      "relative_path": "919/complete.json",
+      "sha256": "a1a2986c8ff11bd0b3eec85faaf605c3702f56044a2114aa0abbac30c72b18ea",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/920/complete.json",
+      "relative_path": "920/complete.json",
+      "sha256": "5abc8545f510a05bbd834df004cbd3a655f66b3f6e5a30cc4fc2f124cf7c3130",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/921/complete.json",
+      "relative_path": "921/complete.json",
+      "sha256": "0780c8a0c609cfbac43b40220f0e31051a3afb12fff6b8fd54a806d571671d20",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/922/complete.json",
+      "relative_path": "922/complete.json",
+      "sha256": "9507bb4a2985785cb4193a196379d8d08f4a0de143bf65ba78af772687127d92",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/923/complete.json",
+      "relative_path": "923/complete.json",
+      "sha256": "0e76bab563111dd70ced78e637ee0565c71ad5ef03b0310c11f94daaeb78db7e",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/924/complete.json",
+      "relative_path": "924/complete.json",
+      "sha256": "10f3b70021193847bf383274841c0c02d59c86bdc7c0716e1cc542df02af5c0f",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/925/complete.json",
+      "relative_path": "925/complete.json",
+      "sha256": "e9afaeb5bf2fbcf13714b1989b33a1e23d6d7d53012143280837f77354ad3e04",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/926/complete.json",
+      "relative_path": "926/complete.json",
+      "sha256": "7aec2f2eee2946ef99695a4668607773a23652f57cd0d395e87530515f0ead4d",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/927/complete.json",
+      "relative_path": "927/complete.json",
+      "sha256": "891a227c64c0352246285d689d6f64404693d01cf45e7c5c30444187fb6f8d84",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/928/complete.json",
+      "relative_path": "928/complete.json",
+      "sha256": "d5c6991215ab769034a49fb69942c517dd27be77d6b5b857e7c2e0a21c8a09b7",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/929/complete.json",
+      "relative_path": "929/complete.json",
+      "sha256": "26d1ec1c1849ba4efcf7efee5149c1ee7a39defaaa8ab1be4be278f79ba2f8da",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/930/complete.json",
+      "relative_path": "930/complete.json",
+      "sha256": "534b9d7f6200468a4e55b2b303b876aeab52d59fc2f75ce6a111f34ede7893d5",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/931/complete.json",
+      "relative_path": "931/complete.json",
+      "sha256": "3d39f8634b1c3e80b7ce3383cb16f42cf6fdf34830e1ae814d2e371555d99dd9",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/932/complete.json",
+      "relative_path": "932/complete.json",
+      "sha256": "a93383751ebd25bd8d1180eeca311eba8f96c848bc93d3d6d3a7c9df85bcb2b9",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/933/complete.json",
+      "relative_path": "933/complete.json",
+      "sha256": "e41eac3ed287eeca33be82ac5b4441cbb82b8a07711930613d43c3cc3067acd4",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/934/complete.json",
+      "relative_path": "934/complete.json",
+      "sha256": "a730c79cb52ac6e8c926bba2ac0757850320b2d221b8013a93f1060ec2fb9143",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/935/complete.json",
+      "relative_path": "935/complete.json",
+      "sha256": "e83369c4a49ebde522970f4136b4950e86933ff599e61d731cfc472f10443feb",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/936/complete.json",
+      "relative_path": "936/complete.json",
+      "sha256": "4f7016eaed8d2409ba24032bc5ee2b62e24b8df9ab08bbd9869c32ef368dc514",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/937/complete.json",
+      "relative_path": "937/complete.json",
+      "sha256": "20177affef29637756fca92bba505ce58ed23dea6c54c9241926aafa2eafc65a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/938/complete.json",
+      "relative_path": "938/complete.json",
+      "sha256": "d182f21e833514891e8357ffd4bd05c0648493665a75034f6dd04a2e13a7033b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/939/complete.json",
+      "relative_path": "939/complete.json",
+      "sha256": "99a3ce463efe0801502dfcf2a16d32066f529b599ef7882317ee5f2d8ebbc389",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/940/complete.json",
+      "relative_path": "940/complete.json",
+      "sha256": "678a4c5a421c1332da2fce65e5a61a1e05f5de8aa6f598decb70653beecd022c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/941/complete.json",
+      "relative_path": "941/complete.json",
+      "sha256": "34aa44eab9ba6ed5a1b5a3e3071b82700e47327863376043807955c309794d5b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/942/complete.json",
+      "relative_path": "942/complete.json",
+      "sha256": "f68207596f8c977623591ad20a15bc9a2ef86d90a36076788b87265768efe228",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/943/complete.json",
+      "relative_path": "943/complete.json",
+      "sha256": "b81882df41807aed8dd812407a4dcaa18c3a22bdfabf7f7c73a112667a26768c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/944/complete.json",
+      "relative_path": "944/complete.json",
+      "sha256": "3e053a46e0a117e751ee83017c6866ecd93eb197f0b767f58320932a9adcbad2",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/945/complete.json",
+      "relative_path": "945/complete.json",
+      "sha256": "9c0b0e62add1e18c9c3587a3e0621db406977fc33f50ea56528eb569b789d877",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/946/complete.json",
+      "relative_path": "946/complete.json",
+      "sha256": "431e5c849612167e8d5ee61c4858184705ca235c6dddfc273f64b0958c4d904a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/947/complete.json",
+      "relative_path": "947/complete.json",
+      "sha256": "8f8344e3d0e9634c2c4b5cdec5d436a7c6e0310e466fe280ccf8ebfa42001b10",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/948/complete.json",
+      "relative_path": "948/complete.json",
+      "sha256": "54efe630c5fed85b2e551d55e87e4fcb4d118fe8f40760728761c84b1599d1f3",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/949/complete.json",
+      "relative_path": "949/complete.json",
+      "sha256": "f0b8651b4b5217900bda1c1d6e0224a62c95462ec2cf3b92979f21a91390320b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/950/complete.json",
+      "relative_path": "950/complete.json",
+      "sha256": "6b621fba09c1d04ca261769a78ceb9d6bd54e0bb581d5bc3a67d56357524e4e2",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/951/complete.json",
+      "relative_path": "951/complete.json",
+      "sha256": "e5c7c279824c10f4222eaf655c1908fa0ee3f67b4bbd226c5f49cffb5ebacb43",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/952/complete.json",
+      "relative_path": "952/complete.json",
+      "sha256": "05d64f843c73e064adfb3fe824fba582898d18fe4b0ef31d2e4eccbf2ffd8235",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/953/complete.json",
+      "relative_path": "953/complete.json",
+      "sha256": "a530b55428bc693fab726c1229298584f21ec90262aa711cf514705ede53e177",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/954/complete.json",
+      "relative_path": "954/complete.json",
+      "sha256": "e05e8b4a56ebe2a98c6234966e195f372f942b21d43c761d1a823574da04caf2",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/955/complete.json",
+      "relative_path": "955/complete.json",
+      "sha256": "b84141f5c9d0b7fbd2e2e94fcd534f24f8e134f403999b4316d3f67cfc660bda",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/956/complete.json",
+      "relative_path": "956/complete.json",
+      "sha256": "201568a1e35af5c7efb8e2db1bd6409c423526876af7deb88ff516e2598fc43a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/957/complete.json",
+      "relative_path": "957/complete.json",
+      "sha256": "3671744d342c4015d028d11fe76daf00d73bd34ff5f5aff9ff9fcb6853a85883",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/958/complete.json",
+      "relative_path": "958/complete.json",
+      "sha256": "e27954c980735d0eac717a9a1e9ad46f796ebbf82abab837c2e00937fbc82fdc",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/959/complete.json",
+      "relative_path": "959/complete.json",
+      "sha256": "361b9577472a8f00825f34d02ce68eb1a28e12c8e9efdde3ece32e10d191bde5",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/960/complete.json",
+      "relative_path": "960/complete.json",
+      "sha256": "0192b1a38d28ae553d401320cdb68ef57ed775f1acda41e5d28c63ff862a839c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/961/complete.json",
+      "relative_path": "961/complete.json",
+      "sha256": "4b3ab0f5363f2e00761726dedeb2f96aac2ed662ff1269b014f014f813d55eba",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/962/complete.json",
+      "relative_path": "962/complete.json",
+      "sha256": "7478b90ba49e3e7ef036b0c91db83f7df50849b15c45ecfc9e1823e7564ec1b7",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/963/complete.json",
+      "relative_path": "963/complete.json",
+      "sha256": "badf0f1f03496452ca26d142a4a11e416aee523f96e7975f658eaa6b0f44d4cc",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/964/complete.json",
+      "relative_path": "964/complete.json",
+      "sha256": "4dc3eea7608d93d4c991be0594ffab9ecd7e1bdca79e60c6812367a2e9068677",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/965/complete.json",
+      "relative_path": "965/complete.json",
+      "sha256": "e5fd9b4df6982dbb89132cb74dbb477cdc72294019d59b80ef6743f7d4a349f5",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/966/complete.json",
+      "relative_path": "966/complete.json",
+      "sha256": "f8de8d9b2259553a803fd9c76b1f8f0684b6fabb8e7fb18e17d23a70d0cde053",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/967/complete.json",
+      "relative_path": "967/complete.json",
+      "sha256": "0a10a005e9fba1a67469597ed1bd4886ad93be16876214b02ddcccdfae7c73e9",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/968/complete.json",
+      "relative_path": "968/complete.json",
+      "sha256": "f551918cda27fe064a2e23a8d7b7be79cbe0f9cfb78c8783c591920d1da4da3f",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/969/complete.json",
+      "relative_path": "969/complete.json",
+      "sha256": "2fbb8dd37b8b9701f3b4c8ed10066eff9d49129d6c40caf6ea1fba821ad6623e",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/970/complete.json",
+      "relative_path": "970/complete.json",
+      "sha256": "796cb489ccfbf801cd9a31162cadfd223d756088b44c8d70fbf8d3fdcfb2ab2d",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/971/complete.json",
+      "relative_path": "971/complete.json",
+      "sha256": "31367408f96fb2f8d197f1eec167d0b86050ec91859b660b113d694f6deb7e67",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/972/complete.json",
+      "relative_path": "972/complete.json",
+      "sha256": "03872ca09070f8ed4e5c035e69dc4f5ee9e662611f6a70825c3c40e53f412c35",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/973/complete.json",
+      "relative_path": "973/complete.json",
+      "sha256": "2705c07f6da7181701eef42dcad3763325c018306f4839fe7c4d2b343f01a2c4",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/974/complete.json",
+      "relative_path": "974/complete.json",
+      "sha256": "434a52b8afc2874ec53d1751e954227f0b9a684926d49bad5a5e7514aab73014",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/975/complete.json",
+      "relative_path": "975/complete.json",
+      "sha256": "2e277ef3d212ecbd87eb7a8cd80e8c1af96e83af1e5bc8dcf735c247f6449071",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/976/complete.json",
+      "relative_path": "976/complete.json",
+      "sha256": "d3021ca0ddf6cbb2da4d612d8b166afd6aa592c1c152564419019ce440fe4b09",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/977/complete.json",
+      "relative_path": "977/complete.json",
+      "sha256": "7ba11aaac61e2bf526c745d11270b453a9bdb9af33bf77456643ead77b80c32a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/978/complete.json",
+      "relative_path": "978/complete.json",
+      "sha256": "bfd895b92c680296afc038451df44fce10bf4e8fd16c0435bf0098ee243e0f1a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/979/complete.json",
+      "relative_path": "979/complete.json",
+      "sha256": "6117887f45ce5e236b6b10d9e4d7988118a1894b949d9358062d0efd2fc21e4b",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/980/complete.json",
+      "relative_path": "980/complete.json",
+      "sha256": "2985c8bc5c89060f38f9d8242ab2776067c2afc5b5940e0e834b4243bda2fb7e",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/981/complete.json",
+      "relative_path": "981/complete.json",
+      "sha256": "bb963d4e3a08767fc65c09de2e46d932a744d18e8b4a17ed2628a600fc6cf7e1",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/982/complete.json",
+      "relative_path": "982/complete.json",
+      "sha256": "d3c36d70e47f2749d9238e67bdb94b2b6c2fc55a57ca0fbd24377d8d003e7a45",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/983/complete.json",
+      "relative_path": "983/complete.json",
+      "sha256": "a975911431f4b8c7553ffa7cdf45fa348b2588999ea0727f28ea97659b4d2c01",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/984/complete.json",
+      "relative_path": "984/complete.json",
+      "sha256": "34eda02dfbaad126898f3bbd1b73c8162a1e502e0d2fafe27bc1a8aa7d3d75b0",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/985/complete.json",
+      "relative_path": "985/complete.json",
+      "sha256": "615262483429a964724c3f47801ca7e961453053c898f5846cfad2925ca0c15c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/986/complete.json",
+      "relative_path": "986/complete.json",
+      "sha256": "86e751e2233e6285b54dfa8c1be016c7ff868fb17df3608860534c14bbe9efce",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/987/complete.json",
+      "relative_path": "987/complete.json",
+      "sha256": "288ea8a3408df2077f9c5f20bc82855e2073ea03b9c12ee54a4f7376c1c51c9a",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/988/complete.json",
+      "relative_path": "988/complete.json",
+      "sha256": "2fe70ae9fd0c056e05ec1f37c6173adbd8aa760152015584448c2d2baa434486",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/989/complete.json",
+      "relative_path": "989/complete.json",
+      "sha256": "fe56f9507b791d0cc91c3e7257e15e6e7f76ffeee498dc68f23c7da2df428177",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/990/complete.json",
+      "relative_path": "990/complete.json",
+      "sha256": "996741231e372a379eaecbf12e938bda7e96cc17d58c298df120bc47b994bf72",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/991/complete.json",
+      "relative_path": "991/complete.json",
+      "sha256": "168e71f2adab65bd77f726a5899ba2a1f6a95e0e81497f1498c66dc0d1983e77",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/992/complete.json",
+      "relative_path": "992/complete.json",
+      "sha256": "2aec6de2bb20aa48310f01ed34e552a6bc5042c4a5c61727e1b2b345a195b019",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/993/complete.json",
+      "relative_path": "993/complete.json",
+      "sha256": "cff64f99843c1eb51285b361c68cbcb4ed38353d26f5877ea0e94029264e8339",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/994/complete.json",
+      "relative_path": "994/complete.json",
+      "sha256": "e3c896a3168d685d9d4bec9353ba9eef97fb47cb61745dbf0cf74d9f57631246",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/995/complete.json",
+      "relative_path": "995/complete.json",
+      "sha256": "e2d1804f61bc9e22740e46cab53302a09d9503a7fffeb4e07e5293c5957214fb",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/996/complete.json",
+      "relative_path": "996/complete.json",
+      "sha256": "0188eb5e7d31b81a57ff33b482ffb554428338c9f5e176ccfadae2f831d0e61c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/997/complete.json",
+      "relative_path": "997/complete.json",
+      "sha256": "95e66c19d519a8ac4a932810e126881512c1e1d90970aaf27232d0ff1cd0a1d7",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/998/complete.json",
+      "relative_path": "998/complete.json",
+      "sha256": "5245f59f0421db9e16eb7e01f4d667a08fc9745d2c96fc7c9e57ca120bad948c",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919/999/complete.json",
+      "relative_path": "999/complete.json",
+      "sha256": "765512da584deca95021b15a47795d039437ee4bfa7171e0a823ce2d0ad80fd8",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "eligible",
+        "graphs",
+        "hashes",
+        "identity",
+        "positions",
+        "source_id",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

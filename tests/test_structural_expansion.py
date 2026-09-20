@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 import torch
 
-from src.data.structural_pretraining.expand import shooting_tasks, expand_task
+from src.data.structural_pretraining.expand import shooting_tasks, dynamic_tasks, expand_task
 from src.data.structural_pretraining.prepare import file_hash
 from src.analysis.liquid_structure import persistence_image
 from src.training_methods.shared_pretraining.initialization import initialize_structural, require_complete_tda
@@ -16,7 +16,7 @@ from src.training_methods.structural_pretraining.objective import Objective
 
 
 def test_extra_shooting_covers_sources_preserves_ancestry_and_avoids_old_frames():
-    sources=[dict(split=split,stratum='al_shooting',lineage=root,frame_count=12,id=str(i))
+    sources=[dict(split=split,stratum='al_shooting',kind='dynamic',lineage=root,frame_count=12,id=str(i))
              for i,(root,split) in enumerate([('a','train'),('a','train'),('b','train'),('held','selection')])]
     parent=dict(sources=sources,tasks=[dict(source=0,frame=3)])
     tasks=shooting_tasks(parent,24,19,5)
@@ -27,6 +27,21 @@ def test_extra_shooting_covers_sources_preserves_ancestry_and_avoids_old_frames(
     assert all((t['source'],t['frame'])!=(0,3) for t in tasks)
     assert sum(t['count'] for t in tasks if sources[t['source']]['lineage']=='a')==12
     assert all(t['split']=='train' and 0<t['count']<=5 for t in tasks)
+
+
+def test_dynamic_expansion_excludes_static_and_heldout_and_preserves_counts():
+    sources=[dict(split=split,kind=kind,stratum=stratum,lineage=lineage,frame_count=30,id=str(i))
+        for i,(split,kind,stratum,lineage) in enumerate([
+            ('train','dynamic','al_native','a'),('train','dynamic','al_native','b'),
+            ('selection','dynamic','al_native','held'),('train','static','mg','static'),
+            ('train','dynamic','mg','mg-root')])]
+    parent=dict(sources=sources,tasks=[dict(source=0,frame=3),dict(source=4,frame=5)])
+    tasks=dynamic_tasks(parent,dict(al_native=24,mg=16),17,4)
+    assert sum(t['count'] for t in tasks)==40
+    assert {t['source'] for t in tasks}=={0,1,4}
+    assert sum(t['count'] for t in tasks if t['source']==4)==16
+    assert not {(t['source'],t['frame']) for t in tasks}&{(0,3),(4,5)}
+    assert len({(t['source'],t['frame']) for t in tasks})==len(tasks)
 
 
 @pytest.mark.parametrize('static',[False,True])

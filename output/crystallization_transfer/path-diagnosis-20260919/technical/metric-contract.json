@@ -1,0 +1,12 @@
+{
+  "family": "crystallization_paths_diagnostics",
+  "exported_at": "2026-09-19T13:57:35.288399+00:00",
+  "files": {
+    "src/research/crystallization_paths/diagnose.py": "f43165be5b9692e7cacc178868640cea7afe4463bae95e7602d8695de33f5b28",
+    "src/research/crystallization_paths/model.py": "73e50e8118251a14232e1b92b76fee305b5dfebd8167783db83fbe7e344dbc74",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/crystallization_paths/runtime.py": "beea440379036e1d1dbf1d767e25de711e8a1a872babb7b3ab00f8e7a3367ad5",
+    "src/research/crystallization_paths/data.py": "d14982d39df713b1ed7549b6809090b93de801b24636860a52b310afa845965a",
+    "docs/metrics/crystallization_paths_diagnostics.md": "87f965929331cfb3d039e1229df3aa12521b2420c863debd65bb222ff3f89cf3"
+  }
+}

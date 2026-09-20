@@ -1,0 +1,9 @@
+{
+  "cache": "${storage:cache}/neighborhood_jepa/tracked-six-65536-20260920",
+  "parent_release": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919",
+  "seed": 20260920,
+  "anchors": 65536,
+  "anchors_per_shard": 256,
+  "query_radius": 4.25,
+  "workers": 10
+}

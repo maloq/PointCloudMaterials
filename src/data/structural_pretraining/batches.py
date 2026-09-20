@@ -8,7 +8,7 @@ from scipy.spatial import cKDTree
 import torch
 
 from .prepare import ELEMENTS, REFERENCE_RADIUS
-from src.data.predictive_memory.targets import taper
+from .support import SUPPORT, EDGE_CUTOFF, local_crop, support_weights
 from src.models.encoders.structural import ATOMIC_NUMBERS
 
 
@@ -16,6 +16,7 @@ class Release:
     def __init__(self,root,materials=None,dynamic_only=False):
         self.root=Path(root); self.manifest=json.loads((self.root/'manifest.json').read_text())
         if self.manifest['state']!='complete':raise ValueError('Structural release is incomplete')
+        self.manifest['identity']=dict(parent=self.manifest['identity'],observation_support=SUPPORT)
         if dynamic_only:
             self.manifest['shards']=[s for s in self.manifest['shards'] if not s['static']]
             self.manifest['identity']=dict(parent=self.manifest['identity'],dynamic_only=True,
@@ -62,13 +63,14 @@ class Release:
                 self.manifest['normalization'][name]=dict(mean=a.mean(0).tolist(),
                     std=np.maximum(a.std(0),1e-4).tolist())
 
-    def view(self,name,index,mace):
+    def view(self,name,index,scale):
         a=self.arrays[name]; lo,hi=a['offsets'][index:index+2]
-        x=np.array(a['positions'][lo:hi],copy=True)
-        ids=np.array(a['atom_ids'][lo:hi],copy=True)
-        result=dict(x=x,ids=ids,center=int(a['center_ids'][index]))
-        if mace:result['physical_edges']=None # edges are generated after scale conversion
-        return result
+        x,rows=local_crop(a['positions'][lo:hi],scale)
+        # Targets were produced from the nearest 80 points, including center.
+        # Cropping by distance preserves that set whenever at least 80 remain.
+        if a['tda_valid'][index] and len(rows)<80:
+            raise ValueError(f'Local support cannot cover the 80-point TDA target: {name}, view {index}, points {len(rows)}')
+        return dict(x=x,ids=np.array(a['atom_ids'][lo:hi][rows]),center=int(a['center_ids'][index]))
 
     def observation(self,index,which,history,mace):
         cache_key=(index,which,history,mace)
@@ -81,13 +83,13 @@ class Release:
         if which in ('future','previous') and record['static']:raise ValueError('Static structures have no temporal neighbors')
         slots=[0,1,2] if history and not record['static'] and which=='anchor' else [slot]
         if any(mapping[i]<0 for i in slots):raise ValueError('Missing declared temporal observation')
-        frames=[self.view(name,int(mapping[i]),mace) for i in slots]
+        frames=[self.view(name,int(mapping[i]),record['scale']) for i in slots]
         ids=np.unique(np.concatenate([f['ids'] for f in frames])); t=len(frames); n=len(ids)
         x=np.zeros((t,n,3),dtype=np.float32);w=np.zeros((t,n),dtype=np.float32)
         factor=REFERENCE_RADIUS/record['scale']
         for k,f in enumerate(frames):
-            loc=np.searchsorted(ids,f['ids']); local=f['x']*factor
-            x[k,loc]=local;w[k,loc]=taper(np.linalg.norm(local,axis=-1),15.,17.)
+            loc=np.searchsorted(ids,f['ids']); local=f['x']
+            x[k,loc]=local;w[k,loc]=support_weights(local)
         center=frames[-1]['center']; loc=np.flatnonzero(ids==center)
         if len(loc)!=1 or not np.all(x[-1,loc[0]]==0):raise ValueError('Lost tracked center identity')
         times=(a['times'][slots] if t>1 else np.array([0.])).astype(np.float32)
@@ -99,7 +101,7 @@ class Release:
             tda_valid=bool(a['tda_valid'][target_index]),
             key=(name,target_index),factor=factor)
         if mace:
-            pairs=cKDTree(x[0]).query_pairs(5.,output_type='ndarray')
+            pairs=cKDTree(x[0]).query_pairs(EDGE_CUTOFF,output_type='ndarray')
             if len(pairs) and np.any(np.linalg.norm(x[0,pairs[:,0]]-x[0,pairs[:,1]],axis=-1)<=0):
                 raise ValueError('Coincident atoms in the normalized MACE graph')
             result['edges']=np.concatenate((pairs,pairs[:,::-1]),axis=0).T.astype(np.int64)
@@ -132,28 +134,28 @@ def collate(samples,architecture,bond_order=False):
         tda_valid=torch.tensor([s['tda_valid'] for s in samples]))
     if architecture=='mace':
         if t!=1:raise ValueError('This structural MACE run is snapshot-only')
-        xs=[];ws=[];zs=[];edges=[];graphs=[];centers=[];bonds=[];offset=0
+        xs=[];ws=[];zs=[];edges=[];graphs=[];centers=[];offset=0
         for i,s in enumerate(samples):
             p=s['positions'][0]; e=s['edges']+offset
             centers.append(offset+s['center'])
-            if bond_order:
-                d2=np.square(p-p[s['center']]).sum(-1)
-                candidates=np.flatnonzero((d2>0)&(s['weights'][0]>0))
-                if len(candidates)<12:
-                    raise ValueError('Bond order requires 12 distinct supported neighbors of the tracked center')
-                neighbors=candidates[np.argsort(d2[candidates],kind='stable')[:12]]
-                bonds.append(neighbors+offset)
             xs.append(p);ws.append(s['weights'][0]);zs.append(np.full(len(p),s['species'],np.int64));edges.append(e)
             graphs.append(np.full(len(p),i,np.int64));offset+=len(p)
         batch.update(packed_positions=torch.from_numpy(np.concatenate(xs)),packed_weights=torch.from_numpy(np.concatenate(ws)),
             packed_species=torch.from_numpy(np.concatenate(zs)),node_graph=torch.from_numpy(np.concatenate(graphs)),
             edges=torch.from_numpy(np.concatenate(edges,axis=1)),packed_centers=torch.tensor(centers))
-        if bond_order:
-            from .bond_order import bond_order_targets
-            vectors=batch['packed_positions'][torch.tensor(np.stack(bonds))]-batch['packed_positions'][batch['packed_centers']][:,None]
-            batch['bond_order']=bond_order_targets(vectors)
-    elif bond_order:
-        raise ValueError('Equivariant bond-order training is implemented for MACE only')
+    if bond_order:
+        if t!=1:raise ValueError('Bond-order supervision requires independent snapshots')
+        from .bond_order import bond_order_targets
+        vectors=[]
+        for s in samples:
+            relative=s['positions'][0]-s['positions'][0,s['center']]
+            d2=np.square(relative).sum(-1)
+            candidates=np.flatnonzero((d2>0)&(s['weights'][0]>0))
+            if len(candidates)<12:
+                raise ValueError('Bond order requires 12 distinct supported neighbors of the tracked center')
+            neighbors=candidates[np.argsort(d2[candidates],kind='stable')[:12]]
+            vectors.append(relative[neighbors])
+        batch['bond_order']=bond_order_targets(torch.from_numpy(np.stack(vectors)))
     return batch
 
 

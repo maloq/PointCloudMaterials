@@ -2343,6 +2343,143 @@
           "The immutable plan contains the full native/shooting source lineage inventory beyond the top-level collection dependencies."
         ]
       }
+    },
+    "structural-neighbors-dynamic-1018080-20260919": {
+      "root": "cache",
+      "path": "structural_pretraining/dynamic-1018080-full-tda-20260919",
+      "kind": "cache",
+      "dependencies": [
+        "structural-neighbors-287500-full-tda-20260918"
+      ],
+      "metadata": {
+        "title": "Fourfold dynamic structural expansion: 1,018,080 Al/Mg/Ti/Ta anchors",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta",
+          "Zr"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Adds 763,560 dynamic anchors at previously unused source/frame combinations across all six training strata. Sampling balances ancestral lineages, then trajectories subject to unused-frame capacity. Retains all parent shards, the 480 selection anchors and fixed material scales. The dynamic-only training subset has 1,018,080 anchors; inherited static data (including Zr) is excluded by the training protocol. Instantaneous TDA144 covers every supervised anchor/spatial/future view; new shards use the local 8-normalized-unit support. No new simulations.",
+        "evidence": [
+          "${dataset:structural-neighbors-dynamic-1018080-20260919}/plan.json",
+          "${dataset:structural-neighbors-dynamic-1018080-20260919}/manifest.json",
+          "configs/shared_pretraining/mace_expanded_dual/data.json"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "limitations": [
+          "Static Al/Mg/Ta/Zr generating potentials are not established; their batches carry unknown-static provenance.",
+          "Anchor records and shooting descendants are correlated; counts are not independent sources. Only the native Al cohort provides independent selection/test roles.",
+          "No velocities or relaxed-TDA targets. Irregular saved-frame intervals retain their measured physical time offsets.",
+          "The immutable plan contains the full native/shooting source lineage inventory beyond the top-level collection dependencies."
+        ]
+      }
+    },
+    "crystallization-transfer-mace-20260919": {
+      "root": "cache",
+      "path": "crystallization-transfer-mace-20260919",
+      "kind": "cache",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903"
+      ],
+      "metadata": {
+        "title": "Dense local onset transfer: 150 Al sources, 362400 candidate windows",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Existing 150 independent 70304-atom Al runs at 400\u2013520 K; 16 outcome-independent tracked centers, 3 ps origins, fixed 90/15/15/30 lineage split. Local MACE graphs and native scalar/tensor features at sparse historical times and seven geometric context centers. Cached verified PTM labels from the local-predictability assay. No simulations generated.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+          "configs/crystallization_transfer/mace_20260919.json"
+        ],
+        "limitations": [
+          "Candidate windows are correlated; independent sample unit is source lineage. At-risk filtering reduces the candidate count.",
+          "Sparse history snapshots and seven representative context centers, not dense spacetime observations.",
+          "Positions enter MACE; the separate physical descriptor baseline additionally uses existing velocities. No relaxed-TDA targets."
+        ]
+      }
+    },
+    "crystallization-paths-mace-20260919": {
+      "root": "cache",
+      "path": "crystallization-paths-mace-20260919",
+      "kind": "cache",
+      "dependencies": [
+        "crystallization-transfer-mace-20260919"
+      ],
+      "metadata": {
+        "title": "Future-center MACE trajectories for local crystallization path forecasts",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Same 150 independent Al trajectories and fixed 90/15/15/30 source split as the transfer assay. Frozen parent MACE center embeddings extend to 594 ps on the existing 3 ps grid. Existing full-timeline physical packets, bond order and PTM labels remain in the parent cache. No new simulations.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "evidence": [
+          "configs/crystallization_transfer/mace_paths_20260919.json",
+          "output/crystallization_transfer/mace-paths-20260919/technical/plan.json"
+        ],
+        "limitations": [
+          "Derived predictions target local structural states, not atomic coordinates.",
+          "Window overlap does not create independent sources.",
+          "Future targets are separated from causal observations; extraction completion is recorded per source."
+        ]
+      }
+    },
+    "neighborhood-jepa-tracked-six-65536-20260920": {
+      "root": "cache",
+      "path": "neighborhood_jepa/tracked-six-65536-20260920",
+      "kind": "cache",
+      "dependencies": [
+        "structural-neighbors-dynamic-1018080-20260919"
+      ],
+      "metadata": {
+        "title": "Tracked six-neighbor space-time JEPA: 65,536 mixed-material training anchors",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Current-frame angular-coverage neighbor selection; same seven atom identities at previous/current/next saved frames. Local radius-8 complete graphs. Current/next center physical85 and instantaneous TDA144 are inherited from the full-TDA parent. 480 native-Al selection anchors remain held out. No static data, velocities, relaxed targets or new simulations.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "evidence": [
+          "${dataset:neighborhood-jepa-tracked-six-65536-20260920}/plan.json",
+          "${dataset:neighborhood-jepa-tracked-six-65536-20260920}/manifest.json",
+          "configs/neighborhood_jepa/data_20260920.json"
+        ],
+        "limitations": [
+          "Selection is native Al only; anchor and shooting counts are not independent trajectories.",
+          "Physical time gaps depend on the recorded source cadence.",
+          "Only center current/next views have fixed physical/TDA labels; neighbor targets are learned equivariant/invariant embeddings.",
+          "Six neighbors provide approximate angular coverage, not an exact canonical cubic frame."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

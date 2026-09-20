@@ -1,0 +1,14 @@
+{
+  "release": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919",
+  "parent_release": "${storage:cache}/structural_pretraining/broad-287500-full-tda-20260918",
+  "additional_dynamic_anchors": {
+    "al_native": 187500,
+    "al_shooting": 225000,
+    "al_other": 59640,
+    "mg": 89460,
+    "ti": 112500,
+    "ta": 89460
+  },
+  "rows_per_task": 256,
+  "seed": 20260921
+}

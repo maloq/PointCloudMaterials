@@ -1,5 +1,11 @@
 # Configuration index
 
+[`analysis/conditional_information_local_last.json`](analysis/conditional_information_local_last.json)
+pins final-update-622 MACE/GATr conditional structure, crystallization and jitter
+comparisons on the approved H100; [protocol](../experiments/gatr_conditional_information_20260918/LOCAL_LAST622.md).
+
+Latest local static Al: [MACE](analysis/static_structural_mace_local_latest_al.yaml) and [GATr](analysis/static_structural_gatr_local_latest_al.yaml), with [protocol](../experiments/shared_pretraining_20260918/STATIC_AL_LOCAL.md).
+
 [`analysis/gatr_conditional_information.json`](analysis/gatr_conditional_information.json)
 and [`analysis/gatr_conditional_spatial.json`](analysis/gatr_conditional_spatial.json)
 pin frozen GATr radial controls, source-held-out structure/future probes and the
@@ -225,3 +231,36 @@ compact W&B logging. See [transition protocol](../docs/shared_pretraining_tempor
 `shared_pretraining/mace_mixed_bond_order/` trains a fresh five-epoch MACE on
 the same dynamic mixed-material data, with q4m/q6m supervised from learned
 equivariant atom features. See [execution and tests](../docs/shared_pretraining_mace_bond_order_20260918.md).
+
+`shared_pretraining/local_structure/` is the current structural-training recipe:
+local 6–8 normalized-unit support, fresh GATr and MACE for 5 epochs each,
+B=2048, compiled BF16. It supersedes the oversized `gatr_mixed_triplets`,
+`gatr_temporal_backtracking` and `mace_mixed_bond_order` recipes. Those historical
+output/checkpoint paths cannot be resumed by current code. See
+[local support, validation and launch](../docs/shared_pretraining_local_structure_20260918.md).
+
+`shared_pretraining/local_structure/gatr_bond_campaign.json` launches only the
+five-epoch replacement GATr with equivariant q4m/q6m supervision; the local MACE
+run continues independently. Both keep the local support and batch 2,048.
+
+`shared_pretraining/mace_expanded_dual/` expands every existing dynamic training stratum fourfold and trains one local MACE on both node61 GPUs for five epoch equivalents. See [execution and data provenance](../docs/shared_pretraining_mace_expanded_dual_20260919.md).
+
+`shared_pretraining/mace_optimized_dual/` continues the expanded MACE checkpoint with process prefetch and the unchanged two-GPU encoder calculation. Its exact-source transition receipt is mandatory; see [the optimization record](../docs/shared_pretraining_mace_dual_optimization_20260919.md).
+
+- `crystallization_transfer/mace_20260919.json`: four allocated GPU lanes for local-onset transfer, dense existing Al origins and sparse geometry-aware context.
+
+- `crystallization_transfer/mace_scaling_20260919.json`: detached continuation
+  testing spatial context radius, 1/3/6 epochs, nested training source counts and
+  window coverage; reuses the registered crystallization cache.
+
+- `crystallization_transfer/mace_adaptive_20260919.json`: corrected trainable-encoder
+  normalization, spatial/temporal attention screens and validation-selected
+  12/24-epoch runs on the existing three RTX allocations.
+- `crystallization_transfer/mace_adaptive_continuations_20260919.json`: two
+  dependent 16-hour RTX/H100 slots continuing the immutable adaptive queue.
+
+The crystallization structural-path companion uses `crystallization_transfer/mace_paths_20260919.json` for ten 12/24-epoch direct, autoregressive, mixture and diffusion forecasts; [protocol](../experiments/crystallization_transfer_20260919/PATHS.md).
+
+`crystallization_transfer/mace_path_refinement_20260919.json` reuses the completed future cache for 30 targeted screens and five validation-selected longer fits; [diagnosis and protocol](../experiments/crystallization_transfer_20260919/PATH_REFINEMENT.md).
+
+- `neighborhood_jepa/`: tracked six-neighbor cache and MACE-only SIGReg/VICReg, spatial and temporal query comparisons; [protocol](../experiments/neighborhood_jepa_20260920/README.md).

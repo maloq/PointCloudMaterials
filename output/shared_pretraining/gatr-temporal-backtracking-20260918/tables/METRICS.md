@@ -369,4 +369,4 @@ resume of the old objective. See the
 [execution record](../shared_pretraining_temporal_backtracking_20260918.md).
 
 
-Table export: 2026-09-18T21:15:40.280047+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.
+Table export: 2026-09-18T22:05:02.612464+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.

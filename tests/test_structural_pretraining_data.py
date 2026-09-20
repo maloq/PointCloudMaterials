@@ -50,7 +50,8 @@ def test_material_subset_filters_inputs_and_refits_only_training_targets(tmp_pat
     assert set(release.arrays)=={'train','heldout'}
     assert release.manifest['normalization']=={
         'physical':{'mean':[2.,4.],'std':[1.,2.]},'tda':{'mean':[5.,10.],'std':[1.,2.]}}
-    assert release.manifest['identity']['parent']==original['identity']
+    assert release.manifest['identity']['parent']['parent']==original['identity']
+    assert release.manifest['identity']['parent']['observation_support']['outer_radius']==8.
     assert json.loads((tmp_path/'manifest.json').read_text())==original
     with pytest.raises(ValueError,match='Requested materials'):Release(tmp_path,materials=['Ti'])
     original['shards'][1]['task']['split']='test'

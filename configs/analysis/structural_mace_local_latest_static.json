@@ -1,0 +1,9 @@
+{
+  "checkpoint": "/work/PERSO/vmorozov/analysis/structural_static/mace-local-step622-al-20260919/technical/source-checkpoint/last.pt",
+  "checkpoint_sha256": "204fb4316df2361011344870313c3d1d76a3a6e5e62b3a10b65c8ab9c46eb5ff",
+  "checkpoint_kind": "latest",
+  "release_manifest_sha256": "06b6b78d7f18d109a27a88dd8b25a6f54926d6f4b0ee6a5b55f1774963ec7736",
+  "output": "/work/PERSO/vmorozov/analysis/structural_static/mace-local-step622-al-20260919",
+  "data_config": "/home/infres/vmorozov/PointCloudMaterials/configs/data/loaders/static_al_structural_mace_local.yaml",
+  "device": "cuda:0"
+}

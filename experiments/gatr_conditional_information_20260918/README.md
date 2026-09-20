@@ -1,5 +1,8 @@
 # GATr information beyond radial structure and density
 
+September 19: [repeat for the final local MACE and GATr checkpoints](LOCAL_LAST622.md),
+using identical trajectories and matching populations with symmetric radial controls.
+
 Question: among environments with similar radial structure and density, does
 the exported representation distinguish bond order, angular arrangement and
 future crystallization? This follows the

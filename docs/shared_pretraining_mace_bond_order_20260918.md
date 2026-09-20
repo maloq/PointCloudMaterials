@@ -50,7 +50,9 @@ Microbatches are pinned in host memory and
 copied asynchronously; the current full batch remains resident on the GPU for
 both gradient-cache passes. Timings and peak memory stay in local JSONL only.
 W&B uses built-in GPU monitoring and the compact loss/validation dashboard,
-adding just weighted bond-order loss and its validation error.
+adding just weighted bond-order loss and its validation error. Production uses
+a 64-snapshot physical microbatch under the 40 GiB allocator limit, while the
+statistical VICReg batch remains 2,048 anchors.
 
 The preflight selects a fixed curvature weight of **2.7**, giving 0.65–0.69%
 of initial temporal loss and 9.4–9.8% of its encoder gradient norm on the three
@@ -77,3 +79,26 @@ node58 allocation. Launch details are in the campaign's `technical/submissions.j
 Monitor the run's `technical/status.json`, `updates.jsonl` and W&B link. Checkpoint
 selection remains physical + 0.25*TDA for comparison with GATr. The native-Al
 selection population does not establish held-out other-metal generalization.
+
+With four preparation workers, the six measured steady-state updates at microbatch
+96 exposed only 2.1–2.9 ms of input waiting (less than 0.02% of total time),
+including spatial/temporal transitions. Peak allocation was 33.1 GiB. However,
+spatial updates took 15.1–15.4 s versus about 9.7 s in the original microbatch-64
+profile. Production therefore retains microbatch 64 and uses the parallel loader;
+its actual data-wait times are checked again after launch. These are short
+operational measurements, not a scientific learning comparison.
+
+The detached worker was submitted at 21:32 UTC on September 18 into allocation
+**999600**, node58 (allocation end: September 19, 01:13 UTC). The run is
+[`mace-mixed-bond-0918`](https://wandb.ai/teshbek/PointCloudMaterials/runs/mace-mixed-bond-0918).
+Artifacts: `output/shared_pretraining/mace-mixed-bond-order-20260918/`.
+Campaign: `output/shared_pretraining/mace-mixed-bond-order-campaign-20260918/`.
+All 31 CPU checks passed (one CUDA-only test skipped there); all seven bond-order
+checks passed on node58, including the CUDA-only test. Metric contracts pass.
+
+Production verification: the first three completed temporal updates at microbatch
+64 took 14.72–14.74 s each, allocated about 23.0 GiB, and exposed 2.3–2.6 ms
+of data waiting (under 0.02%). A GPU observation during these updates reported
+100% utilization. Initial validation and checkpoint export passed; three compiled
+graphs and no graph breaks were recorded. The exact startup rows are preserved
+in the checks directory as `startup-verification.json`.

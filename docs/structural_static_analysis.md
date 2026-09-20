@@ -1,5 +1,12 @@
 # Static Al analysis of structural MACE/GATr–VICReg
 
+Current encoders use the [local v10 support](shared_pretraining_local_structure_20260918.md):
+6–8 normalized units, with old large-support checkpoint revisions rejected.
+The checkpoint paths and numerical results below describe historical runs and
+require their frozen code or old commit. The current adapter uses the same
+local crop as training, including the mixed MACE bond-order encoder.
+
+
 ## Active mixed GATr: frozen latest checkpoint
 
 The temporal-backtracking run's latest available optimizer checkpoint was copied

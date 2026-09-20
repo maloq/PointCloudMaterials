@@ -128,3 +128,23 @@ and an optional dynamic-only subset with refitted training target moments.
 Trajectory-stability inputs and metric equations do not use or change with these
 training options; v7 training curvature is defined separately in
 [shared pretraining](shared_pretraining.md#mixed-material-dynamic-triplets-v7).
+
+## Local structural support (v10)
+
+Current structural MACE/GATr observations use fixed material normalization
+`x_model = x_A * 9.192189 / scale_material`, crop to radius <8 before packing,
+and quintic C2 weights equal to one through radius 6 and zero at radius 8. There
+is no outer halo. MACE uses 5-unit edges, two layers and pooling tapers 0–3,
+3–5, 6–8; GATr globally attends only within the cropped sphere and scales its
+weighted count by 100. Training, static inference and trajectory inference share
+`src/data/structural_pretraining/support.py`. Geometry baselines using the
+encoder's support and radial controls now also use that local support. Existing
+85-component physical and 80-point instantaneous-TDA targets are unchanged.
+
+The revision is incompatible with previous large-support checkpoints. Historical
+exported metric contracts and results retain their original support definitions;
+reproduction of those runs requires their frozen code. Current within-domain
+VICReg, selection, bond-order and temporal-only curvature metric formulas are
+unchanged. Curvature weights are recalibrated at initialization using training
+batches under the declared 2%-loss / 10%-encoder-gradient policy. See
+[local protocol](../shared_pretraining_local_structure_20260918.md).

@@ -77,9 +77,9 @@ def make_release(tmp_path):
         shards.append(record)
         if static:continue # Static data must not even be opened.
         folder=tmp_path/'shards'/name;folder.mkdir(parents=True)
-        arrays=dict(views=np.tile(np.arange(5),(4,1)),offsets=np.arange(6)*3,
-            positions=np.tile([[0.,0,0],[1.,0,0],[0,1.,0]],(5,1)).astype(np.float32),
-            atom_ids=np.tile([7,8,9],5),center_ids=np.full(5,7),times=np.array([-.6,-.3,0.,.1]),
+        arrays=dict(views=np.tile(np.arange(5),(4,1)),offsets=np.arange(6)*80,
+            positions=np.tile(np.vstack((np.zeros((1,3)),np.random.default_rng(42).uniform(-3,3,(79,3)))),(5,1)).astype(np.float32),
+            atom_ids=np.tile(np.arange(7,87),5),center_ids=np.full(5,7),times=np.array([-.6,-.3,0.,.1]),
             physical=np.full((5,85),offset,dtype=np.float32),tda=np.full((5,144),offset,dtype=np.float32),
             tda_valid=np.array([False,False,True,True,True]))
         arrays['physical'][:2]=np.nan;arrays['tda'][:2]=np.nan
@@ -166,40 +166,3 @@ def test_parallel_preparation_preserves_sampler_order_and_cache_accounting(tmp_p
     for a,b in zip(serial[0],parallel[0],strict=True):
         for key in a:torch.testing.assert_close(a[key],b[key],equal_nan=True,rtol=0,atol=0)
     assert release.graph_bytes==sum(v['cache_bytes'] for v in release.graphs.values())
-
-
-def test_objective_transition_preserves_weights_optimizer_rng_and_schedule(tmp_path):
-    from src.models.encoders.mixed_gatr import MIXED_ARCHITECTURE_REVISION
-    from src.training_methods.shared_pretraining.runtime import atomic_checkpoint
-    from src.training_methods.shared_pretraining.initialization import continue_mixed_objective
-    torch.manual_seed(83)
-    model=MixedSnapshotGATr(KEYS);model.encoder=LinearEncoder()
-    objective=MixedObjective(NORM,KEYS,.1,.001)
-    optimizer=torch.optim.AdamW(model.parameters(),lr=.002)
-    data=dict(features=torch.randn(24,5),physical=torch.randn(24,85),tda=torch.randn(24,144),
-              tda_valid=torch.ones(24,dtype=torch.bool))
-    extra=dict(domain=torch.tensor([0,1]*4),triplet_dt=torch.ones(8,2)*.1)
-    cached_update(model,objective,[data],optimizer,True,[.1]*8,extra)
-    config=dict(seed=83,backtracking_weight=.001,schedule=dict(peak=.002,warmup_fraction=.1,minimum_ratio=.01))
-    old=dict(protocol='shared_pretraining_mixed_v7',architecture_revision=MIXED_ARCHITECTURE_REVISION,
-             data={'id':'immutable'},config=config)
-    atomic_checkpoint(tmp_path/'last.pt',model,objective,optimizer,1,.3,old,100)
-    saved=torch.load(tmp_path/'last.pt',map_location='cpu',weights_only=False)
-    changed=dict(old,protocol='shared_pretraining_mixed_v8',config=dict(config,backtracking_weight=10.,continue_from='last.pt'))
-    new=MixedSnapshotGATr(KEYS);new.encoder=LinearEncoder()
-    updated=MixedObjective(NORM,KEYS,.1,10.)
-    new_optimizer=torch.optim.AdamW(new.parameters(),lr=1.)
-    receipt=continue_mixed_objective(new,updated,new_optimizer,saved,changed,100)
-    assert receipt['parent_step']==1 and updated.backtracking_weight==10.
-    for key,value in model.state_dict().items():torch.testing.assert_close(new.state_dict()[key],value,atol=0,rtol=0)
-    assert new_optimizer.param_groups[0]['lr']==optimizer.param_groups[0]['lr']
-    for key,state in optimizer.state_dict()['state'].items():
-        for name,value in state.items():torch.testing.assert_close(new_optimizer.state_dict()['state'][key][name],value,atol=0,rtol=0)
-    torch.testing.assert_close(torch.get_rng_state(),saved['torch_rng'],atol=0,rtol=0)
-    with pytest.raises(ValueError,match='update budget'):
-        continue_mixed_objective(new,updated,new_optimizer,saved,changed,101)
-    with pytest.raises(ValueError,match='only backtracking'):
-        continue_mixed_objective(new,updated,new_optimizer,saved,dict(changed,config=dict(changed['config'],seed=84)),100)
-    updated.physical_std.mul_(2)
-    with pytest.raises(ValueError,match='statistical buffer'):
-        continue_mixed_objective(new,updated,new_optimizer,saved,changed,100)

@@ -2,10 +2,13 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from src.data.structural_pretraining.support import POOL_SCALES
 
 from .mace_causal import CausalMACEEncoder, normalize_atom_features
+from e3nn import o3
 from .axial_gatr import support_bias
 from .structural_precision import FullPrecision, FloatOutput, FullPrecisionReadout, protect_gatr
+from .equivariant_bond import gatr_bond_features
 from gatr.interface import embed_point
 from gatr.layers.linear import EquiLinear
 from gatr.layers.gatr_block import GATrBlock
@@ -13,7 +16,7 @@ from gatr.layers.attention.config import SelfAttentionConfig
 from gatr.layers.mlp.config import MLPConfig
 
 ATOMIC_NUMBERS = (12, 13, 22, 40, 73)
-ARCHITECTURE_REVISION = 'structural_v6_conditioned_heads'
+ARCHITECTURE_REVISION = 'structural_v10_local'
 
 
 def normalized_readout(inputs,hidden,outputs):
@@ -39,7 +42,7 @@ class StructuralMACE(nn.Module):
         super().__init__()
         base = CausalMACEEncoder(channels=channels, output_dim=128, num_layers=2,
             atomic_numbers=ATOMIC_NUMBERS, use_velocity=False, use_history=False,
-            scales_A=((0.,3.),(5.,7.),(15.,17.)), mace_backend=backend)
+            scales_A=POOL_SCALES, mace_backend=backend)
         for name in ('node_embedding','radial_embedding','spherical_harmonics','interactions','products','pool'):
             setattr(self,name,getattr(base,name))
         self.pool.compress=normalized_readout(len(self.pool.scales)*(5*channels+1),readout_hidden,128)
@@ -105,16 +108,17 @@ class StructuralGATr(nn.Module):
             self.time_embedding=nn.ModuleList([FullPrecision(nn.Linear(2,scalar_channels)) for _ in range(layers)])
             self.history_alpha=nn.Parameter(torch.full((layers,),.1))
         self.register_buffer('join_reference',embed_point(torch.zeros(3)))
+        self.bond_harmonics=FullPrecision(o3.SphericalHarmonics([4,6],normalize=False,normalization='component'))
         self.readout=nn.Sequential(normalized_readout(scalar_channels,128,128),
             nn.LayerNorm(128,elementwise_affine=False))
 
-    def atom_features(self,batch):
+    def atom_features(self,batch,return_multivectors=False):
         w=batch['weights']; mask=w>0; b,t,n=w.shape
         if t>1 and not self.history:
             raise ValueError('Snapshot GATr received multiple frames; construct with history=True')
         x=torch.where(mask[...,None],batch['positions']/5.,0.)
         species=self.species(batch['species'])[:,None].expand(b,t,n,16)
-        count=w.sum(-1,keepdim=True).expand_as(w)/1000.
+        count=w.sum(-1,keepdim=True).expand_as(w)/100.
         scale=batch['log_scale'][:,None,None].expand_as(w)
         scalar=torch.cat((torch.stack((w,x.square().sum(-1),count,scale),-1),species),-1)
         mv,scalar=self.input(embed_point(x).unsqueeze(-2),scalars=scalar)
@@ -137,11 +141,15 @@ class StructuralGATr(nn.Module):
                 next_s=next_s.reshape(b,n,t,self.scalar_channels).transpose(1,2)*mask[...,None]
                 gate=self.history_alpha[layer].tanh()
                 mv=mv+gate*(next_mv-mv); scalar=scalar+gate*(next_s-scalar)
-        return scalar
+        return (mv,scalar) if return_multivectors else scalar
 
-    def forward(self,batch):
-        features=self.atom_features(batch)
-        return self.readout(features[torch.arange(len(features),device=features.device),-1,batch['centers']])
+    def forward(self,batch,return_equivariant=False):
+        mv,features=self.atom_features(batch,return_multivectors=True)
+        rows=torch.arange(len(features),device=features.device)
+        state=self.readout(features[rows,-1,batch['centers']])
+        if return_equivariant:
+            return torch.cat((state,gatr_bond_features(mv[:,-1],batch['weights'][:,-1],self.bond_harmonics)),-1)
+        return state
 
 
 class StructuralModel(nn.Module):

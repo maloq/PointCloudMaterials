@@ -1,0 +1,9 @@
+{
+  "family": "crystallization_transfer_summary",
+  "exported_at": "2026-09-19T09:31:52.778363+00:00",
+  "files": {
+    "src/research/crystallization_transfer/report.py": "11e91dc23bc5af6d9a567b1f64887a97083026f94353aeb38c1da786fb549c01",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "docs/metrics/crystallization_transfer_summary.md": "01f5ceb7585b04cfdf4140c6ebd6f5e31335255c0fa1c73df2180636df30fbb7"
+  }
+}

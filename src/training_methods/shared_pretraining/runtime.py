@@ -25,10 +25,12 @@ from .data import CausalRelease
 from .health import spread,training_means,check_learning,check_regression
 from .compilation import compile_encoder,compilation_counters
 from .normalization import calibrate_heads
-from .initialization import initialize_structural,require_complete_tda,continue_mixed_objective
+from .initialization import initialize_structural,require_complete_tda
 from .tracking import Dashboard
+from .resume import check_resume
+from src.data.structural_pretraining.support import SUPPORT
 from . import mixed as mixed_training
-from src.models.encoders.mixed_gatr import MixedSnapshotGATr,MIXED_ARCHITECTURE_REVISION
+from src.models.encoders.mixed_gatr import MixedSnapshotGATr,MixedBondGATr,MIXED_ARCHITECTURE_REVISION,GATR_BOND_REVISION
 from src.models.encoders.mixed_mace import MixedSnapshotMACE,MACE_BOND_REVISION,training_encode
 from src.data.structural_pretraining.bond_order import bond_order_errors,bond_order_magnitudes
 
@@ -105,7 +107,7 @@ def cached_update(model,objective,batches,optimizer,temporal,delta,extra=None,pr
             with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
                 states.append(training_encode(model,batch).float())
     z=torch.cat(states).detach().requires_grad_(True);target=target_batch(resident,device)
-    if isinstance(model,MixedSnapshotMACE):target['bond_order']=torch.cat([b['bond_order'] for b in resident])
+    if isinstance(model,(MixedSnapshotMACE,MixedBondGATr)):target['bond_order']=torch.cat([b['bond_order'] for b in resident])
     if extra is not None:target.update({k:torch.as_tensor(v,device=device) for k,v in extra.items()})
     with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
         loss,terms=objective(model,z,target,temporal,torch.as_tensor(delta,dtype=z.dtype,device=device))
@@ -136,21 +138,21 @@ def selected_rows(release,seed):
 def evaluate(model,objective,release,config,means=None):
     model.eval();p=[];h=[];states=[];fp=[];fh=[];sources=[];bp=[];bh=[]
     bond=[];bond_zero=[];bond_magnitude=[];bond_prediction=[];bond_target=[]
-    mace_bond=isinstance(model,MixedSnapshotMACE)
+    bond_training=isinstance(model,(MixedSnapshotMACE,MixedBondGATr))
     predictions={name:[] for name in ('q','physical','tda')}
     ids=selected_rows(release,config['seed']);device=next(model.parameters()).device
     micro=min(config['microbatch_size'],64)
     for start in range(0,len(ids),micro):
         indices=ids[start:start+micro]
         samples=[release.observation(i,'anchor',config['history_frames']==3,config['architecture']=='mace') for i in indices]
-        batch=move(collate(samples,config['architecture'],bond_order=mace_bond),device)
+        batch=move(collate(samples,config['architecture'],bond_order=bond_training),device)
         with torch.autocast(device.type,dtype=torch.bfloat16,enabled=config['precision']=='bf16'):
             encoded=training_encode(model,batch).float();z=encoded[:,:128]
             if config.get('batch_mode')=='mixed_triplets':
                 domains=torch.as_tensor(mixed_training.group_ids(release,indices),device=device)
                 heads={k:v.float() for k,v in model.heads(z,domains).items()}
             else:heads={k:v.float() for k,v in model.heads(z).items()}
-        if mace_bond:
+        if bond_training:
             predicted=model.bond_order(encoded[:,128:]);target=batch['bond_order']
             bond.append(bond_order_errors(predicted,target).cpu().numpy())
             bond_zero.append(bond_order_errors(torch.zeros_like(target),target).cpu().numpy())
@@ -210,22 +212,24 @@ def atomic_checkpoint(path,model,objective,optimizer,step,best,identity,total):
         torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state_all()),temp);temp.replace(path)
 
 
-def identity_for(config,release,replay,parent,continuation=None):
-    code=implementation();code['files'].update({p:file_hash(p) for p in [__file__,'src/training_methods/shared_pretraining/data.py',
+def identity_for(config,release,replay,parent):
+    code=implementation();code['files'].update({p:file_hash(p) for p in ['src/training_methods/shared_pretraining/runtime.py','src/training_methods/shared_pretraining/data.py',
         'src/training_methods/shared_pretraining/health.py','src/training_methods/shared_pretraining/compilation.py',
         'src/training_methods/shared_pretraining/normalization.py',
         'src/training_methods/shared_pretraining/initialization.py',
         'src/training_methods/shared_pretraining/tracking.py',
+        'src/training_methods/shared_pretraining/parallel_mace.py',
+        'src/training_methods/shared_pretraining/input_pipeline.py','src/training_methods/shared_pretraining/resume.py',
         'src/training_methods/shared_pretraining/mixed.py','src/models/encoders/mixed_gatr.py',
-        'src/models/encoders/mixed_mace.py']})
+        'src/models/encoders/mixed_mace.py','src/models/encoders/equivariant_bond.py']})
     mixed=config.get('batch_mode')=='mixed_triplets'
     mace_bond=mixed and config['architecture']=='mace'
-    return dict(protocol='shared_pretraining_mixed_mace_bond_v9' if mace_bond else ('shared_pretraining_mixed_v8' if mixed else 'shared_pretraining_v6'),
-        architecture_revision=MACE_BOND_REVISION if mace_bond else (MIXED_ARCHITECTURE_REVISION if mixed else ARCHITECTURE_REVISION),
+    return dict(protocol='shared_pretraining_local_mace_bond_v10' if mace_bond else ('shared_pretraining_local_gatr_bond_v11' if mixed else 'shared_pretraining_local_v10'),
+        architecture_revision=MACE_BOND_REVISION if mace_bond else (GATR_BOND_REVISION if mixed else ARCHITECTURE_REVISION),
         data=release.manifest['identity'],replay=None if replay is None else replay.manifest['identity'],
         implementation=code,parent_checkpoint_sha256=None if parent is None else file_hash(parent),
-        continuation_checkpoint_sha256=None if continuation is None else file_hash(continuation),
-        config={k:v for k,v in config.items() if k not in ('output','microbatch_size','wandb')})
+        observation_support=SUPPORT,
+        config={k:v for k,v in config.items() if k not in ('output','microbatch_size','wandb','resume_transition')})
 
 
 def run(config,deadline):
@@ -236,7 +240,7 @@ def run(config,deadline):
 
 
 def execute(config,deadline,root,technical):
-    stop=False;tracking=None;step=0
+    stop=False;tracking=None;step=0;parallel=None;prefetch=None
     def signal_stop(signum,frame):
         nonlocal stop;stop=True
     signal.signal(signal.SIGTERM,signal_stop);signal.signal(signal.SIGUSR1,signal_stop)
@@ -246,38 +250,41 @@ def execute(config,deadline,root,technical):
     try:
         if config['precision'] not in ('float32','bf16'):raise ValueError('Precision must be float32 or bf16')
         if config['precision']=='bf16' and not torch.cuda.is_bf16_supported():raise RuntimeError('Selected GPU does not support BF16')
-        torch.cuda.set_per_process_memory_fraction(config['memory_limit_GiB']*2**30/torch.cuda.get_device_properties(0).total_memory)
+        devices=config.get('gpu_devices',[0])
+        if not devices or devices[0]!=0 or len(set(devices))!=len(devices):
+            raise ValueError('gpu_devices must begin with 0 and contain distinct visible devices')
+        if len(devices)>1 and (config['architecture']!='mace' or config.get('batch_mode')!='mixed_triplets'):
+            raise ValueError('Multi-GPU replay currently implements mixed snapshot MACE only')
+        for device in devices:
+            torch.cuda.set_per_process_memory_fraction(config['memory_limit_GiB']*2**30/torch.cuda.get_device_properties(device).total_memory,device)
         torch.manual_seed(config['seed']);np.random.seed(config['seed'])
         causal=config['phase']=='causal'
         mixed=config.get('batch_mode')=='mixed_triplets'
         if mixed and (causal or config['architecture'] not in ('gatr','mace') or config['history_frames']!=1 or 'parent' in config):
             raise ValueError('Mixed triplet run requires structural snapshot MACE/GATr initialized from scratch')
-        if 'continue_from' in config and (not mixed or config['architecture']!='gatr'):
-            raise ValueError('Objective continuation is defined only for mixed GATr')
+        if 'continue_from' in config:
+            raise ValueError('Oversized-support continuation was removed; start a fresh local-structure run')
         release=(CausalRelease(resolve_path(config['release'])) if causal else
                  Release(resolve_path(config['release']),materials=config['materials'],dynamic_only=mixed))
         if config.get('require_full_tda',False):require_complete_tda(release)
         replay=Release(resolve_path(config['replay_release']),materials=config['materials']) if causal else None
         means=training_means(replay if causal else release)
         parent=resolve_path(config['parent']) if 'parent' in config else None
-        continuation=resolve_path(config['continue_from']) if 'continue_from' in config else None
         if causal:
             parent_status=json.loads((parent.parent/'status.json').read_text())
             if parent_status['state']!='complete':raise ValueError('Causal initialization requires a completed structural fit')
-        identity=identity_for(config,release,replay,parent,continuation)
-        if (technical/'identity.json').exists() and json.loads((technical/'identity.json').read_text())!=identity:
-            raise ValueError('Changed scientific identity; use a new run')
+        identity=identity_for(config,release,replay,parent)
+        if (technical/'identity.json').exists():
+            check_resume(json.loads((technical/'identity.json').read_text()),identity,config.get('resume_transition'),technical)
         save_json(technical/'identity.json',identity)
         if (technical/'status.json').exists() and json.loads((technical/'status.json').read_text())['state']=='complete':return True
         if mixed:
             if config['architecture']=='mace':
                 model=MixedSnapshotMACE(release.group_keys).cuda()
-                objective=mixed_training.MACEBondObjective(release.manifest['normalization'],release.group_keys,
-                    config['physical_correlation_weight'],config['backtracking_weight'],config['bond_order_weight']).cuda()
             else:
-                model=MixedSnapshotGATr(release.group_keys).cuda()
-                objective=mixed_training.MixedObjective(release.manifest['normalization'],release.group_keys,
-                    config['physical_correlation_weight'],config['backtracking_weight']).cuda()
+                model=MixedBondGATr(release.group_keys).cuda()
+            objective=mixed_training.BondObjective(release.manifest['normalization'],release.group_keys,
+                config['physical_correlation_weight'],config['backtracking_weight'],config['bond_order_weight']).cuda()
             save_json(technical/'sampling.json',dict(group_keys=[list(k) for k in release.group_keys],
                 group_counts=mixed_training.quotas(release.group_weights,config['batch_size'],config['minimum_group_size']).tolist(),
                 train_rows=[len(release.groups[k]) for k in release.group_keys],dynamic_only=True,
@@ -289,6 +296,8 @@ def execute(config,deadline,root,technical):
                 Objective(release.manifest['normalization'],config['method'],config['physical_correlation_weight'])).cuda()
         if causal:
             saved=torch.load(parent,map_location='cpu',weights_only=False)
+            if saved['identity']['architecture_revision']!=ARCHITECTURE_REVISION:
+                raise ValueError('Causal parent must use the current local structural architecture')
             missing,unexpected=model.load_state_dict(saved['model'],strict=False)
             if unexpected or set(missing)!={f'future.{k}' for k in model.future.state_dict()}:raise ValueError('Parent encoder/head schema differs')
             if saved['identity']['data']!=replay.manifest['identity']:raise ValueError('Causal replay differs from structural parent data')
@@ -305,23 +314,26 @@ def execute(config,deadline,root,technical):
         resuming=(technical/'last.pt').exists()
         if resuming:
             saved=torch.load(technical/'last.pt',map_location='cuda:0',weights_only=False)
-            if saved['identity']!=identity:raise ValueError('Exact resume identity mismatch')
+            check_resume(saved['identity'],identity,config.get('resume_transition'),technical)
             model.load_state_dict(saved['model']);objective.load_state_dict(saved['objective']);optimizer.load_state_dict(saved['optimizer'])
             step=saved['step'];best=saved['best'];torch.set_rng_state(saved['torch_rng'].cpu());torch.cuda.set_rng_state_all([v.cpu() for v in saved['cuda_rng']])
             if saved['scheduler']['next_update']!=step+1 or saved['scheduler']['total_updates']!=total:raise ValueError('Scheduler/checkpoint step mismatch')
-        elif continuation is not None:
-            saved=torch.load(continuation,map_location='cpu',weights_only=False)
-            transfer=continue_mixed_objective(model,objective,optimizer,saved,identity,total)
-            step=saved['step']
-            save_json(technical/'initialization.json',dict(parent_sha256=file_hash(continuation),**transfer))
         if config['compile_encoder']:
             sample=release.observation(release.groups[release.group_keys[0]][0],
                 'anchor',config['history_frames']>1,config['architecture']=='mace')
             compile_encoder(model.encoder,move(collate([sample],config['architecture']),'cuda'),config['precision'])
+        if len(devices)>1:
+            from .parallel_mace import ParallelMACE
+            sample=release.observation(release.groups[release.group_keys[0]][0],'anchor',False,True)
+            example=collate([sample],'mace')
+            # Warm the primary's lazy tensor-product buffers also for eager runs.
+            if not config['compile_encoder']:
+                with torch.no_grad():model.encoder(move(example,'cuda'))
+            parallel=ParallelMACE(model,devices,example,config['precision'],config['compile_encoder'])
         import wandb
         settings=config['wandb']
         tracking=wandb.init(entity=settings['entity'],project=settings['project'],id=settings['id'],name=settings['name'],group=settings['group'],
-            resume='allow',mode='online',dir=str(technical),config=identity['config'],save_code=False,settings=wandb.Settings(init_timeout=60))
+            resume='allow',mode='online',dir=str(technical),config=identity['config'],allow_val_change=True,save_code=False,settings=wandb.Settings(init_timeout=60))
         if tracking.offline:raise RuntimeError('Online W&B logging is required')
         dashboard=Dashboard(tracking)
         save_json(technical/'wandb_run.json',dict(id=tracking.id,url=tracking.url,entity=tracking.entity,project=tracking.project))
@@ -357,19 +369,28 @@ def execute(config,deadline,root,technical):
                     scales=release.manifest['scales'],state_dim=128,encoder=model.encoder.state_dict(),identity=identity,step=step),technical/'encoder.pt')
             check_learning(metrics,metrics['training_mean_score'],best_present,step,config['health'])
             check_regression(present_scores,metrics['training_mean_score'],step,config['health'])
-        status('running',total_updates=total,train_rows=train_rows,device=torch.cuda.get_device_name(),microbatch=config['microbatch_size'],wandb=tracking.url)
+        save_json(technical/'devices.json',dict(indices=devices,names=[torch.cuda.get_device_name(d) for d in devices],
+            global_batch_size=config['batch_size'],encoder_microbatch_per_gpu=config['microbatch_size']))
+        status('running',total_updates=total,train_rows=train_rows,device=torch.cuda.get_device_name(),devices=devices,microbatch=config['microbatch_size'],wandb=tracking.url)
         started=time.monotonic();last_validation=-1
         if not resuming and config.get('evaluate_initial',False):
             save_selection();last_validation=step
+        if config.get('preparation_processes',0):
+            if not mixed:raise ValueError('Process prefetch implements mixed snapshot training only')
+            from .input_pipeline import ProcessPrefetch
+            prefetch=ProcessPrefetch(release,config,step,total)
         with ThreadPoolExecutor(max_workers=1) as pool:
-            future=pool.submit(prepare,step)
+            future=None if prefetch is not None else pool.submit(prepare,step)
             while step<total and not stop and time.time()<deadline-180:
-                wait=time.monotonic();batches,temporal,delta,indices,group,is_replay,extra=future.result();wait=time.monotonic()-wait
-                if step+1<total:future=pool.submit(prepare,step+1)
+                wait=time.monotonic()
+                batches,temporal,delta,indices,group,is_replay,extra=(prefetch.take(step) if prefetch is not None else future.result())
+                wait=time.monotonic()-wait
+                if prefetch is None and step+1<total:future=pool.submit(prepare,step+1)
                 rate=learning_rate(step+1,total,**config['schedule'])
                 for param in optimizer.param_groups:param['lr']=rate*param['lr_scale']
                 torch.cuda.reset_peak_memory_stats();tick=time.monotonic()
-                terms=cached_update(model,objective,batches,optimizer,temporal,delta,extra,config['precision']);step+=1
+                terms=(parallel.update(model,objective,batches,optimizer,temporal,delta,extra) if parallel is not None else
+                       cached_update(model,objective,batches,optimizer,temporal,delta,extra,config['precision']));step+=1
                 native_batches=step-step//4 if causal else step
                 row=dict(step=step,epoch_equivalent=native_batches*config['batch_size']/train_rows,group=list(group),temporal=temporal,replay=is_replay,
                     lr=rate,encoder_lr=rate*config['encoder_lr_multiplier'],seconds=time.monotonic()-tick,input_wait_seconds=wait,peak_allocated_GiB=torch.cuda.max_memory_allocated()/2**30,
@@ -397,6 +418,9 @@ def execute(config,deadline,root,technical):
         status('failed',error=repr(error),traceback=traceback.format_exc())
         if tracking is not None:tracking.finish(exit_code=1)
         raise
+    finally:
+        if prefetch is not None:prefetch.close()
+        if parallel is not None:parallel.close()
 
 
 if __name__=='__main__':

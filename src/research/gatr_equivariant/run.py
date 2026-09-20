@@ -1,4 +1,5 @@
 """A100 extraction of frozen geometric streams, trajectories and spatial panels."""
+from src.data.structural_pretraining.support import OUTER_RADIUS
 import json
 from pathlib import Path
 import shutil
@@ -132,7 +133,7 @@ def extract_spatial(model, config, parent):
     from src.research.smooth_temporal_encoder.prepare import ptm_labels
     root = Path(config['output'])/'technical/spatial'
     root.mkdir(exist_ok=True)
-    radius = 17*model.scale/REFERENCE_RADIUS
+    radius = OUTER_RADIUS*model.scale/REFERENCE_RADIUS
     for source in [s for s in parent['sources'] if s['split'] == 'test']:
         raw = source_arrays(dict(source, kind='dynamic'))
         for frame in config['spatial_frames']:

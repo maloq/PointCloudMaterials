@@ -1,0 +1,18 @@
+{
+  "output": "output/shared_pretraining/mace-expanded-dual-campaign-20260919",
+  "partition": "RTX6000PRO",
+  "structural_slots": 0,
+  "structural_hours": 8,
+  "cpus_per_task": 16,
+  "gpus_per_task": 2,
+  "runs": [
+    {
+      "name": "mace_expanded_dual",
+      "allocation": 999611,
+      "release_dependency": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919",
+      "configs": {
+        "structural": "configs/shared_pretraining/mace_expanded_dual/mace.json"
+      }
+    }
+  ]
+}

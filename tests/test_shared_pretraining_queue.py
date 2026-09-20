@@ -68,3 +68,17 @@ def test_gpu_submission_waits_for_successful_cpu_target_preparation(tmp_path,mon
     assert 'src.data.structural_pretraining.prepare' in scripts[0]
     assert '--dependency=afterok:101' in scripts[1]
     assert '--final-slot' in scripts[1]
+
+
+def test_existing_allocation_dependency_blocks_on_failed_or_incomplete_tda(tmp_path,monkeypatch):
+    status=tmp_path/'status.json';manifest=tmp_path/'manifest.json'
+    status.write_text(json.dumps(dict(state='failed',error='bad source')))
+    with pytest.raises(RuntimeError,match='Data preparation failed'):
+        queue.wait_for_release(str(tmp_path),float('inf'))
+    status.write_text(json.dumps(dict(state='complete')))
+    manifest.write_text(json.dumps(dict(state='complete')))
+    with pytest.raises(ValueError,match='Incomplete full-TDA'):
+        queue.wait_for_release(str(tmp_path),float('inf'))
+    manifest.write_text(json.dumps(dict(state='complete',tda_coverage='all_supervised_views')))
+    assert queue.wait_for_release(str(tmp_path),float('inf'))
+    assert not queue.wait_for_release(str(tmp_path),0)

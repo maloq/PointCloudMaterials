@@ -1,0 +1,9 @@
+metric,value
+throughput_speedup,1.9215382266208358
+checkpoint_step,1456
+baseline_threads.mean_seconds,1.577151701945695
+baseline_threads.mean_wait_seconds,0.26334817901442875
+baseline_threads.median_seconds,1.2604611619899515
+optimized_processes.mean_seconds,0.8207756057599909
+optimized_processes.mean_wait_seconds,0.0101160843805701
+optimized_processes.median_seconds,0.8209291489911266

@@ -1,0 +1,49 @@
+{
+  "output": "output/gatr_conditional_information/local-last622-h100-20260919",
+  "parent_audit": "output/trajectory_stability/al-v6-20260918",
+  "required_hostname": "nodesumo01",
+  "required_gpu": "H100",
+  "batch_size": 128,
+  "seed": 20260918,
+  "reference_quantiles": 33,
+  "future_horizons_ps": [
+    24,
+    48,
+    96
+  ],
+  "confirmation_frames": 8,
+  "negative_history_frames": 3,
+  "probe_stride": 4,
+  "rff_dimensions": 256,
+  "ridge_penalties": [
+    1e-06,
+    1e-05,
+    0.0001,
+    0.001,
+    0.01,
+    0.1,
+    1.0
+  ],
+  "inner_folds": 3,
+  "bootstrap_draws": 2000,
+  "match_calipers_A": [
+    0.025,
+    0.05,
+    0.1
+  ],
+  "match_density_relative": 0.02,
+  "previous_conditional": "output/gatr_conditional_information/al-v6-node07-20260918",
+  "spatial_audit": "output/gatr_equivariant/al-v6-node07-20260918",
+  "checkpoints": {
+    "mace": {
+      "path": "output/shared_pretraining/mace-local-20260918/technical/last.pt",
+      "sha256": "204fb4316df2361011344870313c3d1d76a3a6e5e62b3a10b65c8ab9c46eb5ff",
+      "producer_code": "output/shared_pretraining/local-structure-campaign-20260918/technical/code"
+    },
+    "gatr": {
+      "path": "output/shared_pretraining/gatr-local-bond-20260918/technical/last.pt",
+      "sha256": "c360ad7eb7b4e5ddcb4ca2f30114e821f171373d6e619705e619fdcfbbab2246",
+      "producer_code": "output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code"
+    }
+  }
+}

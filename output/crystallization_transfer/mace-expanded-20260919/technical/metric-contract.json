@@ -1,0 +1,18 @@
+{
+  "family": "crystallization_transfer",
+  "exported_at": "2026-09-19T03:26:24.201385+00:00",
+  "files": {
+    "src/research/crystallization_transfer/__init__.py": "87dea26048f972a68c7dd3398f003040cb1c351aaecdf78fffc37e80ec204316",
+    "src/research/crystallization_transfer/runtime.py": "b2f2038bc6cad681594c0a9900267db64257460fe31662a4722ab916d18b6195",
+    "src/research/crystallization_transfer/model.py": "f06f868b116117e8375363d9b4a9acd981a7c57cf28617b13225866112a8db4a",
+    "src/research/crystallization_transfer/queue.py": "4e82820799f28190937d9165a7fb3410b576c254e570df1ae651a39275eae383",
+    "src/research/crystallization_transfer/data.py": "d68b50c171c94c8a24ee17bfc3c7ed9834fd2938fc626431f095429c7ec920b6",
+    "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+    "src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+    "src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+    "docs/metrics/crystallization_transfer.md": "bd320ace20bb4371a146f3d090b11771a9c312678f25f29b315fcd8b35c70747"
+  }
+}

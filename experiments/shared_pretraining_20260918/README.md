@@ -225,3 +225,36 @@ preserves the total twelve-epoch exposure budget and optimization state, but
 changes the training objective partway through the fit; it is not a matched
 from-scratch curvature ablation. The original checkpoint and curves remain
 separate. See [coefficient selection and transition](../../docs/shared_pretraining_temporal_backtracking_20260918.md).
+
+## Corrected local structural scale (v10)
+
+The structural observation now has radius 8 normalized units with a 6–8 cosine
+taper, replacing radius 17. All present/future/spatial snapshots are cropped
+before either encoder. Training-data audit: about 122–125 input atoms and
+78–80 weighted atoms across Al/Mg/Ti/Ta; all existing instantaneous-TDA and
+physical target support is retained. This matches the approximate scale of the
+80-point GeoFrameV2 baseline without imposing hard nearest-k membership.
+MACE's pooling supports are 0–3, 3–5 and 6–8, with no outer halo. GATr sees the
+same region. Fresh fits keep the data, physical/TDA anchors, mixed-domain VICReg
+and temporal-only curvature protocol, recalibrating its small coefficient at the
+new initialization. These are corrected fits, not an isolated radius ablation:
+MACE pooling scales and GATr count normalization also change. Previous oversized
+fits are retired. [Recipe and audit](../../docs/shared_pretraining_local_structure_20260918.md).
+
+The revised comparison uses five epochs for each backbone and bond-order
+supervision for GATr as well. GATr pools even-rank harmonics of learned atom-level
+multivector streams before the auxiliary q4m/q6m readout; it does not derive
+high-order tensors from a pooled vector that could vanish in symmetric crystals.
+The invariant state remains z128. Both heads use the same nearest-12 targets,
+fixed normalization and 0.1 loss coefficient. Differences in the two auxiliary
+readout architectures should be reported alongside backbone comparisons.
+
+## Expanded-data MACE follow-up (19 September)
+
+Question: does the local snapshot MACE benefit from four times as many dynamic
+observations with complete instantaneous TDA? Train from scratch on 1,018,080
+Al/Mg/Ti/Ta anchors for five epoch equivalents; retain the completed 254,520-anchor
+fit as a reference. Static data stay excluded and selection sources stay fixed.
+This increases updates from 622 to 2,486 and therefore tests data plus training
+budget, not an isolated compute-matched data effect. One seed; no claim about
+seed uncertainty. Recipe: `configs/shared_pretraining/mace_expanded_dual/`.

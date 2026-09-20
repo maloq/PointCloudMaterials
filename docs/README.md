@@ -17,7 +17,8 @@
 - [Run registry and retention commands](output_registry.md)
 - [Maintained workflow details](workflows.md)
 - [Shared-pretraining W&B metric layout](shared_pretraining_logging.md)
-- [Temporal-only backtracking continuation](shared_pretraining_temporal_backtracking_20260918.md)
+- [Current local structural GATr and MACE](shared_pretraining_local_structure_20260918.md)
+- [Historical temporal-only backtracking continuation](shared_pretraining_temporal_backtracking_20260918.md)
 - [Five-epoch mixed MACE with equivariant bond-order supervision](shared_pretraining_mace_bond_order_20260918.md)
 - [Source refactor scope and validation](src_refactor.md)
 
@@ -31,3 +32,13 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 - [H200 causal MACE experiment and portable handoff](mace_causal_h200.md)
 
 - [Causal MACE GPU execution and expanded-data handoff](mace_causal_runtime.md).
+
+- [Expanded-data MACE on both node61 GPUs](shared_pretraining_mace_expanded_dual_20260919.md): immutable dynamic sampling, complete TDA, global two-GPU replay and detached dependency.
+
+- [Two-GPU MACE pipeline optimization](shared_pretraining_mace_dual_optimization_20260919.md): process prefetch and verified checkpoint continuation.
+
+- [Expanded MACE crystallization transfer execution](crystallization_transfer_20260919.md).
+
+[Structural-path crystallization queue](crystallization_paths_20260919.md): detached local state trajectory forecasts and future-center cache.
+
+- [Neighborhood JEPA execution](neighborhood_jepa_20260920.md): tracked-cache construction, frozen two-H100 MACE queue, exact resumes and model exports.

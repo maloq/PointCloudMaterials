@@ -88,3 +88,53 @@ bond-order head. Its separate run-local preflight records actual mixed updates
 and exposed input-wait time, with compilation warmup identified separately.
 The older homogeneous `profile` command does not measure this mixed objective.
 Production training does not invoke that profiler or any hardware benchmark.
+
+## Local structural support (v10)
+
+Current structural MACE/GATr observations use fixed material normalization
+`x_model = x_A * 9.192189 / scale_material`, crop to radius <8 before packing,
+and quintic C2 weights equal to one through radius 6 and zero at radius 8. There
+is no outer halo. MACE uses 5-unit edges, two layers and pooling tapers 0–3,
+3–5, 6–8; GATr globally attends only within the cropped sphere and scales its
+weighted count by 100. Training, static inference and trajectory inference share
+`src/data/structural_pretraining/support.py`. Geometry baselines using the
+encoder's support and radial controls now also use that local support. Existing
+85-component physical and 80-point instantaneous-TDA targets are unchanged.
+
+The revision is incompatible with previous large-support checkpoints. Historical
+exported metric contracts and results retain their original support definitions;
+reproduction of those runs requires their frozen code. Current within-domain
+VICReg, selection, bond-order and temporal-only curvature metric formulas are
+unchanged. Curvature weights are recalibrated at initialization using training
+batches under the declared 2%-loss / 10%-encoder-gradient policy. See
+[local protocol](../shared_pretraining_local_structure_20260918.md).
+
+## Local GATr bond supervision (v11)
+
+`shared_pretraining_local_gatr_bond_v11` adds the same q4m/q6m targets and
+`12 * mean_m(error^2)` per-order loss as local MACE, with mean over orders and
+loss coefficient 0.1. Only current/partner snapshots are supervised; the past
+snapshot remains curvature context. Its 704 training-only tensor features are
+formed from the final learned atom multivectors' four vector sectors across
+eight channels: separately replace each vector v by `v/sqrt(sum(v^2)+1e-4)`,
+compute real component-normalized solid harmonics l=4,6, and average atoms using
+the encoder's local support weights. Concatenate 32x4e then 32x6e; an equivariant
+linear readout predicts 1x4e+1x6e. All these operations use FP32 under BF16 AMP.
+No raw target vectors or invariant z enter this head. Powers are taken before
+pooling, so inversion-symmetric local order need not vanish. Export remains
+128-dimensional; no additional encoder pass is required. Selection remains
+physical+0.25*TDA, with bond errors and magnitudes reported separately. Training
+is from scratch for five epochs with the small curvature coefficient recalibrated
+on training batches, including the bond loss in its base-gradient comparison.
+
+The 19 September two-GPU structural MACE executor preserves the global objective
+and sums encoder gradients before clipping. Each device uses the same selective
+BF16/FP32 boundaries. Device-scaling preflight is recorded separately from fits;
+production training does not run precision or hardware benchmarks.
+
+For the process-prefetch two-GPU executor, throughput is measured in a
+separate preflight on matched sampled updates, including exposed input wait and
+update computation after startup. Global B and precision remain fixed. CPU worker
+startup and CUDA compilation are excluded from warmed measurements and reported
+separately when measured. These timings do not include periodic validation or
+checkpointing; they are not whole-run completion-time measurements.

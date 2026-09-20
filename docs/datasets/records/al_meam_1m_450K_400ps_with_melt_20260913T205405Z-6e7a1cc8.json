@@ -154,7 +154,6 @@
           "pair_style meam",
           "pair_coeff * * /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam Al /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam Al"
         ],
-        "potential_citation": "Lee, Shim and Baskes (2003), Al 2NN-MEAM; exact files from Al shooting campaign",
         "potential_files": [
           {
             "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
@@ -164,7 +163,8 @@
             "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
             "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
           }
-        ]
+        ],
+        "potential_citation": "Lee, Shim and Baskes (2003), Al 2NN-MEAM; exact files from Al shooting campaign"
       }
     },
     {

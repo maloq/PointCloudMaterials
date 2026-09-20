@@ -4,8 +4,10 @@ from torch import nn
 
 from .structural import StructuralGATr
 from .structural_precision import FullPrecisionReadout
+from .equivariant_bond import GATrBondOrder
 
-MIXED_ARCHITECTURE_REVISION = 'gatr_v7_grouped_heads_snapshot'
+MIXED_ARCHITECTURE_REVISION = 'gatr_v10_local_grouped_heads_snapshot'
+GATR_BOND_REVISION = 'gatr_v11_local_grouped_heads_equivariant_bond_order'
 
 
 class GroupBatchNorm(nn.Module):
@@ -96,3 +98,9 @@ class MixedSnapshotGATr(nn.Module):
         self.projector.input_norm.fit(z,groups)
         hidden=self.projector.input(self.projector.input_norm(z,groups))
         self.projector.hidden_norm.fit(hidden,groups)
+
+
+class MixedBondGATr(MixedSnapshotGATr):
+    def __init__(self,group_keys):
+        super().__init__(group_keys)
+        self.bond_order=GATrBondOrder(self.encoder.mv_channels)

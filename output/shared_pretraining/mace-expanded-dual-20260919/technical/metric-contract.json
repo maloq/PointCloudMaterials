@@ -1,0 +1,32 @@
+{
+  "family": "shared_pretraining",
+  "exported_at": "2026-09-19T01:04:32.441967+00:00",
+  "files": {
+    "docs/metrics/shared_pretraining.md": "7e5ec839732d41ec13bb1b5c265ee86bb70d963c32ac6374c892a3d48301a478",
+    "src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+    "src/data/structural_pretraining/expand.py": "bd20368bac20fdfa24dae9e565975401072d8a9c35825430a04d7630bf0b784f",
+    "src/data/structural_pretraining/prepare.py": "20991ea6032d890392b69015a904b37ab864aba38dfe2794e5f5591f4790aecf",
+    "src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
+    "src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+    "src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
+    "src/training_methods/shared_pretraining/analysis.py": "dc5988b64f99f666da8ef0615e16c50956e6fdc0140fc21a68361bd8df8901dc",
+    "src/training_methods/shared_pretraining/compilation.py": "55aa01fd538e11c59f7d9a358ce0244ef5829010749162829fb0bf06b0b432ba",
+    "src/training_methods/shared_pretraining/data.py": "c6eaf4ed7d1b756eb4af7533cc52a4ed1c61cc41a6d5eb61474061222881b251",
+    "src/training_methods/shared_pretraining/health.py": "52329440f140b8f30dad74364479baf388132fb22f67e518a492e68980bd1012",
+    "src/training_methods/shared_pretraining/initialization.py": "becdbda5b7e82facd301a7615c145692747e22e2410a585ecf49444cd8ad7eea",
+    "src/training_methods/shared_pretraining/normalization.py": "f8341462937f5134519b0e4f6f699d8132b8b81c0af41c0c36e05755150333c4",
+    "src/training_methods/shared_pretraining/runtime.py": "fc53cf7a35fe5065506ac291a6f2575a6f2c2724167a0929ff64a7f9c47a6e39",
+    "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
+    "src/training_methods/structural_pretraining/train.py": "bc324e72c03fd7cbff07a22015f2366f3b388ef78e29bcb9706bd0970aff50e6",
+    "src/models/encoders/mixed_gatr.py": "6586976a8072643a132e4be088801654518a796bccdea5aeb56f00b00367e785",
+    "src/training_methods/shared_pretraining/mixed.py": "d110cb8959790d714829926010ee3796167bc9fbe419b93594ee587979f9600b",
+    "src/training_methods/shared_pretraining/tracking.py": "7ec966d93fd2ed967bc82aaed93322c373ae21b71275b04aaeb0a9d11adf19b6",
+    "src/data/structural_pretraining/bond_order.py": "7350ed7a2afa47f1daaba057b589e361ee156acfe01b08384855c5b7cbee36a6",
+    "src/models/encoders/mixed_mace.py": "5ee5051d58f57598484ada87c334f7b8811f97c0a30b0213751672ade8590eb4",
+    "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+    "src/models/encoders/equivariant_bond.py": "53d155dd54ee3b69e62e8be5b5cc27a716a846ec91c155fcb8831b9c73fb082a",
+    "src/training_methods/shared_pretraining/parallel_mace.py": "18437c5b8f1a62c2a8683c89306760ad426240795e8474b3449324e04384b1b3",
+    "src/training_methods/shared_pretraining/input_pipeline.py": "fd303fb6c6bba2527d55450f4c7f53dc973e692aace46998b8dc8554824644e8",
+    "src/training_methods/shared_pretraining/resume.py": "6d1366e6b060e1652ffdb9fc5a6ef440c243fa282003b17d2a6ccc010a7395d1"
+  }
+}

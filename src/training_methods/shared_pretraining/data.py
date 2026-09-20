@@ -8,6 +8,7 @@ import numpy as np
 from src.analysis.liquid_structure import persistence_image
 from src.data.structural_pretraining.prepare import (REFERENCE_RADIUS,chart,offsets,source_arrays,geometry_packet,save_json,file_hash,digest)
 from src.data.structural_pretraining.batches import Release
+from src.data.structural_pretraining.support import OUTER_RADIUS, SUPPORT
 from src.project_runtime.paths import resolve_path,dataset_path
 
 LAGS=(1,4,12)
@@ -21,7 +22,7 @@ def prepare_task(args):
         if value['identity']!=identity:raise ValueError(f'Changed causal shard: {folder}')
         return value
     arrays=source_arrays(source);ids=arrays['atom_ids'];lookup={int(v):i for i,v in enumerate(ids)}
-    centers=[lookup[c] for c in source['center_ids']];anchor=task['frame'];radius=17*scale/REFERENCE_RADIUS
+    centers=[lookup[c] for c in source['center_ids']];anchor=task['frame'];radius=OUTER_RADIUS*scale/REFERENCE_RADIUS
     frames=[anchor-2,anchor-1,anchor,anchor+1]
     times=(arrays['timesteps'][frames]-arrays['timesteps'][anchor])*source['timestep_fs']/1000
     np.testing.assert_allclose(times,[-1.5,-.75,0,.75],rtol=0,atol=1e-8)
@@ -90,10 +91,10 @@ def prepare(config,workers):
     if train_roots & heldout or len(sources)!=150 or len(train_roots)!=90:raise ValueError('Changed native whole-source split')
     if train_roots!={s['lineage'] for s in structural['sources'] if s['id'].startswith('native_') and s['split']=='train'}:
         raise ValueError('Structural and causal training ancestry differs')
-    plan=dict(protocol='shared_causal_targets_v1',config=config,sources=sources,tasks=tasks,scale=structural['scales']['Al'],
+    plan=dict(protocol='shared_causal_targets_local_v10',observation_support=SUPPORT,config=config,sources=sources,tasks=tasks,scale=structural['scales']['Al'],
         structural_identity=structural['identity'],cohort_sha256=file_hash(resolve_path(config['cohort'])),
         packet_release_sha256=file_hash(resolve_path(config['packet_release'])),
-        producer_hashes={p:file_hash(p) for p in [__file__,'src/data/structural_pretraining/prepare.py','src/analysis/liquid_structure.py']})
+        producer_hashes={p:file_hash(p) for p in [__file__,'src/data/structural_pretraining/support.py','src/data/structural_pretraining/prepare.py','src/analysis/liquid_structure.py']})
     plan['identity']=digest(plan)
     if (root/'plan.json').exists() and json.loads((root/'plan.json').read_text())!=plan:raise ValueError('Changed immutable causal plan')
     save_json(root/'plan.json',plan)

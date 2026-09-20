@@ -8,7 +8,7 @@
   "seed": 20260919,
   "epochs": 5,
   "batch_size": 2048,
-  "microbatch_size": 96,
+  "microbatch_size": 64,
   "memory_limit_GiB": 40,
   "schedule": {
     "peak": 0.002,

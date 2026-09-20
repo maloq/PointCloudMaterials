@@ -1,0 +1,12 @@
+{
+  "output": "output/crystallization_transfer/mace-adaptive-20260919",
+  "frozen_config": "configs/crystallization_transfer/mace_adaptive_20260919.json",
+  "partition": "RTX6000PRO,H100",
+  "hours": 16,
+  "cpus": 8,
+  "memory": "64G",
+  "slots": [
+    {"lane": 3, "after_job": 999611},
+    {"lane": 4, "after_job": 999611}
+  ]
+}

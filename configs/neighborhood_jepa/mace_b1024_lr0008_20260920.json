@@ -1,0 +1,20 @@
+{
+  "output": "output/neighborhood_jepa/mace-b1024-lr0008-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/tracked-six-65536-20260920",
+  "data_config": "configs/neighborhood_jepa/data_20260920.json",
+  "seed": 20260920,
+  "batch_size": 1024,
+  "microbatch": 256,
+  "lr_scale": 4.0,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 4,
+  "screen_epochs": 5,
+  "long_epochs": 12,
+  "wandb": true,
+  "wandb_group": "neighborhood-jepa-b1024-lr0008-20260920",
+  "wandb_prefix": "nj20-b1024",
+  "allocation": "1000818",
+  "cpus_per_task": 16,
+  "workers": 2
+}

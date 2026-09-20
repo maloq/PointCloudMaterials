@@ -14,9 +14,9 @@ from scipy.special import eval_legendre
 
 from src.data.predictive_memory.targets import taper, rbf
 from src.project_runtime.paths import dataset_path, resolve_path
+from .support import REFERENCE_RADIUS, OUTER_RADIUS, SUPPORT
 
 ELEMENTS = {'Mg': 12, 'Al': 13, 'Ti': 22, 'Zr': 40, 'Ta': 73}
-REFERENCE_RADIUS = 9.192189
 
 
 def digest(value):
@@ -239,11 +239,11 @@ def build_plan(config):
                                   seed=int(rng.integers(2**31)), split='selection'))
     for i,t in enumerate(tasks):
         t['id'] = f'{i:06d}'
-    plan = dict(protocol='structural_neighbors_v1', config=config, sources=sources, tasks=tasks,
+    plan = dict(protocol='structural_neighbors_local_v10', observation_support=SUPPORT, config=config, sources=sources, tasks=tasks,
         scales=scales, calibration=calibration, reference_radius=REFERENCE_RADIUS,
         source_evidence=dict(registry=file_hash(config['registry']), cohort=file_hash(config['cohort']),
                              ancestry=file_hash(config['ancestry_plan'])),
-        producer_hashes={p:file_hash(p) for p in ('src/data/structural_pretraining/prepare.py',
+        producer_hashes={p:file_hash(p) for p in ('src/data/structural_pretraining/prepare.py','src/data/structural_pretraining/support.py',
             'src/data/predictive_memory/targets.py','src/analysis/liquid_structure.py')})
     plan['identity'] = digest(plan)
     save_json(destination, plan)
@@ -269,7 +269,7 @@ def prepare_task(arguments):
         if np.any(np.diff(steps) <= 0):
             raise ValueError(f'Non-increasing recorded temporal neighborhood: {source["id"]}, {frame}')
         times = ((steps-steps[2])*source['timestep_fs']/1000.).tolist()
-    radius = 17*scale/REFERENCE_RADIUS
+    radius = OUTER_RADIUS*scale/REFERENCE_RADIUS
     current_x, current_tree, current_box = chart(arrays, frame, static)
     if current_box is not None and np.min(current_box) <= 4*radius:
         raise ValueError(f'Observation radius exceeds local periodic chart: {source["id"]}')
@@ -284,7 +284,7 @@ def prepare_task(arguments):
         centers = rng.choice(eligible, task['count'], replace=False)
     partners = []
     for center in centers:
-        nearby = current_tree.query_ball_point(current_x[center], radius*.25)
+        nearby = current_tree.query_ball_point(current_x[center], 4.25*scale/REFERENCE_RADIUS)
         nearby = [i for i in nearby if i != center]
         if not nearby:
             raise ValueError(f'No spatial partner for {source["id"]}, atom row {center}')

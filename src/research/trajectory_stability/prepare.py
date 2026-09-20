@@ -1,4 +1,5 @@
 """Freeze existing source identities and compute matched local descriptors."""
+from src.data.structural_pretraining.support import OUTER_RADIUS
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime, timezone
 import json
@@ -108,7 +109,7 @@ def prepare_source(args):
     labels = prior['labels'][loc][:, frames].T.reshape(-1)
     soap = SOAP(species=['Al'], periodic=False, r_cut=7., n_max=8, l_max=6,
                 sigma=.3, sparse=False, dtype='float64')
-    radius = 17*plan['scale']/REFERENCE_RADIUS
+    radius = OUTER_RADIUS*plan['scale']/REFERENCE_RADIUS
     positions, atom_ids, pointers, center_indices = [], [], [0], []
     geometries, topology, soaps, nearest_ids = [], [], [], []
     for fi, frame in enumerate(frames):

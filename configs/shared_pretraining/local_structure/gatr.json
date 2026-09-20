@@ -1,0 +1,53 @@
+{
+  "output": "output/shared_pretraining/gatr-local-bond-20260918",
+  "release": "${storage:cache}/structural_pretraining/broad-287500-full-tda-20260918",
+  "phase": "structural",
+  "architecture": "gatr",
+  "method": "vicreg",
+  "history_frames": 1,
+  "seed": 20260919,
+  "epochs": 5,
+  "batch_size": 2048,
+  "microbatch_size": 1024,
+  "memory_limit_GiB": 40,
+  "schedule": {
+    "peak": 0.002,
+    "warmup_fraction": 0.1,
+    "minimum_ratio": 0.01
+  },
+  "log_every": 10,
+  "checkpoint_every": 16,
+  "validate_every": 64,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "name": "gatr-local-bond-b2048-5epochs",
+    "id": "gatr-local-bond-0918",
+    "group": "local-structure-20260918"
+  },
+  "precision": "bf16",
+  "health": {
+    "minimum_std": 1e-06,
+    "baseline_after_updates": 256,
+    "minimum_relative_gain": 0.05,
+    "regression_patience": 3,
+    "maximum_regression_ratio": 1.5
+  },
+  "compile_encoder": true,
+  "physical_correlation_weight": 0.1,
+  "materials": [
+    "Al",
+    "Mg",
+    "Ti",
+    "Ta"
+  ],
+  "encoder_lr_multiplier": 0.1,
+  "require_full_tda": true,
+  "evaluate_initial": true,
+  "batch_mode": "mixed_triplets",
+  "minimum_group_size": 128,
+  "calibration_anchors_per_group": 128,
+  "backtracking_weight": 3.1,
+  "preparation_workers": 4,
+  "bond_order_weight": 0.1
+}

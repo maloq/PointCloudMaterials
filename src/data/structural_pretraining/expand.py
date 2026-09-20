@@ -16,13 +16,26 @@ from .prepare import digest, file_hash, save_json, prepare_task, finalize
 
 def shooting_tasks(parent, extra, seed, rows_per_task):
     """Balance new draws across training lineages and cover every eligible branch."""
+    return dynamic_tasks(parent, {'al_shooting': extra}, seed, rows_per_task)
+
+
+def dynamic_tasks(parent, counts, seed, rows_per_task):
+    """Add distinct source/frame anchors, balanced within each dynamic stratum."""
+    tasks = []
+    for stratum, extra in sorted(counts.items()):
+        tasks.extend(stratum_tasks(parent, stratum, extra, seed, rows_per_task))
+    return tasks
+
+
+def stratum_tasks(parent, stratum, extra, seed, rows_per_task):
     roots = defaultdict(list)
     for index, source in enumerate(parent['sources']):
-        if source['split'] == 'train' and source['stratum'] == 'al_shooting':
+        if (source['split'] == 'train' and source['stratum'] == stratum
+                and source['kind'] == 'dynamic'):
             roots[source['lineage']].append(index)
     if not roots or extra < sum(map(len, roots.values())):
-        raise ValueError('Expansion must cover every eligible shooting source at least once')
-    rng = np.random.default_rng(seed)
+        raise ValueError(f'Expansion must cover every eligible dynamic source in {stratum}')
+    rng = np.random.default_rng(np.random.SeedSequence([seed, int(digest(stratum)[:8], 16)]))
     occupied = {(t['source'], t['frame']) for t in parent['tasks']}
     tasks = []
     for r, lineage in enumerate(sorted(roots)):
@@ -30,13 +43,25 @@ def shooting_tasks(parent, extra, seed, rows_per_task):
         quota = extra // len(roots) + (r < extra % len(roots))
         if quota < len(indices):
             raise ValueError(f'Too few new anchors for lineage {lineage}')
-        for j, index in enumerate(indices):
-            count = quota // len(indices) + (j < quota % len(indices))
+        available = {i: [k for k in range(2, parent['sources'][i]['frame_count']-1)
+                         if (i, k) not in occupied] for i in indices}
+        capacity = np.array([len(available[i])*rows_per_task for i in indices])
+        if np.any(capacity == 0) or capacity.sum() < quota:
+            raise ValueError(f'Insufficient unused frames for lineage {lineage}: {capacity.tolist()}, requested {quota}')
+        # Equal source shares until a short trajectory exhausts its unused frames.
+        # Redistribute the remainder within the same lineage, never into held-out data.
+        counts = np.zeros(len(indices), dtype=int)
+        while counts.sum() < quota:
+            active = np.flatnonzero(counts < capacity)
+            remaining = quota-int(counts.sum())
+            shares = remaining//len(active)+(np.arange(len(active)) < remaining % len(active))
+            counts[active] += np.minimum(shares, capacity[active]-counts[active])
+        for index, count in zip(indices, counts.tolist(), strict=True):
             source = parent['sources'][index]
-            frames = [k for k in range(2, source['frame_count']-1) if (index, k) not in occupied]
+            frames = available[index]
             rng.shuffle(frames)
             if len(frames) < (count + rows_per_task-1)//rows_per_task:
-                raise ValueError(f'Not enough unused shooting frames: {source["id"]}')
+                raise ValueError(f'Not enough unused {stratum} frames: {source["id"]}')
             while count:
                 n = min(count, rows_per_task); frame = frames.pop()
                 tasks.append(dict(source=index, frame=frame, count=n,
@@ -56,7 +81,10 @@ def build_plan(config):
         if file_hash(path) != parent['producer_hashes'][path]:
             raise ValueError(f'Parent target producer differs: {path}')
     tasks = copy.deepcopy(parent['tasks'])
-    tasks += shooting_tasks(parent, config['additional_shooting_anchors'], config['seed'], config['rows_per_task'])
+    if 'additional_dynamic_anchors' in config:
+        tasks += dynamic_tasks(parent, config['additional_dynamic_anchors'], config['seed'], config['rows_per_task'])
+    else:
+        tasks += shooting_tasks(parent, config['additional_shooting_anchors'], config['seed'], config['rows_per_task'])
     for i, task in enumerate(tasks):
         task['id'] = f'{i:06d}'
     plan = dict(protocol='structural_neighbors_full_tda_v1', config=config,

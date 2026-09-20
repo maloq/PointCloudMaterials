@@ -33,14 +33,16 @@ def fibonacci_directions(n):
 
 
 def radial_control(local,scale,quantiles):
+    from src.data.structural_pretraining.support import INNER_RADIUS, OUTER_RADIUS
     r = np.linalg.norm(local.astype(float),axis=-1)
+    r = r[r*REFERENCE_RADIUS/scale < OUTER_RADIUS]
     if np.count_nonzero(r==0)!=1:
         raise ValueError('Exactly one center is required')
     r = np.sort(r[r>0])
     if len(r)<80:
         raise ValueError('Incomplete first 80 neighbor radii')
     q = np.quantile(r,np.linspace(0,1,quantiles))
-    weights = taper(r*REFERENCE_RADIUS/scale,15.,17.)
+    weights = taper(r*REFERENCE_RADIUS/scale,INNER_RADIUS,OUTER_RADIUS)
     moments = np.array([len(r),weights.sum(),*(weights@(r**k)/weights.sum() for k in (1,2,3))])
     # A function of the radius multiset only, with a fixed deterministic angular layout.
     replaced = np.vstack((np.zeros((1,3)),r[:,None]*fibonacci_directions(len(r)))).astype(np.float32)

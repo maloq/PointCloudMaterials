@@ -7,23 +7,26 @@ import numpy as np
 from scipy.spatial import cKDTree
 import torch
 
-from src.data.predictive_memory.targets import taper
+from src.data.structural_pretraining.support import local_crop, support_weights, EDGE_CUTOFF
 from src.data.structural_pretraining.batches import collate, move
 from src.data.structural_pretraining.prepare import REFERENCE_RADIUS, file_hash, save_json
 from src.models.encoders.structural import StructuralGATr, StructuralMACE, ATOMIC_NUMBERS, ARCHITECTURE_REVISION
+from src.models.encoders.mixed_gatr import GATR_BOND_REVISION
+from src.models.encoders.mixed_mace import MACE_BOND_REVISION
 from src.training_methods.shared_pretraining.compilation import compile_encoder
 
 
 def observation(positions, center, scale, architecture):
-    x = np.asarray(positions, dtype=np.float32)*(REFERENCE_RADIUS/scale)
+    x, rows = local_crop(positions, scale)
+    center = int(np.flatnonzero(rows == center).item())
     if not np.all(x[center] == 0):
         raise ValueError('Tracked center no longer at the origin')
-    result = dict(positions=x[None], weights=taper(np.linalg.norm(x, axis=-1), 15., 17.)[None],
+    result = dict(positions=x[None], weights=support_weights(x)[None],
         center=int(center), times=np.zeros(1, np.float32), species=ATOMIC_NUMBERS.index(13),
         log_scale=np.log(scale/REFERENCE_RADIUS), physical=np.zeros(85, np.float32),
         tda=np.zeros(144, np.float32), tda_valid=False)
     if architecture == 'mace':
-        pairs = cKDTree(x).query_pairs(5., output_type='ndarray')
+        pairs = cKDTree(x).query_pairs(EDGE_CUTOFF, output_type='ndarray')
         if np.any(np.linalg.norm(x[pairs[:, 0]]-x[pairs[:, 1]], axis=-1) <= 0):
             raise ValueError('Coincident atoms in a MACE local graph')
         result['edges'] = np.concatenate((pairs, pairs[:, ::-1]), axis=0).T.astype(np.int64)
@@ -41,9 +44,11 @@ def encode(plan):
         if file_hash(record['path']) != record['sha256']:
             raise ValueError(f'Frozen checkpoint changed: {name}')
         saved = torch.load(record['path'], map_location='cpu', weights_only=False)
-        if saved['identity']['architecture_revision'] != ARCHITECTURE_REVISION:
-            raise ValueError('Unsupported checkpoint architecture revision')
         architecture = saved['architecture']
+        revision = (MACE_BOND_REVISION if architecture=='mace' else GATR_BOND_REVISION
+            ) if saved['identity']['config'].get('batch_mode')=='mixed_triplets' else ARCHITECTURE_REVISION
+        if saved['identity']['architecture_revision'] != revision:
+            raise ValueError('Unsupported checkpoint architecture revision; local support required')
         model = (StructuralMACE() if architecture == 'mace' else StructuralGATr()).to(device).eval()
         model.load_state_dict(saved['encoder'], strict=True)
         precision = saved['identity']['config']['precision']

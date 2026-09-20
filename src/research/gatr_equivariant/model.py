@@ -9,6 +9,7 @@ from src.analysis.structural_adapter import _training_contraction_order
 from src.data.structural_pretraining.batches import collate, move
 from src.data.structural_pretraining.prepare import file_hash
 from src.models.encoders.structural import StructuralGATr, ARCHITECTURE_REVISION
+from src.models.encoders.mixed_gatr import GATR_BOND_REVISION
 from src.research.trajectory_stability.encode import observation
 
 STAGES = ('block1', 'block2_mlp_input', 'block2_output')
@@ -34,8 +35,10 @@ class Capture(nn.Module):
         if file_hash(path) != expected_sha256:
             raise ValueError(f'Checkpoint changed: {path}')
         saved = torch.load(path, map_location='cpu', weights_only=False)
+        revision = (GATR_BOND_REVISION if saved['identity']['config'].get('batch_mode')=='mixed_triplets'
+                    else ARCHITECTURE_REVISION)
         if (saved['architecture'], saved['input_frames'], saved['identity']['architecture_revision']) != (
-                'gatr', 1, ARCHITECTURE_REVISION):
+                'gatr', 1, revision):
             raise ValueError('Requires the audited native snapshot GATr')
         for name, expected in saved['identity']['implementation']['files'].items():
             if name.startswith('src/models/') and file_hash(name) != expected:
@@ -86,15 +89,16 @@ class Capture(nn.Module):
 def geometry_baselines(local, scale):
     """Centered density dipoles and quadrupole axis, in physical coordinates."""
     from src.data.predictive_memory.targets import taper
+    from src.data.structural_pretraining.support import INNER_RADIUS, OUTER_RADIUS
     from src.data.structural_pretraining.prepare import REFERENCE_RADIUS
     x = local.astype(np.float64)
     r = np.linalg.norm(x, axis=-1)
     w7 = taper(r, 5., 7.)*(r > 0)
-    w17 = taper(r*REFERENCE_RADIUS/scale, 15., 17.)*(r > 0)
-    if min(w7.sum(), w17.sum()) <= 0:
+    w_local = taper(r*REFERENCE_RADIUS/scale, INNER_RADIUS, OUTER_RADIUS)*(r > 0)
+    if min(w7.sum(), w_local.sum()) <= 0:
         raise ValueError('Empty geometry baseline support')
-    c7 = w7@x/w7.sum(); c17 = w17@x/w17.sum()
+    c7 = w7@x/w7.sum(); c_local = w_local@x/w_local.sum()
     shape = (x.T*w7)@x/w7.sum()
     values, vectors = np.linalg.eigh(shape)
     gap = (values[-1]-values[-2])/values.sum()
-    return np.stack((c7, c17, vectors[:, -1])).astype(np.float32), float(gap)
+    return np.stack((c7, c_local, vectors[:, -1])).astype(np.float32), float(gap)

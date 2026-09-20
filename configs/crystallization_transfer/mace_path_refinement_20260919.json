@@ -1,0 +1,22 @@
+{
+  "output": "output/crystallization_transfer/mace-path-refinement-20260919",
+  "reuse_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "reference_output": "output/crystallization_transfer/mace-adaptive-20260919",
+  "cache": "${storage:cache}/crystallization-transfer-mace-20260919",
+  "future_cache": "${storage:cache}/crystallization-paths-mace-20260919",
+  "seed": 20260919,
+  "origin_stride_frames": 4,
+  "batch_size": 64,
+  "selection_per_source": 128,
+  "selection_samples": 16,
+  "evaluation_samples": 32,
+  "workers": 2,
+  "partition": "RTX6000PRO,H100,L40S",
+  "hours": 16,
+  "future_cache_plan": "output/crystallization_transfer/mace-paths-20260919/technical/plan.json",
+  "future_cache_plan_sha256": "97f93f30697c0b0df9fef70ea5604c953c5ba60dc88be74468a04d87a779e93c",
+  "refinement": {
+    "screen_epochs": 12,
+    "long_epochs": 36
+  }
+}

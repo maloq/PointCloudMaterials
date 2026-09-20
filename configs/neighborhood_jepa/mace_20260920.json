@@ -1,0 +1,17 @@
+{
+  "output": "output/neighborhood_jepa/mace-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/tracked-six-65536-20260920",
+  "data_config": "configs/neighborhood_jepa/data_20260920.json",
+  "seed": 20260920,
+  "batch_size": 1024,
+  "microbatch": 256,
+  "lr_scale": 4.0,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 4,
+  "screen_epochs": 5,
+  "long_epochs": 12,
+  "wandb": true,
+  "allocation": "1000616",
+  "workers": 2
+}

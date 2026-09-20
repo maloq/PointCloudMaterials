@@ -32,7 +32,7 @@ def group_ids(release,indices):
                      for i in indices for r in [release.rows[i][2]]],dtype=np.int64)
 
 
-def prepare(release,step,config):
+def prepare(release,step,config,*,pin_memory=True):
     if config['architecture'] not in ('gatr','mace') or config['history_frames']!=1 or config['method']!='vicreg':
         raise ValueError('Mixed triplets require snapshot MACE/GATr and VICReg')
     architecture=config['architecture'];mace=architecture=='mace'
@@ -65,8 +65,8 @@ def prepare(release,step,config):
     def pack(chunk):
         which,start=chunk
         samples=[release.observation(i,which,False,mace) for i in indices[start:start+micro]]
-        batch=collate(samples,architecture,bond_order=mace)
-        return {k:v.pin_memory() if torch.cuda.is_available() else v for k,v in batch.items()}
+        batch=collate(samples,architecture,bond_order=(mace or config.get('bond_order_weight',0)>0))
+        return {k:v.pin_memory() if pin_memory and torch.cuda.is_available() else v for k,v in batch.items()}
     if workers==1:batches=[pack(chunk) for chunk in chunks]
     else:
         with ThreadPoolExecutor(max_workers=workers) as pool:
@@ -128,10 +128,10 @@ class MixedObjective(Objective):
         return loss,terms
 
 
-class MACEBondObjective(MixedObjective):
+class BondObjective(MixedObjective):
     def __init__(self,normalization,group_keys,correlation_weight,backtracking_weight,bond_order_weight):
         super().__init__(normalization,group_keys,correlation_weight,backtracking_weight)
-        if bond_order_weight<=0:raise ValueError('MACE bond-order objective requires a positive weight')
+        if bond_order_weight<=0:raise ValueError('Bond-order objective requires a positive weight')
         self.bond_order_weight=bond_order_weight
 
     def forward(self,model,features,targets,temporal,delta):

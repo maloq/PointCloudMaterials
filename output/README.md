@@ -6,6 +6,7 @@ Older results, including the former `outputs/` root, are in [the STORE archive](
 
 | Folder | Purpose |
 | --- | --- |
+| [gatr_conditional_information/local-last622-h100-20260919](gatr_conditional_information/local-last622-h100-20260919/RESULTS.md) | Latest final MACE/GATr: symmetric radial controls, repeated bond/angular and future-onset readouts, exact matched pairs and trajectory stability |
 | [gatr_conditional_information/](gatr_conditional_information/al-v6-node07-20260918/RESULTS.md) | Frozen GATr conditional bond/angular information and future-onset tests; radial controls, dense matched pairs, source intervals and figures |
 | `embedding_forecast/` | Current history, local-crystallization, spatial/mixture studies and continuation evidence |
 | `embedding_forecast_20260911/` | Original pilot and enlarged fits, retained at exact provenance/resume paths |
@@ -22,3 +23,7 @@ See [result and metric conventions](../docs/research_layout.md). Simulation prod
 uses the machine simulation root, documented in [simulations](../docs/simulations/README.md).
 
 Refresh the registry with `python scripts/experiment_registry.py build`.
+
+- [Recent local encoders and crystallization](crystallization_transfer/recent-report-20260919/README.md): consolidated results and exact MACE pretraining recipe, with full refinement/screen appendices. Final longer-encoder outcomes remain pending.
+
+- `neighborhood_jepa/mace-20260920/`: MACE-only equivariant neighborhood prediction screens and longer validation-selected fits; [protocol](../experiments/neighborhood_jepa_20260920/README.md).

@@ -10,6 +10,8 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Latest MACE/GATr conditional information](gatr_conditional_information_20260918/LOCAL_LAST622.md) | Completed update-622 comparison: MACE retains substantial angular information; GATr remains mostly radial and is 24% smoother; no useful added onset prediction in the tested readouts. |
+| [Latest local MACE and GATr static Al](shared_pretraining_20260918/STATIC_AL_LOCAL.md) | Final step-622 local bond-order encoders; matched six snapshots and seven-cluster analysis, with native trained local support. |
 | [GATr information beyond radial structure](gatr_conditional_information_20260918/README.md) | Frozen z128: source-held-out bond/angular and prospective readouts, radial-only and duplicate-input controls, 609 strictly matched spatial pairs; little extra angular information and no robust extra forecasting benefit. |
 | [GATr internal directional embeddings](gatr_equivariant_20260918/README.md) | Frozen v6 geometric streams on A100/node07: directional turns, cage correction, phase-conditioned spatial order, rotation controls and readout interventions; interactive 3D explorer. |
 | [Encoder and descriptor trajectory stability](trajectory_stability_20260918/README.md) | Latest selected MACE/GATr versus instantaneous TDA, SOAP and local structural descriptors; matched full Al trajectories, training-reference normalization and source bootstrap. |
@@ -61,3 +63,9 @@ history while testing preservation of bond order and instantaneous topology.
 [Consecutive local-state motion](mace_local_motion_20260916/README.md): **Discarded** frozen-map approach. All 44 fits and evaluation completed; none passed the information gate or joint 0.10 jump requirement. Results retained.
 
 - [Native encoder training-data amount](mace_data_amount_20260916/README.md): matched-update independent-source learning curves with motion constraints.
+
+- [Expanded MACE crystallization transfer](crystallization_transfer_20260919/README.md): frozen, fine-tuned, scratch and tensor-context onset queue on 362,400 candidate windows.
+
+- [Recent local encoder and crystallization report](../output/crystallization_transfer/recent-report-20260919/README.md): pretraining recipe/provenance, context/data scaling, corrected encoder screens and completed trajectory refinements; [pending final update](crystallization_transfer_20260919/REPORT_UPDATE.md).
+
+- [Equivariant neighborhood JEPA](neighborhood_jepa_20260920/README.md): independently encoded local MACE snapshots trained by structured neighbor/time prediction, SIGReg and fixed physical/TDA anchors.

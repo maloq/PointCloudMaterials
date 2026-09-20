@@ -12,20 +12,21 @@ from scipy.spatial import cKDTree
 import torch
 from torch import nn
 
-from src.data.predictive_memory.targets import taper
+from src.data.structural_pretraining.support import OUTER_RADIUS, EDGE_CUTOFF, SUPPORT, local_crop, support_weights
 from src.data.static import PointCloudDataset
 from src.data.structural_pretraining.prepare import ELEMENTS, REFERENCE_RADIUS, offsets
 from src.experiment_runner.artifacts import write_json
 from src.experiment_runner.registry import sha256
 from src.models.encoders.structural import ATOMIC_NUMBERS, ARCHITECTURE_REVISION, StructuralGATr, StructuralMACE
-from src.models.encoders.mixed_gatr import MIXED_ARCHITECTURE_REVISION
+from src.models.encoders.mixed_gatr import GATR_BOND_REVISION
+from src.models.encoders.mixed_mace import MACE_BOND_REVISION
 from src.utils.model_utils import load_model_from_checkpoint
 
 
-PROTOCOL = 'structural_gatr_snapshot_static_v1'
-SHARED_PROTOCOL = 'structural_gatr_snapshot_static_v6'
-MACE_PROTOCOL = 'structural_mace_snapshot_static_v6'
-MIXED_PROTOCOL = 'structural_gatr_snapshot_static_mixed_v8'
+SHARED_PROTOCOL = 'structural_gatr_snapshot_static_local_v10'
+MACE_PROTOCOL = 'structural_mace_snapshot_static_local_v10'
+MIXED_PROTOCOL = 'structural_gatr_snapshot_static_local_bond_v11'
+MACE_BOND_PROTOCOL = 'structural_mace_snapshot_static_local_bond_v10'
 
 
 def _training_contraction_order():
@@ -53,19 +54,16 @@ class StructuralGATrAnalysis(StructuralSnapshotAnalysis):
 
     def __init__(self, cfg):
         super().__init__()
-        if cfg.protocol not in (PROTOCOL, SHARED_PROTOCOL, MIXED_PROTOCOL):
+        if cfg.protocol not in (SHARED_PROTOCOL, MIXED_PROTOCOL):
             raise ValueError(f'Unsupported structural analysis protocol: {cfg.protocol}')
         self.protocol = cfg.protocol
-        self.precision = 'float32'
-        if cfg.protocol in (SHARED_PROTOCOL, MIXED_PROTOCOL):
-            revision = MIXED_ARCHITECTURE_REVISION if cfg.protocol == MIXED_PROTOCOL else ARCHITECTURE_REVISION
-            if cfg.architecture_revision != revision:
-                raise ValueError(f'Checkpoint architecture differs from current implementation: {cfg.architecture_revision}')
-            self.precision = cfg.structural_precision
-            if self.precision not in ('float32', 'bf16'):
-                raise ValueError(f'Unsupported structural inference precision: {self.precision}')
-            # Match the contraction order used by the trained compiled encoder.
-            _training_contraction_order()
+        revision = GATR_BOND_REVISION if cfg.protocol == MIXED_PROTOCOL else ARCHITECTURE_REVISION
+        if cfg.architecture_revision != revision:
+            raise ValueError(f'Checkpoint architecture differs from current implementation: {cfg.architecture_revision}')
+        self.precision = cfg.structural_precision
+        if self.precision not in ('float32', 'bf16'):
+            raise ValueError(f'Unsupported structural inference precision: {self.precision}')
+        _training_contraction_order()
         self.encoder = StructuralGATr()
         self.scales = dict(cfg.structural_scales)
 
@@ -76,7 +74,8 @@ class StructuralMACEAnalysis(StructuralSnapshotAnalysis):
 
     def __init__(self, cfg):
         super().__init__()
-        if cfg.protocol != MACE_PROTOCOL or cfg.architecture_revision != ARCHITECTURE_REVISION:
+        revision = MACE_BOND_REVISION if cfg.protocol == MACE_BOND_PROTOCOL else ARCHITECTURE_REVISION
+        if cfg.protocol not in (MACE_PROTOCOL, MACE_BOND_PROTOCOL) or cfg.architecture_revision != revision:
             raise ValueError(f'Unsupported structural MACE protocol/revision: {cfg.protocol}, {cfg.architecture_revision}')
         self.protocol = cfg.protocol
         self.precision = cfg.structural_precision
@@ -105,17 +104,19 @@ def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr
     if not np.all(distance == 0):
         raise ValueError(f'Analysis centers must be exact source atoms; max error={distance.max()}')
     factor = REFERENCE_RADIUS / scale
-    radius = 17. / factor
+    radius = OUTER_RADIUS / factor
     margin = float(np.minimum(centers-tree.mins, tree.maxes-centers).min())
     if margin <= radius:
         raise ValueError(f'Static center margin {margin:.6f} cannot support {radius:.6f} Angstrom')
-    groups = tree.query_ball_point(centers, radius, return_sorted=True, workers=1)
+    candidates = tree.query_ball_point(centers, radius, return_sorted=True, workers=1)
+    groups = [np.asarray(rows)[local_crop(offsets(points, atom, rows, None), scale)[1]]
+              for atom, rows in zip(atom_rows, candidates, strict=True)]
     n = max(map(len, groups))
     x = np.zeros((len(centers), 1, n, 3), np.float32)
     w = np.zeros((len(centers), 1, n), np.float32)
     species = np.zeros((len(centers), n), np.int64)
     center_indices = []
-    packed_positions, packed_weights, edges, node_graph = [], [], [], []
+    packed_positions, packed_weights, edges, node_graph, packed_centers = [], [], [], [], []
     packed_offset = 0
     for i, (atom, rows) in enumerate(zip(atom_rows, groups, strict=True)):
         rows = np.asarray(rows, dtype=np.int64)
@@ -123,13 +124,14 @@ def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr
         # exactly the native preparation and training observation order.
         local = offsets(points, atom, rows, None) * factor
         x[i, 0, :len(rows)] = local
-        w[i, 0, :len(rows)] = taper(np.linalg.norm(local, axis=-1), 15., 17.)
+        w[i, 0, :len(rows)] = support_weights(local)
         species[i, :len(rows)] = ATOMIC_NUMBERS.index(ELEMENTS[material])
         center_indices.append(int(np.flatnonzero(rows == atom).item()))
         if architecture == 'mace':
             # Match Release.observation: edges are built after fixed scaling,
             # on each complete, unpadded observation, in query_pairs order.
-            pairs = cKDTree(local).query_pairs(5., output_type='ndarray')
+            packed_centers.append(packed_offset+center_indices[-1])
+            pairs = cKDTree(local).query_pairs(EDGE_CUTOFF, output_type='ndarray')
             if len(pairs) and np.any(np.linalg.norm(local[pairs[:, 0]]-local[pairs[:, 1]], axis=-1) <= 0):
                 raise ValueError('Coincident atoms in the normalized static MACE graph')
             edges.append(np.concatenate((pairs, pairs[:, ::-1]), axis=0).T + packed_offset)
@@ -145,7 +147,7 @@ def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr
         batch.update(packed_positions=torch.from_numpy(np.concatenate(packed_positions)),
             packed_weights=torch.from_numpy(np.concatenate(packed_weights)),
             packed_species=torch.full((packed_offset,), ATOMIC_NUMBERS.index(ELEMENTS[material]), dtype=torch.long),
-            node_graph=torch.from_numpy(np.concatenate(node_graph)),
+            node_graph=torch.from_numpy(np.concatenate(node_graph)),packed_centers=torch.tensor(packed_centers),
             edges=torch.from_numpy(np.concatenate(edges, axis=1)))
     return batch
 
@@ -174,7 +176,7 @@ def encode_frame(model, points, centers, settings, *, progress=None):
             progress(centers_done=min(start+batch_size, len(centers)), centers_total=len(centers),
                      elapsed_seconds=time.monotonic()-started)
     return result, dict(centers=len(centers), material=material, material_radius_A=scale,
-        coordinate_scale=REFERENCE_RADIUS/scale, support_radius_A=17*scale/REFERENCE_RADIUS,
+        coordinate_scale=REFERENCE_RADIUS/scale, support_radius_A=OUTER_RADIUS*scale/REFERENCE_RADIUS,
         minimum_boundary_margin_A=float(np.minimum(centers-points.min(0), points.max(0)-centers).min()),
         elapsed_seconds=time.monotonic()-started)
 
@@ -238,7 +240,7 @@ def _checkpoint_encoder(config):
     kind = config.get('checkpoint_kind', 'selected')
     if kind == 'selected':
         return saved
-    if kind != 'latest' or saved['identity']['protocol'] != 'shared_pretraining_mixed_v8':
+    if kind != 'latest' or saved['identity']['protocol'] not in ('shared_pretraining_local_gatr_bond_v11', 'shared_pretraining_local_mace_bond_v10'):
         raise ValueError(f'Unsupported checkpoint kind/protocol: {kind}, {saved["identity"]["protocol"]}')
     from src.project_runtime.paths import resolve_path
     training = saved['identity']['config']
@@ -262,16 +264,17 @@ def export(config):
     if tuple(saved['atomic_numbers']) != ATOMIC_NUMBERS:
         raise ValueError('Checkpoint species vocabulary differs from the native producer')
     training_protocol = saved['identity']['protocol']
-    if training_protocol not in ('structural_neighbors_v1', 'shared_pretraining_v6', 'shared_pretraining_mixed_v8'):
-        raise ValueError(f'Unsupported structural training protocol: {training_protocol}')
-    mixed = training_protocol == 'shared_pretraining_mixed_v8'
-    shared = training_protocol in ('shared_pretraining_v6', 'shared_pretraining_mixed_v8')
-    if mixed and architecture != 'gatr':
-        raise ValueError('The mixed-training protocol requires snapshot GATr')
-    if architecture == 'mace' and not shared:
-        raise ValueError('Static structural MACE export requires the shared v6 training protocol')
-    revision = MIXED_ARCHITECTURE_REVISION if mixed else ARCHITECTURE_REVISION
-    if shared and saved['identity']['architecture_revision'] != revision:
+    revisions = {'structural_neighbors_local_v10': ARCHITECTURE_REVISION,
+                 'shared_pretraining_local_v10': ARCHITECTURE_REVISION,
+                 'shared_pretraining_local_gatr_bond_v11': GATR_BOND_REVISION,
+                 'shared_pretraining_local_mace_bond_v10': MACE_BOND_REVISION}
+    if training_protocol not in revisions:
+        raise ValueError(f'Unsupported structural training protocol: {training_protocol}; local support required')
+    mixed = training_protocol == 'shared_pretraining_local_gatr_bond_v11'
+    bond = training_protocol == 'shared_pretraining_local_mace_bond_v10'
+    if (mixed and architecture != 'gatr') or (bond and architecture != 'mace'):
+        raise ValueError('Training protocol and architecture disagree')
+    if saved['identity']['architecture_revision'] != revisions[training_protocol]:
         raise ValueError('Selected encoder architecture revision differs from the current producer')
     for filename, expected in saved['identity']['implementation']['files'].items():
         if sha256(Path(filename)) != expected:
@@ -286,15 +289,15 @@ def export(config):
             torch.testing.assert_close(value, best['model']['encoder.'+key], rtol=0, atol=0)
         selection_score = best['best']
     data = OmegaConf.load(config['data_config'])
-    protocol = MIXED_PROTOCOL if mixed else MACE_PROTOCOL if architecture == 'mace' else SHARED_PROTOCOL if shared else PROTOCOL
+    protocol = MIXED_PROTOCOL if mixed else MACE_BOND_PROTOCOL if bond else MACE_PROTOCOL if architecture == 'mace' else SHARED_PROTOCOL
     cfg = OmegaConf.create(dict(model_type=f'structural_{architecture}_encoder', protocol=protocol,
         representation_source='encoder', structural_scales=saved['scales'], batch_size=128,
         num_workers=2, max_samples=0, split_seed=123, data=OmegaConf.to_container(data, resolve=True)))
-    if shared:
-        cfg.architecture_revision = saved['identity']['architecture_revision']
-        cfg.structural_precision = saved['identity']['config']['precision']
+    cfg.architecture_revision = saved['identity']['architecture_revision']
+    cfg.structural_precision = saved['identity']['config']['precision']
+    cfg.observation_support = SUPPORT
     if architecture == 'mace':
-        # StructuralModel's verified v6 producer constructs this backend.
+        # The verified local structural producer constructs this backend.
         cfg.structural_backend = 'cueq'
         cfg.structural_execution = 'compiled'
     output = Path(config['output'])/'technical/encoder'
@@ -325,7 +328,7 @@ def verify(config):
     resource.setrlimit(resource.RLIMIT_NOFILE, (hard, hard))
     training = source['identity']['config']
     release = Release(resolve_path(training['release']),
-        materials=training['materials'] if model.protocol in (SHARED_PROTOCOL, MACE_PROTOCOL, MIXED_PROTOCOL) else None)
+        materials=training['materials'])
     index = next(i for i, (_, _, r) in enumerate(release.rows) if r['static'] and r['material'] == 'Al')
     name, row, record = release.rows[index]
     observation = release.observation(index, 'anchor', False, model.architecture == 'mace')
@@ -356,16 +359,16 @@ def verify(config):
     np.testing.assert_allclose(z, zz[::-1], rtol=2e-5, atol=2e-6)
     selected_replay = None
     compiled_latest_replay = None
-    if model.protocol == MIXED_PROTOCOL:
+    if model.protocol in (MIXED_PROTOCOL, MACE_BOND_PROTOCOL):
         # Latest optimizer states have no saved best-selection predictions.
         # Independently load that exact encoder and run the training compiler
         # on native dynamic observations, with the training-only row indexing.
         from src.training_methods.shared_pretraining.compilation import compile_encoder
         dynamic = Release(resolve_path(training['release']), materials=training['materials'], dynamic_only=True)
         indices = np.asarray(dynamic.selection)[np.linspace(0, len(dynamic.selection)-1, 64, dtype=int)]
-        samples = [dynamic.observation(int(i), 'anchor', False, False) for i in indices]
-        inputs = move(collate(samples, 'gatr'), config['device'])
-        reference = StructuralGATr(history=False).to(config['device']).eval()
+        samples = [dynamic.observation(int(i), 'anchor', False, model.architecture=='mace') for i in indices]
+        inputs = move(collate(samples, model.architecture), config['device'])
+        reference = (StructuralMACE() if model.architecture=='mace' else StructuralGATr()).to(config['device']).eval()
         reference.load_state_dict(source['encoder'], strict=True)
         compile_encoder(reference, inputs, model.precision)
         with torch.autocast('cuda', dtype=torch.bfloat16, enabled=model.precision == 'bf16'):

@@ -1,0 +1,23 @@
+{
+  "family": "crystallization_transfer",
+  "exported_at": "2026-09-19T23:23:04.793908+00:00",
+  "files": {
+    "src/research/crystallization_transfer/__init__.py": "87dea26048f972a68c7dd3398f003040cb1c351aaecdf78fffc37e80ec204316",
+    "src/research/crystallization_transfer/runtime.py": "11a4066dc43e17ef334d4a59a3f891528fdaefb671fcbb3b8eefe014be876f18",
+    "src/research/crystallization_transfer/model.py": "2fd55a2e3e2cd85c1f1ced8624a9fbf0c775c11cad1e3b61eb920cea43eaff38",
+    "src/research/crystallization_transfer/queue.py": "7b9e4847e9ee67907369265009cf6e9cfb5cab200d08d9758156e2b17db3a378",
+    "src/research/crystallization_transfer/data.py": "6b6f2798e74d2ce05472600f58d4f99da9837b77d51559e0c31ecf63d9e1411f",
+    "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+    "src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+    "src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+    "docs/metrics/crystallization_transfer.md": "e9b59dceb71d5f4500292257e82036e13bb3c442d771a499b9fba1fdedbb8992",
+    "src/research/crystallization_transfer/scaling.py": "2e3f6b5231dfdc62b9ee9362134512587464b02be274b569155136ea5f09898a",
+    "src/research/crystallization_transfer/training.py": "1424e3bd1dacea6cc6bbe3ddd3bc9d43a67074534ec5a13b41c3e2eeaf7a9a54",
+    "src/research/crystallization_transfer/attention.py": "eb770b9776295f6cb224eeedb46a701168bc6d2d7e485f78b4c879e058647353",
+    "src/research/crystallization_transfer/adaptive.py": "b0a0b2282f5c25c7ebaa8029c9763fae018702b94fbb6854880421d19d5aa81e",
+    "src/research/crystallization_transfer/refinement.py": "5260fb285b37a513bf1537ac4dec7628f0041af0aae4b7bc8b8be089fb566355"
+  }
+}
