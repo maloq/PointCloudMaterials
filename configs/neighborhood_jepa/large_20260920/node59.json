@@ -1,0 +1,35 @@
+{
+  "protocol": "neighborhood_jepa_v2_large_dual",
+  "output": "output/neighborhood_jepa/large-node59-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/native-al-32768-v2-20260920",
+  "parent_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-graphs-20260920",
+  "crystallization_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "seed": 20260920,
+  "batch_size": 2048,
+  "microbatch": 128,
+  "evaluate_every": 256,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 2,
+  "wandb": true,
+  "wandb_group": "neighborhood-jepa-v2-large-dual-20260920",
+  "probe_updates": 1024,
+  "probe_batch_size": 512,
+  "probe_lr": 0.0005,
+  "probe_selection_every": 128,
+  "probe_seed": 20260920,
+  "encoder_channels": 64,
+  "gpu_devices": [
+    0,
+    1
+  ],
+  "target_training_seconds": 10800,
+  "minimum_epochs": 40,
+  "previous_queue": "/home/infres/vmorozov/PointCloudMaterials/output/neighborhood_jepa/v2-native-al-20260920",
+  "name": "E-wide64-b2048-node59",
+  "previous_lanes": [
+    2,
+    3
+  ],
+  "metric_family": "neighborhood_jepa_large_v2"
+}

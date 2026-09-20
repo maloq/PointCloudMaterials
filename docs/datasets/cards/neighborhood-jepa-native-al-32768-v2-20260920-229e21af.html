@@ -1,0 +1,5599 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Expanded native Al JEPA 32,768 anchors: v2</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Expanded native Al JEPA 32,768 anchors: v2</h1><p>32,768 source-balanced training anchors from 90 native Al lineages, plus the same 480 selection anchors from 15 held-out lineages. Existing Lee 2003 MEAM dynamics, fixed 0.75 ps lag. Physical85 and instantaneous TDA144 labels; 21 tracked atom-centered views. V2 adds fixed smooth multiscale angular moments. No new simulation.</p><span class="badge">derived</span><p><code>neighborhood-jepa-native-al-32768-v2-20260920</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-v2-20260920">/home/ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-v2-20260920</a></p><p>614 owned files · 0.319 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Expanded native Al JEPA 32,768 anchors: v2&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;description&quot;: &quot;32,768 source-balanced training anchors from 90 native Al lineages, plus the same 480 selection anchors from 15 held-out lineages. Existing Lee 2003 MEAM dynamics, fixed 0.75 ps lag. Physical85 and instantaneous TDA144 labels; 21 tracked atom-centered views. V2 adds fixed smooth multiscale angular moments. No new simulation.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:neighborhood-jepa-native-al-32768-v2-20260920}/manifest.json&quot;,
+    &quot;configs/neighborhood_jepa/large_20260920/data.json&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Selection previously used in encoder development.&quot;,
+    &quot;Inherited float16 coordinate quantization; float32 graph storage does not recover precision.&quot;,
+    &quot;TDA nearest80 membership remains a separate nonsmooth target; no relaxed TDA.&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-v2-20260920/manifest.json">${dataset:neighborhood-jepa-native-al-32768-v2-20260920}/manifest.json</a></li><li><a href="../../../configs/neighborhood_jepa/large_20260920/data.json">configs/neighborhood_jepa/large_20260920/data.json</a></li></ul><p>Dependencies: <a href="neighborhood-jepa-native-al-32768-graphs-20260920-6cd4ae6d.html">neighborhood-jepa-native-al-32768-graphs-20260920</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>lineage</td><td><code>[&quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_142641279&quot;, &quot;independent_melt_144370470&quot;, &quot;independent_melt_146234076&quot;, &quot;independent_melt_147978527&quot;, &quot;independent_melt_151871197&quot;, &quot;independent_melt_15458297&quot;, &quot;independent_melt_160380922&quot;, &quot;independent_melt_176364202&quot;] … (105 values; see JSON)</code></td></tr><tr><td>split</td><td><code>[&quot;selection&quot;, &quot;train&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[400.0, 450.0, 500.0, 510.0, 520.0]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 614,
+    &quot;apparent_bytes&quot;: 336311504,
+    &quot;allocated_bytes&quot;: 342797312,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 1,
+      &quot;.npy&quot;: 613
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 1,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;moments/000000.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000001.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000005.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000007.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000009.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000010.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000012.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000013.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000014.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000016.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000017.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000019.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000020.npy&quot;,
+      &quot;shape&quot;: [
+        945,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000022.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000023.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000027.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000031.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000033.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000036.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000037.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000038.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000039.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000041.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000045.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000046.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000047.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000048.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000049.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000052.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000053.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000054.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000055.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000056.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000062.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000063.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000065.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000066.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000069.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000070.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000071.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000075.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000076.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000077.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000078.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000080.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000081.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000087.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000089.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000090.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000091.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000092.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000093.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000094.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000095.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000096.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000097.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000098.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000099.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000101.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000104.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000105.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000106.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000108.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000111.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000114.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000115.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000116.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000117.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000119.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000120.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000121.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000122.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000123.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000125.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000126.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000130.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000134.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000135.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000137.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000140.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000142.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000143.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000145.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000146.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000147.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000148.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000150.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000152.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000153.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000154.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000156.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000158.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000161.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000163.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000164.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000165.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000167.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000168.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000169.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000170.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000171.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000172.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000173.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000174.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000177.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000182.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000183.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000185.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000189.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000190.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000193.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000194.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000195.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000196.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000199.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000200.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000203.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000204.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000206.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000207.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000208.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000209.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000213.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000214.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000215.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000218.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000220.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000221.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000224.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000225.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000226.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000227.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000228.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000233.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000234.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000235.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000238.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000241.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000242.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000243.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000244.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000980.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000981.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000982.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000983.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000984.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000985.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000986.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000987.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000988.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000989.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000990.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000991.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000992.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000993.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000994.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000995.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000996.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000997.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000998.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/000999.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001000.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001001.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001002.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001003.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001004.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001005.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001006.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001007.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001008.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001009.npy&quot;,
+      &quot;shape&quot;: [
+        336,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001514.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001515.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001516.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001519.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001525.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001527.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001528.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001529.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001532.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001534.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001537.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001539.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001541.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001542.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001543.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001544.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001549.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001550.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001552.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001554.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001555.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001556.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001558.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001559.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001560.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001561.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001563.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001568.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001570.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001572.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001574.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001576.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001577.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001579.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001580.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001581.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001582.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001583.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001585.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001586.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001587.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001588.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001589.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001590.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001591.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001594.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001596.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001597.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001598.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001600.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001601.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001603.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001606.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001608.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001609.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001610.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001613.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001616.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001617.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001618.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001619.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001620.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001624.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001625.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001626.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001627.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001628.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001630.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001632.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001633.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001634.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001637.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001638.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001640.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001641.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001642.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001643.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001646.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001649.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001650.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001652.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001654.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001656.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001657.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001660.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001662.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001663.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001665.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001668.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001669.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001671.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001673.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001674.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001675.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001677.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001682.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001683.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001687.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001688.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001690.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001691.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001693.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001694.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001696.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001698.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001699.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001700.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001705.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001706.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001707.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001710.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001711.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001712.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001715.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001716.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001717.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001719.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001721.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001723.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001725.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001728.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001729.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001732.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001734.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001735.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001736.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001737.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001741.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001742.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001744.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001745.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001746.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001747.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001748.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001750.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001751.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001752.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001753.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001759.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001761.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001764.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001765.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001766.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001767.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001770.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001772.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001773.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001775.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001777.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001778.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001779.npy&quot;,
+      &quot;shape&quot;: [
+        168,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001780.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001781.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001783.npy&quot;,
+      &quot;shape&quot;: [
+        756,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001787.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001788.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001789.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001790.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001791.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001793.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001796.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001797.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001798.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001800.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001802.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001806.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001808.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001809.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001811.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001814.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001815.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001818.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001819.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001822.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001823.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001825.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001826.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001828.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001829.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001831.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001832.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001835.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001836.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001837.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001838.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001840.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001843.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001847.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001848.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001850.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001852.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001856.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001858.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001859.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001862.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001863.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001864.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001865.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001867.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001868.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001870.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001872.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001873.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001874.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001878.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001879.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001880.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001884.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001885.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001886.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001890.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001891.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001893.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001894.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001896.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001898.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001901.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001905.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001906.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001907.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001908.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001909.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001910.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001912.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001914.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001916.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001917.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001918.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001922.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001923.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001925.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001926.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001928.npy&quot;,
+      &quot;shape&quot;: [
+        210,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001930.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001931.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001932.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001933.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001936.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001937.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001940.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001942.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001943.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001944.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001946.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001950.npy&quot;,
+      &quot;shape&quot;: [
+        945,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001951.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001955.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001958.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001959.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001960.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001961.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001962.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001965.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001967.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001968.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001970.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001971.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001972.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001975.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001976.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001977.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001980.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001982.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001983.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001989.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001992.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001994.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001996.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001998.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/001999.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002001.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002003.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002005.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002006.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002007.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002008.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002011.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002012.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002014.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002016.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002018.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002020.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002021.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002023.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002025.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002027.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002029.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002030.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002031.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002033.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002034.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002037.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002038.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002039.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002040.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002042.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002043.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002048.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002049.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002050.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002052.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002054.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002056.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002060.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002061.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002063.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002064.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002067.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002068.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002069.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002071.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002072.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002074.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002075.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002076.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002078.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002079.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002080.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002082.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002083.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002086.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002088.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002090.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002091.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002092.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002096.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002098.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002099.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002100.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002101.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002104.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002106.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002110.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002111.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002112.npy&quot;,
+      &quot;shape&quot;: [
+        945,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002114.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002118.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002119.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002120.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002121.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002122.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002124.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002125.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002126.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002130.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002132.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002133.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002135.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002136.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002137.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002139.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002145.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002147.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002149.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002153.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002156.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002157.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002163.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002164.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002165.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002166.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002169.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002170.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002171.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002174.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002176.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002177.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002178.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002180.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002181.npy&quot;,
+      &quot;shape&quot;: [
+        210,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002185.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002187.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002188.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002189.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002190.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002193.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002196.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002197.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002198.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002199.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002200.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002203.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002204.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002206.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002212.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002213.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002214.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002215.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002217.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002218.npy&quot;,
+      &quot;shape&quot;: [
+        210,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002219.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002220.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002222.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002224.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002225.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002227.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002232.npy&quot;,
+      &quot;shape&quot;: [
+        945,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002238.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002239.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002241.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002242.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002243.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002248.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002249.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002250.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002252.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002253.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002255.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002257.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002258.npy&quot;,
+      &quot;shape&quot;: [
+        924,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002261.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002262.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002263.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002266.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002269.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002270.npy&quot;,
+      &quot;shape&quot;: [
+        189,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002271.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002273.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002274.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002277.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002278.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002281.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002285.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002286.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002288.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002292.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002294.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002295.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002296.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002298.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002301.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002302.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002305.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002308.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002311.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002312.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002313.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002316.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002318.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002319.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002322.npy&quot;,
+      &quot;shape&quot;: [
+        1344,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;moments/002323.npy&quot;,
+      &quot;shape&quot;: [
+        735,
+        120
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (1 records)</summary><p><a href="../records/neighborhood-jepa-native-al-32768-v2-20260920-229e21af.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-v2-20260920/manifest.json">manifest.json</a> · complete · <code>7a990637c98d9b0482716b1304a7b00230df259a38dac83d718487d9fce67057</code></li></ul></details><p class="muted">Observed 2026-09-20T18:31:23.169342+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

@@ -9,7 +9,6 @@ from torch.utils.data import Dataset,DataLoader
 
 # A 21-view prefetched batch contains hundreds of tensors; descriptor-per-storage
 # transport exhausts the default 1024-FD limit before the bounded mmap cache does.
-torch.multiprocessing.set_sharing_strategy('file_system')
 from src.data.structural_pretraining.batches import collate
 from src.data.structural_pretraining.support import REFERENCE_RADIUS
 from src.training_methods.shared_pretraining.mixed import quotas
@@ -85,5 +84,7 @@ class MixedBatches:
 
 
 def loader(data,sampler,microbatch,workers=4):
+    if workers:
+        torch.multiprocessing.set_sharing_strategy('file_system')
     return DataLoader(data,batch_sampler=sampler,collate_fn=partial(pack,microbatch=microbatch),num_workers=workers,
         pin_memory=True,persistent_workers=workers>0,generator=torch.Generator().manual_seed(731),**({'prefetch_factor':2,'multiprocessing_context':'spawn'} if workers else {}))

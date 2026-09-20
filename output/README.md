@@ -27,3 +27,7 @@ Refresh the registry with `python scripts/experiment_registry.py build`.
 - [Recent local encoders and crystallization](crystallization_transfer/recent-report-20260919/README.md): consolidated results and exact MACE pretraining recipe, with full refinement/screen appendices. Final longer-encoder outcomes remain pending.
 
 - `neighborhood_jepa/mace-20260920/`: MACE-only equivariant neighborhood prediction screens and longer validation-selected fits; [protocol](../experiments/neighborhood_jepa_20260920/README.md).
+
+- Neighborhood JEPA v2: `neighborhood_jepa/v2-native-al-20260920/`; live frozen-probe report `CRYSTALLIZATION.md`.
+
+- `neighborhood_jepa/regularization-20260920/`: one-seed MACE order/regularizer comparisons, validation-selected continuations and matched frozen crystallization readouts.

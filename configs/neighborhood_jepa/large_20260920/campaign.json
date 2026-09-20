@@ -1,0 +1,15 @@
+{
+  "output": "output/neighborhood_jepa/large-20260920",
+  "runs": [
+    {
+      "config": "configs/neighborhood_jepa/large_20260920/node53.json",
+      "allocation": 1000616,
+      "cpus": 20
+    },
+    {
+      "config": "configs/neighborhood_jepa/large_20260920/node59.json",
+      "allocation": 1000818,
+      "cpus": 16
+    }
+  ]
+}

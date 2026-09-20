@@ -69,4 +69,4 @@ Physical reconstruction alone does not establish good frozen downstream dynamics
 and low latent prediction loss alone does not establish information preservation.
 
 
-Table export: 2026-09-20T10:40:53.386704+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.
+Table export: 2026-09-20T13:11:11.530860+00:00. The machine-readable values retain full precision; blank values mean undefined or unrecorded, never zero. Nested metric names preserve the producer's grouping. The implementation hashes are in `../technical/metric-contract.json`.

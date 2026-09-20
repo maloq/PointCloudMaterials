@@ -264,3 +264,9 @@ The crystallization structural-path companion uses `crystallization_transfer/mac
 `crystallization_transfer/mace_path_refinement_20260919.json` reuses the completed future cache for 30 targeted screens and five validation-selected longer fits; [diagnosis and protocol](../experiments/crystallization_transfer_20260919/PATH_REFINEMENT.md).
 
 - `neighborhood_jepa/`: tracked six-neighbor cache and MACE-only SIGReg/VICReg, spatial and temporal query comparisons; [protocol](../experiments/neighborhood_jepa_20260920/README.md).
+
+- Neighborhood JEPA v2 native Al: `neighborhood_jepa/v2_native_al_20260920.json`.
+
+- `neighborhood_jepa/large_20260920/`: expanded native-Al preparation and paired-GPU three-hour width64 MACE runs on node53/node59, followed by frozen crystallization probes.
+
+- `neighborhood_jepa/regularization_20260920/study.json`: MACE order-preserving regularizer/projector comparison and frozen crystallization assays.

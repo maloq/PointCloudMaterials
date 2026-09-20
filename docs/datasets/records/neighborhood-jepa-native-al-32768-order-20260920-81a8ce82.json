@@ -1,0 +1,51 @@
+{
+  "dataset_id": "neighborhood-jepa-native-al-32768-order-20260920",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-order-20260920/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "e0a01c1b245d10b9086607b86ab35692cd15a0f3c6b03ed1beacdcaec0a13fb3",
+      "kind": "metadata",
+      "keys": [
+        "base_identity",
+        "identity",
+        "materials",
+        "mean",
+        "names",
+        "parent",
+        "potential",
+        "shards",
+        "state",
+        "std",
+        "support"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "shards[0].split",
+            "occurrences": 583
+          },
+          {
+            "value": "selection",
+            "first_json_path": "shards[141].split",
+            "occurrences": 30
+          }
+        ],
+        "materials": [
+          {
+            "value": [
+              "Al"
+            ],
+            "first_json_path": "materials",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": "al-lee2003-meam"
+      }
+    }
+  ]
+}

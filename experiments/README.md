@@ -69,3 +69,7 @@ history while testing preservation of bond order and instantaneous topology.
 - [Recent local encoder and crystallization report](../output/crystallization_transfer/recent-report-20260919/README.md): pretraining recipe/provenance, context/data scaling, corrected encoder screens and completed trajectory refinements; [pending final update](crystallization_transfer_20260919/REPORT_UPDATE.md).
 
 - [Equivariant neighborhood JEPA](neighborhood_jepa_20260920/README.md): independently encoded local MACE snapshots trained by structured neighbor/time prediction, SIGReg and fixed physical/TDA anchors.
+
+- [Causal geometry-anchored neighborhood JEPA v2](neighborhood_jepa_v2_20260920/README.md)
+
+- [Neighborhood JEPA regularizer/order comparison](neighborhood_jepa_regularization_20260920/README.md): SIGReg, VICReg and EpiJEPA-inspired geometric regularization.

@@ -61,7 +61,8 @@ class StructuralMACE(nn.Module):
                 setattr(interaction,name,FullPrecision(getattr(interaction,name)))
         self.products=nn.ModuleList([FullPrecision(product) for product in self.products])
 
-    def forward(self,batch,return_equivariant=False):
+    def atom_features(self,batch):
+        """Shared MACE atom pathway; coordinates/support retain the local-patch contract."""
         x=batch['packed_positions'].float(); graph=batch['node_graph']; edges=batch['edges']
         attrs=F.one_hot(batch['packed_species'],len(ATOMIC_NUMBERS)).to(x.dtype)
         h=self.node_embedding(attrs)+self.scale_input(batch['log_scale'][graph,None])
@@ -74,7 +75,13 @@ class StructuralMACE(nn.Module):
             h,sc=interaction(node_attrs=attrs,node_feats=h,edge_attrs=angular,
                 edge_feats=radial,edge_index=edges,cutoff=cutoff,first_layer=i==0)
             h=normalize_atom_features(product(h,sc=sc,node_attrs=attrs))*w[:,None]
-        state=self.output_norm(self.pool(h,x,graph,len(batch['log_scale'])))
+        return dict(features=h, scalars=h[:,:self.channels], positions=x, graph=graph,
+            weights=w, count=len(batch['log_scale']))
+
+    def forward(self,batch,return_equivariant=False):
+        atoms=self.atom_features(batch)
+        h,x,graph=atoms['features'],atoms['positions'],atoms['graph']
+        state=self.output_norm(self.pool(h,x,graph,atoms['count']))
         if return_equivariant:
             # Training-only cache interface. The default exported snapshot stays
             # 128-dimensional and contains no auxiliary prediction head.

@@ -1,0 +1,10 @@
+metric,value
+physical,0.16069920361042023
+tda,0.12777958810329437
+selection_score,0.19264410063624382
+training_mean_baseline,0.5798106789588928
+sources,15
+windows,480
+step,320
+selected_step,320
+total_updates,320

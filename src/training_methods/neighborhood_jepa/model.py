@@ -1,10 +1,8 @@
 """Atom-level high-order features, invariant export, and equivariant query decoding."""
 import torch
 from torch import nn
-from torch.nn import functional as F
 from e3nn import o3
 from src.models.encoders.structural import StructuralMACE
-from src.models.encoders.mace_causal import normalize_atom_features
 
 ELLS=(1,2,4,6)
 CHANNELS=4
@@ -23,31 +21,22 @@ def invariants(e):
 
 class NeighborhoodEncoder(nn.Module):
     """One independently evaluated local snapshot; no teacher or history inside E."""
-    def __init__(self,architecture):
+    def __init__(self,architecture,channels=32):
         super().__init__();self.architecture=architecture
         if architecture!='mace':raise ValueError('This protocol trains MACE only')
-        self.base=StructuralMACE()
-        width=32 if architecture=='mace' else 192
-        self.angular_weights=nn.Sequential(nn.Linear(width+1,64),nn.SiLU(),nn.Linear(64,len(ELLS)*CHANNELS))
+        self.base=StructuralMACE(channels=channels,readout_hidden=104*channels//32)
+        width=channels
+        self.angular_weights=nn.Sequential(nn.Linear(width+1,2*channels),nn.SiLU(),nn.Linear(2*channels,len(ELLS)*CHANNELS))
         self.harmonics=o3.SphericalHarmonics(list(ELLS),normalize=True,normalization='component')
-        self.compress=nn.Sequential(nn.Linear(128+len(ELLS)*CHANNELS**2,192),nn.LayerNorm(192),nn.SiLU(),nn.Linear(192,128))
+        self.compress=nn.Sequential(nn.Linear(128+len(ELLS)*CHANNELS**2,6*channels),nn.LayerNorm(6*channels),nn.SiLU(),nn.Linear(6*channels,128))
         self.output_norm=nn.LayerNorm(128,elementwise_affine=False)
 
     def forward(self,batch):
         base=self.base
-        if self.architecture=='mace':
-            x=batch['packed_positions'].float();g=batch['node_graph'];edges=batch['edges'];w=batch['packed_weights']
-            attrs=F.one_hot(batch['packed_species'],len(base.atomic_numbers)).to(x.dtype)
-            h=base.node_embedding(attrs)+base.scale_input(batch['log_scale'][g,None])
-            sender,receiver=edges;v=x[receiver]-x[sender]
-            radial,cutoff=base.radial_embedding(v.norm(dim=-1,keepdim=True),attrs,edges,base.atomic_numbers)
-            radial=radial*(w[sender]*w[receiver])[:,None];angular=base.spherical_harmonics(v)
-            for i,(interaction,product) in enumerate(zip(base.interactions,base.products,strict=True)):
-                h,sc=interaction(node_attrs=attrs,node_feats=h,edge_attrs=angular,edge_feats=radial,edge_index=edges,cutoff=cutoff,first_layer=i==0)
-                h=normalize_atom_features(product(h,sc=sc,node_attrs=attrs))*w[:,None]
-            z=base.output_norm(base.pool(h,x,g,len(batch['log_scale'])))
-            scalar=h[:,:32];count=len(batch['log_scale'])
-        else:raise ValueError(self.architecture)
+        atoms=base.atom_features(batch)
+        x,g,w=atoms['positions'],atoms['graph'],atoms['weights']
+        scalar,count=atoms['scalars'],atoms['count']
+        z=base.output_norm(base.pool(atoms['features'],x,g,count))
         # Tensor creation, contractions and export are FP32. Harmonics precede pooling.
         with torch.autocast(x.device.type,enabled=False):
             radius=x.norm(dim=-1);weights=w.float()*(radius>1e-6)

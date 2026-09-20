@@ -1,0 +1,27 @@
+{
+  "protocol": "neighborhood_jepa_v2_native_al",
+  "output": "output/neighborhood_jepa/v2-native-al-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/v2-native-al-20260920-final",
+  "parent_cache": "${storage:cache}/neighborhood_jepa/tracked-six-65536-20260920",
+  "crystallization_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "seed": 20260920,
+  "batch_size": 256,
+  "microbatch": 128,
+  "updates": 1280,
+  "evaluate_every": 128,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 2,
+  "wandb": true,
+  "wandb_group": "neighborhood-jepa-v2-native-al-20260920",
+  "wall_hours": 8,
+  "probe_updates": 1024,
+  "probe_batch_size": 512,
+  "probe_lr": 0.0005,
+  "probe_selection_every": 128,
+  "probe_seed": 20260920,
+  "wait_legacy_on_node59": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/neighborhood_jepa/mace-b1024-lr0008-20260920/technical/runs/anchors-vicreg-spatial-long/status.json",
+    "/home/infres/vmorozov/PointCloudMaterials/output/neighborhood_jepa/mace-b1024-lr0008-20260920/technical/runs/spacetime-sig0003-long/status.json"
+  ]
+}

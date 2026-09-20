@@ -2480,6 +2480,129 @@
           "Six neighbors provide approximate angular coverage, not an exact canonical cubic frame."
         ]
       }
+    },
+    "neighborhood-jepa-v2-native-al-20260920": {
+      "root": "cache",
+      "path": "neighborhood_jepa/v2-native-al-20260920-final",
+      "kind": "cache",
+      "dependencies": [
+        "neighborhood-jepa-tracked-six-65536-20260920"
+      ],
+      "metadata": {
+        "title": "Neighborhood JEPA v2 native Al, fixed 0.75 ps lag and smooth anchored moments",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "8,995 training anchors in 36 independent native lineages and 480 selection anchors in 15 lineages. Inherited checked radius8 graphs and physical85/TDA144 labels. New degree1/2/4/6 multiscale C2 moments, training-only per-block scales. Known temperature conditions. No simulations added.",
+        "evidence": [
+          "${dataset:neighborhood-jepa-v2-native-al-20260920}/manifest.json",
+          "configs/neighborhood_jepa/v2_native_al_20260920.json"
+        ],
+        "limitations": [
+          "Selection previously used in encoder development.",
+          "Inherited float16 coordinate quantization; float32 graph storage does not recover precision.",
+          "TDA nearest80 membership remains a separate nonsmooth target; no relaxed TDA."
+        ]
+      }
+    },
+    "neighborhood-jepa-native-al-32768-graphs-20260920": {
+      "root": "cache",
+      "path": "neighborhood_jepa/native-al-32768-graphs-20260920",
+      "kind": "cache",
+      "dependencies": [
+        "structural-neighbors-dynamic-1018080-20260919"
+      ],
+      "metadata": {
+        "title": "Expanded native Al JEPA 32,768 anchors: graphs",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "32,768 source-balanced training anchors from 90 native Al lineages, plus the same 480 selection anchors from 15 held-out lineages. Existing Lee 2003 MEAM dynamics, fixed 0.75 ps lag. Physical85 and instantaneous TDA144 labels; 21 tracked atom-centered views. V2 adds fixed smooth multiscale angular moments. No new simulation.",
+        "evidence": [
+          "${dataset:neighborhood-jepa-native-al-32768-graphs-20260920}/manifest.json",
+          "configs/neighborhood_jepa/large_20260920/data.json"
+        ],
+        "limitations": [
+          "Selection previously used in encoder development.",
+          "Inherited float16 coordinate quantization; float32 graph storage does not recover precision.",
+          "TDA nearest80 membership remains a separate nonsmooth target; no relaxed TDA."
+        ]
+      }
+    },
+    "neighborhood-jepa-native-al-32768-v2-20260920": {
+      "root": "cache",
+      "path": "neighborhood_jepa/native-al-32768-v2-20260920",
+      "kind": "cache",
+      "dependencies": [
+        "neighborhood-jepa-native-al-32768-graphs-20260920"
+      ],
+      "metadata": {
+        "title": "Expanded native Al JEPA 32,768 anchors: v2",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "32,768 source-balanced training anchors from 90 native Al lineages, plus the same 480 selection anchors from 15 held-out lineages. Existing Lee 2003 MEAM dynamics, fixed 0.75 ps lag. Physical85 and instantaneous TDA144 labels; 21 tracked atom-centered views. V2 adds fixed smooth multiscale angular moments. No new simulation.",
+        "evidence": [
+          "${dataset:neighborhood-jepa-native-al-32768-v2-20260920}/manifest.json",
+          "configs/neighborhood_jepa/large_20260920/data.json"
+        ],
+        "limitations": [
+          "Selection previously used in encoder development.",
+          "Inherited float16 coordinate quantization; float32 graph storage does not recover precision.",
+          "TDA nearest80 membership remains a separate nonsmooth target; no relaxed TDA."
+        ]
+      }
+    },
+    "neighborhood-jepa-native-al-32768-order-20260920": {
+      "root": "cache",
+      "path": "neighborhood_jepa/native-al-32768-order-20260920",
+      "kind": "cache",
+      "dependencies": [
+        "neighborhood-jepa-native-al-32768-v2-20260920"
+      ],
+      "metadata": {
+        "title": "Native Al 32768 order anchors and frozen random MACE reservoir",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "description": "Derived current/next local order targets and unlabeled fixed random geometric features on the existing 32768 training / 480 development anchor release; 90/15 independent Lee-MEAM lineages, 0.75 ps lag. No new simulations.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "provenance": {
+          "producer": "src/training_methods/neighborhood_jepa/regularization/data.py",
+          "parent": "neighborhood-jepa-native-al-32768-v2-20260920",
+          "order_definition": "src/analysis/liquid_structure.py:bond_order; q4/q6/w4/w6/qbar6/coherence/density/coordination",
+          "normalization": "training-only current and next center targets, per-component std floor 1e-4",
+          "reservoir": "Random width16 MACE, seed9173, orthogonal 128-to-64 projection, no labels or learned parent weights"
+        },
+        "limitations": [
+          "Order neighbors restricted to encoder-observed local crop; not guaranteed identical to full-trajectory handcrafted baseline neighborhoods.",
+          "One random reservoir initialization.",
+          "No new independent test cohort."
+        ],
+        "evidence": [
+          "${dataset:neighborhood-jepa-native-al-32768-order-20260920}/manifest.json",
+          "${dataset:neighborhood-jepa-native-al-32768-order-20260920}/reservoir.json"
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

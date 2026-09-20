@@ -1,0 +1,338 @@
+{
+  "dataset_id": "neighborhood-jepa-v2-native-al-20260920",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/neighborhood_jepa/v2-native-al-20260920-final/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "0b0db71bb27627b93d521da23bbef06352e81867c52ca4cba292a87bd1d85b4e",
+      "kind": "metadata",
+      "keys": [
+        "condition",
+        "continuity",
+        "exclusions",
+        "geometry_scales",
+        "groups",
+        "identity",
+        "lag_ps",
+        "layout",
+        "locked_overlap",
+        "normalization",
+        "parent",
+        "producer",
+        "selection_role",
+        "selection_roots",
+        "shards",
+        "state",
+        "support",
+        "train_roots"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "lineage": [
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "shards[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "shards[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "shards[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "shards[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "shards[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "shards[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "shards[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "shards[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "shards[8].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "shards[10].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "shards[12].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "shards[14].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "shards[16].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "shards[18].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "shards[20].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "shards[22].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "shards[24].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "shards[26].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "shards[28].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "shards[30].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "shards[32].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "shards[34].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "shards[36].lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "shards[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "shards[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "shards[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "shards[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "shards[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "shards[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "shards[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "shards[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "shards[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "shards[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "shards[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "shards[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "shards[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "shards[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "shards[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "shards[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "shards[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "shards[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "shards[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "shards[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "shards[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "shards[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "shards[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "shards[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "shards[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "shards[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "shards[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "shards[65].lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "shards[0].split",
+            "occurrences": 36
+          },
+          {
+            "value": "selection",
+            "first_json_path": "shards[8].split",
+            "occurrences": 30
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "shards[0].material",
+            "occurrences": 66
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "shards[0].temperature_K",
+            "occurrences": 16
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "shards[2].temperature_K",
+            "occurrences": 14
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "shards[5].temperature_K",
+            "occurrences": 11
+          },
+          {
+            "value": 520.0,
+            "first_json_path": "shards[6].temperature_K",
+            "occurrences": 14
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "shards[26].temperature_K",
+            "occurrences": 11
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

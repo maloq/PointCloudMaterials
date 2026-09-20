@@ -1,0 +1,10 @@
+{
+  "parent_release": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919",
+  "parent_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-graphs-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/native-al-32768-v2-20260920",
+  "crystallization_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "seed": 20260920,
+  "anchors": 32768,
+  "anchors_per_shard": 64,
+  "workers": 6
+}

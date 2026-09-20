@@ -1,11 +1,11 @@
 {
   "family": "neighborhood_jepa",
-  "exported_at": "2026-09-20T10:40:53.386704+00:00",
+  "exported_at": "2026-09-20T13:11:11.530860+00:00",
   "files": {
     "src/training_methods/neighborhood_jepa/__init__.py": "cec66d308d04d43121307f6b8d285f08d9493afe7976f2a5ede04638022482f0",
     "src/training_methods/neighborhood_jepa/model.py": "123ff631cddc749d14fa6f833e9841557759b386212dddf012caf66bf14252a4",
-    "src/training_methods/neighborhood_jepa/queue.py": "2adf913192cd5626bcf752f4dc51357d177904f12c2b2b67bf6ff82467302718",
-    "src/training_methods/neighborhood_jepa/variants.py": "109f90ae73248806f644560e5a2fab162804a0204f7360545850fc4ad05f44d3",
+    "src/training_methods/neighborhood_jepa/queue.py": "fea2077624954ebf991cfa7f354af3506b6c279af96c8d9c63d04b142a95fdbe",
+    "src/training_methods/neighborhood_jepa/variants.py": "8d52e68afb05fcffd723337e03dc3349cfbc71302a23eebb382ffd3fa5327abe",
     "src/training_methods/neighborhood_jepa/data.py": "35e6dd7e2a41c1e793462c7b70af0ccf217fe885cb419b4c8abfee0e8fb3e3b6",
     "src/training_methods/neighborhood_jepa/objective.py": "2d74c8390c238735d4c0db84f6b66c91fdfc950fe2b9a40360e39ffd49a98564",
     "src/training_methods/neighborhood_jepa/prepare.py": "6c05cd9006c96c109bfd1bfa8be9b45ec5f07915b8db857d5958c165f4ac7bf3",

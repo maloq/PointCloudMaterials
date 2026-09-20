@@ -42,3 +42,7 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 [Structural-path crystallization queue](crystallization_paths_20260919.md): detached local state trajectory forecasts and future-center cache.
 
 - [Neighborhood JEPA execution](neighborhood_jepa_20260920.md): tracked-cache construction, frozen two-H100 MACE queue, exact resumes and model exports.
+
+- [Neighborhood JEPA v2 execution](neighborhood_jepa_v2.md)
+
+- [Neighborhood JEPA regularization queue](neighborhood_jepa_regularization.md): detached multi-allocation fits, order anchors and frozen crystallization probes.

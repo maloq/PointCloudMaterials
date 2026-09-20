@@ -677,5 +677,99 @@
       "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
       "src/training_methods/shared_pretraining/compilation.py": "55aa01fd538e11c59f7d9a358ce0244ef5829010749162829fb0bf06b0b432ba"
     }
+  },
+  "neighborhood_jepa_v2": {
+    "files": {
+      "src/training_methods/neighborhood_jepa/v2/queue.py": "90e64850876dfbfbbecf4d059070015f66f108a2c702a0ff8b55ffc5e1999fc7",
+      "src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+      "src/training_methods/neighborhood_jepa/v2/runtime.py": "d1a5fb7fb1e3e1469d321e22ceb92f98da0b3ef2b8a861f113e43026b4a25c3c",
+      "src/training_methods/neighborhood_jepa/v2/contracts.py": "46806805ae0dbda48eb8896489a2beabb5f9bdf54e60090bd37519fcb7083082",
+      "src/training_methods/neighborhood_jepa/v2/geometry.py": "0f07f27030e82d9c78544f8075190607cb59d3aa5633e3712ac2110602aa2381",
+      "src/training_methods/neighborhood_jepa/v2/probe.py": "4fddd8547c2b1dedd4a4882998d74ead3304f23b2783a353d80224201ba67919",
+      "src/training_methods/neighborhood_jepa/v2/audit.py": "0852a09710d4e98bdda03612a6dfb86d8870a981c28eea85c27455abfd47318b",
+      "src/training_methods/neighborhood_jepa/v2/data.py": "582852487cd8eb364953e7405a490e79ffe26276db616eaf1a20d76e4ef3b04b",
+      "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
+      "src/training_methods/neighborhood_jepa/v2/extract.py": "88fe8fe216346292c79d8119cab471ccc4316e2464079059cf9401ae346aa60b",
+      "src/training_methods/neighborhood_jepa/v2/objective.py": "d66e3ff81094518bc729c64a149a3a2664d2a9fb2a6d13de1ad09cbf3e11550f",
+      "docs/metrics/neighborhood_jepa_v2.md": "d81fbd9b1a91287f5749b129dc9bdb2830655727a784d20571123690d432e2bc",
+      "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+      "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319"
+    }
+  },
+  "neighborhood_crystallization_v2": {
+    "files": {
+      "src/training_methods/neighborhood_jepa/v2/queue.py": "90e64850876dfbfbbecf4d059070015f66f108a2c702a0ff8b55ffc5e1999fc7",
+      "src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+      "src/training_methods/neighborhood_jepa/v2/runtime.py": "d1a5fb7fb1e3e1469d321e22ceb92f98da0b3ef2b8a861f113e43026b4a25c3c",
+      "src/training_methods/neighborhood_jepa/v2/contracts.py": "46806805ae0dbda48eb8896489a2beabb5f9bdf54e60090bd37519fcb7083082",
+      "src/training_methods/neighborhood_jepa/v2/geometry.py": "0f07f27030e82d9c78544f8075190607cb59d3aa5633e3712ac2110602aa2381",
+      "src/training_methods/neighborhood_jepa/v2/probe.py": "7f36b0c86e0537bbc557b0cf36fb200fc45ddcb0c1d4faf8b2078f8f381ad489",
+      "src/training_methods/neighborhood_jepa/v2/audit.py": "0852a09710d4e98bdda03612a6dfb86d8870a981c28eea85c27455abfd47318b",
+      "src/training_methods/neighborhood_jepa/v2/data.py": "582852487cd8eb364953e7405a490e79ffe26276db616eaf1a20d76e4ef3b04b",
+      "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
+      "src/training_methods/neighborhood_jepa/v2/extract.py": "dc6f423c95a3cbe98feb23d94b05d27987a43335ad4c24b0cb54d0c70206bd25",
+      "src/training_methods/neighborhood_jepa/v2/objective.py": "d66e3ff81094518bc729c64a149a3a2664d2a9fb2a6d13de1ad09cbf3e11550f",
+      "docs/metrics/neighborhood_crystallization_v2.md": "f2945387608be4998a70aa0dc44d1e23110c2a4f41a67a1935b006b648037b2d",
+      "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+      "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319"
+    }
+  },
+  "neighborhood_jepa_large_v2": {
+    "files": {
+      "docs/metrics/neighborhood_jepa_large_v2.md": "604e6006ce20f1072752e50ce255341d67bc81f3492dbcd2297fbcd26f83a77d",
+      "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+      "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
+      "src/training_methods/neighborhood_jepa/v2/audit.py": "0852a09710d4e98bdda03612a6dfb86d8870a981c28eea85c27455abfd47318b",
+      "src/training_methods/neighborhood_jepa/v2/contracts.py": "46806805ae0dbda48eb8896489a2beabb5f9bdf54e60090bd37519fcb7083082",
+      "src/training_methods/neighborhood_jepa/v2/data.py": "582852487cd8eb364953e7405a490e79ffe26276db616eaf1a20d76e4ef3b04b",
+      "src/training_methods/neighborhood_jepa/v2/expand.py": "43060b7b258270054489115c9959a1e026c0e120a355d6c1acf7712102aea5f1",
+      "src/training_methods/neighborhood_jepa/v2/extract.py": "88fe8fe216346292c79d8119cab471ccc4316e2464079059cf9401ae346aa60b",
+      "src/training_methods/neighborhood_jepa/v2/geometry.py": "0f07f27030e82d9c78544f8075190607cb59d3aa5633e3712ac2110602aa2381",
+      "src/training_methods/neighborhood_jepa/v2/large.py": "ea7f8915b1389f28985b95badc05ecd98945c87ad0a01c802ab3471dce7231b9",
+      "src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+      "src/training_methods/neighborhood_jepa/v2/objective.py": "d66e3ff81094518bc729c64a149a3a2664d2a9fb2a6d13de1ad09cbf3e11550f",
+      "src/training_methods/neighborhood_jepa/v2/parallel.py": "03453af8bb47427b8400b4f515f1e012513353b7cbd6f772e4c740dcdd4364d6",
+      "src/training_methods/neighborhood_jepa/v2/probe.py": "4fddd8547c2b1dedd4a4882998d74ead3304f23b2783a353d80224201ba67919",
+      "src/training_methods/neighborhood_jepa/v2/queue.py": "90e64850876dfbfbbecf4d059070015f66f108a2c702a0ff8b55ffc5e1999fc7",
+      "src/training_methods/neighborhood_jepa/v2/runtime.py": "d1a5fb7fb1e3e1469d321e22ceb92f98da0b3ef2b8a861f113e43026b4a25c3c"
+    }
+  },
+  "neighborhood_jepa_regularization": {
+    "files": {
+      "src/training_methods/neighborhood_jepa/regularization/runtime.py": "f5d6ea050ee2517a35bfd784c9b2fd5a2bfa88a260fa79e8f90d674e4f56e7c3",
+      "src/training_methods/neighborhood_jepa/regularization/data.py": "8bccf70deed8095088f41f3fb7f1f7a72f36dfbe7cf654708b7e198fbb84ff04",
+      "src/training_methods/neighborhood_jepa/regularization/__init__.py": "ad22c0d987d6aedeeea04498e5c42cceb9837cd964e0626818fbc9a5f20bced0",
+      "src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+      "src/training_methods/neighborhood_jepa/regularization/queue.py": "c9ae3dd8c00ef8078af888e3e1564362ccbb3a21b09f0f512e5d9f9635bbdad2",
+      "src/training_methods/neighborhood_jepa/regularization/specs.py": "fca4a9368a6a4dcc9037a75773f3dbe3ee2d8f0edb2d2eff58c8dab6775f491b",
+      "src/training_methods/neighborhood_jepa/regularization/objective.py": "bf4c2b28a668781d697d7415dde5fded77d7941b08ec717466e706d48b65ac98",
+      "src/training_methods/neighborhood_jepa/v2/queue.py": "90e64850876dfbfbbecf4d059070015f66f108a2c702a0ff8b55ffc5e1999fc7",
+      "src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+      "src/training_methods/neighborhood_jepa/v2/runtime.py": "d1a5fb7fb1e3e1469d321e22ceb92f98da0b3ef2b8a861f113e43026b4a25c3c",
+      "src/training_methods/neighborhood_jepa/v2/contracts.py": "46806805ae0dbda48eb8896489a2beabb5f9bdf54e60090bd37519fcb7083082",
+      "src/training_methods/neighborhood_jepa/v2/large.py": "ea7f8915b1389f28985b95badc05ecd98945c87ad0a01c802ab3471dce7231b9",
+      "src/training_methods/neighborhood_jepa/v2/geometry.py": "0f07f27030e82d9c78544f8075190607cb59d3aa5633e3712ac2110602aa2381",
+      "src/training_methods/neighborhood_jepa/v2/probe.py": "7f36b0c86e0537bbc557b0cf36fb200fc45ddcb0c1d4faf8b2078f8f381ad489",
+      "src/training_methods/neighborhood_jepa/v2/expand.py": "43060b7b258270054489115c9959a1e026c0e120a355d6c1acf7712102aea5f1",
+      "src/training_methods/neighborhood_jepa/v2/audit.py": "0852a09710d4e98bdda03612a6dfb86d8870a981c28eea85c27455abfd47318b",
+      "src/training_methods/neighborhood_jepa/v2/data.py": "582852487cd8eb364953e7405a490e79ffe26276db616eaf1a20d76e4ef3b04b",
+      "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
+      "src/training_methods/neighborhood_jepa/v2/extract.py": "dc6f423c95a3cbe98feb23d94b05d27987a43335ad4c24b0cb54d0c70206bd25",
+      "src/training_methods/neighborhood_jepa/v2/objective.py": "d66e3ff81094518bc729c64a149a3a2664d2a9fb2a6d13de1ad09cbf3e11550f",
+      "src/training_methods/neighborhood_jepa/v2/parallel.py": "03453af8bb47427b8400b4f515f1e012513353b7cbd6f772e4c740dcdd4364d6",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+      "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+      "docs/metrics/neighborhood_jepa_regularization.md": "9558b09336cc8675551eb2c3dff38309943952fddd5d7a50e7ef0b9e115b4e73",
+      "docs/metrics/neighborhood_jepa_large_v2.md": "604e6006ce20f1072752e50ce255341d67bc81f3492dbcd2297fbcd26f83a77d",
+      "configs/neighborhood_jepa/regularization_20260920/study.json": "539be7ca96709805ead0241602a3768ef05db86587e48d40bf0a3b006bb5936d"
+    }
   }
 }

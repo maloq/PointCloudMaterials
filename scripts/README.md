@@ -486,3 +486,7 @@ detached queue; see [execution](../docs/crystallization_paths_20260919.md) and t
 The same path queue accepts `configs/crystallization_transfer/mace_path_refinement_20260919.json` for 30 targeted screens and five promotions. `python -m src.research.crystallization_paths.diagnose` replays completed forecasts on selection sources; see [execution](../docs/crystallization_paths_20260919.md).
 
 `python -m src.training_methods.neighborhood_jepa.prepare --config configs/neighborhood_jepa/data_20260920.json` builds tracked neighbor triplets from existing dynamics. `python -m src.training_methods.neighborhood_jepa.queue submit --config configs/neighborhood_jepa/mace_20260920.json` launches the frozen-code MACE-only two-GPU queue; [execution](../docs/neighborhood_jepa_20260920.md), [scientific protocol](../experiments/neighborhood_jepa_20260920/README.md).
+
+`python -m src.training_methods.neighborhood_jepa.v2.queue submit --config configs/neighborhood_jepa/v2_native_al_20260920.json` launches the native-Al A–E mechanism comparison and matched frozen crystallization probes. See [v2 execution](../docs/neighborhood_jepa_v2.md).
+
+- Neighborhood JEPA regularizer/order comparison: `python -m src.training_methods.neighborhood_jepa.regularization.queue`; [operation and preparation](../docs/neighborhood_jepa_regularization.md).

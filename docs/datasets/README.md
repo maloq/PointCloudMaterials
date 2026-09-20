@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-20T01:13:02.416719+00:00
+Observed: 2026-09-20T18:31:23.169342+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -94,7 +94,11 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [memory-al-precision-20260917-source004-T500-failed](cards/memory-al-precision-20260917-source004-T500-failed-2eb6bdda.md) | Al | incomplete_or_rejected | yes | 0 | Unknown / not applicable |
 | [Al: precision campaign and unfinished sources](cards/memory-al-precision-campaign-20260917-c8104deb.md) | Al | mixed | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Mg: six 24 ps EAM continuations](cards/mg-eam-six-24ps-ab3916d9.md) | Mg | research | yes | 6 | Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs) |
+| [Expanded native Al JEPA 32,768 anchors: graphs](cards/neighborhood-jepa-native-al-32768-graphs-20260920-6cd4ae6d.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Native Al 32768 order anchors and frozen random MACE reservoir](cards/neighborhood-jepa-native-al-32768-order-20260920-81a8ce82.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Expanded native Al JEPA 32,768 anchors: v2](cards/neighborhood-jepa-native-al-32768-v2-20260920-229e21af.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Tracked six-neighbor space-time JEPA: 65,536 mixed-material training anchors](cards/neighborhood-jepa-tracked-six-65536-20260920-77d70ca1.md) | Al, Mg, Ta, Ti | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
+| [Neighborhood JEPA v2 native Al, fixed 0.75 ps lag and smooth anchored moments](cards/neighborhood-jepa-v2-native-al-20260920-7a8cb50b.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [nested shooting prepare logs](cards/nested_shooting_prepare_logs-19b5e996.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [nonshooting float32 migration 20260901](cards/nonshooting_float32_migration_20260901-88986f1b.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [polycrystalline balanced geometries](cards/polycrystalline_balanced_geometries-612b5caf.md) | Unknown | research | yes | 0 | Unknown / not applicable |
