@@ -1,0 +1,9 @@
+metric,value
+encoder_gradient_norm,7.018581527518108e-05
+initial_nmse,1.0178468227386475
+final_nmse,0.7525827288627625
+updates,200
+seconds,4.533004283090122
+repeated_export_max_abs,1.4901161193847656e-08
+rotation_invariant_max_abs,1.4901161193847656e-08
+rotation_equivariant_max_abs,1.3969838619232178e-08

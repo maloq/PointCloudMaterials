@@ -163,3 +163,22 @@ threads per rank. If the reference machine has only a one-rank result, its 8/24-
 cells remain **not measured**; a multi-rank/one-rank ratio is not an equal-resource
 hardware comparison. When only a pasted summary is available, label the comparison
 as conditional on matching settings and retain which metadata was not supplied.
+
+## Full-cell MEAM relaxation on CUDA
+
+`python -m src.hardware_benchmark.relaxation --config configs/benchmarks/relaxation_cuda.json --backend h100 --binary /path/to/hopper/lmp`
+runs matched complete-cell relaxation and force/descriptor fidelity checks. Backend
+choices: `h100`, `v100`, `cpu`; CPU runs the new same-release MPI binary and the
+installed production reference. This is separate from training and from the
+synthetic hardware benchmark. See [metric definitions](metrics/relaxation_cuda.md).
+
+2026-09-21 build: LAMMPS patch_2Sep2026, commit
+`d71abe6102c44577442ba7f03b7378a83166b9fd`, CUDA 12.9, separate Kokkos VOLTA70 and
+HOPPER90 double-precision binaries, MEAM enabled. GPU invocation uses one process,
+`-k on g 1 -sf kk -pk kokkos neigh half newton on gpu/aware off` (MEAM requires
+half lists). MPI is disabled for single-GPU builds; CPU reference enables MPI.
+Builds live under `/home/ids/vmorozov/software/lammps-2Sep2026`; exact configuration,
+compiler logs and submitted scripts are in
+`output/hardware_benchmark/relaxation-cuda-20260921/technical`. V100 nodes lack the
+CUDA toolkit; compile VOLTA70 on the H100 host, then verify the binary on V100.
+No system installation or production LAMMPS replacement is performed.

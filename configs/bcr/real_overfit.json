@@ -1,0 +1,66 @@
+{
+  "data": "${storage:cache}/bcr/real-overfit-20260921",
+  "output": "output/bcr/implementation-20260921",
+  "overfit_updates": 200,
+  "preparation": {
+    "seed": 20260921,
+    "radius_A": 8.0,
+    "max_atoms": 256,
+    "frames": [
+      20,
+      40
+    ],
+    "centers_per_frame": 4,
+    "block_frames": 10,
+    "noise_levels": [
+      0.01,
+      0.02,
+      0.04,
+      0.08,
+      0.12
+    ],
+    "test_status": "implementation_only_shared_parent",
+    "sources": [
+      {
+        "source": 0,
+        "root": "24181fba2b4b1facb9a32124170683932012b34cdc94fc57de884a59a50cca7c",
+        "root_evidence": "shared_liquid_hash",
+        "split": "train",
+        "path": "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}/runs/run_000_T400_velocity_35911/replicas/replica_000_velocity_35911/trajectory_binary_float32",
+        "provenance_manifest": "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}/runs/run_000_T400_velocity_35911/manifest.json",
+        "species": "Al",
+        "temperature_K": 400,
+        "timestep_fs": 3.0,
+        "potential_sha256": [
+          "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        ],
+        "format": "temporal_lammps_binary"
+      }
+    ]
+  },
+  "training": {
+    "arm": "bcr",
+    "seed": 20260921,
+    "encoder": {
+      "d0": 2.606064558029175,
+      "n_ref": 124.375,
+      "radius": 8.0,
+      "channels": 32,
+      "code_dim": 128,
+      "cutoff": 5.0,
+      "backend": "e3nn"
+    },
+    "decoder": {
+      "irreps": "64x0e + 32x1o + 16x2e",
+      "depth": 2
+    },
+    "updates": 200,
+    "batch_size": 8,
+    "microbatch": 2,
+    "lr": 0.0003,
+    "min_lr": 3e-06,
+    "precision": "float32",
+    "compile": false
+  }
+}

@@ -62,3 +62,18 @@ def test_paired_cache_reuse_subsets_centers_and_rejects_insufficient_views(tmp_p
     with np.load(root/'clouds.npz') as a:np.testing.assert_array_equal(a['hot'],clouds[1:,:1])
     source.update(pilot_fit=True,split='train',pool_atom_ids=[2,4,6,8])
     assert reuse_paired(plan,task,source,root) is None
+
+
+def test_gpu_execution_preserves_relaxation_protocol(tmp_path):
+    from src.research.relaxed_encoder.accelerated import accelerator_settings
+    from src.data.structural_pretraining.prepare import file_hash
+    binary=tmp_path/'lmp';binary.write_bytes(b'pinned CUDA executable')
+    profile=dict(binary=str(binary),binary_sha256=file_hash(binary),backend='h100')
+    base=dict(minimizer='fire',force_tolerance=.01,timestep_ps=.001,max_iterations=10000,
+              pair_commands=['pair_style meam','pair_coeff immutable-potential'],lammps_command=['mpi','cpu-lmp'])
+    result=accelerator_settings(base,profile)
+    for key in base.keys()-{'lammps_command'}:assert result[key]==base[key]
+    assert result['lammps_command']==[str(binary),'-k','on','g','1','-sf','kk','-pk','kokkos','neigh','half','newton','on','gpu/aware','off']
+    assert base['lammps_command']==['mpi','cpu-lmp']
+    binary.write_bytes(b'changed')
+    with pytest.raises(ValueError,match='binary changed'):accelerator_settings(base,profile)

@@ -168,7 +168,7 @@ def query_atoms(raw,source,anchor,scale,seed):
     return np.array(result)
 
 
-def produce(plan,task,ranks,recovery=None):
+def produce(plan,task,ranks,recovery=None,*,accelerator=None):
     config=plan['config'];source=next(s for s in plan['sources'] if s['id']==task['source']);frame=task['frame']
     source=dict(source,pilot_fit=source['pilot_fit'] and task['anchor'] in config.get('training_frames',config['frames']))
     root=resolve_path(config['cache'])/'cells'/task['id'];root.mkdir(parents=True,exist_ok=True)
@@ -199,6 +199,9 @@ def produce(plan,task,ranks,recovery=None):
         if archive.exists():raise ValueError(f'Archive without paired-cloud provenance: {archive}')
         absolute=SimpleNamespace(**vars(raw),atom_count=raw.atom_count);absolute.positions=AbsolutePositions(raw)
         execution=settings(plan,ranks)
+        if accelerator is not None:
+            from .accelerated import accelerator_settings
+            execution=accelerator_settings(execution,accelerator)
         if recovery is not None:
             execution.update(recovery['limits'],restart_dump=recovery['restart_dump'],restart_sha256=recovery['restart_sha256'])
         try:relax_frame(absolute,frame,work,execution)

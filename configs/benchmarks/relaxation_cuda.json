@@ -1,0 +1,18 @@
+{
+  "output": "output/hardware_benchmark/relaxation-cuda-20260921",
+  "scratch": "${storage:scratch}/hardware_benchmark/relaxation-cuda-20260921",
+  "archive": "${storage:archive}/hardware_benchmark/relaxation-cuda-20260921",
+  "paired_plan": "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+  "source_commit": "d71abe6102c44577442ba7f03b7378a83166b9fd",
+  "repeats": 2,
+  "max_iterations": 10000,
+  "max_evaluations": 50000,
+  "frame_timeout_seconds": 1800,
+  "cpu_ranks": 32,
+  "cases": [
+    {"name": "liquid-520K", "source": 868, "frame": 32},
+    {"name": "transition-520K", "source": 868, "frame": 427},
+    {"name": "post-onset-520K", "source": 868, "frame": 608},
+    {"name": "liquid-400K", "source": 884, "frame": 64}
+  ]
+}

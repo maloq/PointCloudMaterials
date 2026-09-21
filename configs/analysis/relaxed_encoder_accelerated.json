@@ -1,0 +1,7 @@
+{
+  "plan": "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+  "training_config": "configs/analysis/relaxed_encoder_expanded.json",
+  "benchmark": "output/hardware_benchmark/relaxation-cuda-20260921",
+  "seed": 20260921,
+  "force_max_error_tolerance": 1e-8
+}

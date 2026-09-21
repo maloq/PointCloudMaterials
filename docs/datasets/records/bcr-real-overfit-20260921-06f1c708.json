@@ -1,0 +1,71 @@
+{
+  "dataset_id": "bcr-real-overfit-20260921",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/bcr/real-overfit-20260921/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "b3c930192c007e466eedabe892c60a76f35f33033de005c8bad264ae676a5313",
+      "kind": "metadata",
+      "keys": [
+        "anchors",
+        "config",
+        "coordinate_units",
+        "corruption_audit",
+        "d0",
+        "dropped_noise_levels",
+        "identity",
+        "n_ref",
+        "noise_levels",
+        "overflow_count",
+        "patches_sha256",
+        "preprocessing",
+        "radius_A",
+        "records",
+        "roots",
+        "sources",
+        "test_status",
+        "uncertainty_A",
+        "uncertainty_method"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "seed": [
+          {
+            "value": 20260921,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 8.0,
+            "first_json_path": "config.radius_A",
+            "occurrences": 2
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "config.sources[0].split",
+            "occurrences": 9
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400,
+            "first_json_path": "config.sources[0].temperature_K",
+            "occurrences": 9
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "config.sources[0].timestep_fs",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

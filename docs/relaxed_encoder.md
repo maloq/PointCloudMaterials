@@ -48,3 +48,27 @@ allocation as soon as training caches are ready. No new MD trajectories are
 integrated: existing frames are quenched, with verified paired/legacy cache reuse.
 Iteration-limit failures automatically continue from archived full-precision
 coordinates once, at unchanged force tolerance, with the configured larger budget.
+
+## GPU production alongside CPU workers
+
+`python -m src.research.relaxed_encoder.accelerated --config configs/analysis/relaxed_encoder_accelerated.json --backend h100 --lane h100-local --handoff`
+uses the existing plan, cell locks, source/potential verification, convergence
+checks, full-precision failed-quench retries and verified archive publication.
+The `--handoff` worker switches to the encoder queue once training-ready.json
+exists, after finishing its current cell. Stop only the older waiting training
+step on that same GPU before launching this combined worker; preserve the bash
+allocation. Dedicated producer GPUs omit --handoff and finish all missing cells.
+
+Backends are admitted only after the matched benchmark's first cell converges and
+its initial forces agree with the same-release CPU at max component error <=1e-8
+eV/Angstrom. The pinned binary hash and GPU identity are recorded in every newly
+quenched cell's relaxation settings. Existing reused cells retain their original
+receipts. Pending tasks are randomized within training/evaluation priority, so
+backend assignment does not simply follow whole temperature/source ranges.
+
+GPU and CPU FIRE may converge to different local minima despite initial forces
+agreeing to rounding precision. Expanded release therefore contains explicitly
+recorded numerical backends with the same physical Hamiltonian, fixed box and
+0.01 eV/Angstrom tolerance, not bitwise-equivalent CPU targets. The frozen shared
+plan specifies physics/data; technical/accelerated contains this additive execution
+release and its code snapshot. Retain the original CPU production and old code.

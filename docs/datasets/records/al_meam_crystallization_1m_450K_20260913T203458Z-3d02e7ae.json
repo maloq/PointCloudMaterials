@@ -148,7 +148,6 @@
         ]
       },
       "provenance": {
-        "potential_citation": "Lee, Shim and Baskes (2003), Al 2NN-MEAM; exact files from Al shooting campaign",
         "potential_files": [
           {
             "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
@@ -162,7 +161,8 @@
         "pair_commands": [
           "pair_style meam",
           "pair_coeff * * /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam Al /work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam Al"
-        ]
+        ],
+        "potential_citation": "Lee, Shim and Baskes (2003), Al 2NN-MEAM; exact files from Al shooting campaign"
       }
     },
     {

@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-21T09:05:46.021728+00:00
+Observed: 2026-09-21T12:07:34.550029+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -64,6 +64,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [al phase context 70304x1 seed 12346](cards/al_phase_context_70304x1_seed_12346-77b8c6af.md) | Al | review_required | yes | 0 | MACE-MPA-0 medium checkpoint |
 | [Al: expanded full-cell relaxed configurations](cards/al_relaxed_cells_expanded_20260917-d6275785.md) | Al | building | yes | 780 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al: expanded relaxed/instantaneous TDA pairs](cards/al_relaxed_tda_expanded_20260917-0465ee2c.md) | Al | building | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [BCR full-radius Al implementation fixture](cards/bcr-real-overfit-20260921-06f1c708.md) | Al | diagnostic | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Future-center MACE trajectories for local crystallization path forecasts](cards/crystallization-paths-mace-20260919-1db371a4.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Dense local onset transfer: 150 Al sources, 362400 candidate windows](cards/crystallization-transfer-mace-20260919-55cdb4ac.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [embedding-forecast-center-geometry-20260914](cards/embedding-forecast-center-geometry-20260914-746e8c57.md) | Al | derived | yes | 0 | Unknown / not applicable |
@@ -111,8 +112,8 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [potentials](cards/potentials-1f2cb720.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
 | [Al · predictive-memory partial-observation cache](cards/predictive-memory-al-r17-20260917-91f24edf.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Paired observed/relaxed MACE pilot relaxed_cells](cards/relaxed-encoder-cells-20260920-d76dbdc7.md) | Al | research | yes | 230 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
-| [Expanded paired observed/relaxed Al training_cache](cards/relaxed-encoder-expanded-20260921-955f1e16.md) | Al | research | no | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
-| [Expanded paired observed/relaxed Al relaxed_cells](cards/relaxed-encoder-expanded-cells-20260921-2ccf75a7.md) | Al | research | no | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Expanded paired observed/relaxed Al training_cache](cards/relaxed-encoder-expanded-20260921-955f1e16.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Expanded paired observed/relaxed Al relaxed_cells](cards/relaxed-encoder-expanded-cells-20260921-2ccf75a7.md) | Al | research | yes | 705 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Paired observed/relaxed MACE pilot training_cache](cards/relaxed-encoder-pilot-20260920-2637d1ce.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Repository dataset preprocessing caches](cards/repository-derived-data-caches-95186383.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
 | [research-records-20260913](cards/research-records-20260913-54a7309f.md) | Unknown | archive | yes | 0 | Unknown / not applicable |
@@ -135,4 +136,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-11 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+12 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

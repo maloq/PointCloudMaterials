@@ -513,3 +513,13 @@ matched feature add-backs and physical decoders. See [workflow](../docs/crystall
 
 `python -m src.research.relaxed_encoder.expanded --config configs/analysis/relaxed_encoder_expanded.json --allocation JOB_ID`
 submits the expanded paired-relaxation dataset and direct-export regularization sweep; see [workflow](../docs/relaxed_encoder.md).
+
+`python -m src.hardware_benchmark.relaxation --config configs/benchmarks/relaxation_cuda.json --backend {cpu,v100,h100} --binary /path/to/lmp`
+benchmarks paired full-cell MEAM relaxation and target fidelity, separately from
+training; see [GPU relaxation](../docs/hardware_benchmark.md#full-cell-meam-relaxation-on-cuda).
+
+`python -m src.research.relaxed_encoder.accelerated --config configs/analysis/relaxed_encoder_accelerated.json --backend {h100,a100,v100} --lane NAME [--handoff]`
+adds validated CUDA MEAM producers to the shared CPU task queue; see
+[GPU production](../docs/relaxed_encoder.md#gpu-production-alongside-cpu-workers).
+
+`python -m src.training_methods.bcr prepare|verify|train|evaluate|probes|select --config CONFIG` runs the isolated bottleneck-conditioned reconstruction workflow; see [execution](../docs/bcr.md) and [protocol](../experiments/bcr_v1_20260921/README.md).

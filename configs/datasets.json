@@ -2720,10 +2720,11 @@
         "potential_ids": [
           "al-lee2003-meam"
         ],
-        "description": "90 training and 15 development sources; four encoder-training origins; 15 regular-grid assay origins across 150 sources. Full periodic fixed-box Lee2003 MEAM FIRE quenches at 0.01 eV/Angstrom. Tracked nearest80 candidates with radius8 support. Reuses verified pilot and older target clouds where query identities match.",
+        "description": "90 training and 15 development sources; four encoder-training origins; 15 regular-grid assay origins across 150 sources. Full periodic fixed-box Lee2003 MEAM FIRE quenches at 0.01 eV/Angstrom. Tracked nearest80 candidates with radius8 support. Reuses verified pilot and older target clouds where query identities match. Validated CUDA/KOKKOS H100/A100 workers supplement CPU production; per-cell metadata records binary and backend. GPU rounding can select different FIRE minima despite matching initial forces and force tolerance.",
         "evidence": [
           "configs/analysis/relaxed_encoder_expanded.json",
-          "output/relaxed_encoder/expanded-20260921/technical/plan.json"
+          "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+          "output/relaxed_encoder/expanded-20260921/technical/accelerated/launches.json"
         ],
         "limitations": [
           "Preparing; consult per-cell completion receipts. One seed. Reused historical source split, no test-source encoder fitting. Full-cell quenching includes external context. Raw MD coordinates inherit float16 storage; relaxed local clouds saved float32 before full-cell conversion. Training-only target-domain normalization."
@@ -2751,13 +2752,41 @@
         "potential_ids": [
           "al-lee2003-meam"
         ],
-        "description": "90 training and 15 development sources; four encoder-training origins; 15 regular-grid assay origins across 150 sources. Full periodic fixed-box Lee2003 MEAM FIRE quenches at 0.01 eV/Angstrom. Tracked nearest80 candidates with radius8 support. Reuses verified pilot and older target clouds where query identities match.",
+        "description": "90 training and 15 development sources; four encoder-training origins; 15 regular-grid assay origins across 150 sources. Full periodic fixed-box Lee2003 MEAM FIRE quenches at 0.01 eV/Angstrom. Tracked nearest80 candidates with radius8 support. Reuses verified pilot and older target clouds where query identities match. Validated CUDA/KOKKOS H100/A100 workers supplement CPU production; per-cell metadata records binary and backend. GPU rounding can select different FIRE minima despite matching initial forces and force tolerance.",
         "evidence": [
           "configs/analysis/relaxed_encoder_expanded.json",
-          "output/relaxed_encoder/expanded-20260921/technical/plan.json"
+          "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+          "output/relaxed_encoder/expanded-20260921/technical/accelerated/launches.json"
         ],
         "limitations": [
           "Preparing; consult per-cell completion receipts. One seed. Reused historical source split, no test-source encoder fitting. Full-cell quenching includes external context. Raw MD coordinates inherit float16 storage; relaxed local clouds saved float32 before full-cell conversion. Training-only target-domain normalization."
+        ]
+      }
+    },
+    "bcr-real-overfit-20260921": {
+      "root": "cache",
+      "path": "bcr/real-overfit-20260921",
+      "kind": "dataset",
+      "dependencies": [
+        "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "BCR full-radius Al implementation fixture",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "diagnostic",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Eight radius-8 angstrom patches from two full-precision frames of one 400K Al trajectory. Fixed parent ancestry; implementation/overfit only, no held-out scientific claim.",
+        "evidence": [
+          "configs/bcr/real_overfit.json"
+        ],
+        "limitations": [
+          "Single shared prepared-liquid root, no independent test split. Positions float32; explicit native-ULP rounding bound and periodic image identities."
         ]
       }
     }

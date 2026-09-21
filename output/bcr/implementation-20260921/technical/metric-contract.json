@@ -1,0 +1,18 @@
+{
+  "family": "bcr",
+  "exported_at": "2026-09-21T12:08:02.793169+00:00",
+  "files": {
+    "docs/metrics/bcr.md": "e2e9c70ef8e8da1603540bb09b20e9dc8b6eeaf006fe1faff689f82d4e880b29",
+    "src/training_methods/bcr/evaluate.py": "c559b973cd0bc52052a016533d4957aeb2b2f0173eb6a0decbc94d7de361ac43",
+    "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+    "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+    "src/training_methods/bcr/__init__.py": "e633466cdbd3e207c38a6c64ad4bea9aeab645b223a85784e6fc50c68e1603ee",
+    "src/training_methods/bcr/prepare.py": "6e4ffb87a821da32e894fb769c79fa627a936b9ad4ee01b302ac23c299706847",
+    "src/training_methods/bcr/runtime.py": "e1639a70d13e07872b8cc42b45f32cc3cceba7e91fb57de5c5bc2b6a643e4927",
+    "src/training_methods/bcr/analysis.py": "07ccd3cf0cfc75b27e71f2a66903c888e05f9af546bdf4e803c4db63276d5ca1",
+    "src/training_methods/bcr/verify.py": "ac8a7c770b225c06f1430d180e738602380cb797cec8bf62556807a3fcaf1b2c",
+    "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
+    "src/training_methods/bcr/__main__.py": "8e81a9917f83d44bf8159978458a66816080c1f4c882b7a24d12c8b6868d922c"
+  }
+}

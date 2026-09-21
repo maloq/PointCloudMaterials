@@ -1,0 +1,10 @@
+{
+  "family": "relaxation_cuda",
+  "exported_at": "2026-09-21T12:04:40.892883+00:00",
+  "files": {
+    "docs/metrics/relaxation_cuda.md": "11ab3e37e110ae51c0393110837a3162f8446201d48e9968275bf97dc0088edc",
+    "src/hardware_benchmark/relaxation.py": "bf1e7370b8e4ab9f3140c36ede0e9181431c181bfeca641abebfaa0618b8fb85",
+    "src/simulation/relaxation.py": "02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca",
+    "src/research/relaxed_encoder/benchmark.py": "857123ac21765eda289d5e32d897a26b0ca8c36bfa1850fd0feaf63d78c9f720"
+  }
+}

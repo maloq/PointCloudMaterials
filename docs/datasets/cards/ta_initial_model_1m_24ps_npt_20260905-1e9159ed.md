@@ -60,6 +60,6 @@ All 6 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T09:05:46.021728+00:00.
+Observed 2026-09-21T12:07:34.550029+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
