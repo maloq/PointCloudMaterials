@@ -1,0 +1,6 @@
+{
+  "output": "output/relaxed_encoder/expanded-20260921-pilot-readout",
+  "training_output": "output/relaxed_encoder/expanded-20260921",
+  "assay_output": "output/relaxed_encoder/pilot-20260920",
+  "runs": ["hot-control", "cold-control", "cold-sig-temp1"]
+}

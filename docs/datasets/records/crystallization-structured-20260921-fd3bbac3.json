@@ -1,0 +1,2705 @@
+{
+  "dataset_id": "crystallization-structured-20260921",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1000/complete.json",
+      "relative_path": "1000/complete.json",
+      "sha256": "6440abfa22db9dcbf8417846ec6e02dcc38e5a265a7da7c1e26a45b601e5778e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1001/complete.json",
+      "relative_path": "1001/complete.json",
+      "sha256": "c41c1dd601ef23fa065ff244c01610bd1d95ecabb839a2651e9c62785d38c650",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1002/complete.json",
+      "relative_path": "1002/complete.json",
+      "sha256": "c95d652ba1754e67c571ac7ecd62a4a34df35424f647b189df033d399a2cdc82",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1003/complete.json",
+      "relative_path": "1003/complete.json",
+      "sha256": "ec19ff68d86d271eefdb2aa93fe07ea2783582dad0a0c2fef045c3abe5b83e29",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1004/complete.json",
+      "relative_path": "1004/complete.json",
+      "sha256": "eebedf1a141b45c443266778aa07ba64a4d28418b79621dcbfef05560d44f7a1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1005/complete.json",
+      "relative_path": "1005/complete.json",
+      "sha256": "b885b32ec82bddb6a2fa516c0cdf4a14351426629498ea0922a4a738fade9061",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1006/complete.json",
+      "relative_path": "1006/complete.json",
+      "sha256": "dc2f465566b2ae96e807ef3f5be030c455580c7006c24459273d4df0718edca2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1007/complete.json",
+      "relative_path": "1007/complete.json",
+      "sha256": "241d604245d04deb5173ee1689f4ee22f4596574a9cbc3176f9304259ed1f87f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1008/complete.json",
+      "relative_path": "1008/complete.json",
+      "sha256": "f5ecd54845b8e5efcfdd76b283d10ae34ffc261b1ee1e72ac7760aee1db10047",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/1009/complete.json",
+      "relative_path": "1009/complete.json",
+      "sha256": "46eccc3df832dd0b7e1db3faa292c7959568e7f06f5afce529aeabc48a8aafcf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/860/complete.json",
+      "relative_path": "860/complete.json",
+      "sha256": "a7609b763dab9d3d71791e04febd68d6b9c60ed9e87aed17b277621a2513e0a4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/861/complete.json",
+      "relative_path": "861/complete.json",
+      "sha256": "022abbac78242ccf2c5ca4afd1f44c6f4c3d898a5126421002acde6d4a2275c9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/862/complete.json",
+      "relative_path": "862/complete.json",
+      "sha256": "89fba5f985e6d963e6cc8bd8a9858dab2a174a8af0f0af180d8d1953dc8b6ade",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/863/complete.json",
+      "relative_path": "863/complete.json",
+      "sha256": "a29f4425f1a7f1aac20fb23da27da27a012ba4b383829ba411f6cc4d235288f0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/864/complete.json",
+      "relative_path": "864/complete.json",
+      "sha256": "269db4eef1526c03e93b2423c7ba0d1f356c6008363348d3c754ab4d45c19f09",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/865/complete.json",
+      "relative_path": "865/complete.json",
+      "sha256": "6815a8e1fe00534cc9e56f047b468478ec3d216fb23c516f6e7ea01c2c91ec9f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/866/complete.json",
+      "relative_path": "866/complete.json",
+      "sha256": "c3824374e12b8feb87d32f9a07dd772e980a4dbab2a3bc1caf8651f70eaa9933",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/867/complete.json",
+      "relative_path": "867/complete.json",
+      "sha256": "e4aea3d4f482501032067780dc52e10b7f9eadc25a43bcb04b7c7e455f425d56",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/868/complete.json",
+      "relative_path": "868/complete.json",
+      "sha256": "457817e448969103aa68005e139e94e75ede191882b779351648462bce82919d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/869/complete.json",
+      "relative_path": "869/complete.json",
+      "sha256": "d323ac9bcb2b7470cb44c7b47a545b7e21a2ea2b6a6c84da6436b4d54067ea64",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/870/complete.json",
+      "relative_path": "870/complete.json",
+      "sha256": "9d630112fcab022aaef44bb01c39efd675d49c1efe00739de004495450edbbb3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/871/complete.json",
+      "relative_path": "871/complete.json",
+      "sha256": "f54e889fd83f66eb0b97c2276ab2bff93da45422a90ccc8473d4166e23a1631c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/872/complete.json",
+      "relative_path": "872/complete.json",
+      "sha256": "b261bc55515d94c96f5bdfd355d443cb23ab68b430d4c401d420fdb1b312595a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/873/complete.json",
+      "relative_path": "873/complete.json",
+      "sha256": "a721deac8c69552404d59b7f9cb7d4c37db945a135789ec5947f23e7cd995a59",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/874/complete.json",
+      "relative_path": "874/complete.json",
+      "sha256": "58faf2638037c634c1413c859afd08d3f4732e6457e0888df8e5edd0dbce9dd7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/875/complete.json",
+      "relative_path": "875/complete.json",
+      "sha256": "ce302618df6fad3c02fcb745fc962e7f77c05f26ac72b6bfe789939389ae8329",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/876/complete.json",
+      "relative_path": "876/complete.json",
+      "sha256": "6db3472b5e506fd9772a5959f1062dc6c4dcf218ce68dcfcb4545366b4c129f0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/877/complete.json",
+      "relative_path": "877/complete.json",
+      "sha256": "e19f334568bfddccf92e03071c306b4bee120ca548028f9a323e22fd14c87251",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/878/complete.json",
+      "relative_path": "878/complete.json",
+      "sha256": "f3c658146c8d4f3aeaabdc20a3d8f40a14f1c79ce0770f708a49451994f1f20f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/879/complete.json",
+      "relative_path": "879/complete.json",
+      "sha256": "31e22449c46239bcf0f54d2f5b97064d06f79463c2d76149425442ece7a0004b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/880/complete.json",
+      "relative_path": "880/complete.json",
+      "sha256": "6349c19a1c67ebc9fbf5b3205f54ed97b1f624443d5eade76c50cf710907e8ad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/881/complete.json",
+      "relative_path": "881/complete.json",
+      "sha256": "b27d0ecc8ba79bda961a2b898c41d121aaa5cd96badf8745604865562d6d3186",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/882/complete.json",
+      "relative_path": "882/complete.json",
+      "sha256": "e2cce98eb6c08be0222120ca8f1ad7422862755b5cd6cdc6d88b2c5b308449ce",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/883/complete.json",
+      "relative_path": "883/complete.json",
+      "sha256": "c46e32f14e49dec6343bc98d76ee2373f634019e572fc4dff6571bae5fc9a941",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/884/complete.json",
+      "relative_path": "884/complete.json",
+      "sha256": "43bd3b2b663b9e165dd2e52ecf021676bd9d8f9a1198bc7b70d38f7b8e8be685",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/885/complete.json",
+      "relative_path": "885/complete.json",
+      "sha256": "ce0d8bb56c48568581a4e860edc163a3753662cf7c12928a28d7c3e709400ada",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/886/complete.json",
+      "relative_path": "886/complete.json",
+      "sha256": "78d12d5030015c3dbdab9d77a05a48e7a0ca5281c65e6bd3763a09a13f70a5ea",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/887/complete.json",
+      "relative_path": "887/complete.json",
+      "sha256": "41297db6e18d136f64e2a8c0080962a74ca937ca53fc919eb1173b0c13caeabe",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/888/complete.json",
+      "relative_path": "888/complete.json",
+      "sha256": "96aa35199b13c1dd9fbde7c2da938c8f4931df343ba8d97f1d2a5dedab3f8274",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/889/complete.json",
+      "relative_path": "889/complete.json",
+      "sha256": "f267f1b109604af05c22175e2da931fa1c12769b18b860cb262c1d853b3ff8c4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/890/complete.json",
+      "relative_path": "890/complete.json",
+      "sha256": "934a75cfc3e790a054c52817edf405c613333b1e449aab38846e25d3694cb654",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/891/complete.json",
+      "relative_path": "891/complete.json",
+      "sha256": "2be900fd78362f89c6bd0d415f8e70aa275fd543277616ecc5790db8f1e5bf00",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/892/complete.json",
+      "relative_path": "892/complete.json",
+      "sha256": "eab7ec55a06ff6fbd5931c563726a6a695a0975d6a14a3e48bb3b3c99c076995",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/893/complete.json",
+      "relative_path": "893/complete.json",
+      "sha256": "4ce13e44e7b9dc64013922faf5b95e2ae7fd8d58f66c38721f2f9c81003e2bd2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/894/complete.json",
+      "relative_path": "894/complete.json",
+      "sha256": "6e3e60e64da5f43c19c8b7020e0e6312bae3ebcc299a9c41c4f2b3964621b4b4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/895/complete.json",
+      "relative_path": "895/complete.json",
+      "sha256": "daa807a62934230ff4cf134f4888d8874dce796de4f99f666a6376a6fc12fe23",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/896/complete.json",
+      "relative_path": "896/complete.json",
+      "sha256": "e73850564e9140de0d91f524f97dbe6a92e720553182bc5218870e9f6eafe3f8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/897/complete.json",
+      "relative_path": "897/complete.json",
+      "sha256": "1c992e7cab0c64eb8409de6e0ec13389dd829b662422d13d6a0a4c22233ee305",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/898/complete.json",
+      "relative_path": "898/complete.json",
+      "sha256": "74ba2407960434edd76c1223b8d22eb7afe25bfa93fc38632ad2ac3e3bc640cf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/899/complete.json",
+      "relative_path": "899/complete.json",
+      "sha256": "8b92a809a7ac294e3d258953ca7652bb0c6a25ca5d2d37b16e4f5ad10e0a7bdc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/900/complete.json",
+      "relative_path": "900/complete.json",
+      "sha256": "bcdec44a1cf4b308769e096a54ae8ba006dfbee9670926d689c986fb0ccff38e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/901/complete.json",
+      "relative_path": "901/complete.json",
+      "sha256": "7fc83a9b03d6a55f7d4b6b18df4e5f05d1b96c2fad818bd175c79eb7e70e7e98",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/902/complete.json",
+      "relative_path": "902/complete.json",
+      "sha256": "c21acf20342df874a5eb85b631d7fa10554ed6fef9db875d411f580695eaf00e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/903/complete.json",
+      "relative_path": "903/complete.json",
+      "sha256": "8be95cfff6b8020df008af2c585cc569ee933408791f84816961f6b6b7f1b59a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/904/complete.json",
+      "relative_path": "904/complete.json",
+      "sha256": "8a52cf83358b4d8f6168d1653ecf4e7e8a6233269313c5618d5fe68b7ad86b65",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/905/complete.json",
+      "relative_path": "905/complete.json",
+      "sha256": "47559d5257084447585df01b944022fe11c6e8b38743af1e552b8690808b419f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/906/complete.json",
+      "relative_path": "906/complete.json",
+      "sha256": "e4c50744d49173496cd5fc87435032fc851de13d6e2b1eced12fefc9a2b61db7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/907/complete.json",
+      "relative_path": "907/complete.json",
+      "sha256": "3976cf74491c17d5b30d9b365276a59d0702dbc1948076145987e0d9834f2a43",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/908/complete.json",
+      "relative_path": "908/complete.json",
+      "sha256": "980c4ed00afd5fae7230b1c3c79ac429fd5c47dc47a4eb8e9ccd6dc388f252dc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/909/complete.json",
+      "relative_path": "909/complete.json",
+      "sha256": "ffe364fddb2ae8b404edea3cba52ad79657981fdd6ad32e933efa4ef17921610",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/910/complete.json",
+      "relative_path": "910/complete.json",
+      "sha256": "41b68fc1f8b80ec8bae2411e03da45adb8ad0f01af40704a94e3a87f61cdfc79",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/911/complete.json",
+      "relative_path": "911/complete.json",
+      "sha256": "8e5158d26bb19f86e6fb6850e7b7ef802f4b944c7585916de90b8dea0c195201",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/912/complete.json",
+      "relative_path": "912/complete.json",
+      "sha256": "64876ccd4072c989e219343e45ebfa30f3b81f5be824c804b2cc02a1d54529da",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/913/complete.json",
+      "relative_path": "913/complete.json",
+      "sha256": "f54bcb7c65f56245b346e08eb98327ba86b1a29f6a1c13176f022f07eb2ed6f9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/914/complete.json",
+      "relative_path": "914/complete.json",
+      "sha256": "b78bf01ba3365cfac84cad0887a37433c8755e188cb99a60b1916256c1f3f9c5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/915/complete.json",
+      "relative_path": "915/complete.json",
+      "sha256": "a66846f73efc09a8d793270fef05ed55837e2a30afac54c074028c2f6a5d52e3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/916/complete.json",
+      "relative_path": "916/complete.json",
+      "sha256": "5bbc79aa0a1f193f6039badd675e1690ff1a0ece5d76f8216d8fb4fd588b4472",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/917/complete.json",
+      "relative_path": "917/complete.json",
+      "sha256": "b48d1b138a397247eef665750fc6f63551c630642f329632862dcf162234b28d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/918/complete.json",
+      "relative_path": "918/complete.json",
+      "sha256": "d00dcb67cd3789f97ed3f6d19b955b9b99e2745f0738208ec9058d32ce06bcfd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/919/complete.json",
+      "relative_path": "919/complete.json",
+      "sha256": "ed6312d11d8f445ad9411cec5f022c04ca7ce0ffec78756d2813116e98da8f50",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/920/complete.json",
+      "relative_path": "920/complete.json",
+      "sha256": "bb9128aad9d6e84b861afe581a7acf760e762bd4d3b115a1e77e492961333baf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/921/complete.json",
+      "relative_path": "921/complete.json",
+      "sha256": "20908ba989eaa67120db655f9d69228b9d9c02d29235c9cf42522afab1bcacc1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/922/complete.json",
+      "relative_path": "922/complete.json",
+      "sha256": "2f648964f7ac689c341d04b2dfd7fe53b83d7ac97394b55d154b746a4b13e3eb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/923/complete.json",
+      "relative_path": "923/complete.json",
+      "sha256": "d87de31dfa5114fbcc4f2c50186faceda4f9bdf8d26e631e3599defce220ed41",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/924/complete.json",
+      "relative_path": "924/complete.json",
+      "sha256": "79a28628f484c2ddebf584d6071292cee0f6e3b8623454d77b9d0570ace6da7f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/925/complete.json",
+      "relative_path": "925/complete.json",
+      "sha256": "2ca873d7cd49fd0023d7eb7040a40d06b39962369b216d16da9a581a4637b18d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/926/complete.json",
+      "relative_path": "926/complete.json",
+      "sha256": "0ce0bef8175d188f65fa104c479af952a5584de3bbd3ec4fb73e0d7956270483",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/927/complete.json",
+      "relative_path": "927/complete.json",
+      "sha256": "89bc4c1853de70468c206b1c47b27132043763ba67dff4e209b8c9a08122a9d5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/928/complete.json",
+      "relative_path": "928/complete.json",
+      "sha256": "4cd2cadb3799956e991bc0005fb35f12c95aae429d1ea18fadd88a38d9746b78",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/929/complete.json",
+      "relative_path": "929/complete.json",
+      "sha256": "92c8ab6d14515da9013531e7d416ba4d33253afc26848f347851bda33bb385d7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/930/complete.json",
+      "relative_path": "930/complete.json",
+      "sha256": "c8795e6f74b367ea5088815a0173af3148ee04239e3227bfda37b8974b28f608",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/931/complete.json",
+      "relative_path": "931/complete.json",
+      "sha256": "cbdb83cd3dd0de44eec5551836ec7996a937f1f79ca57f919e4b25e668dad18e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/932/complete.json",
+      "relative_path": "932/complete.json",
+      "sha256": "1b4d154485961c75d7b0c8d60a9e952ab0794579f4c0424419353334e9e283b6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/933/complete.json",
+      "relative_path": "933/complete.json",
+      "sha256": "6779591cfee5a51dd4a267fed011055508e6eb5ca1d9096c6a9be4e38ebd2382",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/934/complete.json",
+      "relative_path": "934/complete.json",
+      "sha256": "7e0c0bf5afce6bc8cf1c7a2950965d4348eec7ed60db7be649e25d7312a3d1fb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/935/complete.json",
+      "relative_path": "935/complete.json",
+      "sha256": "ffaf19f1e145680223e2e67587120a21a6dc1f9a9335186eadf72488715d4459",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/936/complete.json",
+      "relative_path": "936/complete.json",
+      "sha256": "15f81fb9d1b7ede66fb11da8844aed458ceeee5c8792eb79ade57cba276fd46f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/937/complete.json",
+      "relative_path": "937/complete.json",
+      "sha256": "ad83a10432ed606d23715a2415f3ee8c3f1c36630d40bc1c37a2116daead25c7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/938/complete.json",
+      "relative_path": "938/complete.json",
+      "sha256": "435fb807ea00a5c1f220eeb449c27a816ee96c7ced3ce1be2b4758cf8d92d3f8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/939/complete.json",
+      "relative_path": "939/complete.json",
+      "sha256": "54c9c4f24c96b7b5c471ebde3ad2ef4d5cc384f1465a4bd8fc0ed2465db914d6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/940/complete.json",
+      "relative_path": "940/complete.json",
+      "sha256": "0f36d069935d2dd61742ecfd5e80036e8ef23135cf051a1b8c620af1430b3374",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/941/complete.json",
+      "relative_path": "941/complete.json",
+      "sha256": "fe5db08c9e31553b184c648a120f8cc053b1d35d75dcf829dc89d2da2a3558ad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/942/complete.json",
+      "relative_path": "942/complete.json",
+      "sha256": "f4c629926bf3c4e3f48fb14f2ec7ae9eefb212fbd0d4a5ac9ff4d68ed8fed8e9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/943/complete.json",
+      "relative_path": "943/complete.json",
+      "sha256": "360397608c7b251fa39b78f7b2b490391e6c7cc63dc286109e4040adcb65cf09",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/944/complete.json",
+      "relative_path": "944/complete.json",
+      "sha256": "d14d2fa6482b565b378487766e420c614ee89bd1371fd544021bae6275d7a67c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/945/complete.json",
+      "relative_path": "945/complete.json",
+      "sha256": "495084df79293b445721d2b93f4f3293ba688303d364f0895e18bc4a050c2bd3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/946/complete.json",
+      "relative_path": "946/complete.json",
+      "sha256": "9506ad82857e7d5761d8bf8e7392e30f0a066ed1dc64d78c167c241d2d60559c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/947/complete.json",
+      "relative_path": "947/complete.json",
+      "sha256": "f018992b040e3c427de5a37d63d0fea8b4c0b5d842268af975fc521cb2687119",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/948/complete.json",
+      "relative_path": "948/complete.json",
+      "sha256": "343936b833c64a8b6313d33875a5fef08c37b6e0b6cf57747e4980271953f64f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/949/complete.json",
+      "relative_path": "949/complete.json",
+      "sha256": "60e9a92a580d9ccbbf6fc8d9d0a5e67f8e6eb70d5ef97f6e2a057ca0d089d90f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/950/complete.json",
+      "relative_path": "950/complete.json",
+      "sha256": "7963379e3b58299640c3d8b35228691bb0645a83c3d6fa9ed96f759efd970d9e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/951/complete.json",
+      "relative_path": "951/complete.json",
+      "sha256": "ba612aa366c8dd3fb910e19b7c60f379044d292a6298efdb7951535e068c982f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/952/complete.json",
+      "relative_path": "952/complete.json",
+      "sha256": "6da4bfbecd4d9ffa5285fbcdb438f3bbf285371fce95c9e7057ab998a9de38ae",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/953/complete.json",
+      "relative_path": "953/complete.json",
+      "sha256": "e9220d52d6a878bb43a15bbc98bf3de19bf0db6e5404044b4a45c85f10dcb9b8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/954/complete.json",
+      "relative_path": "954/complete.json",
+      "sha256": "d05cf1f1c1d60fd163eec33b3566564057156a480f4bfdeb10e14d23d9e81a7d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/955/complete.json",
+      "relative_path": "955/complete.json",
+      "sha256": "a6d7345027beb61d8665f44421c168c6db31f9e2891c1037855f83f01e3451a4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/956/complete.json",
+      "relative_path": "956/complete.json",
+      "sha256": "a63f82a6f3f952efd1f7d87c83e83400122ed03280d9d8fc5406a6135d15bd8c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/957/complete.json",
+      "relative_path": "957/complete.json",
+      "sha256": "c6150238dad4dc25d08f90a8591c6972b6e82d52121609415386ff9e4cd3120f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/958/complete.json",
+      "relative_path": "958/complete.json",
+      "sha256": "fd5a69175a07d462b8c88d1076e72c06a152c65702a7dd46188d742793761fe6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/959/complete.json",
+      "relative_path": "959/complete.json",
+      "sha256": "078ee017efea5a3750a5b47b92424e4e85f3fa6a1408cface0eee1483ef14717",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/960/complete.json",
+      "relative_path": "960/complete.json",
+      "sha256": "d4ab62469b516fb8aa2b2c56751047a5c4d287899c29286c6ff9f7727038abde",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/961/complete.json",
+      "relative_path": "961/complete.json",
+      "sha256": "380a250a5bf8a90aca4e61ad888894e2c8104eb407d47e1b0b344b117fbbd456",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/962/complete.json",
+      "relative_path": "962/complete.json",
+      "sha256": "94842b4ae7790e6ddad1e7fbebf108bc971ec16348a6ad9c780ab31de7667d82",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/963/complete.json",
+      "relative_path": "963/complete.json",
+      "sha256": "a021768ac77516a0c25391b4cb5e93aeb11fae263ca391fb183e3824b7f1d487",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/964/complete.json",
+      "relative_path": "964/complete.json",
+      "sha256": "722bf2f4b332c0a04ec59db2db172fc07864ac988a3ee86065ced7a10f761676",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/965/complete.json",
+      "relative_path": "965/complete.json",
+      "sha256": "0b9d9a07936464460e737406a0df5e08362aa5ace63038cc06b72d8d01510b22",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/966/complete.json",
+      "relative_path": "966/complete.json",
+      "sha256": "8be7fe037b067bd50542d55e72b795ccbd509fa47cfa03b9a2cdf7564cf0e485",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/967/complete.json",
+      "relative_path": "967/complete.json",
+      "sha256": "e23869034c0c2b5f85f723b44a79d520ce08e49a550a79343bfe03c685723647",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/968/complete.json",
+      "relative_path": "968/complete.json",
+      "sha256": "b74dd539ecfa2b4224c080e5f2c5f836fad1e0b5e92626501712868d80586982",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/969/complete.json",
+      "relative_path": "969/complete.json",
+      "sha256": "8fe6dde448b46131ecff3d597d3e2ee42152bcd6b8d77b13fa6a4aad695d4cab",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/970/complete.json",
+      "relative_path": "970/complete.json",
+      "sha256": "af93a22ad3d5b2c99704fd56c7e1cb70ff2875589a969320791bdea9f8016ea3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/971/complete.json",
+      "relative_path": "971/complete.json",
+      "sha256": "9ca70080461541dcfa9fab2b60a9d5f25a6cabe0e1ec5a17da29129cbdbddff7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/972/complete.json",
+      "relative_path": "972/complete.json",
+      "sha256": "ad9452088ca0f8eb78a4645bab5eb75a0d1be07db4fc6ac521f87c4f183ff6d8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/973/complete.json",
+      "relative_path": "973/complete.json",
+      "sha256": "b6ebc992e8819b4dae04ea3545ccb5edc660b034950ce9169779f20cd3082d06",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/974/complete.json",
+      "relative_path": "974/complete.json",
+      "sha256": "cf3aea5fce9a04a5b4b7b707ffe3000c1b12e6a92af8e77764c65e9739617fee",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/975/complete.json",
+      "relative_path": "975/complete.json",
+      "sha256": "0834e2f3b798f64d826306709d51f3f091a4c27087b8640194aefc1c4ecbbebf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/976/complete.json",
+      "relative_path": "976/complete.json",
+      "sha256": "54988d05cb6f2ab5abeeed6e8a7c1cba7ff6c883ec1e1780218260f65f528be0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/977/complete.json",
+      "relative_path": "977/complete.json",
+      "sha256": "72963a69f4fb9549da027b0860b9aff6cfbbe8bcd1d4189e567d429fc29f6655",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/978/complete.json",
+      "relative_path": "978/complete.json",
+      "sha256": "2166f8a81e84b650632455f1c25daabb3817d368cbae7734540aa5e4217996bb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/979/complete.json",
+      "relative_path": "979/complete.json",
+      "sha256": "cbfc2661457ea6d419a6ab4515ea9dea30c3c5725cdb5337697e69297297696b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/980/complete.json",
+      "relative_path": "980/complete.json",
+      "sha256": "800cc7eb8415ce804eea9eae65dc64abbdd81c1e59687670bba8497d0a0e019c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/981/complete.json",
+      "relative_path": "981/complete.json",
+      "sha256": "647082e3addd52ce472339de4dc0309af55f6540ae591fcc693fd57d0934983b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/982/complete.json",
+      "relative_path": "982/complete.json",
+      "sha256": "f1a95bfbbe5148724097aa540b7e2d91d6d2f84a610502d65e6f828b7eb8f724",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/983/complete.json",
+      "relative_path": "983/complete.json",
+      "sha256": "01319ac51ce5a4cd469f82e6283ccf0b91c268bfa60320e23b3ef5eabce5da6a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/984/complete.json",
+      "relative_path": "984/complete.json",
+      "sha256": "6deb7ec578c556369847810e340257c58f8cf56954cd50cfe7dd6324e394216c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/985/complete.json",
+      "relative_path": "985/complete.json",
+      "sha256": "4e7d8c8b43f320f8f2ce6c2795ab76e864e3a0de283939a5531bd09c57a3a32d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/986/complete.json",
+      "relative_path": "986/complete.json",
+      "sha256": "f2293795e774100cec2b6fc4166b6778be7d85fe259148268ca2f8490bd4b191",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/987/complete.json",
+      "relative_path": "987/complete.json",
+      "sha256": "3be4d9053892a7f264d83c4a0fdd8b4e0d64824db53fa610b912f2faffbf19f0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/988/complete.json",
+      "relative_path": "988/complete.json",
+      "sha256": "fc359d90fbaaaf2de5e8710b44f2051416ba8eda297594cae10fb7f565a02c14",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/989/complete.json",
+      "relative_path": "989/complete.json",
+      "sha256": "a9a80610f9f17a42f448e9b9d8939182b5d1248d6290925f9397d376a167b7f7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/990/complete.json",
+      "relative_path": "990/complete.json",
+      "sha256": "4a6a3b672bf54b563547b1e3d8c3040ae56e4bcea8e15ac254792cdd7e2de341",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/991/complete.json",
+      "relative_path": "991/complete.json",
+      "sha256": "1aeb584bce327ebceab86090d92f468815c34d2bce88a82d2e2d0eaece4ea01e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/992/complete.json",
+      "relative_path": "992/complete.json",
+      "sha256": "579ba3c10140c84a9552db8c9ad9c0cbdc019d7aa3f619eaace16d9da75fe9e3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/993/complete.json",
+      "relative_path": "993/complete.json",
+      "sha256": "39853964b67e79c10475da959e67dfcc6390783e23d260cd9a8c2a9371a5631c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/994/complete.json",
+      "relative_path": "994/complete.json",
+      "sha256": "d2f935739b9a135217d4f419bea104d36f7fde84d8346c2e669f91d46bc1a94d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/995/complete.json",
+      "relative_path": "995/complete.json",
+      "sha256": "67ac6605fd9394567cf72d0d7212da50539c546a96a430a0bfff23d10af893e8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/996/complete.json",
+      "relative_path": "996/complete.json",
+      "sha256": "bb02f19b01559e549121bddb49f0eadbc34211eb027643f993a5512516fd9a07",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/997/complete.json",
+      "relative_path": "997/complete.json",
+      "sha256": "c7e9f2830cb7a825cf611cf431b4164aa94103f3932a92a25e8db9a3428b7009",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/998/complete.json",
+      "relative_path": "998/complete.json",
+      "sha256": "643c8b58301ab808c9be153af43feec3d9ee3702fe1966fa62f4bf97567ca913",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-20260921/999/complete.json",
+      "relative_path": "999/complete.json",
+      "sha256": "4564f5d28db467551f51a40d173493d848f763848e35aacf0705511cfe38c2fa",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "mace_center_replay_max_error",
+        "max_query_offset_A",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -203,7 +203,11 @@ def produce(plan,task,ranks,recovery=None,*,accelerator=None):
             from .accelerated import accelerator_settings
             execution=accelerator_settings(execution,accelerator)
         if recovery is not None:
-            execution.update(recovery['limits'],restart_dump=recovery['restart_dump'],restart_sha256=recovery['restart_sha256'])
+            execution.update(recovery['limits'])
+            # A timed-out process may leave no final dump. Its explicit recovery
+            # starts again from the verified original MD frame in a new workdir.
+            if recovery['restart_dump'] is not None:
+                execution.update(restart_dump=recovery['restart_dump'],restart_sha256=recovery['restart_sha256'])
         try:relax_frame(absolute,frame,work,execution)
         except Exception:
             failure=resolve_path(config['archive'])/'failures'/task['id']
@@ -240,13 +244,12 @@ def graph_arrays(clouds,scale):
 def build_training(plan):
     """Three native cache releases consumed by the existing unchanged trainer."""
     config=plan['config'];cache=resolve_path(config['cache']);parent=json.loads(resolve_path(config['normalization_manifest']).read_text());order_norm=json.loads(resolve_path(config['order_manifest']).read_text())
-    root=resolve_path(config['output'])/'technical';completed=[]
-    for source in plan['sources']:
-        if not source['pilot_fit']:continue
-        for frame in config.get('training_frames',config['frames']):
-            for f in (frame,frame+1):
-                if not (cache/'cells'/f'{source["id"]}-{f}'/'complete.json').exists():return False
-            completed.append((source,frame))
+    from .availability import training_availability
+    root=resolve_path(config['output'])/'technical'
+    completed,excluded,pending=training_availability(plan)
+    if pending:return False
+    if not completed:raise ValueError('No paired training observations remain after timeout exclusions')
+    save_json(root/'training-exclusions.json',dict(pairs=excluded,excluded_anchors=sum(x['anchors'] for x in excluded)))
     for arm in ARMS:
         out=cache/arm
         if (out/'manifest.json').exists():continue
@@ -271,6 +274,7 @@ def build_training(plan):
             records.append(dict(id=sid,source=f'native_{source["id"]}',lineage=source['lineage'],split=source.get('validation_role',source['split']),material='Al',potential='al-lee2003-meam',group=0,species=1,scale=config['scale'],anchors=len(hot),temperature_K=source['temperature_K'],frame=frame,hashes={n:file_hash(folder/f'{n}.npy') for n in values}))
         identity=digest(dict(plan=plan['identity'],arm=arm,records=records))
         manifest=dict(parent,state='complete',identity=identity,parent=str(out),shards=records,
+            timeout_excluded_pairs=excluded,
             train_roots=sorted({r['lineage'] for r in records if r['split']=='train'}),selection_roots=sorted({r['lineage'] for r in records if r['split']=='selection'}),
               paired_relaxation_identity=plan['identity'],arm=arm,support='Observed nearest80 candidate IDs retained across quench; input and target both cropped at normalized radius8 per domain; target moments use the identical graph crop',normalization_source=str(resolve_path(config['normalization_manifest'])))
         current_order=dict(order_norm)

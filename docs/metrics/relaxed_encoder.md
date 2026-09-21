@@ -39,3 +39,21 @@ TDA144, order8 and equivariant moment scales is fitted separately to each target
 domain using training sources only; future targets used here are training labels.
 Cold/cold and hot/cold share the same cold target population. Decoder MSE is not
 comparable across hot/cold target domains. Compare frozen original-MD event probes.
+
+Timeout exclusions: technical/skipped retains per-cell failure hashes. A timeout
+in either member removes the full training pair from all three target domains and
+normalization. Assay rows for unavailable source/frame cells are removed jointly
+from every readout and geometry baseline; reported event counts, errors and bootstrap
+intervals use that common retained cohort. Report excluded training-anchor and
+assay-window counts. Timeout selection may be state dependent; the retained assay
+population is not claimed to be the complete predeclared cohort.
+
+Interim readouts of expanded checkpoints reuse the earlier complete two-origin
+assay without changing its source roles or windows. They are exported separately;
+the 758 test windows include only eight positives by 12 ps. No completion-speed
+filtering is used. The same metric definitions apply, but interim and expanded
+assay scores must not be compared as though they used the same test population.
+
+Explicit user-stopped encoders are omitted using the plan-bound
+`technical/evaluation-exclusions.json`; reports disclose exclusions and adjust
+expected readout counts. Data cohorts and metric calculations are unchanged.

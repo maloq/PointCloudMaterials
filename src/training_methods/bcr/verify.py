@@ -25,7 +25,9 @@ def verify(config,data,output,device):
     patches,manifest=load_data(data);cfg=copy.deepcopy(config['training'])
     cfg['encoder'].update(d0=manifest['d0'],n_ref=manifest['n_ref'],radius=manifest['radius_A'])
     model=BCR(cfg).to(device);selected=[p for p,r in zip(patches,manifest['records']) if r['split']=='train'][:2]
-    batch=pack(selected,device);noisy,eps,sigma,_=corrupt(batch,manifest['noise_levels'],manifest['d0'],torch.Generator().manual_seed(16))
+    batch=pack(selected,device)
+    level_ids=torch.tensor(config['overfit_level_ids']) if 'overfit_level_ids' in config else None
+    noisy,eps,sigma,drawn_levels=corrupt(batch,manifest['noise_levels'],manifest['d0'],torch.Generator().manual_seed(16),level_ids)
     prediction,z=model(batch,noisy,sigma);R=o3.rand_matrix().to(device)
     rotated=dict(batch,positions=batch['positions']@R.T);yn=dict(noisy,positions=noisy['positions']@R.T)
     rp,rz=model(rotated,yn,sigma)
@@ -46,6 +48,7 @@ def verify(config,data,output,device):
         correctness_suite_sha256=hashlib.sha256(Path('tests/test_bcr.py').read_bytes()).hexdigest(),
         decoder_contract=identity(cfg.get('decoder',{})),
         model_sha256=hashlib.sha256(Path(__file__).with_name('model.py').read_bytes()).hexdigest(),real_overfit_pass=passed,model_contract=identity(cfg['encoder']),data_identity=manifest['identity'],
+        overfit_levels=[manifest['noise_levels'][i] for i in drawn_levels.cpu().tolist()],
         encoder_gradient_norm=grad,initial_nmse=initial,final_nmse=final,updates=len(curve),seconds=time.monotonic()-begin,
         repeated_export_max_abs=float((repeated-z).detach().abs().max()),
         rotation_invariant_max_abs=float((z-rz).detach().abs().max()),rotation_equivariant_max_abs=float((rp-prediction@R.T).detach().abs().max()),

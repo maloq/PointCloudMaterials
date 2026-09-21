@@ -43,3 +43,8 @@ coordinate uncertainty are excluded explicitly.
 
 Tiny real-data overfit and synthetic G0 tests establish implementation correctness
 only. No G1/G2/G3 scientific success follows from lower training loss.
+
+Training optionally records encoder/decoder relative parameter-update magnitudes
+at every50th update. Reconstruction exports retain per-anchor unconditional and
+matched-swap NMSE for exact paired cohort/subpopulation comparisons; missing donors
+remain undefined. The cached clean code is reused across development noise draws.

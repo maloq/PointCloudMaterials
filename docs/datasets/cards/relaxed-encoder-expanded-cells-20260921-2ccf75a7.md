@@ -10,9 +10,9 @@
 - Location: `/store/PERSO/vmorozov/relaxed_encoder/expanded-20260921`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 705; these are not independent-source counts.
-- Stored frames: 705; duplicate-group records: 113
-- Allocated storage, excluding registered nested datasets: 1.800 GiB
+- Complete binary records with arrays present: 2183; these are not independent-source counts.
+- Stored frames: 2183; duplicate-group records: 114
+- Allocated storage, excluding registered nested datasets: 5.605 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -35,7 +35,8 @@
     "output/relaxed_encoder/expanded-20260921/technical/accelerated/launches.json"
   ],
   "limitations": [
-    "Preparing; consult per-cell completion receipts. One seed. Reused historical source split, no test-source encoder fitting. Full-cell quenching includes external context. Raw MD coordinates inherit float16 storage; relaxed local clouds saved float32 before full-cell conversion. Training-only target-domain normalization."
+    "Preparing; consult per-cell completion receipts. One seed. Reused historical source split, no test-source encoder fitting. Full-cell quenching includes external context. Raw MD coordinates inherit float16 storage; relaxed local clouds saved float32 before full-cell conversion. Training-only target-domain normalization.",
+    "Timeouts are excluded consistently across matched training pairs/readout windows; technical/skipped and training/assay release receipts record omissions. Other failures remain fatal."
   ]
 }
 ```
@@ -53,10 +54,10 @@
 
 ## Evidence
 
-All 2115 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
+All 6549 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T12:07:34.550029+00:00.
+Observed 2026-09-21T16:17:14.292955+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

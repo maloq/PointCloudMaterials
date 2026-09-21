@@ -1,0 +1,4325 @@
+{
+  "dataset_id": "relaxed-encoder-large-test-20260921",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-128/complete.json",
+      "relative_path": "cells/860-128/complete.json",
+      "sha256": "58be116ba48197f51658e9eb41d66203e1f9576dc4387adf56c3e04b21c5b34a",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-176/complete.json",
+      "relative_path": "cells/860-176/complete.json",
+      "sha256": "fc9fdeb74c0e2307a89c9ceb8ef0e62cbbbb08d397ba85dade58b94684438ae0",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-224/complete.json",
+      "relative_path": "cells/860-224/complete.json",
+      "sha256": "30fa5c45d8d4b8dfa5a0a0725c7445664d0843aaeaa8b285e36c1c5b7b2eafc5",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-272/complete.json",
+      "relative_path": "cells/860-272/complete.json",
+      "sha256": "09fc4bd79b1bf37af74c3eb7a009329aa1f3c78c143d0b8072b4766f08df3ede",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-32/complete.json",
+      "relative_path": "cells/860-32/complete.json",
+      "sha256": "4d7a24b6fa4ba42c66f6a9e52edaa6ae2207ae535dc286f64d8777f61ac25698",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-320/complete.json",
+      "relative_path": "cells/860-320/complete.json",
+      "sha256": "f7d13dc0bb48c38447e65cb0c1bc5829f5030ec136e70f4916c87fb283e3110e",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-368/complete.json",
+      "relative_path": "cells/860-368/complete.json",
+      "sha256": "c841bd874dfbc075ebe31fcf838c82bf157e62c5088ee7740e431b3710286566",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-416/complete.json",
+      "relative_path": "cells/860-416/complete.json",
+      "sha256": "f0f96bf0ba2916428d02a642805d94524e369c214412c821f03a9738f78e7d69",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-464/complete.json",
+      "relative_path": "cells/860-464/complete.json",
+      "sha256": "2ffbe5e2bd9fa28e4438115f525ad24924fc17050b8f94ad02c6d98853312208",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-512/complete.json",
+      "relative_path": "cells/860-512/complete.json",
+      "sha256": "518080f2e3af358e72fcf6cd89d0575682f30f321524d9c5eba43ab24d4f84e6",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-560/complete.json",
+      "relative_path": "cells/860-560/complete.json",
+      "sha256": "090ad3493f67e7fb7685c5a7856007e1e83497df4955de25b70e31d0a3a6f09a",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-608/complete.json",
+      "relative_path": "cells/860-608/complete.json",
+      "sha256": "912257164a12d6a409bdefc0ca0c27ea53f139f46123cf58a0a8936b4bef1f4c",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-64/complete.json",
+      "relative_path": "cells/860-64/complete.json",
+      "sha256": "f396bdb44e05bbeb1e41b57a0735167276a583cac23248605fa9ce39b9233111",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-656/complete.json",
+      "relative_path": "cells/860-656/complete.json",
+      "sha256": "c69b1a16454641740c829c2ed5f81e17c81cf29ae951c6fb271f58781fd197df",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/860-80/complete.json",
+      "relative_path": "cells/860-80/complete.json",
+      "sha256": "c2ae20abc04d6508740cc32ead87fa6dc7eceb04b1c028fc1d58747965100bc4",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-128/complete.json",
+      "relative_path": "cells/861-128/complete.json",
+      "sha256": "8c6dbaa793b56b45c4002e6bff634da67b2c6537365517400c262765c8a33a71",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-176/complete.json",
+      "relative_path": "cells/861-176/complete.json",
+      "sha256": "e233534e94a4578cfc31e7e33cc6123d7219e8a138f08c460fc7b9dcafe39407",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-224/complete.json",
+      "relative_path": "cells/861-224/complete.json",
+      "sha256": "c0be2cf7ab2d93b5ce807c87e0111605030abf991d7d51b40cbe1bba207b7a19",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-272/complete.json",
+      "relative_path": "cells/861-272/complete.json",
+      "sha256": "4c8a8563df915f4aaf270ad44f1ee49565b252ddb966d50a23b01c431e9ae83d",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-32/complete.json",
+      "relative_path": "cells/861-32/complete.json",
+      "sha256": "727232395bcd76da83a17b1198399ff0cfc9093a194874149ed8bee70a883902",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-320/complete.json",
+      "relative_path": "cells/861-320/complete.json",
+      "sha256": "200d308912d2fde1e67ba34f47d53ec3b602328052708abb5c5f4e966d7004d5",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-368/complete.json",
+      "relative_path": "cells/861-368/complete.json",
+      "sha256": "ab62ce6a9a6d6507e7e432222ebd7ddf4986b734e2edd1fcad028dbf68d2cfa6",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-416/complete.json",
+      "relative_path": "cells/861-416/complete.json",
+      "sha256": "e462ad613dc94cf8f863f4fb32e7edcf087aef1d6566d8cbd64c47039df0f04b",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-464/complete.json",
+      "relative_path": "cells/861-464/complete.json",
+      "sha256": "77be54f136fe026f84de1810dcefa8f6a7de8657ab48ae7af7a93533b7330638",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-512/complete.json",
+      "relative_path": "cells/861-512/complete.json",
+      "sha256": "e8e8b5512884dec699fdbbbd4d2736b4ae2f6bf95fe413bef9e71e74c99cdc70",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-560/complete.json",
+      "relative_path": "cells/861-560/complete.json",
+      "sha256": "a932091c4d63862bef13888f665a1efdee26c068fabd7c768263a79db5c6631b",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-608/complete.json",
+      "relative_path": "cells/861-608/complete.json",
+      "sha256": "142c751fdfaea404b5490a521d09a2940f5a7ed0cc40890ce7767148b797d2fe",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-64/complete.json",
+      "relative_path": "cells/861-64/complete.json",
+      "sha256": "0b3df65655805480553f80dc627dec0ecf83d9653f39e894e3524873f9f2c7cc",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-656/complete.json",
+      "relative_path": "cells/861-656/complete.json",
+      "sha256": "b57fea9ffd7cf67a4f32d84a9cf8dd883fa249dddc51e33c84a6bb262bdb839e",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/861-80/complete.json",
+      "relative_path": "cells/861-80/complete.json",
+      "sha256": "9df741a5eb3addec4841b9a4569efa9b2f63d5dd435b91924a010090a99e78dc",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-128/complete.json",
+      "relative_path": "cells/862-128/complete.json",
+      "sha256": "4ced3ca9b26d887676d8c8683ec68e4a9304e00e0a24ad3a9c29da0dce2fb8e8",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-176/complete.json",
+      "relative_path": "cells/862-176/complete.json",
+      "sha256": "08ded2cc43d3b2fcf5960263ae613afa494289ce4eb19910c7d3ec67c1a547be",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-224/complete.json",
+      "relative_path": "cells/862-224/complete.json",
+      "sha256": "8ef1e3c00e498b6362698f249d5e298a2527c3d3acd9d5871e371d50a95938dc",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-272/complete.json",
+      "relative_path": "cells/862-272/complete.json",
+      "sha256": "b0dbd5bdfed2fa35059f50faac5faf4721d0808860c42795cb0f49ea88a35ba6",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-32/complete.json",
+      "relative_path": "cells/862-32/complete.json",
+      "sha256": "07205edeb321caf4305813e820573eddf02b87e6f67667e521855a4e61dfc4ac",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-320/complete.json",
+      "relative_path": "cells/862-320/complete.json",
+      "sha256": "6609fa4e93019cdeb491d41fa9e41bb1da334327969a46fdf5159600968401f4",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-368/complete.json",
+      "relative_path": "cells/862-368/complete.json",
+      "sha256": "3bed505209b24a8ce2b8f8dbfa092b65248ce21020de228e026ae685ef1bec0d",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-416/complete.json",
+      "relative_path": "cells/862-416/complete.json",
+      "sha256": "912bab80b52bcba2f7e7312a05c7b5cabab52fef511de86ef194051d4f469272",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-464/complete.json",
+      "relative_path": "cells/862-464/complete.json",
+      "sha256": "fb4918194cd42a1732b29e9edb9035fde59c927870ce2312bc516138d098f264",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-512/complete.json",
+      "relative_path": "cells/862-512/complete.json",
+      "sha256": "0ca1dab4bb731f33665ea5e8103a3a65513d90a8017a4df7abaa938c4406f6b7",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-560/complete.json",
+      "relative_path": "cells/862-560/complete.json",
+      "sha256": "07ebf66f03791d232e15c613053d7f340ab9db2a367830f111f0b93da9d161dd",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-608/complete.json",
+      "relative_path": "cells/862-608/complete.json",
+      "sha256": "eb481dc0b5fe39a37c8a5645a828c376602f00e054474fb5d0c4a249f9890b26",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-64/complete.json",
+      "relative_path": "cells/862-64/complete.json",
+      "sha256": "ce7f6afad9d420d61e2f2e2ec24eb6c6b5e9fdac8aea7364ac953f532a0e6cc5",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-656/complete.json",
+      "relative_path": "cells/862-656/complete.json",
+      "sha256": "af6ecbeab8ca1dc120576bcdf92cc94bd98cc540a58be336c112a81f0b44f1e2",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/862-80/complete.json",
+      "relative_path": "cells/862-80/complete.json",
+      "sha256": "f79bd31774545d5f0e03fa52dddfb2943dda5ddecaad14f1c56a9641c09b3ee8",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-128/complete.json",
+      "relative_path": "cells/863-128/complete.json",
+      "sha256": "7064119cd6eb4ea10b65c6d6c0d22bd1a770113e4a4d46ca631a15eeb4c1e74f",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-176/complete.json",
+      "relative_path": "cells/863-176/complete.json",
+      "sha256": "a4bb4771d86be5774affc71e4b440869aae4d29c53020ffa966ab074e590244b",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-224/complete.json",
+      "relative_path": "cells/863-224/complete.json",
+      "sha256": "f56690527b5bc1efb6a84fc901f404116a185edb287d8d4c6e986e14d4cace22",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-272/complete.json",
+      "relative_path": "cells/863-272/complete.json",
+      "sha256": "70773dcccc9f23b63f8269a7c6af085cde48f045ac541b304e702e87f9ab4d21",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-32/complete.json",
+      "relative_path": "cells/863-32/complete.json",
+      "sha256": "d88da9df0246b2f04f842230d58e5b2b91264af2666b1e465d354d2f7a70df97",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-320/complete.json",
+      "relative_path": "cells/863-320/complete.json",
+      "sha256": "bb686febcfd977564eb6b15f71622ca463ca1af52bcfc56a8f30ee2d431c09c7",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-368/complete.json",
+      "relative_path": "cells/863-368/complete.json",
+      "sha256": "4107f1f6a8e2e8394d4a795942a766ab3326db2abcfac1ba79675d4aabb21d1b",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-416/complete.json",
+      "relative_path": "cells/863-416/complete.json",
+      "sha256": "38e81c37a780eb7344e11d16909f390a2c5155a447e6a1575f9be875604f7097",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-464/complete.json",
+      "relative_path": "cells/863-464/complete.json",
+      "sha256": "d713c8302393dcd7a9bad6a1673fb7c881bb458deebabac1c1293fc136aa3b1f",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-512/complete.json",
+      "relative_path": "cells/863-512/complete.json",
+      "sha256": "7cd104d8f87d23d13cbb8559be318ad2a83ad86f0fd15e9b527b13944f3f67e2",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-560/complete.json",
+      "relative_path": "cells/863-560/complete.json",
+      "sha256": "7938aa9ffc74e1cd1b5b5ad6b0193b8c2b3c9f28e3300788f8fe6196e99795b9",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-608/complete.json",
+      "relative_path": "cells/863-608/complete.json",
+      "sha256": "5ce965acf51cb855c86b2c516963f75005b9ded3f94ba82cb8b572f99a67392f",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-64/complete.json",
+      "relative_path": "cells/863-64/complete.json",
+      "sha256": "8a29140afe02e578adce429e7ce3c83b84b6fb88f51df4cc983faaaf8e64df4d",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-656/complete.json",
+      "relative_path": "cells/863-656/complete.json",
+      "sha256": "8207b5dbfd7c8a2e3a2c16e13e06bf1d47aa8e58bbdef02be7b14b6266b037cb",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/863-80/complete.json",
+      "relative_path": "cells/863-80/complete.json",
+      "sha256": "48a7700ffc4522a3e7874f9b06101370e1ea2da73a9045ce43ccf4567b8d2420",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-128/complete.json",
+      "relative_path": "cells/864-128/complete.json",
+      "sha256": "4e405834b3bc8476a59f051ed5fc3f687fc5dc3757f76c68b8e61f169454fd5f",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-176/complete.json",
+      "relative_path": "cells/864-176/complete.json",
+      "sha256": "701d654c1634867d13877fe86b308503c1234307ef3a9b570ead2db2485802df",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-224/complete.json",
+      "relative_path": "cells/864-224/complete.json",
+      "sha256": "15baf2798763c4fe5cc63972f57d66f96a3c943060c3e83ece1bb8b5a5ff417d",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-272/complete.json",
+      "relative_path": "cells/864-272/complete.json",
+      "sha256": "9e7294ccf8482dfce7c95e08408f29254fdd0b5854b10cf9a96adb3fcaab1029",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-32/complete.json",
+      "relative_path": "cells/864-32/complete.json",
+      "sha256": "3287ff2d9d4cd2816948c512f19815679c9a036e430376d0940c89ba17ecc41c",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-320/complete.json",
+      "relative_path": "cells/864-320/complete.json",
+      "sha256": "ab6e77ea50181a349d31228a929949a614bc81321e070696527fcaf596afde99",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-368/complete.json",
+      "relative_path": "cells/864-368/complete.json",
+      "sha256": "c54a70bcc3e5e3d8e2764ad4ca731a0b930b9b7a2d4f8d5993aa306a019cd402",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-416/complete.json",
+      "relative_path": "cells/864-416/complete.json",
+      "sha256": "e0b22bf1e6c2e96a2db31f33714899a03968ca3f7588df141540909db5ad4351",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-464/complete.json",
+      "relative_path": "cells/864-464/complete.json",
+      "sha256": "47b22d1962aaa9d35ff2dcadcfc2d3c2c93b8739ff29b4a38c7ec114dd0d0fea",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-512/complete.json",
+      "relative_path": "cells/864-512/complete.json",
+      "sha256": "329694d79044d495b43dc7dab1d620bab254ca63506b60f8a7dc34c0f62e1ff4",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-560/complete.json",
+      "relative_path": "cells/864-560/complete.json",
+      "sha256": "5fe7ef19b7f088cb572494b8e89f96522b46fd50437af0b68812a48f4efdb3f7",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-608/complete.json",
+      "relative_path": "cells/864-608/complete.json",
+      "sha256": "0eae9b427277f1a8522cfff621b565d85b026e2044ef476e8ad89d95be3587e7",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-64/complete.json",
+      "relative_path": "cells/864-64/complete.json",
+      "sha256": "a61bdff5239d657b7a1e26f7665b7f8a8513468cb411b5ec61ddf767c117514e",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-656/complete.json",
+      "relative_path": "cells/864-656/complete.json",
+      "sha256": "3b94193c4040078ccfeb73cfc899085b045640d3c857b8217964a2e6070a8c12",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/864-80/complete.json",
+      "relative_path": "cells/864-80/complete.json",
+      "sha256": "1b74368c3a60c9e02d1fdfe90dc5b61fb992acdc32ebc706df72407dfee12e60",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-128/complete.json",
+      "relative_path": "cells/865-128/complete.json",
+      "sha256": "d093a4387466380266c64f142c4af75a3ea78b8e4c14b41200e12fb66b951d27",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-176/complete.json",
+      "relative_path": "cells/865-176/complete.json",
+      "sha256": "a9b9fe95bb6cde8ecc46e8a87b8c3ad9836e04eba9095a4d30c1eff92ff6ccff",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-224/complete.json",
+      "relative_path": "cells/865-224/complete.json",
+      "sha256": "7548bf330f055a5d52b95b4fe671ee9ae5ef74647a9e1c069463a8c1949dcf77",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-272/complete.json",
+      "relative_path": "cells/865-272/complete.json",
+      "sha256": "cb983985bf9889e3083cf01442de13f4644291bbd90731685732f1a9dc45a6b2",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-32/complete.json",
+      "relative_path": "cells/865-32/complete.json",
+      "sha256": "dd4fac5806d029f99b67f5a7889db1d6a0e6ee2730cfcdfb2020774293bdb4f2",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-320/complete.json",
+      "relative_path": "cells/865-320/complete.json",
+      "sha256": "dabaa596be8d4fbe3a651163206071bb6d6d33d1876ec0b9d80741756b13cee1",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-368/complete.json",
+      "relative_path": "cells/865-368/complete.json",
+      "sha256": "c4c878899c8ffa5b507f0d2f811e88d1ef23c8345bdb2b9478c4bf25c4556179",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-416/complete.json",
+      "relative_path": "cells/865-416/complete.json",
+      "sha256": "3877a33242127c3351578cc3bfadc36304afe95cd8efd316beae92e88f01d1dc",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-464/complete.json",
+      "relative_path": "cells/865-464/complete.json",
+      "sha256": "2500e39efb0e0f855e3579c6a48911995e9fb172011a2cf9fa13f24ac6176233",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-512/complete.json",
+      "relative_path": "cells/865-512/complete.json",
+      "sha256": "93b493f60557784dfe75eaaf7c390f23d51d52dc000fb2c3783fe9a6f2bb5497",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-560/complete.json",
+      "relative_path": "cells/865-560/complete.json",
+      "sha256": "2cc29cbe4a589ffeeb1aab0f6a58898cfe4f805b85efeed3320f8a390ab271c5",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-608/complete.json",
+      "relative_path": "cells/865-608/complete.json",
+      "sha256": "364027091e02dc574e4f68b5269277364abd8e977556bb00e7c7d6d70cf5aa09",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-64/complete.json",
+      "relative_path": "cells/865-64/complete.json",
+      "sha256": "0e96e57db619aa36a3580eef2bef82ff91cc468db8ba78f98b1c632828acc521",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-656/complete.json",
+      "relative_path": "cells/865-656/complete.json",
+      "sha256": "8c7c091d3e756fbb323c8fd657c797f4f4bf2cb0064721b3f9fdfe4bf4daaeaf",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/865-80/complete.json",
+      "relative_path": "cells/865-80/complete.json",
+      "sha256": "45444d30d0ca3a18b0badcc6a8fab61873e0430905a10649d8bbe413de6ae006",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-128/complete.json",
+      "relative_path": "cells/866-128/complete.json",
+      "sha256": "dd730000f9ae11b4a13f2a94af247f4643e79fcc7ac33eb58722e0f95b96400c",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-176/complete.json",
+      "relative_path": "cells/866-176/complete.json",
+      "sha256": "9068459e80474c834657cc930c5ed8ee5222022b7e748b1b2a588c9a868da64f",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-224/complete.json",
+      "relative_path": "cells/866-224/complete.json",
+      "sha256": "b19e62537f5ee4d2a91032fa70c45a92a997296a2babf4136645ab6e794677fd",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-272/complete.json",
+      "relative_path": "cells/866-272/complete.json",
+      "sha256": "3ba0fe4c2ab0f4c177b3195cb08aaf7118db2fc096cd201c74efe5a882458100",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-32/complete.json",
+      "relative_path": "cells/866-32/complete.json",
+      "sha256": "925f32c19df8057d02199a416797a6d67c2e214534312b43ec81bfa408429bc0",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-320/complete.json",
+      "relative_path": "cells/866-320/complete.json",
+      "sha256": "760cb3db97414bd346773e53bf2f10c81cff9f4c0730b11fc9b39973213eeb69",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-368/complete.json",
+      "relative_path": "cells/866-368/complete.json",
+      "sha256": "74f510fccaa809e3199391eec6b1a337913241cd1cd4e6bc9b8c8aa248aa7be6",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-416/complete.json",
+      "relative_path": "cells/866-416/complete.json",
+      "sha256": "d5a1ffbaa5119fb30060d1a789351a1c0ec0b3700e66bc93cc4023731d4e60bd",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-464/complete.json",
+      "relative_path": "cells/866-464/complete.json",
+      "sha256": "52008852e8346edd30df3e20475afca3df37094289d2bd624174b54fb9bcf85a",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-512/complete.json",
+      "relative_path": "cells/866-512/complete.json",
+      "sha256": "4e3c5c9c73d09cf043015fd4177cfe7fcf5ada13b2828cefb74cdf0db66537aa",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-560/complete.json",
+      "relative_path": "cells/866-560/complete.json",
+      "sha256": "6227b8e5961bec97e48f9a31818b1e7a5909c8d5abcb2db6596b96e4f90d1eb9",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-608/complete.json",
+      "relative_path": "cells/866-608/complete.json",
+      "sha256": "71194c0c98241a05b67c9c24cf8ea2157813b820c56bcb615bb235ca133f1c0d",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-64/complete.json",
+      "relative_path": "cells/866-64/complete.json",
+      "sha256": "8253238c8e887bf8fa1e753c01a81614bec6baf7c6c7c829fcec95434744dadd",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-656/complete.json",
+      "relative_path": "cells/866-656/complete.json",
+      "sha256": "99e865ed517e12329d604edb9fb6bbb778445e88ed86d3796f3664dc01c1e213",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/866-80/complete.json",
+      "relative_path": "cells/866-80/complete.json",
+      "sha256": "f1129e64a52c8b30621be1b588b7062bfa61cd647542839daf0f180eaac9f144",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/867-32/complete.json",
+      "relative_path": "cells/867-32/complete.json",
+      "sha256": "583a88f58c1fbba1d22f69f726f27f24a86fb406d4109c3f044d625c3de4660b",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/867-64/complete.json",
+      "relative_path": "cells/867-64/complete.json",
+      "sha256": "7b92ed17359f214d054f8e8fe1246b8818f16ae12ec9938c95aa8f648b358640",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/relaxed_encoder/large-test-20260921/cells/867-80/complete.json",
+      "relative_path": "cells/867-80/complete.json",
+      "sha256": "3ac51d5eff34f16cc46646490b1efb41ff12060e8d3af84f3b1a06f00acda2e5",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "clouds_sha256",
+        "identity",
+        "relaxation",
+        "reused_paired",
+        "reused_paired_sha256",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

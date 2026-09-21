@@ -1,0 +1,15 @@
+{
+  "family": "bcr_pilot",
+  "exported_at": "2026-09-21T14:29:50.816497+00:00",
+  "files": {
+    "docs/metrics/bcr.md": "5f3865d61bd06433be4cfebc5ca3f6f90aff14d693f34a50346a22e1daeb9e0b",
+    "docs/metrics/bcr_pilot.md": "961c58092282927ad25402eea672705ef932385ac3020174b9276387fc7c9626",
+    "src/research/bcr_pilot/__init__.py": "5d513b3442ea2bee8f5693150381e799dcc5f9a3a90314efa1b9b3706cbcda48",
+    "src/research/bcr_pilot/data.py": "eb958e7e85d222ddd6d7914b7a4a6edfc431ac047ee528430f380d122a42a13f",
+    "src/research/bcr_pilot/queue.py": "ef948124dad1a8efd7a6fe123d55671d50b921fb8919b56ac3ac65863b6fae13",
+    "src/research/bcr_pilot/profile.py": "ab57f2b666e0be11adfe32074081bca8d9a26e931c4caf50a5915783a48dae5f",
+    "src/research/bcr_pilot/compare.py": "019deb5e802bcde11faaf8fdc983c96de631c56ba978f95f4877f840e033dd2f",
+    "src/training_methods/bcr/evaluate.py": "a0432638c9010be89346be6c8acc4e8e1be69e552e82d814def26e1eb2557c01",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245"
+  }
+}

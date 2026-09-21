@@ -1,0 +1,19 @@
+{
+  "output": "output/relaxed_encoder/large-test-20260921",
+  "cache": "${storage:cache}/relaxed_encoder/large-test-20260921",
+  "scratch": "${storage:scratch}/relaxed_encoder/large-test-20260921",
+  "archive": "${storage:archive}/relaxed_encoder/large-test-20260921",
+  "training_plan": "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+  "heldout_stride_frames": 16,
+  "bootstrap_draws": 1000,
+  "pilot_output": "output/relaxed_encoder/pilot-20260920",
+  "cached_encoders": {
+    "earlier-sigreg-mace": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/sig-direct-raw-order",
+    "earlier-epijepa-mace": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/epi-direct-order",
+    "earlier-vicreg-mace": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/vic-direct-raw-order",
+    "old-vicreg-mace": "output/neighborhood_jepa/v2-native-al-20260920/technical/crystallization/vicreg-mace-local",
+    "old-vicreg-gatr": "output/neighborhood_jepa/v2-native-al-20260920/technical/crystallization/vicreg-gatr-local"
+  },
+  "benchmark": "output/hardware_benchmark/relaxation-cuda-20260921",
+  "force_max_error_tolerance": 1e-8
+}

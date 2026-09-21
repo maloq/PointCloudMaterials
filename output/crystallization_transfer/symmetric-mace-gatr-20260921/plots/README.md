@@ -1,0 +1,3 @@
+# Symmetric context illustration
+
+Existing Al source 860, frame 0, tracked atom 10309. Blue/orange: 12 query directions at 10/20 Å. Black star: tracked center. Left: exactly symmetric cuboctahedral queries. Right: the same queries (open markers), assigned real atom centers (filled markers), assignment offsets (short lines), and actual nearby MD atoms (gray). The encoder uses full local neighborhoods around these real centers; the faint 25 Å cloud is an illustration of context locations, not a truncation of the encoder input. Nominal queries and actual offsets both enter the predictor. The figure is a perspective projection of three-dimensional geometry.

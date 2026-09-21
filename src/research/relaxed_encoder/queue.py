@@ -14,6 +14,8 @@ from src.data.structural_pretraining.prepare import save_json
 from src.project_runtime.paths import resolve_path
 from src.training_methods.shared_pretraining.queue import deadline_for_job
 from .prepare import freeze,produce,build_training,ARMS,arm_for_name
+from .availability import fatal_failures,skipped_cells
+from .selection import evaluation_exclusions,selected_runs
 
 @contextmanager
 def claim(path):
@@ -47,6 +49,7 @@ def cpu(plan,lane,ranks):
                 print(json.dumps(dict(cell=task['id'],seconds=result['relaxation']['seconds'],reused='reused_targets'in result or 'reused_paired'in result)),flush=True)
             except Exception as exc:
                 save_json(root/'failures'/f'{task["id"]}.json',dict(task=task,error=repr(exc),traceback=traceback.format_exc()));traceback.print_exc()
+                if isinstance(exc,subprocess.TimeoutExpired):skipped_cells(plan)
     save_json(root/f'cpu-{lane}.json',dict(state='finished',missing=sum(not (cache/'cells'/t['id']/'complete.json').exists() for t in plan['tasks'])))
 
 
@@ -54,7 +57,7 @@ def build(plan):
     from .assay import prepare
     root=resolve_path(plan['config']['output'])/'technical';deadline=deadline_for_job()
     while time.time()<deadline-300:
-        if list((root/'failures').glob('*.json')):raise RuntimeError('Cell production failed; see technical/failures before restarting')
+        if fatal_failures(plan):raise RuntimeError('Cell production failed; see technical/failures before restarting')
         if not (root/'training-ready.json').exists():build_training(plan)
         if prepare(plan):return
         time.sleep(20)
@@ -66,6 +69,8 @@ def training_config(plan,arm):
 
 def execute(plan,name,phase):
     if phase=='fit':
+        if name in evaluation_exclusions(plan):
+            raise ValueError(f'Encoder training explicitly stopped: {name}')
         from src.training_methods.neighborhood_jepa.regularization.specs import variants
         from src.training_methods.neighborhood_jepa.regularization.runtime import run
         c=training_config(plan,arm_for_name(plan['config'],name));spec=next(s for s in variants(c) if s['name']=='sig-direct-raw-order');spec['name']=name
@@ -79,10 +84,11 @@ def execute(plan,name,phase):
         probes(plan,name)
 
 
-def worker(plan,lane,config_path):
+def worker(plan,lane,config_path,*,evaluation_only=False):
     root=resolve_path(plan['config']['output'])/'technical';deadline=deadline_for_job()
-    arms=[r['name'] for r in plan['config']['runs']] if 'runs' in plan['config'] else ARMS
-    tasks=[('fit',a) for a in arms]+[('extract',a) for a in (*arms,'parent_hot','parent_cold')]
+    arms=[r['name'] for r in selected_runs(plan)] if 'runs' in plan['config'] else ARMS
+    tasks=[] if evaluation_only else [('fit',a) for a in arms]
+    tasks += [('extract',a) for a in (*arms,'parent_hot','parent_cold')]
     tasks += [('probe',a) for a in (*arms,'parent_hot','parent_cold','geometry_hot','geometry_cold','original_geometry','conditions')]
     while time.time()<deadline-300:
         unfinished=False
@@ -112,14 +118,14 @@ def worker(plan,lane,config_path):
             with claim(root/'locks/report') as acquired:
                 if acquired:report(plan)
             save_json(root/f'gpu-{lane}.json',dict(state='finished'));return
-        if list((root/'failures').glob('*.json')) or (root/'build-failed.json').exists():
+        if fatal_failures(plan) or (root/'build-failed.json').exists():
             save_json(root/f'gpu-{lane}.json',dict(state='failed',reason='preparation_failed'))
             raise RuntimeError('Preparation failed; GPU queue stopped, see technical/failures')
         save_json(root/f'gpu-{lane}.json',dict(state='waiting_for_dependency'));time.sleep(20)
 
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('stage',choices=['freeze','cpu','build','gpu','execute','report','benchmark']);p.add_argument('--config',required=True);p.add_argument('--lane',default='0');p.add_argument('--ranks',type=int,default=32);p.add_argument('--name');p.add_argument('--phase');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('stage',choices=['freeze','cpu','build','gpu','evaluate','execute','report','benchmark']);p.add_argument('--config',required=True);p.add_argument('--lane',default='0');p.add_argument('--ranks',type=int,default=32);p.add_argument('--name');p.add_argument('--phase');a=p.parse_args()
     config_path=resolve_path(a.config);plan=freeze(json.loads(config_path.read_text()));torch.set_num_threads(1)
     if a.stage=='cpu':cpu(plan,a.lane,a.ranks)
     elif a.stage=='build':
@@ -127,6 +133,7 @@ def main():
         except Exception as e:
             save_json(resolve_path(plan['config']['output'])/'technical/build-failed.json',dict(error=repr(e),traceback=traceback.format_exc()));raise
     elif a.stage=='gpu':worker(plan,a.lane,config_path)
+    elif a.stage=='evaluate':worker(plan,a.lane,config_path,evaluation_only=True)
     elif a.stage=='execute':execute(plan,a.name,a.phase)
     elif a.stage=='report':
         from .report import report

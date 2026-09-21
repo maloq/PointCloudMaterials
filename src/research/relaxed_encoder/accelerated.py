@@ -16,6 +16,7 @@ from src.data.relaxed_targets.worker import verify_archive
 from src.training_methods.shared_pretraining.queue import deadline_for_job
 from .queue import claim, worker
 from .prepare import produce
+from .availability import fatal_failures,skipped_cells
 
 
 def accelerator_settings(base, profile):
@@ -77,7 +78,8 @@ def run(config,backend,lane,*,handoff=False,wait_benchmark_completion=False):
         tasks.extend(group[i] for i in rng.permutation(len(group)))
     while time.time()<deadline-300:
         if handoff and (root/'training-ready.json').exists():break
-        remaining=[t for t in tasks if not (cache/'cells'/t['id']/'complete.json').exists()]
+        skips=skipped_cells(plan)
+        remaining=[t for t in tasks if t['id'] not in skips and not (cache/'cells'/t['id']/'complete.json').exists()]
         if not remaining:break
         # Reserve the complete normal + extended retry budgets, with publication
         # margin, rather than killing a cell midway through its archived retry.
@@ -107,8 +109,10 @@ def run(config,backend,lane,*,handoff=False,wait_benchmark_completion=False):
                     print(json.dumps(dict(cell=task['id'],backend=backend,seconds=result['relaxation']['seconds'],completed=completed)),flush=True)
                 except Exception as exc:
                     save_json(root/'failures'/f'{task["id"]}.json',dict(task=task,backend=backend,error=repr(exc),traceback=traceback.format_exc()))
+                    if isinstance(exc,subprocess.TimeoutExpired):
+                        skipped_cells(plan);print(json.dumps(dict(cell=task['id'],state='skipped',reason='timeout')),flush=True);continue
                     raise
-        if list((root/'failures').glob('*.json')):raise RuntimeError('Preparation failure recorded; inspect before proceeding')
+        if fatal_failures(plan):raise RuntimeError('Preparation failure recorded; inspect before proceeding')
         if not acquired_any:time.sleep(20)
     if handoff and time.time()<deadline-300:
         save_json(status,dict(state='handed_to_training',completed=completed,profile=profile))

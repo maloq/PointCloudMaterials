@@ -1,0 +1,33 @@
+{
+  "seed": 20260921,
+  "source_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "data": "${storage:cache}/bcr/g1-independent-20260921",
+  "output": "output/bcr/g1-independent-20260921",
+  "radius_A": 8.0,
+  "max_atoms": 256,
+  "centers_per_root": 256,
+  "center_spacing_A": 8.0,
+  "noise_levels": [
+    0.01,
+    0.02,
+    0.04,
+    0.08,
+    0.12
+  ],
+  "potential_sha256": [
+    "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+    "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+  ],
+  "updates": 10000,
+  "batch_size": 256,
+  "microbatch": 32,
+  "checkpoints": [
+    0,
+    1000,
+    3000,
+    10000
+  ],
+  "evaluation_anchors": 384,
+  "evaluation_draws": 2,
+  "evaluation_shuffles": 4
+}

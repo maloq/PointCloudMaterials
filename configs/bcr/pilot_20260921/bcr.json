@@ -1,0 +1,30 @@
+{
+  "data": "${storage:cache}/bcr/g1-independent-20260921",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/bcr/g1-independent-20260921/technical/runs/bcr",
+  "overfit_updates": 200,
+  "training": {
+    "arm": "bcr",
+    "seed": 20260921,
+    "encoder": {
+      "d0": 2.523491859436035,
+      "n_ref": 108.22688802083333,
+      "radius": 8.0,
+      "channels": 32,
+      "code_dim": 128,
+      "cutoff": 5.0,
+      "backend": "e3nn"
+    },
+    "decoder": {
+      "irreps": "64x0e + 32x1o + 16x2e",
+      "depth": 2
+    },
+    "updates": 10000,
+    "batch_size": 256,
+    "microbatch": 32,
+    "lr": 0.0003,
+    "min_lr": 3e-06,
+    "precision": "float32",
+    "compile": false,
+    "gate_receipt": "/home/infres/vmorozov/PointCloudMaterials/output/bcr/g1-independent-20260921/technical/preflight/technical/gate.json"
+  }
+}

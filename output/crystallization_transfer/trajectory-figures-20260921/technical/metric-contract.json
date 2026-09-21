@@ -1,0 +1,11 @@
+{
+  "family": "trajectory_figures",
+  "exported_at": "2026-09-21T14:32:42.847107+00:00",
+  "files": {
+    "src/research/crystallization_paths/figures.py": "2dca46fc2db5506deb5aa75ddb01254839896212a3faadf8b54f3e910aedc3d3",
+    "docs/metrics/trajectory_figures.md": "96065cf3ac2bfba3751ca63abccd5340fc2954652ed4424886fba2b06303e353",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/crystallization_paths/figure_render.py": "50d2bcfee5cab4cc53c36c934e8cf8d12bf89fd022aaf946c5336bac82bb3824",
+    "configs/analysis/crystallization_figures.json": "447ecf8135343d4ae0f55348e275f0e334fe8571df91f3cb8eee84016266e167"
+  }
+}

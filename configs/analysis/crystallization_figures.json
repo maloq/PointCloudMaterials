@@ -1,0 +1,18 @@
+{
+  "input": "output/context_night/night-20260921/paths",
+  "producer": "output/context_night/night-20260921/technical/code",
+  "output": "output/crystallization_transfer/trajectory-figures-20260921",
+  "models": {
+    "direct": "direct-selected-E36",
+    "ar_mse": "ar_mse-selected-E36",
+    "mixture": "mixture-selected-E36",
+    "diffusion": "diffusion-selected-E36"
+  },
+  "seed": 20260921,
+  "samples": 64,
+  "umap_per_source": 64,
+  "umap_neighbors": 30,
+  "umap_min_dist": 0.15,
+  "bootstrap_draws": 1000,
+  "dpi": 300
+}

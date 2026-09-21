@@ -46,6 +46,22 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.relaxed_encoder.queue evaluate --config
+configs/analysis/relaxed_encoder_expanded.json` runs extraction and frozen readouts
+without encoder training. Explicit exclusions are bound to the frozen plan;
+see [stopping fits and evaluating](../docs/relaxed_encoder.md).
+
+`python -m src.research.relaxed_encoder.evaluation freeze|reuse|build|worker|report
+--config configs/analysis/relaxed_encoder_large_test.json` runs the larger fixed-grid
+crystallization assay with whole-source uncertainty and explicit event coverage;
+see [operations](../docs/relaxed_encoder.md) and the
+[scientific protocol](../experiments/relaxed_encoder_large_test_20260921/README.md).
+
+`python -m src.research.relaxed_encoder.interim prepare|extract|probe|report --config
+configs/analysis/relaxed_encoder_interim.json` evaluates finished encoders on an
+existing fixed assay cohort while the larger evaluation is preparing. It retains
+source splits and matched linear/MLP probes; see [interim readouts](../docs/relaxed_encoder.md).
+
 `python -m src.research.relaxed_encoder.recovery submit --config configs/analysis/relaxed_encoder_pilot.json --name RETRY_NAME --allocation JOB_ID`
 recovers iteration-limited quenches and chains cache construction, matched encoder
 training and frozen assays; see [recovery workflow](../docs/relaxed_encoder.md).
@@ -523,3 +539,18 @@ adds validated CUDA MEAM producers to the shared CPU task queue; see
 [GPU production](../docs/relaxed_encoder.md#gpu-production-alongside-cpu-workers).
 
 `python -m src.training_methods.bcr prepare|verify|train|evaluate|probes|select --config CONFIG` runs the isolated bottleneck-conditioned reconstruction workflow; see [execution](../docs/bcr.md) and [protocol](../experiments/bcr_v1_20260921/README.md).
+
+`python -m src.research.bcr_pilot.queue prepare|preflight|submit --config configs/bcr/pilot_20260921/study.json` runs the independent-root three-arm conditioning pilot; [operations](../docs/bcr_pilot.md).
+
+`python -m src.research.crystallization_paths.figures --config configs/analysis/crystallization_figures.json`
+exports paper-style PNG trajectory comparisons, training-fitted UMAP projections,
+and real-point-cloud context diagrams from completed forecasts. CPU replay only;
+no predictor fitting. Separate captions and input identities accompany the gallery.
+Use `--stage render` to adjust appearance without repeating extraction or UMAP.
+
+`python -m src.research.structured_context.queue verify|verify-pipeline|submit|worker|report --config configs/crystallization_transfer/symmetric_mace_gatr_20260921.json` runs the symmetric-context forecast comparison; see [workflow](../docs/structured_context.md).
+
+`python -m src.research.structured_context.figures --config configs/analysis/structured_context_figures.json`
+replays the completed eight forecasts, regenerates PNG/UMAP/context figures, and
+compares the same onset events and matched controls across forecast origins.
+Use `--stage render` for appearance-only changes; [metric definitions](../docs/metrics/structured_figures.md).

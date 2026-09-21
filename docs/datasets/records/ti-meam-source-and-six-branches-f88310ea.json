@@ -148,6 +148,7 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -163,8 +164,7 @@
         "pair_commands": [
           "pair_style meam",
           "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c"
+        ]
       }
     },
     {

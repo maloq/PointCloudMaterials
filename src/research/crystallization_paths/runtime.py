@@ -16,6 +16,9 @@ from .metrics import dense_brier,path_scores,summarize
 
 
 def make_model(spec):
+    if spec.get('context_layout')=='cuboctahedral_v1':
+        from src.research.structured_context.model import StructuredForecaster
+        return StructuredForecaster(spec)
     if 'information_context' in spec:
         from src.research.context_night.context import ContextForecaster
         return ContextForecaster(spec)
@@ -182,6 +185,7 @@ def fit(plan,spec,data,deadline):
     family='crystallization_paths_refinement' if spec.get('protocol')=='path_refinement_v2' else 'crystallization_paths'
     if 'information_context' in spec:
         flat['short_horizon']=metrics['short_horizon'];family='context_night'
+    if spec.get('context_layout')=='cuboctahedral_v1':family='structured_context'
     write_metric_table(flat,resolve_path(config['output']),family=family,name=spec['name'])
     save_json(root/'status.json',dict(state='complete',step=step,selected_step=selected['step'],
         best_selection_brier=best,best_selection_physical_mse=selected['selection_physical_mse'],early_stopped=early_stopped,

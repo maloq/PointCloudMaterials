@@ -83,5 +83,10 @@ history while testing preservation of bond order and instantaneous topology.
 - [Overnight encoder information and trajectory context](context_night_20260921/README.md): local order/angular preservation, wider shells/history, and fixed-target trajectory forecasts.
 
 - [Expanded relaxed-input/target and rank study](relaxed_encoder_expanded_20260921/README.md): larger source-held-out paired dataset, conditional SIGReg/VICReg, frozen onset probes.
+- [Larger fixed-grid crystallization test](relaxed_encoder_large_test_20260921/README.md): 338 planned distinct local test onsets, historical encoder comparisons and whole-source uncertainty.
 
 - [BCR-v1: bottleneck-conditioned reconstruction](bcr_v1_20260921/README.md): implementation, mechanism controls and correctness tests.
+
+- [Independent-root BCR G1 pilot](bcr_g1_20260921/README.md): useful conditioning, matched controls and frozen liquid probes.
+
+- [Symmetric structured MACE/GATr context](structured_context_20260921/README.md): 25 spatial query slots, alternating spatial/causal temporal attention, eight frozen-encoder forecast fits.

@@ -1,0 +1,20 @@
+{
+  "family": "structured_context",
+  "exported_at": "2026-09-21T16:28:39.320437+00:00",
+  "files": {
+    "src/research/structured_context/geometry.py": "2d22090b6758d01172eafa43ccddb62f2051f01bed884f7b3b483de815758c6e",
+    "src/research/structured_context/data.py": "b640aa2781754e4732e1582d674c010d856a6408a3a21eb988feb8101a33b398",
+    "src/research/structured_context/extract.py": "070ecfd1e208ac6eac1c0c7592c7edcba2b72a9c44fd0924beb563edb1582248",
+    "src/research/structured_context/queue.py": "5ec4528c57326575b5f67017cec03f8bf7472fa230b684136648416106aa0165",
+    "src/research/structured_context/model.py": "670bb6f8aad6699dbb98e4c69b5379af19e8996d666125a4de71cc2e407026ff",
+    "src/research/structured_context/figure.py": "26cca4e11a1d33987938206b41e4bd624b3e4f48f2352e7c4847a765091104c6",
+    "src/research/structured_context/__init__.py": "4d4e7a910f07dc27b122c05c9f7849d5b5e955d48ce451c425bdbc12b8a13d88",
+    "src/research/structured_context/verify.py": "c60283a81d2a22dddff6a14a03443aafc819dfb81d5a04813f4735f2c00b2178",
+    "src/research/crystallization_paths/runtime.py": "2a4c091222fe692142dbfea429679ceaaaceffd5d226f0dd39d048a93c9e3739",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+    "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+    "docs/metrics/structured_context.md": "168773f86404012cfddd4dfcfda48ec9cc88d4258f122e17d69ba92d9936e97b"
+  }
+}

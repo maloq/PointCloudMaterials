@@ -9,6 +9,13 @@ all variants start from the same original development-selected parent, not from
 an already low-rank pilot continuation. Calibration/test sources never train the
 encoder. Source split is historical, not an untouched new test set.
 
+Preliminary readouts of the first three completed runs use the earlier fixed
+two-origin cohort (frames 64 and 368), via `relaxed_encoder_interim.json`.
+This avoids selecting evaluation cells by relaxation completion speed. Source
+splits, original MD onset labels, and matched linear/MLP readout settings are
+preserved. Its 758 test windows contain eight positives by 12 ps; these results
+are diagnostic and do not replace the larger assay or select hyperparameters.
+
 ## Data
 
 90 training and15 development sources; encoder origins at frames64/224/368/512,
@@ -69,3 +76,9 @@ uncertainty. Select the cold variant by development physical+.25TDA only, never
 by test AP or maximum rank. Report covariance rank, correlation rank, channel
 standard deviations and within-temperature noncrystalline covariance ranks.
 A higher rank with worse physical/event information is not a success.
+
+Timeout policy update (user requested): skip timed-out cells instead of stopping
+or retrying the entire campaign. Remove affected training pairs and common assay
+windows across all comparison arms; export exclusions and retained event counts.
+Already recovered cells remain included. This introduces conditional-on-success
+sampling and must accompany the scientific results.

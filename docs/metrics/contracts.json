@@ -830,15 +830,18 @@
   },
   "relaxed_encoder": {
     "files": {
-      "src/research/relaxed_encoder/report.py": "1acc58fc8464e511978987478c234d1c1ea6320edadc57a793151bf391909a5d",
+      "src/research/relaxed_encoder/report.py": "c126d0daacb6000ffad2cf9943914e92a1e6c3886ad71cff5b68b395ff1483d5",
       "src/research/relaxed_encoder/__init__.py": "467805d7982553a2c40e2bf3e186ae917c7be5dad4d04edab0ed23941e4399ca",
-      "src/research/relaxed_encoder/assay.py": "e47d7ba0590848c3ad5e31817f255806e62374547b7b746cbc0facf3a3fc1a46",
-      "src/research/relaxed_encoder/prepare.py": "25b3f5a1cb864b8371fcccb478af3741daa86f48fed5875c3adec3719f70bdf3",
-      "src/research/relaxed_encoder/queue.py": "34baf2361499d44e9d16ca62933dbf848412f4bdd14f79b3aae10196c4bafd18",
+      "src/research/relaxed_encoder/assay.py": "f813737d40c183a614fe18291cb52fc52ddfc207e79c856f65d40480171b1b66",
+      "src/research/relaxed_encoder/prepare.py": "5523291ec5d55e5bee38ef8c5e0297ec81836df8ef6a91adb720309f62a55fc6",
+      "src/research/relaxed_encoder/queue.py": "7655a24d2fe57bcf9f97701aa3e1ca6cb3a935a74ae6430c533ee04330332f23",
       "src/research/relaxed_encoder/benchmark.py": "857123ac21765eda289d5e32d897a26b0ca8c36bfa1850fd0feaf63d78c9f720",
-      "docs/metrics/relaxed_encoder.md": "e1dcd892e3b6e48d287c2112fa9908063860ef37e366a64c628a7a1853229698",
+      "docs/metrics/relaxed_encoder.md": "1e231f0e35fb59aeea4624281a2c32f2680ac7c4b09ff780eba782c598547d0a",
       "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
-      "src/simulation/relaxation.py": "02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca"
+      "src/simulation/relaxation.py": "02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca",
+      "src/research/relaxed_encoder/availability.py": "8cb85e6a80ed21dbbdab1b53a066e6e0286f81a27e9f5366b3a3998a29e77323",
+      "src/research/relaxed_encoder/interim.py": "4a0cd99641604f5e64b8fe20741b30943bde9292fe00fccb68e496437b05d06d",
+      "src/research/relaxed_encoder/selection.py": "4d1060d06c2170cbd25d48fb403815f43f0af1b1ca32e69b92ea215780190ddd"
     }
   },
   "context_night_encoder": {
@@ -869,18 +872,82 @@
   },
   "bcr": {
     "files": {
-      "docs/metrics/bcr.md": "e2e9c70ef8e8da1603540bb09b20e9dc8b6eeaf006fe1faff689f82d4e880b29",
-      "src/training_methods/bcr/evaluate.py": "c559b973cd0bc52052a016533d4957aeb2b2f0173eb6a0decbc94d7de361ac43",
+      "docs/metrics/bcr.md": "5f3865d61bd06433be4cfebc5ca3f6f90aff14d693f34a50346a22e1daeb9e0b",
+      "src/training_methods/bcr/evaluate.py": "a0432638c9010be89346be6c8acc4e8e1be69e552e82d814def26e1eb2557c01",
       "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
       "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
       "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
       "src/training_methods/bcr/__init__.py": "e633466cdbd3e207c38a6c64ad4bea9aeab645b223a85784e6fc50c68e1603ee",
       "src/training_methods/bcr/prepare.py": "6e4ffb87a821da32e894fb769c79fa627a936b9ad4ee01b302ac23c299706847",
-      "src/training_methods/bcr/runtime.py": "e1639a70d13e07872b8cc42b45f32cc3cceba7e91fb57de5c5bc2b6a643e4927",
+      "src/training_methods/bcr/runtime.py": "ef6fc1fc6a3d5dd59dafcb87503eaf6ecb04dd6bd80662b0b994ea2479041d5c",
       "src/training_methods/bcr/analysis.py": "07ccd3cf0cfc75b27e71f2a66903c888e05f9af546bdf4e803c4db63276d5ca1",
-      "src/training_methods/bcr/verify.py": "ac8a7c770b225c06f1430d180e738602380cb797cec8bf62556807a3fcaf1b2c",
+      "src/training_methods/bcr/verify.py": "1eb94edaf89a6f5a1e4c8e1ffd6004771400dd88a567970fe5230081041f9165",
       "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
       "src/training_methods/bcr/__main__.py": "8e81a9917f83d44bf8159978458a66816080c1f4c882b7a24d12c8b6868d922c"
+    }
+  },
+  "bcr_pilot": {
+    "files": {
+      "docs/metrics/bcr.md": "5f3865d61bd06433be4cfebc5ca3f6f90aff14d693f34a50346a22e1daeb9e0b",
+      "docs/metrics/bcr_pilot.md": "961c58092282927ad25402eea672705ef932385ac3020174b9276387fc7c9626",
+      "src/research/bcr_pilot/__init__.py": "5d513b3442ea2bee8f5693150381e799dcc5f9a3a90314efa1b9b3706cbcda48",
+      "src/research/bcr_pilot/data.py": "eb958e7e85d222ddd6d7914b7a4a6edfc431ac047ee528430f380d122a42a13f",
+      "src/research/bcr_pilot/queue.py": "ef948124dad1a8efd7a6fe123d55671d50b921fb8919b56ac3ac65863b6fae13",
+      "src/research/bcr_pilot/profile.py": "ab57f2b666e0be11adfe32074081bca8d9a26e931c4caf50a5915783a48dae5f",
+      "src/research/bcr_pilot/compare.py": "019deb5e802bcde11faaf8fdc983c96de631c56ba978f95f4877f840e033dd2f",
+      "src/training_methods/bcr/evaluate.py": "a0432638c9010be89346be6c8acc4e8e1be69e552e82d814def26e1eb2557c01",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245"
+    }
+  },
+  "trajectory_figures": {
+    "files": {
+      "src/research/crystallization_paths/figures.py": "2dca46fc2db5506deb5aa75ddb01254839896212a3faadf8b54f3e910aedc3d3",
+      "docs/metrics/trajectory_figures.md": "96065cf3ac2bfba3751ca63abccd5340fc2954652ed4424886fba2b06303e353",
+      "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+      "src/research/crystallization_paths/figure_render.py": "50d2bcfee5cab4cc53c36c934e8cf8d12bf89fd022aaf946c5336bac82bb3824",
+      "configs/analysis/crystallization_figures.json": "447ecf8135343d4ae0f55348e275f0e334fe8571df91f3cb8eee84016266e167"
+    }
+  },
+  "structured_context": {
+    "files": {
+      "src/research/structured_context/geometry.py": "2d22090b6758d01172eafa43ccddb62f2051f01bed884f7b3b483de815758c6e",
+      "src/research/structured_context/data.py": "b640aa2781754e4732e1582d674c010d856a6408a3a21eb988feb8101a33b398",
+      "src/research/structured_context/extract.py": "070ecfd1e208ac6eac1c0c7592c7edcba2b72a9c44fd0924beb563edb1582248",
+      "src/research/structured_context/queue.py": "5ec4528c57326575b5f67017cec03f8bf7472fa230b684136648416106aa0165",
+      "src/research/structured_context/model.py": "670bb6f8aad6699dbb98e4c69b5379af19e8996d666125a4de71cc2e407026ff",
+      "src/research/structured_context/figure.py": "26cca4e11a1d33987938206b41e4bd624b3e4f48f2352e7c4847a765091104c6",
+      "src/research/structured_context/__init__.py": "4d4e7a910f07dc27b122c05c9f7849d5b5e955d48ce451c425bdbc12b8a13d88",
+      "src/research/structured_context/verify.py": "c60283a81d2a22dddff6a14a03443aafc819dfb81d5a04813f4735f2c00b2178",
+      "src/research/crystallization_paths/runtime.py": "2a4c091222fe692142dbfea429679ceaaaceffd5d226f0dd39d048a93c9e3739",
+      "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+      "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+      "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "docs/metrics/structured_context.md": "168773f86404012cfddd4dfcfda48ec9cc88d4258f122e17d69ba92d9936e97b"
+    }
+  },
+  "relaxed_encoder_large_test": {
+    "files": {
+      "docs/metrics/relaxed_encoder_large_test.md": "81144b7cee1d40fdfb4a77911cab69cb051348627d83f49ce380228c5bb4d824",
+      "docs/metrics/crystallization_information.md": "f1b8c383f9564f68376a44c3754ce32f461418285ca3b5fb77a98aa54e6a9f17",
+      "src/research/relaxed_encoder/evaluation.py": "b40ab09ebddadebd5baede082f69e260640dab65ac9692f179f6ee24ddb50503",
+      "src/research/relaxed_encoder/evaluation_metrics.py": "094b11f32d21a17edbc2ceeab8a5ce9dc20d13e6a30793fb3909346077a1dbd4",
+      "src/research/relaxed_encoder/availability.py": "8cb85e6a80ed21dbbdab1b53a066e6e0286f81a27e9f5366b3a3998a29e77323",
+      "src/research/relaxed_encoder/assay.py": "f813737d40c183a614fe18291cb52fc52ddfc207e79c856f65d40480171b1b66",
+      "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/relaxed_encoder/selection.py": "4d1060d06c2170cbd25d48fb403815f43f0af1b1ca32e69b92ea215780190ddd"
+    }
+  },
+  "structured_figures": {
+    "files": {
+      "src/research/structured_context/figures.py": "d9cc55d4dfd0aa480c3cee2eb1fa87281dccce69e3f63ac9d603a5ffcb65d4c3",
+      "src/research/structured_context/figure_render.py": "3c76bb37380f2da53eb452d9c3e8d75b0be886e0ba82088446ce3c1cee1a2730",
+      "src/research/structured_context/event_offsets.py": "39c787d6ebe38ccf4fed258a510b26b6cbd46cfd0ce62b527f9dcf5d4cdc58da",
+      "src/research/crystallization_paths/figures.py": "2dca46fc2db5506deb5aa75ddb01254839896212a3faadf8b54f3e910aedc3d3",
+      "src/research/crystallization_paths/figure_render.py": "50d2bcfee5cab4cc53c36c934e8cf8d12bf89fd022aaf946c5336bac82bb3824",
+      "docs/metrics/structured_figures.md": "d7524d2c709e7724bab8e40a10b76a3c9a89f5a32a8cd34f9a66a29c9fdd2476",
+      "configs/analysis/structured_context_figures.json": "a32438f6fb4dd0f352e7116ceaf04e94cfee0c02e60ad04d07c67f7f50206f81"
     }
   }
 }

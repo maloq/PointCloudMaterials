@@ -11,7 +11,7 @@ Active fixed-box FIRE target campaign; completed cells, convergence and failure 
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 780; these are not independent-source counts.
-- Stored frames: 780; duplicate-group records: 156
+- Stored frames: 780; duplicate-group records: 157
 - Allocated storage, excluding registered nested datasets: 1.877 GiB
 - Missing metadata: temperature_K, ensemble
 
@@ -53,6 +53,6 @@ All 2340 producer records, their hashes, field paths and current array schemas: 
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T12:07:34.550029+00:00.
+Observed 2026-09-21T16:17:14.292955+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

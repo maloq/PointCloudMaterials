@@ -1,0 +1,72 @@
+{
+  "dataset_id": "bcr-g1-independent-20260921",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/bcr/g1-independent-20260921/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "6e64727dbb204a5c2fd4a3e3538c219dd7c98074f563e8bf78d6afed5c634e30",
+      "kind": "metadata",
+      "keys": [
+        "anchors",
+        "config",
+        "coordinate_units",
+        "corruption_audit",
+        "d0",
+        "development_anchors",
+        "development_roots",
+        "identity",
+        "inventory_sha256",
+        "n_ref",
+        "noise_levels",
+        "overflow_count",
+        "patches_sha256",
+        "preprocessing",
+        "radius_A",
+        "records",
+        "roots",
+        "test_status",
+        "training_anchors",
+        "training_roots",
+        "uncertainty_A",
+        "uncertainty_method"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "seed": [
+          {
+            "value": 20260921,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 8.0,
+            "first_json_path": "config.radius_A",
+            "occurrences": 2
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "records[0].split",
+            "occurrences": 3072
+          },
+          {
+            "value": "development",
+            "first_json_path": "records[3072].split",
+            "occurrences": 1536
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "records[0].temperature_K",
+            "occurrences": 4608
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

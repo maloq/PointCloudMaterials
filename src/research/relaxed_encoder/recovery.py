@@ -16,7 +16,7 @@ from .prepare import freeze,produce
 from .queue import claim,build,worker
 
 
-def retry_cells(plan,root,lane,ranks):
+def retry_cells(plan,root,lane,ranks,accelerator=None):
     recipe=json.loads((root/'plan.json').read_text());technical=resolve_path(plan['config']['output'])/'technical'
     deadline=deadline_for_job();failed=False
     for item in recipe['cells']:
@@ -28,9 +28,9 @@ def retry_cells(plan,root,lane,ranks):
             if status.exists() and json.loads(status.read_text())['state']=='complete':continue
             save_json(status,dict(state='running',lane=lane,task=task))
             try:
-                verify_archive(Path(item['restart_dump']).parent)
+                verify_archive(Path(item['archive']))
                 recovery=dict(name=recipe['name'],limits=recipe['limits'],restart_dump=item['restart_dump'],restart_sha256=item['restart_sha256'])
-                result=produce(plan,task,ranks,recovery=recovery)
+                result=produce(plan,task,ranks,recovery=recovery,accelerator=accelerator)
                 previous=technical/'failures'/f'{task["id"]}.json'
                 if previous.exists():
                     if file_hash(previous)!=item['failure_sha256']:raise ValueError('Original failure record changed')
@@ -45,7 +45,8 @@ def retry_cells(plan,root,lane,ranks):
 def rebuild(plan,root):
     technical=resolve_path(plan['config']['output'])/'technical'
     try:
-        if list((technical/'failures').glob('*.json')):raise RuntimeError('Unresolved cell failures')
+        from .availability import fatal_failures
+        if fatal_failures(plan):raise RuntimeError('Unresolved cell failures')
         old=technical/'build-failed.json'
         if old.exists():old.rename(root/'original-build-failed.json')
         save_json(root/'build-status.json',dict(state='running'))
@@ -57,6 +58,26 @@ def rebuild(plan,root):
         save_json(root/'build-status.json',dict(state='failed',error=repr(exc),traceback=traceback.format_exc()));raise
 
 
+def submit_when_training_ready(plan,root):
+    """Request training GPUs when training caches exist, independently of assays."""
+    technical=resolve_path(plan['config']['output'])/'technical';deadline=deadline_for_job()
+    launches=root/'training-launches.json'
+    if launches.exists():raise FileExistsError(f'Training already submitted: {launches}')
+    while time.time()<deadline-300:
+        state=root/'build-status.json'
+        if state.exists() and json.loads(state.read_text())['state']=='failed':
+            raise RuntimeError('Recovery cache builder failed')
+        if (technical/'training-ready.json').exists():
+            records=[]
+            for script in sorted(root.glob('train-*.sbatch')):
+                job=subprocess.check_output(['sbatch','--parsable',str(script)],text=True).strip()
+                records.append(dict(script=str(script),job=job));save_json(launches,records)
+            if not records:raise ValueError('No frozen training submission scripts')
+            return
+        time.sleep(20)
+    raise TimeoutError('Training caches not ready before allocation deadline')
+
+
 def submit(config_path,name,allocation):
     config_path=Path(config_path);plan=freeze(json.loads(config_path.read_text()));c=plan['config']
     technical=resolve_path(c['output'])/'technical';root=technical/'restarts'/name
@@ -66,7 +87,7 @@ def submit(config_path,name,allocation):
         task=json.loads(p.read_text())['task'];archive=resolve_path(c['archive'])/'failures'/task['id'];verify_archive(archive)
         if 'Stopping criterion = max iterations' not in (archive/'log.lammps').read_text():
             raise ValueError(f'Failure needs separate diagnosis: {task["id"]}')
-        cells.append(dict(task=task,restart_dump=str(archive/'relaxed.dump'),restart_sha256=file_hash(archive/'relaxed.dump'),failure_sha256=file_hash(p)))
+        cells.append(dict(task=task,archive=str(archive),restart_dump=str(archive/'relaxed.dump'),restart_sha256=file_hash(archive/'relaxed.dump'),failure_sha256=file_hash(p)))
     if not cells:raise ValueError('No failed cells to recover')
     save_json(root/'plan.json',dict(name=name,original_identity=plan['identity'],cells=cells,
         limits=dict(max_iterations=50000,max_evaluations=250000,frame_timeout_seconds=7200),
@@ -94,11 +115,17 @@ def submit(config_path,name,allocation):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['submit','cpu','build','gpu-wait']);parser.add_argument('--config',required=True);parser.add_argument('--name',required=True);parser.add_argument('--allocation',type=int);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('stage',choices=['submit','cpu','cuda','build','train-submit','gpu-wait']);parser.add_argument('--config',required=True);parser.add_argument('--name',required=True);parser.add_argument('--allocation',type=int);parser.add_argument('--accelerator-config');parser.add_argument('--backend',choices=['h100','a100','v100']);args=parser.parse_args()
     if args.stage=='submit':submit(args.config,args.name,args.allocation);return
     plan=freeze(json.loads(Path(args.config).read_text()));root=resolve_path(plan['config']['output'])/'technical/restarts'/args.name
     if args.stage=='cpu':retry_cells(plan,root,os.environ['SLURM_ARRAY_TASK_ID'],32)
+    elif args.stage=='cuda':
+        from .accelerated import wait_for_benchmark
+        accelerator_config=json.loads(resolve_path(args.accelerator_config).read_text())
+        profile=wait_for_benchmark(accelerator_config,args.backend,deadline_for_job(),root/'accelerator.json')
+        retry_cells(plan,root,args.backend,1,accelerator=profile)
     elif args.stage=='build':rebuild(plan,root)
+    elif args.stage=='train-submit':submit_when_training_ready(plan,root)
     else:
         deadline=deadline_for_job()
         while time.time()<deadline-1800:

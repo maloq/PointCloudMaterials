@@ -46,3 +46,13 @@ of dropping it from the report.
 
 No new simulation, model fit, or test-driven hyperparameter choice is authorized
 by this reporting note itself.
+
+## Trajectory figure supplement, September 21
+
+The later completed context-night study has a separate paper-style PNG gallery:
+`output/crystallization_transfer/trajectory-figures-20260921/README.md`.
+Reproduce with `python -m src.research.crystallization_paths.figures --config
+configs/analysis/crystallization_figures.json`. It uses the four development-chosen
+family promotions, original held-out predictions, fixed-seed CPU path illustrations,
+training-only UMAP fitting and actual cached spatial neighborhoods. This figure
+supplement does not itself close the earlier report-update task above.

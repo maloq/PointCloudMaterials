@@ -282,9 +282,17 @@ Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.y
 - `context_night/night_20260921.json`: one-seed MACE continuations, observed-context trajectory screens, development promotions and frozen-encoder transfers.
 
 - `analysis/relaxed_encoder_expanded.json`: expanded paired Al relaxation dataset and nine-run MACE rank-regularization study.
+- `analysis/relaxed_encoder_large_test.json`: fixed 12 ps held-out assay grid, 46 frozen readouts and source-bootstrap intervals.
 
 - `benchmarks/relaxation_cuda.json`: matched four-cell V100/H100 and 32-rank CPU MEAM relaxation comparison.
 
 - `analysis/relaxed_encoder_accelerated.json`: validated GPU execution overlay for the existing expanded paired-relaxation plan.
 
 - `bcr/real_overfit.json`: full-radius Al BCR correctness/overfit fixture, not a scientific training population. See [execution](../docs/bcr.md).
+
+- `bcr/pilot_20260921/study.json`: fixed-architecture independent-root BCR/unconditional/frozen-random comparison.
+
+- `analysis/crystallization_figures.json`: paper-style PNG forecasts, UMAP and real spatial-context illustrations from completed development-selected models.
+
+- `analysis/structured_context_figures.json`: completed symmetric MACE/GATr PNG
+  analysis, independent training-fitted UMAPs, and fixed-event lead-time curves.

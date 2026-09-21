@@ -49,14 +49,14 @@ def paired_root_gain(true,other,roots,seed=0,draws=1000):
 
 
 @torch.no_grad()
-def reconstruction(model,patches,records,levels,draws=2,seed=731,unconditional=None,bins=None,covariates=None,shuffles=4,chunk=8):
+def reconstruction(model,patches,records,levels,draws=2,seed=731,unconditional=None,bins=None,covariates=None,shuffles=4,chunk=8,include_swaps=True):
     device=next(model.parameters()).device;model.eval();z=torch.cat([model.encode(pack(patches[i:i+chunk],device)) for i in range(0,len(patches),chunk)])
     roots=[r['root'] for r in records];conditions=[r['temperature_K'] for r in records];radius=model.config['encoder']['radius'];d0=model.config['encoder']['d0']
     output=dict(code=code_statistics(z),anchors=len(patches),roots=len(set(roots)),levels={})
     for k,level in enumerate(levels):
         rows={name:[] for name in ('weighted','unweighted','interior','middle','outer','unconditional')}
         swapped={relax:[] for relax in range(3)}
-        maps={relax:[derangement(roots,conditions,covariates,bins,seed+13*j,relax) for j in range(shuffles)] for relax in range(3)} if bins is not None else {}
+        maps={relax:[derangement(roots,conditions,covariates,bins,seed+13*j,relax) for j in range(shuffles)] for relax in range(3)} if bins is not None and include_swaps else {}
         for draw in range(draws):
             errors={name:[] for name in rows};swap_errors={relax:[[] for _ in range(shuffles)] for relax in maps}
             for start in range(0,len(patches),chunk):
@@ -68,7 +68,8 @@ def reconstruction(model,patches,records,levels,draws=2,seed=731,unconditional=N
                     y,e,s,_=corrupt(b,levels,d0,torch.Generator().manual_seed(seed+100003*idx+1009*k+draw),torch.tensor([k]))
                     ys.append(y['positions']);es.append(e);ss.append(s)
                 noisy=dict(clean,positions=torch.cat(ys));epsilon=torch.cat(es);sigma=torch.cat(ss)
-                pred,_=model(clean,noisy,sigma)
+                code=(model.constant[None].expand(len(sigma),-1) if model.arm=='unconditional' else z[start:start+len(sigma)])
+                pred=model.decoder(noisy['positions'],noisy['species'],noisy['center'],noisy['mask'],code,torch.log(sigma/d0))
                 for name in rows:
                     if name=='unconditional':
                         value=per_environment(unconditional(clean,noisy,sigma)[0],epsilon,clean,radius) if unconditional else torch.full((len(sigma),),torch.nan,device=device)
@@ -92,5 +93,7 @@ def reconstruction(model,patches,records,levels,draws=2,seed=731,unconditional=N
             if not values:continue
             a=np.asarray(values);n=np.isfinite(a).sum(0);avg=np.divide(np.nansum(a,0),n,out=np.full(len(patches),np.nan),where=n>0)
             report[f'swap_relax{relax}']=paired_root_gain(true,avg,roots)
+            report[f'per_anchor_swap_relax{relax}_nmse']=avg.tolist()
+        report['per_anchor_unconditional_nmse']=result['unconditional'].tolist()
         report['per_anchor_nmse']=true.tolist();output['levels'][str(level)]=report
     return output

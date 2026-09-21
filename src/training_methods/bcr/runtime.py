@@ -40,7 +40,7 @@ def save(path,payload):
     temp=path.with_suffix('.tmp');torch.save(payload,temp);temp.replace(path)
 
 
-def train(config,data_path,output,device='cpu',stop_after=None):
+def train(config,data_path,output,device='cpu',stop_after=None,deadline=None):
     if config.get('precision','float32')!='float32' or config.get('compile',False):
         raise ValueError('BCR-v1 deploys tested eager FP32 only; mixed/compiled execution requires a separate parity release')
     patches,manifest=load_data(data_path);records=manifest['records'];indices=[i for i,r in enumerate(records) if r['split']=='train']
@@ -81,8 +81,10 @@ def train(config,data_path,output,device='cpu',stop_after=None):
         tensor_product_paths=[b.paths for b in model.decoder.blocks],config=config,data_identity=manifest['identity'],
         source_hashes={str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('*.py')})
     (tech/'manifest.json').write_text(json.dumps(environment,indent=2)+'\n')
-    begin=time.monotonic();model.train();limit=min(config['updates'],stop_after or config['updates'])
+    begin=time.monotonic();model.train();completed=start;limit=min(config['updates'],stop_after or config['updates'])
     for step in range(start,limit):
+        if deadline is not None and time.time()>deadline-120:
+            save(tech/'last.pt',payload(completed));break
         selection=stream.draw(config['batch_size']);ids=[indices[i] for i in selection]
         clean=pack([patches[i] for i in ids],device);noisy,epsilon,sigma,levels=corrupt(clean,manifest['noise_levels'],manifest['d0'],noise)
         counts+=np.bincount(levels.cpu().numpy(),minlength=len(counts));optimizer.zero_grad(set_to_none=True)
@@ -108,9 +110,19 @@ def train(config,data_path,output,device='cpu',stop_after=None):
             for level in range(len(counts)):
                 rows=levels.cpu().numpy()==level
                 if rows.any():logs[str(manifest['noise_levels'][level])]=float(np.array(values)[rows].mean())
-        norm=torch.nn.utils.clip_grad_norm_(params,1.,error_if_nonfinite=True);optimizer.step()
+        norm=torch.nn.utils.clip_grad_norm_(params,1.,error_if_nonfinite=True)
+        measure_update=step%50==0
+        before={name:p.detach().clone() for name,p in model.named_parameters()} if measure_update else {}
+        optimizer.step();completed=step+1
         record=dict(step=step+1,loss=total,by_sigma=logs,gradient_norm=float(norm),code_gradient_norm=gradz,lr=lr,
             level_counts=counts.tolist(),anchor_exposures=stream.exposures,seconds=time.monotonic()-begin)
+        if measure_update:
+            record['relative_update']={}
+            for label in ('encoder','decoder'):
+                names=[n for n in before if n.startswith(label+'.')]
+                numerator=sum((p.detach()-before[n]).square().sum() for n,p in model.named_parameters() if n in names)
+                denominator=sum(before[n].square().sum() for n in names)
+                record['relative_update'][label]=float(torch.sqrt(numerator/denominator.clamp_min(1e-30)))
         if model.arm!='vicreg':
             record['by_source']={str(src):float(np.mean([v for v,i in zip(values,ids) if records[i]['source']==src])) for src in {records[i]['source'] for i in ids}}
             record['by_shell']={k:float(np.nanmean(v)) if np.isfinite(v).any() else None for k,v in shells.items()}
@@ -120,6 +132,6 @@ def train(config,data_path,output,device='cpu',stop_after=None):
         with (tech/'training.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
         if step+1 in checkpoint_steps(config['updates']) or step+1==limit:
             state=payload(step+1);save(tech/'last.pt',state);save(tech/f'step-{step+1:06d}.pt',state)
-    (tech/'status.json').write_text(json.dumps(dict(state='complete' if limit==config['updates'] else 'checkpointed',step=limit,
+    (tech/'status.json').write_text(json.dumps(dict(state='complete' if completed==config['updates'] else 'checkpointed',step=completed,
         selection='pending structural retention and robustness gates; no best checkpoint claimed'),indent=2))
     return model

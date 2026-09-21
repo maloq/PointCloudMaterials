@@ -1,0 +1,13 @@
+{
+  "family": "structured_figures",
+  "exported_at": "2026-09-21T19:48:44.119042+00:00",
+  "files": {
+    "src/research/structured_context/figures.py": "d9cc55d4dfd0aa480c3cee2eb1fa87281dccce69e3f63ac9d603a5ffcb65d4c3",
+    "src/research/structured_context/figure_render.py": "3c76bb37380f2da53eb452d9c3e8d75b0be886e0ba82088446ce3c1cee1a2730",
+    "src/research/structured_context/event_offsets.py": "39c787d6ebe38ccf4fed258a510b26b6cbd46cfd0ce62b527f9dcf5d4cdc58da",
+    "src/research/crystallization_paths/figures.py": "2dca46fc2db5506deb5aa75ddb01254839896212a3faadf8b54f3e910aedc3d3",
+    "src/research/crystallization_paths/figure_render.py": "50d2bcfee5cab4cc53c36c934e8cf8d12bf89fd022aaf946c5336bac82bb3824",
+    "docs/metrics/structured_figures.md": "d7524d2c709e7724bab8e40a10b76a3c9a89f5a32a8cd34f9a66a29c9fdd2476",
+    "configs/analysis/structured_context_figures.json": "a32438f6fb4dd0f352e7116ceaf04e94cfee0c02e60ad04d07c67f7f50206f81"
+  }
+}

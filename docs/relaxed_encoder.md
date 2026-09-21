@@ -1,5 +1,22 @@
 # Running the paired relaxation pilot
 
+The larger fixed-grid evaluation uses `python -m
+src.research.relaxed_encoder.evaluation freeze|reuse|build|worker|report --config
+configs/analysis/relaxed_encoder_large_test.json`. `reuse` copies verified centered
+float32 observations from the expanded release. Remaining fixed-box quenches use
+the existing GPU producer with this release's `technical/accelerator-config.json`.
+`build` prepares matched assay rows and descriptors; `worker` extracts completed
+checkpoints and runs frozen readouts, with no encoder training. Per-role grids
+increase development/calibration/test coverage without repeating training data.
+
+For preliminary frozen crystallization readouts of completed expanded encoders,
+use `python -m src.research.relaxed_encoder.interim prepare|extract|probe|report
+--config configs/analysis/relaxed_encoder_interim.json`. Extraction needs a GPU;
+probes use CPU. This reuses the complete earlier two-origin assay, checks source
+ancestry/splits and checkpoint/feature hashes, and writes a separate report. It
+does not select whichever cells relaxed fastest, change the main queue, or replace
+the larger 15-origin evaluation. The earlier cohort has eight positive test windows.
+
 Use pointnet-torch214. All scientific settings are in
 `configs/analysis/relaxed_encoder_pilot.json`; implementation is
 `src/research/relaxed_encoder/`. No metrics-contract gate is added.
@@ -72,3 +89,48 @@ recorded numerical backends with the same physical Hamiltonian, fixed box and
 0.01 eV/Angstrom tolerance, not bitwise-equivalent CPU targets. The frozen shared
 plan specifies physics/data; technical/accelerated contains this additive execution
 release and its code snapshot. Retain the original CPU production and old code.
+
+### Recovering a CPU timeout without a final dump
+
+A frozen recovery recipe may explicitly use `restart_dump: null` and
+`restart_sha256: null` to requench the original verified MD frame in a fresh retry
+directory. The old timeout archive is retained and verified. The `cuda` recovery
+stage accepts `--accelerator-config configs/analysis/relaxed_encoder_accelerated.json
+--backend a100` and requires the same benchmark admission as production workers.
+A successful recovery archives the old failure receipt before releasing cache
+construction. `train-submit` watches training-ready.json and submits the frozen
+train-*.sbatch files without waiting for the separate assay release. It records
+submitted IDs and refuses a second submission. This watcher needs only a CPU;
+training GPUs are requested after caches exist.
+
+## Non-blocking timeout policy
+
+Per-cell subprocess.TimeoutExpired is a terminal skipped sample. Keep the failure
+record and verified failure archive; record its identity/hash under technical/skipped.
+No automatic timeout retry is required. CPU and GPU workers continue, and builder/
+trainer readiness treats explicit skips as resolved work. Other failure types still
+fail with context. The availability adapter also recognizes actual TimeoutExpired
+repr records from older frozen CPU workers, so they need not be interrupted.
+
+If either cell of a present/future training pair times out, exclude that entire
+pair from every arm and train-only normalization. An assay timeout removes only
+that source/frame's rows, consistently for all encoders and baselines; graph indices
+are rebuilt for remaining frames. Export excluded training-anchor and assay-window
+counts. Preserve an already completed recovery when it predates the skip decision.
+This is conditional-on-success sampling; retained cohorts and event counts can change.
+
+## Stop encoder fitting and evaluate completed checkpoints
+
+Send SIGUSR1 to the active fit subprocess to save `last.pt` at an update boundary.
+Stop other training queue workers before signalling it so they cannot resume the
+checkpoint. Preserve both best and last checkpoints; an interrupted fit remains
+`checkpointed`, never `complete`. Record its fit queue receipt as `blocked`.
+
+`technical/evaluation-exclusions.json` records the frozen plan identity and an
+`excluded` mapping from run name to an explicit reason. It changes which encoders
+are evaluated without changing the data release, source split or outcome labels.
+Both reports display the exclusion and adjust the number of expected readouts.
+Use `python -m src.research.relaxed_encoder.queue evaluate --config CONFIG` for
+evaluation only: this stage never schedules encoder fits. The larger assay's
+`evaluation worker` also respects these exclusions. Submit GPU extraction jobs
+after successful CPU assay construction so they do not hold GPUs while waiting.

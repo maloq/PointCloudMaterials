@@ -17,22 +17,29 @@ def prepare(plan):
     c=plan['config'];root=resolve_path(c['output'])/'technical/assay';root.mkdir(parents=True,exist_ok=True)
     if (root/'ready.json').exists():return True
     cache=resolve_path(c['cache']);original=json.loads(resolve_path(c['assay_plan']).read_text())
-    for s in plan['sources']:
-        for f in c['frames']:
-            if not (cache/'cells'/f'{s["id"]}-{f}'/'complete.json').exists():return False
+    from .availability import assay_availability,matched_assay_mask,requested_assay_frames
+    available,pending,skips=assay_availability(plan)
+    if pending:return False
+    sources=[s for s in plan['sources'] if available[s['id']]]
     with np.load(resolve_path(c['population'])) as p:
-        anchor=np.array(original['anchors'])[p['rows'][:,1]];keep=np.isin(anchor,c['frames'])
+        anchor=np.array(original['anchors'])[p['rows'][:,1]]
+        keep=matched_assay_mask(p['source'],anchor,requested_assay_frames(plan))
+        before=int(keep.sum());keep &= matched_assay_mask(p['source'],anchor,available)
         pop={k:p[k][keep] for k in ('source','rows','condition','role')}
         pop['original_geometry']=p['descriptor'][keep];frames=anchor[keep]
+    observed_sources=set(pop['source'].tolist())
+    sources=[s for s in sources if s['id'] in observed_sources]
     n=len(frames);pop.update(graph=np.empty(n,np.int64),event=np.empty(n,np.int64),delay=np.empty(n,np.float32),temperature=np.empty(n,np.float32))
+    if not n:raise ValueError('No assay windows remain after timeout exclusions')
     descriptors={domain:np.empty((n,237),np.float32) for domain in ('hot','cold')}
-    for s in plan['sources']:
+    for s in sources:
         sid=s['id'];ix=np.flatnonzero(pop['source']==sid);ci=pop['rows'][ix,2]
         onset=np.load(resolve_path(original['config']['cache'])/str(sid)/'onset.npy')[ci]
         pop['event'][ix]=event_bins(onset,frames[ix]);pop['delay'][ix]=(onset-frames[ix])*.75;pop['temperature'][ix]=s['temperature_K']
         for domain in descriptors:
             clouds=[]
-            for f in c['frames']:
+            source_frames=available[sid]
+            for f in source_frames:
                 with np.load(cache/'cells'/f'{sid}-{f}'/'clouds.npz') as a:
                     rows=np.searchsorted(a['query_atom_ids'][:,0],s['center_atom_ids'])
                     np.testing.assert_array_equal(a['query_atom_ids'][rows,0],s['center_atom_ids'])
@@ -41,7 +48,7 @@ def prepare(plan):
             folder=cache/'assay'/domain/str(sid);folder.mkdir(parents=True,exist_ok=True)
             for name,values in arrays.items():np.save(folder/f'{name}.npy',values)
             save_json(folder/'complete.json',dict(identity=plan['identity'],hashes={name:file_hash(folder/f'{name}.npy') for name in arrays}))
-            graph=np.array([c['frames'].index(int(f))*16+int(i) for f,i in zip(frames[ix],ci,strict=True)])
+            graph=np.array([source_frames.index(int(f))*len(s['center_atom_ids'])+int(i) for f,i in zip(frames[ix],ci,strict=True)],dtype=np.int64)
             pop['graph'][ix]=graph
             unique=np.unique(graph);cropped={int(g):target_cloud(clouds[g],c['scale']) for g in unique}
             d={g:np.r_[geometry_packet(x),persistence_image(x),order_targets(x*REFERENCE_RADIUS/c['scale'],c['scale'])] for g,x in cropped.items()}
@@ -49,9 +56,10 @@ def prepare(plan):
     for domain,values in descriptors.items():
         if not np.isfinite(values).all():raise FloatingPointError(f'Nonfinite {domain} descriptors')
         np.save(root/f'{domain}-descriptors.npy',values)
-        save_json(root/f'{domain}-plan.json',dict(identity=plan['identity'],scale=c['scale'],sources=plan['sources'],config=dict(cache=str(cache/'assay'/domain))))
+        save_json(root/f'{domain}-plan.json',dict(identity=plan['identity'],scale=c['scale'],sources=sources,available_frames=available,skipped_cells=sorted(skips),config=dict(cache=str(cache/'assay'/domain))))
     np.savez(root/'population.npz',**pop)
     save_json(root/'ready.json',dict(identity=plan['identity'],rows=n,counts={r:int((pop['role']==r).sum()) for r in np.unique(pop['role'])},
+        timeout_excluded_windows=before-n,skipped_cells=sorted(skips),
         events={r:int(((pop['event']<5)&(pop['role']==r)).sum()) for r in np.unique(pop['role'])},
         frames=c['frames'],horizons_ps=[.75,3,6,9,12],labels='Original MD first sustained local crystalline onset; relaxation never changes labels'))
     return True
