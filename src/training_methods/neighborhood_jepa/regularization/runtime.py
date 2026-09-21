@@ -54,26 +54,52 @@ def evaluate(model,objective,data,config,baselines):
                 spectrum=np.linalg.eigvalsh(np.cov(selected,rowvar=False)).clip(0)
                 ranks[str(int(temperature))]=float(spectrum.sum()**2/max(np.square(spectrum).sum(),1e-20))
             metrics[f'{label}_{name}_rank_by_temperature']=ranks
+    for name in ('invariant','projected'):
+        values=arrays[name].astype(np.float64);std=values.std(0,ddof=1)
+        standardized=(values-values.mean(0))/np.maximum(std,1e-8)
+        spectrum=np.linalg.eigvalsh(np.cov(standardized,rowvar=False)).clip(0)
+        metrics[f'{name}_correlation_effective_rank']=float(spectrum.sum()**2/max(np.square(spectrum).sum(),1e-20))
+        metrics[f'{name}_std_quantiles']=np.quantile(std,[0,.1,.5,.9,1]).tolist()
     arrays.update(order_target=target,order_prediction=(pred*objective.order_std+objective.order_mean).cpu().numpy(),order_errors=error)
     return metrics,arrays
 
 
 def run(config,spec,deadline):
     configure_host();torch.set_num_threads(1)
+    DataType,ModelType,ObjectiveType,load,evaluate_model=Data,Model,Objective,loader,evaluate
+    if config['protocol']=='neighborhood_information_v1':
+        from src.research.context_night.encoder import Model as ModelType,Objective as ObjectiveType,evaluate as evaluate_model
+    if config['protocol']=='neighborhood_jepa_multihorizon_v1':
+        from ..multihorizon.data import Data as DataType,loader as load
+        from ..multihorizon.model import Model as ModelType
+        from ..multihorizon.objective import Objective as ObjectiveType
+        from ..multihorizon.evaluate import evaluate as evaluate_model
     root=resolve_path(config['output'])/'technical/runs'/spec['name'];root.mkdir(parents=True,exist_ok=True)
-    data=Data(config,spec);metadata=base_identity(dict(config,updates=spec['updates']),spec,data)
+    data=DataType(config,spec);metadata=base_identity(dict(config,updates=spec['updates']),spec,data)
+    execution=None
+    if 'execution_profiles' in config:
+        from .. import execution as execution_module
+        execution=execution_module.select_profile(config['execution_profiles'],torch.cuda.get_device_properties(0).total_memory/2**30)
+        metadata['files'][execution_module.__file__]=file_hash(Path(execution_module.__file__))
+    if config['protocol']=='neighborhood_jepa_multihorizon_v1':
+        metadata['future_identity']=data.future_manifest['identity']
+        metadata['files'].update({str(p):file_hash(p) for p in Path(__file__).parent.parent.joinpath('multihorizon').glob('*.py')})
     metadata.update(order_identity=data.order_manifest['identity'],
         initialization='same frozen v2 development-selected weights; new projector/order head and optimizer' if spec['initialization']=='warm' else spec['initialization'],
         export_normalization='Per-observation LayerNorm; no BatchNorm or train/eval-dependent normalization in the encoder')
+    if config['protocol']=='neighborhood_information_v1':
+        from src.research.context_night import encoder as information_module
+        metadata['files'][information_module.__file__]=file_hash(Path(information_module.__file__))
+        metadata['selection']='source-equal development Physical85 + .25 TDA144 + .25 nonlinear order8'
     metadata['files'].update({str(p):file_hash(p) for p in Path(__file__).parent.glob('*.py')})
     init_path=resolve_path(spec.get('checkpoint',config['warm_checkpoint']))
     if spec['initialization']!='scratch':metadata['initial_checkpoint_sha256']=file_hash(init_path)
     if spec['regularizer']=='epi':metadata['reservoir_manifest_sha256']=file_hash(data.extra/'reservoir.json')
     run_id=digest(metadata);manifest_path=root/'manifest.json'
-    if manifest_path.exists() and json.loads(manifest_path.read_text())!=metadata:raise ValueError('Immutable regularization run changed')
+    if manifest_path.exists() and digest(json.loads(manifest_path.read_text()))!=run_id:raise ValueError('Immutable regularization run changed')
     save_json(manifest_path,metadata)
-    torch.manual_seed(config['seed']);model=Model(config['encoder_channels'],spec,config['seed']).cuda()
-    objective=Objective(data.manifest,data.order_manifest,spec).cuda()
+    torch.manual_seed(config['seed']);model=ModelType(config['encoder_channels'],spec,config['seed']).cuda()
+    objective=ObjectiveType(data.manifest,data.order_manifest,spec).cuda()
     last=root/'last.pt';saved=torch.load(last,map_location='cuda',weights_only=False) if last.exists() else None
     if saved:
         if saved['identity']!=run_id:raise ValueError('Resume identity changed')
@@ -83,11 +109,16 @@ def run(config,spec,deadline):
     elif spec['initialization']=='continuation':
         parent=torch.load(init_path,map_location='cpu',weights_only=False)
         model.load_state_dict(parent['model']);objective.load_state_dict(parent['objective'])
+    elif spec['initialization']=='information_warm':
+        model.initialize_information(torch.load(init_path,map_location='cpu',weights_only=False))
     elif spec['initialization']=='scratch':pass  # Constructor initialization, no learned parent weights.
     else:raise ValueError(spec['initialization'])
     model.encoder.geometry_scales.copy_(torch.tensor(data.manifest['geometry_scales'],device='cuda'))
-    example=next(iter(loader(data,[data.train[:2]],config['microbatch'])))[0][0]
+    train_load=execution_module.loader if execution is not None else load
+    train_microbatch=execution['microbatch'] if execution is not None else config['microbatch']
+    example=next(iter(train_load(data,[data.train[:2]],train_microbatch)))[0][0]
     if config['compile']:compile_encoder(model.encoder,move(example,'cuda'),config['precision'])
+    if execution is not None:execution_module.prime_encoder(model.encoder,example,config['precision'])
     if not saved and spec['regularizer']=='epi' and spec['initialization']!='continuation':calibrate_epi(model,objective,data,config)
     encoder=list(model.encoder.parameters());eid={id(p) for p in encoder};heads=[p for p in model.parameters() if id(p) not in eid]
     optimizer=torch.optim.AdamW([dict(params=encoder,peak=spec['encoder_lr']),dict(params=heads,peak=spec['head_lr'])],weight_decay=1e-4)
@@ -95,6 +126,11 @@ def run(config,spec,deadline):
     if saved:
         optimizer.load_state_dict(saved['optimizer']);step,best=saved['step'],saved['best']
         torch.set_rng_state(saved['rng'].cpu());torch.cuda.set_rng_state(saved['cuda_rng'].cpu())
+    if execution is not None:
+        # Hardware may change on an exact optimizer/RNG resume. Record the chosen
+        # execution tier separately from the immutable scientific run identity.
+        save_json(root/'executions'/f'{time.time_ns()}.json',dict(profile=execution,
+            gpu=torch.cuda.get_device_name(),resume_step=step,identity=run_id))
     baselines=fixed_baselines(data);stop=False
     def request_stop(*_):
         nonlocal stop
@@ -112,15 +148,21 @@ def run(config,spec,deadline):
                      id='nj-reg-'+run_id[:16],name=spec['name'],resume='allow',dir=str(root),config=metadata)
     def validate():
         nonlocal best
-        metrics,arrays=evaluate(model,objective,data,config,baselines);metrics['step']=step
+        metrics,arrays=evaluate_model(model,objective,data,config,baselines);metrics['step']=step
         with (root/'validation.jsonl').open('a') as f:f.write(json.dumps(metrics)+'\n')
         if metrics['selection_score']<best:
             best=metrics['selection_score'];checkpoint('best.pt')
             np.savez_compressed(root/'selection_predictions.npz',**arrays);save_json(root/'metrics.json',metrics)
         if wb:wb.log({f'validation/{k}':metrics[k] for k in ('selection_score','order','future_physical','invariant_effective_rank','projected_effective_rank')},step=step)
+        if wb and 'invariant_correlation_effective_rank' in metrics:
+            wb.log({'validation/invariant_correlation_rank':metrics['invariant_correlation_effective_rank'],
+                    'validation/invariant_std_median':metrics['invariant_std_quantiles'][2]},step=step)
+        if wb and 'horizons' in metrics:
+            wb.log({f'future/{ps}ps/{name}':row[name] for ps,row in metrics['horizons'].items()
+                    for name in ('invariant_relative_to_persistence','equivariant_relative_to_persistence','physical','tda')},step=step)
     if not saved:validate();checkpoint('last.pt')
     started=time.monotonic()
-    stream=loader(data,Batches(data,config['batch_size'],config['seed'],step,spec['updates']),config['microbatch'],config['loader_workers'])
+    stream=train_load(data,Batches(data,config['batch_size'],config['seed'],step,spec['updates']),train_microbatch,config['loader_workers'])
     for packed,target in stream:
         if stop or time.time()>deadline-240:
             checkpoint('last.pt');save_json(root/'status.json',dict(state='checkpointed',step=step,reason='allocation_deadline_or_signal'))
@@ -129,7 +171,11 @@ def run(config,spec,deadline):
         model.train();objective.train();optimizer.zero_grad(set_to_none=True)
         warm=max(1,int(spec['updates']*.1));factor=min((step+1)/warm,1.) if step<warm else .01+.99*.5*(1+math.cos(math.pi*(step-warm)/(spec['updates']-warm)))
         for group in optimizer.param_groups:group['lr']=group['peak']*factor
-        loss,terms,diag=training_step(model,objective,packed,move(target,'cuda'),config['precision'],step%128==0)
+        if execution is None:
+            loss,terms,diag=training_step(model,objective,packed,move(target,'cuda'),config['precision'],step%128==0)
+        else:
+            loss,terms,diag=execution_module.training_step(model,objective,packed,move(target,'cuda'),config['precision'],step%128==0,
+                retain_chunks=execution['retain_chunks'],gpu_cache=execution['gpu_cache'])
         diag['encoder_gradient_norm']=float(torch.nn.utils.clip_grad_norm_(encoder,1.,error_if_nonfinite=True))
         diag['head_gradient_norm']=float(torch.nn.utils.clip_grad_norm_(heads,5.,error_if_nonfinite=True));optimizer.step();step+=1
         if step%16==0 or step==1:

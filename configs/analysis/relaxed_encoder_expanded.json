@@ -1,0 +1,187 @@
+{
+  "protocol": "paired_relaxed_input_target_mace_v1",
+  "output": "output/relaxed_encoder/expanded-20260921",
+  "cache": "${storage:cache}/relaxed_encoder/expanded-20260921",
+  "scratch": "${storage:scratch}/relaxed_encoder/expanded-20260921",
+  "archive": "${storage:archive}/relaxed_encoder/expanded-20260921",
+  "assay_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "population": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/population.npz",
+  "normalization_manifest": "${storage:cache}/neighborhood_jepa/native-al-32768-v2-20260920/manifest.json",
+  "order_manifest": "${storage:cache}/neighborhood_jepa/native-al-32768-order-20260920/manifest.json",
+  "old_relaxation_plan": "output/relaxed_tda/al-expanded-20260917/technical/plan.json",
+  "warm_checkpoint": "output/neighborhood_jepa/large-node53-20260920/technical/runs/E-wide64-b1024-node53/best.pt",
+  "seed": 20260920,
+  "frames": [
+    32,
+    64,
+    80,
+    128,
+    176,
+    224,
+    272,
+    320,
+    368,
+    416,
+    464,
+    512,
+    560,
+    608,
+    656
+  ],
+  "train_sources_per_temperature": null,
+  "selection_sources_per_temperature": null,
+  "scale": 9.121389139452193,
+  "potential_files": [
+    "${storage:datasets}/potentials/Lee2003_Al.library.meam",
+    "${storage:datasets}/potentials/Lee2003_Al.meam"
+  ],
+  "potential_sha256": [
+    "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+    "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+  ],
+  "lammps": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/lmp",
+  "updates": 2048,
+  "batch_size": 512,
+  "microbatch": 128,
+  "evaluate_every": 256,
+  "precision": "bf16",
+  "compile": true,
+  "encoder_channels": 64,
+  "loader_workers": 2,
+  "wandb": true,
+  "wandb_group": "relaxed-expanded-rank-20260921",
+  "metric_family": "neighborhood_jepa_regularization",
+  "execution_profiles": [
+    {
+      "min_vram_GiB": 80,
+      "microbatch": 128,
+      "retain_chunks": 12,
+      "gpu_cache": true
+    }
+  ],
+  "probe": {
+    "seed": 20260920,
+    "device": "cpu",
+    "threads": 2,
+    "updates": 1024,
+    "evaluate_every": 128,
+    "batch_size": 512,
+    "lr": 0.0005,
+    "width": 128
+  },
+  "training_frames": [
+    64,
+    224,
+    368,
+    512
+  ],
+  "paired_parent_plan": "output/relaxed_encoder/pilot-20260920/technical/plan.json",
+  "normalize_target_domain": true,
+  "reference_run": "hot-control",
+  "retry_relaxation": {
+    "max_iterations": 50000,
+    "max_evaluations": 250000,
+    "frame_timeout_seconds": 7200
+  },
+  "runs": [
+    {
+      "name": "hot-control",
+      "arm": "instantaneous",
+      "settings": {
+        "regularizer": "sigreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "global",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-control",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "sigreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "global",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-sig-temp1",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "sigreg",
+        "regularizer_weight": 1.0,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-sig-temp3",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "sigreg",
+        "regularizer_weight": 3.0,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-vic-temp001",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "vicreg",
+        "regularizer_weight": 0.01,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-vic-temp01",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "vicreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "cold-vic-global01",
+      "arm": "relaxed_to_relaxed",
+      "settings": {
+        "regularizer": "vicreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "global",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "hot-vic-temp01",
+      "arm": "instantaneous",
+      "settings": {
+        "regularizer": "vicreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    },
+    {
+      "name": "hot-to-cold-vic-temp01",
+      "arm": "hot_to_relaxed",
+      "settings": {
+        "regularizer": "vicreg",
+        "regularizer_weight": 0.1,
+        "regularizer_scope": "temperature",
+        "encoder_lr": 5e-05,
+        "head_lr": 0.0005
+      }
+    }
+  ]
+}

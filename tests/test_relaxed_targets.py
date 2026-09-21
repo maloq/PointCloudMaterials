@@ -10,6 +10,45 @@ from src.data.relaxed_targets.worker import AbsolutePositions, checked_receipt, 
 from src.simulation.relaxation import sha256
 
 
+def test_full_precision_restart_checks_frame_ids_box_and_checksum(tmp_path):
+    from src.simulation.relaxation import restart_positions
+    trajectory=SimpleNamespace(atom_count=2,atom_ids=np.array([1,2]),atom_types=np.ones(2),
+        timesteps=np.array([750]),box_low=np.zeros((1,3)),box_high=np.ones((1,3))*10)
+    p=tmp_path/'relaxed.dump'
+    prefix='ITEM: TIMESTEP\n750\nITEM: NUMBER OF ATOMS\n2\nITEM: BOX BOUNDS pp pp pp\n0 10\n0 10\n0 10\nITEM: ATOMS id type x y z\n'
+    p.write_text(prefix+'1 1 1.123456789012345 2 3\n2 1 4 5 6\n')
+    original_hash=sha256(p);x=restart_positions(trajectory,0,p,original_hash)
+    assert x.dtype==np.float64 and x[0,0]==1.123456789012345
+    p.write_text(p.read_text().replace('2 1 4','3 1 4'))
+    with pytest.raises(ValueError,match='checksum'):restart_positions(trajectory,0,p,original_hash)
+    with pytest.raises(AssertionError):restart_positions(trajectory,0,p,sha256(p))
+    p.write_text(prefix.replace('750','751')+'1 1 1 2 3\n2 1 4 5 6\n')
+    with pytest.raises(ValueError,match='timestep'):restart_positions(trajectory,0,p,sha256(p))
+    p.write_text(prefix.replace('id type x y z','id type xs ys zs')+'1 1 1 2 3\n2 1 4 5 6\n')
+    with pytest.raises(ValueError,match='schema'):restart_positions(trajectory,0,p,sha256(p))
+
+
+def test_restart_uses_saved_positions_and_still_requires_force_convergence(tmp_path,monkeypatch):
+    from src.simulation import relaxation
+    trajectory=SimpleNamespace(root=tmp_path,atom_count=2,atom_ids=np.array([1,2]),atom_types=np.ones(2),
+        timesteps=np.array([750]),box_low=np.zeros((1,3)),box_high=np.ones((1,3))*10,positions=np.zeros((1,2,3)))
+    (tmp_path/'manifest.json').write_text('{}');p=tmp_path/'failed.dump'
+    p.write_text('ITEM: TIMESTEP\n750\nITEM: NUMBER OF ATOMS\n2\nITEM: BOX BOUNDS pp pp pp\n0 10\n0 10\n0 10\nITEM: ATOMS id type x y z\n1 1 1.123456789012345 2 3\n2 1 4 5 6\n')
+    settings=dict(minimizer='fire',timestep_ps=.001,mass=26.98,pair_commands=['pair_style zero 5.0'],force_tolerance=.01,
+        max_iterations=50000,max_evaluations=250000,lammps_command=['lmp'],frame_timeout_seconds=7200,potential_files=[],restart_dump=str(p),restart_sha256=sha256(p))
+    final_force=[.005]
+    def simulate(command,cwd,**kwargs):
+        positions=np.loadtxt(cwd/'input.data',skiprows=11)
+        assert positions[0,2]==1.123456789012345
+        assert 'minimize 0.0 0.01 50000 250000' in (cwd/'in.lammps').read_text()
+        (cwd/'log.lammps').write_text(f'RELAXED_FORCE {final_force[0]}\nRELAXED_ENERGY -6.0\nRELAXATION_COMPLETE\n')
+    monkeypatch.setattr(relaxation.subprocess,'run',simulate)
+    result=relaxation.relax_frame(trajectory,0,tmp_path/'success',settings)
+    assert result['settings']['restart_sha256']==sha256(p)
+    final_force[0]=.02
+    with pytest.raises(RuntimeError,match='Unconverged'):relaxation.relax_frame(trajectory,0,tmp_path/'failure',settings)
+
+
 def test_physical_sampling_does_not_append_event_endpoint():
     steps = np.array([0, 1, 10, 100, 1000, 2000, 2700])
     assert spaced_frames(steps, 3, 0, 72, 3) == [0, 4, 5]

@@ -82,6 +82,33 @@ def fixed_baselines(data):
     return result
 
 
+def selection_phases(data, config):
+    """Resolve immutable development labels once per dataset instance."""
+    if hasattr(data, '_selection_phases'):
+        return data._selection_phases
+    phase = []
+    assay = json.loads(resolve_path(config['crystallization_plan']).read_text())
+    cache = resolve_path(assay['config']['cache'])
+    source_lookup = {s['lineage']:s for s in assay['sources']}
+    source_arrays, query_arrays = {}, {}
+    for index in data.selection:
+        record,row = data.rows[index]
+        source = source_lookup[record['lineage']]['id']
+        if source not in source_arrays:
+            folder = cache/str(source)
+            source_arrays[source] = (np.load(folder/'atom_ids.npy'), np.load(folder/'labels.npy',mmap_mode='r'))
+        atom_ids, labels = source_arrays[source]
+        if record['id'] not in query_arrays:
+            query_arrays[record['id']] = np.load(data.parent/'shards'/record['id']/'query_atom_ids.npy',mmap_mode='r')
+        query_id = query_arrays[record['id']][row,0]
+        center = np.flatnonzero(atom_ids==query_id)
+        if len(center)!=1:
+            raise ValueError(f'Development phase label does not match tracked center: source={source}, shard={record["id"]}, row={row}, atom={query_id}')
+        phase.append(int(labels[center[0],record['frame']]))
+    data._selection_phases = np.array(phase)
+    return data._selection_phases
+
+
 @torch.no_grad()
 def evaluate(model,objective,data,config,baselines):
     model.eval()
@@ -89,25 +116,12 @@ def evaluate(model,objective,data,config,baselines):
     ids = data.selection
     batches = [ids[i:i+16] for i in range(0,len(ids),16)]
     records = []
-    phase = []
-    assay = json.loads(resolve_path(config['crystallization_plan']).read_text())
-    source_lookup = {s['lineage']:s for s in assay['sources']}
-    for index in ids:
-        record,row = data.rows[index]
-        folder = resolve_path(assay['config']['cache'])/str(source_lookup[record['lineage']]['id'])
-        atom_ids = np.load(folder/'atom_ids.npy')
-        labels = np.load(folder/'labels.npy',mmap_mode='r')
-        query_id = np.load(data.parent/'shards'/record['id']/'query_atom_ids.npy',mmap_mode='r')[row,0]
-        center = np.flatnonzero(atom_ids==query_id)
-        if len(center)!=1: raise ValueError('Development phase label does not match tracked center')
-        phase.append(int(labels[center[0],record['frame']]))
-    outputs = {k:[] for k in ('invariant','projected','physical_target','physical_prediction','future_prediction','index','temperature_K','query_atom_ids','frame','geometry_by_degree','eq_block_rms','target_eq_block_rms','baseline_predictions')}
+    phase = selection_phases(data, config)
+    outputs = {k:[] for k in ('invariant','equivariant','projected','physical_target','physical_prediction','future_prediction','index','temperature_K','query_atom_ids','frame','geometry_by_degree','eq_block_rms','target_eq_block_rms','baseline_predictions')}
     names = ['physical','tda','geometry','future_physical','physical_persistence','condition_mean','geometry_ridge','mean_reversion']
-    for packed,target in loader(data,batches,config['microbatch']):
+    for packed,target in loader(data,batches,config['microbatch'],view_slots=[data.plan.slot(1,0)]):
         target = move(target,'cuda')
-        encoded = encode(model,packed,config['precision'])
-        z = encoded.reshape(len(target['index']),len(data.plan.views),LAYOUT.packed_dim)
-        current = z[:,data.plan.slot(1,0)]
+        current = encode(model,packed,config['precision'])
         group = target['group']
         p = objective.physical_errors(model,current[:,:128],target['physical'][:,0],group)
         t = objective.tda_errors(model,current[:,:128],target['tda'][:,0],group)
@@ -125,7 +139,7 @@ def evaluate(model,objective,data,config,baselines):
         reference = torch.tensor(np.array(reference),device='cuda',dtype=torch.float32)
         records.append(torch.stack((p,t,geom,error(fpred),error(normalized[:,0]),
                                     error(reference[:,0]),error(reference[:,1]),error(reference[:,2])),-1).cpu().numpy())
-        for name,value in dict(invariant=current[:,:128],projected=model.projector(current[:,:128]),
+        for name,value in dict(invariant=current[:,:128],equivariant=current[:,128:],projected=model.projector(current[:,:128]),
                 physical_target=normalized,physical_prediction=model.physical(current[:,:128],group),future_prediction=fpred,
                 geometry_by_degree=scaled_error(current[:,128:],target['moments'][:,data.plan.slot(1,0)],model.encoder.geometry_scales),
                 eq_block_rms=torch.stack([b.square().mean(-1).sqrt() for b in blocks(current[:,128:])],1),

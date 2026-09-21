@@ -44,6 +44,20 @@ def test_vicreg_formula_and_collapsed_penalty():
     assert collapsed>total and abs(float(collapsed)-24.75)<1e-5
 
 
+def test_temperature_vicreg_does_not_count_between_temperature_variance():
+    spec=next(s for s in variants({'seed':1,'updates':8}) if s['name']=='vic-direct-raw-order')
+    spec.update(regularizer_scope='temperature')
+    _,plan,manifest,target,z=fixture(n=8);target['order']=torch.randn(8,2,8)
+    target['temperature_K']=torch.tensor([400.,400.,400.,400.,500.,500.,500.,500.])
+    model=Model(16,spec,1);objective=Objective(manifest,dict(mean=[0.]*8,std=[1.]*8),spec)
+    with torch.no_grad():
+        current=z.reshape(8,len(plan.views),-1)[:,plan.slot(1,0),:128]
+        current[:4]=0;current[4:]=100
+    loss,terms=objective(model,z,target)
+    torch.testing.assert_close(terms['regularizer'],torch.tensor(spec['regularizer_weight']*24.75))
+    loss.backward();assert torch.isfinite(z.grad).all()
+
+
 def test_order_rotation_permutation_and_fcc():
     # Include surrounding FCC cells for the neighbors' own 12-bond environments.
     grid = np.array([[i,j,k] for i in range(-3,4) for j in range(-3,4) for k in range(-3,4)

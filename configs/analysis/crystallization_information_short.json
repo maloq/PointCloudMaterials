@@ -1,0 +1,22 @@
+{
+  "protocol": "frozen_crystallization_information_short_v1",
+  "output": "output/crystallization_information/short-horizon-20260920",
+  "plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "population": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/population.npz",
+  "encoders": {
+    "mace-sigreg-direct": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/sig-direct-raw-order",
+    "mace-epi-direct": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/epi-direct-order",
+    "mace-vicreg-direct": "output/neighborhood_jepa/regularization-20260920/technical/crystallization/vic-direct-raw-order",
+    "old-vicreg-mace": "output/neighborhood_jepa/v2-native-al-20260920/technical/crystallization/vicreg-mace-local",
+    "old-vicreg-gatr": "output/neighborhood_jepa/v2-native-al-20260920/technical/crystallization/vicreg-gatr-local"
+  },
+  "seed": 20260920,
+  "device": "cpu",
+  "threads": 2,
+  "lanes": 4,
+  "updates": 1024,
+  "evaluate_every": 128,
+  "batch_size": 512,
+  "lr": 0.0005,
+  "width": 128
+}

@@ -16,6 +16,9 @@ from .metrics import dense_brier,path_scores,summarize
 
 
 def make_model(spec):
+    if 'information_context' in spec:
+        from src.research.context_night.context import ContextForecaster
+        return ContextForecaster(spec)
     if spec.get('protocol')=='path_refinement_v2':
         from .refined_model import RefinedForecaster
         return RefinedForecaster(spec)
@@ -92,6 +95,7 @@ def fit(plan,spec,data,deadline):
     data.corpus.splits['train']=list(data.full_training_indices)
     summary=configure_training(data.corpus,spec);save_json(root/'training-population.json',summary)
     torch.manual_seed(config['seed']);model=make_model(dict(spec)).to(data.device);initialize(model,data)
+    if 'information_context' in spec:model.initialize_information(data)
     ema=copy.deepcopy(model) if spec.get('ema_decay',0)>0 else None
     optimizer=torch.optim.AdamW(model.parameters(),lr=spec['head_lr'],weight_decay=spec['weight_decay'])
     updates=summary['updates'];per_epoch=summary['updates_per_epoch'];step=0;best=float('inf');stale=0;early_stopped=False
@@ -165,6 +169,9 @@ def fit(plan,spec,data,deadline):
     np.savez_compressed(root/'predictions.npz',test_indices=test,calibration_indices=cal,
         **{f'test_{k}':v for k,v in prediction.items()},**{f'calibration_{k}':v for k,v in calibration.items()})
     metrics=summarize(data.corpus,test,cal,prediction,calibration)
+    if 'information_context' in spec:
+        from src.research.context_night.metrics import short_scores
+        metrics['short_horizon']=short_scores(data,test,cal,prediction,calibration)
     metrics['training']=dict(summary,selected_step=selected['step'],best_selection_brier=best)
     metrics['training'].update(updates=step,complete_epochs=step//per_epoch,partial_epoch_updates=step%per_epoch,
         samples=(step//per_epoch)*summary['eligible_windows'],early_stopped=early_stopped)
@@ -173,6 +180,8 @@ def fit(plan,spec,data,deadline):
     flat.update({key:metrics[key] for key in ('fine_timing','path','test_event_nll','dense_integrated_brier',
         'restricted_mean_time_mae_ps','physical_persistence_standardized_mse','embedding_persistence_standardized_mse','training')})
     family='crystallization_paths_refinement' if spec.get('protocol')=='path_refinement_v2' else 'crystallization_paths'
+    if 'information_context' in spec:
+        flat['short_horizon']=metrics['short_horizon'];family='context_night'
     write_metric_table(flat,resolve_path(config['output']),family=family,name=spec['name'])
     save_json(root/'status.json',dict(state='complete',step=step,selected_step=selected['step'],
         best_selection_brier=best,best_selection_physical_mse=selected['selection_physical_mse'],early_stopped=early_stopped,

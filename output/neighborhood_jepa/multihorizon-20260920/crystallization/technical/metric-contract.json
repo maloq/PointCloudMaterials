@@ -1,0 +1,22 @@
+{
+  "family": "neighborhood_crystallization_v2",
+  "exported_at": "2026-09-20T22:18:05.833761+00:00",
+  "files": {
+    "src/training_methods/neighborhood_jepa/v2/queue.py": "90e64850876dfbfbbecf4d059070015f66f108a2c702a0ff8b55ffc5e1999fc7",
+    "src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+    "src/training_methods/neighborhood_jepa/v2/runtime.py": "e14a8c1aa3bcfbfaa751634ba7b984e1b692ec86551064f657f8e017785cfff4",
+    "src/training_methods/neighborhood_jepa/v2/contracts.py": "46806805ae0dbda48eb8896489a2beabb5f9bdf54e60090bd37519fcb7083082",
+    "src/training_methods/neighborhood_jepa/v2/geometry.py": "0f07f27030e82d9c78544f8075190607cb59d3aa5633e3712ac2110602aa2381",
+    "src/training_methods/neighborhood_jepa/v2/probe.py": "7f36b0c86e0537bbc557b0cf36fb200fc45ddcb0c1d4faf8b2078f8f381ad489",
+    "src/training_methods/neighborhood_jepa/v2/audit.py": "0852a09710d4e98bdda03612a6dfb86d8870a981c28eea85c27455abfd47318b",
+    "src/training_methods/neighborhood_jepa/v2/data.py": "be769b7de034a53939e6c9d3591fa799114e0bff02a22b1a2aca803d5af5f7c9",
+    "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
+    "src/training_methods/neighborhood_jepa/v2/extract.py": "dc6f423c95a3cbe98feb23d94b05d27987a43335ad4c24b0cb54d0c70206bd25",
+    "src/training_methods/neighborhood_jepa/v2/objective.py": "d66e3ff81094518bc729c64a149a3a2664d2a9fb2a6d13de1ad09cbf3e11550f",
+    "docs/metrics/neighborhood_crystallization_v2.md": "f2945387608be4998a70aa0dc44d1e23110c2a4f41a67a1935b006b648037b2d",
+    "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+    "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+    "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319"
+  }
+}

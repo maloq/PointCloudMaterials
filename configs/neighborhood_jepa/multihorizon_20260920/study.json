@@ -1,0 +1,51 @@
+{
+  "protocol": "neighborhood_jepa_multihorizon_v1",
+  "output": "output/neighborhood_jepa/multihorizon-20260920",
+  "cache": "${storage:cache}/neighborhood_jepa/native-al-32768-v2-20260920",
+  "parent_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-graphs-20260920",
+  "crystallization_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "seed": 20260920,
+  "batch_size": 512,
+  "microbatch": 128,
+  "evaluate_every": 128,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 2,
+  "wandb": true,
+  "wandb_group": "neighborhood-jepa-multihorizon-20260920",
+  "probe_updates": 1024,
+  "probe_batch_size": 512,
+  "probe_lr": 0.0005,
+  "probe_selection_every": 128,
+  "probe_seed": 20260920,
+  "encoder_channels": 64,
+  "metric_family": "neighborhood_jepa_multihorizon",
+  "order_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-order-20260920",
+  "updates": 768,
+  "warm_checkpoint": "output/neighborhood_jepa/large-node53-20260920/technical/runs/E-wide64-b1024-node53/best.pt",
+  "long_updates": 0,
+  "future_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-horizons369-20260920",
+  "horizons_ps": [
+    3.0,
+    6.0,
+    9.0
+  ],
+  "prepare_workers": 4,
+  "include_baselines": false,
+  "existing_allocations": [],
+  "extra_gpu_jobs": 3,
+  "execution_profiles": [
+    {
+      "min_vram_GiB": 80,
+      "microbatch": 128,
+      "retain_chunks": 16,
+      "gpu_cache": true
+    },
+    {
+      "min_vram_GiB": 40,
+      "microbatch": 128,
+      "retain_chunks": 6,
+      "gpu_cache": true
+    }
+  ]
+}

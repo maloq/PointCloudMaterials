@@ -270,3 +270,15 @@ The crystallization structural-path companion uses `crystallization_transfer/mac
 - `neighborhood_jepa/large_20260920/`: expanded native-Al preparation and paired-GPU three-hour width64 MACE runs on node53/node59, followed by frozen crystallization probes.
 
 - `neighborhood_jepa/regularization_20260920/study.json`: MACE order-preserving regularizer/projector comparison and frozen crystallization assays.
+
+- `neighborhood_jepa/multihorizon_20260920/study.json`: three matched MACE JEPA multi-horizon embedding fits and frozen crystallization probes.
+
+Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.yaml), [checkpoint export](analysis/epi_direct_static.json), and [protocol](../experiments/neighborhood_jepa_regularization_20260920/STATIC_AL.md).
+
+- `analysis/crystallization_information_short.json`: source-held-out frozen-embedding information diagnostics at0.75–12ps.
+
+- `analysis/relaxed_encoder_pilot.json`: matched MACE relaxed-input/target pilot and full-cell tolerance benchmark.
+
+- `context_night/night_20260921.json`: one-seed MACE continuations, observed-context trajectory screens, development promotions and frozen-encoder transfers.
+
+- `analysis/relaxed_encoder_expanded.json`: expanded paired Al relaxation dataset and nine-run MACE rank-regularization study.

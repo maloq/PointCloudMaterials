@@ -31,3 +31,5 @@ Refresh the registry with `python scripts/experiment_registry.py build`.
 - Neighborhood JEPA v2: `neighborhood_jepa/v2-native-al-20260920/`; live frozen-probe report `CRYSTALLIZATION.md`.
 
 - `neighborhood_jepa/regularization-20260920/`: one-seed MACE order/regularizer comparisons, validation-selected continuations and matched frozen crystallization readouts.
+
+- `neighborhood_jepa/multihorizon-20260920/`: 3/6/9 ps JEPA embedding prediction with physical/TDA anchors.

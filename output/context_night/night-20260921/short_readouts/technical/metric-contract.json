@@ -1,0 +1,17 @@
+{
+  "family": "crystallization_information",
+  "exported_at": "2026-09-21T02:38:43.804173+00:00",
+  "files": {
+    "docs/metrics/crystallization_information.md": "f1b8c383f9564f68376a44c3754ce32f461418285ca3b5fb77a98aa54e6a9f17",
+    "src/research/crystallization_information/__main__.py": "0e59b9af3332612d3984098fab087e310b71ae6c02145bba65c9c20fe6bb744f",
+    "src/research/crystallization_information/data.py": "5984bbbfceb774b6a354028518558023f6a3e9380dc2e5645e3f9c2fcb6f53d3",
+    "src/research/crystallization_information/report.py": "91853b7263b382f5b3d02f5446bb7beae73f5acad06e410d5e775e6a1adbbf6c",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+    "src/research/crystallization_information/__init__.py": "3e52922331f1505d1e0c4f6b584645f0ff3c4f98e111dff4d3958508f40ef8f4",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+    "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+    "src/research/local_predictability/data.py": "b414ac8f681d43c4996658302c392761873e07df6241059b149ad8c1582997d2"
+  }
+}

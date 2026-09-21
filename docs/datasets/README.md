@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-20T18:31:23.169342+00:00
+Observed: 2026-09-21T09:05:46.021728+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -97,6 +97,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Expanded native Al JEPA 32,768 anchors: graphs](cards/neighborhood-jepa-native-al-32768-graphs-20260920-6cd4ae6d.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Native Al 32768 order anchors and frozen random MACE reservoir](cards/neighborhood-jepa-native-al-32768-order-20260920-81a8ce82.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Expanded native Al JEPA 32,768 anchors: v2](cards/neighborhood-jepa-native-al-32768-v2-20260920-229e21af.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Native Al tracked future-center graphs at 3, 6, 9 ps](cards/neighborhood-jepa-native-al-horizons369-20260920-a9e70b5d.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Tracked six-neighbor space-time JEPA: 65,536 mixed-material training anchors](cards/neighborhood-jepa-tracked-six-65536-20260920-77d70ca1.md) | Al, Mg, Ta, Ti | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Neighborhood JEPA v2 native Al, fixed 0.75 ps lag and smooth anchored moments](cards/neighborhood-jepa-v2-native-al-20260920-7a8cb50b.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [nested shooting prepare logs](cards/nested_shooting_prepare_logs-19b5e996.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
@@ -109,6 +110,10 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [potential-ti-kavousi2019](cards/potential-ti-kavousi2019-3547fe9c.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
 | [potentials](cards/potentials-1f2cb720.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
 | [Al · predictive-memory partial-observation cache](cards/predictive-memory-al-r17-20260917-91f24edf.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Paired observed/relaxed MACE pilot relaxed_cells](cards/relaxed-encoder-cells-20260920-d76dbdc7.md) | Al | research | yes | 230 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Expanded paired observed/relaxed Al training_cache](cards/relaxed-encoder-expanded-20260921-955f1e16.md) | Al | research | no | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Expanded paired observed/relaxed Al relaxed_cells](cards/relaxed-encoder-expanded-cells-20260921-2ccf75a7.md) | Al | research | no | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Paired observed/relaxed MACE pilot training_cache](cards/relaxed-encoder-pilot-20260920-2637d1ce.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Repository dataset preprocessing caches](cards/repository-derived-data-caches-95186383.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
 | [research-records-20260913](cards/research-records-20260913-54a7309f.md) | Unknown | archive | yes | 0 | Unknown / not applicable |
 | [restart boundary audit 20260905](cards/restart_boundary_audit_20260905-d2886897.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
@@ -130,4 +135,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-10 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+11 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

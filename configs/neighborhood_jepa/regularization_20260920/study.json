@@ -23,5 +23,31 @@
   "order_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-order-20260920",
   "updates": 768,
   "warm_checkpoint": "output/neighborhood_jepa/large-node53-20260920/technical/runs/E-wide64-b1024-node53/best.pt",
-  "long_updates": 1536
+  "long_updates": 1536,
+  "existing_allocations": [
+    {
+      "job": 1000616,
+      "cpus": 20
+    },
+    {
+      "job": 1000818,
+      "cpus": 16
+    }
+  ],
+  "extra_gpu_jobs": 4,
+  "include_baselines": true,
+  "execution_profiles": [
+    {
+      "min_vram_GiB": 80,
+      "microbatch": 128,
+      "retain_chunks": 16,
+      "gpu_cache": true
+    },
+    {
+      "min_vram_GiB": 40,
+      "microbatch": 128,
+      "retain_chunks": 6,
+      "gpu_cache": true
+    }
+  ]
 }

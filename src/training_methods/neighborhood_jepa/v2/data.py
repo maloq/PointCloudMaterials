@@ -15,6 +15,14 @@ from .contracts import RequiredViewPlan, LAYOUT
 from .geometry import moments, blocks
 
 
+def fetch_by_shard(data, indices):
+    """Group disk reads while preserving every sampled position, including repeats."""
+    samples = [None] * len(indices)
+    for position in sorted(range(len(indices)), key=lambda p: data.rows[indices[p]][0]['id']):
+        samples[position] = data[indices[position]]
+    return samples
+
+
 def prepare(config):
     root = resolve_path(config['cache'])
     root.mkdir(parents=True,exist_ok=True)
@@ -127,6 +135,9 @@ class Data(Dataset):
     def __len__(self):
         return len(self.rows)
 
+    def __getitems__(self, indices):
+        return fetch_by_shard(self, indices)
+
     def __getitem__(self,index):
         record,row = self.rows[index]
         sid = record['id']
@@ -155,8 +166,9 @@ class Data(Dataset):
             temperature_K=record['temperature_K'],group=0)
 
 
-def pack(samples,microbatch):
-    views = [v for s in samples for v in s['views']]
+def pack(samples,microbatch,view_slots=None):
+    views = [v for s in samples for v in
+             (s['views'] if view_slots is None else [s['views'][i] for i in view_slots])]
     batches = [collate(views[i:i+microbatch],'mace') for i in range(0,len(views),microbatch)]
     target = {name:torch.from_numpy(np.stack([s[name] for s in samples]))
               for name in ('moments','position','times','physical','tda','query_atom_ids')}
@@ -179,10 +191,10 @@ class Batches:
         return self.stop-self.start
 
 
-def loader(data,sampler,microbatch,workers=0):
+def loader(data,sampler,microbatch,workers=0,*,view_slots=None):
     if workers:
         torch.multiprocessing.set_sharing_strategy('file_system')
-    return DataLoader(data,batch_sampler=sampler,collate_fn=partial(pack,microbatch=microbatch),
+    return DataLoader(data,batch_sampler=sampler,collate_fn=partial(pack,microbatch=microbatch,view_slots=view_slots),
         num_workers=workers,pin_memory=True,persistent_workers=workers>0,
         generator=torch.Generator().manual_seed(731),
         **({'prefetch_factor':2,'multiprocessing_context':'spawn'} if workers else {}))

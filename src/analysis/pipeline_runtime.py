@@ -376,7 +376,7 @@ def _collect_main_inference_cache(
             raise RuntimeError(
                 "Internal error: model must be loaded before gathering inference batches."
             )
-        if str(cfg.model_type).strip().lower() in ('structural_gatr_encoder', 'structural_mace_encoder'):
+        if str(cfg.model_type).strip().lower() in ('structural_gatr_encoder', 'structural_mace_encoder', 'neighborhood_jepa_encoder'):
             from .structural_adapter import collect_structural_inference
             cache = collect_structural_inference(model, dataloader, cfg, out_dir,
                 max_batches=max_batches_latent, max_samples=max_samples_total)
@@ -513,6 +513,9 @@ def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     if model_type == 'structural_gatr_encoder':
         from .structural_adapter import StructuralGATrAnalysis
         return StructuralGATrAnalysis
+    if model_type == 'neighborhood_jepa_encoder':
+        from .neighborhood_adapter import NeighborhoodAnalysis
+        return NeighborhoodAnalysis
     if model_type == 'structural_mace_encoder':
         from .structural_adapter import StructuralMACEAnalysis
         return StructuralMACEAnalysis

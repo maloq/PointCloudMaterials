@@ -107,6 +107,26 @@
         ]
       },
       "provenance": {
+        "potentials": {
+          "Al": {
+            "files": [
+              "Al1.eam.fs"
+            ],
+            "sha256": [
+              "768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3"
+            ],
+            "provenance": "Mendelev, Kramer, Becker, and Asta, Philosophical Magazine 88, 1723-1750 (2008), DOI 10.1080/14786430802206482; NIST Al1.eam.fs."
+          },
+          "Mg": {
+            "files": [
+              "Mg1.eam.fs"
+            ],
+            "sha256": [
+              "0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2"
+            ],
+            "provenance": "Wilson and Mendelev, Journal of Chemical Physics 144, 144707 (2016), DOI 10.1063/1.4946032; NIST Mg1.eam.fs."
+          }
+        },
         "zr_removal": {
           "removed_at_utc": "2026-09-06T22:17:24.026705+00:00",
           "reason": "User rejected reconstructed-potential Zr simulations; replace with author-supplied Kavousi 2019 pure Ti simulations.",
@@ -206,28 +226,8 @@
             "branches/Zr/310ps/trajectory_binary_float16/timesteps.npy"
           ]
         },
-        "potentials": {
-          "Al": {
-            "files": [
-              "Al1.eam.fs"
-            ],
-            "sha256": [
-              "768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3"
-            ],
-            "provenance": "Mendelev, Kramer, Becker, and Asta, Philosophical Magazine 88, 1723-1750 (2008), DOI 10.1080/14786430802206482; NIST Al1.eam.fs."
-          },
-          "Mg": {
-            "files": [
-              "Mg1.eam.fs"
-            ],
-            "sha256": [
-              "0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2"
-            ],
-            "provenance": "Wilson and Mendelev, Journal of Chemical Physics 144, 144707 (2016), DOI 10.1063/1.4946032; NIST Mg1.eam.fs."
-          }
-        },
-        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304.",
-        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts."
+        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
+        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304."
       }
     }
   ]

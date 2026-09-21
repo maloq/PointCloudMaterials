@@ -21,10 +21,12 @@ def tasks(config,code):
            'sig-linear-order','vic-linear-order','epi-linear-order','none-mlp-order']
     ordered=sorted(variants(config),key=lambda s:first.index(s['name']) if s['name'] in first else len(first))
     for spec in ordered:result.append(dict(type='fit',name=spec['name'],spec=spec))
-    for regularizer in ('sigreg','vicreg','epi'):result.append(dict(type='long',name='long-'+regularizer,regularizer=regularizer))
+    continuations=('sigreg','vicreg','epi') if config['long_updates']>0 else ()
+    for regularizer in continuations:result.append(dict(type='long',name='long-'+regularizer,regularizer=regularizer))
     for spec in variants(config):result.append(dict(type='probe',name=spec['name'],requires=spec['name']))
-    for regularizer in ('sigreg','vicreg','epi'):result.append(dict(type='probe',name='long-'+regularizer,requires='long-'+regularizer))
-    for name in ('geometry-only-baseline','geometry-baseline','condition-baseline'):result.append(dict(type='baseline',name=name))
+    for regularizer in continuations:result.append(dict(type='probe',name='long-'+regularizer,requires='long-'+regularizer))
+    if config['include_baselines']:
+        for name in ('geometry-only-baseline','geometry-baseline','condition-baseline'):result.append(dict(type='baseline',name=name))
     return result
 
 
@@ -85,20 +87,29 @@ def execute(config_path,index):
         if not run(config,item,deadline):sys.exit(75)
 
 
-def worker(config_path,lane):
+def worker(config_path,lane,release_path=None):
     config=json.loads(Path(config_path).read_text());root=resolve_path(config['output']).resolve()/'technical'
     all_tasks=json.loads((root/'tasks.json').read_text());deadline=deadline_for_job();state=root/f'lane-{lane}.json'
+    release=None
+    if release_path:
+        from .release import start_worker, check_gate
+        release=start_worker(Path(release_path),root,lane,deadline)
+        if release is None:return
     while time.time()<deadline-300:
         unfinished=False;claimed=False
         for index,task in enumerate(all_tasks):
+            if release is not None:
+                if task['type']+'/'+task['name'] not in release['tasks']:continue
             dest=directory(root,task);dest.mkdir(parents=True,exist_ok=True);status=dest/'status.json'
             if status.exists() and json.loads(status.read_text())['state'] in ('complete','failed','blocked'):continue
+            if release is not None:check_gate(Path(release_path))
             failed=failed_dependencies(task,all_tasks,root)
             if failed:
                 save_json(status,dict(state='blocked',failed_dependencies=failed));continue
             unfinished=True
             if not ready(config,task,all_tasks,root):continue
-            with (dest/'worker.lock').open('a') as lock:
+            lock_name='worker.lock' if release is None else 'worker-'+release['id']+'.lock'
+            with (dest/lock_name).open('a') as lock:
                 try:fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
                 except BlockingIOError:continue
                 if status.exists() and json.loads(status.read_text())['state'] in ('complete','failed','blocked'):continue
@@ -133,7 +144,10 @@ def submit(config_path):
     if (root/'launches.json').exists():raise FileExistsError('Campaign already submitted')
     # Complete the shared population once before concurrent read-only probes.
     from ..v2.probe import prepare_population
-    from .data import Data
+    if config['protocol']=='neighborhood_jepa_multihorizon_v1':
+        from ..multihorizon.data import Data
+    else:
+        from .data import Data
     for spec in variants(config):
         if spec['regularizer']=='epi':
             Data(config,spec)
@@ -144,7 +158,8 @@ def submit(config_path):
     env=dict(os.environ,PCM_PROJECT_ROOT=str(code),TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1',OPENBLAS_NUM_THREADS='1',
         OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',PYTORCH_ALLOC_CONF='expandable_segments:True',TORCHINDUCTOR_COMPILE_THREADS='4')
     launches=[]
-    for job,lane,cpus in [(1000616,0,20),(1000818,2,16)]:
+    for lane,allocation in enumerate(config['existing_allocations']):
+        job,cpus=allocation['job'],allocation['cpus'];lane*=2
         cmd=['srun',f'--jobid={job}','--overlap','--exact','--nodes=1','--ntasks=1',f'--cpus-per-task={cpus}','--gres=gpu:2',
             sys.executable,'-u','-m',__package__+'.queue','coordinate','--config',frozen,'--lane',str(lane)]
         with (root/f'coordinator-{lane}.log').open('a') as log:
@@ -152,7 +167,8 @@ def submit(config_path):
         launches.append(dict(allocation=job,lane_start=lane,pid=p.pid,command=cmd))
         save_json(root/'launches.json',launches)
     from src.experiment_runner.slurm import submit_sbatch
-    for lane in range(4,8):
+    start=2*len(config['existing_allocations'])
+    for lane in range(start,start+config['extra_gpu_jobs']):
         command=[sys.executable,'-u','-m',__package__+'.queue','worker','--config',frozen,'--lane',str(lane)]
         exports='\n'.join('export '+k+'='+shlex.quote(env[k]) for k in ('PCM_PROJECT_ROOT','TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD','OPENBLAS_NUM_THREADS','OMP_NUM_THREADS','MKL_NUM_THREADS','PYTORCH_ALLOC_CONF','TORCHINDUCTOR_COMPILE_THREADS'))
         script=f'''#!/bin/bash
@@ -174,7 +190,7 @@ cd {shlex.quote(str(code))}
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser();parser.add_argument('phase',choices=['submit','coordinate','worker','execute']);parser.add_argument('--config',required=True);parser.add_argument('--lane',type=int);parser.add_argument('--index',type=int)
+    parser=argparse.ArgumentParser();parser.add_argument('phase',choices=['submit','coordinate','worker','execute']);parser.add_argument('--config',required=True);parser.add_argument('--lane',type=int);parser.add_argument('--index',type=int);parser.add_argument('--release')
     args=parser.parse_args()
     if args.phase=='submit':submit(args.config)
     elif args.phase=='execute':
@@ -188,4 +204,5 @@ if __name__=='__main__':
         except BaseException:
             traceback.print_exc();code=1
         sys.stdout.flush();sys.stderr.flush();os._exit(code)
-    else:{'coordinate':coordinate,'worker':worker}[args.phase](args.config,args.lane)
+    elif args.phase=='worker':worker(args.config,args.lane,args.release)
+    else:coordinate(args.config,args.lane)

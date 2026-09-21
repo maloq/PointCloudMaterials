@@ -8,6 +8,21 @@ native Al Lee-MEAM lineages, 480 development anchors from 15 separate lineages,
 768 updates mean 12 sampled epoch equivalents, not shuffled complete passes.
 Every regularizer receives only current-center exports, not correlated neighbors.
 
+The expanded relaxed study may set `regularizer_scope=temperature`: evaluate the
+same SIGReg or VICReg penalty separately on current anchors at each observed
+temperature, then average equally across temperatures represented in the batch.
+Every group must have at least two anchors. Between-temperature mean differences
+cannot satisfy the conditional variance term. This uses known temperature, not
+phase labels; no test inputs are used. The recipe records weights and scope.
+
+Alongside raw covariance participation rank, `invariant_correlation_effective_rank`
+and its projected analogue compute the same participation ratio after centering
+and dividing each channel by its development sample standard deviation (floor
+1e-8). `*_std_quantiles` report channel standard deviations at0/10/50/90/100%.
+Correlation rank distinguishes scale anisotropy from redundant channels but is
+not itself a selection objective or proof of predictive information. The within-
+temperature/noncrystalline rank metrics retain their original definitions.
+
 All arms retain physical85, instantaneous TDA144, fixed angular moment anchors,
 conditional present/future neighbor predictions, and fixed future physical/TDA
 prediction. Both sides of latent prediction receive gradients. VICReg here means
@@ -49,6 +64,9 @@ LayerNorm is per observation; raw-export arms replace the outermost one with
 identity, retaining internal normalization. Warm transfer strictly loads all parent
 encoder and prediction weights, resets projector/order head and optimizer.
 
+Selection caches immutable phase labels and encodes only the current center;
+training reads are grouped by shard and restored to the sampled order. These
+performance changes preserve all objectives, aggregation and evaluation cadence.
 Checkpoint selection remains source-equal `physical + .25*tda` in every arm.
 Three continuations choose the warm, order-anchored winner separately within
 SIGReg/VICReg/Epi using development `physical + .25*tda + .25*order +

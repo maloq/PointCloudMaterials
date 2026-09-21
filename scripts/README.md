@@ -46,6 +46,10 @@ and refuses to overwrite an existing report. It does not fit models. See the
 
 Current training and analysis use existing module entry points:
 
+`python -m src.research.relaxed_encoder.recovery submit --config configs/analysis/relaxed_encoder_pilot.json --name RETRY_NAME --allocation JOB_ID`
+recovers iteration-limited quenches and chains cache construction, matched encoder
+training and frozen assays; see [recovery workflow](../docs/relaxed_encoder.md).
+
 `python -m src.research.gatr_conditional_information.comparison --config configs/analysis/conditional_information_local_last.json`
 repeats the assay for a pinned pair of final native MACE/GATr checkpoints, using
 each model's frozen training implementation and common radial controls. Stages
@@ -490,3 +494,22 @@ The same path queue accepts `configs/crystallization_transfer/mace_path_refineme
 `python -m src.training_methods.neighborhood_jepa.v2.queue submit --config configs/neighborhood_jepa/v2_native_al_20260920.json` launches the native-Al A–E mechanism comparison and matched frozen crystallization probes. See [v2 execution](../docs/neighborhood_jepa_v2.md).
 
 - Neighborhood JEPA regularizer/order comparison: `python -m src.training_methods.neighborhood_jepa.regularization.queue`; [operation and preparation](../docs/neighborhood_jepa_regularization.md).
+  The `regularization.release` module gates unstarted tasks during an immutable
+  performance release; see the same operations document for allocation handoff.
+
+- Multi-horizon JEPA target views: `python -m src.training_methods.neighborhood_jepa.multihorizon.data --config CONFIG`; [protocol](../experiments/neighborhood_jepa_multihorizon_20260920/README.md).
+
+- Neighborhood JEPA memory/throughput profiling: `python -m src.training_methods.neighborhood_jepa.profile_execution --config CONFIG --microbatch SIZE --output JSON`; [packed GPU inputs and activation retention](../docs/neighborhood_jepa_vram.md). This is a separate diagnostic, never part of scientific training.
+
+Order-regularized neighborhood JEPA checkpoints use `python -m src.analysis.neighborhood_adapter --config configs/analysis/epi_direct_static.json --stage export|verify`, followed by `python -m src.analysis.pipeline configs/analysis/static_epi_direct_al.yaml`. Run under the preserved training producer; see [protocol](../experiments/neighborhood_jepa_regularization_20260920/STATIC_AL.md).
+
+`python -m src.research.crystallization_information --config configs/analysis/crystallization_information_short.json`
+measures short-horizon crystallization information missing from frozen exports using
+matched feature add-backs and physical decoders. See [workflow](../docs/crystallization_information.md).
+
+`python -m src.research.relaxed_encoder.queue STAGE --config configs/analysis/relaxed_encoder_pilot.json` runs the [paired relaxation pilot](../docs/relaxed_encoder.md); scientific protocol in [experiments](../experiments/relaxed_encoder_20260920/README.md).
+
+`python -m src.research.context_night.queue submit --config configs/context_night/night_20260921.json` launches the [overnight context/encoder queue](../docs/context_night.md).
+
+`python -m src.research.relaxed_encoder.expanded --config configs/analysis/relaxed_encoder_expanded.json --allocation JOB_ID`
+submits the expanded paired-relaxation dataset and direct-export regularization sweep; see [workflow](../docs/relaxed_encoder.md).

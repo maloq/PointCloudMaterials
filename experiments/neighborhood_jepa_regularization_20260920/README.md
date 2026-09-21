@@ -56,3 +56,5 @@ Reproduction and detached queue operation: [operations](../../docs/neighborhood_
 Definitions: [training metrics](../../docs/metrics/neighborhood_jepa_regularization.md),
 [frozen crystallization](../../docs/metrics/neighborhood_crystallization_v2.md).
 Results update under `output/neighborhood_jepa/regularization-20260920/`.
+
+[Direct Epi-inspired static Al analysis](STATIC_AL.md) applies the selected invariant embedding to the matched six-snapshot clustering protocol.

@@ -200,3 +200,7 @@ pooling, so inversion-symmetric local order need not vanish. Export remains
 physical+0.25*TDA, with bond errors and magnitudes reported separately. Training
 is from scratch for five epochs with the small curvature coefficient recalibrated
 on training batches, including the bond loss in its base-gradient comparison.
+
+Neighborhood JEPA static exports use the native invariant128 slice, preserving trained per-observation normalization. Angular channels and prediction heads are excluded. The static sampling, clustering and downstream metric definitions remain the same; see `src/analysis/neighborhood_adapter.py`.
+
+The direct Epi snapshot rerun uses native eager BF16 execution: compiled fusion failed batch-size replay. Exact native inputs/weights and eager outputs, singleton replay and reordered batches are verified without widening tolerance.

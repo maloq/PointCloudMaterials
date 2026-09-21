@@ -3,6 +3,9 @@ from ..v2.contracts import variants as original
 
 
 def variants(config):
+    if config.get('protocol')=='neighborhood_jepa_multihorizon_v1':
+        from ..multihorizon.specs import variants as multi_variants
+        return multi_variants(config)
     prototype=original(config)[-1]
     rows=[
         ('sig-mlp-no-order','sigreg','mlp_ln','layernorm',.1,0.,'warm'),

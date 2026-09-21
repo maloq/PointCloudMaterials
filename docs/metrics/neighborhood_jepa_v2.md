@@ -43,3 +43,9 @@ frames, lineages, invariant/projected covariance spectra and error columns.
 Effective rank is trace(C)^2/trace(C^2). One seed is exploratory; no automatic
 promotion or `learned_dynamics` flag is defined. Five arms share initialization,
 1,280 updates, batch 256 and 327,680 anchor draws; required views are 2/2/8/8/14.
+
+The September 20 performance release preserves sampled batch order while grouping
+disk reads by shard. Selection encodes only the current center used by these
+metrics, and caches immutable tracked-center phase labels. Equivariant current
+states are also retained for downstream horizon diagnostics. Metric formulas,
+source weighting, evaluation cadence and selection criteria are unchanged.

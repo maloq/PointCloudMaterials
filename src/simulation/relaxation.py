@@ -12,6 +12,32 @@ def sha256(path):
         return hashlib.file_digest(handle, 'sha256').hexdigest()
 
 
+def restart_positions(trajectory, frame, path, expected_sha256):
+    """Read our full-precision failed-quench dump with exact frame/atom identity."""
+    from src.data.temporal import TemporalLAMMPSDumpDataset
+    path = Path(path)
+    if sha256(path) != expected_sha256:
+        raise ValueError(f'Relaxation restart checksum changed: {path}')
+    with path.open() as handle:
+        header = TemporalLAMMPSDumpDataset._read_frame_header(handle, source_path=path)
+        if header['atom_columns'] != ('id', 'type', 'x', 'y', 'z') or header['num_atoms'] != trajectory.atom_count:
+            raise ValueError(f'Relaxation restart schema differs: {path}')
+        table = np.loadtxt(handle, max_rows=trajectory.atom_count)
+        if handle.read().strip():
+            raise ValueError(f'Unexpected extra restart frames: {path}')
+    if header['timestep'] != int(trajectory.timesteps[frame]):
+        raise ValueError(f'Relaxation restart timestep differs: {path}')
+    if table.shape != (trajectory.atom_count, 5):
+        raise ValueError(f'Relaxation restart shape differs: {table.shape}')
+    np.testing.assert_array_equal(table[:, 0], trajectory.atom_ids)
+    np.testing.assert_array_equal(table[:, 1], trajectory.atom_types)
+    np.testing.assert_allclose(header['box_low'], trajectory.box_low[frame], rtol=0, atol=1e-10)
+    np.testing.assert_allclose(header['box_high'], trajectory.box_high[frame], rtol=0, atol=1e-10)
+    if not np.isfinite(table[:, 2:]).all():
+        raise ValueError(f'Nonfinite relaxation restart positions: {path}')
+    return table[:, 2:]
+
+
 def relax_frame(trajectory, frame, directory, settings):
     # Existing CG experiments retain their original minimization protocol.
     minimizer = settings.get('minimizer', 'cg')
@@ -25,7 +51,9 @@ def relax_frame(trajectory, frame, directory, settings):
         raise FileExistsError(f'Relaxation already exists: {directory}')
     low=trajectory.box_low[frame].astype(np.float64)
     high=trajectory.box_high[frame].astype(np.float64)
-    positions=np.mod(trajectory.positions[frame].astype(np.float64)-low,high-low)+low
+    positions=(restart_positions(trajectory,frame,settings['restart_dump'],settings['restart_sha256'])
+               if 'restart_dump' in settings else trajectory.positions[frame].astype(np.float64))
+    positions=np.mod(positions-low,high-low)+low
     path=directory/'input.data'
     with path.open('w') as handle:
         handle.write(f'Complete periodic frame {frame}\n\n{len(positions)} atoms\n1 atom types\n\n')

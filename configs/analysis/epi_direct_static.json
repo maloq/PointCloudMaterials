@@ -1,0 +1,11 @@
+{
+  "checkpoint": "/work/PERSO/vmorozov/analysis/structural_static/epi-direct-order-step768-al-20260920/technical/source-checkpoint/best.pt",
+  "checkpoint_sha256": "ce6b0620d49ccf5336a751f3cfbdb76290f2c5df6a2615dda30888c36e58eb2b",
+  "variant": "epi-direct-order",
+  "output": "/work/PERSO/vmorozov/analysis/structural_static/epi-direct-order-step768-al-20260920",
+  "scales": {
+    "Al": 9.121389139452193
+  },
+  "data_config": "/home/infres/vmorozov/PointCloudMaterials/configs/data/loaders/static_al_epi_direct.yaml",
+  "verification_frame": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/166ps.npy"
+}

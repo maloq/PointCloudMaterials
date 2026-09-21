@@ -1,0 +1,12 @@
+{
+  "family": "context_night",
+  "exported_at": "2026-09-21T02:32:49.744641+00:00",
+  "files": {
+    "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+    "src/research/context_night/context.py": "9e051fd5e6b3241bb369335697567e6b37ba33c98769bd189783c038e7d9869a",
+    "src/research/crystallization_paths/runtime.py": "f09268b0cf2acf853c88aa9d5f3e18bdc90404824d476d9a9a8cdc423c387114",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+    "docs/metrics/context_night.md": "d44000484e2e20a07cedfb6afe4a62b41294811b8cef7ce798f4cce445831c51"
+  }
+}

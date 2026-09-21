@@ -1,0 +1,10 @@
+{
+  "family": "context_night_encoder",
+  "exported_at": "2026-09-21T02:28:11.394887+00:00",
+  "files": {
+    "src/research/context_night/encoder.py": "6ddb610d0e3cd4a89aa8643cb9e5c6ef6f48be1f07e15b61eeae3802a3ca06ac",
+    "src/training_methods/neighborhood_jepa/regularization/runtime.py": "b6e4861eef7c22ef580cd125cee8c852f54378a16f651948c3ef833882aaa4a0",
+    "src/training_methods/neighborhood_jepa/regularization/objective.py": "bf4c2b28a668781d697d7415dde5fded77d7941b08ec717466e706d48b65ac98",
+    "docs/metrics/context_night_encoder.md": "746d01facb1596f8840334d8aca8e4485ecec125788b50740a804048d9f2d8b9"
+  }
+}

@@ -46,6 +46,7 @@ class ZeroRegularizer(nn.Module):
 class Objective(BaseObjective):
     def __init__(self,manifest,order_manifest,spec):
         super().__init__(manifest,spec)
+        if spec.get('regularizer_scope','global') not in ('global','temperature'):raise ValueError('Unknown regularizer scope')
         self.sigreg=ZeroRegularizer()
         self.gaussian=SIGReg('per_sample_discrepancy')
         self.register_buffer('order_mean',torch.tensor(order_manifest['mean'],dtype=torch.float32))
@@ -62,7 +63,20 @@ class Objective(BaseObjective):
         projected=model.projector(current)
         mode=self.spec['regularizer']
         extra={}
-        if mode=='sigreg':
+        if self.spec.get('regularizer_scope','global')=='temperature':
+            penalties=[];variables=[];covariances=[]
+            for temperature in torch.unique(target['temperature_K']):
+                values=projected[target['temperature_K']==temperature]
+                if len(values)<2:raise ValueError('Conditional regularization requires >=2 anchors per sampled temperature')
+                if mode=='sigreg':p,_,_=self.gaussian(values)
+                elif mode=='vicreg':
+                    p,var,cov=vicreg_regularization(values);variables.append(var);covariances.append(cov)
+                else:raise ValueError(f'Conditional regularizer unsupported: {mode}')
+                penalties.append(p)
+            penalty=torch.stack(penalties).mean()
+            if mode=='vicreg':extra=dict(vicreg_variance=float(torch.stack(variables).mean().detach()),vicreg_covariance=float(torch.stack(covariances).mean().detach()),vicreg_total=float(penalty.detach()))
+            else:extra=dict(sigreg_discrepancy=float(penalty.detach()))
+        elif mode=='sigreg':
             penalty,raw,discrepancy=self.gaussian(projected)
             extra=dict(sigreg_raw=float(raw.detach()),sigreg_discrepancy=float(discrepancy.detach()))
         elif mode=='vicreg':

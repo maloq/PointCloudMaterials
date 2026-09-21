@@ -1,0 +1,15 @@
+{
+  "family": "relaxed_encoder",
+  "exported_at": "2026-09-21T08:45:34.246526+00:00",
+  "files": {
+    "src/research/relaxed_encoder/report.py": "35b31dcdbf161a28cc8e1dae622c724d2796de79a7fd478534ef1777957295d3",
+    "src/research/relaxed_encoder/__init__.py": "467805d7982553a2c40e2bf3e186ae917c7be5dad4d04edab0ed23941e4399ca",
+    "src/research/relaxed_encoder/assay.py": "820c061df84626c165516ae56facbb3680ae5e88231d83c9a890043a656ebac0",
+    "src/research/relaxed_encoder/prepare.py": "174f8d6164dcc1fd6e52875bf1ac4887723f322bb4701593b891c6da0137d2c4",
+    "src/research/relaxed_encoder/queue.py": "0bafd0ea11a40a027e44e03d7437f604d173701641baee25f65c37dbe81a9bad",
+    "src/research/relaxed_encoder/benchmark.py": "857123ac21765eda289d5e32d897a26b0ca8c36bfa1850fd0feaf63d78c9f720",
+    "docs/metrics/relaxed_encoder.md": "52617744c2b7872881a55b9cee2ccc6ce11aad844bd19ebe54f3de9aa0c7aec3",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+    "src/simulation/relaxation.py": "02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca"
+  }
+}

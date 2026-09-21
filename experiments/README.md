@@ -73,3 +73,13 @@ history while testing preservation of bond order and instantaneous topology.
 - [Causal geometry-anchored neighborhood JEPA v2](neighborhood_jepa_v2_20260920/README.md)
 
 - [Neighborhood JEPA regularizer/order comparison](neighborhood_jepa_regularization_20260920/README.md): SIGReg, VICReg and EpiJEPA-inspired geometric regularization.
+
+- [Multi-horizon JEPA embedding prediction](neighborhood_jepa_multihorizon_20260920/README.md): tracked future local states at 3, 6 and 9 ps.
+
+- [Frozen short-horizon information diagnostic](crystallization_information_20260920/README.md): feature add-backs and decoding, up to12ps.
+
+- [Relaxed inputs and targets MACE pilot](relaxed_encoder_20260920/README.md): paired hot/hot, hot/cold, cold/cold and <=12ps onset readouts.
+
+- [Overnight encoder information and trajectory context](context_night_20260921/README.md): local order/angular preservation, wider shells/history, and fixed-target trajectory forecasts.
+
+- [Expanded relaxed-input/target and rank study](relaxed_encoder_expanded_20260921/README.md): larger source-held-out paired dataset, conditional SIGReg/VICReg, frozen onset probes.

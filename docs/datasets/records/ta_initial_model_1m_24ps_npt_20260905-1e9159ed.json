@@ -132,6 +132,8 @@
         ]
       },
       "provenance": {
+        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
+        "protocol_source": "https://arxiv.org/html/2109.06797",
         "potential": {
           "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
           "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386",
@@ -139,9 +141,7 @@
           "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
           "source_page": "https://sites.google.com/site/eampotentials/ta",
           "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
-        },
-        "protocol_source": "https://arxiv.org/html/2109.06797",
-        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart."
+        }
       }
     },
     {
@@ -332,6 +332,8 @@
         ]
       },
       "provenance": {
+        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
+        "protocol_source": "https://arxiv.org/html/2109.06797",
         "potential": {
           "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
           "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386",
@@ -339,9 +341,7 @@
           "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
           "source_page": "https://sites.google.com/site/eampotentials/ta",
           "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
-        },
-        "protocol_source": "https://arxiv.org/html/2109.06797",
-        "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart."
+        }
       }
     },
     {
