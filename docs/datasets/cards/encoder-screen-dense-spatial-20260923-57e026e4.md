@@ -1,0 +1,56 @@
+# Fourfold spatial plot samples for the native encoder screen
+
+[All datasets](../README.md) · [Browsable card](encoder-screen-dense-spatial-20260923-57e026e4.html) · [Full metadata](../records/encoder-screen-dense-spatial-20260923-57e026e4.json)
+
+Original spatial slices plus threefold additional interior atoms, with original full-cell PTM and fitting-only material thresholds. Exact old-label replay required; plots only, no change to numerical metric cohorts.
+
+- ID: `encoder-screen-dense-spatial-20260923`
+- Materials: Al, Ta, Zr
+- Classification: **research**; role: analysis_cache
+- Location: `/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/dense-inputs`
+- Present on this machine: True
+- Potentials: Unknown / not applicable
+- Complete binary records with arrays present: 0; these are not independent-source counts.
+- Stored frames: 0; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 0.022 GiB
+- Missing metadata: generating potential identity
+
+## Notes and relationships
+
+```json
+{
+  "title": "Fourfold spatial plot samples for the native encoder screen",
+  "materials": [
+    "Al",
+    "Ta",
+    "Zr"
+  ],
+  "role": "analysis_cache",
+  "classification": "research",
+  "potential_ids": [],
+  "description": "Original spatial slices plus threefold additional interior atoms, with original full-cell PTM and fitting-only material thresholds. Exact old-label replay required; plots only, no change to numerical metric cohorts.",
+  "evidence": [
+    "src/research/encoder_screen/dense.py",
+    "output/encoder_research/screen-20260923/technical/dense-inputs/manifest.json"
+  ],
+  "limitations": [
+    "Unknown original static potentials and periodic cell metadata. No temporal fate claim."
+  ],
+  "ancestry": "Selected from the same hashed original Al177ps, Ta2.9ns and Zr240ps snapshots and spatial slices as the fixed GeoFrame reference."
+}
+```
+
+## Recorded fields
+
+| Field | Values |
+| --- | --- |
+
+## Evidence
+
+All 1 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/encoder-screen-dense-spatial-20260923-57e026e4.json).
+
+Sources remain at their original locations. Referenced configs/code do not prove actual training use.
+
+Observed 2026-09-24T10:36:51.012083+00:00.
+
+Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

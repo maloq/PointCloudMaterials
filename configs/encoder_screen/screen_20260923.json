@@ -1,0 +1,1186 @@
+{
+  "protocol": "native_snapshot_physical_screen_v1",
+  "output": "${storage:repo}/output/encoder_research/screen-20260923",
+  "reference": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/reference",
+  "reuse_geoframe": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923",
+  "tasks": [
+    {
+      "name": "factorial23-B-relaxed",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260923/technical/fits/B-relaxed/last.pt",
+      "checkpoint_sha256": "bcc8168b22dcae00c198ccf0027a23d18d17559fb09cb0ae921eada8904a1d64",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "6a5cf863794b95950362e5f8a2ebce4baf429210ea0321253903263159e5d0f2"
+    },
+    {
+      "name": "relaxed-cold-vic-temp01",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-vic-temp01/best.pt",
+      "checkpoint_sha256": "58f1184f6f54f1909a33ab8469cc4284d59f14d16b3c334c5cc261a732491b47",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "c559192544524fb28f240926c9e54a483898835169aab029d7f60445498be0c8"
+    },
+    {
+      "name": "jepa-epi-direct-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/epi-direct-order/best.pt",
+      "checkpoint_sha256": "ce6b0620d49ccf5336a751f3cfbdb76290f2c5df6a2615dda30888c36e58eb2b",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "e4717424bb55efd10561dcfc348669de45a464713f95a9294bf18a14f372b8bb"
+    },
+    {
+      "name": "gatr-local-bond-20260918-last",
+      "kind": "shared",
+      "architecture": "gatr",
+      "materials": [
+        "Al",
+        "Ta"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193,
+        "Ta": 9.38733713271385
+      },
+      "precision": "bf16",
+      "step": 622,
+      "checkpoint": "${storage:repo}/output/shared_pretraining/gatr-local-bond-20260918/technical/last.pt",
+      "checkpoint_sha256": "c360ad7eb7b4e5ddcb4ca2f30114e821f171373d6e619705e619fdcfbbab2246",
+      "producer": "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/axial_gatr.py": "d6c2b526fcb717d783769157548767392f8dc8d6d2b30667d99e20ef4f85618e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/equivariant_bond.py": "53d155dd54ee3b69e62e8be5b5cc27a716a846ec91c155fcb8831b9c73fb082a",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mixed_gatr.py": "6586976a8072643a132e4be088801654518a796bccdea5aeb56f00b00367e785",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mixed_mace.py": "5ee5051d58f57598484ada87c334f7b8811f97c0a30b0213751672ade8590eb4"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "74fd84a0d7adde91d5e3e36bd5592650faecf4900275efbe3383eb2eb0bc085e"
+    },
+    {
+      "name": "mace-expanded-dual-20260919-last",
+      "kind": "shared",
+      "architecture": "mace",
+      "materials": [
+        "Al",
+        "Ta"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193,
+        "Ta": 9.38733713271385
+      },
+      "precision": "bf16",
+      "step": 2486,
+      "checkpoint": "${storage:repo}/output/shared_pretraining/mace-expanded-dual-20260919/technical/last.pt",
+      "checkpoint_sha256": "2bc7927daa1936a22bc9d6563f21da7b1152a1c543511df98af5addd095f1d07",
+      "producer": "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/axial_gatr.py": "d6c2b526fcb717d783769157548767392f8dc8d6d2b30667d99e20ef4f85618e",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/equivariant_bond.py": "53d155dd54ee3b69e62e8be5b5cc27a716a846ec91c155fcb8831b9c73fb082a",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/mixed_gatr.py": "6586976a8072643a132e4be088801654518a796bccdea5aeb56f00b00367e785",
+        "${storage:repo}/output/shared_pretraining/mace-dual-optimized-campaign-20260919/technical/code/src/models/encoders/mixed_mace.py": "5ee5051d58f57598484ada87c334f7b8811f97c0a30b0213751672ade8590eb4"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "9b22d7ffafb0a981cf293898a1492d98b2606086e69e7bc348982b546ad2004f"
+    },
+    {
+      "name": "geoframe-visreg-epoch159",
+      "kind": "geoframe",
+      "architecture": "geoframe",
+      "materials": [
+        "Al",
+        "Ta",
+        "Zr"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.192189,
+        "Ta": 9.388275,
+        "Zr": 10.415006
+      },
+      "precision": "float32",
+      "step": null,
+      "checkpoint": "${storage:archive}/projects/PointCloudMaterials-20260913T174741Z/output/detached/visreg_geoframe_v2_factor_sn_grouped_scratch_20260831_174422/VISREG_GF_V2_FACTOR_SN_GROUPED_SCRATCH_L0.4_K4096_G0.1_B16384-periodic-epoch=159.ckpt",
+      "checkpoint_sha256": "f859148b618eacc882b97fc80ae80fca7dcbe0114069fbe43d987788e3066d7d",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/geoframe_continuity/analysis.py": "dfd9850de1331d1f0cf1ae55694c3ac0d762d03e5392afa80db1a76bcba81d69",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/contrastive_learning/vicreg_module.py": "537aa7c92832652797564971540e67ac2dbb7d90ed2bdab1f17dfa0b070a6a7f",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/geo_frame_transformer_v2.py": "f2a40e02626aaec21664d11e19d6a56485283a69ba07d40591929b0335764534",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/ri_mae_encoder.py": "ebbe4118f96c04d5541ede0243f35023e327674d01f6fe430b9cd154265cbf3b"
+      },
+      "batch_size": 256
+    },
+    {
+      "name": "factorial23-D-physical-distance",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260923/technical/fits/D-physical-distance/last.pt",
+      "checkpoint_sha256": "5b996dcc0bfa43edb031fdbbec6931da4a68ae61fbd9ecafe390c60f93255f05",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "3e496f6d9f755067d6a6761063a346c4f9f90e7b8b01108d0e0db80544ff7b30"
+    },
+    {
+      "name": "geoframe-visreg-epoch014",
+      "kind": "geoframe",
+      "architecture": "geoframe",
+      "materials": [
+        "Al",
+        "Ta",
+        "Zr"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.192189,
+        "Ta": 9.388275,
+        "Zr": 10.415006
+      },
+      "precision": "float32",
+      "step": null,
+      "checkpoint": "${storage:archive}/projects/PointCloudMaterials-20260913T174741Z/output/detached/visreg_geoframe_v2_factor_sn_grouped_scratch_20260831_174422/VISREG_GF_V2_FACTOR_SN_GROUPED_SCRATCH_L0.4_K4096_G0.1_B16384-epoch=14.ckpt",
+      "checkpoint_sha256": "c6e666551ac6e2d293cd099c85862361e8252707d2931dbbe2f2b5bc798e5a86",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/geoframe_continuity/analysis.py": "dfd9850de1331d1f0cf1ae55694c3ac0d762d03e5392afa80db1a76bcba81d69",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/contrastive_learning/vicreg_module.py": "537aa7c92832652797564971540e67ac2dbb7d90ed2bdab1f17dfa0b070a6a7f",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/geo_frame_transformer_v2.py": "f2a40e02626aaec21664d11e19d6a56485283a69ba07d40591929b0335764534",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/ri_mae_encoder.py": "ebbe4118f96c04d5541ede0243f35023e327674d01f6fe430b9cd154265cbf3b"
+      },
+      "batch_size": 256
+    },
+    {
+      "name": "factorial23-E-future-residual",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260923/technical/fits/E-future-residual/last.pt",
+      "checkpoint_sha256": "8ceae5190d54a9cd2b26bd7b1dffb8aecc241ddc1cd54aca545ff4d7985e2b79",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "6b3195cd645bceaa73e30bcc5bcbeb197e41b44c81ca485f062b06e760fa9563"
+    },
+    {
+      "name": "factorial23-F-distance-future",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260923/technical/fits/F-distance-future/last.pt",
+      "checkpoint_sha256": "09656bd094842e7ce0187b7258b3f0ccbb9b44861cc12ba034273ecbbccf41ee",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "1febb094492615fee97d8a09c4fd7085904c5cae6cd82de246774017e038f1d7"
+    },
+    {
+      "name": "relaxed-cold-control",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-control/best.pt",
+      "checkpoint_sha256": "3452261dac88688b339504ca88b0b0fb6177e17fbdb139c8be923d8407596acb",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "6c153bf6ae4619e425bd46873db6b6fc9e9bf94f3731f343660366e36484b0d4"
+    },
+    {
+      "name": "relaxed-cold-sig-temp1",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-sig-temp1/best.pt",
+      "checkpoint_sha256": "bf00b0ec2c1f9cab155fed3fbb4bcda93b24f8722c94f083cddc87d20e5356c9",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "9640ff20ff5c8cc1fccf21ae4946902cc35436fe7882a612f3c5bcfe7b22c792"
+    },
+    {
+      "name": "relaxed-cold-sig-temp3",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-sig-temp3/best.pt",
+      "checkpoint_sha256": "3e6648b132a3f841db240b87b691f0b3d2827126181eba80629e54e55ffb2bcc",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "01591150743835f962c4690a608ceae9a07e45627319367242cbe2caeec31c4d"
+    },
+    {
+      "name": "relaxed-cold-vic-temp001",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-vic-temp001/best.pt",
+      "checkpoint_sha256": "279a8825549c111f76f2564f14bc6be8d2c43810340c0536499ee3b7921b172f",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "ec1e3d0428a36aad76a5e673c2418471b4f78ac7b52b8e38b6e9dddd692e0bdf"
+    },
+    {
+      "name": "relaxed-cold-vic-global01",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/cold-vic-global01/best.pt",
+      "checkpoint_sha256": "6d21a2974d26c4aacac4668a5eec3ce5a222fb3df70cadd473ca0a4635a6f0ec",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "e5c178f7b902d05bcac12e4a2941bba00f9f9d1d5f203d2f4629794ec4b3330e"
+    },
+    {
+      "name": "relaxed-hot-control",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/hot-control/best.pt",
+      "checkpoint_sha256": "b3cbb4e88935c5802916b24b8c5633b401df2ab0f9575c5dc5dd0c1ec12cf455",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "e8fd67fb56ea3c65b17d1578e2a21ddbff2e6350f09030595650a98306e23156"
+    },
+    {
+      "name": "relaxed-hot-vic-temp01",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 2048,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/hot-vic-temp01/best.pt",
+      "checkpoint_sha256": "8dd393f7e2ddfe0e284d0e855ca8a8831d96642044a8504698b9a6e656716da7",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "cce25428412910dc01c123df06d4438f57688567ac4e3165d6c8b5844f4258d4"
+    },
+    {
+      "name": "relaxed-hot-to-cold-vic-temp01",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "nearest80",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/runs/hot-to-cold-vic-temp01/best.pt",
+      "checkpoint_sha256": "833c0853080ea79aa90ff7b652137cebbe2eb2c59b31861724f93c9fb992465a",
+      "producer": "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/relaxed_encoder/expanded-20260921/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "d4fd0374985b42bd2a5298ca24c1d230e1eab7b1dbf53b577e44052095655980"
+    },
+    {
+      "name": "jepa-vic-direct-raw-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/vic-direct-raw-order/best.pt",
+      "checkpoint_sha256": "fcf1842f032d9be32e39aa0b2200a9aa2f1d46442c7b5eede5e95e98ce19d51a",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "2010c247b181043a2114d4ddd9a0e0c31a5a3926a43c57fcf5c2e92277328961"
+    },
+    {
+      "name": "jepa-sig-direct-raw-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/sig-direct-raw-order/best.pt",
+      "checkpoint_sha256": "42c0092d32eb3f35062038f6365ec297caa1855141238f4c3836d8be208eea66",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "30baed37fcee02561f93ee63fd32800ddfe8d495b0bfc2501f63e9c6500bd226"
+    },
+    {
+      "name": "jepa-none-mlp-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/none-mlp-order/best.pt",
+      "checkpoint_sha256": "4897c587012873d6b277864186b6d2194670747a504efd08d273eb043b21ff79",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "43254cb4adc7f871385f590148a887f461b6eefa7708665891a83105f30d8cfa"
+    },
+    {
+      "name": "jepa-epi-mlp-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/epi-mlp-order/best.pt",
+      "checkpoint_sha256": "ff0a2becfe219ba9b62084c0be306c41c4fc4e7208fb819bda38a1860f85f872",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "f57180b97ba0e3e6ed8613f3b157012c1f3ea95b9b12025c2ec9a22a9837e806"
+    },
+    {
+      "name": "jepa-sig-mlp-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/sig-mlp-order/best.pt",
+      "checkpoint_sha256": "b60dd38525d5ea869f8937623ec63c5bdbb380f7a6956fb7d4404bf23db25d9f",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "4723b06fc602fcc8b8655be91a72fb9ac7fc6885f84957cb8908086942519daa"
+    },
+    {
+      "name": "jepa-vic-mlp-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/vic-mlp-order/best.pt",
+      "checkpoint_sha256": "13a6b7e58f9c131fa886fcf3e16fd212efa101d32b6fdfb16d9414a2c084f8d3",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "ad882bf099eda4473f491b0a90a970abac75cd1c9f6569941400ccc8e40c3726"
+    },
+    {
+      "name": "jepa-sig-mlp-no-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/sig-mlp-no-order/best.pt",
+      "checkpoint_sha256": "aa0eb7fa708ba8e8592ffdc430e54d3e589587e346da4ba329940e41afe5f954",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "4b0ef45c52a838047dec3aa99d02301333d4a119f3659aaad5b796c8c4bda959"
+    },
+    {
+      "name": "jepa-epi-mlp-strong-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/epi-mlp-strong-order/best.pt",
+      "checkpoint_sha256": "45b4d6fd9b85afb98261bd3b29b5e60418e6dfb49c8732419bfb5107532e34c7",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "110709e1aadf6f7411657dec82ca273cb73c62624872b4a27f0e0aa7f50c4ded"
+    },
+    {
+      "name": "jepa-sig-mlp-strong-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/sig-mlp-strong-order/best.pt",
+      "checkpoint_sha256": "e533fae66297e8cbcdff7ae7191d00e0afdd0bdfbe38275c863d33f14f1968b3",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "5d2531da6d7525f32dcdac295733904eb34f6fa61615844f09fa6b0b9c0d93ae"
+    },
+    {
+      "name": "jepa-scratch-sig-mlp-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/scratch-sig-mlp-order/best.pt",
+      "checkpoint_sha256": "4aaed529d414a778bd0590ad0c8583b045521787be107aeafcc09cddbd688a93",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "af9d20b2801ee60782495f5a64a77b80590ed242f130f4bc0f08fd0f7474cd89"
+    },
+    {
+      "name": "jepa-scratch-vic-direct-raw-order",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 768,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/scratch-vic-direct-raw-order/best.pt",
+      "checkpoint_sha256": "102ae715117463a28c350095ca9b6fa4a5cd04e6de91c3c0497141ffebebd04f",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "18162e69deb407f4adbe663360d2e659760e3f27abe34f58989d05c5dde947fe"
+    },
+    {
+      "name": "jepa-long-epi",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 512,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/long-epi/best.pt",
+      "checkpoint_sha256": "94ce0d4e45cd2cc739cad5c39b3e74a0c611f7f5b6c4dcdbfc38e1b8fd5c0c12",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "c0850071ae2951577c3f140e171e2ed9bfd382724ff7286d17f89c864ef9f75d"
+    },
+    {
+      "name": "jepa-long-sigreg",
+      "kind": "neighborhood",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193
+      },
+      "precision": "bf16",
+      "step": 896,
+      "checkpoint": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/runs/long-sigreg/best.pt",
+      "checkpoint_sha256": "5bd977d74450e5009a6d325b21d01ae1d82148555cfa14e71f2eae487c4fa207",
+      "producer": "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/regularization/model.py": "ef4e9aae71f6389c6141ba3743fb7cf7e1e9cae985acb25e5d8c941bce155701",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/v2/model.py": "974bc9c6fec4c6cf0ac373bfe86371a44eb074d7b007a5ef049c792081835063",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/neighborhood_jepa/regularization-20260920/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "7673f8c8e9ce88b3c78b9ecae6f8dbc3610a3ca126e884fa06296f53f0110376"
+    },
+    {
+      "name": "gatr-local-bond-20260918-best",
+      "kind": "shared",
+      "architecture": "gatr",
+      "materials": [
+        "Al",
+        "Ta"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 9.121389139452193,
+        "Ta": 9.38733713271385
+      },
+      "precision": "bf16",
+      "step": 576,
+      "checkpoint": "${storage:repo}/output/shared_pretraining/gatr-local-bond-20260918/technical/best.pt",
+      "checkpoint_sha256": "8267ab803648a12e0d131ad4a34a44039a4c6ef21bb63b2dd13f14dbd67b2c5d",
+      "producer": "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/data/structural_pretraining/batches.py": "05a70bd4274e18fc9d83e166c198f27ba412418f0e09eb4f6aa918deffee681e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/structural.py": "86f61d13f0bc693b34fe9cc7945bc338f1555abc08e6f4fc79cc6a38de2e73b1",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/axial_gatr.py": "d6c2b526fcb717d783769157548767392f8dc8d6d2b30667d99e20ef4f85618e",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/structural_precision.py": "d83573b8c696c7cccd590366edf9466cb4009112b7d3d1944a117246ceebebe2",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/compensated_bf16.py": "2e8d1b5d6ebfb4e7e60fdde63cf4b13e3ea1a24305703be61e1d11b8ca63f8d8",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/equivariant_bond.py": "53d155dd54ee3b69e62e8be5b5cc27a716a846ec91c155fcb8831b9c73fb082a",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mixed_gatr.py": "6586976a8072643a132e4be088801654518a796bccdea5aeb56f00b00367e785",
+        "${storage:repo}/output/shared_pretraining/gatr-local-bond-campaign-20260918/technical/code/src/models/encoders/mixed_mace.py": "5ee5051d58f57598484ada87c334f7b8811f97c0a30b0213751672ade8590eb4"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "6b7dc59c0b4bb44c99fd9cb2a69cb147c1282b108ab1339da2f41809d5c64775"
+    },
+    {
+      "name": "factorial24-B-relaxed",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260924/technical/fits/B-relaxed/last.pt",
+      "checkpoint_sha256": "adf34388fdc58859222e54090739ad5cee5cb898e73dfc842ec5eb930fa2d1f6",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "efe9e9918cf819cb31d39e4c412484c1e4036597441eaa30ec4a246b37c5a8af"
+    },
+    {
+      "name": "factorial24-D-physical-distance",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260924/technical/fits/D-physical-distance/last.pt",
+      "checkpoint_sha256": "31d9c61ab5671e9a321eac86e8638bc8da10b66194547f93b9a0825b664018c3",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "17d7131b95d6d078332881e035c423b016c1bfcf973bd0ce8f477689caa42728"
+    },
+    {
+      "name": "factorial24-E-future-residual",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260924/technical/fits/E-future-residual/last.pt",
+      "checkpoint_sha256": "51d8ac5732c8cc7d9f5b1df76c7a1c1f20a7d88c73ee374a1050a2014155d2e8",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "1cffe8d485843ddb23fc09c74f2e20adc38a31291173f57ea42d72b9c023f34f"
+    },
+    {
+      "name": "factorial24-F-distance-future",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:analysis}/structural_state/future-metric-seed20260924/technical/fits/F-distance-future/last.pt",
+      "checkpoint_sha256": "9836acbd628c7296407dd1ea52ee3a9b1cdc8e5467597e93416d31cf6c972c58",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "0a936fe35732f78dc4504b8d91b7c28ce2aaabd2a11e1229221a851326fabca3"
+    },
+    {
+      "name": "repaired-A-observed",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:repo}/output/structural_state/repaired-20260923/technical/fits/A-observed/last.pt",
+      "checkpoint_sha256": "b1a0c903c6912d95d67f3cce384222224c74fc70d865a72548bbed2ab7df10a0",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "c32151e41c5f8d59b60dfb7d4927cb5bbdb78a2b4d8f635120b62134d9c57f27"
+    },
+    {
+      "name": "repaired-B-relaxed",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:repo}/output/structural_state/repaired-20260923/technical/fits/B-relaxed/last.pt",
+      "checkpoint_sha256": "f0272edc9ced3fea98cb8437e322bcae291fce274b687f7f1882e16637992ddf",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "d9c55a1c2b18e3b86182cf60f9be7023e424301b9090bdbad0fef90142b2ab9d"
+    },
+    {
+      "name": "repaired-C-relaxed-teacher",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:repo}/output/structural_state/repaired-20260923/technical/fits/C-relaxed-teacher/last.pt",
+      "checkpoint_sha256": "b2a3629ddcd8f3290d5d5d373159743f2482ed12d401d355bdaf212ea4645c34",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "252bad4becd1265a453544b2ba360b345e83fbafd4b1e017105647d1e43eaff7"
+    },
+    {
+      "name": "repaired-D-physical-distance",
+      "kind": "geometry",
+      "architecture": "mace",
+      "materials": [
+        "Al"
+      ],
+      "support": "radius",
+      "scales": {
+        "Al": 1.0
+      },
+      "precision": "float32",
+      "step": 4096,
+      "checkpoint": "${storage:repo}/output/structural_state/repaired-20260923/technical/fits/D-physical-distance/last.pt",
+      "checkpoint_sha256": "a7f4f567f0f6b9bdad027bf28235a7341eeeac173baff50af16547a402b2fdfa",
+      "producer": "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code",
+      "producer_files": {
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+        "${storage:repo}/output/geoframe_evolution/epoch34-reproduction-20260923/technical/code/src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137"
+      },
+      "batch_size": 32,
+      "encoder_sha256": "acbf8976691bd370ba4d63e3f84f7ee332975a2497ddcf32f547e509b4d78ed9"
+    }
+  ],
+  "excluded": [
+    {
+      "family": "causal/history/velocity",
+      "reason": "Requires tracked history/velocity; snapshot substitution changes observation contract"
+    },
+    {
+      "family": "historical full-halo MACE/GATr",
+      "reason": "Native support exceeds available 8 A future patch; separate full-context future assay required"
+    },
+    {
+      "family": "BCR G1",
+      "reason": "Distinct noisy-input decoder study; prioritize audited fixed-geometry successors in this queue"
+    },
+    {
+      "family": "jepa-long-vicreg",
+      "reason": "Identical exported encoder tensors to jepa-vic-direct-raw-order"
+    },
+    {
+      "family": "mace-expanded-dual-20260919-best",
+      "reason": "Identical exported encoder tensors to mace-expanded-dual-20260919-last"
+    }
+  ],
+  "spatial_plot": {
+    "factor": 8,
+    "marker_area_points2": 1.25,
+    "previous_marker_area_points2": 5.0,
+    "previous_inputs": "technical/dense-inputs",
+    "inputs": "technical/dense8-inputs"
+  }
+}

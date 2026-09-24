@@ -1,0 +1,29 @@
+{
+  "family": "encoder_screen",
+  "exported_at": "2026-09-23T16:55:52.208878+00:00",
+  "files": {
+    "docs/metrics/encoder_screen.md": "9f51a76f6f5b67c0e406132d2a88eaa671e672ce638013cfa3766b8cebdc0abf",
+    "src/research/encoder_screen/__init__.py": "b478f5e435650608a2c3decd67b8bc31f86d1144c3465311535a92ea430e8d0c",
+    "src/research/encoder_screen/benchmark.py": "58e78f743bcef392378f683859db0dcb1e6b2ec44540385529c711b888c0aecc",
+    "src/research/encoder_screen/common.py": "e9e97b85f1cffd5bf580ee1f3a235e6e445624da48ad056dc593a6260123a812",
+    "src/research/encoder_screen/figures.py": "96e57df91dc67ecc98281c7db95b02e162db6ba1f863e38a4d155d23dfd51269",
+    "src/research/encoder_screen/native.py": "368a72e5aaabf7073f594263fa79365f831bb86e4204e8e1f628e63cc4b63acd",
+    "src/research/encoder_screen/prepare.py": "38116b83f5e8c4d83de3629c3937acd7abc814c200f5b5ddda804454fd7ac4f2",
+    "src/research/encoder_screen/queue.py": "c9badffac8d29c8fabfb088286660fbf5c6f93d015a96a8abb3b95a14d02bd4e",
+    "src/research/encoder_screen/report.py": "6b4825e22fe93a2a336d5d18878169103fd17243ee82b982efca71d8dce4c4e1",
+    "src/research/encoder_screen/run.py": "a1c66a500f6210e768aa3feb44fdea90433051a0601a90d849c764975fda7667",
+    "src/research/geoframe_evolution/__init__.py": "58ccd8ef62a2efc470df0d3c6f72de5c09c687d995bc2d679c5aeb1c6861747f",
+    "src/research/geoframe_evolution/evaluate.py": "9686de24bd43bb870f1d117483364cc52bf70dbe83120444af32e20b98598e1c",
+    "src/research/geoframe_evolution/metrics.py": "5fd11682e0199c833530bab262d659e84773881ae1352275c0cbf5418e819c8b",
+    "src/research/geoframe_evolution/precursors.py": "bda22b954f6451400c6340e0510c92bef7f9d8b9a810a99f295f7300a469a740",
+    "src/research/geoframe_evolution/prediction.py": "b0fd74d6eb22af28a076b91e2a0d1372928bb15df3d7dff5053b4f7d4206965c",
+    "src/research/geoframe_evolution/queue.py": "b9fab1001c0bcbc1960e4fb8cae9c936cd93f5fac6b79aa404f95ae4b50e9cdc",
+    "src/research/geoframe_evolution/reference.py": "47284e3675d1e3e447dd83aaeac96e3167b86deb7b9ea56f024411c71d9c0cae",
+    "src/research/geoframe_evolution/render.py": "d6c7927179751c169c6071f0bba109e41cb384c5f05c43a735332e7bc96159c4",
+    "src/research/geoframe_evolution/report.py": "3df653d045a839eda32bbecd2a1b5277a51d5feb32034bc029895dcd0914220e",
+    "src/research/geoframe_evolution/review.py": "c7ae2aed175143a8a189aad70406c47c15b2a3e6e32b44a8db9343b2e4f32f7f",
+    "src/research/geoframe_evolution/train.py": "203a798252951e6993c540f83b55090fed6d0d0436bb57b145a7689f4e0f4fff",
+    "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+    "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9"
+  }
+}

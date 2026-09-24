@@ -1,0 +1,6 @@
+{
+  "output": "output/geoframe_evolution/epoch34-reproduction-20260923",
+  "passes": 35,
+  "reference_checkpoint": "${storage:archive}/projects/PointCloudMaterials-20260913T174741Z/output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt",
+  "plot_epochs": [0, 4, 9, 11, 19, 29, 34]
+}

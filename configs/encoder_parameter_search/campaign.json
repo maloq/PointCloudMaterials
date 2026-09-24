@@ -1,0 +1,456 @@
+{
+  "protocol": "matched_encoder_parameters_v1",
+  "output": "output/encoder_research/parameter-search-20260923",
+  "screen_config": "configs/encoder_screen/screen_20260923.json",
+  "geoframe_passes": 35,
+  "fits": [
+    {
+      "name": "gf-mlp-cov1-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov1-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov1-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 1.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-mlp-cov1-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov1-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov1-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 1.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-visreg-mlp-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-visreg-mlp-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-visreg-mlp-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "factor_vae": true,
+      "objective": "visreg"
+    },
+    {
+      "name": "gf-visreg-mlp-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-visreg-mlp-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-visreg-mlp-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "factor_vae": true,
+      "objective": "visreg"
+    },
+    {
+      "name": "gf-mlp-cov1-factor0-s123",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov1-factor0",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov1-factor0-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 1.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-mlp-cov1-factor0-s456",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov1-factor0",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov1-factor0-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 1.0,
+      "factor_vae": false
+    },
+    {
+      "name": "mace-lr1e-05-distance0-s20260923",
+      "family": "mace",
+      "recipe": "mace-lr1e-05-distance0",
+      "seed": 20260923,
+      "training_config": "configs/encoder_parameter_search/mace-s20260923.json",
+      "arm": "lr1e-05-distance0",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 1e-05,
+      "distance_weight": 0.0
+    },
+    {
+      "name": "mace-lr1e-05-distance0-s20260924",
+      "family": "mace",
+      "recipe": "mace-lr1e-05-distance0",
+      "seed": 20260924,
+      "training_config": "configs/encoder_parameter_search/mace-s20260924.json",
+      "arm": "lr1e-05-distance0",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 1e-05,
+      "distance_weight": 0.0
+    },
+    {
+      "name": "mace-lr0.0001-distance0-s20260923",
+      "family": "mace",
+      "recipe": "mace-lr0.0001-distance0",
+      "seed": 20260923,
+      "training_config": "configs/encoder_parameter_search/mace-s20260923.json",
+      "arm": "lr0.0001-distance0",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 0.0001,
+      "distance_weight": 0.0
+    },
+    {
+      "name": "mace-lr0.0001-distance0-s20260924",
+      "family": "mace",
+      "recipe": "mace-lr0.0001-distance0",
+      "seed": 20260924,
+      "training_config": "configs/encoder_parameter_search/mace-s20260924.json",
+      "arm": "lr0.0001-distance0",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 0.0001,
+      "distance_weight": 0.0
+    },
+    {
+      "name": "gf-identity-cov1-factor0-s123",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov1-factor0",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov1-factor0-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 1.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-identity-cov1-factor0-s456",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov1-factor0",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov1-factor0-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 1.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-mlp-cov5-factor0-s123",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov5-factor0",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov5-factor0-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 5.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-mlp-cov5-factor0-s456",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov5-factor0",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov5-factor0-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 5.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-mlp-cov5-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov5-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov5-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 5.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-mlp-cov5-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-mlp-cov5-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-mlp-cov5-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "mlp",
+      "covariance": 5.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-identity-cov1-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov1-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov1-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 1.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-identity-cov1-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov1-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov1-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 1.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-identity-cov5-factor0-s123",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov5-factor0",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov5-factor0-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 5.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-identity-cov5-factor0-s456",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov5-factor0",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov5-factor0-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 5.0,
+      "factor_vae": false
+    },
+    {
+      "name": "gf-identity-cov5-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov5-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov5-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 5.0,
+      "factor_vae": true
+    },
+    {
+      "name": "gf-identity-cov5-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-identity-cov5-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-identity-cov5-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "covariance": 5.0,
+      "factor_vae": true
+    },
+    {
+      "name": "mace-lr1e-05-distance1-s20260923",
+      "family": "mace",
+      "recipe": "mace-lr1e-05-distance1",
+      "seed": 20260923,
+      "training_config": "configs/encoder_parameter_search/mace-s20260923.json",
+      "arm": "lr1e-05-distance1",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 1e-05,
+      "distance_weight": 1.0
+    },
+    {
+      "name": "mace-lr1e-05-distance1-s20260924",
+      "family": "mace",
+      "recipe": "mace-lr1e-05-distance1",
+      "seed": 20260924,
+      "training_config": "configs/encoder_parameter_search/mace-s20260924.json",
+      "arm": "lr1e-05-distance1",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 1e-05,
+      "distance_weight": 1.0
+    },
+    {
+      "name": "mace-lr0.0001-distance1-s20260923",
+      "family": "mace",
+      "recipe": "mace-lr0.0001-distance1",
+      "seed": 20260923,
+      "training_config": "configs/encoder_parameter_search/mace-s20260923.json",
+      "arm": "lr0.0001-distance1",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 0.0001,
+      "distance_weight": 1.0
+    },
+    {
+      "name": "mace-lr0.0001-distance1-s20260924",
+      "family": "mace",
+      "recipe": "mace-lr0.0001-distance1",
+      "seed": 20260924,
+      "training_config": "configs/encoder_parameter_search/mace-s20260924.json",
+      "arm": "lr0.0001-distance1",
+      "milestones": [
+        0,
+        1024,
+        2048,
+        4096
+      ],
+      "encoder_lr": 0.0001,
+      "distance_weight": 1.0
+    },
+    {
+      "name": "gf-visreg-identity-factor1-s123",
+      "family": "geoframe",
+      "recipe": "gf-visreg-identity-factor1",
+      "seed": 123,
+      "training_config": "configs/encoder_parameter_search/gf-visreg-identity-factor1-s123.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "factor_vae": true,
+      "objective": "visreg"
+    },
+    {
+      "name": "gf-visreg-identity-factor1-s456",
+      "family": "geoframe",
+      "recipe": "gf-visreg-identity-factor1",
+      "seed": 456,
+      "training_config": "configs/encoder_parameter_search/gf-visreg-identity-factor1-s456.yaml",
+      "milestones": [
+        0,
+        12,
+        24,
+        35
+      ],
+      "head": "identity",
+      "factor_vae": true,
+      "objective": "visreg"
+    }
+  ]
+}

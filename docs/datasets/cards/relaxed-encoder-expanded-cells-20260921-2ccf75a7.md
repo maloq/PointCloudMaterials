@@ -10,9 +10,9 @@
 - Location: `/store/PERSO/vmorozov/relaxed_encoder/expanded-20260921`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 2183; these are not independent-source counts.
-- Stored frames: 2183; duplicate-group records: 114
-- Allocated storage, excluding registered nested datasets: 5.605 GiB
+- Complete binary records with arrays present: 2460; these are not independent-source counts.
+- Stored frames: 2460; duplicate-group records: 114
+- Allocated storage, excluding registered nested datasets: 6.366 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -54,10 +54,10 @@
 
 ## Evidence
 
-All 6549 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
+All 7380 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T16:17:14.292955+00:00.
+Observed 2026-09-24T10:36:51.012083+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

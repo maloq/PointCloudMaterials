@@ -1,0 +1,82 @@
+{
+  "output": "${storage:analysis}/representation_audit/liquid-geometry-20260922",
+  "expanded_root": "output/relaxed_encoder/expanded-20260921",
+  "physical_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "latest_root": "output/crystallization_transfer/symmetric-relaxed-reuse-20260921",
+  "seed": 20260922,
+  "bootstrap_draws": 500,
+  "max_rows_per_source": 256,
+  "strict_q6": 0.35,
+  "neighbors": 31,
+  "ridge_alpha": 1.0,
+  "whitening_ridge": 0.001,
+  "future_lag_frames": 16,
+  "temporal_lag_frames": 48,
+  "models": [
+    {
+      "name": "parent_hot",
+      "domain": "hot"
+    },
+    {
+      "name": "parent_cold",
+      "domain": "cold"
+    },
+    {
+      "name": "hot-control",
+      "domain": "hot"
+    },
+    {
+      "name": "hot-vic-temp01",
+      "domain": "hot"
+    },
+    {
+      "name": "cold-control",
+      "domain": "cold"
+    },
+    {
+      "name": "cold-sig-temp1",
+      "domain": "cold"
+    },
+    {
+      "name": "cold-sig-temp3",
+      "domain": "cold"
+    },
+    {
+      "name": "cold-vic-temp001",
+      "domain": "cold"
+    },
+    {
+      "name": "cold-vic-temp01",
+      "domain": "cold"
+    },
+    {
+      "name": "cold-vic-global01",
+      "domain": "cold"
+    }
+  ],
+  "checkpoint_pairs": [
+    {
+      "name": "mace-original",
+      "architecture": "mace",
+      "early": "output/shared_pretraining/mace-vicreg-structural-20260918/technical/best.pt",
+      "late": "output/shared_pretraining/mace-vicreg-structural-20260918/technical/last.pt",
+      "producer_code": "output/shared_pretraining/campaign-20260918/technical/code"
+    },
+    {
+      "name": "gatr-original",
+      "architecture": "gatr",
+      "early": "output/shared_pretraining/gatr-vicreg-structural-20260918/technical/best.pt",
+      "late": "output/shared_pretraining/gatr-vicreg-structural-20260918/technical/last.pt",
+      "producer_code": "output/shared_pretraining/campaign-20260918/technical/code"
+    }
+  ],
+  "checkpoint_sampling": {
+    "train": 2048,
+    "selection": 1024,
+    "seed": 20260922,
+    "batch_size": 4,
+    "memory_limit_GiB": 32,
+    "timeout_seconds": 7200,
+    "ridge_alpha": 1.0
+  }
+}

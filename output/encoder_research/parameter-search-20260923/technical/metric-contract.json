@@ -1,0 +1,14 @@
+{
+  "family": "encoder_parameter_search",
+  "exported_at": "2026-09-23T19:05:48.337874+00:00",
+  "files": {
+    "docs/metrics/encoder_parameter_search.md": "7ab2cc116a049a4fd9de3fbf2d49e477d17a9e7bb43a668dc8bfb9ce671841d3",
+    "src/research/encoder_parameter_search/metrics.py": "04e4bc1ad17e6019a7f4f070dda8fe27d05c12c8f062f60cabaa1dc63712a999",
+    "src/research/encoder_parameter_search/assess.py": "75dc3b43588e896fb0389ea7d61a35defb815966a7b147591558c141f1d93aa2",
+    "src/research/encoder_parameter_search/report.py": "3e01fdbf353abe86c16ba189fd7c2ab4b48e0c364a5a162eb4b93dd8f9d590d0",
+    "src/research/encoder_parameter_search/review.py": "4ab06455ed6f02a2f7e6d18d8bc58813378490baef70f500694b14616a68c687",
+    "src/research/geoframe_evolution/metrics.py": "5fd11682e0199c833530bab262d659e84773881ae1352275c0cbf5418e819c8b",
+    "src/research/geoframe_evolution/prediction.py": "b0fd74d6eb22af28a076b91e2a0d1372928bb15df3d7dff5053b4f7d4206965c",
+    "src/research/encoder_screen/report.py": "56e984f234b71a8513f9de6d5573790edcab6e1c0366adfeb47cc0e2280ad2be"
+  }
+}

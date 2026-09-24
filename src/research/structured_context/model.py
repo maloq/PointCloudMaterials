@@ -89,6 +89,10 @@ class StructuredForecaster(RefinedForecaster):
 
     def anchor(self,observed,context):
         value=self.initial(context)
-        z=(observed['features'][:,-25]-self.target_mean[:128])/self.target_scale[:128]
+        # With a shared reference target space, both observed and relaxed arms
+        # learn this mapping. Copying relaxed features into the old encoder's
+        # target coordinates would be an invalid residual anchor.
+        if self.spec.get('target_encoder')=='reference_mace':z=value[:,:128]
+        else:z=(observed['features'][:,-25]-self.target_mean[:128])/self.target_scale[:128]
         liquid=(-self.target_mean[264]/self.target_scale[264]).expand(len(z),1)
         return torch.cat((z,value[:,128:264],liquid),-1)

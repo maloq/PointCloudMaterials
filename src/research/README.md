@@ -1,5 +1,20 @@
 # Implementations of recorded research protocols
 
+`trajectory_stability.audit` supplements existing current-screen and dense
+trajectory exports with source-balanced spectral dimensions and physical-lag
+stability. [Guide](../../docs/encoder_research/embedding_dynamics.md),
+[definitions](../../docs/metrics/embedding_dynamics.md).
+`trajectory_stability.native_dense` reuses pinned native producers to add
+Geoformer and current MACE to the common 0.75 ps observed-trajectory table.
+`trajectory_stability.noise` measures controlled coordinate-noise responses on
+matched origins, including the numerical floor and ratio to natural 0.75 ps motion;
+[guide](../../docs/encoder_research/input_noise.md).
+
+`geoframe_evolution` retains every epoch of the original GeoFrameV2 recipe and
+measures independent physical context, liquid order, continuity and future
+prediction; [protocol](../../experiments/geoframe_evolution_20260923/README.md),
+[commands](../../docs/geoframe_evolution.md).
+
 `gatr_conditional_information.comparison` repeats the conditional-information and
 trajectory-stability assays for pinned native MACE/GATr checkpoints, with exact
 training-code extraction and symmetric radial-only controls. See the
@@ -123,3 +138,16 @@ selection-only promotion to longer runs, through the existing transfer queue.
 `crystallization_paths/` compares direct, autoregressive, mixture and diffusion local structural-state trajectories, reusing the crystallization-transfer source split and frozen MACE. [Protocol](../../experiments/crystallization_transfer_20260919/PATHS.md).
 
 The path study's `diagnose`, `refined_model` and `refinement` modules implement selection-only failure diagnosis, revised trajectory models and physical-error-constrained promotion through the existing path queue.
+# Fixed structural-state screen
+
+`structural_state/` implements the distinct four-arm fixed-target study after BCR:
+verified paired-cache reuse, resident graph geometry, native cuEquivariance MACE,
+code-only heads, relaxed-target and relational objectives, source-held-out probes,
+and detached local/independent Slurm queues. Current v2 repairs amplitude collapse
+with fixed distance scales, fitting-only calibration and a direct pooled export;
+it also audits actual training heads. See [protocol](../../experiments/structural_state_20260923/README.md)
+and [operations](../../docs/structural_state.md).
+
+`structural_state_onset_review.py` audits the completed v2 onset predictions and
+bootstraps complete sources for paired AP and probability errors without fitting;
+see [results](../../output/structural_state/repaired-review-20260923/README.md).

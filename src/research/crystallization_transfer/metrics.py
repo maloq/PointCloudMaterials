@@ -66,7 +66,16 @@ def evaluate(corpus,indices,logits,calibration_indices,calibration_logits):
             false_alarms_per_sampled_center_ns=sum(a['false_alarms'] for a in alarms)/exposure,
             mean_detected_lead_ps=float(np.mean([a['lead_ps'] for a in alarms if a['detected']])) if any(a['detected'] for a in alarms) else None))
     nll=hazard_loss(torch.tensor(logits),torch.tensor(event)).numpy()
-    return dict(test_event_nll=float(weights@nll),classification=rows,timing=timing,spatial=spatial,per_source=per_source,
+    result=dict(test_event_nll=float(weights@nll),classification=rows,timing=timing,spatial=spatial,per_source=per_source,
         bootstrap='500 temperature-stratified whole-source draws, conditional on one training seed',
         timing_grid_ps=corpus.plan['config']['origin_stride_frames']*.75,
         spatial_population='Only observed at-risk sampled centers; not full-cell phase maps or front-speed measurements')
+    if 'reuse_config' in corpus.plan:
+        # Archived observations are irregularly spaced; the original 3ps stride
+        # cannot be interpreted as continuous monitoring exposure here.
+        for row in result['timing']:
+            row.pop('false_alarms_per_sampled_center_ns')
+            row['false_alarm_episodes_per_1000_observed_origins']=1000*row['false_alarm_episodes']/len(ids)
+        result['timing_grid_ps']=None
+        result['origin_sampling']='Frozen available archived origins; irregular spacing. Alarm episodes refer only to successive observed decisions, not continuous monitoring.'
+    return result

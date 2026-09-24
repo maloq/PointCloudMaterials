@@ -1,5 +1,11 @@
 # Experiments, simulations and ideas
 
+For encoder-specific scientific comparisons, use the
+[encoder research handbook](encoder_research/README.md) and its
+[searchable results database](../output/encoder_research/catalogue/index.html).
+Refresh it with `python scripts/experiment_registry.py encoders` in
+`pointnet-torch214`; it indexes existing evidence without training or inference.
+
 Start at [the searchable registry](../output/registry/index.html), or its
 [Markdown index](../output/registry/README.md). The registry is a generated static
 page and JSON, with no database server or service to maintain. Open the HTML in

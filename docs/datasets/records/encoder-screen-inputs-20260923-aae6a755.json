@@ -1,0 +1,46 @@
+{
+  "dataset_id": "encoder-screen-inputs-20260923",
+  "records": [
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/inputs/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "ea6dddf097d035d239139fd9238c2538e185765421a52674c92a670d6c5c17d7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "future_config",
+        "future_graphs",
+        "future_graphs_sha256",
+        "future_identity",
+        "reference",
+        "reference_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "fixed_geometry_future_relation_v3",
+            "first_json_path": "future_config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260923,
+            "first_json_path": "future_config.seed",
+            "occurrences": 1
+          }
+        ],
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "future_config.encoder.radius",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+# Robust onset v1 metrics
+
+Primary: source-weighted average precision for sustained local first onset by
+12 ps, among causally eligible noncrystalline anchors. Three observed noncrystalline
+frames establish eligibility; three future crystalline frames confirm an event.
+The original independently produced labels are reused. Event bins end at
+0.75, 3, 6, 9, 12 ps; bin 5 means survival through 12 ps. All examples have the
+required follow-up. This is finite-horizon local risk, not a committor.
+
+`source_weights` gives every independent root equal total weight. No event
+oversampling is used for fitting probabilities or evaluating precision. AP is
+sklearn weighted average precision, not trapezoidal PR area. Weighted Brier is
+mean squared probability error. Hazard NLL is the first-event/survival likelihood.
+The 5% FPR threshold is chosen on tuning negatives with complete ties; report
+the actual resulting development FPR, recall and precision.
+
+Primary checkpoint: tuning AP maximum among checkpoints whose tuning geometry,
+current-order and future-increment MSEs each remain <=1.05 times their calibrated
+initial value. Selection never reads development outcomes. Initial step zero is
+eligible and explicitly reported. Separate frozen linear/MLP probes use the
+existing tuning-NLL criterion; they must not be mixed with the joint head.
+Observed/relaxed descriptor controls are zero-padded from 89 to 128 dimensions;
+the temperature-only control supplies 128 zero features plus temperature.
+All three use identical linear/MLP probe recipes and source splits.
+
+Physical targets are fit-standardized. Training geometry loss averages the radial17,
+l2 Gram36 and l4 Gram36 blocks equally. `physical` JSON diagnostics report ordinary
+dimension-mean standardized MSE (89 dimensions for geometry, 8 current order,
+24 concatenated 3/9/12 ps increments), source-balanced. Thus training geometry
+loss and exported dimension-mean MSE have deliberately distinct weights.
+
+Define local spacing d_i = mean of the twelve smallest positive distances from
+the tracked center to other atoms in the clean patch. Perturb each noncentral atom
+by independent N(0, (f*d_i/sqrt(3))² I), retaining the center exactly. The expected
+3D displacement RMS is f*d_i. Let q_i be mean squared realized 3D displacement
+over noncentral atoms. Report:
+
+- `input_rms_A = sqrt(sum_i w_i q_i)`;
+- `input_rms_percent_of_spacing = 100 sqrt(sum_i w_i q_i/d_i²)`;
+- `mean_spacing_A = sum_i w_i d_i`;
+- `embedding_noise_rms = sqrt(sum_i w_i ||z'_i-z_i||²/(2 V_fit))`, where V_fit is
+  trace of source-weighted clean fitting covariance of this selected encoder.
+
+The percentage is RMS of local relative displacements, not ratio of two means.
+Always distinguish it from normalized **embedding** Noise RMS. Primary fraction
+is 0.005 (0.5%); all four perturbation scales remain in JSON. One deterministic
+independent noise draw per observation, eight observations per development root.
+Each model receives the same random fields; relaxed inputs have their own spacings.
+Rebuild edges/angular/radial quantities, preserve the finite original candidate
+set, and do not requantize perturbed inputs. Noisy inference cannot fetch an atom
+absent from the original candidate set; finite-support limitation is explicit.
+
+Dense trajectory metrics use only exact 0.75 ps differences, no interpolation.
+They reuse `trajectory_stability.spectrum.analyze`: source-balanced jump RMS and
+quantiles normalized by the historical clean reference covariance; uncentered
+increment/velocity spectra include drift, centered fluctuation spectra remove it.
+Participation rank is (sum eigenvalues)²/sum eigenvalues²; d95 is the smallest
+number of principal directions retaining 95% of spectral energy. Paired-corpus
+dataset rank and dense-chart dataset rank are different populations, both named.
+They are linear dimensions, not estimates of nonlinear intrinsic dimension.
+
+Paired AP intervals resample complete development roots within temperature,
+including multiplicity, with 2,000 shared bootstrap draws. Draws with no positive
+weight are excluded and the valid count reported. These intervals do not quantify
+training-seed uncertainty. The 45-root paired development assay is reused, and the
+dense chart may overlap fitting roots; it is a descriptive diagnostic only.
+
+Smooth-AP is a *training surrogate*: weighted positive-average precision with
+sigmoid score comparisons, full self mass, full fitting risk set and temperature
+0.01. It is evaluated on 12 ps cumulative probabilities every 16 updates and is
+not exported as empirical AP. It does not inherit the SOAP optimizer's guarantees.

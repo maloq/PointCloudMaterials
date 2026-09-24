@@ -1,0 +1,12 @@
+{
+  "input": "output/crystallization_transfer/symmetric-relaxed-reuse-20260921",
+  "output": "output/crystallization_transfer/relaxed-reuse-analysis-20260922",
+  "seed": 20260922,
+  "dpi": 300,
+  "bootstrap_draws": 1000,
+  "offsets_ps": [12, 24, 36, 48],
+  "offset_bin_width_ps": 12,
+  "umap_per_source": 24,
+  "samples": 32,
+  "device": "cuda"
+}

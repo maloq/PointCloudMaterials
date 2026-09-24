@@ -1,0 +1,282 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fixed structural-state matched observed/relaxed MACE screen</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Fixed structural-state matched observed/relaxed MACE screen</h1><p>Verified reuse of complete paired 8-Angstrom observed/relaxed neighborhoods: 45 independent roots, 2880 pairs, 25 fitting/5 tuning/15 reused development roots. Cached graphs and fixed geometry targets; independently cached original-MD order and sustained-onset labels were evaluation-only in v1/v2. The separate v3 distance/future study uses current and9ps future order from fitting roots for encoder supervision; onset remains evaluation-only. No new simulation.</p><span class="badge">research</span><p><code>structural-state-screen-20260922</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/structural-state/screen-20260922">/home/ids/vmorozov/training-cache/structural-state/screen-20260922</a></p><p>5 owned files · 0.083 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Fixed structural-state matched observed/relaxed MACE screen&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;description&quot;: &quot;Verified reuse of complete paired 8-Angstrom observed/relaxed neighborhoods: 45 independent roots, 2880 pairs, 25 fitting/5 tuning/15 reused development roots. Cached graphs and fixed geometry targets; independently cached original-MD order and sustained-onset labels were evaluation-only in v1/v2. The separate v3 distance/future study uses current and9ps future order from fitting roots for encoder supervision; onset remains evaluation-only. No new simulation.&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/structural_state/screen_20260922.json&quot;,
+    &quot;experiments/structural_state_20260922/README.md&quot;,
+    &quot;${storage:cache}/structural-state/screen-20260922/manifest.json&quot;,
+    &quot;configs/structural_state/future_metric_campaign_20260923.json&quot;,
+    &quot;experiments/structural_state_future_20260923/README.md&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Archived float16 full-cell coordinates; no weak-noise experiment. Full-cell relaxation contains context outside the local input. One-seed small mechanism cohort; only18 positive12ps development event windows. Historical cohorts are not an untouched final test.&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/structural_state/screen_20260922.json">configs/structural_state/screen_20260922.json</a></li><li><a href="../../../experiments/structural_state_20260922/README.md">experiments/structural_state_20260922/README.md</a></li><li><a href="../../../%24%7Bstorage%3Acache%7D/structural-state/screen-20260922/manifest.json">${storage:cache}/structural-state/screen-20260922/manifest.json</a> (missing here)</li><li><a href="../../../configs/structural_state/future_metric_campaign_20260923.json">configs/structural_state/future_metric_campaign_20260923.json</a></li><li><a href="../../../experiments/structural_state_future_20260923/README.md">experiments/structural_state_future_20260923/README.md</a></li></ul><p>Dependencies: <a href="bcr-relaxed-audit-20260922-092baf53.html">bcr-relaxed-audit-20260922</a>, <a href="crystallization-transfer-mace-20260919-55cdb4ac.html">crystallization-transfer-mace-20260919</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>radius</td><td><code>[8.0]</code></td></tr><tr><td>radius_A</td><td><code>[8.0]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 5,
+    &quot;apparent_bytes&quot;: 119022839,
+    &quot;allocated_bytes&quot;: 88908288,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 2,
+      &quot;.npz&quot;: 3
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 1,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;observed-graphs.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            365351,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            2881
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;edges&quot;: {
+          &quot;shape&quot;: [
+            2,
+            6574508
+          ],
+          &quot;dtype&quot;: &quot;int32&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;edge_offsets&quot;: {
+          &quot;shape&quot;: [
+            2881
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;relaxed-graphs.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            366913,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            2881
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;edges&quot;: {
+          &quot;shape&quot;: [
+            2,
+            6594606
+          ],
+          &quot;dtype&quot;: &quot;int32&quot;,
+          &quot;fortran_order&quot;: true
+        },
+        &quot;edge_offsets&quot;: {
+          &quot;shape&quot;: [
+            2881
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;targets.npz&quot;,
+      &quot;members&quot;: {
+        &quot;observed_radial&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            17
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;observed_angular&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            4
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;observed_rich&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            144
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;observed_covariates&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relaxed_radial&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            17
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relaxed_angular&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            4
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relaxed_rich&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            144
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relaxed_covariates&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;current_order&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            8
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;phase&quot;: {
+          &quot;shape&quot;: [
+            2880
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;at_risk&quot;: {
+          &quot;shape&quot;: [
+            2880
+          ],
+          &quot;dtype&quot;: &quot;bool&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;event_bin&quot;: {
+          &quot;shape&quot;: [
+            2880
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;delay_ps&quot;: {
+          &quot;shape&quot;: [
+            2880
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;future_order_3&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            8
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;future_order_9&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            8
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;future_order_12&quot;: {
+          &quot;shape&quot;: [
+            2880,
+            8
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (1 records)</summary><p><a href="../records/structural-state-screen-20260922-ae80bafa.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/structural-state/screen-20260922/manifest.json">manifest.json</a> · complete · <code>dc04a30f4cc15ea2a4d2b4949fcb85f13f485ab31ab1e70bdf56e608e9894349</code></li></ul></details><p class="muted">Observed 2026-09-24T10:36:51.012083+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

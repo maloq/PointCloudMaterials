@@ -1,0 +1,10 @@
+{
+  "family": "encoder_research",
+  "exported_at": "2026-09-23T16:41:13.907925+00:00",
+  "files": {
+    "src/experiment_runner/encoder_catalogue.py": "fd2612ebc8056585079910df347f781f478ffc47cb4896d14d2f3541e591929c",
+    "docs/metrics/encoder_research.md": "fddccf5067eec2b5c067dedc5f53e11a606b70ce5befe7c98c0c8c671939a5a0",
+    "docs/encoder_research/catalogue.json": "7d097f9ea423fab4280c589279158dec9e8fa0a11b352c783bdd4e9354a2580f",
+    "docs/encoder_research/highlights.json": "6684d9f4552e74ec055111cbaefd4eab93c97b386282ee64589c1be77c24494f"
+  }
+}

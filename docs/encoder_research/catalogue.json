@@ -1,0 +1,1592 @@
+{
+  "schema_version": 1,
+  "scope": "GeoFrame-forward encoder research and its diagnostic/downstream evaluations. Hardware/simulation/cache inventories excluded. Raw records are evidence, not independently ranked fits.",
+  "sources": {
+    "repo": "${storage:repo}",
+    "archive": "${storage:archive}/projects/PointCloudMaterials-20260913T174741Z",
+    "analysis": "${storage:analysis}",
+    "training_store": "${storage:training_storage}"
+  },
+  "families": [
+    {
+      "id": "geoframe",
+      "title": "GeoFrame / GeoFrame V2 (GeoFormer in discussion)",
+      "description": "Canonical patch frames, invariant transformer; VICReg/VISReg and FactorVAE variants."
+    },
+    {
+      "id": "shooting_atlas",
+      "title": "GeoFrame shooting and predictive-atlas studies",
+      "description": "Frozen descriptors, causal history states and limited encoder fine-tuning; distinguish fitted heads from encoder changes."
+    },
+    {
+      "id": "continuous_controls",
+      "title": "Continuous density, SchNet and reference MACE",
+      "description": "Scratch continuous-geometry controls, fixed physical tasks and temporal predictive objectives."
+    },
+    {
+      "id": "pretrained_mace",
+      "title": "Pretrained scalar MACE",
+      "description": "MLIP initialization; spatial/temporal VICReg, TDA, denoising and pooled/atom temporal fusion."
+    },
+    {
+      "id": "context_mace",
+      "title": "Complete-context and dual-readout MACE",
+      "description": "Smooth inner support, full computational halo, tracked-center/inner features and physical supervision."
+    },
+    {
+      "id": "velocity",
+      "title": "Coordinate/velocity MACE",
+      "description": "256 structural, 32 activity and 16 directed-motion channels; native fine-tuning."
+    },
+    {
+      "id": "frozen_maps",
+      "title": "Discarded frozen-feature replacement maps",
+      "description": "PCA/physical/temporal maps and slowness/curvature/motion objectives; backbone remains frozen."
+    },
+    {
+      "id": "causal_mace",
+      "title": "Native causal MACE",
+      "description": "Trainable atom-level scalar/vector/tensor geometry, velocity and history before pooling."
+    },
+    {
+      "id": "predictive_memory",
+      "title": "Partial-observation predictive memory",
+      "description": "Native causal state and fixed multi-lag physical-path density prediction."
+    },
+    {
+      "id": "local_predictability",
+      "title": "Local predictability and physical backbones",
+      "description": "Descriptor baselines and raw MACE/GATr recognition, onset and future-physical supervision."
+    },
+    {
+      "id": "shared_structural",
+      "title": "Shared structural MACE / GATr",
+      "description": "VICReg/JEPA/SIGReg with physical/TDA anchors; stable/local/bond-order/expanded-data revisions."
+    },
+    {
+      "id": "neighborhood_jepa",
+      "title": "Equivariant neighborhood JEPA",
+      "description": "Snapshot MACE trained with spatial/temporal latent prediction and fixed physical anchors; v1/v2/regularizer/multihorizon variants."
+    },
+    {
+      "id": "relaxed",
+      "title": "Observed/relaxed encoder comparisons",
+      "description": "Paired hot/hot, hot/cold, cold/cold reconstruction and conditional regularization."
+    },
+    {
+      "id": "bcr",
+      "title": "Bottleneck-conditioned reconstruction",
+      "description": "Clean invariant encoder code conditions a noisy-geometry denoiser; conditioning and fresh-decoder controls."
+    },
+    {
+      "id": "structural_state",
+      "title": "Fixed structural-state MACE",
+      "description": "Geometry reconstruction, relaxed teachers and distance supervision; repaired v2 and distance/future factorial."
+    },
+    {
+      "id": "frozen_forecast",
+      "title": "Frozen-encoder forecasting and context",
+      "description": "Downstream direct/AR/mixture/diffusion/context predictors; these are not new encoder fits."
+    },
+    {
+      "id": "diagnostics",
+      "title": "Cross-encoder information and visualization audits",
+      "description": "Topology, geometry, conditional information, invariance, spatial plots and trajectory stability."
+    },
+    {
+      "id": "legacy_controls",
+      "title": "Earlier registered controls",
+      "description": "Historical PointNet/VN/DGCNN/other sweeps where artifacts exist; outside the GeoFrame-forward main narrative."
+    }
+  ],
+  "collections": [
+    {
+      "source": "repo",
+      "path": "output/bcr",
+      "family": "bcr"
+    },
+    {
+      "source": "repo",
+      "path": "output/context_night",
+      "family": "shared_structural"
+    },
+    {
+      "source": "repo",
+      "path": "output/crystallization_information",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "repo",
+      "path": "output/crystallization_transfer",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "repo",
+      "path": "output/embedding_forecast",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "repo",
+      "path": "output/embedding_forecast_20260911",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "repo",
+      "path": "output/factor_vae_archive",
+      "family": "geoframe"
+    },
+    {
+      "source": "repo",
+      "path": "output/gatr_conditional_information",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/gatr_equivariant",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/local_predictability",
+      "family": "local_predictability"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_al_denoising_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_causal",
+      "family": "causal_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_context",
+      "family": "context_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_context_clusters",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_context_recovery",
+      "family": "context_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_context_static",
+      "family": "context_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_encoder_diagnostics",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_local_motion",
+      "family": "frozen_maps"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_local_smooth",
+      "family": "frozen_maps"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_local_state",
+      "family": "frozen_maps"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_tda_ridge_audit",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_velocity",
+      "family": "velocity"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_vicreg_full_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/mace_vicreg_relaxed_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/neighborhood_jepa",
+      "family": "neighborhood_jepa"
+    },
+    {
+      "source": "repo",
+      "path": "output/predictive_memory",
+      "family": "predictive_memory"
+    },
+    {
+      "source": "repo",
+      "path": "output/pretrained_mace_spatiotemporal_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "repo",
+      "path": "output/relaxed_encoder",
+      "family": "relaxed"
+    },
+    {
+      "source": "repo",
+      "path": "output/representation_audit",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/shared_pretraining",
+      "family": "shared_structural"
+    },
+    {
+      "source": "repo",
+      "path": "output/structural_pretraining",
+      "family": "shared_structural"
+    },
+    {
+      "source": "repo",
+      "path": "output/structural_state",
+      "family": "structural_state"
+    },
+    {
+      "source": "repo",
+      "path": "output/structural_static",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/trajectory_stability",
+      "family": "diagnostics"
+    },
+    {
+      "source": "archive",
+      "path": "output/detached",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/embedding_forecast",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "archive",
+      "path": "output/embedding_forecast_20260911",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "archive",
+      "path": "output/experiments",
+      "family": "legacy_controls"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_continuity_20260905",
+      "family": "diagnostics"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_encoder_temporal_stability_finest_30fs_20260904",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_temporal_stability_comparison_finest_30fs_20260904",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_temporal_stability_finest_30fs_20260904",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_temporal_variability_nested24ps_0p3ps_20260904",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_temporal_variability_nested24ps_encoder_output_20260904",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/geoframe_v2_spatiotemporal_analysis_20260905",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "output/liquid_sro_benchmark_20260905",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "archive",
+      "path": "output/liquid_sro_benchmark_20260905_12_24ps_preflight",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_al_denoising_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_balanced_representation_20260908",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_bf16_training_20260908",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_diagnosis_20260905",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_joint_properties_20260908",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_original_vicreg_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_original_vicreg_tda_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_plain80_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_target_complete_20260908",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_target_complete_20260908_context",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_temporal_transformer_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_thermal80_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_thermal80_tda1_24ep_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_topology_nuances_20260907",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_vicreg_audit_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_vicreg_full_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/mace_vicreg_relaxed_20260910",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/predictive_encoder_training_20260905",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "archive",
+      "path": "output/pretrained_mace_80_dt01_cosine_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/pretrained_mace_ablations_20260907",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/pretrained_mace_ablations_lr5_20260907",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/pretrained_mace_spatiotemporal_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/pretrained_mace_spatiotemporal_80_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "archive",
+      "path": "output/smooth_temporal_encoder_20260905",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "archive",
+      "path": "output/temporal_hypotheses_12h_20260906",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/paper_qualitative_example_k8",
+      "family": "legacy_controls"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/pretrain_only_Al_512_k8",
+      "family": "legacy_controls"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/pretrain_only_k8",
+      "family": "legacy_controls"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/static_Al_6frames_multi",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/static_Al_6frames_multi_visreg",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/static_Al_6frames_multiscale_line",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/static_Al_6frames_multiscale_vicred",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/static_crystallization_step187800_multiscale_vicreg",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/temporal_Al_500frames_multi",
+      "family": "geoframe"
+    },
+    {
+      "source": "archive",
+      "path": "outputs/temporal_Al_500frames_multi_new",
+      "family": "geoframe"
+    },
+    {
+      "source": "analysis",
+      "path": "embedding_forecast",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "analysis",
+      "path": "factor_vae_archive",
+      "family": "geoframe"
+    },
+    {
+      "source": "analysis",
+      "path": "mace",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_context",
+      "family": "context_mace"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_context_clusters",
+      "family": "diagnostics"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_context_recovery",
+      "family": "context_mace"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_context_static",
+      "family": "context_mace"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_encoder_diagnostics",
+      "family": "diagnostics"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_local_smooth",
+      "family": "frozen_maps"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_local_state",
+      "family": "frozen_maps"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_tda_ridge_audit",
+      "family": "diagnostics"
+    },
+    {
+      "source": "analysis",
+      "path": "mace_velocity",
+      "family": "velocity"
+    },
+    {
+      "source": "analysis",
+      "path": "representation_audit",
+      "family": "diagnostics"
+    },
+    {
+      "source": "analysis",
+      "path": "structural_state",
+      "family": "structural_state"
+    },
+    {
+      "source": "analysis",
+      "path": "structural_static",
+      "family": "diagnostics"
+    },
+    {
+      "source": "training_store",
+      "path": "embedding_forecast",
+      "family": "frozen_forecast"
+    },
+    {
+      "source": "training_store",
+      "path": "geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905",
+      "family": "geoframe"
+    },
+    {
+      "source": "training_store",
+      "path": "geoframe_v2_vicreg_vs_visreg_20260905",
+      "family": "geoframe"
+    },
+    {
+      "source": "training_store",
+      "path": "geoframe_v2_vicreg_vs_visreg_largebatch_20260905",
+      "family": "geoframe"
+    },
+    {
+      "source": "training_store",
+      "path": "mace",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "training_store",
+      "path": "mace_original_vicreg_tda_20260909",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "training_store",
+      "path": "nested_committor_geoframe_v2_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictability_map_geoframe_v2_20260903_125942",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictability_map_geoframe_v2_20260903_130823",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictability_map_geoframe_v2_20260903_131707",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictability_map_nested_transition_geoframe_v2_20260903_134223",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictability_map_nested_transition_geoframe_v2_20260903_135104",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_expanded512_cache_geoframe_v2_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_expanded512_history_finetune_geoframe_v2_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_geoframe_v2_480branches_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_history4_geoframe_v2_480branches_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_nested_fixed24_geoframe_v2_20260903",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_nested_fixed24_history_geoframe_v2_20260903",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_nested_fixed24_transition_encoder_finetune_geoframe_v2_20260903",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_nested_fixed24_transition_geoframe_v2_20260903",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_nested_fixed24_transition_history_geoframe_v2_20260903",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_history_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_input_cache_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_scaled_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_scaled_history_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "predictive_atlas_temporal_encoder_scaled_input_cache_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "pretrained_mace_80_dt01_cosine_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "training_store",
+      "path": "pretrained_mace_ablations_20260907",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "training_store",
+      "path": "pretrained_mace_spatiotemporal_20260906",
+      "family": "pretrained_mace"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_ablation0_future_change_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_distributional_ablation3_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_dynamical_ablation7_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_encoder_finetune_ablation6_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_geometry_ablation4_fixed_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_geometry_ablation4_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_multiscale_ablation1_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_predictive_encoder_comparison_440branches_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_predictive_geo_frame_70304_400K_20260831",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_predictive_geoframe_v1_440branches_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_predictive_geoframe_v2_factor_sn_440branches_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_short_horizon_ablation7b_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_spatial_ablation2_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "shooting_temporal_pretraining_ablation5_geoframe_v2_20260901",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "temporal_encoder_pretraining_expanded512_cache_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "temporal_encoder_pretraining_geoframe_v2_29824_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "temporal_encoder_pretraining_geoframe_v2_468480_20260902",
+      "family": "shooting_atlas"
+    },
+    {
+      "source": "training_store",
+      "path": "temporal_hypotheses_12h_20260906",
+      "family": "continuous_controls"
+    },
+    {
+      "source": "repo",
+      "path": "output/geoframe_evolution",
+      "family": "geoframe"
+    },
+    {
+      "source": "repo",
+      "path": "output/encoder_research/screen-20260923",
+      "family": "diagnostics"
+    },
+    {
+      "source": "repo",
+      "path": "output/encoder_research/parameter-search-20260923",
+      "family": "diagnostics"
+    }
+  ],
+  "studies": [
+    {
+      "id": "bcr_followup_20260922",
+      "family": "bcr",
+      "title": "BCR: sample-specific conditioning and structural retention",
+      "source": "repo",
+      "path": "experiments/bcr_followup_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "bcr_g1_20260921",
+      "family": "bcr",
+      "title": "Independent-root BCR conditioning pilot",
+      "source": "repo",
+      "path": "experiments/bcr_g1_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "bcr_v1_20260921",
+      "family": "bcr",
+      "title": "Bottleneck-conditioned reconstruction (BCR-v1)",
+      "source": "repo",
+      "path": "experiments/bcr_v1_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "context_night_20260921",
+      "family": "shared_structural",
+      "title": "Overnight: preserve local information and supply missing predictive context",
+      "source": "repo",
+      "path": "experiments/context_night_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "crystallization_followup_20260922",
+      "family": "frozen_forecast",
+      "title": "Which observed information improves relaxed-MACE crystallization forecasts?",
+      "source": "repo",
+      "path": "experiments/crystallization_followup_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "crystallization_information_20260920",
+      "family": "frozen_forecast",
+      "title": "Which observed information improves a frozen snapshot's short-horizon onset prediction?",
+      "source": "repo",
+      "path": "experiments/crystallization_information_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "crystallization_transfer_20260919",
+      "family": "frozen_forecast",
+      "title": "Crystallization prediction from the expanded local MACE checkpoint",
+      "source": "repo",
+      "path": "experiments/crystallization_transfer_20260919/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "embedding_forecast_20260911",
+      "family": "frozen_forecast",
+      "title": "Forecasting local-structure embedding trajectories \u2014 September 11, 2026",
+      "source": "repo",
+      "path": "experiments/embedding_forecast_20260911/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "encoder_training_literature_20260922",
+      "family": "structural_state",
+      "title": "Encoder training after BCR: literature and next experiments",
+      "source": "repo",
+      "path": "experiments/encoder_training_literature_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "factor_vae_20260901",
+      "family": "geoframe",
+      "title": "GeoFrame factor-VAE sweep",
+      "source": "archive",
+      "path": "experiments/factor_vae_20260901/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "forecast_context_20260913",
+      "family": "frozen_forecast",
+      "title": "How much observed history improves an embedding forecast?",
+      "source": "repo",
+      "path": "experiments/forecast_context_20260913/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "forecast_crystallization_20260913",
+      "family": "frozen_forecast",
+      "title": "Do embedding forecasts predict a local environment becoming crystal?",
+      "source": "repo",
+      "path": "experiments/forecast_crystallization_20260913/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "forecast_spatial_attention_20260914",
+      "family": "frozen_forecast",
+      "title": "Learned spatial attention for future local-structure embeddings",
+      "source": "repo",
+      "path": "experiments/forecast_spatial_attention_20260914/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "forecast_spatial_mixture_20260913",
+      "family": "frozen_forecast",
+      "title": "12 ps history, spatial surroundings and probabilistic trajectories \u2014 2026-09-13",
+      "source": "repo",
+      "path": "experiments/forecast_spatial_mixture_20260913/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "gatr_conditional_information_20260918",
+      "family": "diagnostics",
+      "title": "GATr information beyond radial structure and density",
+      "source": "repo",
+      "path": "experiments/gatr_conditional_information_20260918/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "gatr_equivariant_20260918",
+      "family": "diagnostics",
+      "title": "Are GATr's internal directions persistent or spatially ordered?",
+      "source": "repo",
+      "path": "experiments/gatr_equivariant_20260918/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "geoframe_continuity_20260905",
+      "family": "diagnostics",
+      "title": "GeoFrame continuity and dynamic-frame diagnostic",
+      "source": "archive",
+      "path": "experiments/geoframe_continuity_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "liquid_geometry_20260922",
+      "family": "diagnostics",
+      "title": "Does liquid embedding geometry explain crystallization prediction?",
+      "source": "repo",
+      "path": "experiments/liquid_geometry_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "liquid_sro_benchmark_20260905",
+      "family": "continuous_controls",
+      "title": "Liquid short-range-order benchmark \u2014 September 5, 2026",
+      "source": "archive",
+      "path": "experiments/liquid_sro_benchmark_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "local_predictability_20260917",
+      "family": "local_predictability",
+      "title": "Local crystallization predictability and information retention",
+      "source": "repo",
+      "path": "experiments/local_predictability_20260917/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_al_denoising_20260910",
+      "family": "pretrained_mace",
+      "title": "Al topology denoising \u2014 September 10, 2026",
+      "source": "repo",
+      "path": "experiments/mace_al_denoising_20260910/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_balanced_representation_20260908",
+      "family": "pretrained_mace",
+      "title": "Balanced MACE representation training \u2014 2026-09-08",
+      "source": "archive",
+      "path": "experiments/mace_balanced_representation_20260908/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_causal_20260916",
+      "family": "causal_mace",
+      "title": "Does early geometry\u2013velocity\u2013history interaction improve a local predictive state?",
+      "source": "repo",
+      "path": "experiments/mace_causal_20260916/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_context_20260914",
+      "family": "context_mace",
+      "title": "Complete context and tracked-center MACE readouts",
+      "source": "repo",
+      "path": "experiments/mace_context_20260914/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_context_clusters_20260915",
+      "family": "diagnostics",
+      "title": "Why are liquid clusters incoherent in the joint MACE representation?",
+      "source": "repo",
+      "path": "experiments/mace_context_clusters_20260915/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_context_recovery_20260914",
+      "family": "context_mace",
+      "title": "Recovering local structure in continuous MACE embeddings",
+      "source": "repo",
+      "path": "experiments/mace_context_recovery_20260914/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_context_static_20260915",
+      "family": "context_mace",
+      "title": "Joint MACE embeddings on static Al and Zr",
+      "source": "repo",
+      "path": "experiments/mace_context_static_20260915/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_data_amount_20260916",
+      "family": "velocity",
+      "title": "How much independent data does the native local-state encoder need?",
+      "source": "repo",
+      "path": "experiments/mace_data_amount_20260916/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_diagnosis_20260905",
+      "family": "pretrained_mace",
+      "title": "MACE pilot diagnosis \u2014 September 5, 2026",
+      "source": "archive",
+      "path": "experiments/mace_diagnosis_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_encoder_diagnostics_20260914",
+      "family": "diagnostics",
+      "title": "Does the forecast MACE encoder encode stable, generalizable local structure?",
+      "source": "repo",
+      "path": "experiments/mace_encoder_diagnostics_20260914/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_joint_properties_20260908",
+      "family": "pretrained_mace",
+      "title": "Improve MACE properties together \u2014 2026-09-08",
+      "source": "archive",
+      "path": "experiments/mace_joint_properties_20260908/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_local_motion_20260916",
+      "family": "frozen_maps",
+      "title": "Organized and smooth local-state motion",
+      "source": "repo",
+      "path": "experiments/mace_local_motion_20260916/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_local_smooth_20260915",
+      "family": "frozen_maps",
+      "title": "Direct temporal training of an informative local state",
+      "source": "repo",
+      "path": "experiments/mace_local_smooth_20260915/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_local_state_20260915",
+      "family": "frozen_maps",
+      "title": "Frozen features for informative, smooth local-group states",
+      "source": "repo",
+      "path": "experiments/mace_local_state_20260915/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_original_vicreg_20260909",
+      "family": "pretrained_mace",
+      "title": "Pretrained MACE in the original VICReg pipeline \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_original_vicreg_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_original_vicreg_tda_20260909",
+      "family": "pretrained_mace",
+      "title": "Original VICReg + TDA on normalized MACE \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_original_vicreg_tda_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_plain80_20260909",
+      "family": "pretrained_mace",
+      "title": "Plain 80-atom MACE \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_plain80_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_target_complete_20260908",
+      "family": "pretrained_mace",
+      "title": "Target-complete compact MACE \u2014 2026-09-08",
+      "source": "archive",
+      "path": "experiments/mace_target_complete_20260908/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_tda_ridge_audit_20260914",
+      "family": "diagnostics",
+      "title": "Retesting single-frame VICReg versus TDA supervision",
+      "source": "repo",
+      "path": "experiments/mace_tda_ridge_audit_20260914/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_temporal_transformer_20260909",
+      "family": "pretrained_mace",
+      "title": "Temporal MACE transformer \u2014 September 9, 2026",
+      "source": "archive",
+      "path": "experiments/mace_temporal_transformer_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_thermal80_20260909",
+      "family": "pretrained_mace",
+      "title": "Variant C: hot/relaxed MACE \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_thermal80_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_thermal80_tda1_24ep_20260909",
+      "family": "pretrained_mace",
+      "title": "Variant C, TDA from epoch 1, 24 epochs \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_thermal80_tda1_24ep_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_topology_nuances_20260907",
+      "family": "pretrained_mace",
+      "title": "Topology-sensitive MACE continuation \u2014 2026-09-07",
+      "source": "archive",
+      "path": "experiments/mace_topology_nuances_20260907/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_velocity_20260915",
+      "family": "velocity",
+      "title": "A local coordinate/velocity MACE encoder",
+      "source": "repo",
+      "path": "experiments/mace_velocity_20260915/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_vicreg_audit_20260909",
+      "family": "pretrained_mace",
+      "title": "MACE VICReg audit \u2014 2026-09-09",
+      "source": "archive",
+      "path": "experiments/mace_vicreg_audit_20260909/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_vicreg_full_20260910",
+      "family": "pretrained_mace",
+      "title": "Full normalized MACE VICReg with Ta/Ti \u2014 September 10, 2026",
+      "source": "repo",
+      "path": "experiments/mace_vicreg_full_20260910/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "mace_vicreg_relaxed_20260910",
+      "family": "pretrained_mace",
+      "title": "Relaxed MEAM topology in the original VICReg trainer \u2014 September 10, 2026",
+      "source": "repo",
+      "path": "experiments/mace_vicreg_relaxed_20260910/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "neighborhood_jepa_20260920",
+      "family": "neighborhood_jepa",
+      "title": "Snapshot MACE from equivariant space\u2013time neighborhood prediction",
+      "source": "repo",
+      "path": "experiments/neighborhood_jepa_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "neighborhood_jepa_multihorizon_20260920",
+      "family": "neighborhood_jepa",
+      "title": "Does longer-horizon JEPA embedding prediction improve the local state?",
+      "source": "repo",
+      "path": "experiments/neighborhood_jepa_multihorizon_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "neighborhood_jepa_regularization_20260920",
+      "family": "neighborhood_jepa",
+      "title": "Does order-preserving regularization improve local structure representations?",
+      "source": "repo",
+      "path": "experiments/neighborhood_jepa_regularization_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "neighborhood_jepa_v2_20260920",
+      "family": "neighborhood_jepa",
+      "title": "Does causal geometry-anchored neighbor prediction improve a snapshot state?",
+      "source": "repo",
+      "path": "experiments/neighborhood_jepa_v2_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "predictive_encoder_training_20260905",
+      "family": "continuous_controls",
+      "title": "Task-supervised encoder training \u2014 September 5, 2026",
+      "source": "archive",
+      "path": "experiments/predictive_encoder_training_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "predictive_memory_20260917",
+      "family": "predictive_memory",
+      "title": "Predictive memory in partial atomic observations",
+      "source": "repo",
+      "path": "experiments/predictive_memory_20260917/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "pretrained_mace_80_dt01_cosine_20260906",
+      "family": "pretrained_mace",
+      "title": "MACE: 0.1 ps temporal pairs and per-step cosine \u2014 2026-09-06",
+      "source": "archive",
+      "path": "experiments/pretrained_mace_80_dt01_cosine_20260906/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "pretrained_mace_ablations_20260907",
+      "family": "pretrained_mace",
+      "title": "Matched pretrained MACE objective ablations \u2014 2026-09-07",
+      "source": "archive",
+      "path": "experiments/pretrained_mace_ablations_20260907/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "pretrained_mace_ablations_lr5_20260907",
+      "family": "pretrained_mace",
+      "title": "MACE ablations: quota recovery and 5\u00d7 peak LR \u2014 2026-09-07",
+      "source": "archive",
+      "path": "experiments/pretrained_mace_ablations_lr5_20260907/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "pretrained_mace_spatiotemporal_20260906",
+      "family": "pretrained_mace",
+      "title": "Pretrained small MACE with spatial and temporal structure objectives \u2014 2026-09-06",
+      "source": "archive",
+      "path": "experiments/pretrained_mace_spatiotemporal_20260906/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "pretrained_mace_spatiotemporal_80_20260906",
+      "family": "pretrained_mace",
+      "title": "Strict 80-point pretrained MACE, with W&B online \u2014 2026-09-06",
+      "source": "archive",
+      "path": "experiments/pretrained_mace_spatiotemporal_80_20260906/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "relaxed_encoder_20260920",
+      "family": "relaxed",
+      "title": "Do relaxed inputs and targets improve a local predictive representation?",
+      "source": "repo",
+      "path": "experiments/relaxed_encoder_20260920/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "relaxed_encoder_expanded_20260921",
+      "family": "relaxed",
+      "title": "Expanded paired relaxation and conditional rank regularization",
+      "source": "repo",
+      "path": "experiments/relaxed_encoder_expanded_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "relaxed_encoder_large_test_20260921",
+      "family": "relaxed",
+      "title": "More informative matched crystallization evaluation",
+      "source": "repo",
+      "path": "experiments/relaxed_encoder_large_test_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "shared_pretraining_20260918",
+      "family": "shared_structural",
+      "title": "Twelve-epoch shared structural and causal pretraining",
+      "source": "repo",
+      "path": "experiments/shared_pretraining_20260918/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "shooting_ablation_20260901",
+      "family": "shooting_atlas",
+      "title": "Shooting representation and prediction ablations \u2014 September 2026",
+      "source": "archive",
+      "path": "experiments/shooting_ablation_20260901/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "smooth_temporal_encoder_20260905",
+      "family": "continuous_controls",
+      "title": "Smooth spatial and temporal encoder pilot \u2014 September 5, 2026",
+      "source": "archive",
+      "path": "experiments/smooth_temporal_encoder_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "spatiotemporal_20260905",
+      "family": "geoframe",
+      "title": "Matched spatiotemporal representation study",
+      "source": "archive",
+      "path": "experiments/spatiotemporal_20260905/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structural_pretraining_20260917",
+      "family": "shared_structural",
+      "title": "Shared structural pretraining with physical and topology anchors",
+      "source": "repo",
+      "path": "experiments/structural_pretraining_20260917/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structural_state_20260922",
+      "family": "structural_state",
+      "title": "Fixed structural targets, relaxed teachers and physical distances",
+      "source": "repo",
+      "path": "experiments/structural_state_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structural_state_20260923",
+      "family": "structural_state",
+      "title": "Repaired structural-state screen",
+      "source": "repo",
+      "path": "experiments/structural_state_20260923/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structural_state_future_20260923",
+      "family": "structural_state",
+      "title": "Does preserving physical neighborhoods improve predictive representations?",
+      "source": "repo",
+      "path": "experiments/structural_state_future_20260923/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structured_context_20260921",
+      "family": "frozen_forecast",
+      "title": "Symmetric spatial context for frozen MACE and GATr forecasting",
+      "source": "repo",
+      "path": "experiments/structured_context_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structured_relaxed_context_20260921",
+      "family": "frozen_forecast",
+      "title": "Symmetric context with relaxed MACE",
+      "source": "repo",
+      "path": "experiments/structured_relaxed_context_20260921/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "structured_relaxed_reuse_20260922",
+      "family": "frozen_forecast",
+      "title": "Archived relaxed inputs for symmetric-context crystallization forecasts",
+      "source": "repo",
+      "path": "experiments/structured_relaxed_reuse_20260922/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "temporal_hypotheses_12h_20260906",
+      "family": "continuous_controls",
+      "title": "Descriptor-free temporal hypotheses \u2014 September 6, 2026",
+      "source": "archive",
+      "path": "experiments/temporal_hypotheses_12h_20260906/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "trajectory_stability_20260918",
+      "family": "diagnostics",
+      "title": "Stability of the latest structural encoders along trajectories",
+      "source": "repo",
+      "path": "experiments/trajectory_stability_20260918/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "consult_record"
+    },
+    {
+      "id": "geoframe_evolution_20260923",
+      "family": "geoframe",
+      "title": "GeoFrameV2 35-pass reproduction, interfaces and liquid fidelity",
+      "source": "repo",
+      "path": "experiments/geoframe_evolution_20260923/README.md",
+      "evidence": "protocol_and_findings_record",
+      "status": "complete"
+    },
+    {
+      "id": "encoder_screen_20260923",
+      "family": "diagnostics",
+      "title": "Broad native snapshot screen with interface, liquid and conditional future metrics",
+      "source": "repo",
+      "path": "experiments/encoder_screen_20260923/README.md",
+      "evidence": "protocol_and_running_queue",
+      "status": "running"
+    },
+    {
+      "id": "encoder_parameters_20260923",
+      "family": "diagnostics",
+      "title": "Matched encoder parameters: projector, regularizer, learning rate and physical distance",
+      "source": "repo",
+      "path": "experiments/encoder_parameters_20260923/README.md",
+      "evidence": "protocol_and_running_queue",
+      "status": "running"
+    }
+  ],
+  "skip_directories": [
+    ".git",
+    "__pycache__",
+    ".pytest_cache",
+    "code",
+    "source",
+    "source_snapshot",
+    "frozen_source",
+    "tracking",
+    "execution",
+    "wandb",
+    "config_snapshot",
+    "cache",
+    "caches",
+    "views",
+    "data",
+    "datasets",
+    "checkpoints",
+    "checkpoints_selected",
+    "restarts",
+    "archive-before",
+    "initial-report-version",
+    "runtime",
+    "storage",
+    "registry",
+    "encoder_research",
+    "dataset-registry",
+    "src",
+    "configs",
+    "docs",
+    "scripts",
+    "tests",
+    "analysis_source",
+    "analysis-source",
+    "collector-recovery-code",
+    "training-source",
+    "failed-model-summary"
+  ],
+  "index_only_csv": [
+    "latent_projection.csv",
+    "local_structure_coords_clusters.csv"
+  ],
+  "max_import_bytes": 20000000
+}

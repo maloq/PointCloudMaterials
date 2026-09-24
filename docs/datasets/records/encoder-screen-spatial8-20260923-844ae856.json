@@ -1,0 +1,20 @@
+{
+  "dataset_id": "encoder-screen-spatial8-20260923",
+  "records": [
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/dense8-inputs/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "218870f13f5248c6db335c8afdda5e2ec497ff9ce79b57961ccf5b9507292f9e",
+      "kind": "metadata",
+      "keys": [
+        "factor",
+        "files",
+        "frames",
+        "original_reference_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

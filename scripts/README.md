@@ -1,5 +1,9 @@
 # Maintained commands
 
+`python -m src.research.geoframe_evolution.train|reference|queue|precursors`
+reproduces the epoch-34 GeoFrame recipe and measures interfaces, defects,
+liquid order and prediction along training; [commands](../docs/geoframe_evolution.md).
+
 Run from the repository root with `conda run -n pointnet-torch214 python …` for new
 GPU work. Exact resumes of existing jobs retain their recorded `pointnet`
 environment; see [the PyTorch upgrade](../docs/pytorch214_upgrade.md).
@@ -7,6 +11,11 @@ Commands contain argument parsing and forwarding only; scientific implementation
 belongs in `src/`. Run-specific settings belong in configuration, not copied runners.
 See [workflow details](../docs/workflows.md), [experiment records](../experiments/README.md)
 and [the output layout](../docs/research_layout.md).
+
+`python scripts/experiment_registry.py encoders` refreshes the offline encoder
+research catalogue and SQLite evidence database from registered local/archived
+reports and tables. It performs no training or inference. See the
+[encoder research handbook](../docs/encoder_research/README.md).
 
 `python -m src.research.local_predictability.report --config
 configs/analysis/local_predictability_report.json --output output/local_predictability/NEW-SUMMARY`
@@ -45,6 +54,33 @@ and refuses to overwrite an existing report. It does not fit models. See the
 | `plot_homogeneous_checkpoint.py`, `render_shooting_dynamics_gifs.py` | Simulation visualization. |
 
 Current training and analysis use existing module entry points:
+
+`python -m src.research.robust_onset.queue preflight|submit|collect --config
+configs/robust_onset/screen_20260924.json` runs the new one-seed onset/robustness
+screen with AP ranking, relaxed teachers and tensor pooling. See
+[operations](../docs/robust_onset.md); production correctness preflight is separate
+from training.
+
+`python -m src.research.structural_state.queue preflight|launch-local|serial|worker|collect
+--config configs/structural_state/repaired_20260923.json` runs the four repaired
+fixed-geometry/relaxed-teacher/physical-distance native MACE experiments. Preflight
+is a separate correctness stage. `launch-local` freezes code and starts detached
+serial queues on the visible GPUs of the current Slurm allocation. The `submit`
+action instead submits independent GPU allocations. Historical v1 runs use their
+original frozen code;
+see [operations](../docs/structural_state.md).
+
+The same queue accepts `configs/structural_state/future_metric_seed20260923.json`
+and `future_metric_seed20260924.json` for the two-seed distance/future factorial.
+`python -m src.research.structural_state.factorial_report --config
+configs/structural_state/future_metric_campaign_20260923.json` collects fully
+completed seeds with paired onset intervals and predeclared physical rules;
+workers call it automatically. See [the protocol](../experiments/structural_state_future_20260923/README.md).
+
+`python -m src.research.structural_state_onset_review --run RUN --output NEW-OUTPUT`
+audits completed repaired-encoder onset predictions and exports paired whole-source
+uncertainty for12ps AP, Brier, binary log loss and event-time NLL. It never refits
+models; see [metric definitions](../docs/metrics/structural_state_onset_review.md).
 
 `python -m src.research.relaxed_encoder.queue evaluate --config
 configs/analysis/relaxed_encoder_expanded.json` runs extraction and frozen readouts
@@ -554,3 +590,37 @@ Use `--stage render` to adjust appearance without repeating extraction or UMAP.
 replays the completed eight forecasts, regenerates PNG/UMAP/context figures, and
 compares the same onset events and matched controls across forecast origins.
 Use `--stage render` for appearance-only changes; [metric definitions](../docs/metrics/structured_figures.md).
+
+The selected relaxed cold-vic-temp01 model uses `src.analysis.neighborhood_adapter` export/verify with `configs/analysis/relaxed_best_static.json`, followed by `src.analysis.pipeline configs/analysis/static_relaxed_best_al.yaml`. See [protocol](../experiments/relaxed_encoder_expanded_20260921/STATIC_AL.md).
+
+Relaxed symmetric-context MACE forecasts use the module entry point
+`python -m src.research.structured_context.relaxed`; see
+[operations](../docs/structured_relaxed_context.md) and the
+[research protocol](../experiments/structured_relaxed_context_20260921/README.md).
+The active archived-data route is `python -m src.research.structured_context.reuse`;
+it replaces fresh-quench preparation for this comparison and runs no simulations.
+
+`python -m src.research.bcr_followup.queue preflight|submit|run|report --config configs/bcr/followup_20260922/study.json` runs the eight-hour frozen-BCR follow-up and paired relaxed-data audit; [operations](../docs/bcr_followup.md), [scientific protocol](../experiments/bcr_followup_20260922/README.md).
+
+Matched relaxed-versus-original MACE PNG analysis:
+`python -m src.research.structured_context.reuse_figures --config configs/analysis/relaxed_reuse_figures.json`.
+Use `--render-only` to redraw checked artifacts without GPU inference or UMAP fitting.
+Captions and the HTML gallery are saved alongside the PNG files.
+
+`python -m src.research.crystallization_followup.queue prepare|verify|submit|worker|report --config configs/crystallization_transfer/literature_followup_20260922.json`
+runs the paired-input, actual-time and dense-history frozen-MACE experiments;
+[workflow](../docs/crystallization_followup.md), [literature and protocol](../experiments/crystallization_followup_20260922/README.md).
+
+`python -m src.research.crystallization_followup.front --config configs/crystallization_transfer/crystal_front_20260922.json --after output/crystallization_transfer/literature-optimization-20260922`
+derives observed bond-coherent cluster descriptors from existing MD, then validates
+and launches the front queue after the optimization queue; no new simulation.
+
+`python -m src.research.bcr_followup_analysis --config configs/analysis/bcr_followup_20260922.json` analyzes completed BCR interventions, frozen structural probes and fresh decoders, with root-bootstrap uncertainty and a static summary figure; [findings](../experiments/bcr_followup_20260922/RESULTS.md).
+
+`python -m src.research.liquid_geometry.study prepare|model|latest|checkpoints|report --config configs/analysis/liquid_geometry_20260922.json` runs frozen metric interventions, exact-cohort forecast associations and native early/late checkpoint diagnostics; see [workflow](../docs/liquid_geometry.md).
+
+Native snapshot physical screen: `python -m src.research.encoder_screen.queue --config configs/encoder_screen/screen_20260923.json --lane NAME`; [preparation, cached figure pass and continuation](../docs/encoder_screen.md).
+
+`python -m src.research.encoder_parameter_search.preflight` and `queue launch|worker` run the28-fit matched GeoFrame/MACE parameter search; [execution](../docs/encoder_parameter_search.md).
+
+`python -m src.research.mace_epi.queue submit --config configs/mace_epi/campaign.json` runs the paired MACE VICReg/Epi comparison; see [operations](../docs/mace_epi.md) and [scientific protocol](../experiments/mace_paired_epi_20260923/README.md).

@@ -1,0 +1,46 @@
+{
+  "dataset_id": "crystallization-structured-relaxed-20260921",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystallization-structured-relaxed-20260921/cells/868-32/complete.json",
+      "relative_path": "cells/868-32/complete.json",
+      "sha256": "2a4f7afe28934b84aecfa8651d226d9fab085b5027b2cb3af089cc571bef138e",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "checkpoint_sha256",
+        "frame",
+        "identity",
+        "observations_sha256",
+        "precise_dump_sha256",
+        "relaxation",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "relaxation.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "relaxation.settings.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.",
+            "first_json_path": "relaxation.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "output": "${storage:analysis}/encoder_research/noise-lag075-20260924",
+  "parent_config": "configs/analysis/encoder_dynamics_lag075_20260924.json",
+  "origins_per_atom": 8,
+  "draws": 4,
+  "seed": 20260924,
+  "sigma_A": [
+    0.0001,
+    0.001,
+    0.01,
+    0.1
+  ],
+  "primary_sigma_A": 0.01,
+  "v6_commit": "dfdadb886b"
+}

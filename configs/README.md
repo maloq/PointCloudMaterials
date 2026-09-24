@@ -1,5 +1,22 @@
 # Configuration index
 
+[`geoframe_evolution/`](geoframe_evolution/) reproduces the epoch-34 GeoFrameV2
+recipe through 35 full passes, with independent Al/Ta/Zr interface/liquid assays;
+[workflow](../docs/geoframe_evolution.md).
+
+[`structural_state/future_metric_campaign_20260923.json`](structural_state/future_metric_campaign_20260923.json)
+coordinates two seeds of the relaxed geometry/current-order × distance × future
+encoder study (eight new fits); [protocol](../experiments/structural_state_future_20260923/README.md).
+
+[`structural_state/repaired_20260923.json`](structural_state/repaired_20260923.json)
+defines the four-arm repair with calibrated heads, preserved pooled features and
+fixed distance scales, detached across two GPUs in the current allocation;
+[protocol](../experiments/structural_state_20260923/README.md).
+
+[`structural_state/screen_20260922.json`](structural_state/screen_20260922.json)
+defines the four matched native MACE fits after BCR, using fixed observed/relaxed
+geometry and relational supervision; [protocol](../experiments/structural_state_20260922/README.md).
+
 [`analysis/conditional_information_local_last.json`](analysis/conditional_information_local_last.json)
 pins final-update-622 MACE/GATr conditional structure, crystallization and jitter
 comparisons on the approved H100; [protocol](../experiments/gatr_conditional_information_20260918/LOCAL_LAST622.md).
@@ -296,3 +313,50 @@ Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.y
 
 - `analysis/structured_context_figures.json`: completed symmetric MACE/GATr PNG
   analysis, independent training-fitted UMAPs, and fixed-event lead-time curves.
+
+Development-selected relaxed static Al: [pipeline](analysis/static_relaxed_best_al.yaml), [export](analysis/relaxed_best_static.json), [protocol](../experiments/relaxed_encoder_expanded_20260921/STATIC_AL.md).
+
+Relaxed symmetric-context forecasting: `crystallization_transfer/symmetric_relaxed_mace_20260921.json`;
+[protocol](../experiments/structured_relaxed_context_20260921/README.md).
+
+Active reuse-only comparison: `crystallization_transfer/symmetric_relaxed_reuse_20260921.json`;
+[protocol](../experiments/structured_relaxed_reuse_20260922/README.md).
+
+Literature-guided frozen-MACE follow-up: `crystallization_transfer/literature_followup_20260922.json`;
+[twelve matched experiments](../experiments/crystallization_followup_20260922/README.md).
+
+Second wave: `crystallization_transfer/literature_optimization_20260922.json` (16
+optimization fits) and `crystallization_transfer/crystal_front_20260922.json` (12
+observed ordered-region/context tests); [protocol](../experiments/crystallization_followup_20260922/SECOND_WAVE.md).
+
+- `bcr/followup_20260922/study.json`: one-seed, eight-hour frozen BCR conditioning/readout audit, archived paired relaxed geometry and three matched fresh-decoder fits; [workflow](../docs/bcr_followup.md).
+
+`analysis/relaxed_reuse_figures.json` produces matched forecast, UMAP and real
+observed/relaxed atom illustrations; see the archived-reuse research record.
+
+- `analysis/bcr_followup_20260922.json`: CPU-only analysis of completed BCR/relaxed audits, paired root intervals and plots.
+
+- `analysis/liquid_geometry_20260922.json`: ten-encoder liquid metric interventions, latest paired crystallization bridge and genuine same-run MACE/GATr checkpoints; [protocol](../experiments/liquid_geometry_20260922/README.md).
+
+- [Encoder snapshot screen](encoder_screen/screen_20260923.json): pinned native producers and fixed physical references; [execution](../docs/encoder_screen.md).
+
+[`encoder_parameter_search/campaign.json`](encoder_parameter_search/campaign.json) defines28 matched parameter-search fits and convergence checkpoints; [protocol](../experiments/encoder_parameters_20260923/README.md).
+
+- `mace_epi/campaign.json`: matched direct-embedding MACE paired alignment with VICReg or geometric Epi regularization, two seeds and24 full passes. See [operations](../docs/mace_epi.md).
+## Embedding dynamics supplement
+
+`robust_onset/screen_20260924.json` defines the eight-arm predictive/robustness
+MACE queue; [scientific protocol](../experiments/robust_onset_20260924/README.md)
+and [operations](../docs/robust_onset.md). One seed, two concurrent Slurm GPUs.
+
+`analysis/encoder_noise_20260924.json` adds controlled Gaussian input-noise
+response to the matched 0.75 ps table; [workflow](../docs/encoder_research/input_noise.md).
+
+`analysis/encoder_dynamics_lag075_20260924.json` uses **only 0.75 ps**, with fresh
+Geoformer/current-MACE exports on the existing dense trajectory cohort. Run
+`trajectory_stability.native_dense`, then `trajectory_stability.audit` as
+documented in the [guide](../docs/encoder_research/embedding_dynamics.md).
+
+`analysis/encoder_dynamics_20260924.json` selects completed exports for the
+[state/movement dimension audit](../docs/encoder_research/embedding_dynamics.md).
+It runs analysis only and preserves historical outputs.

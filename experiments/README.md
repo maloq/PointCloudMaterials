@@ -1,5 +1,8 @@
 # Current research
 
+For the cross-study history, measurement guide and searchable results, start with
+the [encoder research handbook](../docs/encoder_research/README.md).
+
 Only scientific questions, protocols, findings and reproduction configurations
 belong here. Simulation campaigns and inventories are in [docs/simulations](../docs/simulations/README.md);
 storage, portability and maintenance are in [docs](../docs/data_storage.md).
@@ -10,6 +13,14 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Predictive, noise-aware encoders](robust_onset_20260924/README.md) | Eight one-seed controls: onset gradients, full-cohort AP ranking, present relaxed teachers, normalized perturbations, and multiscale tensor pooling. |
+| [AP-focused encoders and temporal dimensions](encoder_ap_20260924/README.md) | Proposed frozen-head/ranking/input/fine-tuning sequence; completed stability and state/movement spectra on 19 existing representations. |
+| [GeoFrame convergence, interfaces and structured liquid](geoframe_evolution_20260923/README.md) | [Completed 35-pass review](../output/geoframe_evolution/epoch34-review-20260923/RESULTS.md): liquid-order readout improves in encoder but declines in projector; interface/fault resolution improves; Ta/Zr candidates and conditional future assays. |
+| [Distance/future encoder factorial](structural_state_future_20260923/README.md) | Eight new encoders: two seeds, common geometry/current labels, distance and future residual losses; liquid retention, future transfer and matched onset tests. |
+| [Repaired structural-state screen](structural_state_20260923/README.md) | Four matched reruns with fitting-only calibration, direct pooled features, fixed distance scales and actual training-head audits; same existing source cohort, one seed. |
+| [Fixed structural-state screen](structural_state_20260922/README.md) | Four one-seed native MACE fits: observed/relaxed geometry, fixed relaxed teacher and physical distance supervision; matched retention, future-order and onset evaluations. |
+| [Literature-guided crystallization forecast follow-up](crystallization_followup_20260922/README.md) | Twelve matched frozen-MACE tests of original/relaxed inputs, actual-time changes, dense recent observations and short-horizon objectives; [primary literature](crystallization_followup_20260922/LITERATURE.md). |
+| [Encoder training after BCR: literature and next experiments](encoder_training_literature_20260922/README.md) | Proposed four-fit screen: isolated structural reconstruction, fixed relaxed targets and physical relation supervision; primary literature, existing negative controls and decision criteria. No training launched. |
 | [Latest MACE/GATr conditional information](gatr_conditional_information_20260918/LOCAL_LAST622.md) | Completed update-622 comparison: MACE retains substantial angular information; GATr remains mostly radial and is 24% smoother; no useful added onset prediction in the tested readouts. |
 | [Latest local MACE and GATr static Al](shared_pretraining_20260918/STATIC_AL_LOCAL.md) | Final step-622 local bond-order encoders; matched six snapshots and seven-cluster analysis, with native trained local support. |
 | [GATr information beyond radial structure](gatr_conditional_information_20260918/README.md) | Frozen z128: source-held-out bond/angular and prospective readouts, radial-only and duplicate-input controls, 609 strictly matched spatial pairs; little extra angular information and no robust extra forecasting benefit. |
@@ -90,3 +101,15 @@ history while testing preservation of bond order and instantaneous topology.
 - [Independent-root BCR G1 pilot](bcr_g1_20260921/README.md): useful conditioning, matched controls and frozen liquid probes.
 
 - [Symmetric structured MACE/GATr context](structured_context_20260921/README.md): 25 spatial query slots, alternating spatial/causal temporal attention, eight frozen-encoder forecast fits.
+
+- [BCR conditioning and relaxed-structure audit](bcr_followup_20260922/README.md): frozen checkpoint interventions, pooled/exported residual probes, archived paired relaxation transfer, matched fresh decoders.
+
+- [Liquid representation plot audit and training diagnosis](../output/representation_audit/liquid-structure-20260922/RESULTS.md):66 published UMAPs, provenance correction, conditional liquid measurements and proposed native-encoder ablation.
+
+- [Liquid geometry versus crystallization prediction](liquid_geometry_20260922/README.md): ten frozen encoders, metric interventions, latest paired forecasts and native early/late checkpoint diagnosis.
+
+- [Broad native snapshot screen, September23](encoder_screen_20260923/README.md): interface/liquid resolution and conditional crystallization metrics on fixed cohorts.
+
+[Encoder parameter search](encoder_parameters_20260923/README.md): matched GeoFrame projector/covariance/FactorVAE/VISReg and MACE learning-rate/distance interventions with two seeds.
+
+- [Paired MACE + Epi, September23](mace_paired_epi_20260923/README.md): direct temporal alignment, VICReg control and Epi/variance-floor treatments, two seeds,24 full passes.

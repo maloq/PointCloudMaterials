@@ -12,7 +12,7 @@
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 8.670 GiB
+- Allocated storage, excluding registered nested datasets: 9.222 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -56,10 +56,10 @@
 
 ## Evidence
 
-All 2384 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-20260921-955f1e16.json).
+All 2976 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-20260921-955f1e16.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T16:17:14.292955+00:00.
+Observed 2026-09-24T10:36:51.012083+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

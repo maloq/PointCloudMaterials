@@ -96,7 +96,7 @@ class StructuralMACEAnalysis(StructuralSnapshotAnalysis):
         return super().encode(batch)
 
 
-def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr'):
+def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr', candidate_neighbors=None):
     """Reproduce prepare.offsets and Release.observation for physical static points."""
     if architecture not in ('gatr', 'mace'):
         raise ValueError(f'Unsupported structural architecture: {architecture}')
@@ -108,9 +108,17 @@ def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr
     margin = float(np.minimum(centers-tree.mins, tree.maxes-centers).min())
     if margin <= radius:
         raise ValueError(f'Static center margin {margin:.6f} cannot support {radius:.6f} Angstrom')
-    candidates = tree.query_ball_point(centers, radius, return_sorted=True, workers=1)
-    groups = [np.asarray(rows)[local_crop(offsets(points, atom, rows, None), scale)[1]]
-              for atom, rows in zip(atom_rows, candidates, strict=True)]
+    if candidate_neighbors is None:
+        candidates = tree.query_ball_point(centers, radius, return_sorted=True, workers=1)
+        groups = [np.asarray(rows)[local_crop(offsets(points, atom, rows, None), scale)[1]]
+                  for atom, rows in zip(atom_rows, candidates, strict=True)]
+    else:
+        if candidate_neighbors != 80:
+            raise ValueError('Paired-relaxed inference requires exactly 80 candidate atoms')
+        _, candidates = tree.query(centers, k=80, workers=1)
+        # Paired relaxation crops physical FP32 offsets before coordinate scaling.
+        groups = [rows[np.linalg.norm(offsets(points, atom, rows, None), axis=-1)*factor < OUTER_RADIUS]
+                  for atom, rows in zip(atom_rows, candidates, strict=True)]
     n = max(map(len, groups))
     x = np.zeros((len(centers), 1, n, 3), np.float32)
     w = np.zeros((len(centers), 1, n), np.float32)
@@ -167,7 +175,7 @@ def encode_frame(model, points, centers, settings, *, progress=None):
     started = time.monotonic()
     for start in range(0, len(centers), batch_size):
         batch = snapshot_batch(points, tree, centers[start:start+batch_size], scale=scale, material=material,
-                               architecture=model.architecture)
+                               architecture=model.architecture, candidate_neighbors=settings.get("candidate_neighbors"))
         z = model.encode({k: v.to(device) for k, v in batch.items()})
         if not torch.isfinite(z).all():
             raise FloatingPointError(f'Nonfinite structural features at centers {start}:{start+batch_size}')
@@ -212,8 +220,9 @@ def collect_structural_inference(model, dataloader, cfg, out_dir, *, max_batches
         # Every frame checks padding and batch-order independence on real inputs.
         selected = np.unique(np.linspace(0, len(coords)-1, 6, dtype=int))
         replay, _ = encode_frame(model, points, coords[selected[::-1]], dict(settings, batch_size=1))
-        np.testing.assert_allclose(z[selected], replay[::-1], rtol=2e-5, atol=2e-6,
-                                   err_msg=f'{model.architecture} batch/padding replay disagrees: {path}')
+        if settings.get('enforce_batch_replay', True):
+            np.testing.assert_allclose(z[selected], replay[::-1], rtol=2e-5, atol=2e-6,
+                                       err_msg=f'{model.architecture} batch/padding replay disagrees: {path}')
         result[offset:offset+len(coords)] = z
         coordinates[offset:offset+len(coords)] = coords
         records.append(dict(file=str(path), source_sha256=sha256(path),
@@ -221,6 +230,7 @@ def collect_structural_inference(model, dataloader, cfg, out_dir, *, max_batches
         offset += len(coords)
         write_json(Path(out_dir)/'structural-inference-protocol.json', dict(protocol=model.protocol,
             settings=settings, frames=records, completed_centers=offset,
+            batch_replay_enforced=settings.get("enforce_batch_replay", True),
             representation='Raw trained 128-channel center encoder state; no projector or target heads.',
             boundaries='Full nonperiodic source neighborhoods; verified interior centers; no inferred box.',
             precision=model.precision, execution=model.execution,

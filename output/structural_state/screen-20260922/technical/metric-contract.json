@@ -1,0 +1,20 @@
+{
+  "family": "structural_state",
+  "exported_at": "2026-09-22T09:11:53.471027+00:00",
+  "files": {
+    "src/research/structural_state/__init__.py": "2b84b21a27dca5f2bf8a7f456cba7c78ef4a026cc96523c958706723e5e39187",
+    "src/research/structural_state/common.py": "f28e0803198864d5fc499f3c41ff385dbf17d9f9ba609c933513dc1094ce2c1d",
+    "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+    "src/research/structural_state/evaluation.py": "954f8c702e393316c2ea81ef77770bcd43b5125441c3876d5fd2303c6e542ed1",
+    "src/research/structural_state/model.py": "c0a47ea33683d18539eea541a6a3b93538697710133e2b998ec402c29c0443ae",
+    "src/research/structural_state/preflight.py": "ef4b13ac81d91a25666534cfe4ec7f831f95dd6eed04eb6240cdc8e210408c18",
+    "src/research/structural_state/queue.py": "83275402afa6814cd6d96c766d0f4e18a4432715a4f045ef681753644dc741ad",
+    "src/research/structural_state/report.py": "db4bdedbde89a49b3ddf19ff26c4762681b4648339a092d352b652ccbf5871cd",
+    "src/research/structural_state/runtime.py": "36f08b07432373a98563959db0d8b0770f5e9c7a3aeb885fcca78ff7359c5bd5",
+    "docs/metrics/structural_state.md": "7f88f39c0b9ba64f56a7eb3949e0869a17607b11652b9f0ff74664cfed803cdf",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+    "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490"
+  }
+}

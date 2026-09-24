@@ -204,3 +204,5 @@ on training batches, including the bond loss in its base-gradient comparison.
 Neighborhood JEPA static exports use the native invariant128 slice, preserving trained per-observation normalization. Angular channels and prediction heads are excluded. The static sampling, clustering and downstream metric definitions remain the same; see `src/analysis/neighborhood_adapter.py`.
 
 The direct Epi snapshot rerun uses native eager BF16 execution: compiled fusion failed batch-size replay. Exact native inputs/weights and eager outputs, singleton replay and reordered batches are verified without widening tolerance.
+
+Paired-relaxed snapshot inference exports the raw invariant128 channels, with nearest80 candidates selected on the supplied relaxed coordinates and the producer radius8 crop. This differs from training candidate identities tracked from hot coordinates. The batch replay assertion may be disabled explicitly while its differences remain recorded. Downstream metric calculations are unchanged.

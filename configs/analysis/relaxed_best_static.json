@@ -1,0 +1,15 @@
+{
+  "checkpoint": "/work/PERSO/vmorozov/analysis/structural_static/relaxed-cold-vic-temp01-step2048-al-20260921/technical/source-checkpoint/best.pt",
+  "checkpoint_sha256": "58f1184f6f54f1909a33ab8469cc4284d59f14d16b3c334c5cc261a732491b47",
+  "variant": "cold-vic-temp01",
+  "output": "/work/PERSO/vmorozov/analysis/structural_static/relaxed-cold-vic-temp01-step2048-al-20260921",
+  "scales": {
+    "Al": 9.121389139452193
+  },
+  "data_config": "/home/infres/vmorozov/PointCloudMaterials/configs/data/loaders/static_al_relaxed_best.yaml",
+  "verification_frame": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/166ps.npy",
+  "native_output_tolerance": {
+    "rtol": 2e-05,
+    "atol": 2e-05
+  }
+}

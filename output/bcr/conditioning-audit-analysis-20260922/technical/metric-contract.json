@@ -1,0 +1,11 @@
+{
+  "family": "bcr_followup_analysis",
+  "exported_at": "2026-09-22T07:49:02.759062+00:00",
+  "files": {
+    "src/research/bcr_followup_analysis.py": "f3046a1de5a429af05e427cb3f8c19733e70fa99b1b099e2465a1bb6a8d76821",
+    "docs/metrics/bcr_followup_analysis.md": "b3051a2afa736c7ed3f58e0d5b18f1551d5c1341b629418eaf16e76179df0a69",
+    "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+    "configs/analysis/bcr_followup_20260922.json": "09c5b0a3c1cbec5f63d0a950433cb2230b2f8d0d127837f5463862b5536a460b"
+  }
+}

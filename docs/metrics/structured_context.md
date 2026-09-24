@@ -25,3 +25,32 @@ are preserved: 7.94 Å MACE and 16.87 Å historical step-3072 GATr.
 The 36-epoch ceiling and early stopping are recorded separately from actual updates
 and selected checkpoint. One seed; no claim of training-seed uncertainty. Historical
 results used different context heads and initialization and are reference comparisons.
+
+The relaxed-MACE variant uses the validation-selected cold-input/cold-target
+checkpoint. Both observed context features and future latent targets use relaxed
+structures. Its descriptor-history/shell auxiliaries use relaxed geometry;
+velocity-independent columns only. Physical forecast labels and event onsets
+remain original MD, with identical score definitions and source splits. This is
+an encoder-and-observation-domain comparison, not an isolated checkpoint ablation.
+
+For the archived-reuse comparison, both observed and relaxed arms use identical
+available origins and three actual observations within 72 ps. No temporal
+interpolation or duplicate-frame padding is used; attention receives actual
+physical offsets. The two historical descriptor differences replace the dense
+reference's three differences; its unused third difference block is zero in both
+arms. Context query identities are selected in the observed geometry and retained
+across quenching, with actual relaxed displacements supplied in the relaxed arm.
+
+Both reuse arms predict the same original MACE latent timeline and original MD
+physical/event targets through 96 ps. Their initial target-space state is decoded,
+not copied from input embeddings. Hence no unobserved relaxed future is imputed.
+Archival float16 relaxed coordinates are an explicit approximation: the precise
+benchmark comparison is exported in `technical/precision.json`. Reuse is not a
+replication of the dense original history protocol.
+
+For irregular archived origins, `timing_grid_ps` is null. Alarm episodes are
+computed over successive observed decisions, not continuous monitoring. The
+continuous-exposure false-alarm rate is omitted and replaced by
+`false_alarm_episodes_per_1000_observed_origins` = 1000 times the number of false
+alarm episodes divided by evaluated forecast windows. Calibration sources still
+set thresholds; test sources never select encoders or heads.

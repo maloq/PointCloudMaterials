@@ -3,6 +3,9 @@
 [**Dataset registry**](DATASETS.md) · [Experiment & simulation dashboard](output/registry/index.html) ·
 [Ideas backlog](experiments/ideas.json) · [Run organization guide](docs/output_registry.md)
 
+[Encoder research handbook](docs/encoder_research/README.md): model history,
+training objectives, evaluation methods, searchable results and analysis guides.
+
 Maintained commands are indexed in [scripts/README.md](scripts/README.md).
 Research-specific recipes live in [experiments/](experiments/README.md).
 See [current research and retained checkpoints](docs/research_retention.md),

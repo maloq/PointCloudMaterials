@@ -1,0 +1,48 @@
+{
+  "protocol": "bcr_conditioning_audit_v1",
+  "seed": 20260921,
+  "pilot": "configs/bcr/pilot_20260921/study.json",
+  "output": "output/bcr/conditioning-audit-20260922",
+  "feature_steps": [0, 1000, 3000, 10000],
+  "intervention_steps": [1000, 10000],
+  "decoder_steps": [0, 1000, 10000],
+  "evaluation_chunk": 16,
+  "alphas": [0, 0.5, 1, 2],
+  "constant": {
+    "updates": 1000,
+    "batch_size": 128,
+    "microbatch": 32,
+    "learning_rate": 0.01,
+    "evaluate_every": 100,
+    "tuning_anchors": 128
+  },
+  "probes": {
+    "updates": 5000,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "evaluate_every": 100,
+    "width": 128
+  },
+  "decoder": {
+    "updates": 10000,
+    "batch_size": 256,
+    "microbatch": 32,
+    "learning_rate": 0.0003,
+    "minimum_learning_rate": 0.000003,
+    "save_every": 250
+  },
+  "vicreg_checkpoint": null,
+  "wall_hours": 8,
+  "partition": "RTX6000PRO",
+  "relaxed": {
+    "plan": "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+    "cache": "${storage:cache}/bcr/relaxed-audit-20260922",
+    "frames": [64, 224, 368, 512],
+    "train_roots_per_temperature": 6,
+    "development_roots_per_temperature": 3,
+    "centers_per_cell": 16,
+    "steps": [0, 10000]
+  },
+  "hybrid_objective": "Deferred: first inspect pooled/exported features and stronger probes; no automatic encoder retraining."
+}

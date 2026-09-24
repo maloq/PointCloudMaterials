@@ -1,5 +1,9 @@
 # Project documentation
 
+- [GeoFrame checkpoint evolution and Ta/Zr structured-liquid regions](geoframe_evolution.md)
+
+- [Encoder research handbook](encoder_research/README.md): GeoFrame-to-current training methods, evaluation protocols, searchable results database, analysis tools and workflow improvements.
+
 - [Synthetic storage, LAMMPS CPU and GPU hardware benchmarks](hardware_benchmark.md)
 
 - [Causal native MACE: atom-level geometry, motion and history](mace_causal.md)
@@ -38,6 +42,7 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 - [Two-GPU MACE pipeline optimization](shared_pretraining_mace_dual_optimization_20260919.md): process prefetch and verified checkpoint continuation.
 
 - [Expanded MACE crystallization transfer execution](crystallization_transfer_20260919.md).
+- [Literature-guided frozen-MACE forecast queue](crystallization_followup.md).
 
 [Structural-path crystallization queue](crystallization_paths_20260919.md): detached local state trajectory forecasts and future-center cache.
 
@@ -46,3 +51,13 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 - [Neighborhood JEPA v2 execution](neighborhood_jepa_v2.md)
 
 - [Neighborhood JEPA regularization queue](neighborhood_jepa_regularization.md): detached multi-allocation fits, order anchors and frozen crystallization probes.
+
+- [Liquid geometry diagnostic workflow](liquid_geometry.md): frozen inputs, CPU metric experiments and native GPU checkpoint inference.
+
+- [Structural-state encoder training and distance/future factorial](structural_state.md): verified data reuse, detached queues and automatic matched evaluation.
+
+- [Broad encoder snapshot screen](encoder_screen.md): queue, cached analyses, and native input contracts.
+
+[Encoder parameter-search queue](encoder_parameter_search.md): frozen28-fit campaign, convergence assays and8×spatial plots.
+
+- [Paired MACE + Epi](mace_epi.md): submit/resume the matched24-pass encoder comparison and native structural/future analysis.

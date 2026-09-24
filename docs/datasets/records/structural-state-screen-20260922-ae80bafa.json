@@ -1,0 +1,52 @@
+{
+  "dataset_id": "structural-state-screen-20260922",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/structural-state/screen-20260922/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "dc04a30f4cc15ea2a4d2b4949fcb85f13f485ab31ab1e70bdf56e608e9894349",
+      "kind": "metadata",
+      "keys": [
+        "assay_sha256",
+        "d0",
+        "files",
+        "identity",
+        "inputs",
+        "n_ref",
+        "new_simulations",
+        "onset_counts",
+        "parent_identity",
+        "potential_sha256",
+        "precision",
+        "radius_A",
+        "rows",
+        "split_rows",
+        "state",
+        "target_training"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "inputs.radius",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 8.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": [
+          "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        ]
+      }
+    }
+  ]
+}

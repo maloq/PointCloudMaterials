@@ -1,0 +1,20 @@
+{
+  "dataset_id": "encoder-screen-dense-spatial-20260923",
+  "records": [
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/dense-inputs/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "a37b64205e6793ac4d91921846c11ee00aab60cd919b1fc908da05c50bae0bc8",
+      "kind": "metadata",
+      "keys": [
+        "factor",
+        "files",
+        "frames",
+        "original_reference_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "input": "output/bcr/conditioning-audit-20260922",
+  "pilot": "output/bcr/g1-independent-20260921",
+  "output": "output/bcr/conditioning-audit-analysis-20260922",
+  "bootstrap_draws": 10000,
+  "bootstrap_seed": 20260922
+}

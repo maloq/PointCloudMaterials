@@ -1,0 +1,24 @@
+{
+  "family": "structural_state",
+  "exported_at": "2026-09-23T11:56:15.192120+00:00",
+  "files": {
+    "docs/metrics/structural_state.md": "b3fc2fac53d968e3a011bc06e9ee57ddae4d0d661abe55b71688bc1979e7fb26",
+    "src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+    "src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+    "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+    "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+    "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+    "src/research/structural_state/__init__.py": "2b84b21a27dca5f2bf8a7f456cba7c78ef4a026cc96523c958706723e5e39187",
+    "src/research/structural_state/common.py": "db2ecf4294502c46772b6de3854095e477da737a69ba00d053314fd40c043519",
+    "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+    "src/research/structural_state/evaluation.py": "92f324cb615b7479bb6d8299fbd855c192b07215a79c7c4b49dbff04e9e35b4c",
+    "src/research/structural_state/model.py": "7dfada08b6711a273a915bab38d39a1f1e71def9be06f199919168edb99e8149",
+    "src/research/structural_state/preflight.py": "c461ee1191b8029def08fc2b51457b5b43c3c1d3b53738f3ad72567d7053c3d0",
+    "src/research/structural_state/queue.py": "45ea4257efc9aaa979a56d6d6f0a36e6058289a5dfbdbb2da2742f5c84524cf9",
+    "src/research/structural_state/report.py": "041bdc5852fa2b768ad24327420a5870dc378da202e09d32a1993d2e197dfa6e",
+    "src/research/structural_state/runtime.py": "1211f0b04b74cf84d533e0e69d9aec47285d2bddeecf762392a766787ffeb983",
+    "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+    "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245"
+  }
+}

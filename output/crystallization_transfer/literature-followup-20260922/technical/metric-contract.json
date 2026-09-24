@@ -1,0 +1,15 @@
+{
+  "family": "crystallization_followup",
+  "exported_at": "2026-09-22T08:21:37.056711+00:00",
+  "files": {
+    "docs/metrics/crystallization_followup.md": "9895555419c6bb9a115a4611be3b02c3f556beb7f18f131de86a2f13145f72d6",
+    "src/research/crystallization_followup/metrics.py": "cb9ffa5bf9d792c6c4c39a7b5d5033022b25a73ba56e2348e5fad9d590913943",
+    "src/research/crystallization_followup/model.py": "f78bb3d67f2bbab1fbb970bca485394d499ab2b2bb3f746128e310bee1e9c36a",
+    "src/research/crystallization_followup/data.py": "ca9c1da077268784c511ab56f60a58ead372e937a8d84089bf99fe7dcfb7a037",
+    "src/research/crystallization_followup/queue.py": "f85f776f749055e6987eae4aeacbdbbcf29e1d0e0673194fcf541b632123bf2e",
+    "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82"
+  }
+}

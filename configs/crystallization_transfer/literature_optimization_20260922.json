@@ -1,0 +1,159 @@
+{
+  "output": "output/crystallization_transfer/literature-optimization-20260922",
+  "source_plan": "output/crystallization_transfer/symmetric-relaxed-reuse-20260921/technical/plan.json",
+  "seed": 20260919,
+  "batch_size": 128,
+  "epochs": 48,
+  "patience": 10,
+  "workers": 2,
+  "bootstrap_draws": 1000,
+  "variants": [
+    {
+      "name": "cold-E48"
+    },
+    {
+      "name": "quench-E48",
+      "quench_descriptors": true
+    },
+    {
+      "name": "rates-quench-E48",
+      "quench_descriptors": true,
+      "history_rates": true
+    },
+    {
+      "name": "current-E48",
+      "dense_mode": "repeat"
+    },
+    {
+      "name": "quench-lr3e5",
+      "quench_descriptors": true,
+      "head_lr": 3e-05
+    },
+    {
+      "name": "cold-lr3e5",
+      "head_lr": 3e-05
+    },
+    {
+      "name": "rates-quench-lr3e5",
+      "quench_descriptors": true,
+      "history_rates": true,
+      "head_lr": 3e-05
+    },
+    {
+      "name": "quench-short025",
+      "quench_descriptors": true,
+      "short_weight": 0.25
+    },
+    {
+      "name": "quench-short1",
+      "quench_descriptors": true,
+      "short_weight": 1.0
+    },
+    {
+      "name": "cold-short1",
+      "short_weight": 1.0
+    },
+    {
+      "name": "quench-free",
+      "quench_descriptors": true,
+      "teacher_mode": "free"
+    },
+    {
+      "name": "cold-free",
+      "teacher_mode": "free"
+    },
+    {
+      "name": "quench-wd1e3",
+      "quench_descriptors": true,
+      "weight_decay": 0.001
+    },
+    {
+      "name": "quench-wd1e2",
+      "quench_descriptors": true,
+      "weight_decay": 0.01
+    },
+    {
+      "name": "quench-width64",
+      "quench_descriptors": true,
+      "head_width": 64
+    },
+    {
+      "name": "quench-lr3e5-E96",
+      "quench_descriptors": true,
+      "head_lr": 3e-05,
+      "patience": 16,
+      "training": {
+        "budget": "epochs",
+        "epochs": 96,
+        "sources": 90,
+        "window_fraction": 1.0
+      }
+    }
+  ],
+  "comparisons": [
+    [
+      "quench-E48",
+      "cold-E48"
+    ],
+    [
+      "rates-quench-E48",
+      "quench-E48"
+    ],
+    [
+      "current-E48",
+      "quench-E48"
+    ],
+    [
+      "quench-lr3e5",
+      "quench-E48"
+    ],
+    [
+      "cold-lr3e5",
+      "cold-E48"
+    ],
+    [
+      "rates-quench-lr3e5",
+      "quench-E48"
+    ],
+    [
+      "quench-short025",
+      "quench-E48"
+    ],
+    [
+      "quench-short1",
+      "quench-E48"
+    ],
+    [
+      "cold-short1",
+      "cold-E48"
+    ],
+    [
+      "quench-free",
+      "quench-E48"
+    ],
+    [
+      "cold-free",
+      "cold-E48"
+    ],
+    [
+      "quench-wd1e3",
+      "quench-E48"
+    ],
+    [
+      "quench-wd1e2",
+      "quench-E48"
+    ],
+    [
+      "quench-width64",
+      "quench-E48"
+    ],
+    [
+      "quench-lr3e5-E96",
+      "quench-E48"
+    ],
+    [
+      "quench-lr3e5-E96",
+      "quench-lr3e5"
+    ]
+  ]
+}

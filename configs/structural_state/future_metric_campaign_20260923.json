@@ -1,0 +1,17 @@
+{
+  "output": "output/structural_state/future-metric-20260923",
+  "seeds": [
+    {
+      "seed": 20260923,
+      "config": "configs/structural_state/future_metric_seed20260923.json",
+      "output": "output/structural_state/future-metric-seed20260923"
+    },
+    {
+      "seed": 20260924,
+      "config": "configs/structural_state/future_metric_seed20260924.json",
+      "output": "output/structural_state/future-metric-seed20260924"
+    }
+  ],
+  "bootstrap": 2000,
+  "bootstrap_seed": 20260923
+}

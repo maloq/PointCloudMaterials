@@ -1,0 +1,136 @@
+{
+  "protocol": "fixed_geometry_future_relation_v3",
+  "output": "output/structural_state/future-metric-seed20260924",
+  "cache": "${storage:cache}/structural-state/screen-20260922",
+  "paired_cache": "${storage:cache}/bcr/relaxed-audit-20260922",
+  "paired_selection": "output/bcr/conditioning-audit-20260922/technical/relaxed-selection.json",
+  "paired_identity": "2ee3d055dc2b54589984c5f964208198f447055c8a795489798a99dc45c4957e",
+  "assay_plan": "output/crystallization_transfer/mace-expanded-20260919/technical/plan.json",
+  "seed": 20260924,
+  "future_ps": [
+    3.0,
+    9.0,
+    12.0
+  ],
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 32,
+    "code_dim": 128,
+    "backend": "cueq"
+  },
+  "training": {
+    "updates": 4096,
+    "batch_size": 256,
+    "microbatch": 64,
+    "encoder_lr": 1e-05,
+    "head_lr": 0.0003,
+    "weight_decay": 1e-05,
+    "warmup": 128,
+    "gradient_clip": 5.0,
+    "head_norm_bound": 10.0,
+    "evaluate_every": 256,
+    "save_every": 128,
+    "log_every": 32,
+    "head_ridge": 1.0,
+    "relation_warmup": 512,
+    "minimum_spread_ratio": 0.1,
+    "milestones": [
+      1024,
+      2048,
+      4096
+    ]
+  },
+  "arms": [
+    {
+      "name": "B-relaxed",
+      "input": "relaxed",
+      "relaxed_weight": 0.0,
+      "relation_weight": 0.0,
+      "current_weight": 0.25,
+      "future_weight": 0.0
+    },
+    {
+      "name": "D-physical-distance",
+      "input": "relaxed",
+      "relaxed_weight": 0.0,
+      "relation_weight": 0.1,
+      "current_weight": 0.25,
+      "future_weight": 0.0
+    },
+    {
+      "name": "E-future-residual",
+      "input": "relaxed",
+      "relaxed_weight": 0.0,
+      "relation_weight": 0.0,
+      "current_weight": 0.25,
+      "future_weight": 0.25
+    },
+    {
+      "name": "F-distance-future",
+      "input": "relaxed",
+      "relaxed_weight": 0.0,
+      "relation_weight": 0.1,
+      "current_weight": 0.25,
+      "future_weight": 0.25
+    }
+  ],
+  "probes": {
+    "updates": 1024,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "evaluate_every": 128,
+    "width": 128
+  },
+  "bootstrap": 2000,
+  "retention_tolerance_relative_mse": 0.02,
+  "slurm": {
+    "partitions": "A100,H100,RTX6000PRO",
+    "exclude": "node58",
+    "cpus": 4,
+    "memory_GiB": 48,
+    "hours": 8
+  },
+  "local_queue": [
+    [
+      "B-relaxed",
+      "D-physical-distance",
+      "E-future-residual",
+      "F-distance-future"
+    ]
+  ],
+  "probe_seed": 20260922,
+  "dynamics": {
+    "lag_ps": 9.0,
+    "baseline_ridge": 1.0
+  },
+  "contrasts": [
+    [
+      "physical_distance",
+      "B-relaxed",
+      "D-physical-distance"
+    ],
+    [
+      "future_residual",
+      "B-relaxed",
+      "E-future-residual"
+    ],
+    [
+      "combined",
+      "B-relaxed",
+      "F-distance-future"
+    ],
+    [
+      "future_given_distance",
+      "D-physical-distance",
+      "F-distance-future"
+    ],
+    [
+      "distance_given_future",
+      "E-future-residual",
+      "F-distance-future"
+    ]
+  ],
+  "campaign": "configs/structural_state/future_metric_campaign_20260923.json"
+}

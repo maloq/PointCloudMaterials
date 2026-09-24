@@ -33,7 +33,7 @@
   },
   "analysis": {
     "files": {
-      "docs/metrics/analysis.md": "315cbe690f04aa05987797ea60fc7b0cbf3349b469de65c0ec2ff8b6095d41f1",
+      "docs/metrics/analysis.md": "e721e9bf6e1fb85154cf562043eb4bf1b6521126a4f411839ecdbf374c677e6c",
       "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
       "src/analysis/topology.py": "c1c61cc47b278530000f2614c149d61c5b854477a1cba590a85eb8c75383d840",
       "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
@@ -47,11 +47,11 @@
       "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
       "src/research/mace_context/cluster_probe.py": "0b428b6602812ee60c7e385128ac2e98675f8adf72a99d9a0426ea5d195942c4",
       "docs/structural_static_analysis.md": "d772ae6d69400091f68b2d4d5090c598dd81036913536ed5088df2058ad6526c",
-      "src/analysis/structural_adapter.py": "5510167ec5f2e8462d35ccefb526be7bbf3b4d70e1cb021f890e28ec8b8d1b89",
+      "src/analysis/structural_adapter.py": "731d2f29eae235123c47dbc76bf3d989599cbc192f9bca3e940db44481497279",
       "src/analysis/pipeline_runtime.py": "9b615578ff290a0ec0d06d67ce0a1d2c8d4c0bd911e2b3a6a4c322fa1081fa37",
       "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
       "src/models/encoders/equivariant_bond.py": "53d155dd54ee3b69e62e8be5b5cc27a716a846ec91c155fcb8831b9c73fb082a",
-      "src/analysis/neighborhood_adapter.py": "8fe945e2fdb276ae146a2cb9c61a03a27c905376a04bced74f3bea61d71e54f8"
+      "src/analysis/neighborhood_adapter.py": "06c26cea58650713aecf3f6e139f6d029df576df66588336f6727d28c21c9470"
     }
   },
   "forecast_context": {
@@ -568,7 +568,7 @@
       "src/research/crystallization_transfer/model.py": "2fd55a2e3e2cd85c1f1ced8624a9fbf0c775c11cad1e3b61eb920cea43eaff38",
       "src/research/crystallization_transfer/queue.py": "d7564348adf0f132d5a08f09baefb2c5f3f7e69b5894fa44ef6a99cb8680cbca",
       "src/research/crystallization_transfer/data.py": "6b6f2798e74d2ce05472600f58d4f99da9837b77d51559e0c31ecf63d9e1411f",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
       "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
       "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
@@ -596,7 +596,7 @@
       "src/research/crystallization_transfer/model.py": "2fd55a2e3e2cd85c1f1ced8624a9fbf0c775c11cad1e3b61eb920cea43eaff38",
       "src/research/crystallization_transfer/queue.py": "d7564348adf0f132d5a08f09baefb2c5f3f7e69b5894fa44ef6a99cb8680cbca",
       "src/research/crystallization_transfer/data.py": "6b6f2798e74d2ce05472600f58d4f99da9837b77d51559e0c31ecf63d9e1411f",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
       "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
       "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
@@ -608,7 +608,7 @@
       "src/research/crystallization_transfer/attention.py": "1aae2cb80bbbf3195a2ae74c99891b93481b27e47ff2ea0654bf5f9b1a543916",
       "src/research/crystallization_transfer/adaptive.py": "b0a0b2282f5c25c7ebaa8029c9763fae018702b94fbb6854880421d19d5aa81e",
       "src/research/crystallization_transfer/refinement.py": "5260fb285b37a513bf1537ac4dec7628f0041af0aae4b7bc8b8be089fb566355",
-      "src/research/crystallization_paths/runtime.py": "f09268b0cf2acf853c88aa9d5f3e18bdc90404824d476d9a9a8cdc423c387114",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
       "src/research/crystallization_paths/model.py": "73e50e8118251a14232e1b92b76fee305b5dfebd8167783db83fbe7e344dbc74",
       "src/research/crystallization_paths/queue.py": "d715c9eb827c1ab60fb76295dd54fb7df47dce3a3b809dac4e21fb32e44b59f4",
       "src/research/crystallization_paths/__init__.py": "c849e349a7083523dfec84a156da494d1aee3c3ade19b711aa798dc4e624213e",
@@ -623,7 +623,7 @@
       "src/research/crystallization_paths/diagnose.py": "f43165be5b9692e7cacc178868640cea7afe4463bae95e7602d8695de33f5b28",
       "src/research/crystallization_paths/model.py": "73e50e8118251a14232e1b92b76fee305b5dfebd8167783db83fbe7e344dbc74",
       "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
-      "src/research/crystallization_paths/runtime.py": "f09268b0cf2acf853c88aa9d5f3e18bdc90404824d476d9a9a8cdc423c387114",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
       "src/research/crystallization_paths/data.py": "24664743978059f108c7fbf065e90f846ef05d3cffe41daea0720794010b87a4",
       "docs/metrics/crystallization_paths_diagnostics.md": "87f965929331cfb3d039e1229df3aa12521b2420c863debd65bb222ff3f89cf3"
     }
@@ -635,7 +635,7 @@
       "src/research/crystallization_transfer/model.py": "2fd55a2e3e2cd85c1f1ced8624a9fbf0c775c11cad1e3b61eb920cea43eaff38",
       "src/research/crystallization_transfer/queue.py": "d7564348adf0f132d5a08f09baefb2c5f3f7e69b5894fa44ef6a99cb8680cbca",
       "src/research/crystallization_transfer/data.py": "6b6f2798e74d2ce05472600f58d4f99da9837b77d51559e0c31ecf63d9e1411f",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
       "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
       "src/data/structural_pretraining/support.py": "22fd61e21659b7ee8cc5583293650708091a77c4daf31673dc0cf06b2658b359",
@@ -647,7 +647,7 @@
       "src/research/crystallization_transfer/attention.py": "1aae2cb80bbbf3195a2ae74c99891b93481b27e47ff2ea0654bf5f9b1a543916",
       "src/research/crystallization_transfer/adaptive.py": "b0a0b2282f5c25c7ebaa8029c9763fae018702b94fbb6854880421d19d5aa81e",
       "src/research/crystallization_transfer/refinement.py": "5260fb285b37a513bf1537ac4dec7628f0041af0aae4b7bc8b8be089fb566355",
-      "src/research/crystallization_paths/runtime.py": "f09268b0cf2acf853c88aa9d5f3e18bdc90404824d476d9a9a8cdc423c387114",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
       "src/research/crystallization_paths/model.py": "73e50e8118251a14232e1b92b76fee305b5dfebd8167783db83fbe7e344dbc74",
       "src/research/crystallization_paths/queue.py": "d715c9eb827c1ab60fb76295dd54fb7df47dce3a3b809dac4e21fb32e44b59f4",
       "src/research/crystallization_paths/__init__.py": "c849e349a7083523dfec84a156da494d1aee3c3ade19b711aa798dc4e624213e",
@@ -695,7 +695,7 @@
       "docs/metrics/neighborhood_jepa_v2.md": "ce19080f0d73a10f739be7a3f97826920e8800fce56df54bd816625813f1813f",
       "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
       "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319"
     }
   },
@@ -715,7 +715,7 @@
       "docs/metrics/neighborhood_crystallization_v2.md": "f2945387608be4998a70aa0dc44d1e23110c2a4f41a67a1935b006b648037b2d",
       "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
       "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319"
     }
   },
@@ -723,7 +723,7 @@
     "files": {
       "docs/metrics/neighborhood_jepa_large_v2.md": "604e6006ce20f1072752e50ce255341d67bc81f3492dbcd2297fbcd26f83a77d",
       "src/models/encoders/structural.py": "e831db9b90d77ef0ace03755977bb8b896142873494507e3e2701eda40e53429",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
       "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
       "src/training_methods/neighborhood_jepa/model.py": "3f1e3cd5d1356e4dc8931cb678684b58ac83b26cf49f174b68a263c55437ebb7",
       "src/training_methods/neighborhood_jepa/v2/__init__.py": "c87be40f93a0d2d93bbdc43d3f55c48525b550998c7125a1c8248a9af0d7060f",
@@ -856,7 +856,7 @@
     "files": {
       "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
       "src/research/context_night/context.py": "9e051fd5e6b3241bb369335697567e6b37ba33c98769bd189783c038e7d9869a",
-      "src/research/crystallization_paths/runtime.py": "f09268b0cf2acf853c88aa9d5f3e18bdc90404824d476d9a9a8cdc423c387114",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
       "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
       "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
       "docs/metrics/context_night.md": "d44000484e2e20a07cedfb6afe4a62b41294811b8cef7ce798f4cce445831c51"
@@ -911,19 +911,23 @@
   "structured_context": {
     "files": {
       "src/research/structured_context/geometry.py": "2d22090b6758d01172eafa43ccddb62f2051f01bed884f7b3b483de815758c6e",
-      "src/research/structured_context/data.py": "b640aa2781754e4732e1582d674c010d856a6408a3a21eb988feb8101a33b398",
+      "src/research/structured_context/data.py": "f4c3d31cd5a12d3de35e5129e32249fcc3039ddb1fae9607c1938a306a9cbcf7",
       "src/research/structured_context/extract.py": "070ecfd1e208ac6eac1c0c7592c7edcba2b72a9c44fd0924beb563edb1582248",
       "src/research/structured_context/queue.py": "5ec4528c57326575b5f67017cec03f8bf7472fa230b684136648416106aa0165",
-      "src/research/structured_context/model.py": "670bb6f8aad6699dbb98e4c69b5379af19e8996d666125a4de71cc2e407026ff",
+      "src/research/structured_context/model.py": "a0e353482d9243b06588fcb31be1844240ff954199856ee8a177ac2c4272af36",
       "src/research/structured_context/figure.py": "26cca4e11a1d33987938206b41e4bd624b3e4f48f2352e7c4847a765091104c6",
       "src/research/structured_context/__init__.py": "4d4e7a910f07dc27b122c05c9f7849d5b5e955d48ce451c425bdbc12b8a13d88",
       "src/research/structured_context/verify.py": "c60283a81d2a22dddff6a14a03443aafc819dfb81d5a04813f4735f2c00b2178",
-      "src/research/crystallization_paths/runtime.py": "2a4c091222fe692142dbfea429679ceaaaceffd5d226f0dd39d048a93c9e3739",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
       "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
       "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
       "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
-      "src/research/crystallization_transfer/metrics.py": "da579d223a5cc2f70a3225805adb11ddd7687d8d48d40607dbd04d06cf3b8bef",
-      "docs/metrics/structured_context.md": "168773f86404012cfddd4dfcfda48ec9cc88d4258f122e17d69ba92d9936e97b"
+      "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
+      "docs/metrics/structured_context.md": "be5f01b67490d7287fa585597f459a54b0ff235ed387735b127ea83280bef949",
+      "src/research/structured_context/relaxed.py": "3ffa6517b1ac1dd2ce4255c405b25bba4e27971bf7af7eec02fdd31497e3a423",
+      "src/research/structured_context/reuse.py": "586c10c0acfe8e2e040dd847cbb56f3ef967304304eea43d43c4079b815efce2",
+      "src/research/structured_context/reuse_data.py": "52ecab2623a107ce5c009a36e2075ecda6f55e80c18d0eb04dbb016073a0b89c",
+      "src/research/structured_context/reuse_verify.py": "f524a96349f178a8fd7d7858a8848d4f87dc4c5e5082e2947b6a5a390c12185c"
     }
   },
   "relaxed_encoder_large_test": {
@@ -948,6 +952,281 @@
       "src/research/crystallization_paths/figure_render.py": "50d2bcfee5cab4cc53c36c934e8cf8d12bf89fd022aaf946c5336bac82bb3824",
       "docs/metrics/structured_figures.md": "d7524d2c709e7724bab8e40a10b76a3c9a89f5a32a8cd34f9a66a29c9fdd2476",
       "configs/analysis/structured_context_figures.json": "a32438f6fb4dd0f352e7116ceaf04e94cfee0c02e60ad04d07c67f7f50206f81"
+    }
+  },
+  "relaxed_reuse_figures": {
+    "files": {
+      "src/research/structured_context/reuse_figures.py": "be720fea9e7d0ab216e86e64e322f2b3e3da3d7d34b6a041a4e937622c624110",
+      "src/research/structured_context/reuse_render.py": "39cf326839f6b27f3cfee7558100fe781984d4dd07ee2a160e0b95c3e68517be",
+      "src/research/structured_context/event_offsets.py": "39c787d6ebe38ccf4fed258a510b26b6cbd46cfd0ce62b527f9dcf5d4cdc58da",
+      "docs/metrics/relaxed_reuse_figures.md": "df57024880d94ed98c053dd92aa65a0e90826368c9103eb234e7f012cd401274"
+    }
+  },
+  "bcr_followup": {
+    "files": {
+      "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+      "src/research/bcr_followup/interventions.py": "79fa61b8570d04d9a6865d1e975e839dc6dcc9092a542f996728499086ed1e5b",
+      "src/research/bcr_followup/report.py": "19e15bb6d101d320d653adc8024d4fdd2cdc79026c0d144bd4036b26580c5cc2",
+      "src/research/bcr_followup/preflight.py": "e35f4a1e3bdfc5c0f904c7973233cd8b0d3154b031db8fd1e372d9b804a338d9",
+      "src/research/bcr_followup/decoders.py": "3e8e3602912a8b27ffa7b7e391bfdb5a53a30101c07fc84431e308da163460de",
+      "src/research/bcr_followup/__init__.py": "553bf543c5c352319537990bc289febb169d19cc1f1d03c90d106e03e2456758",
+      "src/research/bcr_followup/queue.py": "3734bdfbcc2133c3515851245a0a03e9a0cdae784679987a1f8e860f1e68a807",
+      "src/research/bcr_followup/relaxed.py": "b19bbbb83dc4aa9f8e9afa6cb4a5d71303c613a9ea0a0cf39a29b6f9797dbd6f",
+      "src/research/bcr_followup/common.py": "3af687644d44c4c1ad9326d898e8b8fd6f64286718f93d55f5fab39ee09c6de2",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+      "src/training_methods/bcr/evaluate.py": "a0432638c9010be89346be6c8acc4e8e1be69e552e82d814def26e1eb2557c01",
+      "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
+      "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+      "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+      "src/research/bcr_pilot/data.py": "eb958e7e85d222ddd6d7914b7a4a6edfc431ac047ee528430f380d122a42a13f",
+      "src/research/bcr_pilot/compare.py": "019deb5e802bcde11faaf8fdc983c96de631c56ba978f95f4877f840e033dd2f",
+      "docs/metrics/bcr_followup.md": "5e068727de1adda403889c5b916ab0bea78697b976b5395b62af250f2dc9ea5e",
+      "docs/metrics/bcr.md": "5f3865d61bd06433be4cfebc5ca3f6f90aff14d693f34a50346a22e1daeb9e0b"
+    }
+  },
+  "bcr_followup_analysis": {
+    "files": {
+      "src/research/bcr_followup_analysis.py": "f3046a1de5a429af05e427cb3f8c19733e70fa99b1b099e2465a1bb6a8d76821",
+      "docs/metrics/bcr_followup_analysis.md": "b3051a2afa736c7ed3f58e0d5b18f1551d5c1341b629418eaf16e76179df0a69",
+      "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+      "configs/analysis/bcr_followup_20260922.json": "09c5b0a3c1cbec5f63d0a950433cb2230b2f8d0d127837f5463862b5536a460b"
+    }
+  },
+  "crystallization_followup": {
+    "files": {
+      "docs/metrics/crystallization_followup.md": "9895555419c6bb9a115a4611be3b02c3f556beb7f18f131de86a2f13145f72d6",
+      "src/research/crystallization_followup/metrics.py": "cb9ffa5bf9d792c6c4c39a7b5d5033022b25a73ba56e2348e5fad9d590913943",
+      "src/research/crystallization_followup/model.py": "f78bb3d67f2bbab1fbb970bca485394d499ab2b2bb3f746128e310bee1e9c36a",
+      "src/research/crystallization_followup/data.py": "3fe7e1be7a75e2e49d43d590e9cc7c5c913f621799abc87741b679feea33374b",
+      "src/research/crystallization_followup/queue.py": "aa61721abde83363196f5a08903dba4822aaec75ea992508b1edf68a23fd8ce7",
+      "src/research/crystallization_paths/runtime.py": "63b1d98269d6fdb0d8ba3b3539f22d12c1bf96c2bb91e0a0fc5938644b2c465a",
+      "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+      "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+      "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+      "src/research/crystallization_followup/front.py": "bda3f4014c6754cd3eb8f17f3c1d8a363e6fe2b87a7c21a45b13080c632444d0"
+    }
+  },
+  "liquid_geometry": {
+    "files": {
+      "src/research/liquid_geometry/__init__.py": "13cc2abb8f9473270b27fb6d278a450c1ef4d1d1a061a2d80dd8da3106edc40d",
+      "src/research/liquid_geometry/checkpoints.py": "76142a9b58ad176d4f026b39f653ab6ebff9ae8fdc4ba391b35f97f04f7d80c2",
+      "src/research/liquid_geometry/latest.py": "85c7f9a97bc1c73eb848677ea6a4cf45a0d05300547dee3f354282619ae517f9",
+      "src/research/liquid_geometry/metrics.py": "f3c3279429f4ca6adaf174b490b6e2c6e17755f936eb948a2eb2c61d58ce624c",
+      "src/research/liquid_geometry/study.py": "e5e0215f5a7b8f96531439182c7df9b381601079a389135d8189c4ffbba34c72",
+      "docs/metrics/liquid_geometry.md": "80784aa3aaf8e8dbda571d683777e31318aa694c840eb186bd5f3d9fbd305a63",
+      "configs/analysis/liquid_geometry_20260922.json": "4a20fa2826b752edf0830db7f7d75894264caa195c8b5d33235ce61d49fdccf2",
+      "src/research/crystallization_information/data.py": "5984bbbfceb774b6a354028518558023f6a3e9380dc2e5645e3f9c2fcb6f53d3",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490"
+    }
+  },
+  "structural_state": {
+    "files": {
+      "configs/structural_state/future_metric_seed20260923.json": "10641445dfb9a85c1510c49056af17ce6a34867bbdabdb05f6b32835d8a11f7c",
+      "configs/structural_state/future_metric_seed20260924.json": "ee2057d2668e6c19ab5b556487e3d5fc9456a0511135a20c263712878b3fd78e",
+      "docs/metrics/structural_state.md": "f64cea22fdfa744bc02002b86ba318a11010c2a07a35df8086e7da4538ac896c",
+      "src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+      "src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+      "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+      "src/research/liquid_geometry/metrics.py": "f3c3279429f4ca6adaf174b490b6e2c6e17755f936eb948a2eb2c61d58ce624c",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/structural_state/__init__.py": "2b84b21a27dca5f2bf8a7f456cba7c78ef4a026cc96523c958706723e5e39187",
+      "src/research/structural_state/common.py": "28a2defcfd04a559e91beb1b841151652c64dd371b6bde274c8d4ce267da08a2",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+      "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/structural_state/factorial_report.py": "65ab1e26b018b6aec00bd8c1d7f6bf411ab216388ecb285515879f14e92f9eb9",
+      "src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+      "src/research/structural_state/preflight.py": "98f32d7ec01c9c4edc1a01addf764fef7fcc7f30237c4e2d5ea1306f8fdfb591",
+      "src/research/structural_state/queue.py": "1d047a8e3b5e2b1c4e84224f7b96e3d387be9434cba290d1d73171c1cf3901a5",
+      "src/research/structural_state/report.py": "55f8c6744f1c4215db67bdb0cad46719242f9c0c58f0ce43b6240e14285cc0dc",
+      "src/research/structural_state/runtime.py": "c46c169cf1d55c3fce3763551362192555e7ee24fe36e0ec79fe0da7b8e69b86",
+      "src/research/structural_state_onset_review.py": "fe09fd48d83fecf8310d072d2533a68ca09baf8d0231f26a534a3efcc55d03d0",
+      "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+      "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245"
+    }
+  },
+  "structural_state_onset_review": {
+    "files": {
+      "src/research/structural_state_onset_review.py": "fe09fd48d83fecf8310d072d2533a68ca09baf8d0231f26a534a3efcc55d03d0",
+      "src/research/structural_state/report.py": "55f8c6744f1c4215db67bdb0cad46719242f9c0c58f0ce43b6240e14285cc0dc",
+      "src/research/structural_state/common.py": "28a2defcfd04a559e91beb1b841151652c64dd371b6bde274c8d4ce267da08a2",
+      "docs/metrics/structural_state_onset_review.md": "cef248b3458357772757fe5940f5500f159b0c409d8c16662c170b24a26b9e9a"
+    }
+  },
+  "structural_state_future": {
+    "files": {
+      "configs/structural_state/future_metric_campaign_20260923.json": "ea4f716223e1724cb2cb56d45215de825dfeef5b03a0cb6cf24aa389ab8f70f4",
+      "configs/structural_state/future_metric_seed20260923.json": "10641445dfb9a85c1510c49056af17ce6a34867bbdabdb05f6b32835d8a11f7c",
+      "configs/structural_state/future_metric_seed20260924.json": "ee2057d2668e6c19ab5b556487e3d5fc9456a0511135a20c263712878b3fd78e",
+      "docs/metrics/structural_state.md": "f64cea22fdfa744bc02002b86ba318a11010c2a07a35df8086e7da4538ac896c",
+      "docs/metrics/structural_state_future.md": "e67942222ffccc1c112b5a1820c4bbf3bc13387d2561abbc070188226619c31a",
+      "src/models/encoders/mace_backend.py": "851377c502b7ded570271e2d9dea311c15007d0773a0bbc4fe840fee3c5b9137",
+      "src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+      "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+      "src/research/liquid_geometry/metrics.py": "f3c3279429f4ca6adaf174b490b6e2c6e17755f936eb948a2eb2c61d58ce624c",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/structural_state/__init__.py": "2b84b21a27dca5f2bf8a7f456cba7c78ef4a026cc96523c958706723e5e39187",
+      "src/research/structural_state/common.py": "28a2defcfd04a559e91beb1b841151652c64dd371b6bde274c8d4ce267da08a2",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+      "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/structural_state/factorial_report.py": "65ab1e26b018b6aec00bd8c1d7f6bf411ab216388ecb285515879f14e92f9eb9",
+      "src/research/structural_state/model.py": "149a5479c654dfbe5dbbc6c456715b0fe4a63d6e345551901c119632498dd6eb",
+      "src/research/structural_state/preflight.py": "98f32d7ec01c9c4edc1a01addf764fef7fcc7f30237c4e2d5ea1306f8fdfb591",
+      "src/research/structural_state/queue.py": "1d047a8e3b5e2b1c4e84224f7b96e3d387be9434cba290d1d73171c1cf3901a5",
+      "src/research/structural_state/report.py": "55f8c6744f1c4215db67bdb0cad46719242f9c0c58f0ce43b6240e14285cc0dc",
+      "src/research/structural_state/runtime.py": "c46c169cf1d55c3fce3763551362192555e7ee24fe36e0ec79fe0da7b8e69b86",
+      "src/research/structural_state_onset_review.py": "fe09fd48d83fecf8310d072d2533a68ca09baf8d0231f26a534a3efcc55d03d0",
+      "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+      "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245"
+    }
+  },
+  "encoder_research": {
+    "files": {
+      "src/experiment_runner/encoder_catalogue.py": "fd2612ebc8056585079910df347f781f478ffc47cb4896d14d2f3541e591929c",
+      "docs/metrics/encoder_research.md": "fddccf5067eec2b5c067dedc5f53e11a606b70ce5befe7c98c0c8c671939a5a0",
+      "docs/encoder_research/catalogue.json": "7d097f9ea423fab4280c589279158dec9e8fa0a11b352c783bdd4e9354a2580f",
+      "docs/encoder_research/highlights.json": "6684d9f4552e74ec055111cbaefd4eab93c97b386282ee64589c1be77c24494f"
+    }
+  },
+  "geoframe_evolution": {
+    "files": {
+      "docs/metrics/geoframe_evolution.md": "cc011ea43518cb54fe5fac8d7714715f85554d4a230f23f4de48ed3514adfd03",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/research/geoframe_evolution/__init__.py": "58ccd8ef62a2efc470df0d3c6f72de5c09c687d995bc2d679c5aeb1c6861747f",
+      "src/research/geoframe_evolution/evaluate.py": "9686de24bd43bb870f1d117483364cc52bf70dbe83120444af32e20b98598e1c",
+      "src/research/geoframe_evolution/metrics.py": "5fd11682e0199c833530bab262d659e84773881ae1352275c0cbf5418e819c8b",
+      "src/research/geoframe_evolution/prediction.py": "c1ab33f9e3d5a2e969074ffb33eaf4e725f8ce3e92281cf9cc46918f0d369ad6",
+      "src/research/geoframe_evolution/queue.py": "b9fab1001c0bcbc1960e4fb8cae9c936cd93f5fac6b79aa404f95ae4b50e9cdc",
+      "src/research/geoframe_evolution/reference.py": "47284e3675d1e3e447dd83aaeac96e3167b86deb7b9ea56f024411c71d9c0cae",
+      "src/research/geoframe_evolution/report.py": "3df653d045a839eda32bbecd2a1b5277a51d5feb32034bc029895dcd0914220e",
+      "src/research/geoframe_evolution/train.py": "203a798252951e6993c540f83b55090fed6d0d0436bb57b145a7689f4e0f4fff",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/trajectory_stability/audit.py": "5bf122bce155cea9d7adccc3bcf793fa29886dddc6bc601b08ffff1ef01b6b2f",
+      "docs/metrics/embedding_dynamics.md": "e935f594faf5d5aadfb87f5d4998a43e1e3ab902247a275af371eb4fbcab9241"
+    }
+  },
+  "geoframe_precursors": {
+    "files": {
+      "docs/metrics/geoframe_precursors.md": "2bad898cdd7a19219a037886eb2c362fb227537322b57ce81abddd0331cf64a6",
+      "src/research/geoframe_evolution/precursors.py": "bda22b954f6451400c6340e0510c92bef7f9d8b9a810a99f295f7300a469a740",
+      "src/research/geoframe_evolution/reference.py": "47284e3675d1e3e447dd83aaeac96e3167b86deb7b9ea56f024411c71d9c0cae",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12"
+    }
+  },
+  "geoframe_evolution_review": {
+    "files": {
+      "src/research/geoframe_evolution/review.py": "c7ae2aed175143a8a189aad70406c47c15b2a3e6e32b44a8db9343b2e4f32f7f",
+      "docs/metrics/geoframe_evolution_review.md": "b92709aabaa4c39e136c5ccb85ec49db8fdca1a097a8283449dbe82fd46f0c2d"
+    }
+  },
+  "encoder_screen": {
+    "files": {
+      "docs/metrics/encoder_screen.md": "807c0b0c663ecdc2c9fdcd425348037791c4c149829b8e657b669bbdaefd4c9d",
+      "src/research/encoder_screen/__init__.py": "b478f5e435650608a2c3decd67b8bc31f86d1144c3465311535a92ea430e8d0c",
+      "src/research/encoder_screen/benchmark.py": "319cfaa20b4d4c41c3c3594084f30f935e924e9c4d5f04123f7d6225eee8bce6",
+      "src/research/encoder_screen/common.py": "355f0a2d1f6d24c9a6a42d4c2dbd341b56aaa7358b605b5847dbd9e5096e12df",
+      "src/research/encoder_screen/figures.py": "a56ee0b32f46711413d3f50d07885f0deb3c41a2cdb3ea7b94f14d26e24a171e",
+      "src/research/encoder_screen/native.py": "0847957f977b5175b2a8aab5ee3e4c84d3cb78fb9b07af9a6a7c8d5381548f1c",
+      "src/research/encoder_screen/prepare.py": "a642d3c43c9efd6816a81e1b86e6872dbb9ba8886860466a981b617e49cca8f6",
+      "src/research/encoder_screen/queue.py": "2377944cef4dd64e801f79c8fc633a02462c419ba315e5577e6d97096208ecad",
+      "src/research/encoder_screen/report.py": "56e984f234b71a8513f9de6d5573790edcab6e1c0366adfeb47cc0e2280ad2be",
+      "src/research/encoder_screen/run.py": "4a73206447a8c66e3b0905a0d217a9f39298d3510a3edfdc2a2f0e006a6f3114",
+      "src/research/geoframe_evolution/__init__.py": "58ccd8ef62a2efc470df0d3c6f72de5c09c687d995bc2d679c5aeb1c6861747f",
+      "src/research/geoframe_evolution/evaluate.py": "9686de24bd43bb870f1d117483364cc52bf70dbe83120444af32e20b98598e1c",
+      "src/research/geoframe_evolution/metrics.py": "5fd11682e0199c833530bab262d659e84773881ae1352275c0cbf5418e819c8b",
+      "src/research/geoframe_evolution/precursors.py": "bda22b954f6451400c6340e0510c92bef7f9d8b9a810a99f295f7300a469a740",
+      "src/research/geoframe_evolution/prediction.py": "c1ab33f9e3d5a2e969074ffb33eaf4e725f8ce3e92281cf9cc46918f0d369ad6",
+      "src/research/geoframe_evolution/queue.py": "b9fab1001c0bcbc1960e4fb8cae9c936cd93f5fac6b79aa404f95ae4b50e9cdc",
+      "src/research/geoframe_evolution/reference.py": "47284e3675d1e3e447dd83aaeac96e3167b86deb7b9ea56f024411c71d9c0cae",
+      "src/research/geoframe_evolution/render.py": "d6c7927179751c169c6071f0bba109e41cb384c5f05c43a735332e7bc96159c4",
+      "src/research/geoframe_evolution/report.py": "3df653d045a839eda32bbecd2a1b5277a51d5feb32034bc029895dcd0914220e",
+      "src/research/geoframe_evolution/review.py": "c7ae2aed175143a8a189aad70406c47c15b2a3e6e32b44a8db9343b2e4f32f7f",
+      "src/research/geoframe_evolution/train.py": "203a798252951e6993c540f83b55090fed6d0d0436bb57b145a7689f4e0f4fff",
+      "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/trajectory_stability/audit.py": "5bf122bce155cea9d7adccc3bcf793fa29886dddc6bc601b08ffff1ef01b6b2f",
+      "docs/metrics/embedding_dynamics.md": "e935f594faf5d5aadfb87f5d4998a43e1e3ab902247a275af371eb4fbcab9241"
+    }
+  },
+  "encoder_parameter_search": {
+    "files": {
+      "docs/metrics/encoder_parameter_search.md": "121de989b779d7920647b3349b1984343d918c6e2c2e69a1cf52a1643d1416a9",
+      "src/research/encoder_parameter_search/metrics.py": "04e4bc1ad17e6019a7f4f070dda8fe27d05c12c8f062f60cabaa1dc63712a999",
+      "src/research/encoder_parameter_search/assess.py": "75dc3b43588e896fb0389ea7d61a35defb815966a7b147591558c141f1d93aa2",
+      "src/research/encoder_parameter_search/report.py": "3e01fdbf353abe86c16ba189fd7c2ab4b48e0c364a5a162eb4b93dd8f9d590d0",
+      "src/research/encoder_parameter_search/review.py": "4ab06455ed6f02a2f7e6d18d8bc58813378490baef70f500694b14616a68c687",
+      "src/research/geoframe_evolution/metrics.py": "5fd11682e0199c833530bab262d659e84773881ae1352275c0cbf5418e819c8b",
+      "src/research/geoframe_evolution/prediction.py": "c1ab33f9e3d5a2e969074ffb33eaf4e725f8ce3e92281cf9cc46918f0d369ad6",
+      "src/research/encoder_screen/report.py": "56e984f234b71a8513f9de6d5573790edcab6e1c0366adfeb47cc0e2280ad2be",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/trajectory_stability/audit.py": "5bf122bce155cea9d7adccc3bcf793fa29886dddc6bc601b08ffff1ef01b6b2f",
+      "docs/metrics/embedding_dynamics.md": "e935f594faf5d5aadfb87f5d4998a43e1e3ab902247a275af371eb4fbcab9241"
+    }
+  },
+  "mace_epi": {
+    "files": {
+      "src/research/mace_epi/__init__.py": "8e872740483ddfcdc9f9c5ff948205bc92c48532578cde2934fa46fbb5c1858e",
+      "src/research/mace_epi/data.py": "fa69d044e2607c5873fd148a38a5b79a824cb8656f3fa391eb2a7731c0f93164",
+      "src/research/mace_epi/preflight.py": "ef4680992931c61c45c383b27fc423a89551b8c3c55c00e8115e88b9336a2cf6",
+      "src/research/mace_epi/queue.py": "fe04d7f573b5b5e7847bb8d2f20b45ab9135da3bc6d594944115b8d5e845e8e2",
+      "src/research/mace_epi/objective.py": "b77e57c8566cf4da25675662944bf29d54f4e357ef1e61116ba3d8340a4ba490",
+      "src/research/mace_epi/train.py": "25e80a38ca599ef3189ec9233cbd147777f926df70b25ea56114d04cd03dd183",
+      "docs/metrics/mace_epi.md": "26b3f90a6d4744806decd6831e370262c776f560b659d2a0d287f286cf55e51c",
+      "src/training_methods/neighborhood_jepa/regularization/objective.py": "044c92b27dbce50f5476824a7a1db14f22801bec2d6283b1f92a0f1f9fda2c27",
+      "src/training_methods/structural_pretraining/objective.py": "202e1b02ec24bc88a54264c737160955d63118b648217447f0494c9b6f719da0",
+      "src/training_methods/neighborhood_jepa/execution.py": "e3aec63fa4142ffbeefeedea5ab64486a7ab8737678dabe36e19381d114d0344"
+    }
+  },
+  "embedding_dynamics": {
+    "files": {
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/trajectory_stability/audit.py": "5bf122bce155cea9d7adccc3bcf793fa29886dddc6bc601b08ffff1ef01b6b2f",
+      "docs/metrics/embedding_dynamics.md": "e935f594faf5d5aadfb87f5d4998a43e1e3ab902247a275af371eb4fbcab9241",
+      "src/research/trajectory_stability/report.py": "9bb54e4553737c8a162695b520febb6d2f33946230becac2ac2eabb08cd5e084",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+      "src/experiment_runner/metric_docs.py": "031b6c5604ec65328e2797b7696b34ce1a0219fb4950602ecfdae4918b230f3e",
+      "src/research/trajectory_stability/native_dense.py": "cd7601acc05431c299d2aa0149ab6ed42a8f1ba3c36b911cff9dd7a5ce8092b3",
+      "src/research/encoder_screen/native.py": "0847957f977b5175b2a8aab5ee3e4c84d3cb78fb9b07af9a6a7c8d5381548f1c"
+    }
+  },
+  "embedding_noise": {
+    "files": {
+      "src/research/trajectory_stability/noise.py": "0d663cc8ea8cbfd8b1a84bba86700a4177d17642eb6178a5eefbf588a3cba896",
+      "src/research/trajectory_stability/noise_worker.py": "98d57f671bdf7264f4cf36410394cdbf96a5f19eb80a25a90892a80fd4d65b1a",
+      "src/research/trajectory_stability/noise_metrics.py": "7969e38f9072914af3867e433ed697199a317015ba95c30552a3798a662f70d4",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/encoder_screen/native.py": "0847957f977b5175b2a8aab5ee3e4c84d3cb78fb9b07af9a6a7c8d5381548f1c",
+      "src/analysis/liquid_structure.py": "aece948f2faceefaea2c9530bbca5a594dad615b046ef5b0e8f74366e5dbff12",
+      "src/data/structural_pretraining/prepare.py": "20991ea6032d890392b69015a904b37ab864aba38dfe2794e5f5591f4790aecf",
+      "src/data/predictive_memory/targets.py": "c9c9ce7315c59691ee9eaefa956309d6caaf3481fc3353f913e3887b53918256",
+      "docs/metrics/embedding_noise.md": "361b8e5983113dfba062d1bc8dbd6330e53f4e842eedddea5affcac6b76bfa03"
+    }
+  },
+  "robust_onset": {
+    "files": {
+      "docs/metrics/robust_onset.md": "0952ef819912da00212ef2adee0f68212f50239b89d6eb4a116fd9146fc30248",
+      "src/research/robust_onset/metrics.py": "dcb8226dda382260f32dfe5692ae3be3fe7fd926453d6a24cb6803443fd39727",
+      "src/research/robust_onset/__init__.py": "f9a14871af2be947fd652ef3be62c658a8634e2da377041352400a76affe72a2",
+      "src/research/robust_onset/evaluate.py": "99840fe06d8ba2017fa1adb80eb04c9f1a1a327bb33ee06814dc8f4de3b7b4a7",
+      "src/research/robust_onset/train.py": "fd07077be971ef3171042140b87b4b28e63773c5cd1b98fc4fdf98fe7d7afdec",
+      "src/research/robust_onset/common.py": "db55f520df4af868943a5dc861b919410d914cfdba5c4debf0b113ddbd132a4b",
+      "src/research/robust_onset/queue.py": "d9546a78ab946a31dbebd15130cff3aa9ddab73475ac8080a19b3253912d47fb",
+      "src/research/robust_onset/model.py": "eb1060a67d825a69e1efdc0ee0ead2660e2e2b4dcbf4c92f2606cb518f30b70f",
+      "src/research/robust_onset/data.py": "06bf2e17433874730d477227f28e83665666f1ec439763db66868b2b25f2eded",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1"
     }
   }
 }

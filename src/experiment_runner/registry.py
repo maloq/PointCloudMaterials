@@ -421,7 +421,7 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['build', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('command', choices=['build', 'encoders', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
     parser.add_argument('--root', action='append', help='Local output/ or outputs/ subtree; repeat to select several.')
     parser.add_argument('--inactive', action='store_true', help='Confirm the selected runs have no active readers, writers or queued jobs.')
     parser.add_argument('--min-mib', type=float, default=100, help='Large-file report threshold (allocated MiB).')
@@ -438,6 +438,9 @@ def main(argv=None):
     repo = Path(__file__).resolve().parents[2]
     if args.command == 'build':
         build(repo)
+    elif args.command == 'encoders':
+        from .encoder_catalogue import build as build_encoders
+        build_encoders(repo)
     elif args.command == 'storage':
         from .storage import inventory
         inventory(repo, args.root, repo / 'output/maintenance/storage', args.min_mib)

@@ -1,0 +1,24 @@
+{
+  "family": "bcr_followup",
+  "exported_at": "2026-09-22T00:20:18.663037+00:00",
+  "files": {
+    "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+    "src/research/bcr_followup/interventions.py": "79fa61b8570d04d9a6865d1e975e839dc6dcc9092a542f996728499086ed1e5b",
+    "src/research/bcr_followup/report.py": "19e15bb6d101d320d653adc8024d4fdd2cdc79026c0d144bd4036b26580c5cc2",
+    "src/research/bcr_followup/preflight.py": "e35f4a1e3bdfc5c0f904c7973233cd8b0d3154b031db8fd1e372d9b804a338d9",
+    "src/research/bcr_followup/decoders.py": "3e8e3602912a8b27ffa7b7e391bfdb5a53a30101c07fc84431e308da163460de",
+    "src/research/bcr_followup/__init__.py": "553bf543c5c352319537990bc289febb169d19cc1f1d03c90d106e03e2456758",
+    "src/research/bcr_followup/queue.py": "3734bdfbcc2133c3515851245a0a03e9a0cdae784679987a1f8e860f1e68a807",
+    "src/research/bcr_followup/relaxed.py": "b19bbbb83dc4aa9f8e9afa6cb4a5d71303c613a9ea0a0cf39a29b6f9797dbd6f",
+    "src/research/bcr_followup/common.py": "3af687644d44c4c1ad9326d898e8b8fd6f64286718f93d55f5fab39ee09c6de2",
+    "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+    "src/training_methods/bcr/evaluate.py": "a0432638c9010be89346be6c8acc4e8e1be69e552e82d814def26e1eb2557c01",
+    "src/training_methods/bcr/objective.py": "396616227b27a941e29cb0344905babd9a271c09af5e0057a8ba86bcd2e118ff",
+    "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+    "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+    "src/research/bcr_pilot/data.py": "eb958e7e85d222ddd6d7914b7a4a6edfc431ac047ee528430f380d122a42a13f",
+    "src/research/bcr_pilot/compare.py": "019deb5e802bcde11faaf8fdc983c96de631c56ba978f95f4877f840e033dd2f",
+    "docs/metrics/bcr_followup.md": "5e068727de1adda403889c5b916ab0bea78697b976b5395b62af250f2dc9ea5e",
+    "docs/metrics/bcr.md": "5f3865d61bd06433be4cfebc5ca3f6f90aff14d693f34a50346a22e1daeb9e0b"
+  }
+}

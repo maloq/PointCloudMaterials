@@ -1,0 +1,37 @@
+{
+  "output": "output/crystallization_transfer/literature-followup-20260922",
+  "source_plan": "output/crystallization_transfer/symmetric-relaxed-reuse-20260921/technical/plan.json",
+  "seed": 20260919,
+  "batch_size": 128,
+  "epochs": 24,
+  "patience": 6,
+  "workers": 2,
+  "bootstrap_draws": 1000,
+  "variants": [
+    {"name": "cold-control"},
+    {"name": "original-control", "observation_domain": "observed"},
+    {"name": "cold-rates", "history_rates": true},
+    {"name": "cold-dense-repeat", "dense_mode": "repeat"},
+    {"name": "cold-dense-real", "dense_mode": "real"},
+    {"name": "cold-dual-repeat", "secondary_domain": "relaxed"},
+    {"name": "cold-dual-original", "secondary_domain": "observed"},
+    {"name": "cold-quench-difference", "quench_descriptors": true},
+    {"name": "cold-dense-rates", "dense_mode": "real", "history_rates": true},
+    {"name": "dual-dense-rates", "secondary_domain": "observed", "dense_mode": "real", "history_rates": true},
+    {"name": "dual-dense-rates-short", "secondary_domain": "observed", "dense_mode": "real", "history_rates": true, "short_weight": 1.0},
+    {"name": "dual-dense-rates-no-clock", "secondary_domain": "observed", "dense_mode": "real", "history_rates": true, "absolute_clock": false}
+  ],
+  "comparisons": [
+    ["cold-control", "original-control"],
+    ["cold-rates", "cold-control"],
+    ["cold-dense-repeat", "cold-control"],
+    ["cold-dense-real", "cold-dense-repeat"],
+    ["cold-dual-repeat", "cold-control"],
+    ["cold-dual-original", "cold-dual-repeat"],
+    ["cold-quench-difference", "cold-control"],
+    ["cold-dense-rates", "cold-dense-real"],
+    ["dual-dense-rates", "cold-dense-rates"],
+    ["dual-dense-rates-short", "dual-dense-rates"],
+    ["dual-dense-rates-no-clock", "dual-dense-rates"]
+  ]
+}

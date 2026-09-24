@@ -16,6 +16,9 @@ from .metrics import dense_brier,path_scores,summarize
 
 
 def make_model(spec):
+    if spec.get('context_layout')=='cuboctahedral_followup_v1':
+        from src.research.crystallization_followup.model import FollowupForecaster
+        return FollowupForecaster(spec)
     if spec.get('context_layout')=='cuboctahedral_v1':
         from src.research.structured_context.model import StructuredForecaster
         return StructuredForecaster(spec)
@@ -125,7 +128,7 @@ def fit(plan,spec,data,deadline):
     selection_weights=source_weights(data.corpus.source_ids[selection])
     save_json(root/'model.json',dict(spec=spec,parameters=sum(p.numel() for p in model.parameters()),
         normalization='Fixed training-only source-balanced feature and target moments',
-        selection='Dense integrated event Brier score on selection sources; free rollout'))
+        selection=f'Dense integrated event Brier through {spec.get("selection_horizon_ps",96)} ps on selection sources; free rollout'))
     while step<updates and not early_stopped:
         if stop or time.time()>deadline-600:
             checkpoint();save_json(root/'status.json',dict(state='checkpointed',step=step,updates=updates,
@@ -153,7 +156,11 @@ def fit(plan,spec,data,deadline):
         if step%per_epoch==0 or step==updates:
             evaluated=ema if ema is not None else model
             prediction=predict(evaluated,data,selection,config['selection_samples'])
-            score=float(selection_weights@dense_brier(prediction['cdf'],prediction['event']))
+            if spec.get('context_layout')=='cuboctahedral_followup_v1':
+                from src.research.crystallization_followup.metrics import window_scores
+                score=float(selection_weights@window_scores(prediction['cdf'],prediction['event'])['brier12'])
+            else:
+                score=float(selection_weights@dense_brier(prediction['cdf'],prediction['event']))
             physical=float(selection_weights@prediction['path_scores'][:,:,1:4].mean((1,2)))
             if score<best:
                 best=score;stale=0;torch.save(dict(model=evaluated.state_dict(),spec=evaluated.spec,step=step,selection_brier=score,selection_physical_mse=physical,
@@ -186,6 +193,7 @@ def fit(plan,spec,data,deadline):
     if 'information_context' in spec:
         flat['short_horizon']=metrics['short_horizon'];family='context_night'
     if spec.get('context_layout')=='cuboctahedral_v1':family='structured_context'
+    if spec.get('context_layout')=='cuboctahedral_followup_v1':family='crystallization_followup'
     write_metric_table(flat,resolve_path(config['output']),family=family,name=spec['name'])
     save_json(root/'status.json',dict(state='complete',step=step,selected_step=selected['step'],
         best_selection_brier=best,best_selection_physical_mse=selected['selection_physical_mse'],early_stopped=early_stopped,

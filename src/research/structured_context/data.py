@@ -33,6 +33,13 @@ class StructuredPaths(ContextPaths):
                 a['order'][:,::4].transpose(1,0,2)[:199],np.isin(a['labels'][:,::4],[1,2,3]).T[:199,:,None]),-1).astype(np.float32)
             if state.shape!=(199,16,STATE_DIM) or not np.isfinite(state).all():raise ValueError(f'Invalid {name} timeline {sid}')
             states.append(state);onsets.append(np.array(a['onset']))
+            if 'relaxed_config' in plan:
+                path=folder/'information.npy'
+                if file_hash(path)!=receipt['files'][path.name]:raise ValueError(f'Relaxed descriptors changed: {sid}')
+                info=np.load(path)
+                if info.shape!=(167,16,97) or not np.isfinite(info).all():raise ValueError(f'Invalid relaxed descriptors: {sid}')
+                information.append(info)
+                continue
             path=assay/source['shard']
             if file_hash(path)!=source['shard_sha256']:raise ValueError('Assay changed')
             with np.load(path) as p:

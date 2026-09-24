@@ -1,0 +1,65 @@
+{
+  "output": "${storage:analysis}/encoder_research/dynamics-lag075-20260924",
+  "native": {
+    "cache": "${storage:cache}/structural-state/screen-20260922",
+    "evaluations": []
+  },
+  "dense": {
+    "root": "output/trajectory_stability/al-v6-20260918",
+    "methods": [
+      "mace",
+      "gatr",
+      "tda",
+      "soap",
+      "bond_order",
+      "radial",
+      "angular"
+    ],
+    "lags_ps": [
+      0.75
+    ],
+    "extra_exports": [
+      {
+        "name": "gf-mlp-cov1-factor1-s123-0035",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/gf-mlp-cov1-factor1-s123-0035",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/gf-mlp-cov1-factor1-s123-0035"
+      },
+      {
+        "name": "gf-mlp-cov1-factor1-s456-0035",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/gf-mlp-cov1-factor1-s456-0035",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/gf-mlp-cov1-factor1-s456-0035"
+      },
+      {
+        "name": "gf-visreg-mlp-factor1-s123-0035",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/gf-visreg-mlp-factor1-s123-0035",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/gf-visreg-mlp-factor1-s123-0035"
+      },
+      {
+        "name": "gf-visreg-mlp-factor1-s456-0035",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/gf-visreg-mlp-factor1-s456-0035",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/gf-visreg-mlp-factor1-s456-0035"
+      },
+      {
+        "name": "mace-lr1e-05-distance0-s20260923-4096",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/mace-lr1e-05-distance0-s20260923-4096",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/mace-lr1e-05-distance0-s20260923-4096"
+      },
+      {
+        "name": "mace-lr1e-05-distance0-s20260924-4096",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/mace-lr1e-05-distance0-s20260924-4096",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/mace-lr1e-05-distance0-s20260924-4096"
+      },
+      {
+        "name": "mace-lr0.0001-distance0-s20260923-4096",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/mace-lr0.0001-distance0-s20260923-4096",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/mace-lr0.0001-distance0-s20260923-4096"
+      },
+      {
+        "name": "mace-lr0.0001-distance0-s20260924-4096",
+        "source_evaluation": "output/encoder_research/parameter-search-20260923/technical/evaluations/mace-lr0.0001-distance0-s20260924-4096",
+        "root": "output/encoder_research/dense-native-20260924/technical/evaluations/mace-lr0.0001-distance0-s20260924-4096"
+      }
+    ]
+  },
+  "inference_output": "output/encoder_research/dense-native-20260924"
+}

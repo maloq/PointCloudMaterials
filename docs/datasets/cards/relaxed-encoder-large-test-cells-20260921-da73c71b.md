@@ -8,11 +8,11 @@
 - Materials: Al
 - Classification: **research**; role: relaxed_cells
 - Location: `/store/PERSO/vmorozov/relaxed_encoder/large-test-20260921`
-- Present on this machine: False
+- Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 0; these are not independent-source counts.
-- Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.000 GiB
+- Complete binary records with arrays present: 1440; these are not independent-source counts.
+- Stored frames: 1440; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 3.680 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -43,13 +43,19 @@
 
 | Field | Values |
 | --- | --- |
+| atom_count | [70304] |
+| timestep_ps | [0.001] |
+| protocol | ["Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation."] |
+| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"] |
+| frame_count | [1] |
+| storage_dtype | ["float16"] |
 
 ## Evidence
 
-All 0 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-large-test-cells-20260921-da73c71b.json).
+All 4320 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-large-test-cells-20260921-da73c71b.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-21T16:17:14.292955+00:00.
+Observed 2026-09-24T10:36:51.012083+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

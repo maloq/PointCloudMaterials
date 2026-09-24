@@ -82,3 +82,5 @@ or retrying the entire campaign. Remove affected training pairs and common assay
 windows across all comparison arms; export exclusions and retained event counts.
 Already recovered cells remain included. This introduces conditional-on-success
 sampling and must accompany the scientific results.
+
+[Static Al analysis](STATIC_AL.md) uses the selected cold-vic-temp01 step2048 embedding directly on the existing relaxed snapshots.

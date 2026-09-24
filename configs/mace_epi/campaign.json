@@ -1,0 +1,62 @@
+{
+  "protocol": "mace_paired_epi_v1",
+  "output": "${storage:analysis}/encoder_research/mace-vicreg-epi-20260923",
+  "screen_config": "configs/encoder_screen/screen_20260923.json",
+  "cache": "${storage:cache}/neighborhood_jepa/native-al-32768-v2-20260920",
+  "order_cache": "${storage:cache}/neighborhood_jepa/native-al-32768-order-20260920",
+  "data_identity": "93e1498722f1cd875217d4b16612ca9a2552973fb7ffec2cd17e0e27c6c12fab",
+  "reservoir_manifest_sha256": "7e0588960dca2cd0b8d1393e3c7cc7740bb70e72043ebeb3e23af190fea3f1fa",
+  "encoder_channels": 64,
+  "epochs": 24,
+  "batch_size": 512,
+  "microbatch": 128,
+  "precision": "bf16",
+  "compile": true,
+  "loader_workers": 2,
+  "learning_rate": 0.0001,
+  "epi_weight": 0.1,
+  "log_every": 16,
+  "milestones": [
+    0,
+    4,
+    12,
+    24
+  ],
+  "slurm": {
+    "partitions": "RTX6000PRO,H100",
+    "workers": 2,
+    "hours": 12
+  },
+  "fits": [
+    {
+      "name": "mace-epi-s123",
+      "treatment": "epi",
+      "seed": 123
+    },
+    {
+      "name": "mace-epi-s456",
+      "treatment": "epi",
+      "seed": 456
+    },
+    {
+      "name": "mace-vicreg-s123",
+      "treatment": "vicreg",
+      "seed": 123
+    },
+    {
+      "name": "mace-vicreg-s456",
+      "treatment": "vicreg",
+      "seed": 456
+    },
+    {
+      "name": "mace-epi-variance-s123",
+      "treatment": "epi-variance",
+      "seed": 123
+    },
+    {
+      "name": "mace-epi-variance-s456",
+      "treatment": "epi-variance",
+      "seed": 456
+    }
+  ]
+}

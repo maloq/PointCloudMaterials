@@ -1,0 +1,12 @@
+{
+  "family": "embedding_dynamics",
+  "exported_at": "2026-09-24T10:13:20.983487+00:00",
+  "files": {
+    "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+    "src/research/trajectory_stability/audit.py": "2d50a061ae726a4e4f02ab2eb77c443c1173d27003dd11ad0fc11f1480d1c9cd",
+    "docs/metrics/embedding_dynamics.md": "083cf5f636c3f1be1b10d66aaf10002826b6eabbc135776f146e6c7e99b2d945",
+    "src/research/trajectory_stability/report.py": "9bb54e4553737c8a162695b520febb6d2f33946230becac2ac2eabb08cd5e084",
+    "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+    "src/experiment_runner/metric_docs.py": "031b6c5604ec65328e2797b7696b34ce1a0219fb4950602ecfdae4918b230f3e"
+  }
+}

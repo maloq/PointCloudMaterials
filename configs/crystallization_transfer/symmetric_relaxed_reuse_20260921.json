@@ -1,0 +1,15 @@
+{
+  "output": "output/crystallization_transfer/symmetric-relaxed-reuse-20260921",
+  "reference_plan": "output/crystallization_transfer/symmetric-mace-gatr-20260921/technical/plan.json",
+  "relaxation_plan": "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+  "selection": "output/relaxed_encoder/expanded-20260921/technical/development-selection.json",
+  "reuse_plans": ["output/relaxed_encoder/expanded-20260921/technical/plan.json", "output/relaxed_encoder/large-test-20260921/technical/plan.json"],
+  "context_cache": "${storage:cache}/crystallization-structured-relaxed-reuse-20260921",
+  "history_frames": 3,
+  "maximum_history_ps": 72,
+  "extraction_batch": 128,
+  "quantization_gate": {"feature_relative_rms_max": 0.1, "median_cosine_min": 0.99},
+  "new_workers": 4,
+  "partition": "RTX6000PRO,H100,L40S,A100",
+  "hours": 8
+}

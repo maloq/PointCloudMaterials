@@ -2909,6 +2909,338 @@
           "Planned 338 distinct local onsets on 30 test sources (27 event-bearing), not 338 independent nucleation events. Timeout exclusions shared across models. Historical source split. CPU/GPU FIRE minima may differ; backend and binary hashes retained."
         ]
       }
+    },
+    "crystallization-structured-relaxed-20260921": {
+      "root": "cache",
+      "path": "crystallization-structured-relaxed-20260921",
+      "kind": "dataset",
+      "dependencies": [
+        "relaxed-encoder-expanded-20260921"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Relaxed MACE symmetric-context observations",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Planned 150 independent Al sources; unchanged source ancestry and split. Full-cell fixed-box FIRE relaxation, fmax <=0.01 eV/A. 25 cuboctahedral queries per center; observed nearest80 identities retained in relaxed float32 clouds. Frozen cold-vic-temp01 features. Original MD defines outcomes.",
+        "evidence": [
+          "configs/crystallization_transfer/symmetric_relaxed_mace_20260921.json",
+          "output/crystallization_transfer/symmetric-relaxed-mace-20260921/technical/plan.json"
+        ],
+        "limitations": [
+          "Preparation incomplete; inspect cell receipts. No new MD integration; initial positions inherit float16 storage. One selected encoder and one forecast seed."
+        ]
+      }
+    },
+    "crystallization-structured-relaxed-reuse-20260921": {
+      "root": "cache",
+      "path": "crystallization-structured-relaxed-reuse-20260921",
+      "kind": "dataset",
+      "dependencies": [
+        "relaxed-encoder-expanded-20260921",
+        "relaxed-encoder-large-test-20260921"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Reused relaxed MACE symmetric-context features",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Frozen inventory of3062 existing quenched cells,150 independent Al sources. Original source split. Three real observations within72 ps. Tracked observed cuboctahedral query identities, actual relaxed geometry. Cold-vic-temp01 frozen encoder. Shared original MD future targets; no new simulation.",
+        "evidence": [
+          "configs/crystallization_transfer/symmetric_relaxed_reuse_20260921.json",
+          "output/crystallization_transfer/symmetric-relaxed-reuse-20260921/technical/plan.json",
+          "output/crystallization_transfer/symmetric-relaxed-reuse-20260921/technical/precision.json"
+        ],
+        "limitations": [
+          "Preparing features; inspect source receipts. Archived full-cell float16 precision; four-cell feature comparison median cosine0.999105, relative RMS0.063568. Not equivalent to precise local-cloud extraction. Irregular frozen origin availability; compare matched controls."
+        ]
+      }
+    },
+    "bcr-relaxed-audit-20260922": {
+      "root": "cache",
+      "path": "bcr/relaxed-audit-20260922",
+      "kind": "dataset",
+      "dependencies": [
+        "relaxed-encoder-expanded-cells-20260921",
+        "relaxed-encoder-expanded-20260921",
+        "bcr-g1-independent-20260921"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "BCR paired full-radius observed/relaxed Al structural audit",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Derived from existing Lee2003 MEAM trajectories and fixed-box FIRE relaxed full cells; no new simulation. Seeded 45 roots at 400/450/500/510/520 K, 4 frames and 16 paired tracked centers per root. Complete 8 A patches independently extracted in each domain; 25 fitting/5 tuning/15 development roots, no historical test/calibration sources.",
+        "evidence": [
+          "configs/bcr/followup_20260922/study.json",
+          "output/bcr/conditioning-audit-20260922/technical/relaxed-selection.json",
+          "experiments/bcr_followup_20260922/README.md"
+        ],
+        "limitations": [
+          "Planned derived cache; completion is recorded in its manifest and per-cell receipts. Archived full-box float16 positions, float32 boxes and exact identities; used only for structural probes, not weak-noise denoising. Neighbor membership can differ across domains. Full-cell quenches contain external context."
+        ]
+      }
+    },
+    "crystallization-observed-front-20260922": {
+      "root": "cache",
+      "path": "crystallization-observed-front-20260922",
+      "kind": "dataset",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Observed Al bond-coherent cluster and front descriptors",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Existing float16 original MD coordinates,150 independent sources; fixed archived origins and3 ps past. q6 coherence threshold0.7,12 nearest bonds within5 A,ordered if>=7 coherent bonds. Components restricted to12/20/25 A balls;10 A order-evaluation halo.14 invariant descriptors per radius,16 fixed tracked centers/source. No PTM, future labels, new MD or relaxation.",
+        "evidence": [
+          "configs/crystallization_transfer/crystal_front_20260922.json",
+          "src/research/crystallization_followup/front.py",
+          "output/crystallization_transfer/literature-followup-20260922/technical/plan.json"
+        ],
+        "limitations": [
+          "Preparation in progress; verify per-source receipts. Hard bond-order thresholds are feature definitions, not PTM labels or direct interface surfaces. Components truncated at observation boundary; no global cluster-size information. Single historical source split."
+        ],
+        "ancestry": "Same150 independent melt lineages and90/15/15/30 source split as archived relaxed-input comparison; identity and original manifest hashes preserved per source."
+      }
+    },
+    "structural-state-screen-20260922": {
+      "root": "cache",
+      "path": "structural-state/screen-20260922",
+      "kind": "dataset",
+      "dependencies": [
+        "bcr-relaxed-audit-20260922",
+        "crystallization-transfer-mace-20260919"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Fixed structural-state matched observed/relaxed MACE screen",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Verified reuse of complete paired 8-Angstrom observed/relaxed neighborhoods: 45 independent roots, 2880 pairs, 25 fitting/5 tuning/15 reused development roots. Cached graphs and fixed geometry targets; independently cached original-MD order and sustained-onset labels were evaluation-only in v1/v2. The separate v3 distance/future study uses current and9ps future order from fitting roots for encoder supervision; onset remains evaluation-only. No new simulation.",
+        "evidence": [
+          "configs/structural_state/screen_20260922.json",
+          "experiments/structural_state_20260922/README.md",
+          "${storage:cache}/structural-state/screen-20260922/manifest.json",
+          "configs/structural_state/future_metric_campaign_20260923.json",
+          "experiments/structural_state_future_20260923/README.md"
+        ],
+        "limitations": [
+          "Archived float16 full-cell coordinates; no weak-noise experiment. Full-cell relaxation contains context outside the local input. One-seed small mechanism cohort; only18 positive12ps development event windows. Historical cohorts are not an untouched final test."
+        ]
+      }
+    },
+    "geoframe-physical-reference-20260923": {
+      "root": "output",
+      "path": "geoframe_evolution/epoch34-reproduction-20260923/technical/reference",
+      "kind": "dataset",
+      "dependencies": [
+        "Al",
+        "Ta",
+        "Zr"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "GeoFrame Al/Ta/Zr independent physical reference assay",
+        "materials": [
+          "Al",
+          "Ta",
+          "Zr"
+        ],
+        "role": "analysis_cache",
+        "classification": "research",
+        "potential_ids": [],
+        "description": "Nine original inherent snapshots, full-cell PTM/Al planar faults and 4096 uniform interior anchors plus their nearest neighbors per snapshot; fixed spatial holdout, q12/q14 and topology descriptors. Analysis arrays only; no new simulation.",
+        "evidence": [
+          "configs/geoframe_evolution/assay.json",
+          "src/research/geoframe_evolution/reference.py",
+          "output/geoframe_evolution/epoch34-reproduction-20260923/technical/reference/manifest.json"
+        ],
+        "limitations": [
+          "Original static generating potentials and periodic cell metadata are unknown. Free boundaries with interior exclusion. Encoder training includes these frames; probe spatial holdout is transductive. Candidate order labels do not establish temporal persistence or nucleation."
+        ],
+        "ancestry": "Derived directly from registered Al, Ta and Zr original inherent configurations, retaining each input file hash and atom row index; no claim of independent snapshot ancestry."
+      }
+    },
+    "geoframe-structured-liquid-regions-20260923": {
+      "root": "output",
+      "path": "geoframe_evolution/structured-liquid-regions-20260923/technical/structured-liquid-regions",
+      "kind": "dataset",
+      "dependencies": [
+        "geoframe-physical-reference-20260923"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Dense Ta/Zr structured-liquid candidate regions",
+        "materials": [
+          "Ta",
+          "Zr"
+        ],
+        "role": "analysis_cache",
+        "classification": "research",
+        "potential_ids": [],
+        "description": "Dense full-neighbor order and mutually coherent candidate components around up to six isolated high-order centers per material.",
+        "evidence": [
+          "src/research/geoframe_evolution/precursors.py",
+          "docs/metrics/geoframe_precursors.md"
+        ],
+        "limitations": [
+          "Targeted high-order selection; not an unbiased prevalence estimate or verified nuclei. Boundary-truncated components flagged. Potential identities remain unknown."
+        ],
+        "ancestry": "Ta 2.9 ns and Zr 240 ps snapshots from the original static collections; inherits their unknown trajectory ancestry."
+      }
+    },
+    "encoder-screen-inputs-20260923": {
+      "root": "output",
+      "path": "encoder_research/screen-20260923/technical/inputs",
+      "kind": "dataset",
+      "dependencies": [
+        "geoframe-physical-reference-20260923",
+        "structural-state-screen-20260922"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Native snapshot screen cached physical observations",
+        "materials": [
+          "Al",
+          "Ta",
+          "Zr"
+        ],
+        "role": "analysis_cache",
+        "classification": "research",
+        "potential_ids": [],
+        "description": "Verified10 A full-source neighborhoods and nearest80 crops at the fixed GeoFrame assay centers; pointer/hash to existing45-root relaxedAl future patches. No new simulation.",
+        "evidence": [
+          "configs/encoder_screen/screen_20260923.json",
+          "src/research/encoder_screen/prepare.py",
+          "output/encoder_research/screen-20260923/technical/inputs/manifest.json"
+        ],
+        "limitations": [
+          "Static potentials remain unknown; originalGeoFrame training includes these static snapshots. Future data have separate registered MEAM provenance. Do not infer common potential across collections."
+        ],
+        "ancestry": "Derived from geoframe-physical-reference-20260923 atom centers and original hashed Al/Ta/Zr sources; existing structural-state-screen-20260922 future corpus reused without row changes."
+      }
+    },
+    "encoder-screen-dense-spatial-20260923": {
+      "root": "output",
+      "path": "encoder_research/screen-20260923/technical/dense-inputs",
+      "kind": "dataset",
+      "dependencies": [
+        "geoframe-physical-reference-20260923"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Fourfold spatial plot samples for the native encoder screen",
+        "materials": [
+          "Al",
+          "Ta",
+          "Zr"
+        ],
+        "role": "analysis_cache",
+        "classification": "research",
+        "potential_ids": [],
+        "description": "Original spatial slices plus threefold additional interior atoms, with original full-cell PTM and fitting-only material thresholds. Exact old-label replay required; plots only, no change to numerical metric cohorts.",
+        "evidence": [
+          "src/research/encoder_screen/dense.py",
+          "output/encoder_research/screen-20260923/technical/dense-inputs/manifest.json"
+        ],
+        "limitations": [
+          "Unknown original static potentials and periodic cell metadata. No temporal fate claim."
+        ],
+        "ancestry": "Selected from the same hashed original Al177ps, Ta2.9ns and Zr240ps snapshots and spatial slices as the fixed GeoFrame reference."
+      }
+    },
+    "encoder-screen-spatial8-20260923": {
+      "root": "output",
+      "path": "encoder_research/screen-20260923/technical/dense8-inputs",
+      "kind": "dataset",
+      "dependencies": [
+        "encoder-screen-dense-spatial-20260923"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Eightfold spatial plot samples for the native encoder screen",
+        "materials": [
+          "Al",
+          "Ta",
+          "Zr"
+        ],
+        "role": "analysis_cache",
+        "classification": "research",
+        "potential_ids": [],
+        "description": "All original fourfold slice atoms plus the same number of additional interior atoms. Original and fourfold reference labels must replay exactly. Plots only; numerical metric cohorts remain fixed.",
+        "evidence": [
+          "src/research/encoder_screen/dense.py",
+          "output/encoder_research/screen-20260923/technical/dense8-inputs/manifest.json"
+        ],
+        "limitations": [
+          "Unknown original static potentials and periodic cell metadata. No temporal fate claim."
+        ],
+        "ancestry": "Selected from the same hashed original Al177ps, Ta2.9ns and Zr240ps snapshots and spatial slices as the fixed GeoFrame reference."
+      }
+    },
+    "robust-onset-noise-20260924": {
+      "root": "cache",
+      "path": "robust-onset/noise-20260924",
+      "kind": "dataset",
+      "dependencies": [
+        "structural-state-screen-20260922"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Robust-onset finite coordinate perturbation bank",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Three deterministic coordinate-noise views of fitting-only paired Al snapshots, using 0.2/0.5/1 percent expected 3D displacement RMS relative to local 12-neighbor spacing. Center fixed, neighbor edges rebuilt. Parent quantized positions and independent source ancestry preserved; no new simulation.",
+        "evidence": [
+          "configs/robust_onset/screen_20260924.json",
+          "experiments/robust_onset_20260924/README.md",
+          "${storage:cache}/robust-onset/noise-20260924/manifest.json"
+        ],
+        "limitations": [
+          "Finite reused augmentation bank, not a new physical trajectory; full finite parent support retained.",
+          "Onset labels used for encoder supervision in robust_onset_v1 only. The 15 development roots were used in prior research."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

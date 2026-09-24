@@ -1,0 +1,10 @@
+{
+  "family": "structural_state_onset_review",
+  "exported_at": "2026-09-23T12:50:02.739466+00:00",
+  "files": {
+    "src/research/structural_state_onset_review.py": "fe09fd48d83fecf8310d072d2533a68ca09baf8d0231f26a534a3efcc55d03d0",
+    "src/research/structural_state/report.py": "041bdc5852fa2b768ad24327420a5870dc378da202e09d32a1993d2e197dfa6e",
+    "src/research/structural_state/common.py": "db2ecf4294502c46772b6de3854095e477da737a69ba00d053314fd40c043519",
+    "docs/metrics/structural_state_onset_review.md": "cef248b3458357772757fe5940f5500f159b0c409d8c16662c170b24a26b9e9a"
+  }
+}

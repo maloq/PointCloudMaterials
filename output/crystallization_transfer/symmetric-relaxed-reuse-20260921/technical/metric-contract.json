@@ -1,0 +1,24 @@
+{
+  "family": "structured_context",
+  "exported_at": "2026-09-21T22:30:28.776186+00:00",
+  "files": {
+    "src/research/structured_context/geometry.py": "2d22090b6758d01172eafa43ccddb62f2051f01bed884f7b3b483de815758c6e",
+    "src/research/structured_context/data.py": "f4c3d31cd5a12d3de35e5129e32249fcc3039ddb1fae9607c1938a306a9cbcf7",
+    "src/research/structured_context/extract.py": "070ecfd1e208ac6eac1c0c7592c7edcba2b72a9c44fd0924beb563edb1582248",
+    "src/research/structured_context/queue.py": "5ec4528c57326575b5f67017cec03f8bf7472fa230b684136648416106aa0165",
+    "src/research/structured_context/model.py": "a0e353482d9243b06588fcb31be1844240ff954199856ee8a177ac2c4272af36",
+    "src/research/structured_context/figure.py": "26cca4e11a1d33987938206b41e4bd624b3e4f48f2352e7c4847a765091104c6",
+    "src/research/structured_context/__init__.py": "4d4e7a910f07dc27b122c05c9f7849d5b5e955d48ce451c425bdbc12b8a13d88",
+    "src/research/structured_context/verify.py": "c60283a81d2a22dddff6a14a03443aafc819dfb81d5a04813f4735f2c00b2178",
+    "src/research/crystallization_paths/runtime.py": "2a4c091222fe692142dbfea429679ceaaaceffd5d226f0dd39d048a93c9e3739",
+    "src/research/crystallization_paths/metrics.py": "08eaf02c4f5fbd2a19e6393b75603c99fb1de9368a08e7e28bff8cf3471cf1e7",
+    "src/research/context_night/metrics.py": "45d9f645a7de8789595bf9d576b30bfbb8425250bf141f8a14992ebb0e934f8f",
+    "src/research/crystallization_information/runtime.py": "734fe34a4f147c5334749626c62313ed8963dca8b03ddc9763f7be54f6b04d82",
+    "src/research/crystallization_transfer/metrics.py": "c93cc927b2afa9665f95bde06210bdb18615278de3d9f033d41e7b7469617f32",
+    "docs/metrics/structured_context.md": "be5f01b67490d7287fa585597f459a54b0ff235ed387735b127ea83280bef949",
+    "src/research/structured_context/relaxed.py": "3ffa6517b1ac1dd2ce4255c405b25bba4e27971bf7af7eec02fdd31497e3a423",
+    "src/research/structured_context/reuse.py": "586c10c0acfe8e2e040dd847cbb56f3ef967304304eea43d43c4079b815efce2",
+    "src/research/structured_context/reuse_data.py": "52ecab2623a107ce5c009a36e2075ecda6f55e80c18d0eb04dbb016073a0b89c",
+    "src/research/structured_context/reuse_verify.py": "f524a96349f178a8fd7d7858a8848d4f87dc4c5e5082e2947b6a5a390c12185c"
+  }
+}

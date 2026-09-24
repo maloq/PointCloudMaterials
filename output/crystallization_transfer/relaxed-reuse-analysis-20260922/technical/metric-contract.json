@@ -1,0 +1,10 @@
+{
+  "family": "relaxed_reuse_figures",
+  "exported_at": "2026-09-21T22:53:38.595858+00:00",
+  "files": {
+    "src/research/structured_context/reuse_figures.py": "be720fea9e7d0ab216e86e64e322f2b3e3da3d7d34b6a041a4e937622c624110",
+    "src/research/structured_context/reuse_render.py": "39cf326839f6b27f3cfee7558100fe781984d4dd07ee2a160e0b95c3e68517be",
+    "src/research/structured_context/event_offsets.py": "39c787d6ebe38ccf4fed258a510b26b6cbd46cfd0ce62b527f9dcf5d4cdc58da",
+    "docs/metrics/relaxed_reuse_figures.md": "df57024880d94ed98c053dd92aa65a0e90826368c9103eb234e7f012cd401274"
+  }
+}
