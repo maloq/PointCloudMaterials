@@ -18,6 +18,7 @@ not a claim that every old file anywhere on every server has been recovered.
 | [studies.csv](../../output/encoder_research/catalogue/tables/studies.csv) | Dated protocol/finding records, including archived ones |
 | [coverage.json](../../output/encoder_research/catalogue/technical/coverage.json) | Actual capture time/counts, manifest identity and explicit coverage limitations |
 | [METRICS.md](../../output/encoder_research/catalogue/tables/METRICS.md) | Frozen definitions for the catalogue exports themselves |
+| [prediction-context.csv](../../output/encoder_research/prediction-context-20260925/tables/prediction-context.csv) |275 recent AP comparisons with separate encoder/predictor inputs; join on collection/model/readout; [coverage and policy](prediction_context.md) |
 
 No database server is needed. SQLite, Python's standard `sqlite3`, pandas or a
 SQLite browser can open the file. The HTML contains its own searchable metadata

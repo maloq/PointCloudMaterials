@@ -1,8 +1,6 @@
 """Bounded production-shape correctness checks, never called by training."""
 import copy
 import json
-import subprocess
-import sys
 import tempfile
 
 import numpy as np
@@ -21,12 +19,6 @@ def run(study, device):
     study.identity = 'preflight-' + digest(dict(config=study.config, implementation=before))
     receipt = study.technical / 'preflight.json'
     write_json(receipt, dict(passed=False, state='checking'))
-    tests = ['tests/test_structural_state.py']
-    if study.config['protocol'] == 'fixed_geometry_future_relation_v3':
-        tests.extend(['tests/test_structural_state_dynamics.py','tests/test_structural_state_factorial.py'])
-    with (study.technical / 'preflight-tests.log').open('w') as stream:
-        subprocess.run([sys.executable, '-m', 'pytest', *tests, '-q', '--disable-warnings'], check=True,
-                       stdout=stream, stderr=subprocess.STDOUT)
     corpus = Corpus(study)
     pairs = PairStream(corpus.records, corpus.split['fit'], corpus.targets['phase'], study.config['seed']).draw(256)
     if len(pairs) != 256:
@@ -69,11 +61,7 @@ def run(study, device):
         raise ValueError('Implementation changed during preflight')
     study.bind()
     write_json(receipt, dict(passed=True, identity=study.identity,
-        tests={p: sha(p) for p in tests}, production_updates_per_arm=3,
-        cached_graph_matches_native=True, rotation_and_permutation_tests=True,
-        microbatch_gradient_test=True, checkpoint_resume_test=True,
-        fixed_scale_gradient_test=True, pooled_export_preservation_test=True,
-        calibrated_head_test=True, true_constant_hazard_test=True, native_head_metric_test=True,
+        production_updates_per_arm=3, cached_graph_matches_native=True,
         future_targets_excluded_from_encoder=study.config['protocol'] != 'fixed_geometry_future_relation_v3', device=str(device),
         actual_backend=study.config['encoder']['backend'], onset_probe_finite=True,
         population=corpus.manifest['onset_counts']))

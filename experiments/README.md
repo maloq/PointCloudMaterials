@@ -1,5 +1,19 @@
 # Current research
 
+[Encoder training with directional context](encoder_context_epochs_20260925/README.md): scratch, physical pretraining, VICReg and Epi with a variance floor; observed/relaxed supervised fine-tuning and both chosen predictors, with at least twelve complete epochs and full evaluation.
+
+[Spatial context on fixed Al64](equivariant_context_al64_20260925/README.md): matched ten-fit repeat on 64 centers, immutable source/sample roles, predictive-likelihood selection and compact online metrics.
+
+[Equivariant spatial context, 25 September](equivariant_context_20260925/README.md): all ten fits completed. Directional context improves AP3 in several matched comparisons; relaxed tensor attention also improves event NLL against its symmetric control. One seed; see paired source intervals and interpretation limits.
+
+Current predictive-information protocol: [supervised likelihood, no AP tuning](supervised_information_20260925/README.md).
+
+[Supervised capacity: small/500k/1M/2M](supervised_capacity_20260925/README.md) compares eight geometry-only onset fits with one seed.
+
+[Supervised onset AP3/AP6](supervised_onset_20260924/README.md) starts the separate
+crystallization-supervised branch: larger existing paired cohort, six encoder
+variants and validation-only promotion under one8.5-hour GPU budget.
+
 For the cross-study history, measurement guide and searchable results, start with
 the [encoder research handbook](../docs/encoder_research/README.md).
 
@@ -13,6 +27,7 @@ The dated folder name is the start date; older experiments below support current
 
 | Research | Current evidence / purpose |
 | --- | --- |
+| [Local states within a spatial hierarchy](spatial_hierarchy_20260924/README.md) | Four one-seed controls: local hierarchy, late surrounding context, early 12/16 Å context; fixed 8 Å focal targets. |
 | [Predictive, noise-aware encoders](robust_onset_20260924/README.md) | Eight one-seed controls: onset gradients, full-cohort AP ranking, present relaxed teachers, normalized perturbations, and multiscale tensor pooling. |
 | [AP-focused encoders and temporal dimensions](encoder_ap_20260924/README.md) | Proposed frozen-head/ranking/input/fine-tuning sequence; completed stability and state/movement spectra on 19 existing representations. |
 | [GeoFrame convergence, interfaces and structured liquid](geoframe_evolution_20260923/README.md) | [Completed 35-pass review](../output/geoframe_evolution/epoch34-review-20260923/RESULTS.md): liquid-order readout improves in encoder but declines in projector; interface/fault resolution improves; Ta/Zr candidates and conditional future assays. |
@@ -113,3 +128,8 @@ history while testing preservation of bond order and instantaneous topology.
 [Encoder parameter search](encoder_parameters_20260923/README.md): matched GeoFrame projector/covariance/FactorVAE/VISReg and MACE learning-rate/distance interventions with two seeds.
 
 - [Paired MACE + Epi, September23](mace_paired_epi_20260923/README.md): direct temporal alignment, VICReg control and Epi/variance-floor treatments, two seeds,24 full passes.
+
+## Latest onset prediction direction
+
+[3 ps primary onset experiments](onset_ap3_20260924/README.md): saved 3/6/12 ps
+re-evaluation, event coverage, and a staged existing-data experiment proposal.

@@ -1,0 +1,113 @@
+{
+  "protocol": "spatial_hierarchy_v1",
+  "output": "${storage:analysis}/encoder_research/spatial-hierarchy-20260924",
+  "cache": "${storage:cache}/structural-state/screen-20260922",
+  "augmented_cache": "${storage:cache}/robust-onset/noise-20260924",
+  "dense_root": "output/trajectory_stability/al-v6-20260918",
+  "dense_inputs": "${storage:cache}/spatial-hierarchy/screen-20260924/dense-inputs",
+  "seed": 20260924,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 32,
+    "code_dim": 128,
+    "backend": "cueq"
+  },
+  "training": {
+    "updates": 2048,
+    "batch_size": 128,
+    "microbatch": 32,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0003,
+    "weight_decay": 1e-05,
+    "warmup": 128,
+    "evaluate_every": 128,
+    "save_every": 64,
+    "log_every": 32,
+    "ranking_every": 16,
+    "ap_temperature": 0.01,
+    "ap_weight": 1.0
+  },
+  "retention_ratio": 1.05,
+  "noise": {
+    "training_rms_fractions": [
+      0.002,
+      0.005,
+      0.01
+    ],
+    "evaluation_rms_fractions": [
+      0.001,
+      0.005,
+      0.01,
+      0.03
+    ]
+  },
+  "arms": [
+    {
+      "name": "L-local",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false,
+      "context": "local",
+      "early": true
+    },
+    {
+      "name": "W-wide-late",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false,
+      "context": "wide",
+      "early": false
+    },
+    {
+      "name": "H-hierarchy12",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false,
+      "context": "near",
+      "early": true
+    },
+    {
+      "name": "H-hierarchy16",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false,
+      "context": "wide",
+      "early": true
+    }
+  ],
+  "probes": {
+    "updates": 1024,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "evaluate_every": 128,
+    "width": 128
+  },
+  "bootstrap": 2000,
+  "slurm": {
+    "partitions": "RTX6000PRO,H100,A100,L40S",
+    "cpus": 4,
+    "memory_GiB": 48,
+    "hours": 2,
+    "concurrent": 2,
+    "job_name": "spatial-hierarchy"
+  },
+  "context_cache": "${storage:cache}/spatial-hierarchy/screen-20260924",
+  "context_selection": "output/bcr/conditioning-audit-20260922/technical/relaxed-selection.json",
+  "reference_arm": "L-local",
+  "title": "Spatial hierarchy encoder screen",
+  "primary_horizon_ps": 12.0
+}

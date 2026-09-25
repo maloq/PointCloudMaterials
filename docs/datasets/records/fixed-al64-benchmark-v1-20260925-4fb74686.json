@@ -1,0 +1,2845 @@
+{
+  "dataset_id": "fixed-al64-benchmark-v1-20260925",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "a238c913c59e544b2fab156238f10dcacbe3f263fbafdd29b8d05b36ac50757e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "horizons_ps",
+        "identity",
+        "inputs",
+        "legacy_order_sha256",
+        "plan_sha256",
+        "population_sha256",
+        "sources",
+        "state",
+        "test_status"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "horizons_ps": [
+          {
+            "value": [
+              0.75,
+              3.0,
+              6.0,
+              9.0,
+              12.0
+            ],
+            "first_json_path": "horizons_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "1ed363e2e4439ec1aacbafc6a544951edd42ec6ef4d884a965bb10cf27c648f6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "8e951adfd046da4f588b6e2d6ea5235b6b7182edbf6e97dce545f135c1b5c21c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "3be717860bf0a215d59cd93a15f2d44b8e2d3641fd65aa1fe7f345017b256211",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "793cc2931f9d0ffddab467c9602b974b145d0ecd4cb777298b753992cff3d822",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "b82bf05e479edbf45ae43c97b1ca95d7c653d3d65701d162028c69ce1fec138e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "87ce34307ddae2867f3055d04e89912cc0dda066263314c38360fd5cb41e778a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "c317b9de15af56bb1af1cb060c784dea2e529f8764523c20d04f7db3be23a96b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "a42ef789c8799ed72ed7c651e4dc7ac31eb76b6ddf959890e492f05aad4e03dc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "0201c7acfa7c1de7766b9576c8fc96588428db12f82ed0ef9d67b6baca0eda70",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "0e9266635d926dee62d7a748cb1c98b55724a3c5f6cdf62fb34409987bdf343e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "540217788432d97ccd690f56ed0747f7f3af00341875de9f1cbcba4f95153232",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "03c6c63329da098a75fa7ed36c92ddfd60efaa13bd7e2ce5c94897daa5f502eb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "02cd9e7824e840a052fa36d78262deb5359f43441cdc37ed7813d2cfafb73397",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "fe6b12d895ea9a2379fe8388b64cabddffc26ad8e9d0b07235911f40465e63c8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "e6f84f888eed090a002999040d6dfb5b4ad6d9a41c9ed64a1c28c1988cf064c0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "3164112a165ad96d3af6dea439c4b963fef1259ff9abbf56da551654be8b4be1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "fbc9184ab114696cfd559f34e73a2debb5ef95947032d520e788eabe39dbd1fc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "8789b352e5101e99305767305f36180c0572235dd9d14b505263156a836548d7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "c23e95fa53805d0a34183db920da68465259707070bab1a4737dfcb81ee33151",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "1dc166ca54f1ee3bb7c1e93f1f40cbec55f6c0475f9ce7beec6aefe137fbbca1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "c4812074f723b7b46e6938d34557ddf53b167a4b34a4b07fd5b3301ffee7d1c7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "64bdd87b1108cf0e545540704c61342ede64c372a116e9b317e883fbe8be5342",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "8be24bbad43f764d0d78e47242837faede108a332785dc1ef560253123c650cf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "5995d6e28f86a5890a1c5fd58b9cf6927d775ce90faca1b969ef9834b4715db2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "8cd6cbcc6084a0af54c66a03103089845eee7c9d963b8b3771eba44a3e867bf6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "843ce39176d284b415e6f30f9dedce3972d81809ff7adef354f4ca140a4db20b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "d52ea279ec6e79d338fe6ab55f0d606478350a7ca5d05b2692652459615b3823",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "d5b75c75ec0cfa2230164b20fc5d3796e117bf06b70ed3ef3e992a9f43a4998b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "9e932b8f6f19e6c368f222b2df180e8ab92cc115b6bd883f837f64991d391048",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "abb7fee9b00d8f89873db18628827b347f77b28520d51063ba51ae0dcb54ecfd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "cd1d49d211466cd2e706ea5caecf2c27eb6c990197549887f4b57056df43f03c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "d425197182373c0d3925ed9c9dec04197484dae3e302b695fdb207c167a78402",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "9c81ff7f346ad0878c5d08fe5b37e03d777ce7be9d5ed5b25a19620a6486edd4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "6ec7b4b1b3d9654f3f9385ae37c97b29e1b5687511beca8ef5fc2364d5d67c78",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "998605dc68d98e25bf277d1916582efc97395ded4c7b0cd67078d921248b0ec8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "a44e592d6ad839ab0ed01f0919e49087f74e0ff5dfe15c004f6e24f1b4be26a1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "e8669af59b7f2c90cdc074d0e4826002acb7b4042e479799ec8e93e15697d1cc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "7d6de922f7e1ca230c2e2dc81996b9353db968b69da001044ebffd9a5000a47e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "9156f9b369a7d3572704d04962d32f85ed15bbf1f10652226024a9ec9276fae1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "cc459c860b27109ab3fc80b32ba9d93347357b21d825e8d162c125138a637086",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "b78a47707a11d5f7c54c6322c6122c821bba89ca1b8b88d02f519c4f6cfd7e04",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "feae893985ea37230914950cd8b5c945d4c7b21d1b6a881ac9f198e13f680cc9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "45fb2cf6a0f3a4e0688385950eb18b4588359818cac7a5953618d12bebfb47e6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "af51edba85f8d1d1790ca0d8744ee6702d8d2c4fc3a6855f535d7b1113401a23",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "3714493171ba2a4598f83f7fe41db7856ac034e0ff79673ba9f5ba48d97b0c2a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "416b05ce9aa34c343afc0f74d164f7808b36bd3fd375c146ea52aa15a1160612",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "1b140fd410d7a38737c21c6fb9801f334ef7bc180c08ec084731eb53e7985b3e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "ee0beff0cfcb0e516cd795dc3fbbc53dbb43c6ffb784742e826e1843c5e9f8c1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "79ad812832d7c28a63a95de6bd9b7497fc1a2f68db1f158976bb54b70690d804",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "1d82560cc9cd70bd4803d339b98f2573cf90ef48e4d1b7368c360ec7b5436a74",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "78db7c8d6eaf926e9ab947fce9adc1f38653ad1721e91ff19f57ddb381243704",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "d947220e0131fb7ad4d9536adfd5a24fa4bac19100d0a88196a2715ae7f3c9e5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "89f6ffec5560bb8ca2ff76c040d8dacc1fe5dc5d74380d6543d8ffc6d4651f1f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "fe83854297b4f902be8187133cf992fcd8e973069210feb202f2aa9e72623d7e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "e9fede76f3ffee2320a83a7d8bf9d5a420ffc40a29cc1642d1e20b5da366b650",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "eee2956dd048196877f558f2803829000853653e5962b3a953caca6c3890bb5a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "13afb370bcf41ead6ddd370d2f9d1f4dd6b2e27fe6e5ca905e3d8c761a5a9bbd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "656bd0ad2210e02310d92c62311edac10ac4ee0cbeeed41e82c596ca0ba449ef",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "c629a48504fcbb31b4fab7649d09d92d798b5bc5e648f16d68a57db73516bd84",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "1e954a3af4c7a3a09196982a22c8aa405d1347726f4d6ef7be04799c2fef5a86",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "e0d8fd2069ba54dc7cfaef007f44799f78c476067afe4b4a5c028d9572ec9901",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "3f537504b85b87f55d6be62ceaceb83e3ca48da58e8391b54f45cc6510e7ff16",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "3cde03b7607b49c4cb75a732a8f5165bcbfc26f76f65b7ac102b726654ecfff1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "63ea1a622e4e9413dffdbc05e5f6501a1e838a74002ddbd956f22e4b8e8bb5b5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "78ae7a2fbe6e95f40554ace969118845205202b50b85fb57a8729db231abf8d5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "78891f491e7b7ede2fda8ce888549cc16ee562ad0c4063a695b21c616c1664a8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "24f251c8f605e291b3115ed72b441ee3dde2696574a3f62d47bc77bfac05420c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "a1f01330b2bcab35647a1a6eaa551e59a90fff902b0c719f2451fe463dccb856",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "7f6d3818f5d786907fd7a534b0d846d80d02136e3a3f038d460cf1fba851856d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "773afe6b6fdca371c9f889f46ce37da802da044618e6fd2de68ad1a0e23792c8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "0204dbe87b2838379d34895fc42100e6e36baa2c5727156e388f229097d0d13b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "05eeb4129dfe18f124d2341de117191c57503e0353d691a7ffb6dac7db5ef642",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "99644d1e1a2ae00cd3e536f2c975272cece852aea70ef39e298f18f4a69414a6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "b730acae667887a17ebe12955a92a6905880da5b0a71cecc12efac036da927a5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "90705c713876cc52adcaea63c758ed4d555070773b6f8d8d4a2a418ee53ca995",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "776f3275b4a1d630d9672f8c2aa624ed11a75372a813039298c176bb000f849a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "dd3b0da4d97051ef329a61ea898cf029d6bfe71b11e0d42d8c3022c734cdcf54",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "f91228d56425622c51e20bda2c7b246d247abab4039a1aa5c995e30b46339f5a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "d335c5fee2c1a073486d4d5074e0afb5fb7d7ea795ea70e238df6f417ce00e8e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "bd6b9ee368a0156a7a48db1722ebbf393942ba8fea4669ba1e6b6003518611fb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "8fb1dcf8bc5e7a9ae0f34bb503c5e12e47a194fd2bb60e84b584d9f4add441d0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "eb2dbe3ce0e55ba5e3c0fc15febf6fa89290124bcdd7e190e5f3e32b4c18a42b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "e032d56d58ec4d19c0352e6bfef726a4ce398d5c85a0e39d35dea5f2746e8033",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "b6ee633e8abd9a0e875abd4b1dbfd551a108ef4721efe46a44cc41140c18e2d4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "70ec4f8d994ffc2202ea036503244b37eb15f7195b2f667330a12850fb2e43f7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "b218e0e1267f2b90c6661f40cb9a12da45667081748b8ad862d146d1411592cb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "f2380fb9313446bb629f29b392e77893e4a4208f437bb481c0148a28e1066812",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "b91b84b7ff466007a513cf53359f855edc3fdbacdc7737ffaf8a2f1446a724e8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "c5b8b3b396a06569f3154de1892bb21817716cdde72ad7ff90c9e5f13b8ff588",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "49e60fadcc80ef89a7be93c4c6323ca66570e49dfb3663e1fe0fe7d2a51ec4cc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "0a934fb81bcf4209c60e9416b76537c2791c7b54dbaa5493980cf5d715f7a879",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "dc31d4332cf3ff76dc08f565b493c8fab06e0f5526532c3bb852ae44b3241088",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "d70ee1e2bed8948443fc9f03e479298d958a04645712feb66fa8055b65d48f0d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "78b476904384efb50d34b4edb8b324dba76be40362e9113070798242f277f527",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "956ab86b14f8186c567c5d759e0c24b51c090755ed157c0f6a70f5bd1cabb9c4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "c274761f68d28b6985346332ff7d80043cf244d957a9590c19ce22b951c0787f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "8e4bbf47c90cc54b0899ed03064bc226059a880a05887f2019f595d09fa18aa4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "af869699d42c161b8babbb805b66f7705e1e27e53f5e9df25d016d14c59d62a9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "f66888303b2d7c0cbe89b6ad39eff8011cfa6cf0461f8064e5643453350407be",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "aa8ff56c65d8650d95d0322b74b1b89176da80f28a4439692831f7dace3ca027",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "fa236f29bc020bbb19902e4648b77b6e5f2029917b6fbd5af7b20ee772b16d52",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "affdacd59367918a6a7dac6ddcdf9b42e23837a5c50535a2ae49d2b37bd056df",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "976fc88977ffc46b0875ee9c712dfb6e02437d47f204abab8c895797305c7539",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "7c1d09c4ca84604f01f0f4fe08b1f960395f038faa30b0306cb9bb5650a7290f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "ff658382f913fd2f9d1cacaba4e793a9ee5d02cec396db3965a5900938a039a8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "b216153f9e3f2d4151febec4ae2fecbcb6ce2e66e748bb2ab0fddbba14644a24",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "4ef13ef022ad952e0b41570eeb9c2ff825a22b8b0e2ab6620c63ab08fca60725",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "69c6b2766a000b29c630ba249edf1aae72889402d577aaee32633e620154049d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "d480d979dc5a4fd544e965534142eb5b0dbb6d5178596dcacf934f08b939e911",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "320236b740d8d1ee55c23cbcd28ce5cb7ec3af2e1c1ecc21ec8d462bb41d345a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "066e641381191e8982a56aba6c73ea28ff929f0fd6835510797f68cd151acc9f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "e2622a63078d2d188e87c6d77e0a3ea72520a17c7e8da6b444882352426b1548",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "5515b902c84f8ffca99c6e32ae76c6153b75bc6e8943b7af5e7195f7fd33f677",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "221de87ca321abbe80955632bed4142052b6ae5f9ada992bc6a0717c7a95e48c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "70d22b3cc40a82d8754cd3651e3e5e3c85be43cb5bd44cdd98314bab99460f67",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "a0b54a6eda7bc5dd976c8724b191300e2634f8084e670315c86bd8455957c175",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "ca5f5c945d9447d809390b83bf10d0e42ad0ab8f14d19c2fecc563f506509489",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "5c289e526a3cfc295f9748b3f7b6246836d5af64910015d062e4e2a48a2299d2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "9c19a69727075478e031cb552aa7a4e830bf6357d96125771706fc1a608e5bad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "15f803eaef93090ea5dbebccc5917083ab782d1649ddf98f91c82a0afd9284b9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "4b5320e492e4ce22656281485c438a0a54008d308cc55c160524e5b63ef1825f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "930c55a1267e3d6e6af34a5b9ba1ffc733e308e25fae7df3b725d9c5fb866942",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "0b32b0e76084c32e99686350be544569b35e12d600c7e8aa7f172ab9ad6a2d6f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "803d9c6b916bc8bd1c7d11d048c701cbde6b2f5abc09c8a5c006513e833bfaa4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "abfa9f73e20d680179fe1d7fb523a55527f9d44b418c4676ceec29fc36514b06",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "96b7ec14d24c58f233b647d6337b1edae2d1efe856eee77e0c4af185875b2182",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "35be3c4163867fd189e78479affd7603cb51f4ad8bec24edb8d624653161ede4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "7520a790f5b49fc97707efb2b0c501a9d2ab073fa9086656c926fe48d0c9b5ee",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "aa7a2b4326079743b4dba8c1e8066b2980e878eda4788a1e778c396024db2b57",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "6b58fb08ae2092e9961b34dc60a9630554a186d574b9bc005a534ec989a420df",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "5c5b4907f588e359bdf53c56a1aa09ecf2c3b949b1fda544c0f84b922e212964",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "60486662e9baac30b8f2746eb69aba4d926cd44c8e26e03d1ce7191d8065c65f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "2c4e68622eda9fedee827c6c3e87a6c03b872fe2171468de2662cf56ac5ae3a6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "1a92ebbf1ed7bec7254e7fea48aa5ecf286301c3c99f1978dcc5759e0ebb0927",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "93faa8818b3a38d7a385e06d9b08d195f6eb33ad8e4c531844173882e846a0ac",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "da2c9343de6db6ae3ba0a5e70c2bca99d61095a01c33db0fc9167a074dad7fa5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "dc4de4e44087cede673cc28237c1e50ff3938f6181fde72fb9e03d642efd1bad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "a75369ae84b0ad58a0ff4f346993a2b0a34b3a18df7e1cae22bdb21c454545ea",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "4a3c82d02ddd834148f95e6fce771c23233508c1e8a17065cb3aa0cbe6674863",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "3480154893b457360541a57a0baee9bc98f069ca8aef9d35d75c60abc45427ec",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "6fd509f4474e082d7f0a6d0d99c642ea4053daab77d55b493d0c077d205058f3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "21d226a3e2760647d608ec6bde6d21aef144f5c86a13de5c93a01c9acc2e98cf",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "c429029b99e2cf7ac99b7a2b47f486cc8be14c06301149ab5a066d5d71ac9b8b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "baa90edf750f354758f165b95524973e09571a5339deb7cd1b8d4fc6b450a7df",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "6cceb5556f61b067edc878fc2038e18706839cc4640d56b8e7398e3a8128b805",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "f8c5ca7584f7e70133b69603af8b27845b9004a9d9eb944eff139be3ab5013c8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "3ab2635fe9999cfe39356ac0a25ee055ab9cabd31dad3749dbc3777121c7ba94",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "0795cba9abbcc2e757b0d1f4b7de3fcf9bf4bd9632dd8e0c3f4542c1c576bc14",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source",
+        "structural"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "35cda7f38d522a51bc3bbc3ec3c91d67e5f4c81c422b75c1bdf72b4f28796066",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/benchmark/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "84f083009cafcb632809d16ce48df67c6fba21884e95a3d83aa185dec619041c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "full_ptm_verification_frames",
+        "identity",
+        "labels_reused",
+        "legacy_labels_exact",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

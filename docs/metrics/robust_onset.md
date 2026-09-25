@@ -1,7 +1,8 @@
 # Robust onset v1 metrics
 
 Primary: source-weighted average precision for sustained local first onset by
-12 ps, among causally eligible noncrystalline anchors. Three observed noncrystalline
+the explicitly configured `primary_horizon_ps` (3 ps for new experiments; the
+original frozen study used12 ps), among causally eligible noncrystalline anchors. Three observed noncrystalline
 frames establish eligibility; three future crystalline frames confirm an event.
 The original independently produced labels are reused. Event bins end at
 0.75, 3, 6, 9, 12 ps; bin 5 means survival through 12 ps. All examples have the
@@ -14,7 +15,7 @@ mean squared probability error. Hazard NLL is the first-event/survival likelihoo
 The 5% FPR threshold is chosen on tuning negatives with complete ties; report
 the actual resulting development FPR, recall and precision.
 
-Primary checkpoint: tuning AP maximum among checkpoints whose tuning geometry,
+Primary checkpoint: tuning AP at `primary_horizon_ps` maximum among checkpoints whose tuning geometry,
 current-order and future-increment MSEs each remain <=1.05 times their calibrated
 initial value. Selection never reads development outcomes. Initial step zero is
 eligible and explicitly reported. Separate frozen linear/MLP probes use the
@@ -59,7 +60,12 @@ number of principal directions retaining 95% of spectral energy. Paired-corpus
 dataset rank and dense-chart dataset rank are different populations, both named.
 They are linear dimensions, not estimates of nonlinear intrinsic dimension.
 
-Paired AP intervals resample complete development roots within temperature,
+Comparisons export AP3, AP6 and AP12, with primary-horizon Brier, prevalence,
+recall/FPR, selection and paired intervals explicitly labeled. Alarm thresholds
+are chosen separately on tuning negatives at each horizon. Changing the primary
+horizon does not change the full five-bin hazard NLL or physical targets.
+
+Paired AP intervals at the configured primary horizon resample complete development roots within temperature,
 including multiplicity, with 2,000 shared bootstrap draws. Draws with no positive
 weight are excluded and the valid count reported. These intervals do not quantify
 training-seed uncertainty. The 45-root paired development assay is reused, and the
@@ -67,5 +73,6 @@ dense chart may overlap fitting roots; it is a descriptive diagnostic only.
 
 Smooth-AP is a *training surrogate*: weighted positive-average precision with
 sigmoid score comparisons, full self mass, full fitting risk set and temperature
-0.01. It is evaluated on 12 ps cumulative probabilities every 16 updates and is
+0.01. It is evaluated on primary-horizon cumulative probabilities every 16 updates,
+with positives defined by the corresponding onset bin, and is
 not exported as empirical AP. It does not inherit the SOAP optimizer's guarantees.

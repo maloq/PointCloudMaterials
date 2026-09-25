@@ -2,6 +2,13 @@
 
 [Handbook](README.md) · [Metric contracts](../metrics/) · [Results](results.md)
 
+**25 September input audit:** see the [per-comparison context ledger](prediction_context.md).
+The older Geoformer/native/Epi onset probes received temperature and97 physical
+features alongside the embedding; the larger supervised head received temperature
+and simulation age. These are conditional scores. New experiments exclude
+explicit temperature/time inputs by user instruction; historical scores retain
+their actual definitions.
+
 There is no single encoder accuracy. Every comparison needs an **observation
 contract**, an exported feature identity, a target, a readout, a population and a
 split. The exact exported `tables/METRICS.md` takes precedence over this cross-study

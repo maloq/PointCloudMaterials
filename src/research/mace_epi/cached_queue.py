@@ -11,6 +11,7 @@ import json
 import os
 from pathlib import Path
 import sys
+import traceback
 
 
 def cached_copies(loader):
@@ -46,5 +47,28 @@ def main():
     queue.main()
 
 
+def run_cli():
+    # Completed DataLoader subprocesses can hang in resource-tracker shutdown,
+    # retaining their GPU and blocking the next stage after all artifacts exist.
+    # Exit only after the synchronous queue stage returns; preserve failures and
+    # the trainer's checkpoint/deadline status instead of reporting success.
+    code = 0
+    try:
+        main()
+    except SystemExit as exc:
+        code = exc.code
+    except BaseException:
+        traceback.print_exc()
+        code = 1
+    if code is None:
+        code = 0
+    elif not isinstance(code, int):
+        print(code, file=sys.stderr)
+        code = 1
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(code)
+
+
 if __name__ == '__main__':
-    main()
+    run_cli()

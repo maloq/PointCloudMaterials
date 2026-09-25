@@ -1,5 +1,9 @@
 # Datasets: start here
 
+**New Al comparisons:** [fixed 64-center benchmark and large structural-pretraining
+sets](docs/datasets/fixed_al64.md), with frozen 90/15/15/30 source roles and an exact
+historical 16-center comparison track.
+
 **[Open the searchable dataset registry](docs/datasets/index.html)** ·
 [Browse the Markdown cards](docs/datasets/README.md) ·
 [Download CSV](docs/datasets/datasets.csv) · [Registry JSON](docs/datasets/registry.json)

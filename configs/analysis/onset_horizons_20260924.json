@@ -1,0 +1,100 @@
+{
+  "output": "${storage:analysis}/encoder_research/onset-horizons-20260924",
+  "cache": "${storage:cache}/structural-state/screen-20260922",
+  "primary_horizon_ps": 3,
+  "horizons_ps": [
+    3,
+    6,
+    12
+  ],
+  "seed": 20260924,
+  "bootstrap_draws": 2000,
+  "descriptor_metrics": "${storage:analysis}/encoder_research/robust-onset-20260924/technical/descriptor-baselines.json",
+  "current_physics_predictions": "output/geoframe_evolution/epoch34-reproduction-20260923/technical/evaluations/epoch-034/current-physics-future-predictions.npz",
+  "collections": [
+    {
+      "name": "robust_onset",
+      "root": "${storage:analysis}/encoder_research/robust-onset-20260924",
+      "format": "joint",
+      "expected_models": 8,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    },
+    {
+      "name": "spatial_hierarchy",
+      "root": "${storage:analysis}/encoder_research/spatial-hierarchy-20260924",
+      "format": "joint",
+      "expected_models": 4,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    },
+    {
+      "name": "mace_epi",
+      "root": "${storage:analysis}/encoder_research/mace-vicreg-epi-20260923",
+      "format": "native",
+      "expected_models": 24,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    },
+    {
+      "name": "native_screen",
+      "root": "output/encoder_research/screen-20260923",
+      "format": "native",
+      "expected_models": 40,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    },
+    {
+      "name": "parameter_search",
+      "root": "output/encoder_research/parameter-search-20260923",
+      "format": "native",
+      "expected_models": 43,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    },
+    {
+      "name": "Geoformer",
+      "root": "output/geoframe_evolution/epoch34-reproduction-20260923",
+      "format": "geoformer",
+      "expected_models": 37,
+      "selection": "fixed recorded encoder checkpoint; conditional frozen hazard selected by tuning NLL"
+    }
+  ],
+  "paired_comparisons": [
+    {
+      "collection": "robust_onset",
+      "readout": "joint",
+      "reference": "B-onset",
+      "models": [
+        "A-physical",
+        "C-rank",
+        "D-relaxed-teacher",
+        "E-noise-teacher",
+        "H-relaxed-input"
+      ]
+    },
+    {
+      "collection": "spatial_hierarchy",
+      "readout": "joint",
+      "reference": "L-local",
+      "models": [
+        "W-wide-late",
+        "H-hierarchy12",
+        "H-hierarchy16"
+      ]
+    },
+    {
+      "collection": "mace_epi",
+      "readout": "encoder",
+      "reference": "mace-vicreg-s123-epoch024",
+      "models": [
+        "mace-epi-s123-epoch024",
+        "mace-epi-variance-s123-epoch024"
+      ]
+    },
+    {
+      "collection": "mace_epi",
+      "readout": "encoder",
+      "reference": "mace-vicreg-s456-epoch024",
+      "models": [
+        "mace-epi-s456-epoch024",
+        "mace-epi-variance-s456-epoch024"
+      ]
+    }
+  ]
+}

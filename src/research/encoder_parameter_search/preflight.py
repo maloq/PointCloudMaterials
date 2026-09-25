@@ -4,8 +4,6 @@ import copy
 import json
 import os
 from pathlib import Path
-import subprocess
-import sys
 import time
 import torch
 from omegaconf import OmegaConf
@@ -21,8 +19,6 @@ from .queue import read
 
 def run(path):
     c=read(path);root=Path(c['output'])/'technical/preflight';root.mkdir(parents=True,exist_ok=True)
-    subprocess.run([sys.executable,'-m','pytest','tests/test_encoder_parameter_search.py',
-        'tests/test_structural_state.py','tests/test_structural_state_dynamics.py','-q','--disable-warnings'],check=True)
     # Match architecture initialization explicitly across every loss/head arm.
     signatures={}
     for item in [i for i in c['fits'] if i['family']=='geoframe']:

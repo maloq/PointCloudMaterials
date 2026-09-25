@@ -5,7 +5,8 @@ from torch import nn
 
 from src.training_methods.bcr.data import taper
 from src.models.encoders.mace_causal import normalize_atom_features
-from src.research.structural_state.model import GeometryEncoder, GraphBank as FixedGraphBank, gather_indices
+from src.research.structural_state.model import GeometryEncoder
+from src.models.encoders.graph_bank import GraphBank as FixedGraphBank, gather_indices
 
 
 class GraphBank(FixedGraphBank):
@@ -15,7 +16,7 @@ class GraphBank(FixedGraphBank):
 
     def batch(self, indices):
         result = super().batch(indices)
-        nodes, _, _ = gather_indices(self.offsets, np.asarray(indices, dtype=np.int64))
+        nodes, _, _ = gather_indices(self.offsets, self.node_lengths, np.asarray(indices, dtype=np.int64))
         result['radius'] = self.radius[torch.as_tensor(nodes, device=self.device)]
         return result
 
@@ -65,6 +66,17 @@ class Model(nn.Module):
         self.heads = nn.ModuleDict({k: nn.Linear(d, n) for k,n in
             [('observed',89), ('relaxed',89), ('current',8), ('future',24)]})
         self.hazard = nn.Sequential(nn.Linear(d+temperatures,64), nn.SiLU(), nn.Linear(64,5))
+
+    @property
+    def input_radius(self):
+        return self.encoder.radius
+
+    def make_bank(self, arrays, device):
+        return GraphBank(arrays, self.encoder, device)
+
+    def inference_arrays(self, patches):
+        from src.research.structural_state.data import graph_arrays
+        return graph_arrays(patches, self.encoder.cutoff)
 
     def forward(self, graph):
         return self.encoder(graph)

@@ -1,0 +1,95 @@
+{
+  "protocol": "supervised_onset_information_v4",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/encoder_context/al64-epochs-20260925/physical/base-hot",
+  "cache": "${storage:cache}/supervised-onset/al64-b512-20260925",
+  "primary_horizon_ps": 3.0,
+  "secondary_horizon_ps": 6.0,
+  "seed": 20260924,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "training": {
+    "screen_updates": 4104,
+    "maximum_updates": 4104,
+    "batch_size": 256,
+    "microbatch": 256,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05,
+    "warmup": 128,
+    "evaluate_every": 171,
+    "save_every": 171,
+    "log_every": 32,
+    "positive_sampling_fraction": 0.0,
+    "teacher_weight": 0.2,
+    "epochs": 24,
+    "minimum_selection_epoch": 12
+  },
+  "arms": [
+    {
+      "name": "O-NLL",
+      "input": "hot",
+      "teacher": false
+    }
+  ],
+  "teacher_arm": "R-NLL",
+  "baselines": {
+    "updates": 4104,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "epochs": 24,
+    "minimum_selection_epoch": 12
+  },
+  "queue": {
+    "hours": 8.5,
+    "screen_maximum_minutes_per_arm": 45,
+    "finalists": 2,
+    "evaluation_reserve_minutes": 75,
+    "allocation": null,
+    "cpus": 8
+  },
+  "bootstrap": 1000,
+  "noise_rms_fractions": [
+    0.001,
+    0.005,
+    0.01,
+    0.03
+  ],
+  "prediction_context": {
+    "external_inputs": []
+  },
+  "parameter_budget": {
+    "encoder_target": 634496,
+    "encoder_actual": 634496,
+    "model_total": 651653
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-context-al64-epochs-20260925",
+    "display_name": "Al64 | physical | Observed | Encoder"
+  },
+  "objective": "hazard_nll",
+  "selection_metric": "hazard_nll",
+  "runtime": {
+    "compile": true,
+    "plan_cache_MiB": 256
+  },
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "initial_encoder": {
+    "checkpoint": "${storage:analysis}/encoder_context/al64-epochs-20260925/pretraining/physical/technical/epoch-012.pt",
+    "method": "physical"
+  }
+}

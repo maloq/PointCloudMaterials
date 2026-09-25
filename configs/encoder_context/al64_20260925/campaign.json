@@ -1,0 +1,68 @@
+{
+  "protocol": "encoder_context_epochs_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/encoder_context/al64-epochs-20260925",
+  "cache": "${storage:scratch}/training-cache/encoder-context/al64-epochs-20260925",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "methods": [
+    "scratch",
+    "physical",
+    "vicreg",
+    "epi_variance"
+  ],
+  "variants": [
+    "vector_messages",
+    "harmonic_hierarchy"
+  ],
+  "seed": 20260924,
+  "batch_size": 256,
+  "microbatch": 256,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "pretraining": {
+    "epochs": 12,
+    "learning_rate": 0.0001
+  },
+  "supervised_epochs": 24,
+  "predictor_epochs": 24,
+  "runtime": {
+    "compile": true
+  },
+  "bootstrap": 1000,
+  "slurm": {
+    "partitions": "RTX6000PRO",
+    "cpus": 8,
+    "memory": "32G",
+    "feature_walltime": "08:00:00",
+    "predictor_walltime": "02:00:00",
+    "node": "node59",
+    "allocation": "1008517"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-context-al64-epochs-20260925"
+  },
+  "lanes": [
+    [
+      "scratch",
+      "physical"
+    ],
+    [
+      "vicreg",
+      "epi_variance"
+    ]
+  ]
+}

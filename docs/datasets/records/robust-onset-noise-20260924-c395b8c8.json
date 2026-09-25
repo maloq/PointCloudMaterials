@@ -1,0 +1,28 @@
+{
+  "dataset_id": "robust-onset-noise-20260924",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/robust-onset/noise-20260924/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "63b2d949998dab08ba935b55f2584c7283d1e8e01393ca42bbb80ee4e7942e40",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "note",
+        "signature",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "seed": [
+          {
+            "value": 20260924,
+            "first_json_path": "signature.seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

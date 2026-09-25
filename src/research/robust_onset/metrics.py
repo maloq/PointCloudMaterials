@@ -2,6 +2,15 @@
 import numpy as np
 import torch
 
+HORIZONS_PS = (.75, 3., 6., 9., 12.)
+
+
+def horizon_index(horizon_ps):
+    """Index of the actual first-onset hazard bin, in physical picoseconds."""
+    if horizon_ps not in HORIZONS_PS:
+        raise ValueError(f'Onset horizon must be one of {HORIZONS_PS} ps, got {horizon_ps}')
+    return HORIZONS_PS.index(horizon_ps)
+
 
 def local_spacing(patch):
     """Mean distance from the fixed center to its twelve nearest other atoms."""

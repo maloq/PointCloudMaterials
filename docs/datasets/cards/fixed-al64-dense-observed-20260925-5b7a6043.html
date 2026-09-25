@@ -1,0 +1,1405 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fixed Al64 dense observed embedding evaluation</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Fixed Al64 dense observed embedding evaluation</h1><p>All 801 stored frames of 64 fixed centers in the 30 test sources; 0.75 ps cadence. Observed nearest80 geometry and original structural labels. Evaluation only; never training or normalization.</p><span class="badge">derived</span><p><code>fixed-al64-dense-observed-20260925</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed">/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed</a></p><p>91 owned files · 0.972 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Fixed Al64 dense observed embedding evaluation&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;evaluation_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;description&quot;: &quot;All 801 stored frames of 64 fixed centers in the 30 test sources; 0.75 ps cadence. Observed nearest80 geometry and original structural labels. Evaluation only; never training or normalization.&quot;,
+  &quot;lineage&quot;: &quot;Same immutable independent Al source ancestry and test roles as fixed-al64-benchmark-v1-20260925. No new simulation or quench.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:fixed-al64-dense-observed-20260925}/manifest.json&quot;,
+    &quot;configs/fixed_cohort/al64_v1.json&quot;,
+    &quot;src/research/encoder_context/dense.py&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Historically examined test sources; not an untouched evaluation.&quot;,
+    &quot;Observed geometry only; dense relaxed trajectories unavailable.&quot;,
+    &quot;Nearest80 cropped at 8 Angstrom, without computational halo.&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/manifest.json">${dataset:fixed-al64-dense-observed-20260925}/manifest.json</a></li><li><a href="../../../configs/fixed_cohort/al64_v1.json">configs/fixed_cohort/al64_v1.json</a></li><li><a href="../../../src/research/encoder_context/dense.py">src/research/encoder_context/dense.py</a></li></ul><p>Dependencies: <a href="fixed-al64-benchmark-v1-20260925-4fb74686.html">fixed-al64-benchmark-v1-20260925</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>cadence_ps</td><td><code>[0.75]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 91,
+    &quot;apparent_bytes&quot;: 1514906875,
+    &quot;allocated_bytes&quot;: 1043704832,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 31,
+      &quot;.npz&quot;: 30,
+      &quot;.npy&quot;: 30
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 31,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;1000/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1001/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1001/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1002/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1002/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1003/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1003/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1007/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1007/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1008/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1008/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;1009/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;1009/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;881/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;881/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;882/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;882/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;883/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;883/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;908/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;908/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;909/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;909/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;910/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;910/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;911/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;911/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;912/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;912/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;913/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;913/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;938/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;938/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;939/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;939/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;940/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;940/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;941/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;941/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;942/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;942/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;943/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;943/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;968/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;968/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;969/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;969/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;970/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;970/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;971/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;971/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;972/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;972/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;973/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;973/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;998/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;998/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;999/observations.npz&quot;,
+      &quot;members&quot;: {
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;frame&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            51264
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;999/positions.npy&quot;,
+      &quot;shape&quot;: [
+        801,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (31 records)</summary><p><a href="../records/fixed-al64-dense-observed-20260925-5b7a6043.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/manifest.json">manifest.json</a> · metadata · <code>4114806e90d78ccd6f63fe0e28bca04caad06d38a90494d3efd4655ee6c0168d</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1000/complete.json">1000/complete.json</a> · metadata · <code>f97d5bc7d920cb0e868ec534cf75f48af43ee9c6e893985a89e3c2ddcb3ffbe1</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1001/complete.json">1001/complete.json</a> · metadata · <code>cf879d8d340b6dd0c8327a526383cbf0f649b9f7a25839a3aab3d5de45b1eb02</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1002/complete.json">1002/complete.json</a> · metadata · <code>3eaada54a8357d4b33d1d91af862077dec1a9ca14e8a22c582fae3952040b1d1</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1003/complete.json">1003/complete.json</a> · metadata · <code>fa384dd93aeb93a5dadd85cf12e017a0234e811cf007cc481d5cb1a929c5e78d</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1007/complete.json">1007/complete.json</a> · metadata · <code>628d9b602ad64ff7208aa49a0cecab7b183e43cc784381ecca40f0ed90899962</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1008/complete.json">1008/complete.json</a> · metadata · <code>7b9df156ebd5f36b1ea3b498c9cb55504331c26706830bf6f3621a8484dceee0</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1009/complete.json">1009/complete.json</a> · metadata · <code>4200e80865e19cbf05ed11917f7828e655e1e52d623416e5ef7b25f2af564fef</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/881/complete.json">881/complete.json</a> · metadata · <code>c00686171dbdc18070cbeddb45ec10ec1788963cf7da92c19de787fee78ba7aa</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/882/complete.json">882/complete.json</a> · metadata · <code>bd4e72427a85c4309e63a6c021e1f57e4a2c9bb8bce77496630ed114983e28a0</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/883/complete.json">883/complete.json</a> · metadata · <code>76e6d1d534955a0b555f658359fb13e465e4f41866bf23084aa12feb65d5a85a</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/908/complete.json">908/complete.json</a> · metadata · <code>d733790d6c74e844abeaf802083e23cd40d59e3a1c2c5f9950f31e77c32f928d</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/909/complete.json">909/complete.json</a> · metadata · <code>a9ddc6e807dd253c5171dd8474da0f000019aab704a5beff02c3d3eeecf7c694</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/910/complete.json">910/complete.json</a> · metadata · <code>f3c797a6f0085309df600c8f3448bed25d50c30cc21715b6fe845a4009735b60</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/911/complete.json">911/complete.json</a> · metadata · <code>c2af09f3f2309675b14b1a1e44dfab29772191eb2963847550704682c632d698</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/912/complete.json">912/complete.json</a> · metadata · <code>623d910a38cdc8103efabd08a416c783a952348a10db011d098aa6e70067483a</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/913/complete.json">913/complete.json</a> · metadata · <code>12b470e305880c90097a0d8a154a441ddf089dc1f14f9a81130524d29e2d8bea</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/938/complete.json">938/complete.json</a> · metadata · <code>b5b904d307b59b08bc194ebb79acd5594c0d99b14ad31c59109dc8365c1cb087</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/939/complete.json">939/complete.json</a> · metadata · <code>1ebd330e7035c79cd43725378a17a34515a6de2ede92a06239fe04ece1c1b7b6</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/940/complete.json">940/complete.json</a> · metadata · <code>241b2fcfcc2af72bcd405d31ef9c9a6e93cb26b04e3e151930e25588cdfb0076</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/941/complete.json">941/complete.json</a> · metadata · <code>4328d7ed174ffe19f892543424a68c69597405bd51944a9d6e4113204cde4034</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/942/complete.json">942/complete.json</a> · metadata · <code>565e75b2c8dd50f7e189e06d59636aa97b7f9f9d3c20583ea3d345b7feb1ab27</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/943/complete.json">943/complete.json</a> · metadata · <code>e7282cba3b262438d2960f102932aca5168a226b9c1b35a38cfce1e945fc3b6f</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/968/complete.json">968/complete.json</a> · metadata · <code>f24711eaa28a42f9cb1ee9a14c23bcdaeb53cdef1ca20d27c84b897a5ba8fdc8</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/969/complete.json">969/complete.json</a> · metadata · <code>804d9ecdab049dc719b1c19939be12d585605e617279b0c6e8a4a1e08a4b5bdb</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/970/complete.json">970/complete.json</a> · metadata · <code>de34c1bd4bc5243e292b8fe8a96c622d1c30069c8cdc3e3e2823974d0b396038</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/971/complete.json">971/complete.json</a> · metadata · <code>d01c9f17c9dec5af52ad88de68f908e63ffcf4958e53782e38a27451b238f442</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/972/complete.json">972/complete.json</a> · metadata · <code>c2190e4e7d70fcb3a71f28509583c5e9ac9f6d86b93e404d1c32093aec244410</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/973/complete.json">973/complete.json</a> · metadata · <code>3240d4bbb3625b71999151f8bfd277c524605518ba15cfaf145433be24d075b0</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/998/complete.json">998/complete.json</a> · metadata · <code>9131ac94a6cc1e1af0ce230b9b0fd2e965780f92248858c90229326ec6663208</code></li><li><a href="../../../../../../../scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/999/complete.json">999/complete.json</a> · metadata · <code>afb9bbc552981f75f6d3a9046a0538b239f7ba38e14091145cbca50867714b41</code></li></ul></details><p class="muted">Observed 2026-09-25T13:22:08.459741+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

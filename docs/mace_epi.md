@@ -26,7 +26,7 @@ supplements are in `technical/evaluations/` and `technical/supplements/`.
 Readable native results are `index.html`, `plots/`, `tables/summary.csv`.
 
 To resume on another allocated GPU, use the active orchestration command in
-`technical/orchestration-v2/launch.json`, with its original `PCM_PROJECT_ROOT`.
+`technical/orchestration-v3/launch.json`, with its original `PCM_PROJECT_ROOT`.
 The wrapper invokes the original frozen scientific producer/config.
 Per-fit locks prevent duplicate fits. Preserve frozen code and configuration;
 do not relaunch the active recipe over an existing run. Training stops before
@@ -64,3 +64,26 @@ workers1006472/1006474 and continuations1006473/1006475. The active receipt is
 The existing successful GPU gate is verified by configuration hash at each worker
 start. Initial report generation was interrupted after submission to replace its
 repeated catalogue resolution; this did not cancel the submitted fits.
+
+## Shutdown recovery on24September2026
+
+The queue audit found that both Epi fits had completed all1536 updates/24 epochs,
+but their training subprocesses had not exited. On node61, job1006474 was waiting
+for its multiprocessing resource tracker with0% GPU use, despite its completion
+receipt being over eight hours old. Job1006473 could never start because its
+predecessor1006472 had failed; that predecessor's final Slurm accounting record
+was unavailable during the audit.
+
+The orchestration wrapper now flushes output and exits after the synchronous
+stage returns, preserving normal, failed and checkpointed exit codes. Eleven
+tests passed, including subprocess tests with deliberately blocked finalizers.
+The completed fit also replayed its completion check and exited successfully on
+node61. All saved milestone checkpoints were verified for identity and finite
+model tensors; the final checkpoint hashes and24-epoch counters matched their
+completion receipts.
+
+The stalled job1006474 and pending jobs1006473/1006475 were superseded by detached
+workers1007451/1007452, each capped at12 hours. The original frozen scientific
+producer, config and checkpoints remain unchanged. Completed fits are skipped
+and proceed to evaluation. The recovery receipt and wrapper hash are in
+`technical/orchestration-v3/launch.json`; previous launch receipts point to it.

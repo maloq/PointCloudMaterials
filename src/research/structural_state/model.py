@@ -6,63 +6,8 @@ from torch import nn
 from src.training_methods.bcr.model import Encoder
 from src.training_methods.bcr.data import taper
 from src.models.encoders.mace_causal import normalize_atom_features
+from src.models.encoders.graph_bank import GraphBank
 from .data import BLOCKS
-
-
-def gather_indices(offsets, indices):
-    lengths = np.diff(offsets)[indices]
-    starts = np.r_[0, np.cumsum(lengths)]
-    local = np.arange(starts[-1]) - np.repeat(starts[:-1], lengths)
-    return local + np.repeat(offsets[indices], lengths), starts, lengths
-
-
-class GraphBank:
-    """All parameter-free graph tensors reside on the selected GPU.
-
-    Edges retain local indices; batching remaps them without distance searches.
-    Coordinates are fixed in this protocol. Geometry-changing augmentations must
-    build a new bank, never reuse cached spherical harmonics or radial features.
-    """
-    def __init__(self, arrays, encoder, device):
-        if list(encoder.radial_embedding.parameters()):
-            raise ValueError('Caching requires a parameter-free radial embedding')
-        self.device = torch.device(device)
-        self.offsets = arrays['offsets']
-        self.edge_offsets = arrays['edge_offsets']
-        positions = torch.as_tensor(arrays['positions'], device=device)
-        edge = torch.as_tensor(arrays['edges'], device=device, dtype=torch.long)
-        self.edge = edge
-        self.weight = taper(positions.norm(dim=-1), encoder.radius)
-        self.center = torch.zeros((len(positions), 1), device=device)
-        self.center[torch.as_tensor(self.offsets[:-1], device=device)] = 1
-        self.attrs = torch.ones_like(self.center)
-        offset = np.repeat(self.offsets[:-1], np.diff(self.edge_offsets))
-        absolute = edge + torch.as_tensor(offset, device=device)[None]
-        angular, radial = [], []
-        with torch.no_grad():
-            for start in range(0, edge.shape[1], 131072):
-                e = absolute[:, start:start + 131072]
-                v = positions[e[1]] - positions[e[0]]
-                angular.append(encoder.spherical_harmonics(v))
-                r, c = encoder.radial_embedding(v.norm(dim=-1, keepdim=True), self.attrs, e, encoder.atomic_numbers)
-                radial.append(r * (self.weight[e[0]] * self.weight[e[1]])[:, None])
-                if c is not None:
-                    raise ValueError('Native MACE must apply its cutoff inside radial features')
-        self.angular = torch.cat(angular)
-        self.radial = torch.cat(radial)
-
-    def batch(self, indices):
-        indices = np.asarray(indices, dtype=np.int64)
-        nodes, ptr, lengths = gather_indices(self.offsets, indices)
-        edges, _, edge_lengths = gather_indices(self.edge_offsets, indices)
-        ni = torch.as_tensor(nodes, device=self.device)
-        ei = torch.as_tensor(edges, device=self.device)
-        shifts = torch.as_tensor(np.repeat(ptr[:-1], edge_lengths), device=self.device)
-        return dict(attrs=self.attrs[ni], center=self.center[ni], weight=self.weight[ni],
-                    edge=self.edge[:, ei] + shifts[None], angular=self.angular[ei],
-                    radial=self.radial[ei], cutoff=None,
-                    group=torch.as_tensor(np.repeat(np.arange(len(indices)), lengths), device=self.device),
-                    centers=torch.as_tensor(ptr[:-1], device=self.device), size=len(indices))
 
 
 class GeometryEncoder(Encoder):

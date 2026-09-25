@@ -194,7 +194,7 @@ def main():
       "[Spatial training summary](training_summary.json), [neural temporal metrics](neural_temporal_metrics.json), [all linear/filter forecasts](forecast_metrics.json), [full static coverage](full_static_Al/coverage.json), and [provenance](provenance.json) retain the detailed evidence. Best, last, and final checkpoints are saved for all 18 trained models. Launch records identify the detached processes; all have finished.", ""]
     (out / "RESULTS.md").write_text("\n".join(lines))
 
-    files = list((ROOT / "src/research/smooth_temporal_encoder").glob("*.py")) + [ROOT / "src/models/encoders/smooth_density.py",ROOT / "src/temporal_vamp/smooth_state.py",ROOT / "tests/test_smooth_density.py",args.config.resolve()]
+    files = list((ROOT / "src/research/smooth_temporal_encoder").glob("*.py")) + [ROOT / "src/models/encoders/smooth_density.py",ROOT / "src/temporal_vamp/smooth_state.py",args.config.resolve()]
     versions = {}
     import torch, e3nn, importlib.metadata
     versions.update(torch=torch.__version__, e3nn=e3nn.__version__, mace=importlib.metadata.version("mace-torch"),numpy=np.__version__)
@@ -202,7 +202,7 @@ def main():
           git_head=subprocess.check_output(["git","rev-parse","HEAD"],cwd=ROOT,text=True).strip(),
           source_sha256={str(path.relative_to(ROOT)):hashlib.sha256(path.read_bytes()).hexdigest() for path in files},
           versions=versions, stage_config_note="Spatial checkpoints/data manifest retain their original configs; the final config adds the subsequent temporal training settings.",
-          tests=dict(command="python -m pytest tests/test_smooth_density.py -q", passed=7),
+          historical_tests=dict(passed=7, note="Reported by the original experiment; not rerun by this report"),
           saved_sources="data/manifest.json includes original trajectory manifests and hashes; full_static_Al/coverage.json includes static source hashes.")
     write_json(out / "provenance.json", provenance)
     write_json(out / "status.json", dict(state="complete", spatial_runs=6, temporal_runs=12, full_static_Al_centers=772953,

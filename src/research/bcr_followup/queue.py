@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -58,7 +57,6 @@ def submit(config_path):
         raise ValueError('Submission requires passing preflight bound to current code/data/configuration')
     relaxed.freeze_selection(study)
     code = snapshot(root)
-    shutil.copytree('tests', code/'tests', ignore=shutil.ignore_patterns('__pycache__'))
     # Snapshot() preserves data/output routing; the scientific root selection is
     # frozen before submission, never expanded by later producer completions.
     relative = Path(config_path).resolve().relative_to(Path.cwd().resolve())

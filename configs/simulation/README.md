@@ -23,8 +23,7 @@ a launch recipe. Its bytes and producer implementation are unchanged.
 Older Al MLIP, shooting, runtime-benchmark and campaign variants are in the
 [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/simulation/).
 Their records and dataset inventory are indexed under
-[docs/simulations](../../docs/simulations/README.md). Regression-only configurations
-live in `tests/fixtures/simulation/`; do not use them to launch production runs.
+[docs/simulations](../../docs/simulations/README.md).
 
 `al_crystallization_1m.json` is the requested million-atom source-only variant: 300 ps melt, up to 400 ps crystallization, no branches, with the melt restart retained. `source_limit_policy: save_state` records duration-limited completion separately from attaining the crystal-fraction threshold.
 

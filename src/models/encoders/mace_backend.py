@@ -2,8 +2,14 @@
 from importlib.metadata import version
 
 
-def mace_backend_config(backend):
+def mace_backend_config(backend, *, layout='mul_ir', conv_fusion=False):
+    if layout not in ('mul_ir', 'ir_mul'):
+        raise ValueError(f'Unknown irrep layout: {layout}')
+    if conv_fusion and (backend != 'cueq' or layout != 'ir_mul'):
+        raise ValueError('Indexed cuEq convolution requires cueq with ir_mul layout')
     if backend == 'e3nn':
+        if layout != 'mul_ir':
+            raise ValueError('e3nn requires mul_ir layout')
         return None
     if backend != 'cueq':
         raise ValueError(f'Unknown MACE backend {backend!r}; choose e3nn or cueq')
@@ -17,8 +23,8 @@ def mace_backend_config(backend):
         raise RuntimeError('MACE could not import cuEquivariance; refusing an e3nn fallback')
     # Invariants, velocity injections and temporal attention consume mul_ir.
     # O3_e3nn preserves MACE/e3nn Clebsch-Gordan conventions, including parity.
-    return CuEquivarianceConfig(enabled=True, layout='mul_ir', group='O3_e3nn',
-                                optimize_all=True, conv_fusion=False)
+    return CuEquivarianceConfig(enabled=True, layout=layout, group='O3_e3nn',
+                                optimize_all=True, conv_fusion=conv_fusion)
 
 
 def mace_backend_metadata(backend):

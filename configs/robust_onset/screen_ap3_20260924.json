@@ -1,0 +1,137 @@
+{
+  "protocol": "robust_onset_v1",
+  "output": "${storage:analysis}/encoder_research/robust-onset-ap3-20260924",
+  "cache": "${storage:cache}/structural-state/screen-20260922",
+  "augmented_cache": "${storage:cache}/robust-onset/noise-20260924",
+  "dense_root": "output/trajectory_stability/al-v6-20260918",
+  "dense_inputs": "output/encoder_research/dense-native-20260924/technical/inputs",
+  "seed": 20260924,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 32,
+    "code_dim": 128,
+    "backend": "cueq"
+  },
+  "training": {
+    "updates": 2048,
+    "batch_size": 128,
+    "microbatch": 32,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0003,
+    "weight_decay": 1e-05,
+    "warmup": 128,
+    "evaluate_every": 128,
+    "save_every": 64,
+    "log_every": 32,
+    "ranking_every": 16,
+    "ap_temperature": 0.01,
+    "ap_weight": 1.0
+  },
+  "retention_ratio": 1.05,
+  "noise": {
+    "training_rms_fractions": [
+      0.002,
+      0.005,
+      0.01
+    ],
+    "evaluation_rms_fractions": [
+      0.001,
+      0.005,
+      0.01,
+      0.03
+    ]
+  },
+  "arms": [
+    {
+      "name": "A-physical",
+      "input": "observed",
+      "event_encoder": false,
+      "ap": false,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false
+    },
+    {
+      "name": "B-onset",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": false,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false
+    },
+    {
+      "name": "C-rank",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false
+    },
+    {
+      "name": "D-relaxed-teacher",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": true,
+      "noise": false,
+      "tensor_pool": false
+    },
+    {
+      "name": "E-noise-teacher",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": true,
+      "noise": true,
+      "tensor_pool": false
+    },
+    {
+      "name": "F-tensor-noise-teacher",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": true,
+      "noise": true,
+      "tensor_pool": true
+    },
+    {
+      "name": "G-tensor-rank",
+      "input": "observed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": true
+    },
+    {
+      "name": "H-relaxed-input",
+      "input": "relaxed",
+      "event_encoder": true,
+      "ap": true,
+      "teacher": false,
+      "noise": false,
+      "tensor_pool": false
+    }
+  ],
+  "probes": {
+    "updates": 1024,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "evaluate_every": 128,
+    "width": 128
+  },
+  "bootstrap": 2000,
+  "slurm": {
+    "partitions": "RTX6000PRO,H100,A100,L40S",
+    "cpus": 4,
+    "memory_GiB": 48,
+    "hours": 4,
+    "concurrent": 2
+  },
+  "primary_horizon_ps": 3.0,
+  "title": "Robust Onset \u2014 3 ps primary"
+}

@@ -4,6 +4,25 @@ Scientific rationale, literature and arm definitions are in the
 [protocol](../experiments/robust_onset_20260924/README.md).
 Use conda `pointnet-torch214`. No new MD or minimization is performed.
 
+New recipes use **3 ps AP** as the ranking-loss and checkpoint-selection horizon:
+`configs/robust_onset/screen_ap3_20260924.json`. The historical recipe below
+explicitly retains12 ps and must be reproduced from its frozen source. The new
+recipe has a distinct output and has not been submitted. Its current small
+cohort has only 11 fitting,2 tuning and 3 development3 ps events; enlarge the
+existing-data cohort before a substantial new search.
+
+The read-only horizon review reuses saved predictions from all recent studies:
+
+```bash
+python -m src.research.onset_horizons --config configs/analysis/onset_horizons_20260924.json
+```
+
+It refuses to overwrite a completed review. Results and fingerprints are under
+`output/encoder_research/onset-horizons-20260924/`. No encoder/probe is refit.
+All new comparison exports include AP3, AP6 and AP12. The main hazard NLL remains
+five-bin; the configured primary horizon controls ranking, tuning AP selection,
+primary Brier/threshold reporting and paired AP intervals.
+
 ```bash
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
 python -m src.research.robust_onset.queue preflight --config configs/robust_onset/screen_20260924.json
@@ -41,8 +60,14 @@ frozen `technical/code` tree or a fresh experiment directory.
 Collect without resubmission:
 
 ```bash
+cd output/encoder_research/robust-onset-20260924/technical/code
+export PCM_PROJECT_ROOT="$PWD"
 python -m src.research.robust_onset.queue collect --config configs/robust_onset/screen_20260924.json
 ```
+
+Use this frozen directory after later workspace changes, including the spatial
+hierarchy extension. The live workspace intentionally rejects changed identities
+instead of silently reinterpreting the earlier experiment.
 
 The AP uncertainty intervals are whole-root sampling intervals. One-seed runs do
 not estimate seed uncertainty. Historical development sources are reused, so any

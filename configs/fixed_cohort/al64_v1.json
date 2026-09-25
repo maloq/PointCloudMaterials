@@ -1,0 +1,20 @@
+{
+  "protocol": "fixed_al64_v1",
+  "cache": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "parent_plan": "output/relaxed_encoder/large-test-20260921/technical/plan.json",
+  "legacy_labels": "output/embedding_forecast/local-crystallization-20260913/technical/labels",
+  "label_cache": "${storage:cache}/local-predictability-20260917-broad",
+  "legacy_population": "${storage:cache}/supervised-onset/ap36-large-20260924/population.npz",
+  "centers_per_source": 64,
+  "candidate_atoms": 80,
+  "radius_A": 8.0,
+  "cadence_ps": 0.75,
+  "horizons_ps": [0.75, 3.0, 6.0, 9.0, 12.0],
+  "onset_persistence_frames": 3,
+  "negative_history_frames": 3,
+  "minimum_onset_anchor": 64,
+  "structural_stride_frames": 4,
+  "structural_roles": ["train", "selection"],
+  "expected_source_counts": {"train": 90, "selection": 15, "calibration": 15, "test": 30},
+  "external_inputs": []
+}

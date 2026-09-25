@@ -3241,6 +3241,203 @@
           "Onset labels used for encoder supervision in robust_onset_v1 only. The 15 development roots were used in prior research."
         ]
       }
+    },
+    "spatial-hierarchy-screen-20260924": {
+      "root": "cache",
+      "path": "spatial-hierarchy/screen-20260924",
+      "kind": "dataset",
+      "dependencies": [
+        "structural-state-screen-20260922"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Current-frame 16-A surroundings of fixed 8-A focal patches",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "2880 current-frame observed patches from exactly the 45-root paired geometry screen, expanded from 8 to 16 A. Preserves focal inputs, identities, frame times and root splits; fixed smooth nested-region summaries and dense trajectory inference inputs. No new simulation or relaxation.",
+        "evidence": [
+          "configs/spatial_hierarchy/screen_20260924.json",
+          "experiments/spatial_hierarchy_20260924/README.md",
+          "${storage:cache}/spatial-hierarchy/screen-20260924/manifest.json"
+        ],
+        "limitations": [
+          "Fixed invariant coarse context summaries lose outer atom-level detail.",
+          "Small reused development cohort; one seed and only 18 positive onset windows.",
+          "Original quantized observed trajectories; dense chart is descriptive and may overlap fitting roots."
+        ]
+      }
+    },
+    "supervised-onset-ap36-large-20260924": {
+      "root": "cache",
+      "path": "supervised-onset/ap36-large-20260924",
+      "kind": "cache",
+      "dependencies": [
+        "relaxed-encoder-large-test-20260921"
+      ],
+      "metadata": {
+        "title": "Supervised onset AP3/AP6 paired Al graph release",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "31,609 existing prospective observations; original MD onset labels; paired observed/relaxed nearest-80 graphs in physical Angstroms. 90 train, 15 selection, 15 calibration, 30 historical-test independent melt lineages. All 150 original source manifests and ancestry IDs preserved in manifest.json. No new MD or quenches.",
+        "evidence": [
+          "${dataset:supervised-onset-ap36-large-20260924}/manifest.json",
+          "configs/supervised_onset/ap36_20260924.json",
+          "src/research/supervised_onset/data.py"
+        ],
+        "limitations": [
+          "Historical test reused in earlier studies.",
+          "Existing nearest-80 support; no computational halo.",
+          "Paired held-out anchor cadence 12 ps; event labels retain 0.75 ps resolution.",
+          "Inherited float16 trajectory precision; no recovered lost coordinate precision."
+        ]
+      }
+    },
+    "equivariant-context-prepared-20260925": {
+      "root": "cache",
+      "path": "equivariant-context/node59-b512-v2-20260925",
+      "kind": "cache",
+      "dependencies": [
+        "supervised-onset-ap36-large-20260924",
+        "relaxed-encoder-large-test-cells-20260921"
+      ],
+      "metadata": {
+        "title": "Equivariant spatial-context Al feature cache",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Frozen shared-MACE scalar/tensor feature cache at 25 patches for 31,609 prospective windows across 150 independent Al sources. Observed and same-frame relaxed inputs; extraction follows fresh likelihood-trained width-128 encoders. Node59 batch/microbatch 512 queue authorized on 2026-09-25.",
+        "evidence": [
+          "configs/equivariant_context/comparison_20260925.json",
+          "src/research/equivariant_context/data.py",
+          "${storage:analysis}/equivariant_context/node59-b512-v2-20260925/technical/inventory.json"
+        ],
+        "limitations": [
+          "Not generated yet.",
+          "Historical test sources reused.",
+          "Box-fixed query stencil and hard nearest-80 membership are not globally rotation-invariant under resampling.",
+          "Inherited float16 absolute-coordinate quantization; no new simulation or quench."
+        ]
+      }
+    },
+    "fixed-al64-benchmark-v1-20260925": {
+      "root": "cache",
+      "path": "fixed-cohort/al64-v1-20260925/benchmark",
+      "kind": "cache",
+      "dependencies": [
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "al_520K_remaining24_20260913T204114Z",
+        "relaxed-encoder-large-test-20260921"
+      ],
+      "metadata": {
+        "title": "Fixed Al64 crystallization benchmark",
+        "materials": [
+          "Al"
+        ],
+        "role": "prediction_benchmark",
+        "classification": "derived",
+        "description": "150 independent native Al sources, frozen 90 train/15 selection/15 calibration/30 test roles and 64 tracked centers. Matched observed/relaxed nearest80 patches, original MD sustained-onset labels at 0.75/3/6/9/12 ps, and exact historical 16-center comparison rows.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Inherited independent melt ancestry and fixed source roles; exact sources, manifest hashes and atom IDs in ../splits.json. No new simulation.",
+        "evidence": [
+          "${dataset:fixed-al64-benchmark-v1-20260925}/manifest.json",
+          "${dataset:fixed-al64-benchmark-v1-20260925}/../plan.json",
+          "configs/fixed_cohort/al64_v1.json",
+          "docs/datasets/fixed_al64.md"
+        ],
+        "limitations": [
+          "Historical test sources are reused, not a fresh untouched test.",
+          "Centers and windows within a source are correlated.",
+          "Nearest80 cropped at 8 Angstrom, not a complete radius ball or computational halo.",
+          "Structural selection is validation only; structural fit and normalization use only the 90 training ancestors."
+        ]
+      }
+    },
+    "fixed-al64-structural-v1-20260925": {
+      "root": "cache",
+      "path": "fixed-cohort/al64-v1-20260925/structural",
+      "kind": "cache",
+      "dependencies": [
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "al_520K_remaining24_20260913T204114Z",
+        "relaxed-encoder-large-test-20260921"
+      ],
+      "metadata": {
+        "title": "Fixed Al64 structural pretraining: 1,157,760 training neighborhoods",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "Native Al geometry only: 90 training sources, 64 fixed centers, 201 frames at 3 ps sampling. Separate 15-source validation set of 192,960 neighborhoods. Optional 86,400 train/36,480 validation observed-relaxed pairs. No calibration/test ancestors or descendants, no crystallization labels, no outcome filtering.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Inherited independent melt ancestry and fixed source roles; exact sources, manifest hashes and atom IDs in ../splits.json. No new simulation.",
+        "evidence": [
+          "${dataset:fixed-al64-structural-v1-20260925}/manifest.json",
+          "${dataset:fixed-al64-structural-v1-20260925}/../plan.json",
+          "configs/fixed_cohort/al64_v1.json",
+          "docs/datasets/fixed_al64.md"
+        ],
+        "limitations": [
+          "Historical test sources are reused, not a fresh untouched test.",
+          "Centers and windows within a source are correlated.",
+          "Nearest80 cropped at 8 Angstrom, not a complete radius ball or computational halo.",
+          "Structural selection is validation only; structural fit and normalization use only the 90 training ancestors."
+        ]
+      }
+    },
+    "fixed-al64-dense-observed-20260925": {
+      "root": "scratch",
+      "path": "training-cache/encoder-context/al64-epochs-20260925/dense-observed",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Fixed Al64 dense observed embedding evaluation",
+        "materials": [
+          "Al"
+        ],
+        "role": "evaluation_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "All 801 stored frames of 64 fixed centers in the 30 test sources; 0.75 ps cadence. Observed nearest80 geometry and original structural labels. Evaluation only; never training or normalization.",
+        "lineage": "Same immutable independent Al source ancestry and test roles as fixed-al64-benchmark-v1-20260925. No new simulation or quench.",
+        "evidence": [
+          "${dataset:fixed-al64-dense-observed-20260925}/manifest.json",
+          "configs/fixed_cohort/al64_v1.json",
+          "src/research/encoder_context/dense.py"
+        ],
+        "limitations": [
+          "Historically examined test sources; not an untouched evaluation.",
+          "Observed geometry only; dense relaxed trajectories unavailable.",
+          "Nearest80 cropped at 8 Angstrom, without computational halo."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

@@ -1,0 +1,13 @@
+{
+  "output": "${storage:analysis}/encoder_supervised/information-default128-20260925",
+  "partitions": "H100,RTX6000PRO",
+  "cpus": 8,
+  "memory": "48G",
+  "walltime": "08:45:00",
+  "runs": [
+    {
+      "name": "width128",
+      "config": "configs/supervised_onset/default128.json"
+    }
+  ]
+}

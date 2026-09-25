@@ -1,0 +1,6 @@
+{
+  "output": "${storage:analysis}/encoder_research/prediction-context-20260925",
+  "screen_table": "output/encoder_research/onset-horizons-20260924/tables/all-models.csv",
+  "supervised_root": "output/encoder_supervised/ap36-large-20260924",
+  "expected_rows": 275
+}

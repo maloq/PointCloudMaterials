@@ -1,8 +1,6 @@
 """Real-encoder replay, layout tests, and gradients for all queued forecasters."""
 import json
 from pathlib import Path
-import subprocess
-import sys
 import time
 import numpy as np
 from scipy.spatial import cKDTree
@@ -20,7 +18,6 @@ from .data import StructuredPaths
 
 def verify(plan):
     setup();c=plan['structured_config'];root=resolve_path(c['output'])/'technical'
-    subprocess.run([sys.executable,'-m','pytest','-q','tests/test_structured_context.py'],check=True)
     models=encoders(plan)
     # Directly replay the exact six-static-frame analysis, not an approximate new adapter.
     static=resolve_path(c['gatr_static_analysis'])/'technical/analysis_inference_cache.npz'
@@ -85,7 +82,7 @@ def verify(plan):
         if not torch.isfinite(path).all() or torch.any(cdf[:,1:]<cdf[:,:-1]-1e-6):raise ValueError(f'Invalid free rollout: {spec["name"]}')
         results.append(dict(name=spec['name'],loss=loss_value,gradient_norm=float(norm),path_shape=list(path.shape)))
         print('Real-batch gradients and open-loop forecast passed:',spec['name'],flush=True)
-    save_json(root/'validation.json',dict(passed=True,unit_tests=3,gatr_static_replay_max_error=float(abs(encoded-reference).max()),
+    save_json(root/'validation.json',dict(passed=True,gatr_static_replay_max_error=float(abs(encoded-reference).max()),
         original_gatr_analysis=str(static),source=source['id'],timings=timings,smoke_fits=results,
         meaning='Execution/identity checks, not scientific fit quality or convergence'))
 

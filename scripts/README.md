@@ -1,5 +1,24 @@
 # Maintained commands
 
+`python -m src.data.fixed_cohort.prepare --config configs/fixed_cohort/al64_v1.json --workers 4`
+builds the immutable 64-center Al benchmark and source-disjoint structural
+pretraining corpus; [data contract and loaders](../docs/datasets/fixed_al64.md).
+CPU preparation only; no training, new simulations or online tracking.
+
+`python -m src.research.equivariant_context.queue prepare|check|submit|worker|collect --config configs/equivariant_context/comparison_20260925.json` prepares the shared-encoder invariant/vector/tensor/hierarchical predictor comparison; [operations](../docs/equivariant_context.md). Preparation and checks never submit or train.
+
+`python -m src.research.supervised_onset.campaign check|submit|collect --config
+configs/supervised_onset/information_20260925/campaign.json` runs the small/500k/1M/2M
+comparison through the existing supervised trainer; [operations](../docs/supervised_capacity.md).
+
+`python -m src.research.supervised_onset.queue prepare|preflight|launch|worker|collect`
+runs the distinct crystallization-supervised likelihood protocol (AP reporting only) on the existing
+larger paired cohort; [operations](../docs/supervised_onset.md).
+
+`python -m src.research.prediction_context_audit --config configs/analysis/prediction_context_20260925.json`
+logs the actual prediction inputs of275 saved AP comparisons, checking probe
+widths and retaining evidence hashes; [policy and ledger](../docs/encoder_research/prediction_context.md).
+
 `python -m src.research.geoframe_evolution.train|reference|queue|precursors`
 reproduces the epoch-34 GeoFrame recipe and measures interfaces, defects,
 liquid order and prediction along training; [commands](../docs/geoframe_evolution.md).
@@ -54,6 +73,20 @@ and refuses to overwrite an existing report. It does not fit models. See the
 | `plot_homogeneous_checkpoint.py`, `render_shooting_dynamics_gifs.py` | Simulation visualization. |
 
 Current training and analysis use existing module entry points:
+
+`python -m src.research.encoder_context.queue prepare|check|launch|report --config
+configs/encoder_context/al64_20260925/campaign.json` runs the fixed-Al64 encoder
+initialization comparison with vector/harmonic predictors and complete evaluation;
+[operations](../docs/encoder_context.md). Tests/preflight remain local-only.
+
+`python -m src.research.onset_horizons --config configs/analysis/onset_horizons_20260924.json`
+replays saved native and joint-head onset probabilities at3/6/12 ps, with3 ps
+primary and explicit event counts. It preserves all historical model selectors
+and performs no training; [definitions](../docs/metrics/onset_horizons.md).
+
+`python -m src.research.spatial_hierarchy.queue preflight|submit|collect --config
+configs/spatial_hierarchy/screen_20260924.json` compares local and surrounding
+context hierarchies with fixed focal targets; [guide](../docs/spatial_hierarchy.md).
 
 `python -m src.research.robust_onset.queue preflight|submit|collect --config
 configs/robust_onset/screen_20260924.json` runs the new one-seed onset/robustness

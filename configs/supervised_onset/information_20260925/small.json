@@ -1,0 +1,86 @@
+{
+  "protocol": "supervised_onset_information_v4",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/encoder_supervised/information-runtime-20260925/small",
+  "cache": "${storage:cache}/supervised-onset/ap36-large-20260924",
+  "parent_output": "output/relaxed_encoder/large-test-20260921",
+  "primary_horizon_ps": 3.0,
+  "secondary_horizon_ps": 6.0,
+  "seed": 20260924,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 32,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "training": {
+    "screen_updates": 2048,
+    "maximum_updates": 8192,
+    "batch_size": 256,
+    "microbatch": 256,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05,
+    "warmup": 128,
+    "evaluate_every": 256,
+    "save_every": 128,
+    "log_every": 32,
+    "positive_sampling_fraction": 0.5,
+    "teacher_weight": 0.2
+  },
+  "arms": [
+    {
+      "name": "O-NLL",
+      "input": "hot",
+      "teacher": false
+    },
+    {
+      "name": "R-NLL",
+      "input": "cold",
+      "teacher": false
+    }
+  ],
+  "teacher_arm": "R-NLL",
+  "baselines": {
+    "updates": 2048,
+    "batch_size": 512,
+    "learning_rate": 0.001
+  },
+  "queue": {
+    "hours": 8.5,
+    "screen_maximum_minutes_per_arm": 45,
+    "finalists": 2,
+    "evaluation_reserve_minutes": 75,
+    "allocation": null,
+    "cpus": 8
+  },
+  "bootstrap": 1000,
+  "noise_rms_fractions": [
+    0.001,
+    0.005,
+    0.01,
+    0.03
+  ],
+  "prediction_context": {
+    "external_inputs": []
+  },
+  "parameter_budget": {
+    "encoder_target": 79232,
+    "encoder_actual": 79232,
+    "model_total": 96389
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "objective": "hazard_nll",
+  "selection_metric": "hazard_nll",
+  "runtime": {
+    "compile": true,
+    "plan_cache_MiB": 256
+  }
+}

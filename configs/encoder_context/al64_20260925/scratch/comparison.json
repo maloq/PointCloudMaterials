@@ -1,0 +1,71 @@
+{
+  "protocol": "equivariant_context_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/encoder_context/al64-epochs-20260925/scratch",
+  "cache": "${storage:scratch}/training-cache/encoder-context/al64-epochs-20260925/scratch/context",
+  "population_cache": "${storage:cache}/supervised-onset/al64-b512-20260925",
+  "parent_plan": "output/relaxed_encoder/large-test-20260921/technical/plan.json",
+  "base_configs": {
+    "hot": "configs/encoder_context/al64_20260925/scratch/base_hot.json",
+    "cold": "configs/encoder_context/al64_20260925/scratch/base_cold.json"
+  },
+  "domains": [
+    "hot",
+    "cold"
+  ],
+  "variants": [
+    "vector_messages",
+    "harmonic_hierarchy"
+  ],
+  "seed": 20260924,
+  "batch_size": 256,
+  "encoder_updates": 4104,
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2,
+    "encoder_channels": 128
+  },
+  "training": {
+    "updates": 4104,
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-05,
+    "log_every": 32,
+    "evaluate_every": 171,
+    "save_every": 171,
+    "epochs": 24,
+    "minimum_selection_epoch": 12
+  },
+  "objective": "event_nll",
+  "selection_metric": "event_nll",
+  "external_inputs": [],
+  "bootstrap": 1000,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-context-al64-epochs-20260925"
+  },
+  "slurm": {
+    "partitions": "RTX6000PRO",
+    "cpus": 8,
+    "memory": "32G",
+    "feature_walltime": "08:00:00",
+    "predictor_walltime": "02:00:00",
+    "node": "node59",
+    "allocation": "1008517"
+  },
+  "microbatch": 256,
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "extraction": {
+    "chunk": 512,
+    "workers": 3,
+    "prefetch": 3,
+    "compile": true
+  },
+  "experiment_label": "Al64 | scratch"
+}

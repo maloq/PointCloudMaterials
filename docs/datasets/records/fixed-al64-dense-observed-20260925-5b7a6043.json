@@ -1,0 +1,510 @@
+{
+  "dataset_id": "fixed-al64-dense-observed-20260925",
+  "records": [
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "4114806e90d78ccd6f63fe0e28bca04caad06d38a90494d3efd4655ee6c0168d",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "domain",
+        "release_identity",
+        "rows",
+        "selection",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1000/complete.json",
+      "relative_path": "1000/complete.json",
+      "sha256": "f97d5bc7d920cb0e868ec534cf75f48af43ee9c6e893985a89e3c2ddcb3ffbe1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1001/complete.json",
+      "relative_path": "1001/complete.json",
+      "sha256": "cf879d8d340b6dd0c8327a526383cbf0f649b9f7a25839a3aab3d5de45b1eb02",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1002/complete.json",
+      "relative_path": "1002/complete.json",
+      "sha256": "3eaada54a8357d4b33d1d91af862077dec1a9ca14e8a22c582fae3952040b1d1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1003/complete.json",
+      "relative_path": "1003/complete.json",
+      "sha256": "fa384dd93aeb93a5dadd85cf12e017a0234e811cf007cc481d5cb1a929c5e78d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1007/complete.json",
+      "relative_path": "1007/complete.json",
+      "sha256": "628d9b602ad64ff7208aa49a0cecab7b183e43cc784381ecca40f0ed90899962",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1008/complete.json",
+      "relative_path": "1008/complete.json",
+      "sha256": "7b9df156ebd5f36b1ea3b498c9cb55504331c26706830bf6f3621a8484dceee0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/1009/complete.json",
+      "relative_path": "1009/complete.json",
+      "sha256": "4200e80865e19cbf05ed11917f7828e655e1e52d623416e5ef7b25f2af564fef",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/881/complete.json",
+      "relative_path": "881/complete.json",
+      "sha256": "c00686171dbdc18070cbeddb45ec10ec1788963cf7da92c19de787fee78ba7aa",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/882/complete.json",
+      "relative_path": "882/complete.json",
+      "sha256": "bd4e72427a85c4309e63a6c021e1f57e4a2c9bb8bce77496630ed114983e28a0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/883/complete.json",
+      "relative_path": "883/complete.json",
+      "sha256": "76e6d1d534955a0b555f658359fb13e465e4f41866bf23084aa12feb65d5a85a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/908/complete.json",
+      "relative_path": "908/complete.json",
+      "sha256": "d733790d6c74e844abeaf802083e23cd40d59e3a1c2c5f9950f31e77c32f928d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/909/complete.json",
+      "relative_path": "909/complete.json",
+      "sha256": "a9ddc6e807dd253c5171dd8474da0f000019aab704a5beff02c3d3eeecf7c694",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/910/complete.json",
+      "relative_path": "910/complete.json",
+      "sha256": "f3c797a6f0085309df600c8f3448bed25d50c30cc21715b6fe845a4009735b60",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/911/complete.json",
+      "relative_path": "911/complete.json",
+      "sha256": "c2af09f3f2309675b14b1a1e44dfab29772191eb2963847550704682c632d698",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/912/complete.json",
+      "relative_path": "912/complete.json",
+      "sha256": "623d910a38cdc8103efabd08a416c783a952348a10db011d098aa6e70067483a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/913/complete.json",
+      "relative_path": "913/complete.json",
+      "sha256": "12b470e305880c90097a0d8a154a441ddf089dc1f14f9a81130524d29e2d8bea",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/938/complete.json",
+      "relative_path": "938/complete.json",
+      "sha256": "b5b904d307b59b08bc194ebb79acd5594c0d99b14ad31c59109dc8365c1cb087",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/939/complete.json",
+      "relative_path": "939/complete.json",
+      "sha256": "1ebd330e7035c79cd43725378a17a34515a6de2ede92a06239fe04ece1c1b7b6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/940/complete.json",
+      "relative_path": "940/complete.json",
+      "sha256": "241b2fcfcc2af72bcd405d31ef9c9a6e93cb26b04e3e151930e25588cdfb0076",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/941/complete.json",
+      "relative_path": "941/complete.json",
+      "sha256": "4328d7ed174ffe19f892543424a68c69597405bd51944a9d6e4113204cde4034",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/942/complete.json",
+      "relative_path": "942/complete.json",
+      "sha256": "565e75b2c8dd50f7e189e06d59636aa97b7f9f9d3c20583ea3d345b7feb1ab27",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/943/complete.json",
+      "relative_path": "943/complete.json",
+      "sha256": "e7282cba3b262438d2960f102932aca5168a226b9c1b35a38cfce1e945fc3b6f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/968/complete.json",
+      "relative_path": "968/complete.json",
+      "sha256": "f24711eaa28a42f9cb1ee9a14c23bcdaeb53cdef1ca20d27c84b897a5ba8fdc8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/969/complete.json",
+      "relative_path": "969/complete.json",
+      "sha256": "804d9ecdab049dc719b1c19939be12d585605e617279b0c6e8a4a1e08a4b5bdb",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/970/complete.json",
+      "relative_path": "970/complete.json",
+      "sha256": "de34c1bd4bc5243e292b8fe8a96c622d1c30069c8cdc3e3e2823974d0b396038",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/971/complete.json",
+      "relative_path": "971/complete.json",
+      "sha256": "d01c9f17c9dec5af52ad88de68f908e63ffcf4958e53782e38a27451b238f442",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/972/complete.json",
+      "relative_path": "972/complete.json",
+      "sha256": "c2190e4e7d70fcb3a71f28509583c5e9ac9f6d86b93e404d1c32093aec244410",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/973/complete.json",
+      "relative_path": "973/complete.json",
+      "sha256": "3240d4bbb3625b71999151f8bfd277c524605518ba15cfaf145433be24d075b0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/998/complete.json",
+      "relative_path": "998/complete.json",
+      "sha256": "9131ac94a6cc1e1af0ce230b9b0fd2e965780f92248858c90229326ec6663208",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/al64-epochs-20260925/dense-observed/999/complete.json",
+      "relative_path": "999/complete.json",
+      "sha256": "afb9bbc552981f75f6d3a9046a0538b239f7ba38e14091145cbca50867714b41",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "release_identity",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

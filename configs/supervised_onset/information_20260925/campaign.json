@@ -1,0 +1,25 @@
+{
+  "output": "${storage:analysis}/encoder_supervised/information-runtime-20260925",
+  "partitions": "H100,RTX6000PRO",
+  "cpus": 8,
+  "memory": "48G",
+  "walltime": "08:45:00",
+  "runs": [
+    {
+      "name": "small",
+      "config": "configs/supervised_onset/information_20260925/small.json"
+    },
+    {
+      "name": "500k",
+      "config": "configs/supervised_onset/information_20260925/500k.json"
+    },
+    {
+      "name": "1m",
+      "config": "configs/supervised_onset/information_20260925/1m.json"
+    },
+    {
+      "name": "2m",
+      "config": "configs/supervised_onset/information_20260925/2m.json"
+    }
+  ]
+}

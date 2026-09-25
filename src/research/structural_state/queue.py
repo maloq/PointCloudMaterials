@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -52,7 +51,6 @@ def submit(study):
     if path.exists():
         raise FileExistsError(f'Study already submitted; inspect {path}')
     code = snapshot(root)
-    shutil.copytree('tests', code / 'tests', ignore=shutil.ignore_patterns('__pycache__'))
     launch = dict(state='submitting', identity=study.identity, code=str(code), jobs=[], submitted_at=time.time())
     write_json(path, launch)
     for arm in study.config['arms']:
@@ -121,7 +119,6 @@ def launch_local(study):
     if path.exists():
         raise FileExistsError(f'Already launched; inspect {path}')
     code = snapshot(study.technical)
-    shutil.copytree('tests', code / 'tests', ignore=shutil.ignore_patterns('__pycache__'))
     relative = study.config_path.relative_to(Path.cwd().resolve())
     launch = dict(state='launching', identity=study.identity, code=str(code),
                   job=job, host=os.uname().nodename, deadline=deadline, workers=[])

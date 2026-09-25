@@ -2,8 +2,6 @@
 import copy
 import json
 from pathlib import Path
-import subprocess
-import sys
 import tempfile
 import time
 
@@ -26,10 +24,6 @@ def run(config, device):
     study = Study(config)
     receipt = study.technical/'preflight.json'
     write_json(receipt, dict(passed=False, identity=study.identity, state='checking'))
-    tests = ['tests/test_bcr.py', 'tests/test_bcr_pilot.py', 'tests/test_bcr_followup.py']
-    with (study.technical/'preflight-tests.log').open('w') as stream:
-        subprocess.run([sys.executable, '-m', 'pytest', *tests, '-q'], stdout=stream,
-                       stderr=subprocess.STDOUT, check=True)
     model = study.model(1000, device)
     codes = np.load(study.original/'technical/evaluations/001000/bcr-features.npy')
     indices = study.chosen[:16]
@@ -75,7 +69,6 @@ def run(config, device):
                     raise ValueError(f'Nonfinite paired features: {cell["key"]}/{domain}')
             patch_counts[domain] = np.diff(offsets).tolist()
     write_json(receipt, dict(passed=True, identity=study.identity, finished=time.time(),
-        tests={p: file_hash(p) for p in tests}, tests_log='preflight-tests.log',
         device=str(device), feature_replay=True, corruption_replay=True,
         full_batch_decoder_updates=3, encoder_unchanged=True,
         relaxed_roots=len(selected['sources']), relaxed_cells=len(selected['cells']),

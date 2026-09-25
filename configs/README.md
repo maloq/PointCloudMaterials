@@ -1,5 +1,34 @@
 # Configuration index
 
+[`fixed_cohort/al64_v1.json`](fixed_cohort/al64_v1.json) freezes the 64-center Al
+benchmark and large structural pretraining sets for new model comparisons;
+[split and input contract](../docs/datasets/fixed_al64.md). Existing runs keep
+their recorded data.
+
+[Encoder initialization and directional context](encoder_context/al64_20260925/campaign.json): four initializations, eight supervised encoders, each tested with vector messages and harmonic hierarchy; at least 12 full epochs and complete representation diagnostics. [Operations](../docs/encoder_context.md).
+
+[Fixed Al64 context repeat](equivariant_context/al64_20260925/comparison.json): fresh observed/relaxed encoders and the same four predictors, fixed 64-center population, 4,096 updates, batch/microbatch 512. [Protocol](../experiments/equivariant_context_al64_20260925/README.md).
+
+[Equivariant context](equivariant_context/comparison_20260925.json): prepared four-predictor comparison for observed/relaxed inputs, shared width-128 encoders, one seed, batch/microbatch 512, likelihood training, AP3/AP6 evaluation. [Operations](../docs/equivariant_context.md).
+
+[`supervised_onset/default128.json`](supervised_onset/default128.json) is the default
+native spatial MACE recipe:128 channels,128-D export,634,496 encoder parameters,
+batch/microbatch256 and online W&B. It trains and selects by predictive hazard
+likelihood, with no temperature/time inputs. The single-size campaign wrapper is
+[`supervised_onset/default_campaign.json`](supervised_onset/default_campaign.json).
+See [architecture and counts](../docs/encoder_research/mace_sizes.md).
+
+[`supervised_onset/information_20260925/campaign.json`](supervised_onset/information_20260925/campaign.json)
+is the current likelihood-trained predictive-information comparison: small control plus500k/1M/2M encoders,
+observed/relaxed geometry, no temperature or time inputs, one seed and four
+independent GPU jobs. It supersedes the unlaunched geometry-v2 proposal. The older
+[`ap36_20260924.json`](supervised_onset/ap36_20260924.json) records the completed
+conditioned study and requires its frozen runner. See [input policy](../docs/encoder_research/prediction_context.md)
+and [capacity operations](../docs/supervised_capacity.md).
+
+[`analysis/prediction_context_20260925.json`](analysis/prediction_context_20260925.json)
+audits prediction inputs for275 saved AP comparisons without retraining.
+
 [`geoframe_evolution/`](geoframe_evolution/) reproduces the epoch-34 GeoFrameV2
 recipe through 35 full passes, with independent Al/Ta/Zr interface/liquid assays;
 [workflow](../docs/geoframe_evolution.md).
@@ -154,11 +183,6 @@ temporal SSL and descriptor entry points no longer select a retired recipe by
 default. The FactorVAE and historical GeoFrame objective queues require
 `--config-dir`; the spatiotemporal trainer accepts it too. The optimized Al shell
 launcher requires `CAMPAIGN_CONFIG` in addition to `PYTHON`.
-
-Fifteen old simulation configs needed by regression tests moved to
-`tests/fixtures/simulation/`, with internal fixture paths updated. Two GeoFrame
-regression fixtures preserve their fully composed training settings. These fixtures
-are test inputs, not a second set of maintained run recipes.
 
 The [MACE context pilot](analysis/mace_context.json) selects complete message context, smooth inner pooling and tracked-center readouts with matched VICReg continuation.
 The [context recovery recipe](analysis/mace_context_recovery.json) compares cached
@@ -345,6 +369,10 @@ observed/relaxed atom illustrations; see the archived-reuse research record.
 - `mace_epi/campaign.json`: matched direct-embedding MACE paired alignment with VICReg or geometric Epi regularization, two seeds and24 full passes. See [operations](../docs/mace_epi.md).
 ## Embedding dynamics supplement
 
+`spatial_hierarchy/screen_20260924.json` compares local-only, late-context and
+early 12/16 Å context-conditioned MACE; [protocol](../experiments/spatial_hierarchy_20260924/README.md)
+and [operations](../docs/spatial_hierarchy.md).
+
 `robust_onset/screen_20260924.json` defines the eight-arm predictive/robustness
 MACE queue; [scientific protocol](../experiments/robust_onset_20260924/README.md)
 and [operations](../docs/robust_onset.md). One seed, two concurrent Slurm GPUs.
@@ -360,3 +388,12 @@ documented in the [guide](../docs/encoder_research/embedding_dynamics.md).
 `analysis/encoder_dynamics_20260924.json` selects completed exports for the
 [state/movement dimension audit](../docs/encoder_research/embedding_dynamics.md).
 It runs analysis only and preserves historical outputs.
+
+## Three-picosecond onset recipes
+
+`analysis/onset_horizons_20260924.json` replays saved predictions at3/6/12 ps.
+`robust_onset/screen_ap3_20260924.json` and
+`spatial_hierarchy/screen_ap3_20260924.json` use3 ps for ranking and checkpoint
+selection, with separate outputs. Historical `screen_20260924.json` recipes
+retain explicit12 ps settings. New recipes have not been submitted; see the
+[experiment priorities](../experiments/onset_ap3_20260924/README.md).

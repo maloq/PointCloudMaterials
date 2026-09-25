@@ -1,0 +1,58 @@
+{
+  "protocol": "equivariant_context_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/equivariant_context/node59-b512-v2-20260925",
+  "cache": "${storage:cache}/equivariant-context/node59-b512-v2-20260925",
+  "population_cache": "${storage:cache}/supervised-onset/ap36-large-20260924",
+  "parent_plan": "output/relaxed_encoder/large-test-20260921/technical/plan.json",
+  "base_configs": {
+    "hot": "configs/equivariant_context/base_hot.json",
+    "cold": "configs/equivariant_context/base_cold.json"
+  },
+  "domains": [
+    "hot",
+    "cold"
+  ],
+  "variants": [
+    "symmetric_invariant",
+    "vector_messages",
+    "tensor_attention",
+    "harmonic_hierarchy"
+  ],
+  "seed": 20260924,
+  "batch_size": 512,
+  "encoder_updates": 4096,
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2,
+    "encoder_channels": 128
+  },
+  "training": {
+    "updates": 4096,
+    "learning_rate": 0.0005,
+    "weight_decay": 1e-05,
+    "log_every": 32,
+    "evaluate_every": 256,
+    "save_every": 128
+  },
+  "objective": "event_nll",
+  "selection_metric": "event_nll",
+  "external_inputs": [],
+  "bootstrap": 1000,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "slurm": {
+    "partitions": "RTX6000PRO",
+    "cpus": 8,
+    "memory": "32G",
+    "feature_walltime": "08:00:00",
+    "predictor_walltime": "02:00:00",
+    "node": "node59",
+    "allocation": "1008517"
+  },
+  "microbatch": 512
+}

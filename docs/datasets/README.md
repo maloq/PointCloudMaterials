@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-24T10:36:51.012083+00:00
+Observed: 2026-09-25T13:22:08.459741+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -79,8 +79,12 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Fourfold spatial plot samples for the native encoder screen](cards/encoder-screen-dense-spatial-20260923-57e026e4.md) | Al, Ta, Zr | research | yes | 0 | Unknown / not applicable |
 | [Native snapshot screen cached physical observations](cards/encoder-screen-inputs-20260923-aae6a755.md) | Al, Ta, Zr | research | yes | 0 | Unknown / not applicable |
 | [Eightfold spatial plot samples for the native encoder screen](cards/encoder-screen-spatial8-20260923-844ae856.md) | Al, Ta, Zr | research | yes | 0 | Unknown / not applicable |
-| [GeoFrame Al/Ta/Zr independent physical reference assay](cards/geoframe-physical-reference-20260923-6b117f18.md) | Al, Ta, Zr | research | yes | 0 | Unknown / not applicable |
-| [Dense Ta/Zr structured-liquid candidate regions](cards/geoframe-structured-liquid-regions-20260923-3aa5616b.md) | Ta, Zr | research | yes | 0 | Unknown / not applicable |
+| [Equivariant spatial-context Al feature cache](cards/equivariant-context-prepared-20260925-91ef98cd.md) | Al | derived | no | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Fixed Al64 crystallization benchmark](cards/fixed-al64-benchmark-v1-20260925-4fb74686.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Fixed Al64 dense observed embedding evaluation](cards/fixed-al64-dense-observed-20260925-5b7a6043.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Fixed Al64 structural pretraining: 1,157,760 training neighborhoods](cards/fixed-al64-structural-v1-20260925-a7f0b736.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [GeoFrame Al/Ta/Zr independent physical reference assay](cards/geoframe-physical-reference-20260923-6b117f18.md) | Al, Ta, Zr | research | no | 0 | Unknown / not applicable |
+| [Dense Ta/Zr structured-liquid candidate regions](cards/geoframe-structured-liquid-regions-20260923-3aa5616b.md) | Ta, Zr | research | no | 0 | Unknown / not applicable |
 | [interrupted attempts](cards/interrupted_attempts-241fcc9b.md) | Unknown | incomplete_or_rejected | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al · full-timeline physical descriptors](cards/local-predictability-20260917-broad-66446cfa.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al: current full-timeline native release](cards/local-predictability-native-release-1a28e8bc.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
@@ -131,14 +135,17 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Repository dataset preprocessing caches](cards/repository-derived-data-caches-95186383.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
 | [research-records-20260913](cards/research-records-20260913-54a7309f.md) | Unknown | archive | yes | 0 | Unknown / not applicable |
 | [restart boundary audit 20260905](cards/restart_boundary_audit_20260905-d2886897.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
+| [Robust-onset finite coordinate perturbation bank](cards/robust-onset-noise-20260924-c395b8c8.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al shared causal pretraining: 38,400 windows, geometry and instantaneous TDA](cards/shared-causal-38400-20260918-79d3a6ec.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [shooting float32 migration 20260901](cards/shooting_float32_migration_20260901-ab3f5054.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
+| [Current-frame 16-A surroundings of fixed 8-A focal patches](cards/spatial-hierarchy-screen-20260924-2634b77c.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al/Mg/Ti/Ta/Zr structural neighbors: 250,000 training anchors](cards/structural-neighbors-250k-20260917-caca88b3.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Al/Mg/Ti/Ta/Zr: 287,500 anchors with complete instantaneous TDA](cards/structural-neighbors-287500-full-tda-20260918-799b001d.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Fourfold dynamic structural expansion: 1,018,080 Al/Mg/Ti/Ta anchors](cards/structural-neighbors-dynamic-1018080-20260919-338e6838.md) | Al, Mg, Ta, Ti, Zr | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Fixed structural-state matched observed/relaxed MACE screen](cards/structural-state-screen-20260922-ae80bafa.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [superseded preparation al meam position shooting 15ps topup manifest metadata 20260904T0955Z](cards/superseded_preparation_al_meam_position_shooting_15ps_topup_manifest_metadata_20260904T0955Z-3b234b41.md) | Unknown | prepared | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [superseded preparation al meam predictive dynamics fixed15 smoke wave979929 20260904T0955Z](cards/superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z-be4065aa.md) | Unknown | fixture | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Supervised onset AP3/AP6 paired Al graph release](cards/supervised-onset-ap36-large-20260924-e6c63a0b.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Ta: five 10-million-atom branches](cards/ta-eam-five-24ps-0b8a1ae4.md) | Ta | research | yes | 5 | Zhong 2014 Ta EAM |
 | [Ta: 1,024,000-atom baseline, 24 ps](cards/ta_initial_model_1m_24ps_npt_20260905-1e9159ed.md) | Ta | research | yes | 2 | Zhong 2014 Ta EAM |
 | [temporal](cards/temporal-e4540a7c.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
@@ -150,4 +157,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-13 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+18 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

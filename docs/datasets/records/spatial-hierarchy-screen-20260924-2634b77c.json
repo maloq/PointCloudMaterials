@@ -1,0 +1,49 @@
+{
+  "dataset_id": "spatial-hierarchy-screen-20260924",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-hierarchy/screen-20260924/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "66f80fcf48a519f81463be1781a032442d83fc63f4f71803530dcb3827217096",
+      "kind": "metadata",
+      "keys": [
+        "context",
+        "files",
+        "maximum_focal_coordinate_replay_error_A",
+        "new_simulations",
+        "parent_identity",
+        "radii_A",
+        "raw_current_frames",
+        "rows",
+        "signature",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-hierarchy/screen-20260924/dense-inputs/manifest.json",
+      "relative_path": "dense-inputs/manifest.json",
+      "sha256": "4d8bf04a303cd515d35829e8ed66cac8eca53fbee4e0b8d21eeaca349f744384",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "producer_sha256",
+        "radius_A",
+        "source_plan_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius_A": [
+          {
+            "value": 16.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

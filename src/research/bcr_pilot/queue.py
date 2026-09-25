@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -68,7 +67,7 @@ def submit(config,allocation=None):
         if remaining<estimate+.5:raise ValueError(f'Existing allocation has {remaining:.2f}h; need {estimate+.5:.2f}h including reserve')
         parity=json.loads((root/'h100-parity.json').read_text())
         if not parity['passed']:raise ValueError('Existing H100 needs passing cross-GPU FP32 parity')
-    code=snapshot(root);shutil.copytree('tests',code/'tests',ignore=shutil.ignore_patterns('__pycache__'))
+    code=snapshot(root)
     partition='H100' if 'H100' in timing[0]['gpu'] else 'RTX6000PRO'
     launches=[]
     for name in ('unconditional','frozen_random','bcr'):

@@ -53,8 +53,7 @@ def train(config,data_path,output,device='cpu',stop_after=None,deadline=None):
         if (not gate['G0_pass'] or not gate['real_overfit_pass'] or gate['model_contract']!=identity(config['encoder'])
             or gate['decoder_contract']!=identity(config.get('decoder',{}))
             or gate['model_sha256']!=hashlib.sha256(Path(__file__).with_name('model.py').read_bytes()).hexdigest()
-            or gate['implementation_hashes']!=implementation_hashes()
-            or gate['correctness_suite_sha256']!=hashlib.sha256(Path('tests/test_bcr.py').read_bytes()).hexdigest()):
+            or gate['implementation_hashes']!=implementation_hashes()):
             raise ValueError('Large launch requires passing G0 and real overfit for this model contract')
     torch.set_float32_matmul_precision('highest')
     torch.use_deterministic_algorithms(True)

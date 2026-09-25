@@ -206,7 +206,7 @@ Preparation saved its then-current configuration (30 epochs, batch 128). Before 
 Literature: [Hiraoka et al., persistent homology of amorphous solids](https://arxiv.org/abs/1501.03611), [Adams et al., persistence images](https://arxiv.org/abs/1507.06217), [Russo and Tanaka, orientational ordering before crystallization](https://pmc.ncbi.nlm.nih.gov/articles/PMC3395031/) (hard-sphere evidence, not direct evidence for these metals), [MACE](https://arxiv.org/abs/2206.07697), [SchNet](https://arxiv.org/abs/1706.08566).
 '''
     (out/'RESULTS.md').write_text(text)
-    files=sorted((ROOT / "src/research/liquid_sro_benchmark").glob("*.py"))+sorted((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905/technical').glob('*.json'))+[ROOT/'src/analysis/liquid_structure.py',ROOT/'src/models/encoders/atomic_graph.py',ROOT/'src/models/encoders/smooth_density.py',ROOT/'tests/test_liquid_sro_benchmark.py']
+    files=sorted((ROOT / "src/research/liquid_sro_benchmark").glob("*.py"))+sorted((dataset_path('research-records-20260913') / 'experiments/liquid_sro_benchmark_20260905/technical').glob('*.json'))+[ROOT/'src/analysis/liquid_structure.py',ROOT/'src/models/encoders/atomic_graph.py',ROOT/'src/models/encoders/smooth_density.py']
     write_json(out/'provenance.json',dict(host=platform.node(),python=sys.version,executable=sys.executable,
         git_head=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),
         versions={n:importlib.metadata.version(n) for n in ('torch','mace-torch','e3nn','cuequivariance','cuequivariance-torch','gudhi','dscribe','ase','numpy','scipy')},

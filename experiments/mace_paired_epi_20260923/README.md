@@ -51,7 +51,12 @@ Recipe: `configs/mace_epi/campaign.json`.
 python -m src.research.mace_epi.queue submit --config configs/mace_epi/campaign.json
 ```
 
-Findings: pending. Primary comparisons are matched seed/pass liquid-neighbor
+Findings: all six fits and24 checkpoint evaluations completed. See the
+[cross-study results](../../docs/encoder_research/results_20260924.md#mace-paired-alignment-epi-versus-vicreg).
+Plain Epi improves the final present-structure readouts over VICReg but has lower
+onset AP. The variance floor improves Epi's onset AP; none of the three objectives
+establishes improved Brier or9 ps residual prediction beyond current physics.
+Primary comparisons are matched seed/pass liquid-neighbor
 NMSE, nonbulk fault/interface AP and spatial boundary AUC; report continuous
 order recovery and perturbation response alongside them. Require calibrated
 onset benefit beyond current physics before claiming better crystallization

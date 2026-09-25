@@ -13,7 +13,7 @@ from src.research.trajectory_stability.spectrum import source_weights
 from .common import write_json, save_checkpoint, sha, remaining
 from .data import targets
 from .model import Model, GraphBank
-from .metrics import smooth_ap
+from .metrics import smooth_ap, horizon_index
 
 
 def setup(study, name, device):
@@ -21,16 +21,15 @@ def setup(study, name, device):
     values,scalers,conditions,risk,sources=targets(corpus)
     torch.manual_seed(c['seed'])
     ec=dict(c['encoder'],d0=corpus.manifest['d0'],n_ref=corpus.manifest['n_ref'])
-    model=Model(ec,a['tensor_pool'],conditions.shape[1]).to(device)
-    with np.load(study.cache/f'{a["input"]}-graphs.npz') as arrays:
-        bank=GraphBank(dict(arrays),model.encoder,device)
+    model=study.make_model(ec,a,conditions.shape[1]).to(device)
+    bank=model.make_bank(study.graph_arrays(a),device)
     noisy=[]
     if a['noise']:
         manifest=json.loads((study.augmented/'manifest.json').read_text())
         for i in range(len(c['noise']['training_rms_fractions'])):
             p=study.augmented/f'view-{i}.npz'
             if sha(p)!=manifest['files'][p.name]:raise ValueError(f'Changed noisy input: {p}')
-            with np.load(p) as arrays:noisy.append(GraphBank(dict(arrays),model.encoder,device))
+            with np.load(p) as arrays:noisy.append(model.make_bank(dict(arrays),device))
     return model,bank,noisy,corpus,{k:torch.as_tensor(v,device=device) for k,v in values.items()},scalers,torch.as_tensor(conditions,device=device),risk,sources,ec
 
 
@@ -50,7 +49,7 @@ def physical_loss(model,z,target,arm):
     return loss
 
 
-def ranking_backward(model,bank,ids,conditions,labels,weights,chunk,temperature,coefficient):
+def ranking_backward(model,bank,ids,conditions,labels,weights,chunk,temperature,coefficient,*,horizon_ps):
     """Gradient caching: full risk-set AP, replayed through microbatched MACE.
 
     No optimizer update between caching and replay; encoder has no dropout or
@@ -58,7 +57,7 @@ def ranking_backward(model,bank,ids,conditions,labels,weights,chunk,temperature,
     this full-population loss (up to floating point execution order).
     """
     z=encode(model,bank,ids,chunk).detach().requires_grad_(True)
-    probability=cumulative_risk(model.logits(z,conditions[ids]))[:,-1]
+    probability=cumulative_risk(model.logits(z,conditions[ids]))[:,horizon_index(horizon_ps)]
     loss=coefficient*(1-smooth_ap(probability,labels,weights,temperature))
     loss.backward()
     gradients=z.grad.detach()
@@ -87,14 +86,15 @@ def step(model,bank,noisy,corpus,target,conditions,risk,sources,arm,config,rng,n
         (event*len(ix)/batch).backward();total+=float(event.detach())*len(ix)/batch
     rank=0.
     if arm['ap'] and (number+1)%tc['ranking_every']==0:
-        rank=ranking_backward(model,bank,ri,conditions,event_bin[ri]<5,
+        primary=config['primary_horizon_ps']
+        rank=ranking_backward(model,bank,ri,conditions,event_bin[ri]<=horizon_index(primary),
             torch.as_tensor(source_weights(sources[ri]),device=bank.device,dtype=torch.float32),
-            chunk,tc['ap_temperature'],tc['ap_weight'])
+            chunk,tc['ap_temperature'],tc['ap_weight'],horizon_ps=primary)
     return dict(loss=total,ranking_loss=rank)
 
 
 @torch.no_grad()
-def validate(model,bank,corpus,target,conditions,risk,sources,arm,chunk):
+def validate(model,bank,corpus,target,conditions,risk,sources,arm,chunk,*,horizon_ps):
     ids=corpus.split['tune']; z=encode(model,bank,ids,chunk)
     w=torch.as_tensor(source_weights(sources[ids]),device=z.device,dtype=z.dtype)
     present=float(w@block_error(model.heads[arm['input']](z),target[arm['input']][ids]))
@@ -102,8 +102,11 @@ def validate(model,bank,corpus,target,conditions,risk,sources,arm,chunk):
     future=float(w@(model.heads['future'](z)-target['future'][ids]).square().mean(1))
     ids=risk['tune']; z=encode(model,bank,ids,chunk); logits=model.logits(z,conditions[ids])
     bins=corpus.targets['event_bin'][ids]
-    metrics=weighted_scores(bins<5,cumulative_risk(logits)[:,-1].cpu().numpy(),sources[ids])
-    return dict(present_mse=present,current_mse=current,future_mse=future,**metrics)
+    k=horizon_index(horizon_ps)
+    metrics=weighted_scores(bins<=k,cumulative_risk(logits)[:,k].cpu().numpy(),sources[ids])
+    if metrics['average_precision'] is None:
+        raise ValueError(f'No tuning onset events at {horizon_ps:g} ps; AP checkpoint selection is undefined')
+    return dict(primary_horizon_ps=horizon_ps,present_mse=present,current_mse=current,future_mse=future,**metrics)
 
 
 def train(study,name,device='cuda',deadline=None):
@@ -135,10 +138,10 @@ def train(study,name,device='cuda',deadline=None):
             ix=risk['fit'];w=source_weights(sources[ix]);bins=corpus.targets['event_bin'][ix]
             prior=np.array([w[bins==k].sum()/w[bins>=k].sum() for k in range(5)]).clip(1e-4,1-1e-4)
             model.hazard[-1].weight.zero_();model.hazard[-1].bias.copy_(torch.as_tensor(np.log(prior/(1-prior))))
-        initial=validate(model,bank,corpus,target,conditions,risk,sources,arm,tc['microbatch'])
+        initial=validate(model,bank,corpus,target,conditions,risk,sources,arm,tc['microbatch'],horizon_ps=c['primary_horizon_ps'])
     if reference_variance<=0:raise ValueError('Collapsed initial export')
     def state():
-        return dict(identity=study.identity,arm=name,step=number,best=best,model=model.state_dict(),
+        return dict(identity=study.identity,arm=name,step=number,best=best,primary_horizon_ps=c['primary_horizon_ps'],model=model.state_dict(),
             optimizer=optimizer.state_dict(),rng=rng.bit_generator.state,torch_rng=torch.get_rng_state(),
             cuda_rng=torch.cuda.get_rng_state() if str(device).startswith('cuda') else None,
             initial=initial,reference_variance=reference_variance,encoder_config=ec,target_scalers=scalers)
@@ -147,7 +150,8 @@ def train(study,name,device='cuda',deadline=None):
     write_json(folder/'environment.json',dict(torch=torch.__version__,backend=c['encoder']['backend'],
         gpu=torch.cuda.get_device_name() if str(device).startswith('cuda') else 'cpu',
         parameters=sum(p.numel() for p in model.parameters()), precision='float32, TF32 disabled',
-        fit_events=int((corpus.targets['event_bin'][risk['fit']]<5).sum())))
+        primary_horizon_ps=c['primary_horizon_ps'],
+        fit_events=int((corpus.targets['event_bin'][risk['fit']]<=horizon_index(c['primary_horizon_ps'])).sum())))
     started=time.monotonic()
     try:
         while number<tc['updates']:
@@ -164,7 +168,7 @@ def train(study,name,device='cuda',deadline=None):
                 with (folder/'training.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                 print(name,json.dumps(record),flush=True)
             if number%tc['evaluate_every']==0 or number==tc['updates']:
-                val=validate(model,bank,corpus,target,conditions,risk,sources,arm,tc['microbatch'])
+                val=validate(model,bank,corpus,target,conditions,risk,sources,arm,tc['microbatch'],horizon_ps=c['primary_horizon_ps'])
                 retained=all(val[k]<=initial[k]*c['retention_ratio'] for k in ('present_mse','current_mse','future_mse'))
                 val.update(step=number,retained=retained)
                 with (folder/'validation.jsonl').open('a') as f:f.write(json.dumps(val)+'\n')

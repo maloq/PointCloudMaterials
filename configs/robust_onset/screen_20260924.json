@@ -1,5 +1,6 @@
 {
   "protocol": "robust_onset_v1",
+  "primary_horizon_ps": 12.0,
   "output": "${storage:analysis}/encoder_research/robust-onset-20260924",
   "cache": "${storage:cache}/structural-state/screen-20260922",
   "augmented_cache": "${storage:cache}/robust-onset/noise-20260924",

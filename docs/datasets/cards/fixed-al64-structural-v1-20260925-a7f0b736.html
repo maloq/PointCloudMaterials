@@ -1,0 +1,3971 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Fixed Al64 structural pretraining: 1,157,760 training neighborhoods</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Fixed Al64 structural pretraining: 1,157,760 training neighborhoods</h1><p>Native Al geometry only: 90 training sources, 64 fixed centers, 201 frames at 3 ps sampling. Separate 15-source validation set of 192,960 neighborhoods. Optional 86,400 train/36,480 validation observed-relaxed pairs. No calibration/test ancestors or descendants, no crystallization labels, no outcome filtering.</p><span class="badge">derived</span><p><code>fixed-al64-structural-v1-20260925</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural">/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural</a></p><p>526 owned files · 1.257 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Fixed Al64 structural pretraining: 1,157,760 training neighborhoods&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;role&quot;: &quot;training_cache&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;Native Al geometry only: 90 training sources, 64 fixed centers, 201 frames at 3 ps sampling. Separate 15-source validation set of 192,960 neighborhoods. Optional 86,400 train/36,480 validation observed-relaxed pairs. No calibration/test ancestors or descendants, no crystallization labels, no outcome filtering.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;lineage&quot;: &quot;Inherited independent melt ancestry and fixed source roles; exact sources, manifest hashes and atom IDs in ../splits.json. No new simulation.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:fixed-al64-structural-v1-20260925}/manifest.json&quot;,
+    &quot;${dataset:fixed-al64-structural-v1-20260925}/../plan.json&quot;,
+    &quot;configs/fixed_cohort/al64_v1.json&quot;,
+    &quot;docs/datasets/fixed_al64.md&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Historical test sources are reused, not a fresh untouched test.&quot;,
+    &quot;Centers and windows within a source are correlated.&quot;,
+    &quot;Nearest80 cropped at 8 Angstrom, not a complete radius ball or computational halo.&quot;,
+    &quot;Structural selection is validation only; structural fit and normalization use only the 90 training ancestors.&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/manifest.json">${dataset:fixed-al64-structural-v1-20260925}/manifest.json</a></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/plan.json">${dataset:fixed-al64-structural-v1-20260925}/../plan.json</a></li><li><a href="../../../configs/fixed_cohort/al64_v1.json">configs/fixed_cohort/al64_v1.json</a></li><li><a href="../fixed_al64.md">docs/datasets/fixed_al64.md</a></li></ul><p>Dependencies: <a href="al_meam_independent_sources_70304_400-500K_30perT_float16_20260902-09a0e5bb.html">al_meam_independent_sources_70304_400-500K_30perT_float16_20260902</a>, <a href="al_meam_independent_sources_70304_510-520K_30perT_float16_20260903-c4fad9f2.html">al_meam_independent_sources_70304_510-520K_30perT_float16_20260903</a>, <a href="al_520K_remaining24_20260913T204114Z-4a280fe4.html">al_520K_remaining24_20260913T204114Z</a>, <a href="relaxed-encoder-large-test-20260921-1b1aed47.html">relaxed-encoder-large-test-20260921</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>lineage</td><td><code>[&quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_142641279&quot;, &quot;independent_melt_144370470&quot;, &quot;independent_melt_146234076&quot;, &quot;independent_melt_147978527&quot;, &quot;independent_melt_151871197&quot;, &quot;independent_melt_15458297&quot;, &quot;independent_melt_160380922&quot;, &quot;independent_melt_176364202&quot;] … (105 values; see JSON)</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 526,
+    &quot;apparent_bytes&quot;: 1729234647,
+    &quot;allocated_bytes&quot;: 1349885440,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 106,
+      &quot;.npy&quot;: 420
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 106,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;sources/1004/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1004/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1004/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1004/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1005/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1005/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1005/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1005/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1006/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1006/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1006/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/1006/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/860/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/860/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/860/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/860/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/861/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/861/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/861/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/861/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/862/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/862/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/862/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/862/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/863/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/863/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/863/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/863/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/864/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/864/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/864/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/864/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/865/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/865/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/865/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/865/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/866/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/866/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/866/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/866/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/867/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/867/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/867/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/867/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/868/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/868/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/868/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/868/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/869/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/869/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/869/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/869/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/870/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/870/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/870/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/870/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/871/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/871/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/871/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/871/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/872/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/872/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/872/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/872/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/873/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/873/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/873/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/873/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/874/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/874/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/874/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/874/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/876/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/876/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/876/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/876/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/878/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/878/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/878/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/878/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/879/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/879/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/879/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/879/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/884/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/884/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/884/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/884/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/885/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/885/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/885/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/885/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/886/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/886/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/886/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/886/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/887/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/887/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/887/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/887/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/888/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/888/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/888/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/888/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/889/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/889/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/889/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/889/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/890/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/890/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/890/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/890/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/891/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/891/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/891/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/891/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/892/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/892/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/892/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/892/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/893/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/893/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/893/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/893/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/894/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/894/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/894/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/894/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/895/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/895/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/895/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/895/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/896/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/896/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/896/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/896/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/897/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/897/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/897/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/897/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/898/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/898/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/898/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/898/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/899/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/899/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/899/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/899/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/900/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/900/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/900/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/900/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/901/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/901/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/901/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/901/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/902/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/902/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/902/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/902/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/903/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/903/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/903/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/903/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/906/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/906/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/906/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/906/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/914/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/914/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/914/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/914/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/915/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/915/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/915/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/915/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/916/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/916/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/916/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/916/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/917/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/917/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/917/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/917/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/918/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/918/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/918/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/918/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/919/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/919/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/919/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/919/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/920/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/920/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/920/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/920/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/921/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/921/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/921/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/921/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/922/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/922/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/922/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/922/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/923/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/923/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/923/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/923/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/924/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/924/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/924/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/924/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/925/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/925/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/925/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/925/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/926/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/926/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/926/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/926/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/927/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/927/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/927/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/927/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/928/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/928/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/928/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/928/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/929/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/929/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/929/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/929/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/930/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/930/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/930/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/930/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/931/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/931/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/931/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/931/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/935/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/935/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/935/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/935/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/936/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/936/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/936/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/936/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/937/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/937/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/937/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/937/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/944/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/944/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/944/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/944/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/945/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/945/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/945/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/945/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/946/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/946/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/946/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/946/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/947/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/947/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/947/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/947/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/948/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/948/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/948/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/948/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/949/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/949/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/949/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/949/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/950/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/950/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/950/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/950/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/951/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/951/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/951/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/951/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/952/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/952/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/952/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/952/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/953/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/953/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/953/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/953/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/954/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/954/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/954/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/954/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/955/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/955/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/955/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/955/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/956/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/956/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/956/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/956/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/957/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/957/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/957/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/957/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/958/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/958/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/958/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/958/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/959/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/959/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/959/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/959/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/960/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/960/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/960/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/960/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/961/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/961/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/961/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/961/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/963/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/963/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/963/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/963/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/965/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/965/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/965/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/965/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/967/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/967/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/967/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/967/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/974/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/974/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/974/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/974/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/975/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/975/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/975/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/975/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/976/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/976/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/976/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/976/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/977/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/977/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/977/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/977/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/978/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/978/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/978/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/978/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/979/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/979/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/979/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/979/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/980/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/980/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/980/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/980/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/981/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/981/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/981/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/981/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/982/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/982/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/982/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/982/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/983/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/983/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/983/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/983/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/984/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/984/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/984/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/984/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/985/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/985/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/985/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/985/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/986/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/986/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/986/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/986/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/987/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/987/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/987/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/987/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/988/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/988/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/988/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/988/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/989/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/989/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/989/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/989/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/990/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/990/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/990/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/990/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/991/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/991/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/991/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/991/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/992/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/992/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/992/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/992/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/994/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/994/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/994/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/994/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/997/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        64
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/997/frames.npy&quot;,
+      &quot;shape&quot;: [
+        201
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/997/neighbor_ids.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/997/positions.npy&quot;,
+      &quot;shape&quot;: [
+        201,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (106 records)</summary><p><a href="../records/fixed-al64-structural-v1-20260925-a7f0b736.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/manifest.json">manifest.json</a> · complete · <code>7d2207b749284360a1d373d838b505de1fd54fdb1a771e074bd5306aa863fd64</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/1004/complete.json">sources/1004/complete.json</a> · metadata · <code>ac87132337ebc56d205d8159ea171d7267734e6762333d5845b673d6d660c566</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/1005/complete.json">sources/1005/complete.json</a> · metadata · <code>56b31000161f6f764296ecdb0e473f4a5b34a7e29c43dfa9840af54b7615c30c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/1006/complete.json">sources/1006/complete.json</a> · metadata · <code>fb24cc124674254481b5f323ad1c1549bf75294e7398fe056376e063f70ed156</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/860/complete.json">sources/860/complete.json</a> · metadata · <code>50a40898ea69344a5eb79f0ef5886ceae4b83ad8cce42f646ceb83122dc910e2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/861/complete.json">sources/861/complete.json</a> · metadata · <code>61edeefa9450916fbfccc839c33eb39caaef9adb3a858d69d8a0135e204dc6da</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/862/complete.json">sources/862/complete.json</a> · metadata · <code>faeb49a22b0ab692e956dd2549b3944fb687d2d6cf3dde7e80dbce2bdd6d5e10</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/863/complete.json">sources/863/complete.json</a> · metadata · <code>25bb494aefc8f15c19fae95fd7ad542f8dcbd4a32c001d9262e8e2bba5c73806</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/864/complete.json">sources/864/complete.json</a> · metadata · <code>461c2ee3dafa64187e8acd28b72b0fadcda950f6c303b092c662eb92ba8b7962</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/865/complete.json">sources/865/complete.json</a> · metadata · <code>5c50d1df8e6b9325c617ec3edd0e81a903c65a5fa5cecb87ebe5a2699d90a616</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/866/complete.json">sources/866/complete.json</a> · metadata · <code>3785183231a47afd360753f2f7b8fc4eb9412d05eb50de3dd123d3a91a8ef91d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/867/complete.json">sources/867/complete.json</a> · metadata · <code>dbd0e639d2be779490fcf8427bac452f11d627bf243ed30287cbec9e0cf2be3a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/868/complete.json">sources/868/complete.json</a> · metadata · <code>662eb856194634005e32f8e4fb2fe342c5b677befb40b75dacdefb127761c604</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/869/complete.json">sources/869/complete.json</a> · metadata · <code>5813fa4dcbbbd57cec71f4a1f9013218863a4d718e8b4d8e88104789985900f5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/870/complete.json">sources/870/complete.json</a> · metadata · <code>29a7fa60cf007a5d0c1aa545ab3575a4f76a9c9ec26e4b240f240b3653b315e4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/871/complete.json">sources/871/complete.json</a> · metadata · <code>5faeeb3a34650b6151b595596ae7342e9006a7f101b31f09efe90b95265d807f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/872/complete.json">sources/872/complete.json</a> · metadata · <code>53e3bfabd2268469ed22d259e56376a9445096e103af5deae3c9e7cfea7ba858</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/873/complete.json">sources/873/complete.json</a> · metadata · <code>d4fdc79365868caaf3685335e2f64e41b8435fca144604ed9a23331e59e86b36</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/874/complete.json">sources/874/complete.json</a> · metadata · <code>912c64a9f86795e53ae6db039b4798c5e3a0f5f834de50c30cc80050a1c48286</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/876/complete.json">sources/876/complete.json</a> · metadata · <code>b9f4a606bc781d9d248ab9eec082d53e910f0549d5e685d1acd9a7f7d442ba39</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/878/complete.json">sources/878/complete.json</a> · metadata · <code>e4a8f099d353c8c56777852a3d7d736dea1fda44ea29a20e41dfc6e36a9fe6c7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/879/complete.json">sources/879/complete.json</a> · metadata · <code>eecc9589cd8652f0e8b4cca474f02edd934ef56eb55475e6a3d542349f89ed02</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/884/complete.json">sources/884/complete.json</a> · metadata · <code>27da54d1a1a3fad49d6f07b9662686866e7b806b5c05885f001e1b9450bb180b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/885/complete.json">sources/885/complete.json</a> · metadata · <code>8d90046ddb714a0095c25af2ff69331e7795ddb005d0e5a11bfa875a869a62ec</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/886/complete.json">sources/886/complete.json</a> · metadata · <code>b5bd61a110f4c0d4adbc85d58b3947574f27895860fcce32ec9af4ae857923ab</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/887/complete.json">sources/887/complete.json</a> · metadata · <code>4644ed1d8787ed941377c6c2bd61c8aafcbffb8424a7a6ef2a838321085300d6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/888/complete.json">sources/888/complete.json</a> · metadata · <code>844146877175fda2142b249f0ea805b6f30e3c690bb64f95057bddbb51f91018</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/889/complete.json">sources/889/complete.json</a> · metadata · <code>48117d189b1c95b33f5db0f09456c2639c53285fb84010bce658ae0ef672e95b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/890/complete.json">sources/890/complete.json</a> · metadata · <code>684262b90aa0d5e2d53b84c4efc35a517da1612c02bc47f823f88f53dc3975f1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/891/complete.json">sources/891/complete.json</a> · metadata · <code>4b47a67543be4078840554e4b3905a24005141ee93c1627130ff8636997ee775</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/892/complete.json">sources/892/complete.json</a> · metadata · <code>087e546d2cc46a46cb621f547cc4c92aae4fc5385452fd4944e92ba2c0512256</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/893/complete.json">sources/893/complete.json</a> · metadata · <code>ee6c0bdd7b26cdffddaf37609c4f4878fdce816de2e0c0ff07105e9084fde8e2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/894/complete.json">sources/894/complete.json</a> · metadata · <code>6ea6bbb164a51a7b6eea5fc346692f150f65d8f9bbef84be597b390db7cc67f9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/895/complete.json">sources/895/complete.json</a> · metadata · <code>c1187af524fa4795b4c115c06ca430ea5dbdd15b477ed38c67a3b7b98712a906</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/896/complete.json">sources/896/complete.json</a> · metadata · <code>34e78a4dfe359bb75d4dd0496a5352ef02f3a89bfe67d07a9cf2d455f2b0d735</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/897/complete.json">sources/897/complete.json</a> · metadata · <code>02313dd5f25848972224d23ec1bb65270139e1407d7f606eafab67302ac84a7b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/898/complete.json">sources/898/complete.json</a> · metadata · <code>52ed648de0f196c648850c24b17ad598577f4c313d2c261768eedacc1cdd05b3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/899/complete.json">sources/899/complete.json</a> · metadata · <code>52f17f5edb072e294ec7d7329ece140e40b1d89dc65bded345ebd9181c647600</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/900/complete.json">sources/900/complete.json</a> · metadata · <code>291747459ad99ade1718668b5f6a3cb4f2c138ac111d8031076861221c810ab9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/901/complete.json">sources/901/complete.json</a> · metadata · <code>aae3c549eca09094bb38642c7c0402c9c3e691c9a70580cae3722a26dd5ddaef</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/902/complete.json">sources/902/complete.json</a> · metadata · <code>4b3e7ae7affe46182c214374893965cd29e6063bde02dca325215a1416f8014b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/903/complete.json">sources/903/complete.json</a> · metadata · <code>9cb943ca2322eec71f6a507fedd52e64e6fa4068947dd98567fe62aec80b847f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/906/complete.json">sources/906/complete.json</a> · metadata · <code>ff9f39c5d275e8c0e4dee07262ce2cd4e9183af3e5da76513be43bd0736bf7c8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/914/complete.json">sources/914/complete.json</a> · metadata · <code>45494f71b43bc05141b1e7c71d4f2bbb4af465d52fb7b8dd8f7875c79cd12f9f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/915/complete.json">sources/915/complete.json</a> · metadata · <code>8e47d5a75bb2d3c3367c9ee2ae3d1c0d17bee5e9118e23006396515ea716ade4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/916/complete.json">sources/916/complete.json</a> · metadata · <code>52f209aa38d3228bc5bf2f342fe94b6cd9afe49202aa94415185e0d2dee40b71</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/917/complete.json">sources/917/complete.json</a> · metadata · <code>8aed4afa638699ff4935073aa1ee6066ad1c3f0728d72b8b8507f8e18234dfdd</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/918/complete.json">sources/918/complete.json</a> · metadata · <code>62e5e3bf548c219663aebc9ad2b4a4ca567637f5e8c17b611086156481074778</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/919/complete.json">sources/919/complete.json</a> · metadata · <code>bfeede3fc492bcec851eccf395cd2714eebafcdf048939051bfb6c96f2d52f2c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/920/complete.json">sources/920/complete.json</a> · metadata · <code>443e079ee2ba41b5027b2f3cdf626e0242f8923d988dc67c41f62f7455edff38</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/921/complete.json">sources/921/complete.json</a> · metadata · <code>f2377fa48f2f8281652bacb70d480d9a80bcd9949aa2fe7107a15f299eea8943</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/922/complete.json">sources/922/complete.json</a> · metadata · <code>2d99ffcf255c575764756ab974789bba337191b3e5a3534d352ec8b0affc2651</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/923/complete.json">sources/923/complete.json</a> · metadata · <code>71d5ced3e5f755826458258dd5756a074bfcfb1733387f52e8da968e00280758</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/924/complete.json">sources/924/complete.json</a> · metadata · <code>5b8511cd35835a5a7cc6bd826ee489526e8db169f436c6a04e44ca19665a2c96</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/925/complete.json">sources/925/complete.json</a> · metadata · <code>6d4ab585ee72833757338b14073be800cc94c7d20f59791b852272c142d8fa9d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/926/complete.json">sources/926/complete.json</a> · metadata · <code>f3380b0c95cc8e2f0f549b28ea1b6d0fe6f4276c5e969b4528b368db1a1232b1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/927/complete.json">sources/927/complete.json</a> · metadata · <code>64f22dc67f858c0bb9a6c852c4019e59d1ef8806dd22369d6d37e2d28636441e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/928/complete.json">sources/928/complete.json</a> · metadata · <code>571dedabe1ff4e669022d03a6f513e815b1db2ca127b0d10f4828e5fbda1f97e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/929/complete.json">sources/929/complete.json</a> · metadata · <code>a6a3b6bf25ebe82ef9b1088a9c2856c0d68619c01f2e482a20dd9f69536c6625</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/930/complete.json">sources/930/complete.json</a> · metadata · <code>c8eb2793cdef924d9f4bf95091db3007ffff26a6a29915ca1d20a96116ad6d58</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/931/complete.json">sources/931/complete.json</a> · metadata · <code>34488cd82a15d7aebb50e7f68a3480828fb33d09739f7657f8ae6a4d54b85676</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/935/complete.json">sources/935/complete.json</a> · metadata · <code>29e154c87240dec7727abe6c0de10b557a06b4a9bdc4a4ad2d2f43e95628d251</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/936/complete.json">sources/936/complete.json</a> · metadata · <code>9a7fb2e0a1e0ac43ed3d6627a6c55f609bc68b2446f7a21f796c203def0f3d69</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/937/complete.json">sources/937/complete.json</a> · metadata · <code>fdb46f27ca881504309065aa7140d28bb2981c65cd06cdf30fbe2a9768605454</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/944/complete.json">sources/944/complete.json</a> · metadata · <code>149311cb5e11d05e38ca92610d1d014a9be6ba8a81d97dd610b7479b3a3ba22e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/945/complete.json">sources/945/complete.json</a> · metadata · <code>c7afed55f653c112e8cb67fe4ccef999fb2d4b3e34b707edcf342b62c378206f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/946/complete.json">sources/946/complete.json</a> · metadata · <code>3376937afab4a9a1e4f3c088cf7353f077a311016bef06846808e6b62c780e41</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/947/complete.json">sources/947/complete.json</a> · metadata · <code>01702a2f31a35677ae96616add5368a9536f97f142b5ddb30a61d26a2cabaadf</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/948/complete.json">sources/948/complete.json</a> · metadata · <code>ca47cda3fa9f9491a03941c4cc941d3eacb1d303805b74b82b72a1502b2d4671</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/949/complete.json">sources/949/complete.json</a> · metadata · <code>4b2386d400b288bc629afa495da405f5681177ff16501432cec9d3bae2b463ef</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/950/complete.json">sources/950/complete.json</a> · metadata · <code>b6b070a6c633bff5280166e53886beca7c75c7a484f989c5d38b62e4a2f046d3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/951/complete.json">sources/951/complete.json</a> · metadata · <code>f2ee09a79cd1e12873f41331db92495584c1aa1026bf8096cda56ece564e0bc9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/952/complete.json">sources/952/complete.json</a> · metadata · <code>dd08163138b932dc5ed18744ddc4684688f310d533aa58a59144ef1d6c88e575</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/953/complete.json">sources/953/complete.json</a> · metadata · <code>d017a19ed78d2ea00690a7aa13d366608d711ded5f3d7aaacfc0214dd46e9e33</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/954/complete.json">sources/954/complete.json</a> · metadata · <code>8d34564cd7dc01064fa9603502914ffea8572e781d30ef975080dc5248bc2ee8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/955/complete.json">sources/955/complete.json</a> · metadata · <code>06b5bcb880138e429a5327f74f44a855366fd10af22a456e4b794418481e6a89</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/956/complete.json">sources/956/complete.json</a> · metadata · <code>b26617ab796b2cd3733090d1b8326312266e73653368a3dd346449659a175360</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/957/complete.json">sources/957/complete.json</a> · metadata · <code>ce2e7e037947f100c2ef2916917300452b1a8bcbefed3e8c9006c6c8eb126697</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/958/complete.json">sources/958/complete.json</a> · metadata · <code>1a8820e70542f37ecca5408c02330898a410a14bf91ed50af903be84d90b04b4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/959/complete.json">sources/959/complete.json</a> · metadata · <code>7db5432ed8fc9c575861eec05a9d41cc71b3e1e942bc95835826b258ca077ac2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/960/complete.json">sources/960/complete.json</a> · metadata · <code>f0961a9cf0ef216f1b74e0c82be9a66eecc69f29c220c6d1fb6e604aa35da97d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/961/complete.json">sources/961/complete.json</a> · metadata · <code>480c097234d9ac1572632aa03280ab2345ab3cb82c2646b344889af02a13c9b8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/963/complete.json">sources/963/complete.json</a> · metadata · <code>8986ec1916565e7fa59ad5a8d71bda07e18a75c24ed1ed1e1361be0e32e54d70</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/965/complete.json">sources/965/complete.json</a> · metadata · <code>15585ae2550ed23701812bee82e9a5a2b8b874b2f74db4c75137f48768b5fe1f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/967/complete.json">sources/967/complete.json</a> · metadata · <code>5027b1d392889adb5552493c189b2349fe04b413b3b49ad473a50ecde821640c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/974/complete.json">sources/974/complete.json</a> · metadata · <code>b859a5e286e38a819ad7e3746f791b347795febf9b99821c44c41585ae803e64</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/975/complete.json">sources/975/complete.json</a> · metadata · <code>82750801cebc5ac115f1dc9000d0e9f9831025163d804e658b55f0d6bef142f7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/976/complete.json">sources/976/complete.json</a> · metadata · <code>619e8a68f50fe5b8bc0fe792b17b09e0f0a9b4107f32b3dd79656301407aadd6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/977/complete.json">sources/977/complete.json</a> · metadata · <code>e52cd55d443339c96e17392a23c25d8614330fce4d537c9933744c1ca178ee03</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/978/complete.json">sources/978/complete.json</a> · metadata · <code>37ae646ad5067bc629e9be2394a21f810221b27ff99a21cb010ca7271aba177a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/979/complete.json">sources/979/complete.json</a> · metadata · <code>4755c12d0768ec6f3d83e471c4ae0fe47e703f6c4183e07c3f5860790b201063</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/980/complete.json">sources/980/complete.json</a> · metadata · <code>de80b80099ff1a2e61ff4178952d941337c886755b4f9f21ece53aeb31daac37</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/981/complete.json">sources/981/complete.json</a> · metadata · <code>1a5759cd73d3663e41695e8ff6964d06347220a8776ced96208a0a7b80b1b921</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/982/complete.json">sources/982/complete.json</a> · metadata · <code>eef4018f7a8ba89b99c18c6b19dda291ca4842e0aff69b7b0c8d137a63c6232d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/983/complete.json">sources/983/complete.json</a> · metadata · <code>42166cfe4ddadf2e0fae3b2a92e9cb5337b4e37d33da761941d3b4e6e15a2066</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/984/complete.json">sources/984/complete.json</a> · metadata · <code>29596b5038c4f6a9521c05c1de4763cb0f5e68acebba2658d6b82dd32057fe1b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/985/complete.json">sources/985/complete.json</a> · metadata · <code>9fcbd1ad6fa560ccf6017e0360d2f6ab92008fdb5c9cd2e5edff899f31c0bf3e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/986/complete.json">sources/986/complete.json</a> · metadata · <code>c1f4ab8ec8f8468ab242e9b632cdac85f1f6df49cb4dbd919ba3d5df7f9a43b7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/987/complete.json">sources/987/complete.json</a> · metadata · <code>3c8207589943604cd2fbc677d51a2bd0e8f8a9115d7fc074bebcb51934cf1fd1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/988/complete.json">sources/988/complete.json</a> · metadata · <code>31f81e48ce098479f81f791e9739a52f6b2dd5c7bb8b945788ef7811d2d9189d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/989/complete.json">sources/989/complete.json</a> · metadata · <code>f67f4376f750c17d5b27ca4634bb862a7297b167e2f9ee4dfe729cf4b26d0cb1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/990/complete.json">sources/990/complete.json</a> · metadata · <code>b38a48fc9789065e70d187d653096c0ada2dfe0b536297d424ecc22737d12fd0</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/991/complete.json">sources/991/complete.json</a> · metadata · <code>189a2f1e1814dcb315c181cc6e41093480b519a4efc498bc95b35d35ca93c539</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/992/complete.json">sources/992/complete.json</a> · metadata · <code>0ecd23368bae3842cf51763998b0b43443831067c1110b54214536bd096a96c3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/994/complete.json">sources/994/complete.json</a> · metadata · <code>0bd1d3f8c95b627833d2d06671f13248ef26f4fd896668fc1862ad5db9e9f8fe</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925/structural/sources/997/complete.json">sources/997/complete.json</a> · metadata · <code>c1fab826cd6cbdc0d2acb2a87b7285b97c40a6e4017b0ce1ded2237497c8931c</code></li></ul></details><p class="muted">Observed 2026-09-25T13:22:08.459741+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

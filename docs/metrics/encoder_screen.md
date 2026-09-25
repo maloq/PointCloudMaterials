@@ -1,5 +1,14 @@
 # Native snapshot encoder screen, September 23, 2026
 
+New summary exports display **3 ps onset AP first**, with 6 ps and 12 ps alongside
+it, plus Brier at all three horizons. These values already exist in each saved
+five-bin hazard evaluation. The primary reporting change does not reselect
+historical checkpoints or readouts: frozen hazards retain tuning-NLL selection.
+The existing paired `brier_delta` remains explicitly a 12 ps difference; it is
+not silently reinterpreted as3 ps. The saved-prediction horizon review provides
+separate AP3 bootstrap intervals and event counts. Historical exported metric
+definitions and tables are preserved.
+
 This extends the **unchanged calculations** of `geoframe_evolution` to pinned native
 snapshot exports. `tables/<model>.csv` is flattened numerical output; full arrays,
 confusions and eligibility counts remain in each `technical/evaluations/<model>/metrics.json`.

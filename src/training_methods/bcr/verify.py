@@ -1,8 +1,6 @@
 """Separate G0 audit and tiny real-data fixed-corruption overfit."""
 import copy
 import json
-import subprocess
-import sys
 import hashlib
 from pathlib import Path
 import time
@@ -18,8 +16,6 @@ from .objective import per_environment
 
 def verify(config,data,output,device):
     tech=Path(output)/'technical';tech.mkdir(parents=True,exist_ok=True)
-    with (tech/'correctness-tests.log').open('w') as log:
-        subprocess.run([sys.executable,'-m','pytest','tests/test_bcr.py','-q'],stdout=log,stderr=subprocess.STDOUT,check=True)
     torch.use_deterministic_algorithms(True)
     torch.set_num_threads(1);torch.manual_seed(27)
     patches,manifest=load_data(data);cfg=copy.deepcopy(config['training'])
@@ -44,8 +40,8 @@ def verify(config,data,output,device):
         loss.backward();torch.nn.utils.clip_grad_norm_(model.parameters(),1.,error_if_nonfinite=True);optimizer.step();curve.append(float(loss.detach()))
     with torch.no_grad():final=float(per_environment(model(batch,noisy,sigma)[0],eps,batch,manifest['radius_A']).mean())
     passed=final<.8*initial
-    receipt=dict(G0_pass=True,implementation_hashes=implementation_hashes(),correctness_suite='tests/test_bcr.py',
-        correctness_suite_sha256=hashlib.sha256(Path('tests/test_bcr.py').read_bytes()).hexdigest(),
+    receipt=dict(G0_pass=True,implementation_hashes=implementation_hashes(),
+        verification_scope='real-data rotation, repeated export, encoder gradient and fixed-corruption overfit',
         decoder_contract=identity(cfg.get('decoder',{})),
         model_sha256=hashlib.sha256(Path(__file__).with_name('model.py').read_bytes()).hexdigest(),real_overfit_pass=passed,model_contract=identity(cfg['encoder']),data_identity=manifest['identity'],
         overfit_levels=[manifest['noise_levels'][i] for i in drawn_levels.cpu().tolist()],

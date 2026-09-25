@@ -19,7 +19,10 @@ def summarize(name,metrics,representation,reference,source,task=None):
         liquid_order_r2=None,liquid_topology_r2=None,boundary_ap=None,fault_ap=None,
         nonbulk_ami=None,nonbulk_spatial_auc=None,liquid_rank=None,
         future_residual_mse=p['future_residual_9ps']['groups']['all']['mse'],
-        onset_ap12=h12['average_precision'],onset_brier12=h12['brier'],hazard_selected_step=h['best_step'],
+        primary_horizon_ps=3,onset_ap3=h['horizons']['3.0']['average_precision'],
+        onset_ap6=h['horizons']['6.0']['average_precision'],onset_ap12=h12['average_precision'],
+        onset_brier3=h['horizons']['3.0']['brier'],onset_brier6=h['horizons']['6.0']['brier'],
+        onset_brier12=h12['brier'],hazard_selected_step=h['best_step'],
         brier_delta=None,brier_ci_low=None,brier_ci_high=None,future_mse_delta=None,future_ci_low=None,future_ci_high=None,
         source=str(source))
     paths=dict(liquid_order_r2=('liquid_order','mean_r2'),liquid_topology_r2=('liquid_topology','mean_r2'),
@@ -82,13 +85,13 @@ def report(config):
         ax.invert_yaxis();ax.grid(alpha=.2);ax.axvline(0,color='gray',lw=.6)
     fig.suptitle('Fixed Al centers and future targets; native inputs/precision differ\nStatic means across three frames; Brier intervals resample 15 reused development roots, not training seeds')
     fig.savefig(root/'plots/comparison.png',dpi=150);plt.close(fig)
-    columns=['model','representation','liquid_order_r2','liquid_topology_r2','fault_ap','boundary_ap','nonbulk_ami','nonbulk_spatial_auc','onset_ap12','onset_brier12','hazard_selected_step','brier_delta','future_mse_delta']
+    columns=['model','representation','onset_ap3','onset_ap6','onset_ap12','onset_brier3','liquid_order_r2','liquid_topology_r2','fault_ap','boundary_ap','nonbulk_ami','nonbulk_spatial_auc','onset_brier12','hazard_selected_step','brier_delta','future_mse_delta']
     def cell(v):return 'undefined' if v is None else f'{v:.5g}' if isinstance(v,float) else html.escape(str(v))
     table='<table><thead><tr>'+''.join('<th>'+k+'</th>' for k in columns)+'</tr></thead><tbody>'+''.join('<tr>'+''.join('<td>'+cell(r[k])+'</td>' for k in columns)+'</tr>' for r in rows)+'</tbody></table>'
     tasks_html='<ul>'+''.join('<li>'+html.escape(t['name'])+': '+t['status']+'</li>' for t in tasks)+'</ul>'
     page='''<!doctype html><meta charset="utf-8"><title>Encoder physical screen</title><style>body{font:16px system-ui;margin:30px;color:#153340}table{border-collapse:collapse;font-size:12px}td,th{padding:7px;border-bottom:1px solid #ddd}th{position:sticky;top:0;background:#eef5f7}img{max-width:100%}input{padding:10px;width:50%}</style><h1>Encoder physical screen</h1>'''
     page+='<p>'+html.escape(str(counts))+' new evaluations; 37 prior GeoFrame checkpoints reused.</p>'
-    page+='<p>Native input supports and numerical precision differ. All snapshot probes share physical labels/centers. Static Al is a transductive screen, and the 15 future development roots have been repeatedly inspected. Positive AP alone does not establish calibrated prediction. Step 0 is the constant-risk control. Blank/undefined classes are not zeros.</p><p><a href="tables/summary.csv">Summary CSV</a> · <a href="tables/METRICS.md">Metric definitions</a> · <a href="../../../docs/encoder_screen.md">Protocol and execution</a></p>'
+    page+='<p>Primary onset metric is AP at 3 ps; 6 ps and 12 ps are secondary. Historical checkpoint and NLL readout selections are unchanged. Native input supports and numerical precision differ. All snapshot probes share physical labels/centers. Static Al is a transductive screen, and the 15 future development roots have been repeatedly inspected. Positive AP alone does not establish calibrated prediction. Step 0 is the constant-risk control. Blank/undefined classes are not zeros.</p><p><a href="tables/summary.csv">Summary CSV</a> · <a href="tables/METRICS.md">Metric definitions</a> · <a href="../../../docs/encoder_screen.md">Protocol and execution</a></p>'
     galleries=[]
     for t in config['tasks']:
         path=root/'technical/evaluations'/t['name']/'figures.json'
