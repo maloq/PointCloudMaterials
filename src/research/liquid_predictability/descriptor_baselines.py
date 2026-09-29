@@ -1,6 +1,5 @@
 """Mean, affine ridge and linear-logit controls for frozen descriptor fits."""
 import argparse
-import csv
 import json
 import math
 import os
@@ -17,7 +16,7 @@ from scipy.special import softmax
 from threadpoolctl import threadpool_limits
 from src.data.fixed_cohort.protocol import sha,digest,write_json
 from src.project_runtime.paths import resolve_path
-from src.experiment_runner.metric_docs import snapshot_metric_docs,check_metric_docs
+from src.experiment_runner.metric_docs import write_metric_rows,check_metric_docs
 from .data import config
 from .descriptor_data import load
 from .descriptor_fit import quantities,targets,metrics
@@ -33,9 +32,7 @@ def protocol(c):
 
 
 def table(root,name,rows):
-    snapshot_metric_docs(root,'liquid_descriptor_baselines')
-    with (root/'tables'/f'{name}.csv').open('w',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+    return write_metric_rows(rows, root, family='liquid_descriptor_baselines', name=name)
 
 
 def point_scores(pred,target,w):

@@ -1,8 +1,24 @@
 """Readable run outputs and explicit access to the two repository analysis layouts."""
 
 import json
+import hashlib
 import os
 from pathlib import Path
+
+
+def file_hash(path):
+    """Stream an artifact's SHA-256 without loading it into host memory."""
+    value = hashlib.sha256()
+    with Path(path).open('rb') as stream:
+        for block in iter(lambda: stream.read(8 << 20), b''):
+            value.update(block)
+    return value.hexdigest()
+
+
+def implementation_hashes(*paths):
+    """Bind explicit repository dependencies without importing their producers."""
+    repository = Path(__file__).resolve().parents[2]
+    return {path: file_hash(repository / path) for path in paths}
 
 
 def result_folders(root):

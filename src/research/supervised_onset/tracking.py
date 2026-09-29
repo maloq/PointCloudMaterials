@@ -2,22 +2,14 @@
 from contextlib import contextmanager
 import hashlib
 import json
-import os
 import time
 from types import SimpleNamespace
 import numpy as np
 
 from .common import write_json
-
-
-DEFAULTS = dict(entity='teshbek', project='PointCloudMaterials', mode='online')
-
-
-def require_online(settings):
-    if settings['mode'] != 'online' or os.environ.get('WANDB_MODE', 'online') != 'online':
-        raise ValueError('W&B must remain online for new runs; offline/disabled mode is not authorized')
-    if os.environ.get('WANDB_DISABLED', '').lower() in ('true', '1', 'yes'):
-        raise ValueError('WANDB_DISABLED conflicts with mandatory online experiment tracking')
+from src.experiment_runner.wandb_tracking import (
+    DEFAULTS, online_training, require_online, update_recorded_summary,
+)
 
 
 @contextmanager
@@ -26,7 +18,6 @@ def tracked_run(study, name, *, job_type='encoder'):
         raise ValueError('Diagnostic studies must use local_evaluation; they cannot create W&B runs')
     if job_type not in ('encoder', 'predictor', 'control'):
         raise ValueError(f'W&B is restricted to scientific training runs, not {job_type!r}; keep diagnostics local')
-    import wandb
     settings = study.config['wandb']
     require_online(settings)
     folder = study.technical/'wandb'/name
@@ -34,31 +25,19 @@ def tracked_run(study, name, *, job_type='encoder'):
     run_id = hashlib.sha256(f'{study.identity}:{name}'.encode()).hexdigest()[:20]
     display=settings.get('display_name',f'{study.root.parent.name}/{study.root.name}/{name}')
     if job_type=='control' and 'display_name' in settings:display=f'{display} | {name} control'
-    run = wandb.init(entity=settings['entity'], project=settings['project'], mode='online',
-        id=run_id, resume='allow', name=display,
+    with online_training(settings, run_id=run_id, name=display,
         group=settings.get('group',study.root.parent.name), job_type=job_type,
         config=dict(study.config, experiment_identity=study.identity, tracked_component=name),
         tags=[study.config['branch'], 'no-temperature-or-time-inputs', job_type],
-        dir=str(folder), save_code=False, force=True, settings=wandb.Settings(init_timeout=60))
-    if run is None or run.settings.mode != 'online':
-        if run is not None:
-            run.finish(exit_code=1)
-        raise RuntimeError('W&B did not establish an online run; refusing untracked training')
-    try:
+        folder=folder, receipt_path=folder/'run.json',
+        receipt_fields=dict(identity=study.identity, component=name)) as run:
         run.define_metric('optimizer_update', hidden=True)
         for prefix in ('train', 'validation'):
             run.define_metric(f'{prefix}/*', step_metric='optimizer_update', summary='last')
         run.summary['prediction_external_inputs'] = []
         run.summary['training_log_semantics'] = ('Label-free encoder objective; no onset labels or event selection'
             if study.config['branch']=='self_supervised' else 'Predictive likelihood training; AP is an evaluation diagnostic only')
-        write_json(folder/'run.json', dict(id=run.id, url=run.url, mode=run.settings.mode,
-            entity=run.entity, project=run.project, identity=study.identity, component=name))
         yield run
-    except BaseException:
-        run.finish(exit_code=1)
-        raise
-    else:
-        run.finish(exit_code=0)
 
 
 @contextmanager
@@ -91,25 +70,11 @@ def update_training_summary(study, name, fields, *, evaluation):
     settings = study.config['wandb']
     require_online(settings)
     folder = study.technical/'wandb'/name
-    receipt = json.loads((folder/'run.json').read_text())
     expected_id = hashlib.sha256(f'{study.identity}:{name}'.encode()).hexdigest()[:20]
     expected = dict(id=expected_id, identity=study.identity, component=name,
         entity=settings['entity'], project=settings['project'], mode='online')
-    for key,value in expected.items():
-        if receipt[key] != value:
-            raise ValueError(f'Associated training receipt mismatch: {folder}/run.json: {key}')
-    target = folder/'evaluations'/f'{evaluation}.json'
-    record = dict(state='pending', run_id=receipt['id'], url=receipt['url'],
-        identity=study.identity, evaluation=evaluation, fields=fields, created_online_runs=0)
-    write_json(target, record)
-    try:
-        import wandb
-        run = wandb.Api(timeout=60).run(f"{receipt['entity']}/{receipt['project']}/{receipt['id']}")
-        run.summary.update(fields)
-    except Exception as error:
-        write_json(target, dict(record, state='failed', error=repr(error)))
-        raise
-    write_json(target, dict(record, state='complete', updated_at=time.time()))
+    update_recorded_summary(folder/'run.json', fields,
+                            evaluation=evaluation, expected=expected)
 
 
 def training_record(run, record, optimizer):

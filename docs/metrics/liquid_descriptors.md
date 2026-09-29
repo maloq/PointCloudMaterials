@@ -83,3 +83,12 @@ on explicitly sealed derived cohorts. Their prediction-context records name the
 input domain and original versus synthetic versus relaxed-label target. Pairing,
 synthetic generators and cold membership rules are defined in liquid_controls.md;
 historical exported definitions remain frozen.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

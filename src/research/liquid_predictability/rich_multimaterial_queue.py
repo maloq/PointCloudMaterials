@@ -3,8 +3,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -12,6 +10,7 @@ import traceback
 
 from src.data.fixed_cohort.protocol import digest,sha,write_json
 from src.experiment_runner.metric_docs import check_metric_docs
+from src.experiment_runner.execution import ExecutionBundle, SlurmQueue
 from src.project_runtime.paths import resolve_path,REPO
 from .data import config
 
@@ -23,27 +22,23 @@ def submit(path):
     check_metric_docs(family=c['metric_family'])
     preflight=config(tech/'preflight.json')
     if preflight['config_sha256']!=sha(Path(path)) or not preflight['finite']:raise ValueError('Run the matching local descriptor check first')
-    code=tech/'code';repo=Path(__file__).resolve().parents[3]
-    for name in ('src','docs/metrics','configs/liquid_predictability'):
-        shutil.copytree(repo/name,code/name,ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.nbc','*.nbi'))
-    write_json(code/'config.json',c)
+    repo = Path(__file__).resolve().parents[3]
+    bundle = ExecutionBundle.freeze(
+        repo, tech / 'code', c,
+        directories=('src', 'docs/metrics', 'configs/liquid_predictability'),
+    )
+    code = bundle.root
     env=dict(PCM_PROJECT_ROOT=str(REPO),OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',
         NUMBA_NUM_THREADS='1',TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1',PYTORCH_CUDA_ALLOC_CONF='expandable_segments:True')
-    base=[sys.executable,'-u','-m','src.research.liquid_predictability.rich_multimaterial_queue']
     receipt=dict(submitted_at=time.time(),code=str(code),config_sha256=sha(Path(path)),
         dataset_plan_sha256=sha(resolve_path(c['cache'])/'plan.json'),jobs={})
-    def job(stage,options,dependency=None,partition='CPU'):
-        script=tech/f'{stage}.sbatch';cmd=base+[stage,'--config',str(code/'config.json')]
-        script.write_text('\n'.join(['#!/bin/bash',f'#SBATCH --job-name=MM-RD-{stage}',
-            f'#SBATCH --partition={partition}','#SBATCH --nodes=1','#SBATCH --ntasks=1',
-            f'#SBATCH --output={tech}/{stage}-%A_%a.log',*['#SBATCH '+o for o in options],
-            'set -euo pipefail','ulimit -n 4096','cd '+shlex.quote(str(code)),
-            'exec env '+shlex.join([f'{k}={v}' for k,v in env.items()])+' '+shlex.join(cmd),'']))
-        args=['sbatch','--parsable']+(['--dependency=afterok:'+dependency] if dependency else [])+[str(script)]
-        jid=subprocess.check_output(args,text=True).strip().split(';')[0]
-        receipt['jobs'][stage]=jid;write_json(launch,receipt);return jid
+    queue = SlurmQueue(tech, bundle, 'src.research.liquid_predictability.rich_multimaterial_queue',
+                       env, launch, receipt, 'MM-RD')
+    def job(stage, options, dependency=None, partition='CPU'):
+        return queue.submit(stage, options,
+                            'afterok:' + dependency if dependency else None, partition)
     p=c['preparation'];r=c['runtime']
-    try:
+    with queue.submission():
         sealed=None
         if 'prepared_identity' in c:
             verify_prepared(c)
@@ -63,8 +58,6 @@ def submit(path):
         sized=job('subset',['--cpus-per-task=2','--mem=16G','--time=02:00:00'],profiled or sealed)
         job('train-worker',[f'--gpus={r["gpus"]}',f'--cpus-per-task={r["cpu_threads"]}',
             f'--mem={r["memory_GB"]}G',f'--time={r["walltime"]}'],sized,r['partition'])
-    except BaseException:
-        receipt['submission_error']=traceback.format_exc();write_json(launch,receipt);raise
     return receipt
 
 

@@ -5,14 +5,13 @@ import numpy as np
 import torch
 from src.data.fixed_cohort.protocol import sha,write_json
 from src.project_runtime.paths import resolve_path
-from src.experiment_runner.metric_docs import snapshot_metric_docs
-from src.research.spatial_approach.evaluate import csv_rows
+from src.experiment_runner.metric_docs import write_metric_rows
 from src.research.distance_encoder.model import loss_terms
 from src.research.spatial_distance.model import cdf,capped_mean
 from .data import population,masks,features,ROLES
 
 def tables(root,name,rows):
-    snapshot_metric_docs(root,'liquid_predictability');csv_rows(root/'tables'/f'{name}.csv',rows)
+    return write_metric_rows(rows, root, family='liquid_predictability', name=name)
 
 def score_values(values,distance,w):
     w=w/w.sum();result=dict(distance_nll=float(w@values['nll']),distance_rmse_A=float(np.sqrt(w@(values['mean_A']-np.minimum(distance,64))**2)))

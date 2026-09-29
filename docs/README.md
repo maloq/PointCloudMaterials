@@ -1,6 +1,7 @@
 # Project documentation
 
 - [Code cleanup review and prioritized implementation backlog, 2026-09-29](code_cleanup_review_20260929.md)
+- [Implemented shared execution and artifact methods](code_cleanup_implementation.md)
 
 - [Multimaterial MACE256 local descriptors: normalized residual head, 60 epochs](rich_multimaterial_encoder.md)
 

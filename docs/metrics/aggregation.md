@@ -74,3 +74,12 @@ The source manifest, checkpoint hash, target scaling and exact counts are retain
 technical files. Historical values exported again are not recomputed by table export.
 
 Topology comparison CSVs include both bounds of each source-bootstrap interval; the complete comparison JSON is under `technical/metrics.json`.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

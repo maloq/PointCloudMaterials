@@ -15,7 +15,6 @@ from pytorch_lightning.strategies import DDPStrategy
 from datetime import datetime
 from omegaconf import DictConfig, ListConfig, open_dict
 from pytorch_lightning.utilities.rank_zero import rank_zero_only
-import wandb
 
 
 sys.path.append(os.getcwd())
@@ -433,23 +432,30 @@ def get_rundir_name() -> str:
 
 @rank_zero_only
 def init_wandb(cfg: DictConfig, run_dir):
-    os.environ['WANDB_MODE'] = cfg.wandb_mode
-    os.environ['WANDB_DIR'] = 'output/wandb'
-    os.environ['WANDB_CONFIG_DIR'] = 'output/wandb'
-    os.environ['WANDB_CACHE_DIR'] = 'output/wandb'
-    wandb_run = wandb.init(project='PointCloudMaterials', name=cfg.experiment_name)
-    if cfg.wandb_mode == 'online' and wandb_run.offline:
-        raise RuntimeError('Online W&B was requested, but the initialized run is offline.')
+    import hashlib
+    import json
     from pathlib import Path
-    from src.experiment_runner.registry import write_json
-    write_json(Path(run_dir)/'wandb_run.json', dict(id=wandb_run.id, url=wandb_run.url,
-        entity=wandb_run.entity, project=wandb_run.project, mode=cfg.wandb_mode))
+    from omegaconf import OmegaConf
+    from src.experiment_runner.wandb_tracking import DEFAULTS, start_online_run
+    settings = DEFAULTS | dict(mode=cfg.wandb_mode)
+    folder = Path(run_dir)
+    receipt_path = folder / 'wandb_run.json'
+    if receipt_path.exists():
+        receipt = json.loads(receipt_path.read_text())
+        for key in ('entity', 'project', 'mode'):
+            if receipt[key] != settings[key]:
+                raise ValueError(f'W&B resume receipt differs: {receipt_path}: {key}')
+        run_id = receipt['id']
+    else:
+        run_id = hashlib.sha256(str(folder.resolve()).encode()).hexdigest()[:20]
+    wandb_run = start_online_run(
+        settings, run_id=run_id, name=cfg.experiment_name,
+        config=OmegaConf.to_container(cfg, resolve=True), folder=folder,
+        receipt_path=receipt_path, job_type='encoder',
+    )
     wandb_run.define_metric("trainer/global_step", hidden=True)
     wandb_run.define_metric("*", step_metric="trainer/global_step", step_sync=True)
-    return WandbLogger(save_dir=os.path.join(os.getcwd(), run_dir),
-                       project=cfg.project_name,
-                       name=cfg.experiment_name,
-                       log_model=False)
+    return WandbLogger(experiment=wandb_run, save_dir=str(folder), log_model=False)
 
 
 def _validate_train_batches_available(
@@ -820,6 +826,20 @@ def train_model(cfg: DictConfig, model_class, run_dir=None, checkpoint_callbacks
                 break
 
     # Run test after training completes
+    if trainer.is_global_zero:
+        from pathlib import Path
+        from src.experiment_runner.artifacts import write_json
+        for callback in checkpoint_callbacks:
+            if callback.monitor != checkpoint_monitor or not callback.best_model_path:
+                continue
+            selected = Path(callback.best_model_path).resolve()
+            score = callback.best_model_score
+            write_json(Path(run_dir) / 'technical/selected-checkpoint.json', dict(
+                path=os.path.relpath(selected, Path(run_dir).resolve()),
+                monitor=callback.monitor, mode=callback.mode,
+                score=float(score) if score is not None else None,
+            ))
+            break
     if run_test:
         logger.print("Starting test phase...")
         run_test_single_device = bool(getattr(cfg, "test_single_device", True))

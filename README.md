@@ -1,4 +1,4 @@
-# Pytorch Implementation of PointNet
+# PointCloudMaterials
 
 [**Dataset registry**](DATASETS.md) · [Experiment & simulation dashboard](output/registry/index.html) ·
 [Ideas backlog](experiments/ideas.json) · [Run organization guide](docs/output_registry.md)
@@ -32,17 +32,9 @@ tracked-atom temporal pairs.
 
 ## Installation
 
-### Create a new uv environment
-
-```bash
-uv pip install torch torchvision \
-  --index-url https://download.pytorch.org/whl/cu130
-```
-### Install all other requirements
-
-```bash
-pip install -r requirements.txt
-```
+Use the maintained conda environment `pointnet-torch214`. Fresh-machine setup,
+pinned dependencies and CPU/GPU profiles are documented in
+[portable setup](docs/portability.md).
 
 ---
 
@@ -51,7 +43,7 @@ pip install -r requirements.txt
 Use the existing conda environment:
 
 ```bash
-conda run -n pointnet python -m src.analysis.pipeline configs/analysis/static.yaml --checkpoint CHECKPOINT --output-dir output/static-al/review
+conda run -n pointnet-torch214 python -m src.analysis.pipeline configs/analysis/static.yaml --checkpoint CHECKPOINT --output-dir output/static-al/review
 ```
 
 New results have a readable `README.md`/gallery, `plots/`, metric CSVs plus definitions
@@ -60,9 +52,9 @@ resume semantics. See [the folder and retention conventions](docs/research_layou
 and [visualization options](docs/analysis_visualization.md).
 
 ```bash
-conda run -n pointnet python scripts/experiment_registry.py build
-conda run -n pointnet python scripts/experiment_registry.py storage
-conda run -n pointnet python scripts/experiment_registry.py clean --root output/QUESTION/RUN
+conda run -n pointnet-torch214 python scripts/experiment_registry.py build
+conda run -n pointnet-torch214 python scripts/experiment_registry.py storage
+conda run -n pointnet-torch214 python scripts/experiment_registry.py clean --root output/QUESTION/RUN
 ```
 
 The cleanup command previews reclaimable inference caches. Applying it requires

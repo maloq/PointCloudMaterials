@@ -6,6 +6,9 @@ protocols separate. Address checkpoint/result correctness before splitting large
 files or applying formatting.
 
 This is a review and implementation backlog, not an applied source refactor.
+The subsequent [implementation record](code_cleanup_implementation.md) describes
+the shared methods now extracted and their artifact comparisons; the remaining
+findings below stay on the backlog.
 It covers the current working checkout, including uncommitted/new source.
 HEAD was `e7ac340f`; the initial status contained 455 modified, 109 deleted and
 394 untracked entries across the repository. Other work continued during the

@@ -1,5 +1,4 @@
 """MACE sensitivity controls and rich-descriptor prediction through one state."""
-import csv
 import json
 import math
 import time
@@ -12,7 +11,10 @@ from torch import nn
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.project_runtime.paths import resolve_path
-from src.experiment_runner.metric_docs import snapshot_metric_docs
+from src.experiment_runner.metric_docs import write_metric_rows
+from src.experiment_runner.array_exports import ArrayExport
+from src.experiment_runner.checkpoints import TrainingState
+from src.experiment_runner.artifacts import implementation_hashes
 from src.research.crystal_vector.model import JointCrystalVector, vcreg
 from src.research.crystal_vector.train import compile_model, deadline
 from src.research.equivariant_context.model import geometry
@@ -25,9 +27,7 @@ FAMILIES = ('geometry','bond_order','cna','tda')
 
 
 def table(root, name, rows, *, family='liquid_controls'):
-    snapshot_metric_docs(root,family)
-    with (root/'tables'/f'{name}.csv').open('w',newline='') as f:
-        writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+    return write_metric_rows(rows, root, family=family, name=name)
 
 
 class ControlMACE(JointCrystalVector):
@@ -125,14 +125,16 @@ def validation(model,data,c):
 @torch.no_grad()
 def export(model,data,c,study):
     root=study.root/'analyses/prediction-v1';tech=root/'technical';tech.mkdir(parents=True,exist_ok=True);model.eval()
-    prediction=np.lib.format.open_memmap(tech/'predictions.building.npy',mode='w+',dtype=np.float32,shape=(len(data.rows['ids']),data.outputs))
-    states=np.lib.format.open_memmap(tech/'states.building.npy',mode='w+',dtype=np.float32,shape=(len(data.rows['ids']),model.latent_dim))
-    for start in range(0,len(prediction),c['batch_size']):
-        b=data.batch(np.arange(start,min(start+c['batch_size'],len(prediction))))
-        with torch.autocast('cuda',dtype=torch.bfloat16):out=model(b)
-        prediction[start:start+len(b['target'])]=out['prediction'].cpu().numpy();states[start:start+len(b['target'])]=out['state'].cpu().numpy()
-    prediction.flush();states.flush();del prediction,states
-    (tech/'predictions.building.npy').replace(tech/'predictions.npy');(tech/'states.building.npy').replace(tech/'states.npy')
+    count = len(data.rows['ids'])
+    specifications = dict(predictions=((count, data.outputs), np.float32),
+                          states=((count, model.latent_dim), np.float32))
+    with ArrayExport(tech, specifications) as arrays:
+        for start in range(0, count, c['batch_size']):
+            b = data.batch(np.arange(start, min(start+c['batch_size'], count)))
+            with torch.autocast('cuda', dtype=torch.bfloat16):
+                out = model(b)
+            arrays.write(start, predictions=out['prediction'].cpu().numpy(),
+                         states=out['state'].cpu().numpy())
     pred=np.load(tech/'predictions.npy',mmap_mode='r');scores=[];features=[];summary={}
     if data.feature_task:
         families=np.array([v['family'] for v in data.columns]);fw=data.loss_weight.cpu().numpy()
@@ -194,7 +196,10 @@ def run(c,name,preflight=False):
         if not torch.isfinite(loss):raise FloatingPointError('Nonfinite control preflight')
         return dict(arm=name,finite=True,loss=float(loss.detach()),gradient_norm=float(norm),outputs=data.outputs,
                     batch=c['batch_size'],parameters=sum(p.numel() for p in model.parameters()))
-    binding=dict(config=c,arm=arm,dataset=data.manifest['identity'],code={p.name:sha(p) for p in Path(__file__).parent.glob('control_*.py')})
+    binding=dict(config=c,arm=arm,dataset=data.manifest['identity'],code={p.name:sha(p) for p in Path(__file__).parent.glob('control_*.py')},
+        execution=implementation_hashes('src/experiment_runner/artifacts.py',
+            'src/experiment_runner/array_exports.py','src/experiment_runner/checkpoints.py',
+            'src/experiment_runner/metric_docs.py','src/experiment_runner/wandb_tracking.py'))
     identity=digest(binding)
     if (tech/'identity.json').exists() and config(tech/'identity.json')!=binding:raise ValueError('Control fit identity changed')
     write_json(tech/'identity.json',binding)
@@ -214,18 +219,22 @@ def run(c,name,preflight=False):
     groups=[dict(params=[p for p in model.parameters() if id(p) in enc_ids],lr=c['training']['encoder_lr']),
             dict(params=[p for p in model.parameters() if id(p) not in enc_ids],lr=c['training']['head_lr'])]
     opt=torch.optim.AdamW(groups,weight_decay=c['training']['weight_decay'],fused=True)
-    epoch=step=update=0;best=float('inf')
+    epoch = step = update = 0
+    best = float('inf')
     if (tech/'last.pt').exists():
-        saved=torch.load(tech/'last.pt',map_location=device,weights_only=False)
-        if saved['identity']!=identity:raise ValueError('Control checkpoint identity changed')
-        model.load_state_dict(saved['model']);opt.load_state_dict(saved['optimizer']);epoch=saved['epoch'];step=saved['step'];update=saved['update'];best=saved['best'];rng.bit_generator.state=saved['rng']
-        torch.set_rng_state(saved['torch_rng'].cpu());torch.cuda.set_rng_state(saved['cuda_rng'].cpu())
+        state = TrainingState.read(tech/'last.pt', identity=identity, device=device)
+        state.restore(model, opt, rng, restore_torch_rng=True)
+        saved = state.payload
+        epoch, step, update, best = (saved[k] for k in ('epoch', 'step', 'update', 'best'))
     compile_model(model,data,c)
     def save(path):
-        tmp=path.with_suffix('.building.pt');torch.save(dict(identity=identity,model=model.state_dict(),encoder=model.encoder.state_dict(),
-            encoder_config=c['encoder_config'],config=c,arm=arm,optimizer=opt.state_dict(),epoch=epoch,step=step,update=update,best=best,
-            rng=rng.bit_generator.state,torch_rng=torch.get_rng_state(),cuda_rng=torch.cuda.get_rng_state()),tmp);tmp.replace(path)
-    total=c['training']['blocks']*c['training']['updates_per_block'];stop=deadline(c)
+        TrainingState.capture(
+            model, opt, rng, identity=identity, capture_torch_rng=True,
+            encoder=model.encoder.state_dict(), encoder_config=c['encoder_config'],
+            config=c, arm=arm, epoch=epoch, step=step, update=update, best=best,
+        ).save(path)
+    total = c['training']['blocks'] * c['training']['updates_per_block']
+    stop = deadline(c)
     if (tech/'complete.json').exists():
         model.load_state_dict(torch.load(tech/'best.pt',map_location=device,weights_only=False)['model']);summary=export(model,data,c,study)
         update_training_summary(study,'fit',summary,evaluation='rich-feature-prediction' if data.feature_task else 'synthetic-sensitivity')
@@ -236,27 +245,44 @@ def run(c,name,preflight=False):
             'training/batch_size':c['batch_size'],'training/objective':'family-balanced fixed-variance Gaussian NLL' if data.feature_task else 'categorical NLL',
             'checkpoint/selector':'validation target likelihood; VCReg excluded'})
         while epoch<c['training']['blocks']:
-            model.train();started=time.time()
+            model.train()
+            started = time.time()
             while step<c['training']['updates_per_block']:
                 if time.time()>stop:
-                    save(tech/'last.pt');write_json(tech/'state.json',dict(state='checkpointed',update=update));return
-                b=data.batch(rng.choice(data.split['train'],c['batch_size'],p=data.weights['train']));opt.zero_grad(set_to_none=True)
+                    save(tech/'last.pt')
+                    write_json(tech/'state.json', dict(state='checkpointed', update=update))
+                    return
+                ids = rng.choice(data.split['train'], c['batch_size'], p=data.weights['train'])
+                b = data.batch(ids)
+                opt.zero_grad(set_to_none=True)
                 factor=min((update+1)/128,1)*(.05+.95*.5*(1+math.cos(math.pi*update/total)))
                 for group,base in zip(opt.param_groups,(c['training']['encoder_lr'],c['training']['head_lr'])):group['lr']=base*factor
                 with torch.autocast('cuda',dtype=torch.bfloat16):out=model(b)
-                nll=data.loss(out['prediction'],b['target']).mean();reg=vcreg(out,c['regularization'])[0]*min((update+1)/512,1);loss=nll+reg
+                nll = data.loss(out['prediction'], b['target']).mean()
+                reg = vcreg(out, c['regularization'])[0] * min((update+1)/512, 1)
+                loss = nll + reg
                 if not torch.isfinite(loss):raise FloatingPointError(f'Nonfinite control loss {name}/{update}')
-                loss.backward();norm=torch.nn.utils.clip_grad_norm_(model.parameters(),5,error_if_nonfinite=True);opt.step();step+=1;update+=1
+                loss.backward()
+                norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 5, error_if_nonfinite=True)
+                opt.step()
+                step += 1
+                update += 1
                 if update%16==0:
                     record=dict(optimizer_update=update,**{'train/target_nll':float(nll.detach()),'train/vcreg':float(reg.detach()),'train/gradient_norm':float(norm)})
                     log.log(record)
                     with (tech/'training.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')
                     write_json(tech/'state.json',dict(state='training',update=update,total_updates=total))
                 if update%64==0:save(tech/'last.pt')
-            score=validation(model,data,c);epoch+=1;step=0
+            score = validation(model, data, c)
+            epoch += 1
+            step = 0
             if not np.isfinite(score):raise FloatingPointError('Nonfinite validation score')
-            if score<best:best=score;save(tech/'best.pt');log.summary['checkpoint/selected_block']=epoch
-            save(tech/'last.pt');save(tech/f'block-{epoch:02d}.pt')
+            if score < best:
+                best = score
+                save(tech/'best.pt')
+                log.summary['checkpoint/selected_block'] = epoch
+            save(tech/'last.pt')
+            save(tech/f'block-{epoch:02d}.pt')
             record=dict(optimizer_update=update,block=epoch,seconds=time.time()-started,**{'validation/target_nll':score})
             log.log(record)
             with (tech/'validation.jsonl').open('a') as f:f.write(json.dumps(record)+'\n')

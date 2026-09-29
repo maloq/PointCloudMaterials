@@ -68,3 +68,12 @@ A derived cohort may have no training example in a declared distance bin. The
 linear multinomial fit uses observed training classes; absent classes have zero
 predicted mass and the shared 1e-12 scoring floor. Record absent bins explicitly.
 Binary fits are expanded to the declared output space without changing logits.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

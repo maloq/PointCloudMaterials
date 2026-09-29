@@ -11,6 +11,7 @@ from src.data.fixed_cohort.dataset import read_release
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.data.structural_pretraining.native_dataset import NativeStructuralDataset
 from src.project_runtime.paths import resolve_path
+from src.experiment_runner.artifacts import implementation_hashes
 from .data import config
 from .descriptors import patch_descriptors
 
@@ -54,6 +55,8 @@ def plan(c):
         structural_identity=spec['identity'],normalization=spec['normalization'],fixed_identity=fixed['identity'],
         fixed_population_sha256=fm['population_sha256'],
         implementation={p.name:sha(p) for p in (Path(__file__),Path(__file__).with_name('descriptors.py'))},
+        execution=implementation_hashes('src/experiment_runner/preparation.py',
+                                        'src/experiment_runner/artifacts.py'),
         tasks=tasks,columns=columns,counts=dict(counts),sampling='all raw dynamic observed rows; no phase labels')
     binding['identity']=digest(binding)
     root=resolve_path(c['cache']);root.mkdir(parents=True,exist_ok=True)
@@ -64,29 +67,22 @@ def plan(c):
 
 
 def prepare_task(args):
+    from src.experiment_runner.preparation import PreparationShard
     c,identity,columns,task=args;root=resolve_path(c['cache'])/'shards'/task['id'];root.mkdir(parents=True,exist_ok=True)
-    receipt=root/'complete.json'
-    if receipt.exists():
-        saved=config(receipt)
-        if saved['identity']!=identity or saved['task']!=task:raise ValueError(f'Changed prepared task {root}')
-        for name,h in saved['files'].items():
-            if sha(root/name)!=h:raise ValueError(f'Changed prepared file {root/name}')
+    shard = PreparationShard(root, identity)
+    if shard.verified(task=task) is not None:
         return dict(task=task['id'],rows=task['rows'],reused=True)
     path=resolve_path(task['input'])
     if sha(path)!=task['input_sha256']:raise ValueError(f'Changed raw input {path}')
     raw=np.load(path,mmap_mode='r').reshape(-1,80,3)
     index=np.asarray(task['row_indices'],np.int64) if 'row_indices' in task else np.arange(task['rows'])
     if len(index)!=task['rows'] or (len(index) and index.max()>=len(raw)):raise ValueError(f'Invalid input rows: {task["id"]}')
-    progress=root/'progress.json';start=0
-    if progress.exists():
-        saved=config(progress)
-        if saved['identity']!=identity:raise ValueError(f'Changed partial task {root}')
-        start=saved['rows_done']
-    mode='r+' if progress.exists() else 'w+'
+    start = shard.offset('rows_done', total=len(index))
+    mode='r+' if shard.resuming else 'w+'
     positions=np.lib.format.open_memmap(root/'positions.npy',mode=mode,dtype=np.float32,shape=(len(index),80,3))
     features=np.lib.format.open_memmap(root/'features.npy',mode=mode,dtype=np.float32,shape=(len(index),len(columns)))
     names=[v['name'] for v in columns];started=time.monotonic()
-    write_json(progress,dict(identity=identity,rows_done=start))
+    shard.progress(rows_done=start)
     for begin in range(start,len(index),c['preparation']['checkpoint_rows']):
         stop=min(begin+c['preparation']['checkpoint_rows'],len(index))
         x=np.asarray(raw[index[begin:stop]],np.float32)*np.float32(task['factor'])
@@ -96,13 +92,12 @@ def prepare_task(args):
             if current!=names:raise ValueError('Descriptor columns changed')
             features[begin+j]=value
         positions[begin:stop]=x;positions.flush();features.flush()
-        write_json(progress,dict(identity=identity,rows_done=stop))
+        shard.progress(rows_done=stop)
     a=np.asarray(features,dtype=np.float64)
     np.savez(root/'moments.npz',total=a.sum(0),second=(a*a).sum(0))
     del a,features,positions,raw
-    saved=dict(identity=identity,task=task,seconds=time.monotonic()-started,
-        files={n:sha(root/n) for n in ('positions.npy','features.npy','moments.npz')})
-    write_json(receipt,saved)
+    saved = shard.complete(('positions.npy', 'features.npy', 'moments.npz'),
+                           task=task, seconds=time.monotonic()-started)
     return dict(task=task['id'],rows=len(index),seconds=saved['seconds'])
 
 

@@ -49,7 +49,8 @@ class Study:
             'src/models/encoders/mace_backend.py', 'src/research/robust_onset/metrics.py',
             'src/models/encoders/spatial_mace.py', 'src/models/encoders/graph_bank.py',
             'src/research/local_predictability/metrics.py', 'src/research/trajectory_stability/spectrum.py',
-            'src/experiment_runner/prediction_context.py')]
+            'src/experiment_runner/prediction_context.py',
+            'src/experiment_runner/wandb_tracking.py', 'src/experiment_runner/artifacts.py')]
         paths += [base / 'src/models/encoders/spatial_mace.py',
                   base / 'src/models/encoders/graph_bank.py']
         receipt = dict(config=self.config, data=sha(self.cache / 'manifest.json'),

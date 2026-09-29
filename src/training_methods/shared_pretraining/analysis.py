@@ -169,14 +169,27 @@ def run(config,deadline):
             axes[j].plot(LAGS[1:],[results[phase]['all']['metrics']['nonlinear'][str(l)][metric] for l in LAGS[1:]],marker='o',label=phase)
             axes[j].set(xlabel='Forecast horizon (ps)',ylabel=f'Standardized {metric} MSE');axes[j].legend()
     fig.tight_layout();fig.savefig(folder/'frozen_prediction.png',dpi=180);plt.close(fig)
-    import wandb
-    settings=config['wandb'];run=wandb.init(entity=settings['entity'],project=settings['project'],id=settings['id'],name=settings['name'],group=settings['group'],mode='online',resume='allow',dir=str(technical),config=config,save_code=False)
-    if run.offline:raise RuntimeError('Analysis W&B logging must be online')
+    from src.experiment_runner.wandb_tracking import (
+        DEFAULTS, require_online, update_recorded_summary,
+    )
+    settings = DEFAULTS | config['wandb']
+    require_online(settings)
     for phase in results:
+        fields = {}
         for name in ['ridge','nonlinear']:
             for lag,values in results[phase]['all']['metrics'][name].items():
-                for key in ['physical','tda']:run.summary[f'{phase}/{name}/{lag}ps/{key}']=values[key]
-    save_json(technical/'wandb_run.json',dict(id=run.id,url=run.url));run.finish()
+                for key in ['physical','tda']:
+                    fields[f'{phase}/{name}/{lag}ps/{key}'] = values[key]
+        receipt = resolve_path(config['checkpoints'][phase]).parent/'wandb_run.json'
+        update_recorded_summary(
+            receipt, fields, evaluation='frozen-backbone',
+            expected={key: settings[key] for key in ('entity', 'project')},
+        )
+    save_json(technical/'evaluation-tracking.json', dict(
+        mode='local', created_online_runs=0,
+        training_receipts={phase: str(resolve_path(path).parent/'wandb_run.json')
+                           for phase, path in config['checkpoints'].items()},
+    ))
     save_json(technical/'status.json',dict(state='complete',test_sources=len(np.unique(data['source'][data['split']=='test'])),rows=len(data['row_id'])))
     return True
 

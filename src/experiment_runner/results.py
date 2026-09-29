@@ -31,7 +31,13 @@ SUCCESS_JOB_STATUSES = {"completed", "dry_run", "COMPLETED"}
 # ---------------------------------------------------------------------------
 
 def find_best_checkpoint(run_dir: Path) -> Optional[Path]:
-    """Find the best checkpoint in a run directory (Lightning convention)."""
+    """Read the producer's selection; filenames never determine model quality."""
+    receipt = run_dir / 'technical/selected-checkpoint.json'
+    if receipt.exists():
+        selected = run_dir / json.loads(receipt.read_text())['path']
+        if not selected.is_file():
+            raise FileNotFoundError(f'Recorded selected checkpoint is missing: {receipt}: {selected}')
+        return selected
     candidates: List[Path] = []
 
     # Standard Lightning checkpoints/ subfolder.
@@ -46,13 +52,39 @@ def find_best_checkpoint(run_dir: Path) -> Optional[Path]:
     if not candidates:
         return None
 
-    # Prefer files that are NOT "last.ckpt".
-    best = [c for c in candidates if "last" not in c.stem.lower()]
-    if not best:
-        best = candidates
+    # The most recent callback state records selection made during training.
+    # Periodic checkpoints have no monitor and do not select a scientific model.
+    for checkpoint in sorted(candidates, key=lambda p: p.stat().st_mtime, reverse=True):
+        callbacks = _load_checkpoint(checkpoint).get('callbacks', {})
+        selections = set()
+        for state in callbacks.values():
+            if not isinstance(state, dict) or not state.get('monitor'):
+                continue
+            recorded = state.get('best_model_path')
+            if not recorded:
+                continue
+            # A retained run may have moved. Match its recorded filename within
+            # this run only; duplicate filenames are ambiguous, not a fallback.
+            matches = [p for p in candidates if p.name == Path(recorded).name]
+            if len(matches) != 1:
+                raise ValueError(f'{checkpoint}: selected checkpoint {recorded!r} '
+                                 f'has {len(matches)} matches in {run_dir}')
+            selections.add(matches[0])
+        if len(selections) == 1:
+            return selections.pop()
+        if selections:
+            raise ValueError(f'{run_dir}: multiple monitored selections: '
+                             f'{sorted(map(str, selections))}; record the intended selector')
+    raise ValueError(f'{run_dir}: checkpoints have no recorded monitored selection; '
+                     'record the intended checkpoint explicitly')
 
-    # Sort by name (Lightning embeds metric values in filenames) then pick first.
-    return sorted(best, key=lambda p: p.name)[0]
+
+def _load_checkpoint(path):
+    import torch
+    try:
+        return torch.load(path, map_location='cpu', weights_only=False)
+    except Exception as error:
+        raise RuntimeError(f'Cannot read checkpoint evidence: {path}: {error}') from error
 
 
 def _parse_metric_from_log(log_path: Path, metric_name: str) -> Optional[float]:
@@ -72,17 +104,9 @@ def _parse_metric_from_log(log_path: Path, metric_name: str) -> Optional[float]:
 
 def _read_checkpoint_metric(run_dir: Path, metric_name: str) -> Optional[float]:
     """Read a monitored metric value from checkpoint callback state."""
-    try:
-        import torch
-    except ImportError:
-        return None
-
     ckpt_paths = sorted(run_dir.rglob("*.ckpt"), key=lambda p: p.stat().st_mtime, reverse=True)
     for ckpt_path in ckpt_paths:
-        try:
-            ckpt = torch.load(ckpt_path, map_location="cpu", weights_only=False)
-        except Exception:
-            continue
+        ckpt = _load_checkpoint(ckpt_path)
         callbacks = ckpt.get("callbacks")
         if not isinstance(callbacks, dict):
             continue
@@ -92,7 +116,9 @@ def _read_checkpoint_metric(run_dir: Path, metric_name: str) -> Optional[float]:
             monitor = str(state.get("monitor", "")).strip()
             if monitor != metric_name:
                 continue
-            score = state.get("best_model_score") or state.get("current_score")
+            score = state.get("best_model_score")
+            if score is None:
+                score = state.get("current_score")
             if score is None:
                 continue
             if hasattr(score, "item"):

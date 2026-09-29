@@ -85,3 +85,12 @@ All metric CSV exports freeze this document and implementation hashes using
 `snapshot_metric_docs`. Predictions, checkpoints, exact subset IDs, training logs
 and configuration identities remain available. Frozen probes, descriptor and
 distribution controls stay local; scientific encoder fits remain online in W&B.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

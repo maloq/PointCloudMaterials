@@ -54,12 +54,13 @@ def resolve_checkpoints(
                 f"no matching job in dependency stage {stage.depends_on!r}."
             )
 
-        # Try cached checkpoint path first, then search the run dir.
+        # A missing recorded selection is an integrity error, not a new selection.
         ckpt_path: Optional[Path] = None
         if dep_job.checkpoint_path:
             ckpt_path = Path(dep_job.checkpoint_path)
-            if not ckpt_path.exists():
-                ckpt_path = None
+            if not ckpt_path.is_file():
+                raise FileNotFoundError(f'Stage {stage.name!r}, experiment {exp.name!r}: '
+                                        f'recorded checkpoint is missing: {ckpt_path}')
 
         if ckpt_path is None and dep_job.run_dir:
             ckpt_path = find_best_checkpoint(Path(dep_job.run_dir))

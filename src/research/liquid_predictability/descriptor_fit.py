@@ -1,12 +1,11 @@
 """Weighted distance-distribution boosting/MLP controls; validation-only selection."""
-import csv
 import json
 import time
 from pathlib import Path
 import numpy as np
 from src.data.fixed_cohort.protocol import sha,digest,write_json
 from src.project_runtime.paths import resolve_path
-from src.experiment_runner.metric_docs import snapshot_metric_docs
+from src.experiment_runner.metric_docs import write_metric_rows
 from .data import config
 from .descriptor_data import load,parent
 
@@ -37,9 +36,7 @@ def metrics(pred,truth,w):
 
 
 def table(root,name,rows):
-    snapshot_metric_docs(root,'liquid_descriptors')
-    with (root/'tables'/f'{name}.csv').open('w',newline='') as f:
-        writer=csv.DictWriter(f,fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
+    return write_metric_rows(rows, root, family='liquid_descriptors', name=name)
 
 
 def fit(c,name):

@@ -14,6 +14,8 @@ from src.research.distance_encoder.model import loss_terms
 from src.research.spatial_distance.model import capped_mean,cdf
 from src.research.supervised_onset.tracking import tracked_run,local_evaluation,update_training_summary
 from src.research.equivariant_context.cache import RetainedCache
+from src.experiment_runner.array_exports import ArrayExport
+from src.experiment_runner.checkpoints import TrainingState
 from .data import config,population,masks,features
 from .models import DescriptorMixture,DistanceMACE,initialize_descriptor
 
@@ -57,6 +59,10 @@ def study_record(c,arm,data):
         'src/models/encoders/spatial_mace.py','src/research/encoder_context/geometry.py',
         'src/research/supervised_onset/model.py','src/research/spatial_distance/model.py',
         'src/research/distance_encoder/model.py')]
+    files += [repo / p for p in (
+        'src/experiment_runner/artifacts.py', 'src/experiment_runner/array_exports.py',
+        'src/experiment_runner/checkpoints.py', 'src/experiment_runner/metric_docs.py',
+        'src/experiment_runner/wandb_tracking.py')]
     binding=dict(config=c,arm=arm,dataset=data.manifest['identity'],train_sources=data.sources.tolist(),
         implementation={str(p.relative_to(repo)):sha(p) for p in files})
     identity=digest(binding)
@@ -113,11 +119,13 @@ def frozen_features(model,data,c,study,stop):
 def load_features(model,data,folder,study):
     file=folder/'features.npy';receipt=folder/'complete.json'
     if not receipt.exists():
-        model.eval();a=np.lib.format.open_memmap(folder/'features.building.npy',mode='w+',dtype=np.float32,shape=(len(data.positions),176))
-        for begin in range(0,len(a),4096):
-            with torch.autocast('cuda',dtype=torch.bfloat16):z,v=model.encode(data.positions[begin:begin+4096])
-            a[begin:begin+len(z)]=torch.cat((z,v.flatten(1)),1).cpu().numpy()
-        a.flush();del a;(folder/'features.building.npy').replace(file)
+        model.eval()
+        count = len(data.positions)
+        with ArrayExport(folder, dict(features=((count, 176), np.float32))) as arrays:
+            for begin in range(0, count, 4096):
+                with torch.autocast('cuda', dtype=torch.bfloat16):
+                    z, v = model.encode(data.positions[begin:begin+4096])
+                arrays.write(begin, features=torch.cat((z, v.flatten(1)), 1).cpu().numpy())
         write_json(receipt,dict(rows=len(data.positions),sha256=sha(file)))
     done=json.loads(receipt.read_text())
     if done['rows']!=len(data.positions) or sha(file)!=done['sha256']:raise ValueError('Changed frozen cache')
@@ -149,9 +157,10 @@ def run(path,name,preflight=False):
     opt=torch.optim.AdamW(groups,weight_decay=c['training']['weight_decay'],fused=device.type=='cuda')
     epoch=update=step=0;best=float('inf');rng=np.random.default_rng(c['seed'])
     if (tech/'last.pt').exists():
-        old=torch.load(tech/'last.pt',map_location=device,weights_only=False)
-        if old['identity']!=study.identity:raise ValueError('Checkpoint identity mismatch')
-        model.load_state_dict(old['model']);opt.load_state_dict(old['optimizer']);epoch=old['epoch'];update=old['update'];step=old['step'];best=old['best'];rng.bit_generator.state=old['rng']
+        state = TrainingState.read(tech/'last.pt', identity=study.identity, device=device)
+        state.restore(model, opt, rng)
+        old = state.payload
+        epoch, step, update, best = (old[k] for k in ('epoch', 'step', 'update', 'best'))
     if enc:compile_model(model,data,c)
     encoder_input=dict(type='native_MACE',geometry_only=True,radius_A=8,nearest_candidates=80,layers=2,channels=128,
         embedding=128,trainable=arm['model']=='joint',history=False,motion=False,conditions=[]) if enc else None
@@ -162,8 +171,9 @@ def run(path,name,preflight=False):
         population=arm['population'],target='nearest established crystal distance; direction excluded',
         labels_as_inputs=False,clearance_as_input=False,encoder_initialization=arm['initialization'],train_sources=data.sources.tolist(),fixed_cohort=c['fixed_dataset']))
     def save(file):
-        tmp=file.with_suffix('.building.pt');torch.save(dict(identity=study.identity,model=model.state_dict(),optimizer=opt.state_dict(),
-            epoch=epoch,step=step,update=update,best=best,rng=rng.bit_generator.state,config=c,arm=arm,encoder_config=enc),tmp);tmp.replace(file)
+        TrainingState.capture(model, opt, rng, identity=study.identity,
+                              epoch=epoch, step=step, update=update, best=best,
+                              config=c, arm=arm, encoder_config=enc).save(file)
     stop=deadline(c);total=c['training']['epochs']*c['training']['updates_per_epoch']
     lease=frozen_features(model,data,c,study,stop) if arm['model']=='frozen' else nullcontext(None)
     if (tech/'complete.json').exists():
@@ -181,19 +191,29 @@ def run(path,name,preflight=False):
         log.summary.update({'model/parameters':sum(p.numel() for p in model.parameters()),'data/train_rows':len(data.split['train']),
             'data/train_sources':len(data.sources),'training/global_batch':c['batch_size'],'checkpoint/selector':'minimum validation distance NLL, epoch 1 onward'})
         while epoch<c['training']['epochs']:
-            model.train();started=time.time()
+            model.train()
+            started = time.time()
             while step<c['training']['updates_per_epoch']:
                 if time.time()>stop:
-                    save(tech/'last.pt');write_json(tech/'state.json',dict(state='checkpointed',update=update));return
-                ids=rng.choice(data.split['train'],c['batch_size'],p=data.weights['train']);b=data.batch(ids);opt.zero_grad(set_to_none=True)
+                    save(tech/'last.pt')
+                    write_json(tech/'state.json', dict(state='checkpointed', update=update))
+                    return
+                ids = rng.choice(data.split['train'], c['batch_size'], p=data.weights['train'])
+                b = data.batch(ids)
+                opt.zero_grad(set_to_none=True)
                 factor=min((update+1)/c['training']['warmup_updates'],1)*(.05+.95*.5*(1+math.cos(math.pi*update/total)))
                 for g,base in zip(opt.param_groups,(c['training']['encoder_lr'],c['training']['head_lr'])):g['lr']=base*factor
                 with torch.autocast('cuda',dtype=torch.bfloat16,enabled=device.type=='cuda'):out=model(b)
-                _,nll,_=loss_terms(out['parts'],b['distance'],c['loss']);penalty=nll.new_zeros(())
+                _, nll, _ = loss_terms(out['parts'], b['distance'], c['loss'])
+                penalty = nll.new_zeros(())
                 if arm['model']=='joint':penalty=vcreg(out,c['regularization'])[0]*min((update+1)/c['regularization']['warmup_updates'],1)
                 loss=nll.mean()+penalty
                 if not torch.isfinite(loss):raise FloatingPointError(f'Nonfinite fit {name}/{update}')
-                loss.backward();norm=torch.nn.utils.clip_grad_norm_(model.parameters(),5.,error_if_nonfinite=True);opt.step();step+=1;update+=1
+                loss.backward()
+                norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 5., error_if_nonfinite=True)
+                opt.step()
+                step += 1
+                update += 1
                 if update%c['training']['log_every']==0:
                     row=dict(optimizer_update=update,**{'train/distance_nll':float(nll.mean().detach()),'train/vcreg':float(penalty.detach()),
                         'train/gradient_norm_before_clip':float(norm),'train/epoch':epoch+step/c['training']['updates_per_epoch'],
@@ -202,11 +222,16 @@ def run(path,name,preflight=False):
                     with (tech/'training.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')
                     write_json(tech/'state.json',dict(state='training',epoch=epoch,update=update,total_updates=total))
                 if update%c['training']['save_every']==0:save(tech/'last.pt')
-            metrics=score(model,data,c,'selection');epoch+=1;step=0
+            metrics = score(model, data, c, 'selection')
+            epoch += 1
+            step = 0
             if not np.isfinite(metrics['distance_nll']):raise FloatingPointError('Nonfinite validation')
             if metrics['distance_nll']<best:
-                best=metrics['distance_nll'];save(tech/'best.pt');log.summary.update({'checkpoint/selected_epoch':epoch,'checkpoint/validation_distance_nll':best})
-            save(tech/f'epoch-{epoch:02d}.pt');save(tech/'last.pt')
+                best = metrics['distance_nll']
+                save(tech/'best.pt')
+                log.summary.update({'checkpoint/selected_epoch':epoch,'checkpoint/validation_distance_nll':best})
+            save(tech/f'epoch-{epoch:02d}.pt')
+            save(tech/'last.pt')
             row=dict(optimizer_update=update,epoch=epoch,seconds=time.time()-started,**{'validation/'+k:v for k,v in metrics.items()})
             log.log(row)
             with (tech/'validation.jsonl').open('a') as f:f.write(json.dumps(row)+'\n')

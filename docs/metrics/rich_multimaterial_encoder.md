@@ -201,3 +201,12 @@ identity and W&B run. The prior correlation2/angular2 checkpoint at update 598 i
 preserved. The prepared 190-epoch continuation was never resumed. The new run
 reuses its exact fitting sample IDs and target transform, with frozen checksums;
 new architecture, LR and batch settings are explicitly recorded in the recipe.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

@@ -53,3 +53,12 @@ calibration/test rows remain separate; no held-out optimization. Native feature
 units and column definitions remain the original rich-descriptor definitions.
 Save predictions, exact row IDs and 256-D states. Test summaries update the
 original online W&B run through its stable ID. Debug measurement stays local.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

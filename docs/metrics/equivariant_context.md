@@ -97,3 +97,12 @@ a recorded scientific training run through the API, without creating or
 restarting runs. Scientific training remains online. This changes logging and
 validates identity/hash before cached readout reuse; objectives, selectors,
 metric calculations and historical exported definitions are unchanged.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

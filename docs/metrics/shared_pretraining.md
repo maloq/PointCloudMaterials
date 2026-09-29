@@ -491,3 +491,12 @@ identities and checkpoint SHA256. Data, architecture, library versions, loss and
 sampling settings are protected; permitted source changes are explicitly limited
 to the tested runtime, input pipeline and parallel executor. The transition retains
 optimizer moments, scheduler position, RNG state, best score and validation history.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

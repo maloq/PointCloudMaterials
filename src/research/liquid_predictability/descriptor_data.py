@@ -6,6 +6,8 @@ from concurrent.futures import ProcessPoolExecutor
 import numpy as np
 from src.data.fixed_cohort.protocol import sha,digest,write_json
 from src.project_runtime.paths import resolve_path
+from src.experiment_runner.preparation import PreparationShard
+from src.experiment_runner.artifacts import implementation_hashes
 from .data import config,population,masks
 from .descriptors import patch_descriptors,summarize_context
 
@@ -24,13 +26,13 @@ def prepare_source(c,item,pool):
     pc=parent(c);dataset=resolve_path(pc['dataset']['root']);folder=dataset/'sources'/str(item['source'])
     dest=resolve_path(c['cache'])/'sources'/str(item['source']);dest.mkdir(parents=True,exist_ok=True)
     binding=dict(dataset=pc['prepared_data']['identity'],input=item['files'],
-                 descriptors=sha(Path(__file__).with_name('descriptors.py')),preparation=sha(Path(__file__)))
+                 descriptors=sha(Path(__file__).with_name('descriptors.py')),preparation=sha(Path(__file__)),
+                 execution=implementation_hashes('src/experiment_runner/preparation.py',
+                                                  'src/experiment_runner/artifacts.py'))
     identity=digest(binding)
-    if (dest/'complete.json').exists():
-        receipt=config(dest/'complete.json')
-        if receipt['identity']!=identity:raise ValueError('Changed descriptor source identity')
-        for name,h in receipt['files'].items():
-            if sha(dest/name)!=h:raise ValueError(f'Changed descriptor cache {dest/name}')
+    shard = PreparationShard(dest, identity)
+    receipt = shard.verified()
+    if receipt is not None:
         return receipt
     for name in ('rows.npz','positions.npy'):
         if sha(folder/name)!=item['files'][name]:raise ValueError(f'Changed input {folder/name}')
@@ -41,14 +43,10 @@ def prepare_source(c,item,pool):
     sample,names=patch_descriptors(np.asarray(bank[0]));width=len(sample)
     _,summaries=summarize_context(np.zeros((1,25,width)),m['actual'][:1])
     columns=[{'name':f'{s}/{n}','family':n.split('/')[0]} for s in summaries for n in names]
-    progress=dest/'progress.json';start=0
-    if progress.exists():
-        saved=config(progress)
-        if saved['identity']!=identity:raise ValueError('Changed partial descriptor identity')
-        start=saved['patches_done']
+    start = shard.offset('patches_done', total=len(patches))
     path=dest/'patches.npy'
-    x=np.lib.format.open_memmap(path,mode='r+' if progress.exists() else 'w+',dtype=np.float32,shape=(len(patches),width))
-    write_json(progress,dict(identity=identity,patches_done=start,total_patches=len(patches)))
+    x=np.lib.format.open_memmap(path,mode='r+' if shard.resuming else 'w+',dtype=np.float32,shape=(len(patches),width))
+    shard.progress(patches_done=start, total_patches=len(patches))
     started=time.time()
     for begin in range(start,len(patches),8192):
         end=min(begin+8192,len(patches));chunk=c['preparation']['chunk_size']
@@ -56,7 +54,7 @@ def prepare_source(c,item,pool):
         offset=begin
         for value in pool.map(_block,arrays):
             x[offset:offset+len(value)]=value;offset+=len(value)
-        x.flush();write_json(progress,dict(identity=identity,patches_done=end,total_patches=len(patches)))
+        x.flush();shard.progress(patches_done=end, total_patches=len(patches))
         print(json.dumps(dict(source=item['source'],patches_done=end,total=len(patches),seconds=time.time()-started)),flush=True)
     context=np.lib.format.open_memmap(dest/'features.npy',mode='w+',dtype=np.float32,shape=(len(ids),len(columns)))
     for begin in range(0,len(ids),128):
@@ -64,9 +62,11 @@ def prepare_source(c,item,pool):
         context[begin:begin+len(rows)]=summarize_context(x[local],m['actual'][rows])[0]
     context.flush();del context,x
     np.save(dest/'local_rows.npy',ids);write_json(dest/'columns.json',columns)
-    receipt=dict(identity=identity,source=item['source'],rows=len(ids),patches=len(patches),features=len(columns),binding=binding,
-                 files={name:sha(dest/name) for name in ('features.npy','local_rows.npy','columns.json','patches.npy')})
-    write_json(dest/'complete.json',receipt);return receipt
+    return shard.complete(
+        ('features.npy', 'local_rows.npy', 'columns.json', 'patches.npy'),
+        source=item['source'], rows=len(ids), patches=len(patches),
+        features=len(columns), binding=binding,
+    )
 
 
 def prepare(c,task):

@@ -144,3 +144,12 @@ relative to its own fitting-population spread, not a common raw latent metric.
 `stability.csv`, `ranks.csv`, `per-track.csv`, `eigenvalues.csv` accompany the
 full JSON and input checksums in `technical/`. Existing exported definitions are
 preserved: use a fresh output directory for this supplementary analysis.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

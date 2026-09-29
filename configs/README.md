@@ -495,14 +495,17 @@ documented in the [guide](../docs/encoder_research/embedding_dynamics.md).
 [state/movement dimension audit](../docs/encoder_research/embedding_dynamics.md).
 It runs analysis only and preserves historical outputs.
 
-## Three-picosecond onset recipes
+## Historical three-picosecond AP-selected proposals
 
 `analysis/onset_horizons_20260924.json` replays saved predictions at3/6/12 ps.
 `robust_onset/screen_ap3_20260924.json` and
 `spatial_hierarchy/screen_ap3_20260924.json` use3 ps for ranking and checkpoint
 selection, with separate outputs. Historical `screen_20260924.json` recipes
-retain explicit12 ps settings. New recipes have not been submitted; see the
-[experiment priorities](../experiments/onset_ap3_20260924/README.md).
+retain explicit12 ps settings. These unsubmitted proposals are historical and
+must not enter future queues: the current objective requires predictive
+likelihood or label-free selection, with AP used only as a diagnostic. Preserve
+their recorded definitions; see the [historical proposals](../experiments/onset_ap3_20260924/README.md)
+and [current training branches](../docs/encoder_research/training_branches.md).
 
 `analysis/encoder_quality_latest_20260926.json` pins eight current native MACE exports for the [frozen quality comparison](../experiments/encoder_quality_20260926/README.md).
 

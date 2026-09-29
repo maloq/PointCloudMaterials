@@ -3,15 +3,13 @@ import argparse
 import json
 import os
 from pathlib import Path
-import shlex
-import shutil
 import subprocess
 import sys
 import time
-import traceback
 from src.data.fixed_cohort.protocol import sha,write_json
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.metric_docs import check_metric_docs
+from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage
 from .data import config
 
 
@@ -22,26 +20,19 @@ def submit(path):
     preflight=config(tech/'preflight.json')
     if preflight['config_sha256']!=sha(Path(path)) or not preflight['finite']:raise ValueError('Missing matching local numerical check')
     check_metric_docs(family='liquid_descriptors')
-    repo=Path(__file__).resolve().parents[3];code=tech/'code'
-    shutil.copytree(repo/'src',code/'src',ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.nbc','*.nbi'))
-    shutil.copytree(repo/'docs/metrics',code/'docs/metrics')
-    destination=code/'configs/liquid_predictability';destination.mkdir(parents=True)
-    shutil.copy2(path,destination/Path(path).name);write_json(code/'config.json',c)
+    repo = Path(__file__).resolve().parents[3]
+    bundle = ExecutionBundle.freeze(
+        repo, tech / 'code', c, directories=('src', 'docs/metrics'),
+        files=((path, 'configs/liquid_predictability/' + Path(path).name),),
+    )
+    code = bundle.root
     env=dict(PCM_PROJECT_ROOT=str(repo),OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',
              TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1',NUMBA_NUM_THREADS='1')
-    command=[sys.executable,'-u','-m','src.research.liquid_predictability.descriptor_queue']
     receipt=dict(submitted_at=time.time(),code=str(code),config_sha256=sha(Path(path)),jobs={})
-    def job(stage,options,dependency=None,partition='CPU'):
-        cmd=command+[stage,'--config',str(code/'config.json')];script=tech/f'{stage}.sbatch'
-        script.write_text('\n'.join(['#!/bin/bash',f'#SBATCH --job-name=LD-{stage}',
-            '#SBATCH --partition='+partition,'#SBATCH --nodes=1','#SBATCH --ntasks=1',
-            f'#SBATCH --output={tech}/{stage}-%A_%a.log',*['#SBATCH '+v for v in options],
-            'set -euo pipefail','ulimit -n 4096','cd '+shlex.quote(str(code)),
-            'exec env '+shlex.join([f'{k}={v}' for k,v in env.items()])+' '+shlex.join(cmd),'']))
-        args=['sbatch','--parsable']+(['--dependency='+dependency] if dependency else [])+[str(script)]
-        ident=subprocess.check_output(args,text=True).strip().split(';')[0]
-        receipt['jobs'][stage]=ident;write_json(receipt_path,receipt);return ident
-    try:
+    queue = SlurmQueue(tech, bundle, 'src.research.liquid_predictability.descriptor_queue',
+                       env, receipt_path, receipt, 'LD')
+    job = queue.submit
+    with queue.submission():
         if c.get('prepared_launch'):
             original=config(resolve_path(c['prepared_launch']))
             preparation_config=config(Path(original['code'])/'config.json')
@@ -60,9 +51,6 @@ def submit(path):
             f'--cpus-per-task={c["fit_threads"]}','--mem=64G','--time=06:00:00'],
             'afterok:'+sealed,partition=c['gpu_partition'])
         job('compare',['--cpus-per-task=2','--mem=24G','--time=01:00:00'],'afterok:'+cpu+':'+gpu)
-    except BaseException:
-        receipt['submission_error']=traceback.format_exc();write_json(receipt_path,receipt)
-        raise
     return receipt
 
 
@@ -74,8 +62,7 @@ def main():
     if args.stage=='submit':print(json.dumps(submit(args.config),indent=2));return
     index=args.index if args.index is not None else int(os.environ.get('SLURM_ARRAY_TASK_ID','0'))
     tech=resolve_path(c['output'])/'technical';state=tech/f'{args.stage}-{args.arm or index}.json'
-    try:
-        write_json(state,dict(state='running',job=os.environ.get('SLURM_JOB_ID')))
+    with recorded_stage(state, job=os.environ.get('SLURM_JOB_ID')) as progress:
         if args.stage=='prepare':
             from .descriptor_data import prepare
             prepare(c,index)
@@ -87,15 +74,12 @@ def main():
             arms=[arm for arm in c['arms'] if (arm['model']=='catboost')==gpu]
             if gpu:arms=arms[index::c['gpu_lanes']]
             for arm in arms:
-                write_json(state,dict(state='running',arm=arm['name']))
+                progress.update(arm=arm['name'])
                 subprocess.run([sys.executable,'-u','-m','src.research.liquid_predictability.descriptor_queue',
                     'fit','--config',args.config,'--arm',arm['name']],check=True)
         else:
             from .descriptor_fit import fit,compare
             fit(c,args.arm) if args.stage=='fit' else compare(c)
-        write_json(state,dict(state='complete',finished_at=time.time()))
-    except BaseException:
-        write_json(state,dict(state='failed',traceback=traceback.format_exc()));raise
 
 
 if __name__=='__main__':main()

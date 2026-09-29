@@ -101,3 +101,12 @@ The full-coverage extension requires relaxation availability for every original
 eligible row before freezing its paired cohort; it never silently substitutes
 the earlier available-only intersection. New quenches use the same generating
 potential, fixed box, FIRE and force tolerance, with larger execution limits.
+
+
+## Execution refactor
+
+The code-cleanup revision consolidates artifact export, preparation, checkpoint
+and execution helpers. Scientific formulas, rows, weights, fitting populations
+and selectors are unchanged. New table exports include a per-table hash and
+definition binding. Historical exported definitions and frozen source snapshots
+remain authoritative; changed implementation hashes require a new export revision.

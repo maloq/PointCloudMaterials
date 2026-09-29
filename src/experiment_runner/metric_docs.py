@@ -8,14 +8,14 @@ import json
 from pathlib import Path
 import shutil
 
-from .artifacts import result_folders, write_json
+from .artifacts import file_hash, result_folders, write_json
 
 REPO = Path(__file__).resolve().parents[2]
 DOCUMENTS = REPO / 'docs/metrics'
 
 
 def fingerprint(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    return file_hash(path)
 
 
 def check_metric_docs(*, family=None):
@@ -123,22 +123,62 @@ def numeric_rows(metrics, prefix=''):
             yield name, value
 
 
-def write_metric_table(metrics, root, *, family, name='metrics'):
+def _table_contract(root, family, name):
+    root = Path(root)
     path = Path(root) / 'tables' / f'{name}.csv'
     binding = Path(root) / f'technical/table-contracts/{name}.json'
     prior = binding if binding.exists() else Path(root)/'technical/metric-contract.json'
     if path.exists() and prior.exists() and json.loads(prior.read_text())['family']!=family:
         raise ValueError(f'{path}: table belongs to another metric family; choose a distinct table name or analysis')
     contract = snapshot_metric_docs(root, family)
-    stream = io.StringIO(newline='')
-    writer = csv.writer(stream)
-    writer.writerow(('metric', 'value'))
-    writer.writerows(numeric_rows(metrics))
+    return path, contract
+
+
+def _publish_table(path, contract, family, content):
     temporary = path.with_suffix('.csv.building')
-    temporary.write_text(stream.getvalue())
+    temporary.write_text(content)
     temporary.replace(path)
+    return _bind_table(path, contract, family)
+
+
+def _bind_table(path, contract, family):
+    root = path.parent.parent
+    name = path.stem
     write_json(Path(root) / f'technical/table-contracts/{name}.json', dict(
         table=f'tables/{name}.csv', sha256=fingerprint(path), family=family,
         contract=str(contract.relative_to(root)),
         definitions=f'tables/metric-definitions/{family}.md'))
     return path
+
+
+def write_metric_table(metrics, root, *, family, name='metrics'):
+    path, contract = _table_contract(root, family, name)
+    stream = io.StringIO(newline='')
+    writer = csv.writer(stream)
+    writer.writerow(('metric', 'value'))
+    writer.writerows(numeric_rows(metrics))
+    return _publish_table(path, contract, family, stream.getvalue())
+
+
+def write_metric_rows(rows, root, *, family, name, columns=None):
+    """Bind a row table to frozen definitions, preserving field order and precision.
+
+    Nonempty producers may retain their first row's declared field order. Empty
+    tables require explicit columns so their schema remains meaningful.
+    """
+    rows = iter(rows)
+    first = next(rows, None)
+    if columns is None:
+        if first is None:
+            raise ValueError(f'{family}/{name}: empty metric table requires columns')
+        columns = tuple(first)
+    path, contract = _table_contract(root, family, name)
+    temporary = path.with_suffix('.csv.building')
+    with temporary.open('w', newline='') as stream:
+        writer = csv.DictWriter(stream, fieldnames=columns)
+        writer.writeheader()
+        if first is not None:
+            writer.writerow(first)
+        writer.writerows(rows)
+    temporary.replace(path)
+    return _bind_table(path, contract, family)

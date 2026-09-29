@@ -4,16 +4,14 @@ import copy
 import json
 import os
 from pathlib import Path
-import shlex
-import shutil
 import subprocess
 import sys
 import time
-import traceback
 
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.project_runtime.paths import resolve_path, REPO as PROJECT_ROOT
 from src.experiment_runner.metric_docs import check_metric_docs
+from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage
 from .data import config
 
 
@@ -48,26 +46,25 @@ def submit(path):
     if receipt_file.exists():raise ValueError('Already submitted; resume frozen commands, do not duplicate jobs')
     for family in ('liquid_controls','liquid_descriptors','liquid_descriptor_baselines'):check_metric_docs(family=family)
     freeze(c);cohorts=recipes(c)
-    repo=Path(__file__).resolve().parents[3];code=tech/'code'
-    shutil.copytree(repo/'src',code/'src',ignore=shutil.ignore_patterns('__pycache__','*.pyc','*.nbc','*.nbi'))
-    shutil.copytree(repo/'docs/metrics',code/'docs/metrics');shutil.copytree(repo/'configs/liquid_predictability',code/'configs/liquid_predictability')
-    write_json(code/'config.json',c)
+    repo = Path(__file__).resolve().parents[3]
+    bundle = ExecutionBundle.freeze(
+        repo, tech / 'code', c,
+        directories=('src', 'docs/metrics', 'configs/liquid_predictability'),
+    )
+    code = bundle.root
     receipt=dict(config_sha256=sha(Path(path)),code=str(code),submitted_at=time.time(),jobs={},
                  recipes={str(p):sha(p) for p in folder_files(tech/'recipes')})
     # A dependent production job may submit from a frozen code snapshot. Keep
     # that code immutable while resolving storage/catalog against the project.
     env=dict(PCM_PROJECT_ROOT=str(PROJECT_ROOT),OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',
              TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1',NUMBA_NUM_THREADS='1',OVITO_THREAD_COUNT='1')
-    def job(stage,options,after=None,gpu=False):
-        command=[sys.executable,'-u','-m','src.research.liquid_predictability.control_queue',stage,'--config',str(code/'config.json')]
-        script=tech/f'{stage}.sbatch';script.write_text('\n'.join(['#!/bin/bash',f'#SBATCH --job-name=LC-{stage}',
-            '#SBATCH --partition='+(c['gpu_partition'] if gpu else 'CPU'),'#SBATCH --nodes=1','#SBATCH --ntasks=1',
-            f'#SBATCH --output={tech}/{stage}-%A_%a.log',*['#SBATCH '+s for s in options],
-            'set -euo pipefail','ulimit -n 4096','cd '+shlex.quote(str(code)),
-            'exec env '+shlex.join([f'{k}={v}' for k,v in env.items()])+' '+shlex.join(command),'']))
-        args=['sbatch','--parsable']+(['--dependency=afterok:'+':'.join(after)] if after else [])+[str(script)]
-        ident=subprocess.check_output(args,text=True).strip().split(';')[0];receipt['jobs'][stage]=ident;write_json(receipt_file,receipt);return ident
-    try:
+    queue = SlurmQueue(tech, bundle, 'src.research.liquid_predictability.control_queue',
+                       env, receipt_file, receipt, 'LC')
+    def job(stage, options, after=None, gpu=False):
+        dependency = 'afterok:' + ':'.join(after) if after else None
+        return queue.submit(stage, options, dependency,
+                            partition=c['gpu_partition'] if gpu else 'CPU')
+    with queue.submission():
         syn=job('synthetic',['--cpus-per-task=4','--mem=48G','--time=02:00:00'])
         prep=job('paired-prepare',[f'--array=0-{c["preparation"]["tasks"]-1}%{c["preparation"]["tasks"]}',
             f'--cpus-per-task={c["preparation"]["workers"]}','--mem=32G','--time=08:00:00'])
@@ -79,8 +76,6 @@ def submit(path):
         check=job('preflight',['--gpus=1','--cpus-per-task=4','--mem=64G','--time=01:00:00'],[boost],True)
         mace=job('mace',['--array=0-1%2','--gpus=1','--cpus-per-task=4','--mem=64G','--time=16:00:00'],[check],True)
         job('report',['--cpus-per-task=4','--mem=48G','--time=02:00:00'],[cpu,boost,mace])
-    except BaseException:
-        receipt['submission_error']=traceback.format_exc();write_json(receipt_file,receipt);raise
     return receipt
 
 
@@ -161,12 +156,8 @@ def main():
         print(json.dumps(freeze(c)['counts']));recipes(c);return
     index=a.index if a.index is not None else int(os.environ.get('SLURM_ARRAY_TASK_ID','0'))
     state=resolve_path(c['output'])/'technical'/f'{a.stage}-{a.arm or index}.json'
-    try:
-        write_json(state,dict(state='running',started_at=time.time(),job=os.environ.get('SLURM_JOB_ID')))
+    with recorded_stage(state, job=os.environ.get('SLURM_JOB_ID')):
         execute(c,a.stage,index,a.arm)
-        write_json(state,dict(state='complete',finished_at=time.time()))
-    except BaseException:
-        write_json(state,dict(state='failed',traceback=traceback.format_exc()));raise
 
 
 if __name__=='__main__':main()
