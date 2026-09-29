@@ -84,3 +84,15 @@ and independent-snapshot 0.75-ps stability retain their existing definitions. Th
 are diagnostic evaluations, not reconstruction pretraining or temporal inputs.
 Scientific training alone creates online W&B runs; evaluation updates their recorded
 IDs. Frozen metric documents and implementation hashes accompany all exported CSVs.
+
+
+## Explicit task-head refactor
+
+The training/model refactor separates typed patch and spatial-context trunks from
+task heads and expands training statements. Mathematical objectives, populations,
+weights and selectors retain their definitions. Joint/rich-patch initialization
+and state names are preserved; distance/control fresh initialization changes
+when unused head construction is removed and receives a versioned architecture
+identity. Historical continuations use their frozen sources. W&B wall-time stays
+local and fixed baselines stay in summary; metric calculations are unchanged.
+See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).

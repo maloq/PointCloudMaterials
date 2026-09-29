@@ -69,3 +69,15 @@ significance or treatment selection is claimed.
 Dominance becomes evidence of harmful reliance only with a generalization penalty
 or systematic proxy failure. Low rank alone, importance under ablation, large
 weights and legitimate predictive features are insufficient to establish overfit.
+
+
+## Explicit task-head refactor
+
+The training/model refactor separates typed patch and spatial-context trunks from
+task heads and expands training statements. Mathematical objectives, populations,
+weights and selectors retain their definitions. Joint/rich-patch initialization
+and state names are preserved; distance/control fresh initialization changes
+when unused head construction is removed and receives a versioned architecture
+identity. Historical continuations use their frozen sources. W&B wall-time stays
+local and fixed baselines stay in summary; metric calculations are unchanged.
+See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).

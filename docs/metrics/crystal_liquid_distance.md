@@ -87,3 +87,15 @@ Record encoder and predictor contexts separately, cohort identity, prior exposur
 exact population and per-source counts, parent/selected checkpoint hashes, sampling
 and synchronized two-GPU settings. One online W&B scientific run; diagnostics and
 associated evaluation update that run, with no additional online probe runs.
+
+
+## Explicit task-head refactor
+
+The training/model refactor separates typed patch and spatial-context trunks from
+task heads and expands training statements. Mathematical objectives, populations,
+weights and selectors retain their definitions. Joint/rich-patch initialization
+and state names are preserved; distance/control fresh initialization changes
+when unused head construction is removed and receives a versioned architecture
+identity. Historical continuations use their frozen sources. W&B wall-time stays
+local and fixed baselines stay in summary; metric calculations are unchanged.
+See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).

@@ -109,3 +109,15 @@ of the tracked atom one raw native frame apart (verified source timeline .75 ps)
 Movement d95/ranks use centered increment covariance; RMS includes mean movement.
 BF16 scalar/vector rotation errors are reported separately. There are no time
 inputs or temporal smoothness losses. One seed; no significance claim.
+
+
+## Explicit task-head refactor
+
+The training/model refactor separates typed patch and spatial-context trunks from
+task heads and expands training statements. Mathematical objectives, populations,
+weights and selectors retain their definitions. Joint/rich-patch initialization
+and state names are preserved; distance/control fresh initialization changes
+when unused head construction is removed and receives a versioned architecture
+identity. Historical continuations use their frozen sources. W&B wall-time stays
+local and fixed baselines stay in summary; metric calculations are unchanged.
+See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).

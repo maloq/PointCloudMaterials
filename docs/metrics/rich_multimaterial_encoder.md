@@ -123,9 +123,13 @@ over all evaluated rows and distributed ranks before division, so batch sizes
 and rank partitions do not change the definition. A ratio of 1 matches the mean
 predictor, 0.5 means half its MSE, 0 is perfect, and values above 1 are worse.
 
-W&B/local validation records use `validation/relative_mse_to_training_mean` and
-`validation/{family}_relative_mse_to_training_mean`, alongside their model and
-baseline MSEs. Final training-run summaries use the same suffixes under
+W&B validation history uses `validation/relative_mse_to_training_mean` and
+`validation/{family}_relative_mse_to_training_mean`, alongside model MSEs.
+Fixed `validation/*training_mean_mse` denominators are summary-only; local
+validation records still retain them. Custom wall-time `seconds` stays local,
+since W&B already records runtime. Historical time/baseline series are hidden
+on resume and receive no new points. This logging change does not alter metric
+calculations or training. Final training-run summaries use the same suffixes under
 `evaluation/{population}/`. `scores.csv` includes an overall `family=all` row;
 `features.csv` also includes the baseline MSE, ratio and skill for every target,
 including inactive targets marked `trained=false`. Ratios and skill are undefined
@@ -210,3 +214,15 @@ and execution helpers. Scientific formulas, rows, weights, fitting populations
 and selectors are unchanged. New table exports include a per-table hash and
 definition binding. Historical exported definitions and frozen source snapshots
 remain authoritative; changed implementation hashes require a new export revision.
+
+
+## Explicit task-head refactor
+
+The training/model refactor separates typed patch and spatial-context trunks from
+task heads and expands training statements. Mathematical objectives, populations,
+weights and selectors retain their definitions. Joint/rich-patch initialization
+and state names are preserved; distance/control fresh initialization changes
+when unused head construction is removed and receives a versioned architecture
+identity. Historical continuations use their frozen sources. W&B wall-time stays
+local and fixed baselines stay in summary; metric calculations are unchanged.
+See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).

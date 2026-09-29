@@ -1734,12 +1734,12 @@
   "crystal_vector": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1750,18 +1750,19 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36"
+      "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "crystal_interface": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1772,22 +1773,23 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "docs/metrics/crystal_interface.md": "289919cad978b3755ef65a79db753b471d71fd83d96920a67566e06320d1b784",
+      "docs/metrics/crystal_interface.md": "8843199cdbf7d250783170638c6d4f2c9c7ad130340d921a81873b375043b429",
       "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
       "src/research/crystal_vector/interface_evaluate.py": "35bc74a963fbf130233ed260fbd4532ebacde84c04a47dab3dbba51708156e13",
       "src/research/crystal_vector/interface_queue.py": "f97526d63952aecdb5f5dbc9badbb7767d57f848b914ca96cbb277d67baaba36",
-      "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36"
+      "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "crystal_interface_unseen": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1798,25 +1800,26 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "docs/metrics/crystal_interface.md": "289919cad978b3755ef65a79db753b471d71fd83d96920a67566e06320d1b784",
+      "docs/metrics/crystal_interface.md": "8843199cdbf7d250783170638c6d4f2c9c7ad130340d921a81873b375043b429",
       "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
       "src/research/crystal_vector/interface_evaluate.py": "35bc74a963fbf130233ed260fbd4532ebacde84c04a47dab3dbba51708156e13",
       "src/research/crystal_vector/interface_queue.py": "f97526d63952aecdb5f5dbc9badbb7767d57f848b914ca96cbb277d67baaba36",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
       "src/research/crystal_vector/unseen.py": "226228277f945559e4de9b9dae1c87e64ed31dfa7a0789711bc6a3afdcc86f08",
       "src/research/crystal_vector/expand.py": "020919c2c94d92d75fcd9e0b2cf93c1823bed99dd5eb42fa6e3383ba19fd5265",
-      "docs/metrics/crystal_interface_unseen.md": "56dfd8dab5e2bc27a252fa05b923af6dc8df464bc0c9485b0b09b54405fdb329"
+      "docs/metrics/crystal_interface_unseen.md": "dc88345edc3911a69d394d63ae4c5e89c1064c01e985f2e6fe8969e12f0ebf02",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "crystal_overfit": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1827,25 +1830,26 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "docs/metrics/crystal_interface.md": "289919cad978b3755ef65a79db753b471d71fd83d96920a67566e06320d1b784",
+      "docs/metrics/crystal_interface.md": "8843199cdbf7d250783170638c6d4f2c9c7ad130340d921a81873b375043b429",
       "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
       "src/research/crystal_vector/interface_evaluate.py": "35bc74a963fbf130233ed260fbd4532ebacde84c04a47dab3dbba51708156e13",
       "src/research/crystal_vector/interface_queue.py": "f97526d63952aecdb5f5dbc9badbb7767d57f848b914ca96cbb277d67baaba36",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
       "src/research/crystal_vector/overfit.py": "d69499d4ff24fc233bc9dd143141445c4079422b33bcc56979bf574f27eae03e",
       "src/research/crystal_vector/unseen.py": "226228277f945559e4de9b9dae1c87e64ed31dfa7a0789711bc6a3afdcc86f08",
-      "docs/metrics/crystal_overfit.md": "ab5044f04b49cc97a24236408277e5270f2e2bc02323c87d6b822a030fe0379f"
+      "docs/metrics/crystal_overfit.md": "3c0d93b3c942ec632720f0eb62184cf5367b8eb8e25c85beb7f9d61b32b2b4fa",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "crystal_feature_dominance": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1856,7 +1860,7 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "docs/metrics/crystal_interface.md": "289919cad978b3755ef65a79db753b471d71fd83d96920a67566e06320d1b784",
+      "docs/metrics/crystal_interface.md": "8843199cdbf7d250783170638c6d4f2c9c7ad130340d921a81873b375043b429",
       "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
       "src/research/crystal_vector/interface_evaluate.py": "35bc74a963fbf130233ed260fbd4532ebacde84c04a47dab3dbba51708156e13",
       "src/research/crystal_vector/interface_queue.py": "f97526d63952aecdb5f5dbc9badbb7767d57f848b914ca96cbb277d67baaba36",
@@ -1864,18 +1868,19 @@
       "src/research/crystal_vector/feature_audit.py": "b4a9d44d29d09e78fc0605b88bdaaf37dc7246e34ac4b8fbc7bf99489b253830",
       "src/research/crystal_vector/overfit.py": "d69499d4ff24fc233bc9dd143141445c4079422b33bcc56979bf574f27eae03e",
       "configs/analysis/crystal_feature_dominance_20260928.json": "e77ae038b0a15415b8efc75e3c2885387bee0e2d4cb9e250e1d82d2a08a355de",
-      "docs/metrics/crystal_feature_dominance.md": "dcf6d40c372eba6358cb978c645cb42a0712b0a7d39c4d2aa54d015d2eded514"
+      "docs/metrics/crystal_feature_dominance.md": "7a9525f81ea492b8580c44dc958030c9c6325809679813d80bb98a330cef1177",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "crystal_liquid_distance": {
     "files": {
       "src/research/crystal_vector/data.py": "7080ee7b8cb14dfc9c35ca8e0f9d9d53a28d6b9df3988245f4597e3cd22982d7",
-      "src/research/crystal_vector/train.py": "20af5b1b2ba7c178b59e2e40443f4312b8a6fc16fc8e4beb76b1078d8d3851d1",
+      "src/research/crystal_vector/train.py": "9c3f46c81b8e99cb9d03d186ecb6af5d50e30bbd22af9d1a0420a869eb83bc10",
       "src/research/crystal_vector/__init__.py": "a8dc96bc2596dcfa1a1fb42caec201071bf2236fc3413a9c7020812b328c6728",
       "src/research/crystal_vector/queue.py": "94172c662faab274fdd277b0b8d72b355aed3d9dc1aae4f1e9a272fb130f2f0b",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/evaluate.py": "0d8e92037abd630562013624e8d4e260c6043d7dc39045e8923edfbb74cd7843",
-      "docs/metrics/crystal_vector.md": "a476ee7e94ad7c6830f2e03c07aad14d84af0549575885c217d9b5b8e6df9d2f",
+      "docs/metrics/crystal_vector.md": "f3c5d69080051abe99a4b7cb5cf05e070a72f5f7a75ee2e4772d0c94d971484f",
       "src/research/spatial_distance/model.py": "2943b7c35fc32e32751043b10a245d6bbcc243bd2666c63c10a8ebef866870c7",
       "src/research/spatial_distance/train.py": "c46a3d8a687b616731f7ff301ba661909891f375f8ddd78d97f210284e838007",
       "src/research/spatial_distance/confidence.py": "4b662157d08e753ed76d6fa19845f6eb647586e28b38e2c2e3d20624e0543841",
@@ -1886,29 +1891,30 @@
       "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
       "src/research/crystal_vector/sampling.py": "ffcde88ac90963c93aefc4d99b13cf61cbd154479d34012672452155fa9c8b73",
-      "docs/metrics/crystal_interface.md": "289919cad978b3755ef65a79db753b471d71fd83d96920a67566e06320d1b784",
+      "docs/metrics/crystal_interface.md": "8843199cdbf7d250783170638c6d4f2c9c7ad130340d921a81873b375043b429",
       "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
       "src/research/crystal_vector/interface_evaluate.py": "35bc74a963fbf130233ed260fbd4532ebacde84c04a47dab3dbba51708156e13",
       "src/research/crystal_vector/interface_queue.py": "f97526d63952aecdb5f5dbc9badbb7767d57f848b914ca96cbb277d67baaba36",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
       "src/research/crystal_vector/unseen.py": "226228277f945559e4de9b9dae1c87e64ed31dfa7a0789711bc6a3afdcc86f08",
       "src/research/crystal_vector/expand.py": "020919c2c94d92d75fcd9e0b2cf93c1823bed99dd5eb42fa6e3383ba19fd5265",
-      "docs/metrics/crystal_interface_unseen.md": "56dfd8dab5e2bc27a252fa05b923af6dc8df464bc0c9485b0b09b54405fdb329",
+      "docs/metrics/crystal_interface_unseen.md": "dc88345edc3911a69d394d63ae4c5e89c1064c01e985f2e6fe8969e12f0ebf02",
       "src/research/crystal_vector/liquid.py": "8d2ebe1d57526b8a0371b3e19a10eaaca12966ab40845eb2440e43e9d0360e9b",
-      "docs/metrics/crystal_liquid_distance.md": "0207e5fc3ea332628139a66b14dc90f855b607ce6cb367630a175fbcec19c2a5",
-      "configs/crystal_vector/liquid_distance_20260928.json": "2f3522b2a71cc9daca0d97eb673a5c227cd1393897903532a0c19c373a3f2534"
+      "docs/metrics/crystal_liquid_distance.md": "506548ca23185d2e82f69af9d41d258dbe68dfb05c73510c7f90aaf38c604b79",
+      "configs/crystal_vector/liquid_distance_20260928.json": "2f3522b2a71cc9daca0d97eb673a5c227cd1393897903532a0c19c373a3f2534",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073"
     }
   },
   "liquid_predictability": {
     "files": {
-      "src/research/liquid_predictability/models.py": "b917ca5199211f6ad110734c0d350a3098fda9b345cfb71617a2dfad3420af34",
+      "src/research/liquid_predictability/models.py": "507f29d2e32be4ef8f7912ecf4c051d3c9a0e7de54738c137b5cb99ec02825b8",
       "src/research/liquid_predictability/queue.py": "f2bf7ece4fc15d059a556e9ef2577610a18ad711665df2ab398c8022d9ac3d45",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/research/liquid_predictability/__init__.py": "277a6896c3e821f03ee9e9831b3b04e1dae72b4700087b4df557097fa3c1c1d5",
       "src/research/liquid_predictability/evaluate.py": "f1802217d6d6a3ea1e635a846880bff0e3b5ad9c859119403dd9decaf71439aa",
-      "src/research/liquid_predictability/train.py": "a37649d1073161478e644a5e0ddd9313907743622dd888489742c133398cbd37",
-      "docs/metrics/liquid_predictability.md": "5d7b267c958473947f6184daff14b2e468dd457af1d3f62ed49bc2558f6ec0a9",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/liquid_predictability/train.py": "bf5d2ccdf41d1c08d924344210dc22fcee85530b30272d12938db7ab1ddab423",
+      "docs/metrics/liquid_predictability.md": "046d98fd241bd54c5ee0292d6fe5273c4577015c2752251e38e4870ac2e96aaf",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
       "src/research/equivariant_context/model.py": "9a4c4d6124ecee2df41985f16ccbbe60728931ecbcf21fffb39d8ac67061094e",
       "src/research/equivariant_context/features.py": "d6568fdcacc7ef679101576bc31b55ccf20413f03c5b7eadeb1840164c233ac6",
@@ -1919,16 +1925,18 @@
       "src/experiment_runner/metric_docs.py": "3e791c2c08ac2a1b1fb70a8538a3ad04cd6534f143ba75dd8bbbb84dcfdd50d1",
       "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
-      "src/experiment_runner/array_exports.py": "c7af2f4418c3759c4c53b0f14dfde906de333fa1a0f1d4b017666c07e61a7eb7"
+      "src/experiment_runner/array_exports.py": "c7af2f4418c3759c4c53b0f14dfde906de333fa1a0f1d4b017666c07e61a7eb7",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
+      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96"
     }
   },
   "liquid_descriptors": {
     "files": {
-      "docs/metrics/liquid_descriptors.md": "1c283c9e92696303c34e8d340fe83b7a93798ef1d72a830c412a68aa6e34ad5b",
+      "docs/metrics/liquid_descriptors.md": "e422ac1910acf6577c33702d83f70f432a669bc2a39a336c7f3e06fc3cb381d9",
       "configs/liquid_predictability/descriptors_al64_20260928.json": "c982f0ae8128aaa155cb8b41fa47c08759b0d1dd6935e5df8146ac4ac39a36bc",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
-      "src/research/liquid_predictability/descriptor_fit.py": "904d1da89c336f87e10a5b280e43bbff6391f89fe37b594de05fd18213135e0f",
+      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
       "src/research/liquid_predictability/descriptor_queue.py": "3b3b3cd6dc5d23083e0cd562288ee76a7f0e95945ee81e5ab12eb08cbd943428",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/data/fixed_cohort/protocol.py": "1784f6ba0ccd69478f0cc7165dbf625ce8e1ec7c26bc7ddf8b52fa43161b3275",
@@ -1940,11 +1948,11 @@
   },
   "liquid_descriptor_baselines": {
     "files": {
-      "docs/metrics/liquid_descriptor_baselines.md": "1d15f89e6d0f4fbf3a3c72aeec7f03820a5c48c539a570e89cd3ec5e6889223b",
+      "docs/metrics/liquid_descriptor_baselines.md": "4f8540acf00c9e52f634abf5314ccd5bcf0632fb5249ffa052e6e26809ae2db7",
       "configs/liquid_predictability/descriptor_baselines_20260928.json": "a34c0cce16eff3cfe29929453dd0dc55ca34cd19b979576ab659b35060f914ca",
       "src/research/liquid_predictability/descriptor_baselines.py": "abd630bc5ac0512352e25f7e43bffa8d8037c98475e968b205d87782a7574193",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
-      "src/research/liquid_predictability/descriptor_fit.py": "904d1da89c336f87e10a5b280e43bbff6391f89fe37b594de05fd18213135e0f",
+      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/data/fixed_cohort/protocol.py": "1784f6ba0ccd69478f0cc7165dbf625ce8e1ec7c26bc7ddf8b52fa43161b3275",
       "src/experiment_runner/metric_docs.py": "3e791c2c08ac2a1b1fb70a8538a3ad04cd6534f143ba75dd8bbbb84dcfdd50d1",
@@ -1954,17 +1962,17 @@
   },
   "liquid_controls": {
     "files": {
-      "docs/metrics/liquid_controls.md": "112fcb6bf0603ec5eae65f713ff4cce4e597cb8f4f4c0c6e67873219118312f0",
+      "docs/metrics/liquid_controls.md": "e07458f453d956090c5b2524c0a44b89dcb421181dec1c31b974e07235062972",
       "configs/liquid_predictability/controls_relaxed_20260928.json": "cf41cb43e7c3eb7ca247ffab55e894a3a292e949b471fe95756af0b0d258381f",
-      "src/research/liquid_predictability/control_train.py": "1b09a29503ec7d73d57ac1598bd0e79ea7afe5de18d2562bcc7e2312f548d56f",
+      "src/research/liquid_predictability/control_train.py": "c6db8e11d661aa16033c4f633a4d9db94f8ece3b268e5ff34ae16c2025419ce0",
       "src/research/liquid_predictability/control_report.py": "55c6ea4e921f1807242d81ed742decc88e24a497966224146ac61a71d13e2428",
       "src/research/liquid_predictability/control_data.py": "6a24e16b4bbd1aba95c68c97a2c022ba5e59789051e4faf08ec81813ee7bb059",
       "src/research/liquid_predictability/control_queue.py": "f0d18f999bf5c73f51b5ba865a924b6511dc23a2836908dd18e825e156def85e",
-      "src/research/liquid_predictability/descriptor_fit.py": "904d1da89c336f87e10a5b280e43bbff6391f89fe37b594de05fd18213135e0f",
+      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
       "src/research/liquid_predictability/descriptor_baselines.py": "abd630bc5ac0512352e25f7e43bffa8d8037c98475e968b205d87782a7574193",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/equivariant_context/model.py": "9a4c4d6124ecee2df41985f16ccbbe60728931ecbcf21fffb39d8ac67061094e",
       "src/research/equivariant_context/features.py": "d6568fdcacc7ef679101576bc31b55ccf20413f03c5b7eadeb1840164c233ac6",
       "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
@@ -1979,14 +1987,17 @@
       "src/experiment_runner/metric_docs.py": "3e791c2c08ac2a1b1fb70a8538a3ad04cd6534f143ba75dd8bbbb84dcfdd50d1",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
       "src/experiment_runner/array_exports.py": "c7af2f4418c3759c4c53b0f14dfde906de333fa1a0f1d4b017666c07e61a7eb7",
-      "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572"
+      "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
+      "src/research/liquid_predictability/models.py": "507f29d2e32be4ef8f7912ecf4c051d3c9a0e7de54738c137b5cb99ec02825b8",
+      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96"
     }
   },
   "rich_descriptor_encoder": {
     "files": {
-      "docs/metrics/rich_descriptor_encoder.md": "3454a0247e5c3a00a5e9ce6a63461901f27a82f8cfe52e720b0d2c08a53b1795",
+      "docs/metrics/rich_descriptor_encoder.md": "31396576ddec1a7cefa0e93b1ca8445170cb7c46e11df9540d4d28830d9ddcce",
       "configs/liquid_predictability/rich_mace256_20260929.json": "2aa5e17a4d26a7a36077252f02c20c11b8c0b7d0b5e3c04b0cafdcd8cb8f224d",
-      "src/research/liquid_predictability/rich_encoder.py": "f82dca08de66ed25a1b6e40de47b24a32692e1e1b5f7c077f94400de2c2ea323",
+      "src/research/liquid_predictability/rich_encoder.py": "d03e6cefb2b4f4429d70c8eea559ac30f5c1c867903206e5c96fbdacfaf30714",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
       "src/research/equivariant_context/features.py": "d6568fdcacc7ef679101576bc31b55ccf20413f03c5b7eadeb1840164c233ac6",
@@ -1995,13 +2006,16 @@
       "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5",
       "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
       "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
-      "src/research/liquid_predictability/control_train.py": "1b09a29503ec7d73d57ac1598bd0e79ea7afe5de18d2562bcc7e2312f548d56f",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
+      "src/research/liquid_predictability/control_train.py": "c6db8e11d661aa16033c4f633a4d9db94f8ece3b268e5ff34ae16c2025419ce0",
       "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
       "src/experiment_runner/array_exports.py": "c7af2f4418c3759c4c53b0f14dfde906de333fa1a0f1d4b017666c07e61a7eb7",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
       "src/experiment_runner/metric_docs.py": "3e791c2c08ac2a1b1fb70a8538a3ad04cd6534f143ba75dd8bbbb84dcfdd50d1",
-      "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572"
+      "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
+      "src/research/liquid_predictability/models.py": "507f29d2e32be4ef8f7912ecf4c051d3c9a0e7de54738c137b5cb99ec02825b8",
+      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96"
     }
   },
   "spatial_vicreg_coordinates": {
@@ -2018,10 +2032,10 @@
   },
   "rich_multimaterial_encoder": {
     "files": {
-      "docs/metrics/rich_multimaterial_encoder.md": "7a8a131d2568d014c9ebf4042e62d85627e97f5cfc6d07d906065a903e8e4c30",
+      "docs/metrics/rich_multimaterial_encoder.md": "afea9f774e476c3b04d656fa96bd3fdf014ab5548407c5a8393ee8bdcd6e1d73",
       "configs/liquid_predictability/rich_multimaterial_20260929.json": "0ca5f3174a889991d130b55c40f694d2ab39800933d3448dd3c0690d63e593cd",
       "src/research/liquid_predictability/rich_multimaterial_data.py": "5ad1cc825b3aef2ef3ebefd48b8f779728b960528442b8b39c9158b915a20576",
-      "src/research/liquid_predictability/rich_multimaterial_train.py": "541fa6db13276f86a559d0e27ebeb13857790c9be95094e62a18003ee780dc0c",
+      "src/research/liquid_predictability/rich_multimaterial_train.py": "d8033e905a620255b41698afa1dddce6248877d690298944fab1bcd8f3b6c169",
       "src/research/liquid_predictability/rich_multimaterial_queue.py": "3d82210f80cdb9611ae7f47f5b72a29eb22d3aa9f1e140c035dcb02342223558",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
       "src/data/structural_pretraining/native_dataset.py": "614c5128aae496d3eb6704bc24daebe1c287847373c3a1aad695d358857de5be",
@@ -2030,9 +2044,9 @@
       "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
       "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5",
       "src/research/equivariant_context/features.py": "d6568fdcacc7ef679101576bc31b55ccf20413f03c5b7eadeb1840164c233ac6",
-      "src/research/crystal_vector/model.py": "798e7eeb8e5508867b8cc5496173f630282e3fb58b698ca88ba2ee54303565eb",
+      "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
-      "src/research/liquid_predictability/rich_encoder.py": "f82dca08de66ed25a1b6e40de47b24a32692e1e1b5f7c077f94400de2c2ea323",
+      "src/research/liquid_predictability/rich_encoder.py": "d03e6cefb2b4f4429d70c8eea559ac30f5c1c867903206e5c96fbdacfaf30714",
       "configs/liquid_predictability/rich_multimaterial_repair_20260929.json": "cd4d0979e210b2f62636a727096cff77499b4d352e6a454e4d2666d5087a4f5b",
       "configs/liquid_predictability/rich_multimaterial_lr004_20260929.json": "56013181b00561ac07cee85971139a1870dce7460b615cc7ef75606de837b88a",
       "src/research/liquid_predictability/rich_multimaterial_handoff.py": "8cacf9d00902472680d1c6d60352853b1f67e2e56a70a302979a4b16ba85c406",
@@ -2043,7 +2057,9 @@
       "src/experiment_runner/metric_docs.py": "3e791c2c08ac2a1b1fb70a8538a3ad04cd6534f143ba75dd8bbbb84dcfdd50d1",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
       "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
-      "src/experiment_runner/execution.py": "11a13604bba7002afe67341035a9173297de73d06f6ed29fb048fed459653b8c"
+      "src/experiment_runner/execution.py": "11a13604bba7002afe67341035a9173297de73d06f6ed29fb048fed459653b8c",
+      "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
+      "src/research/liquid_predictability/models.py": "507f29d2e32be4ef8f7912ecf4c051d3c9a0e7de54738c137b5cb99ec02825b8"
     }
   },
   "spatial_vicreg_bias": {

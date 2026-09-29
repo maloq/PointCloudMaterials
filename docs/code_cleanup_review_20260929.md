@@ -217,6 +217,11 @@ a different restart-capable thermostat from its older campaign.
 
 ### 8. Dense training code hides state and model contracts — medium priority
 
+The [training/model follow-up](code_cleanup_implementation.md#training-and-model-follow-up)
+now addresses these three model classes, a shared typed/context trunk, feature
+layout ownership and six related training modules. Other experiment families
+retain their own protocols and remain separate follow-up work.
+
 **Evidence:** `src/research/liquid_predictability/control_train.py` has 93 statement
 semicolons in 266 lines; `src/research/spatial_vicreg_bias/evaluate.py` has 78 in
 393 lines. At `liquid_predictability/train.py:196`, backward, clipping, optimizer
