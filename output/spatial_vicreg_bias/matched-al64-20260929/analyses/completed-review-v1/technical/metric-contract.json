@@ -1,0 +1,10 @@
+{
+  "family": "spatial_vicreg_results",
+  "exported_at": "2026-09-29T10:25:20.422553+00:00",
+  "files": {
+    "src/research/spatial_vicreg_bias/results.py": "80d82c50b7277feceac7204fc1f433a98b54acd3c73be3330c88236211477181",
+    "src/research/spatial_vicreg_bias/data.py": "bbb4d1a60ab52467eaf2d30718e5bda9294c69ad3b2e6b78257158e553830b11",
+    "docs/metrics/spatial_vicreg_results.md": "57ccb87bd679da0c75879450e7cc8d34e0563a4233591ea45fd794f4a336db0c"
+  },
+  "verified": true
+}

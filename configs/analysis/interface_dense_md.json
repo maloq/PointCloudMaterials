@@ -1,0 +1,27 @@
+{
+  "protocol": "interface_dense_md_v1",
+  "pacmap_config": "configs/analysis/interface_pacmap_cuda.json",
+  "output": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/dense-md-v1",
+  "publication": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1",
+  "snapshots": [
+    {
+      "source": 908,
+      "frame": 768
+    }
+  ],
+  "selection": "Largest accepted crystal-side interface atom count among the 390 fixed held-out snapshots; visualization only",
+  "workers": 8,
+  "chunk_atoms": 256,
+  "models": [
+    {
+      "run": "S1-seed17",
+      "epoch": 24
+    },
+    {
+      "run": "S0-seed17",
+      "epoch": 4
+    }
+  ],
+  "gpu_partition": "A40,3090,L40S",
+  "gpu_node": null
+}

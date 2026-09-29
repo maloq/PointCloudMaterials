@@ -26,7 +26,7 @@ def discard_inference_cache(out_dir: Path, cache_filename: str) -> None:
         (retained / 'README.md').write_text(
             '# Removed inference caches\n\n'
             'The adjacent metadata preserves exact checkpoint, input, sampling and seed specifications. '
-            'Rebuild with the original full analysis and `figure_set.figure_only=false`. '
+            'Rebuild with the original full analysis in a new output directory. '
             'Keep the selected checkpoint and original datasets. Prediction arrays are not removed.\n')
     for path in (data, metadata):
         if path.exists() or path.is_symlink():
@@ -110,101 +110,18 @@ def _inference_cache_paths(out_dir: Path, cache_filename: str) -> tuple[Path, Pa
     return npz_path, meta_path
 
 
-def _validate_inference_cache_arrays(cache: dict[str, np.ndarray]) -> None:
-    required = ("inv_latents", "eq_latents", "phases", "coords", "instance_ids")
-    missing = [key for key in required if key not in cache]
-    if missing:
-        raise ValueError(f"Inference cache missing arrays: {missing}")
-    inv_latents = np.asarray(cache["inv_latents"])
-    if inv_latents.ndim != 2:
-        raise ValueError(
-            "Inference cache 'inv_latents' must have shape [num_samples, latent_dim], "
-            f"got shape={tuple(inv_latents.shape)}."
-        )
-    num_samples = int(inv_latents.shape[0])
-    _validate_invariant_latent_values(inv_latents)
-
-    coords = np.asarray(cache["coords"])
-    if coords.ndim != 2 or coords.shape[1] != 3:
-        raise ValueError(
-            "Inference cache 'coords' must have shape [num_samples, 3], "
-            f"got shape={tuple(coords.shape)}."
-        )
-    if coords.shape[0] != num_samples:
-        raise ValueError(
-            "Inference cache sample mismatch between 'inv_latents' and 'coords': "
-            f"{num_samples} vs {coords.shape[0]}. "
-            f"All cache shapes: {{'inv_latents': {tuple(inv_latents.shape)}, "
-            f"'coords': {tuple(coords.shape)}, "
-            f"'eq_latents': {tuple(np.asarray(cache['eq_latents']).shape)}, "
-            f"'phases': {tuple(np.asarray(cache['phases']).shape)}, "
-            f"'instance_ids': {tuple(np.asarray(cache['instance_ids']).shape)}}}."
-        )
-
-    for key in ("eq_latents", "phases", "instance_ids"):
-        arr = np.asarray(cache[key])
-        if arr.size == 0:
-            continue
-        if arr.shape[0] != num_samples:
-            raise ValueError(
-                "Inference cache sample mismatch: "
-                f"'inv_latents' has {num_samples} rows but '{key}' has shape={tuple(arr.shape)}."
-            )
-    optional_sample_keys = [
-        key
-        for key in cache.keys()
-        if key not in required
-    ]
-    for key in optional_sample_keys:
-        arr = np.asarray(cache[key])
-        if arr.size == 0:
-            continue
-        if arr.ndim == 0:
-            raise ValueError(
-                "Inference cache dynamic arrays must remain per-sample arrays. "
-                f"Key {key!r} was saved as a scalar."
-            )
-        if arr.shape[0] != num_samples:
-            raise ValueError(
-                "Inference cache sample mismatch in optional array: "
-                f"'inv_latents' has {num_samples} rows but '{key}' has shape={tuple(arr.shape)}."
-            )
+def _validate_inference_cache_arrays(cache):
+    """Check numerical encoder output; cache schema is owned by our collectors."""
+    _validate_invariant_latent_values(cache['inv_latents'])
 
 
-def _validate_invariant_latent_values(inv_latents: np.ndarray) -> None:
-    arr = np.asarray(inv_latents)
-    chunk_size = 65536
-    zero_rows = 0
-    first_zero_row: int | None = None
-    first_nonfinite_row: int | None = None
-    for start in range(0, int(arr.shape[0]), chunk_size):
-        end = min(start + chunk_size, int(arr.shape[0]))
-        chunk = np.asarray(arr[start:end], dtype=np.float32)
-        finite_rows = np.isfinite(chunk).all(axis=1)
-        if not np.all(finite_rows):
-            bad = int(np.flatnonzero(~finite_rows)[0])
-            first_nonfinite_row = start + bad
-            break
-        norms = np.linalg.norm(chunk, axis=1)
-        zero_mask = norms <= 1.0e-8
-        if np.any(zero_mask):
-            zero_rows += int(np.count_nonzero(zero_mask))
-            if first_zero_row is None:
-                first_zero_row = start + int(np.flatnonzero(zero_mask)[0])
-
-    if first_nonfinite_row is not None:
-        raise ValueError(
-            "Inference cache 'inv_latents' contains non-finite values. "
-            f"first_bad_row={first_nonfinite_row}, shape={tuple(arr.shape)}. "
-            "Delete the cache and rerun inference."
-        )
-    if zero_rows > 0:
-        raise ValueError(
-            "Inference cache 'inv_latents' contains zero-norm rows. "
-            f"zero_rows={zero_rows}, first_zero_row={first_zero_row}, "
-            f"shape={tuple(arr.shape)}. This usually means the cache was written "
-            "from an incomplete async GPU-to-CPU transfer; delete the cache and rerun inference."
-        )
+def _validate_invariant_latent_values(inv_latents):
+    for start in range(0, len(inv_latents), 65536):
+        chunk = inv_latents[start:start+65536].astype(np.float32, copy=False)
+        invalid = ~np.isfinite(chunk).all(axis=1) | (np.linalg.norm(chunk, axis=1) <= 1e-8)
+        if invalid.any():
+            raise ValueError(f'Invalid encoder output at row {start + np.flatnonzero(invalid)[0]}: '
+                             'nonfinite or zero-norm embedding; recompute inference.')
 
 
 def _load_inference_cache(

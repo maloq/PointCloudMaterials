@@ -28,18 +28,23 @@ replacement training. The existing cache is reused, with no new data generation.
 
 Future runs require online Weights & Biases tracking in
 [teshbek/PointCloudMaterials](https://wandb.ai/teshbek/PointCloudMaterials).
-Encoder fitting, frozen readouts and descriptor controls open an online run
-before optimization. Study identity plus component name determines the stable
-run ID; screening, continuation and evaluation reuse that ID. Encoder loss,
-gradient norm, learning rates and selection AP use the optimizer-update axis;
-each readout has its own update axis. Final AP/Brier/calibration results are
-summaries, so evaluating an earlier selected checkpoint cannot rewind history.
-Receipts live in `technical/wandb/<component>/run.json`. Offline/disabled modes
-are rejected; authentication failures abort instead of silently losing tracking.
-Previously submitted frozen jobs retain their original local logging.
-Only scientific training runs and their associated evaluation metrics belong
-in W&B. Debugging, tests, smoke checks and hardware benchmarks stay local.
-Tracking tests mock the SDK; they never create online test runs.
+Scientific encoder and predictor fits open an online run before optimization.
+Study identity plus component name determines the stable resumable run ID.
+Frozen diagnostic probes and descriptor controls stay local, with progress and
+summaries under `technical/evaluation-tracking/<component>/<kind>/`; their
+checkpoints, predictions and metrics are retained. Cached readouts return verified
+saved predictions without a tracking session.
+
+Associated evaluation scores update an existing training run through the public
+API using `technical/wandb/<component>/run.json`. The receipt must match the
+study identity, component and project; a missing or mismatched receipt fails
+rather than creating another run. Summary updates do not change training state,
+restart a finished run or rewind optimizer history. A local publication receipt
+records success or failure. Authentication/network failures remain visible.
+Online tracking remains mandatory for scientific fits; offline/disabled modes
+are rejected. Debugging, smoke checks and hardware benchmarks stay local.
+Already-running frozen jobs retain their existing logging, as requested; the
+new policy applies to subsequent launches.
 
 A separate September25 timing check on the RTX PRO6000 Blackwell used the2M
 relaxed-input encoder,80-atom cached patches and effective batch256. Microbatch64

@@ -1,0 +1,13 @@
+{
+  "family": "interface_pacmap",
+  "exported_at": "2026-09-29T13:05:57.428371+00:00",
+  "files": {
+    "src/research/spatial_vicreg_bias/pacmap_views.py": "675829954cb7b72da6fa1f3ec6a0d7ce518dc6f37c7acfddd24e1c73fcc8a10a",
+    "src/research/spatial_vicreg_bias/pacmap_view.html": "1bc3d01286a16354fea2021a4088bcd25affb73c56cb6495ac89a557206511fe",
+    "src/research/spatial_vicreg_bias/correspondence.py": "c319e749dc83024372a9d9b9b3765f0ec7a9252318ef5e1613714f6faba9e4cb",
+    "src/research/spatial_vicreg_bias/data.py": "bbb4d1a60ab52467eaf2d30718e5bda9294c69ad3b2e6b78257158e553830b11",
+    "src/research/equivariant_context/cache.py": "855cf94d9a5129b52350ee5ea6b1bd303644c6cebcc105c2af4f50a5c8a2d30b",
+    "docs/metrics/interface_pacmap.md": "6466aba0c5509460f7bb769986619dd001c07a17b41b6e0ac408ac9353f041db"
+  },
+  "verified": true
+}

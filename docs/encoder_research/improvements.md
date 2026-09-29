@@ -2,6 +2,11 @@
 
 [Handbook](README.md) · [Current analysis tools](analysis.md)
 
+September 26 follow-up: [result-system implementation](../research_results_system.md)
+adds named bundles, shared run/evaluation receipts, explicit operational
+classification and real metric hash validation. The table below records the
+earlier recommendations; producer adoption remains incremental.
+
 The immediate navigation improvement is implemented: one family/evaluation guide,
 a curated results table, an offline searchable catalogue and a SQLite evidence
 store with original source references. It reads the existing research layout;
@@ -24,10 +29,10 @@ reporting system.
 | 3 | Fresh confirmation sources and balanced seed replication | Repeated development inspection and single-seed fitting dominate uncertainty | Freeze final sources before model promotion; separate source and seed variation; size evaluation by independent roots and onsets, not atom/window count |
 | 3 | Incremental, content-addressed catalogue imports | A broad historical refresh rereads many unchanged small files | Cache imported records by content identity; preserve revisions and aliases; report actual coverage, not just a successful exit |
 
-The metric-contract audit gap above is a recommendation, not a claimed repair in
-this documentation task. Changing global historical export behavior deserves a
-separate reviewed change. The new catalogue records its own hashes and validates
-quoted evidence, but does not retroactively validate or recompute old metrics.
+The metric-contract audit gap above was repaired in the September 26 implementation.
+New numerical exports verify declared source/doc hashes. Historical publication
+retains original definitions; it does not retroactively validate or recompute old
+metrics. The three adopted bundles exercise preserved historical evidence.
 
 For day-to-day work, make the smallest useful result card first: the question,
 what changed, the exact comparison population, one paired effect with uncertainty,
@@ -60,4 +65,5 @@ one 4096-anchor frame metric stage. KMeans assignments matched exactly; maximum
 scalar-score drift was 0.00091 and a few logistic classifications changed because
 of numerical reductions. This is not a 54× end-to-end claim. Caching the immutable
 physical references and the shared current-physics baseline also removes repeated
-work. The global metric-contract audit gap above remains unmodified.
+work. That snapshot left the metric-contract audit gap unchanged; the September
+26 result-system implementation subsequently repaired it.

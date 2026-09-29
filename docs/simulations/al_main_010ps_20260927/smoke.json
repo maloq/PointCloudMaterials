@@ -1,0 +1,30 @@
+{
+  "state": "complete",
+  "protocol": "al_dense_replay_v1",
+  "source_sha256": "b9d236f78d97cbd6a9a75e33bf0767565c66da0e64697a7b85efa05ae31ed266",
+  "source_deleted": true,
+  "frame_count": 6001,
+  "atom_count": 108,
+  "float32_manifest_sha256": "6135892c2d4a600e0f9112d70e1edc9d4a6f17a6e8078f51aeb2a519bf79dfde",
+  "float16_manifest_sha256": "69665a797339866f05cd429ba7438ee994dc194ee530348e31c8fa00cc8fc079",
+  "quantization": {
+    "positions": {
+      "max_abs": 0.00390625,
+      "rms": 0.0015796515267993711,
+      "coordinate_count": 1944324,
+      "units": "angstrom",
+      "periodic_minimum_image": true
+    },
+    "velocities": {
+      "max_abs": 0.0074405670166015625,
+      "rms": 0.0007220612957146235,
+      "coordinate_count": 1944324,
+      "units": "angstrom_per_ps",
+      "periodic_minimum_image": false
+    }
+  },
+  "precision_reference": "Verified transient float32 consumer coordinates; native restarts retained",
+  "float32_reference_retained": false,
+  "scope": "108-atom infrastructure fixture, 300000 steps; not a scientific source",
+  "source_input": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/smoke/source.in.lammps"
+}

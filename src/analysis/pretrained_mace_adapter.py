@@ -1,5 +1,6 @@
 """Fine-tuned MACE encoder bridge to the existing full static analysis."""
 from pathlib import Path
+from src.analysis.config import load_checkpoint_analysis_config
 from omegaconf import OmegaConf
 import torch
 from torch import nn
@@ -24,7 +25,7 @@ class PretrainedMACEAnalysis(nn.Module):
 
 def export_encoder(cfg):
     out=Path(cfg['output']);directory=out/'encoder';directory.mkdir(exist_ok=True);(directory/'.hydra').mkdir(exist_ok=True)
-    analysis=OmegaConf.load(cfg['analysis_config'])
+    analysis=load_checkpoint_analysis_config(cfg['analysis_config'])
     data=OmegaConf.load(analysis.inputs.data_config)
     config=OmegaConf.create(dict(model_type='pretrained_mace_encoder',representation_source='encoder',pretrained_checkpoint=cfg['pretrained_checkpoint'],protocol=cfg['protocol'],performance=cfg['performance'],batch_size=cfg['microbatch_size'],num_workers=4,max_samples=0,split_seed=123,data=OmegaConf.to_container(data,resolve=True)))
     payload=torch.load(out/'best.pt',map_location='cpu',weights_only=False)

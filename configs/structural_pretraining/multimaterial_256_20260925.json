@@ -1,0 +1,28 @@
+{
+  "protocol": "native_multimaterial_structural_v1",
+  "release": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+  "output": "${storage:analysis}/structural_pretraining/multimaterial-256-20260925",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d"
+  },
+  "source_catalog": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919/plan.json",
+  "external_dynamic_strata": ["al_other", "mg", "ti", "ta"],
+  "external_static_materials": ["Mg", "Ti", "Ta", "Zr"],
+  "native_train_centers": 256,
+  "external_center_fraction": 0.01,
+  "frame_spacing_ps": 3.0,
+  "candidate_atoms": 80,
+  "radius_A": 8.0,
+  "maximum_rows_per_shard": 32768,
+  "seed": 20260925,
+  "species": [12, 13, 22, 40, 73],
+  "inputs": {
+    "positions": "center-relative nearest80, unscaled Angstrom, radius8 mask, no halo",
+    "species": "actual atomic number",
+    "conditions": [],
+    "history": "none",
+    "motion": "none",
+    "training_only_teacher": "existing paired native Al relaxed cells; observed atom membership retained"
+  }
+}

@@ -1,16 +1,14 @@
-"""Flat, portable galleries of artifacts produced by the standard analysis pipeline."""
-
-import fcntl
-import html
+"""Structured publication of standard analyses; rendering never recalculates scores."""
 import json
 import os
 from pathlib import Path
-import shutil
 
 from omegaconf import OmegaConf
 
-from src.experiment_runner.artifacts import analysis_artifacts, result_folders
+from src.experiment_runner.artifacts import analysis_artifacts, write_json
 from src.experiment_runner.metric_docs import write_metric_table
+from src.experiment_runner.result_records import file_hash, location
+from .publication import publish_bundle
 
 
 def report_directory(cfg, analysis_cfg):
@@ -23,117 +21,72 @@ def report_directory(cfg, analysis_cfg):
     return Path(root)/str(name).lower().replace('_', '-')
 
 
-def _write(path, text):
-    temporary = path.with_name(f'.{path.name}.{os.getpid()}.tmp')
-    temporary.write_text(text, encoding='utf-8')
-    temporary.replace(path)
-
-
-def publish_report(source, destination, *, checkpoint_sha256=None, update_index=True):
-    source, destination = Path(source).resolve(), Path(destination).resolve()
+def publish_report(source, destination, *, checkpoint_sha256=None, update_index=True,
+                   computed=False, analysis_cfg=None):
+    source, destination = Path(source).absolute(), Path(destination).absolute()
     if not (source/'analysis_metrics.json').is_file():
         source = analysis_artifacts(source)
     metrics = json.loads((source/'analysis_metrics.json').read_text())
-    if checkpoint_sha256 is None:
-        checkpoint_sha256 = (metrics['topology']['checkpoint_sha256'] if 'topology' in metrics
-                             else metrics['checkpoint_sha256'])
-    result_folders(destination)
-    manifest_path = destination/'technical/source.json'
-    legacy_manifest = destination/'source.json'
-    previous_path = manifest_path if manifest_path.exists() else legacy_manifest
-    if previous_path.exists():
-        previous = json.loads(previous_path.read_text())
-        if previous['checkpoint_sha256'] != checkpoint_sha256:
-            raise FileExistsError(f'{destination} already belongs to {previous["analysis_directory"]}. '
-                                  'Choose a distinct report.root for another experiment.')
-    k = int(metrics['clustering']['primary_k'])
-    files = {
-        'tsne.png': 'latent_tsne_clusters.png',
-        'umap.png': 'latent_umap_clusters.png',
-        'pca.png': 'latent_pca_analysis.png',
-        'pca-3d.png': 'latent_pca_3d.png',
-        'latent-statistics.png': 'latent_statistics.png',
-        'representatives.png': f'real_md/representatives/04_cluster_representatives_k{k}_pca_reciprocal.png',
-        'representatives-bonds.png': f'real_md/representatives/09_cluster_representatives_knn_edges_k{k}.png',
-        'representatives.html': 'real_md/representatives/12_cluster_representatives_3d.html',
-        'md-umap.png': 'real_md/latent/latent_projection_umap_clusters.png',
-        'md-pca.png': 'real_md/latent/latent_projection_pca_clusters.png',
-        'cluster-proportions.png': 'real_md/time_series/cluster_proportions_stacked_area.png',
-        'transitions.png': 'real_md/transitions/transition_aggregate_flow.png',
-        'metrics.json': 'analysis_metrics.json',
-        'topology.json': 'topology/metrics.json',
-    }
-    for snapshot in sorted((source/'snapshots').glob('*')):
-        for extension in ('png', 'html'):
-            files[f'spatial-{snapshot.name}.{extension}'] = (
-                f'snapshots/{snapshot.name}/md_space/md_space_clusters_k{k}.{extension}')
-        files[f'representatives-{snapshot.name}.png'] = (
-            f'snapshots/{snapshot.name}/figure_set_k{k}/04_cluster_representatives_k{k}_pca_reciprocal.png')
-    for path in sorted((source/'connected_regimes').glob('*.png')):
-        files[path.name.replace('_', '-')] = str(path.relative_to(source))
-    for path in sorted((source/'real_md/representatives').glob('11_*.html')):
-        files[path.name.removeprefix('11_').replace('_', '-')] = str(path.relative_to(source))
-    published = {}
-    for name, relative in files.items():
-        original = source/relative
-        if not original.exists():
-            continue  # These plots are optional stages of the analysis pipeline.
-        category = 'technical' if name.endswith('.json') else 'plots'
-        name = f'{category}/{name}'
-        temporary = (destination/name).with_name(f'.{Path(name).name}.{os.getpid()}.tmp')
-        if source.is_relative_to(destination):
-            # A self-contained run already owns these bytes in technical/. Avoid a second plot copy.
-            temporary.symlink_to(os.path.relpath(original, temporary.parent))
-        else:
-            shutil.copy2(original, temporary)
-        temporary.replace(destination/name)
-        published[name] = relative
-    write_metric_table(metrics, destination, family='analysis')
-    # Only retire the files owned by our previous gallery manifest. Source analyses stay intact.
-    if legacy_manifest.exists():
-        previous = json.loads(legacy_manifest.read_text())
-        for name in previous['files']:
-            old = destination/name
-            if name not in published and old.is_file() and old.parent == destination:
-                old.unlink()
-        legacy_manifest.unlink()
-    cards = []
-    links = ['<li><a href="tables/metrics.csv">Metric table (CSV)</a></li>',
-             '<li><a href="tables/METRICS.md">How the metrics are calculated</a></li>']
-    for name in published:
-        label = Path(name).stem.replace('-', ' ')
-        if name.endswith('.png'):
-            cards.append(f'<figure><a href="{html.escape(name)}"><img loading="lazy" '
-                         f'src="{html.escape(name)}" alt="{html.escape(label)}"></a>'
-                         f'<figcaption>{html.escape(label)}</figcaption></figure>')
-        elif name.endswith('.html'):
-            links.append(f'<li><a href="{html.escape(name)}">{html.escape(name)}</a></li>')
-    umap_available = any(name in published for name in ('plots/umap.png', 'plots/md-umap.png'))
-    umap_status = 'UMAP available.' if umap_available else 'UMAP has not been generated for this report yet.'
-    title = destination.name
-    page = ('<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width">'
-        f'<title>{html.escape(title)}</title><style>body{{font:16px system-ui;margin:2rem;background:#f5f6f8;color:#202530}}'
-        'a{color:#2454a6}.plots{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem}'
-        'figure{margin:0;background:white;padding:1rem;border-radius:8px}img{width:100%;height:auto}'
-        'figcaption{padding-top:.6rem}li{margin:.4rem 0}</style>'
-        f'<a href="../index.html">All runs</a><h1>{html.escape(title)}</h1><p>{umap_status}</p>'
-        f'<ul>{"".join(links)}</ul><div class="plots">{"".join(cards)}</div>')
-    _write(destination/'index.html', page)
-    _write(destination/'README.md', f'# {title}\n\nOpen [the gallery](index.html).\n\n{umap_status}\n\n'
-           + '- [Metric table](tables/metrics.csv) · [Metric definitions](tables/METRICS.md)\n\n'
-           + '\n'.join(f'- [{name}]({name})' for name in published if not name.startswith('technical/'))+'\n')
-    _write(manifest_path, json.dumps(dict(analysis_directory=str(source), files=published,
-        checkpoint_sha256=checkpoint_sha256), indent=2)+'\n')
-    print(f'[analysis] Gallery: {destination/"index.html"}', flush=True)
-    if not update_index:
-        return
-    with (destination.parent/'.index.lock').open('w') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
-        reports = sorted({p.parent.parent for p in destination.parent.glob('*/technical/source.json')}
-                         | {p.parent for p in destination.parent.glob('*/source.json')})
-        entries = ''.join(f'<li><a href="{html.escape(p.name)}/index.html">{html.escape(p.name)}</a></li>' for p in reports)
-        _write(destination.parent/'index.html', '<!doctype html><meta charset="utf-8"><title>Research results</title>'
-            '<style>body{font:18px system-ui;margin:3rem}li{margin:.7rem 0}</style>'
-            f'<h1>Research results</h1><ul>{entries}</ul>')
-        _write(destination.parent/'README.md', '# Research results\n\n'
-               + '\n'.join(f'- [{p.name}]({p.name}/index.html)' for p in reports)+'\n')
+    if computed:
+        previous = destination/'analyses/standard-v1/analysis.json'
+        if previous.exists() and json.loads(previous.read_text())['numerical_evidence']['sha256']!=file_hash(source/'analysis_metrics.json'):
+            raise ValueError(f'{previous}: numerical evidence changed; export to a new analysis revision')
+        # Only the numerical producer may create a new metric export. Publication
+        # calls retain the original calculation definitions.
+        calculation_root = source.parent if source.name == 'data' else destination/'analyses/standard-v1'
+        write_metric_table(metrics, calculation_root, family='analysis', name='scores')
+    metadata = dict(protocol='standard-analysis',
+        inputs={'evidence': metrics.get('inference_cache', {}),
+                'note': 'Native input/representation contract is recorded in retained cache metadata.'},
+        population={'static_sources': metrics.get('analysis_source_names'),
+                    'temporal_inputs': metrics.get('temporal_real_inputs'),
+                    'note': 'Descriptive unless the linked scientific protocol establishes held-out sampling.'},
+        selection={'note': 'Checkpoint supplied by caller; analysis does not select models.'})
+    provenance_path = source/'encoder-provenance.json'
+    if provenance_path.exists():
+        provenance = json.loads(provenance_path.read_text())
+        metadata['selection'] = dict(rule=provenance['selection'],method=provenance['method'],
+            epoch=provenance['epoch'],source_checkpoint_sha256=provenance['source_sha256'],
+            receipt=location(provenance_path))
+    native_path = source/'structural-inference-protocol.json'
+    if native_path.exists():
+        native = json.loads(native_path.read_text())
+        metadata['inputs']['native_receipt'] = dict(path=location(native_path),sha256=file_hash(native_path))
+        metadata['inputs']['representation'] = native['representation']
+        metadata['inputs']['protocol'] = native['protocol']
+        if native['protocol'] == 'native_capacity_mace_static_v1':
+            frame = native['frames'][0]
+            metadata['inputs'].update({k:frame[k] for k in ('encoder_inputs','predictor_inputs',
+                'history','motion','explicit_conditions','observation','support_radius_A','candidate_atoms')})
+    stages = None
+    if analysis_cfg is not None:
+        stages = {'numerical_analysis':dict(state='complete', evidence=str(source/'analysis_metrics.json'))}
+        for name, option, key in [('representatives','figure_set.enabled','cluster_figure_set'),
+                                 ('real_md','real_md.enabled','real_md_qualitative')]:
+            enabled = bool(OmegaConf.select(analysis_cfg,option,default=False))
+            recorded = key in metrics or key+'_by_k' in metrics or (name=='representatives' and 'cluster_figure_sets_by_snapshot' in metrics)
+            stages[name] = dict(state=('complete' if recorded else 'unavailable') if enabled else 'disabled',
+                                evidence=str(source/'analysis_metrics.json') if recorded else None,
+                                note=f'{option}={enabled}; saved result block present={recorded}.')
+        equivariance_enabled = (bool(OmegaConf.select(analysis_cfg,'equivariance.enabled',default=True))
+                                and not metrics['runtime_profile'].get('equivariance_skipped',False))
+        equivariance_recorded = 'equivariance' in metrics
+        stages['equivariance'] = dict(
+            state=('complete' if equivariance_recorded else 'unavailable') if equivariance_enabled else 'disabled',
+            evidence=str(source/'analysis_metrics.json') if equivariance_recorded else None,
+            note='State follows the requested option, runtime profile and saved result block.')
+    analysis = publish_bundle(source,destination,checkpoint_sha256=checkpoint_sha256,
+        metadata=metadata,stages=stages,refresh=update_index,
+        include_paper_svg=bool(OmegaConf.select(analysis_cfg,'real_md.time_series.paper_enabled',default=False)) if analysis_cfg is not None else False,
+        execution=dict(state='analysis_complete',evidence=location(source/'analysis_metrics.json'),
+                       note='Numerical analysis completed; this is not a new encoder fit.') if computed else None)
+    # The maintained topology collector discovers numerical results through this
+    # exact producer receipt. Keep that interface without recreating flat plots.
+    manifest = destination/'technical/source.json'
+    if not manifest.exists():
+        write_json(manifest,dict(analysis_directory=str(source),files={},
+                                checkpoint_sha256=analysis['checkpoint_sha256']))
+    numerical_alias = destination/'technical/metrics.json'
+    if not numerical_alias.exists():
+        numerical_alias.symlink_to(os.path.relpath(source/'analysis_metrics.json',numerical_alias.parent))
+    return analysis

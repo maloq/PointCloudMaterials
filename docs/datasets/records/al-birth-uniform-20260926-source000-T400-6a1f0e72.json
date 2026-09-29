@@ -1,0 +1,570 @@
+{
+  "dataset_id": "al-birth-uniform-20260926-source000-T400",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/metadata.json",
+      "relative_path": "metadata.json",
+      "sha256": "501c18b328b90bcc1dd89de4d886875023c5aa29f6f0ae8f7b3834d5c1f77b82",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "completed_steps",
+        "conditions_are_model_inputs",
+        "equilibration_steps",
+        "material",
+        "max_hold_steps",
+        "melt_steps",
+        "native_restart_sha256",
+        "observation_start",
+        "parent_trajectory_id",
+        "potential",
+        "preparation_seed",
+        "protocol",
+        "replica",
+        "root_lineage",
+        "run_dir",
+        "run_id",
+        "run_index",
+        "sample_interval_steps",
+        "source_sha256",
+        "split",
+        "state",
+        "stop_reason",
+        "temperature_K",
+        "timestep_ps",
+        "velocity_seed"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_spontaneous_birth_sources_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_355088647",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "parent_trajectory_id": [
+          {
+            "value": null,
+            "first_json_path": "parent_trajectory_id",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 355088647,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 219271997,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam",
+            "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+          },
+          {
+            "path": "/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam",
+            "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/outcome.json",
+      "relative_path": "outcome.json",
+      "sha256": "776530728b941ba4a0e7524ff76f9f2d9a8586281bc8abce1a8bd7a4475821af",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "completed_steps",
+        "frame_count",
+        "hold_seconds",
+        "host",
+        "melt_seconds",
+        "native_restart_sha256",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state",
+        "stop_reason",
+        "updated_at"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/source_progress.json",
+      "relative_path": "source_progress.json",
+      "sha256": "d703c312c8d449924ac08361c0bfb38575dca0c69051febfbaf69685822a1764",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "crystal_fraction",
+        "first_fraction_crossing_step",
+        "fractions",
+        "ptm_rmsd_cutoff",
+        "step",
+        "stop",
+        "stop_reason",
+        "time_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/status.json",
+      "relative_path": "status.json",
+      "sha256": "776530728b941ba4a0e7524ff76f9f2d9a8586281bc8abce1a8bd7a4475821af",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "completed_steps",
+        "frame_count",
+        "hold_seconds",
+        "host",
+        "melt_seconds",
+        "native_restart_sha256",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state",
+        "stop_reason",
+        "updated_at"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/trajectory_binary_float16/manifest.json",
+      "relative_path": "trajectory_binary_float16/manifest.json",
+      "sha256": "5513fec54b1a0b26e3a7c020f0b29c1c63713a78e30671f5c87a8e1d4e50e600",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al_spontaneous_birth_sources_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_355088647",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1601,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "01b643428bfc6336307a46f22ae5a6ffe0ba0059768eb257196e30561e163540",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f7b8ca6689208086bbac1422cef24246d8f111516eaf8aa1321f81138ad02c1b",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              1601,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ad01166a9d0accdd3a8e58df3f47158a50165f7ea0875d66fce6e72d3c7e994a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              1601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "2f26fcd5fa2b1c69e8fbdacf1a4c258aee65fbb0f302d0b783df5998396eb9ad",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              1601,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d2b428f0f3579152dc9d2823c1d9005a33ee7b24754dda39a9a51d49d44d2e68",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 80000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "6f07268e4822eb7b2a4a0d6dad62cd621d849615dc8e816a76cb5d09d5bbc96f",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source000-T400/trajectory_binary_float32/manifest.json",
+      "relative_path": "trajectory_binary_float32/manifest.json",
+      "sha256": "256812c96e1ef1ed9555caf54a315df10391a23e3898be17fc6846e37fb4b954",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al_spontaneous_birth_sources_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_355088647",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1601,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "01b643428bfc6336307a46f22ae5a6ffe0ba0059768eb257196e30561e163540",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f7b8ca6689208086bbac1422cef24246d8f111516eaf8aa1321f81138ad02c1b",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              1601,
+              70304,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a08ec7d3b239963dc877912ce502b2ab2219b22e4785ce7331fb155e406aa284",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              1601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "2f26fcd5fa2b1c69e8fbdacf1a4c258aee65fbb0f302d0b783df5998396eb9ad",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              1601,
+              70304,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "438f676e870fbd52ef5f0e324da3566dad75b5ee7d74008fecd6237b84503ba9",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 80000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "eb8e644cac5e5663cc9fb95bc1664b96aaa9d64d80378863675ca95d2c84febb",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

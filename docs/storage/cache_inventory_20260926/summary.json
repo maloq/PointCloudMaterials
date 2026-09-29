@@ -1,0 +1,430 @@
+{
+  "started_at": "2026-09-26T15:08:25.478556+00:00",
+  "finished_at": "2026-09-26T15:09:00.692408+00:00",
+  "unit": "GB = 10^9 allocated bytes",
+  "cache_bytes_excluding_archived_relaxed_cells": 1044200378880,
+  "archived_relaxed_cells_bytes": 13905190912,
+  "total_including_relaxed_cells_bytes": 1058105569792,
+  "groups_bytes": {
+    "Spatial-context forecasting": 613298106368,
+    "Crystallization transfer": 73250669568,
+    "Full embedding forecasting": 70210019328,
+    "Equivariant-context training": 58627929600,
+    "Structural encoder pretraining": 53320355328,
+    "Shared context geometry": 52038851584,
+    "Other training and derived data caches": 37251338752,
+    "Neighborhood JEPA": 31587598336,
+    "Relaxed structures and their training caches": 26234880000,
+    "Analysis and historical output caches": 17559092224,
+    "Distance encoder": 13103776768,
+    "Structured crystallization": 10867011072,
+    "Generated encoder features": 755425792,
+    "Root metadata and links": 515072
+  },
+  "physical_roots": [
+    {
+      "path": "/home/ids/vmorozov/training-cache",
+      "allocated_bytes": 496005684736
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache",
+      "allocated_bytes": 70778255360
+    },
+    {
+      "path": "/store/PERSO/vmorozov/training-cache-archive-20260925",
+      "allocated_bytes": 360619450368
+    },
+    {
+      "path": "/store/PERSO/vmorozov/training-cache-archive-20260926",
+      "allocated_bytes": 99237896192
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_encoder",
+      "allocated_bytes": 11837005824
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda",
+      "allocated_bytes": 2068185088
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/crystallization_transfer/symmetric-relaxed-reuse-20260921/technical/smoke-cache",
+      "allocated_bytes": 5833216
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/pilot/cache",
+      "allocated_bytes": 27576832
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/dense-inputs",
+      "allocated_bytes": 24112640
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/dense8-inputs",
+      "allocated_bytes": 56125440
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research/screen-20260923/technical/inputs",
+      "allocated_bytes": 199009280
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_context_recovery/forecast-seed20260910-20260914/technical/cached",
+      "allocated_bytes": 1024
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 7251456
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_full_20260910/train/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 7251456
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/analysis_standard/analysis_inference_cache.npz",
+      "allocated_bytes": 404262912
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 2421760
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 7212032
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 2421760
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/analysis_inference_cache.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_repeat_anchor_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_reverse_past_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 7251456
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 2435072
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/relaxed_encoder/expanded-20260921/technical/smoke/cache",
+      "allocated_bytes": 296629248
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/relaxed_encoder/large-test-20260921/technical/cached-feature-smoke",
+      "allocated_bytes": 9132032
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/relaxed_encoder/pilot-20260920/technical/smoke/cache",
+      "allocated_bytes": 9495552
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/structural_static/gatr-vicreg-step3072-al-20260918/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 358088192
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/post_training/Al/analysis_inference_cache.npz",
+      "allocated_bytes": 8413184
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/post_training/Mg/analysis_inference_cache.npz",
+      "allocated_bytes": 8413184
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/post_training/Ta/analysis_inference_cache.npz",
+      "allocated_bytes": 7102464
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/geoframe_v2_spatiotemporal_Al_Mg_Ta_20260905/post_training/data_cache",
+      "allocated_bytes": 89989120
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/predictive_atlas_expanded512_cache_geoframe_v2_20260902",
+      "allocated_bytes": 1777664
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/predictive_atlas_temporal_encoder_input_cache_20260902",
+      "allocated_bytes": 1777664
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/predictive_atlas_temporal_encoder_scaled_input_cache_20260902",
+      "allocated_bytes": 1777664
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/pretrained_mace_80_dt01_cosine_20260906/source_cache",
+      "allocated_bytes": 1464369152
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/temporal_encoder_pretraining_expanded512_cache_20260902",
+      "allocated_bytes": 1769472
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/temporal_hypotheses_12h_20260906/cache",
+      "allocated_bytes": 1727627264
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/temporal_hypotheses_12h_20260906/static_Al_physical_cache",
+      "allocated_bytes": 1997676544
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/.pytest_cache",
+      "allocated_bytes": 393216
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/cache_float16_20260907",
+      "allocated_bytes": 425984
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/embedding_forecast_20260911/pilot/cache",
+      "allocated_bytes": 56360960
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_full_20260910/train/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_full_20260910/train/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 10117120
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_full_20260910/train/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 10117120
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep01/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_20260910_172946/default/anchor_pca__rep02/analysis_standard/analysis_inference_cache.npz",
+      "allocated_bytes": 541564928
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 10117120
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/anchor_blocks__rep02/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/analysis_inference_cache.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_repeat_anchor_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/test_reverse_past_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/train_real_inference.npz",
+      "allocated_bytes": 10117120
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_vicreg_relaxed_20260910/runs/mace_vicreg_relaxed_h100_detached_20260910_175825/default/mean_blocks__rep03/analysis_standard/topology/val_real_inference.npz",
+      "allocated_bytes": 3563520
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache",
+      "allocated_bytes": 696320
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/registry/retired_cache_metadata/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache",
+      "allocated_bytes": 57344
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/registry/retired_cache_metadata/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720/replicas/replica_000/analysis_inputs/temporal/cache",
+      "allocated_bytes": 81920
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/registry/retired_cache_metadata/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720/replicas/replica_000/analysis_inputs/temporal/cache",
+      "allocated_bytes": 81920
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/static_sample_cache",
+      "allocated_bytes": 5939200
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache",
+      "allocated_bytes": 49209344
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720/replicas/replica_000/analysis_inputs/temporal/cache",
+      "allocated_bytes": 149454848
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720/replicas/replica_000/analysis_inputs/temporal/cache",
+      "allocated_bytes": 149430272
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/outputs/static_Al_6frames_multiscale_line/analysis_inference_cache.npz",
+      "allocated_bytes": 541515776
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/outputs/static_crystallization_step187800_multiscale_vicreg/analysis_inference_cache.npz",
+      "allocated_bytes": 1630208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast/context-space-mixture-20260913/technical/spatial-cache",
+      "allocated_bytes": 1416949248
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast/spatial-context-scale-20260913/technical/cache-execution",
+      "allocated_bytes": 1774592
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast/spatial-context-scale-20260913/technical/cache-execution-v2",
+      "allocated_bytes": 1767424
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast/spatial-context-scale-20260913/technical/cache-preparation",
+      "allocated_bytes": 8704
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast/spatial-context-scale-20260913/technical/cache-preparation-v2",
+      "allocated_bytes": 24064
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_context/multimaterial256-epochs-20260925/technical/preparation-before-cache6",
+      "allocated_bytes": 2761216
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_quality/latest-mace-20260926/technical/logging-policy-review-20260926/evaluation-tracking/cached-readout-review",
+      "allocated_bytes": 16896
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/feature-extraction-20260925/technical/verified-code/.pytest_cache",
+      "allocated_bytes": 39424
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/feature-extraction-20260925/technical/verified-code/tests/.pytest_cache",
+      "allocated_bytes": 32256
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/feature-extraction-20260925/technical/verified-code-v2/.pytest_cache",
+      "allocated_bytes": 39424
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/feature-extraction-20260925/technical/verified-code-v2/tests/.pytest_cache",
+      "allocated_bytes": 32256
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/pipeline-fixes-20260925/technical/verified-code/.pytest_cache",
+      "allocated_bytes": 39424
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/encoder_supervised/pipeline-fixes-20260925/technical/verified-code/tests/.pytest_cache",
+      "allocated_bytes": 32256
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace/anchor_blocks__rep02/analysis_inference_cache.npz",
+      "allocated_bytes": 405271040
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace/anchor_pca__rep01/analysis_inference_cache.npz",
+      "allocated_bytes": 405271040
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace/full/analysis_inference_cache.npz",
+      "allocated_bytes": 405271040
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace/full-original/analysis_inference_cache.npz",
+      "allocated_bytes": 405271040
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace_context_recovery/forecast-seed20260910-20260914/technical/cached",
+      "allocated_bytes": 171324928
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace_context_static/dual-physics-epoch12-al-20260915/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 1411279360
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/mace_context_static/dual-physics-epoch12-zr-20260915/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 1367650304
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/standard-v1/data/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/epi-direct-order-step768-al-20260920/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/gatr-local-step622-al-20260919/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/gatr-temporal-backtracking-latest-20260918T1936/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 358991872
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/gatr-vicreg-v6-step1216-al-20260918/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/mace-epi-epoch12-al-20260926/analyses/standard-v1/data/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/mace-local-step622-al-20260919/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/mace-vicreg-v6-step1465-al-20260918/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/structural_static/relaxed-cold-vic-temp01-step2048-al-20260921/technical/analysis_inference_cache.npz",
+      "allocated_bytes": 359006208
+    }
+  ]
+}

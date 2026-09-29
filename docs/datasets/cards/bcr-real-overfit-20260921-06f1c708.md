@@ -33,7 +33,8 @@ Eight radius-8 angstrom patches from two full-precision frames of one 400K Al tr
     "configs/bcr/real_overfit.json"
   ],
   "limitations": [
-    "Single shared prepared-liquid root, no independent test split. Positions float32; explicit native-ULP rounding bound and periodic image identities."
+    "Single shared prepared-liquid root, no independent test split. Positions float32; explicit native-ULP rounding bound and periodic image identities.",
+    "Original coarse Al source payload was deleted at user request on 2026-09-26. The existing derived cache is retained; rebuilding it from that source is no longer possible."
   ]
 }
 ```
@@ -54,6 +55,6 @@ All 1 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

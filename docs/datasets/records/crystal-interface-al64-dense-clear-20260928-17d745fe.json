@@ -1,0 +1,4005 @@
+{
+  "dataset_id": "crystal-interface-al64-dense-clear-20260928",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "1d1df1b9e52b2988d34b780ddff8ed1c912bcb29d68ad4defbda027d7f233026",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "plan_sha256",
+        "sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "052d8dc934dbe736db2d88343b6e57b2fc5208efe95b5c5dd5daf0df3a0668bb",
+      "kind": "metadata",
+      "keys": [
+        "dataset",
+        "expansion",
+        "fixed_identity",
+        "identity",
+        "implementation",
+        "paths",
+        "protocol",
+        "sources",
+        "target"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "joint_snapshot_interface_unseen_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260928,
+            "first_json_path": "expansion.seed",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].lineage",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 150
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 150
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].audit_metadata.temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "7c2cfc95ad3defd203fae8ab374325808f0a624cd5d8c27a1d44b771124b49da",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "02079b9cafb768719e78854c5d06578be4054327aab2a16db9399664bfc386f8",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "371651b3dd408b5b457a1d0e42d1d0cef1178a18857a8797f386dd6d7f6d025d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "07c9ca95381e517ab86bf996cf507f954d71524c52b07f182e358601fcbc67c5",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "ff92f393ff97bd0057dbb29c16410dcd2e7481d6a378cfc92c99be7859ab9371",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "9eb948c70e8924769c2b088a3b54bdb9878c55695cb17dd9c41f21e3a0fe7f7d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "f55ae3e0739400c943698be1c0361b3cf7fd5170665cff0aece6266ccdd29c1f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "0f83430d5b0d603ef0a14a85f815408901b33a37f1cf85e380cd8f2ce93e049f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "a8a36507d108e4a02608f5ed77be1ecd256cf4f53d75542ce4768969dbc60646",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "b2597f666fe7500a6bfec2546d8973faa2bd76110f81b041dcdafdbae4b7753f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "e335f75a90c84bf7026270a7efa19fdcc9603775c200e82776cd90604c3b07a2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "206a50344c0c69ff8be3f0a006127bc43370b483cadd8b57e95476671f3d74f4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "e2136afe3f38791383e984976663d28248512f6e9746cf5f5dce2f8eee073b11",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "f9fd82916177eec102a0ecbfd81613058fedcec6c005f9d8fd9837d76bb3e186",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "b7f87249f2247d0ef90a5e069b71d77226f5f99c0b94ff3f7d535bb4282ea6d7",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "f09e4e669de2def5a2ecb94b5d1fb2806521540167d841705f0c40d5535cbf67",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "adbb294483b780cc419e13afb477c982660ddcaf2d6396a9bf4d636c7b7a1ef8",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "d8de56b313dad99333b2f40cc6bb59b852704416545e41dab060d80144c0a8d4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "32b2cb66d336c9c06f77456202799d8fcdf74d75c3df892b8a72fe5f468e80b5",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "c6d0957f95b294971939af17948580c435f2416c09c1930433a0a8d94d9d7c29",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "cf2074efb23212387b12f8e672262b4b5df5dc6f6c96b50149adc3cb797e3794",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "904cebabb386cee2798a0a6a4601d8970c35b79ab7e705a0833101f76e63fb7f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "db7bd657a1448cda6b8503edcd19a98eedaad378523de672c4e1242a58f1fdf4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "6c9c9eaf9a294130adaffda0ee5ff64f56d06d8bde33c362088588315858bc99",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "44d2c31bd7ac2ce2d6a13d47d8321dfa85aca4be4d0425c4e78ea59de0706f91",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "a5f30a145600289ee119c71504fd709c345116ec87e2884f4383a0e0e3bcc566",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "6aea17da5da599757fef8692ab5462d74166c807b2d67654d1b636c71e2174c5",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "8deee0ed33678cfc79188e8c415f99eb99a53b8b28336bcbade177933da45dd2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "e47a7b7f57ddf2cacc5767c0eacd4b60b26ff652f58cce15d632d40af98067d1",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "1434dae6e89dbd3a2e8cea183aaa9558b55b763d26c10c04159b22e56ed07671",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "b9b70cb616f51a173ac48e5e66fa4a87cb6b4fd8fab16fcb591714f58389c910",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "883a3442010acf3e8a0f487c9b54241429c1f267e31a8338601ab3ea32b18dd7",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "c69dd5eb67ea215fecb9c0e55b690f33f8d0227cc7535579aeae3ade18889282",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "109a8ff84148c22417f1bcbb4d2f2f69cb28ff261bce9e84a678e5a4f742e5dc",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "53c226ef22b345b47416b25009b20f551ac7ca10b480057976c644e2404159f2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "7965d31014681a08008912b84e7ababe0031cef3f32f3283dd162ff565f4fe96",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "51369c69f035e4f7dffb4ee7abf2ddcfc34f6af9458a1f152555de35c0b35447",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "e1e197d0dc24dd4ca2eb5d00c142c85d6f2d50e3c42f8d221763e69f6113000c",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "08ed7d18dc0f6519cda72742b633fc2416259c37780aabcd2b2018959ae2811f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "0ee4cc20f6113560c5744176c4ea6edc9aabc0402dfd3085dd6ce0ad4c2a8a76",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "6d59ff760f7c9db38bd13c02508d6f5160a6c6905dfb6e6e40a2c48301420e42",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "0688d146ee6250dafaebb78e8c370c477697d6b175f1c93b1498915d74238b66",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "2f95e5d1fe6e39110755a60d80f6436c625b36ce56d4215e8d3abf9376b469f0",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "951efa0695798e3b5ac21947b0426a10e23ae598f0db3622181711c871a374c7",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "fb90a5c325d11fc40e7d7a9148f24428a18c35415969ef3dae2c881c64a324c9",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "cd96c339235eea3471f267313cfac0bddefb4e4461c93f1fec97ed128cceb0cb",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "244bb70056867146dbc92c6fd6dbd08e041c995781825ac9b581dfb6ccf50d53",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "0959d776477d92812158ba276e3f2a1d5c2fa4748c581141969467e2e89bf287",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "00494214af64489b0295868d227ed0ff20e4506b550d9c5a799621f756693549",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "89526ccd28dd2c2cfb4f93102a3165c0b0cd80146e8b63ed2d6a0f87621dcd56",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "791b5dd87cebee0c3147036a21a01c9dc1da81de8b0fe37eb11c76238cf4f338",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "086206316b703be6a4ac732f83b7d9be0f64ddcca045d451884e58381e90a300",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "b8388dd5679d60708be4add7fdd3cf81b313f99a5401f8756173f086e553f2c2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "314a881a75716d1ce7bf6d45b01255bcd0addf97ee77862471a908bbbc9a05a1",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "b00094269a26c28b9eba947d00ad99b3a8a6d670505723a08354605a24f54f9e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "7e2248f38dfaa4f9f6501d426368912f07623054aa084d5068c7d97bbbf1a514",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "b8a1cbd17cb1e8e6afbf5655473dd1e196e5def169ad6075b29e82ddcc13f8ed",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "fe545373c1ecfa69bfa81091395d48688cbb2d4e17d30f920b73fa57a5035b35",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "63a1f83d59fbaf781485df6a293ee05765ef8e1590da5e21bb8594e6e2567f34",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "1f714b916cda8e8584d9cded27f4db10e5b0ef5a1fab6fae5be37fa1ba86fe7e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "fc5cfa3933bdbd50d2b112f7ae1aaa2d336cb2b3d0809fda64bed49f9465f5ec",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "f7656646ec32627b06f71f8a1103ce5c4f8b56a8931d0d7ee8c45c2e2cba7032",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "34be394415bdc3c7877480f08ee08825ea9808d845eea5001efb87731e75a38b",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "35346b75ff9bad6b9814bd3e733f042ac49db83fad6bc1bf1b87b0206e16f3fc",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "4d27ca2f7be749e787ce82a6bee2af0ff6f4d992846f154b53b74f45046761cb",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "1f51393cd28c9d0d06c71acaddcca7dd8095b1c030d76b1f6e15048b5a4483a5",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "47e58f07be698f5be4dd8e1ba2091c2361c52c24464a6dc1304025c135d10a79",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "762106ff87ec2e236ce0d1a549b03587fee1d012c54f82bc5f6952f4ff00bf20",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "c8a5adfbf31033d3b09570446273a2ec3714c6021810b5b7f6ecd02525bdef89",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "c74b7e5474a6c9ea42f99a5ec4fae0a2143cbe415957567143c0ce3b67c14ce4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "ccde382e04926703ea1996a3a207642aa76982f71adf4daba33012285f747219",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "c14d30cb958044b63e5fdaf716684f933f3561a5cf904739a3b89d409ddaeb7f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "49a2ea536d8ba2da4e1ed677667053c34cf444d17e9234cc407be9bb5b5c81ff",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "e30bcaa212a479c076023a74d17651bb29794c78b3c93dcaff2841e8ed15cb48",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "28c7a0bb109405a7906f58837b7f1c62a9ad59e77e5caf82a64b303c05744a49",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "f92b94aba9167ffa9aa7ee211394ff67e42acac89308cd750be9fa88c53b7a1f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "5567b532dd073fc3d6a5ff47acb7b2a0e07262d9b3ce869a7a263d89ca54eb5e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "82e36ab80543ef88618c10137f07be1fe7fd9924bc91e3dd5e8ee85c54f0c3b6",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "08f9a287db7c0346743328d5f18da5dd0f9bcd00e4d3b86de54b826d0e7773fb",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "8b03994d8f081c4a4e2a71e1cf1e398db6d8f00fa0d40390bcecee66ef37b7ad",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "5a7b294c36178a9004bda63034713db1126b9e1b9d1fd5f8ed2ebae2cbd1cd49",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "9062f91bfe11c1d90b4a68bfd8eeea4a786a8752f26c4d83beb2d702df7cbd6e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "ff58038d7ca127ab8c496b17b8058b870e7c0215334d660b9963377d44092c6d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "f7c45fc7d0c9aa726e472dd10e261318460c9089e642301e54a7529ce7ce4384",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "d9c1b6c0c3f04cc8599b0c2c42ef6f35a6c7d0764ba7141ad2cc91084b28055d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "b02546a8cf4e3bb8a647f6ffcbebc39a954cae468fd6576d1d96670f9f4d265f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "72e813f89b4c01fc12184b06270277e770e3e74d992aa4d4db43218ae94ea385",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "f93b79493d9774020fc35e4bd4d73e16d2cbc03bda7bb9e94f870534fad763d7",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "2ea0e323ecc1917358fbe94dd2116b4d75dcfc582d9e15743a1b39790b5f0283",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "55bc733575b51d983128208514ba074e2ddef1ac2e39fe7d4954266c25fb283f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "fb926417cfe77d07d3f209a2b5684be0fe8c683e6ab5a275c26a9d7145ae5d09",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "c1f27b98614579fc4bc9d595a02899bcafaf29264a3807ee74c65bf68b217e1a",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "960adc93af630eff22f78c2cfc0e746e2359466aa3e04451074133719d7e7e24",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "7ddf79e2d1b138c7d256b4ea0409e6c00f2f63c2bc9341557ae2e2e7e8b34bf4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "f8d8979b9b793e9dd811e77a6c9fb6730b7fb2b948cb94fb844af19d233512d3",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "c27006e8383120ce6a7c85dfc4dd75917d75ee939bce736da401c7eb934bef96",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "19a30f7455023079e470319cd13b2a6e23d959cf0befe6ae38c7d0f4d967ba7c",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "cd9c84003df88aa799147bac9f1187d933ae38465a3c3edb814a852950e02ab8",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "3f1ddd98a665574aa294733b32d9578f68ce738d7be76d9ac2b2b84ea4d957ff",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "5dd8f52f383196ae53a942939bdffa7fd99704281b70fd370e56a54f62b41751",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "1b58f73979a3899079a54456701370599da341e1c462ae66bb6f14a78dda9a70",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "85f6694e2fd3f63130acfb3537f7bacfc403d1bd65f1ec69683085683594e287",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "6bed0c8cca0bcb29919819c699f5fd6d5fed7f721f717d216aafaf86f8ddb9ba",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "3e8cc64d6544431be1f836406de9f8da53dc6aa10831967e6c9abbd6e4e05181",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "e985756df48b8ff895b67bbf1f79fbe26aed63c110dff0e455e23ddb982ed3a5",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "4b4458633a35239ac74ced5f487049a7942ceb614e85c82a4b4435fd1b344fbe",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "72504cbd23a8ef47697d7eb8ff2d202cfbea3c24b8ece29718a7e96ac2ab797c",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "0ebc0243288202c2132d0383fe04e05b5a713767ab1494bb0b4e0be3b8fdb7ca",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "5b4b4c57e5577d33bb372453797a3c3fa70f2cce4ac6dcd7f13df899f9ae8282",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "0128cb9785c651d0a6848b6fc5f9ed1758dbd768191aeca43b6781feb6ac7442",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "c778295d849f06863c24336f3807362352947fd29da51323a85efd99d3bcd4eb",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "6fcc6b297d42822d3fecbb0b267009b4063503ad0088d5697b8b6d2886a15583",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "a796f755c9a5e2cc65e4e1d23fbcba9c85f16d20d94bacfd2f033a70cc9619fb",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "d332a742456e37d8c7ce7e6fb427f77be42414a0ebecbc29583abf92c5d037a2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "0aaac1af0e69c8e80635fc169ed4fefa3c1f6964d93e414eed7801f52416e80b",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "7bc809568d3a89f47175737e52e2ac40b52ca70dfef55bf27c21836179997d7e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "67d9644d591b70254fe1fe7c87cdc0f7b4ac5a9587a43e7da08cd1b2eac33f61",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "159eb720f63a7a1db509fd04209be51152e90f18c4fd242e19b9e5878336785d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "f4deb0bddee7e33f06928b351999653adc263fa96d08b82d462fe209a9b925bc",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "61cf9863a08935a150d1e4c23bc58bbf5a39c5332bb92c047f6fba48492d1091",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "2961f53d078e06e1b93fb7ea86a729ccd7ec4e47735755c52a8fd41d84fa1995",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "625080e36bbf23912948ffeaf948220f85c28119275351f302b321e0a593bcd4",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "6632827ab9d4baf259406258ec47d288e72a504dc82fe939f3b9dd8a3d3d4b7e",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "4c19d4c1421b1f80a3c6208c04dc0e6ed40899a70faf00887787172307d0e792",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "ba5ff5c5a2c188a8fa61b87717b610a2fff107e923842c39d0194133801a455f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "894cdb78c1c3d28c6dac2551d627b72eb1f067f9b53c6f6a8ea3c38a4b41c10b",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "ad01f0b9352107db99fd6940525107eea224e382bc608a7f2dfa4ee2c5803885",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "6ec63bd82af97f0ecae1e5c44cba52c3447ed30be7b7ac7363500828fefff825",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "e0f7d37d8df989d27e389606d8abf85905e4c3605c94e827f4a10b5f1c819634",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "335ca98bdbe6ce6d0daa9259b3f0484547a106f931f8fe69f5c9af8bb957a44a",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "43055cbb583e2694a3735c5b53d8bab44f7783c1b653ed027d8cae8b702b279c",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "12ea4f099f2955813aa1fb7b4f0c18fbc50840587037c5e2388d2f2be8cd5195",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "fadd1ee273cd69acfbd597fee09cc836a0c9209f0107836d90c576cad84831b2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "4bc05f97bd740238a3b9db74e6a94d1fc4b9277a1d0cf3edd5b6a71aa71c24e0",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "0ce7de1faa34084609ac404f5ab62cd0e199d20f4d00c6949055bb4b09a8dd9b",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "c0797f1cbea93c79b5cf8f8ac557419189383f470c00c64446deb2c64ff6c45d",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "53fdb973c1ff54af7628d7608c71ace5748eb6b3043552e0357263fe22021d31",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "b86190e341f89b174318773a22c321d69e4ff9eaadfb24124007e316b23b8d98",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "9503bc942f00af3f47b04cf1178be5a0e2fc74bcfd968ed0f48546fcc7cf7be2",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "943f7dabaf1dbbd296f3b68c7d5fb8d22bd390971793c62f6dc7fd3aa0d1d599",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "992699417d716e450c096e4e2d48bb636fe069afd4b0417d8eb52e06a50a90be",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "3a8ec75a86877556d9a91521d118df810840f46434f005954eb978984c88f19b",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "257feec3fbbb0ed1d14f9661a0522f16048bac05582f7b2dbbe15981d2f7ac35",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "1912b1f1eacc9ce8f96cb448754c7c3301db150e47e2916088e00ae47eefe6cc",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "214a4e272f305c5776256f8a2c5847253e370c59b878e75618105dd4c75d9d1f",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "489ae3070539ce5cd09246736a0f053e1c0ecb4ff5be665f1d9f2bf4b2479df8",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "494b45ef0183d8f70c1da01c051bd8b993d108d930018187377c2e0bf3bb02ef",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "8b63f6c0e2c1cdcb2db5a957eac88db1e3608475036748f9ed153da6bc4ec856",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "71cd9780d7af2c527faf85d075bd15ab124945832ecb6378e2abee638ca6c340",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-dense-clear-20260928/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "742616e6b5715ba71fc8541a71a6405b82faeaa93fd00087bd8eeacae45048df",
+      "kind": "metadata",
+      "keys": [
+        "candidate_uniform_added",
+        "files",
+        "identity",
+        "near20_new",
+        "new_invisible_rows",
+        "original_interface_rows",
+        "patches",
+        "population_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

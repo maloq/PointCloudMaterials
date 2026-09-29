@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "4bccf3c29bdab795bdd1355152f829b4eaf57f0267637920cd4c6e2221669482",
+  "family": "rich_mace_interface",
+  "contract": "technical/metric-contracts/rich_mace_interface.json",
+  "definitions": "tables/metric-definitions/rich_mace_interface.md"
+}

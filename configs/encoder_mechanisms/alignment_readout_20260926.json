@@ -1,0 +1,149 @@
+{
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "protocol": "encoder_mechanisms_v1",
+  "output": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926",
+  "external_inputs": [],
+  "seeds": [
+    20260926,
+    20260927,
+    20260928
+  ],
+  "evaluation_seed": 20260926,
+  "batch_size": 256,
+  "microbatch": 256,
+  "structural_train_rows": 345600,
+  "structural_selection_rows": 36480,
+  "prediction_train_rows": 43523,
+  "pretraining": {
+    "epochs": 24,
+    "learning_rate": 0.0001,
+    "checkpoint_epochs": [
+      0,
+      4,
+      8,
+      12,
+      18,
+      24
+    ],
+    "sampling": "Each paired train row exactly once per epoch; seed-matched 16-shard block permutation"
+  },
+  "arms": [
+    {
+      "name": "R0",
+      "method": "epi_noalign",
+      "objective": {
+        "treatment": "epi-variance",
+        "epi_weight": 0.1,
+        "alignment_weight": 0.0
+      }
+    },
+    {
+      "name": "R1",
+      "method": "epi_variance",
+      "objective": {
+        "treatment": "epi-variance",
+        "epi_weight": 0.1,
+        "alignment_weight": 0.49019607843137253
+      }
+    },
+    {
+      "name": "R2",
+      "method": "vicreg",
+      "objective": {
+        "treatment": "vicreg",
+        "epi_weight": 0.1,
+        "alignment_weight": 0.49019607843137253
+      }
+    }
+  ],
+  "runtime": {
+    "compile": true
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-mechanisms-20260926"
+  },
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "population_cache": "${storage:cache}/supervised-onset/al64-b512-20260925",
+  "quality_template": "configs/analysis/encoder_quality_latest_20260926.json",
+  "supervised_template": "configs/encoder_context/multimaterial256_batch1024_epi_recovery_20260925/epi_variance/base_hot.json",
+  "birth_training_definition": "${storage:analysis}/nucleus_harvest/train-audit-20260926/technical/plan.json",
+  "birth_workers": 12,
+  "stage0": {
+    "readouts": [
+      "linear",
+      "mlp128",
+      "mlp256"
+    ],
+    "inputs": [
+      "z128",
+      "z128+d32",
+      "z128+P32(z)"
+    ],
+    "distance": [
+      "raw128",
+      "train-standardized128",
+      "train-standardized PCA32"
+    ],
+    "controls": [
+      "density26",
+      "SOAP50"
+    ],
+    "selection": "hazard NLL only; reuse completed exact-budget linear/128-wide fits"
+  },
+  "stage2": {
+    "initialization": "R1 fixed epoch24; scratch uses exact retained R1 epoch0 with identical pool normalization",
+    "variants": [
+      "frozen",
+      "finetune",
+      "scratch"
+    ],
+    "epochs": 24,
+    "minimum_selection_epoch": 12,
+    "selector": "validation hazard NLL",
+    "fixed_endpoint": 24
+  },
+  "gated_stages": {
+    "birth_prediction": "held-out distinct-event support and released natural-risk sampling first",
+    "linear_vamp": "only if current distance/persistence diagnostics leave the declared mechanism unresolved"
+  },
+  "cache_policy": {
+    "encoders_kept": 6,
+    "reason": "Reuse the existing shared cache namespace and its live lease/eviction policy; preserve its recorded location, rather than creating a second six-entry pool. No new training dataset cache is created."
+  }
+}

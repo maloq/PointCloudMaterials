@@ -2,7 +2,6 @@ checkpoint:
   path: output/2026-06-25/17-03-39/VISREG_l512_K4096_N160_M80_RI_MAE_Invariant-epoch=79.ckpt
   output_dir: output/temporal-al/standard
   cuda_device: 0
-
 inputs:
   data_config: null
   static_data_files: null
@@ -44,31 +43,13 @@ inputs:
         enabled: true
         force_recompute: false
         file: temporal_snapshot_dense_inference_cache.npz
-
 cache:
   enabled: true
   force_recompute: false
   file: analysis_inference_cache.npz
-
-swav:
-  enabled: false
-  assignment_method: sinkhorn
-  sinkhorn_iterations: 20
-  batch_size: 8192
-  export_assignment_csv: true
-  max_assignment_csv_rows: 100000
-  representative_top_k: 12
-  frame_proportions: true
-  transitions: true
-  compare_to_clustering: true
-  md_outputs: true
-  md_max_points: 0
-  plots: true
-
 runtime:
   progress_every_batches: 20
   seed_base: 123
-
 clustering:
   primary_k: 7
   k_values: null
@@ -77,8 +58,6 @@ clustering:
   standardize: true
   pca_variance: 0.99
   pca_max_components: 64
-  # Temporal analysis fits clustering on inputs.temporal_real.dump_file via the
-  # main temporal inference cache. This cap only controls the fit subset size.
   temporal_fit_max_samples: 600000
   hdbscan:
     enabled: false
@@ -92,28 +71,41 @@ clustering:
     cluster_selection_epsilon: 0.0
     cluster_selection_method: leaf
     refit_full_data: true
-
-# Test whether C2 is a required tracked-atom intermediate on paths from
-# liquid-like C0/C1 to C3, and validate the states with independent CNA motifs.
-# Cluster IDs are zero-based and refer to clustering.primary_k.
 gateway_phase:
   enabled: true
   states:
-    a: [0, 1]
-    intermediate: [2]
-    b: [3]
+    a:
+    - 0
+    - 1
+    intermediate:
+    - 2
+    b:
+    - 3
   bootstrap_samples: 1000
   random_state: 123
   gateway_fraction_threshold: 0.95
   minimum_reactive_paths: 30
-  lag_strides: [1, 2, 4, 8]
+  lag_strides:
+  - 1
+  - 2
+  - 4
+  - 8
   reactive_path_csv_limit: 100000
   spatial:
     enabled: true
     neighbor_k: 12
     max_frames: 60
-    precursor_lags: [1, 2, 4, 8]
-    precursor_radius_edges: [0.0, 4.0, 8.0, 12.0, 16.0]
+    precursor_lags:
+    - 1
+    - 2
+    - 4
+    - 8
+    precursor_radius_edges:
+    - 0.0
+    - 4.0
+    - 8.0
+    - 12.0
+    - 16.0
     precursor_max_events: 2000
   cna:
     enabled: true
@@ -122,29 +114,23 @@ gateway_phase:
     fit_max_pointclouds: 1200
     shell_min_neighbors: 8
     shell_max_neighbors: 24
-
 md:
   overlap_boost: 0.0
   overlap_fraction: null
   use_all_points: true
   interactive_max_points: 0
-
 tsne:
   enabled: false
   max_samples: 200000
   n_iter: 1000
   paper_enabled: true
-
 pca:
   max_samples: 200000
-
 latent_stats:
   max_samples: 200000
   correlation_max_samples: 50000
-
 figure_set:
   enabled: true
-  figure_only: false
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
@@ -173,7 +159,7 @@ figure_set:
     ptm_enabled: true
     cna_enabled: true
     cna_max_signatures: 5
-    center_atom_tolerance: 1.0e-6
+    center_atom_tolerance: 1.0e-06
     shell_min_neighbors: 8
     shell_max_neighbors: 24
   raytrace:
@@ -190,7 +176,6 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-
 real_md:
   enabled: true
   time_series:
@@ -246,7 +231,7 @@ real_md:
         file: temporal_md_space_dense_inference_cache.npz
       point_size: 12.0
       alpha: 1.0
-      diagonal_visible_depth_fraction: 0.10
+      diagonal_visible_depth_fraction: 0.1
     umap:
       enabled: true
       animation_frame_count: 60
@@ -261,7 +246,7 @@ real_md:
       trajectory_fade_power: 1.0
       trajectory_directional_subsegments: 6
       trajectory_directional_start_alpha_fraction: 0.32
-      trajectory_directional_start_width_fraction: 0.60
+      trajectory_directional_start_width_fraction: 0.6
       trajectory_directional_end_width_fraction: 1.35
       trajectory_endpoint_point_size: 3.0
       trajectory_endpoint_point_alpha: 0.95
@@ -273,9 +258,11 @@ real_md:
     optional:
       steinhardt:
         enabled: false
-        l_values: [4, 6]
+        l_values:
+        - 4
+        - 6
         append_shell_size: true
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       cna:
@@ -283,7 +270,7 @@ real_md:
         max_signatures: 12
         append_shell_size: true
         fit_max_pointclouds: 4000
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       soap:
@@ -299,7 +286,7 @@ real_md:
         pca_components: 16
         fit_max_pointclouds: 4000
         n_jobs: 1
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
   transitions:
@@ -308,12 +295,24 @@ real_md:
     max_distance: null
     flow_mute_diagonal: true
     flow_min_fraction: 0.001
-
 dynamic_motif:
   enabled: false
   render: {}
   field: {}
-
 equivariance:
   enabled: false
   max_batches: 2
+swav:
+  enabled: false
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true

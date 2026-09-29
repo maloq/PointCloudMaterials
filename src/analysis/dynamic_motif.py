@@ -289,10 +289,22 @@ def _path_relative_to(base_dir: Path, path: Path | None) -> str | None:
     return str(path.relative_to(base_dir))
 
 
-def _remove_existing_transition_snapshot_flow_artifacts(transitions_dir: Path) -> None:
-    for pattern in ("transition_snapshot_flow_*.png", "transition_snapshot_flow_index.csv"):
-        for path in transitions_dir.glob(pattern):
-            path.unlink()
+def _resolve_transition_snapshot_anchors(sample_df, *, num_flow_charts):
+    frames = np.sort(sample_df["frame_index"].unique())
+    selected = np.linspace(0, len(frames) - 1, min(len(frames), num_flow_charts + 1), dtype=int)
+    anchors = []
+    for frame in frames[selected]:
+        steps = sample_df.loc[sample_df["frame_index"] == frame, "timestep"].unique()
+        step = int(steps[0]) if len(steps) == 1 and steps[0] >= 0 else None
+        anchors.append(dict(frame_index=int(frame), timestep=step, label=f"Frame {frame}"))
+    return anchors
+
+
+def _build_transition_snapshot_counts(sample_df, *, frame_index_from, frame_index_to):
+    # Tracks retain their source/atom identities; only atoms seen at both anchors
+    # contribute a transition. Use the same counter as the full trajectory.
+    samples = sample_df[sample_df["frame_index"].isin([frame_index_from, frame_index_to])]
+    return compute_transition_tables(samples)[0]
 
 
 def _select_representatives(
@@ -619,7 +631,6 @@ def run_dynamic_motif_analysis(
         transition_matrix_path = transitions_dir / "transition_matrix.png"
         plot_transition_heatmap(matrix, labels, transition_matrix_path)
     if not transition_counts.empty and settings.render.sankey:
-        _remove_existing_transition_snapshot_flow_artifacts(transitions_dir)
         snapshot_flow_count = int(settings.transition_snapshot_flow_count)
         if snapshot_flow_count > 0:
             anchors = _resolve_transition_snapshot_anchors(
@@ -634,6 +645,8 @@ def run_dynamic_motif_analysis(
                     frame_index_from=int(anchor_from["frame_index"]),
                     frame_index_to=int(anchor_to["frame_index"]),
                 )
+                if pair_counts.empty:
+                    continue
                 pair_state_ids = sorted(
                     set(
                         zip(

@@ -1,0 +1,7 @@
+{
+  "table": "tables/matched_times.csv",
+  "sha256": "9ac188aeaba33dfbbb27b5ec07c3082146039d40790716473b5ea3ff95aa8c4f",
+  "family": "al_replay",
+  "contract": "technical/metric-contracts/al_replay.json",
+  "definitions": "tables/metric-definitions/al_replay.md"
+}

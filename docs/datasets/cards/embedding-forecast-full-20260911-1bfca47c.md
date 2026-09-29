@@ -2,17 +2,17 @@
 
 [All datasets](../README.md) · [Browsable card](embedding-forecast-full-20260911-1bfca47c.html) · [Full metadata](../records/embedding-forecast-full-20260911-1bfca47c.json)
 
-Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.
+Bulk forecasting cache arrays deleted at user request on 2026-09-27. Metadata, identity/timeline arrays and rebuild provenance remain. This cache must be rebuilt before use; see docs/storage/cache_cleanup_20260927/README.md.
 
 - ID: `embedding-forecast-full-20260911`
 - Materials: Unknown
-- Classification: **derived**; role: training_cache
-- Location: `/home/ids/vmorozov/training-cache/embedding-forecast-full-20260911`
+- Classification: **retired**; role: provenance_only
+- Location: `/store/PERSO/vmorozov/training-cache-archive-20260926/embedding-forecast-full-20260911`
 - Present on this machine: True
 - Potentials: Unknown / not applicable
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 48.912 GiB
+- Allocated storage, excluding registered nested datasets: 0.021 GiB
 - Missing metadata: materials, generating potential identity
 
 ## Notes and relationships
@@ -21,12 +21,14 @@ Derived inputs or targets. Source lineages and target protocol remain part of th
 {
   "title": "embedding-forecast-full-20260911",
   "materials": [],
-  "role": "training_cache",
-  "classification": "derived",
-  "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+  "role": "provenance_only",
+  "classification": "retired",
+  "description": "Bulk forecasting cache arrays deleted at user request on 2026-09-27. Metadata, identity/timeline arrays and rebuild provenance remain. This cache must be rebuilt before use; see docs/storage/cache_cleanup_20260927/README.md.",
   "evidence": [
-    "${dataset:embedding-forecast-full-20260911}"
-  ]
+    "${dataset:embedding-forecast-full-20260911}",
+    "${dataset:embedding-forecast-full-20260911}/retirement.json"
+  ],
+  "retirement_record": "docs/storage/cache_cleanup_20260927/receipt.json"
 }
 ```
 
@@ -48,6 +50,6 @@ All 127 producer records, their hashes, field paths and current array schemas: [
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

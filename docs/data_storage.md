@@ -17,6 +17,15 @@ and dependencies are in [configs/datasets.json](../configs/datasets.json).
 `python scripts/project.py paths` shows effective roots; `datasets` resolves IDs.
 See [portability](portability.md) for setup, verified copies, bundles and publication.
 
+The active [multimaterial RH2 fit](rich_multimaterial_encoder.md) writes to
+`${storage:training_storage}/liquid_predictability/mm-rd-mace256-c3-l3-residual-head-20260929`
+on STORE after WORK exhausted its quota on 29 September. Its original frozen
+output setting is redirected by a specific alias in `machine.local.yaml`, without
+changing the global analysis root or scientific identity. Checkpoints and all
+other run artifacts were checksum-verified before attempted source cleanup;
+`technical/storage-migration.json` records hashes. WORK refused some deletions,
+so residual duplicate files there are not the active run. Use the resolved path.
+
 SCRATCH has a 30-day inactivity purge. Publish completed simulations and preserve
 stopped failures/restarts on STORE before that deadline. Conversion must verify
 checksums and float16 position quantization before removing larger exports;
@@ -26,6 +35,15 @@ checksums and float16 position quantization before removing larger exports;
 [September 11–13 retention review](research_retention.md) identifies the live research,
 checkpoints and older inputs that must remain available. A large file can be a
 necessary paired test array or exact-resume checkpoint; do not classify by size alone.
+
+[Research cache sizes, 26 September 2026](storage/cache_inventory_20260926/README.md)
+lists allocated GB by cache family and physical location, including archives and
+derived relaxed structures. The [cache-use audit and retirement options](storage/cache_usage_20260926/README.md)
+separate recent references, active dependencies and old forecasting payloads.
+The [completed September 27 cache cleanup](storage/cache_cleanup_20260927/README.md)
+removed 683.461 GB of those forecasting payloads, retaining rebuild provenance.
+[Simulation cleanup](simulations/cleanup_20260926/README.md)
+records the separately authorized deletion of coarse Al and stopped failed MD payloads.
 
 For disposable inference caches:
 

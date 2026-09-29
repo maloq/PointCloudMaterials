@@ -1,5 +1,12 @@
 # Predictive-memory precision sources — 17 September 2026
 
+**Retention update, 26 September:** the user requested deletion of failed
+attempts. Sources 003 and 004 now retain only logs, inputs and provenance; their
+partial MD trajectories, starting structures and native restarts were removed
+from STORE and the stopped SCRATCH copies. Completed sources 000–002 are retained.
+See the [cleanup receipt and scope](cleanup_20260926/README.md). The stop record
+below describes the original preservation action.
+
 **Stopped at the user's request on 17 September, about 13:45 CEST.** Three
 500 K training sources (000–002) completed and were verified in STORE. Source
 003 stopped during melt preparation and source 004 during measurement; both

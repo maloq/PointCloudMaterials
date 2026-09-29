@@ -12,7 +12,7 @@ Stopped 12-source preparation; three completed sources and retained failures are
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 1.552 GiB
+- Allocated storage, excluding registered nested datasets: 0.008 GiB
 - Missing metadata: timestep_fs, ensemble
 
 ## Notes and relationships
@@ -54,6 +54,6 @@ All 4 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

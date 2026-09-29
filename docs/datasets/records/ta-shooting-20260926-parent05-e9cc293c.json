@@ -1,0 +1,1381 @@
+{
+  "dataset_id": "ta-shooting-20260926-parent05",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/config.json",
+      "relative_path": "config.json",
+      "sha256": "d260a7ec13c58216e2ce46d1cb1cf9c742754a35f39dd1a5fff501e98e2c8114",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "barostat_ps",
+        "branch_steps",
+        "branches",
+        "checkpoint_steps",
+        "cpus",
+        "delete_verified_source_text",
+        "dump_every_steps",
+        "execution",
+        "mass_g_mol",
+        "material",
+        "output_root",
+        "pair_commands",
+        "position_storage_dtype",
+        "potential_files",
+        "pressure_bar",
+        "protocol",
+        "required_free_bytes",
+        "run_id",
+        "sample_interval_ps",
+        "schema_version",
+        "temperature_K",
+        "thermostat_ps",
+        "timestep_ps"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ta-position-branches",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1900,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.2,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 2.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "mass_g_mol": [
+          {
+            "value": 180.95,
+            "first_json_path": "mass_g_mol",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 827237809,
+            "first_json_path": "branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 549417302,
+            "first_json_path": "branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 357008615,
+            "first_json_path": "branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 535089732,
+            "first_json_path": "branches[3].velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "branches[0].parent_id",
+            "occurrences": 4
+          }
+        ]
+      },
+      "provenance": {
+        "pair_commands": [
+          "pair_style eam/alloy",
+          "pair_coeff * * /work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam Ta"
+        ],
+        "potential_files": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/status.json",
+      "relative_path": "status.json",
+      "sha256": "de7c446101c5e369034709f0681e32e78ed17f5c54eca5ddaf7c19597629205c",
+      "kind": "metadata",
+      "keys": [
+        "completed_at_utc",
+        "completed_branches",
+        "current_branch",
+        "host",
+        "pid",
+        "started_at_utc",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/metadata.json",
+      "relative_path": "branches/shot00/metadata.json",
+      "sha256": "554fb3800e8d3118a361cdde9508991f69a2229ca99d939eadff1cc3fb064c2c",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 827237809,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/outcome.json",
+      "relative_path": "branches/shot00/outcome.json",
+      "sha256": "60eef6757de58a7528a1e8570bfb19c402b4b86f08e82b44bbb6c9254641f462",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 827237809,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/shot00/trajectory_binary_float16/manifest.json",
+      "sha256": "8443f8bd226793f72b30dfe6207f307516c97fdb249081d8b00c88e099c4ab25",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "provenance.metadata.origin.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 827237809,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 10000422,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b34db408922b352dbdd3dbdd3854b8481d4360b04bdad1b6b7c0e9d2c2865d8f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "38e9fba19ee914b954b643e354d69ccacc278f96eb6d1f6bfc42dc8918da15cd",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fe83daeed844c6c96a7c9b010c5168120db91720cc965ce99494723207ce06a9",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "70eb194003c236f186a3bfe170f9f841286750124f144132eee73772501c4a62",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              10000422,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "c73383e58a5d602fff702d8525850d87e56bd5cff5fdebedde406af3a015af1d",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1b862db124b880b6a6236b923e63bd1b3dde8b917deecc19f5d0bc09425a5ba9",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 12000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "339f79c4e66572f96acc93d2caee895065b23f10639f010315c09d337bc07504",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/metadata.json",
+      "relative_path": "branches/shot01/metadata.json",
+      "sha256": "1abc2fd5634a51a4af247a9050eb1326239e307537f96dfa20584206cd71378a",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 549417302,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/outcome.json",
+      "relative_path": "branches/shot01/outcome.json",
+      "sha256": "8c2f50fb6667dfca494f2db1156cae725ec34a4e7108caec827496c12604c2ef",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 549417302,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/shot01/trajectory_binary_float16/manifest.json",
+      "sha256": "105f9c4afd8fd9364b6b59dc8e1ee0f5f1570499d370cf58cc1bc3c17e93be54",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "provenance.metadata.origin.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 549417302,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 10000422,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b34db408922b352dbdd3dbdd3854b8481d4360b04bdad1b6b7c0e9d2c2865d8f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "38e9fba19ee914b954b643e354d69ccacc278f96eb6d1f6bfc42dc8918da15cd",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "73a9700c2c37885b5d60187e410ff6f83a78e46606b1b1ba5ac2830cf846609b",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "95cda962de0b2500aff49d246aa17e967c2073410f6a969ca887f64500450ec5",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              10000422,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "228433a84dcdfa8c8cdb085dfc7f44ac7eddbc4f54336fd82af54658ac0bc74d",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1b862db124b880b6a6236b923e63bd1b3dde8b917deecc19f5d0bc09425a5ba9",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 12000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "96dacd61639f58b3ea715ba3e98acd5176f3bb54e8990d8688cc649c2149e47a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/metadata.json",
+      "relative_path": "branches/shot02/metadata.json",
+      "sha256": "001e7a6fd531c88cf737d83621ce3f61a02e0435682361227781d68f56ecbfc8",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 357008615,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/outcome.json",
+      "relative_path": "branches/shot02/outcome.json",
+      "sha256": "e395610c3a4ae4f3729a1865642366bf9889e0ab4d2d130d41f4d5646351cbcd",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 357008615,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/shot02/trajectory_binary_float16/manifest.json",
+      "sha256": "d831a45fd2cea5343b88bed31c2fa5d80d7e8d9b1e433d2e877080fee8a573e9",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "provenance.metadata.origin.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 357008615,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 10000422,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b34db408922b352dbdd3dbdd3854b8481d4360b04bdad1b6b7c0e9d2c2865d8f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "38e9fba19ee914b954b643e354d69ccacc278f96eb6d1f6bfc42dc8918da15cd",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "45d0cbf13d57c08e11174930ef9fccfaf8fef97edc536ff00fa03b11ba472ee1",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "60897106f8f4a0cc8f813d8966c7698a03d64a2408a57d691fddc4f3fc491aaf",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              10000422,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d8815fdf4c4573df984b4eadacbf2b7f5a3504b4631af976bcd328cbdcf1d905",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1b862db124b880b6a6236b923e63bd1b3dde8b917deecc19f5d0bc09425a5ba9",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 12000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "8f7e6506804df0e57a9040cd80e176e94c1cca1241e06981af72c06bfe1760bc",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/metadata.json",
+      "relative_path": "branches/shot03/metadata.json",
+      "sha256": "ca04c14c3058def7454596a046095a5b4b6d5aab883179b8712fbc7697f5a4b1",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 535089732,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/outcome.json",
+      "relative_path": "branches/shot03/outcome.json",
+      "sha256": "d90ee060edc1b6dd4fc3efebc1c6d1d6d5ec5c8d30d0b00d4623f198622eeeee",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "dump_every_steps",
+        "final_restart_file",
+        "final_restart_sha256",
+        "frame_count",
+        "material",
+        "origin",
+        "potential",
+        "state",
+        "steps",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 535089732,
+            "first_json_path": "origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "origin.parent_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/trajectory_binary_float16/manifest.json",
+      "relative_path": "branches/shot03/trajectory_binary_float16/manifest.json",
+      "sha256": "22a08d90ed827161a760708c7c81879dbf29b705db04c5a039a07996a7cd0eba",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 241,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "provenance.metadata.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.60ns",
+            "first_json_path": "provenance.metadata.origin.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 535089732,
+            "first_json_path": "provenance.metadata.origin.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.metadata.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 10000422,
+        "frame_count": 241,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b34db408922b352dbdd3dbdd3854b8481d4360b04bdad1b6b7c0e9d2c2865d8f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              10000422
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "38e9fba19ee914b954b643e354d69ccacc278f96eb6d1f6bfc42dc8918da15cd",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "d0771c1f1828bd3337e698e556c77339e9a029c9b3ca4b453d6d196bf4942b14",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              241,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6f5e32df626c8fece8a3b5a3ab24715d2ceb53e1feb3114de5ccb0671068758d",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              241,
+              10000422,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "e1fa055839334cb785ac129e81e8b64ff4097e99efdd279a110073754154deea",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              241
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1b862db124b880b6a6236b923e63bd1b3dde8b917deecc19f5d0bc09425a5ba9",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 12000,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "dca5cee658e1c5ad013b708afa202a1aee04cd89e67fc189e8486df72d0c9344",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

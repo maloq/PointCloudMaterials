@@ -39,6 +39,8 @@ def _training_contraction_order():
 
 class StructuralSnapshotAnalysis(nn.Module):
     execution = 'eager'
+    representation = 'Raw trained 128-channel center encoder state; no projector or target heads.'
+    batch_replay_tolerance = dict(rtol=2e-5, atol=2e-6)
 
     def forward(self, points):
         raise ValueError('Structural encoders require full source neighborhoods and tracked centers')
@@ -162,6 +164,9 @@ def snapshot_batch(points, tree, centers, *, scale, material, architecture='gatr
 
 @torch.no_grad()
 def encode_frame(model, points, centers, settings, *, progress=None):
+    if model.architecture == 'native_mace':
+        from .native_mace_adapter import encode_frame as encode_native
+        return encode_native(model, points, centers, settings, progress=progress)
     if points.dtype != np.float32 or points.ndim != 2 or points.shape[1] != 3:
         raise ValueError(f'Expected native float32 static coordinates, got {points.dtype} {points.shape}')
     # Match training FP32 arithmetic, including disabling TF32.
@@ -221,7 +226,7 @@ def collect_structural_inference(model, dataloader, cfg, out_dir, *, max_batches
         selected = np.unique(np.linspace(0, len(coords)-1, 6, dtype=int))
         replay, _ = encode_frame(model, points, coords[selected[::-1]], dict(settings, batch_size=1))
         if settings.get('enforce_batch_replay', True):
-            np.testing.assert_allclose(z[selected], replay[::-1], rtol=2e-5, atol=2e-6,
+            np.testing.assert_allclose(z[selected], replay[::-1], **model.batch_replay_tolerance,
                                        err_msg=f'{model.architecture} batch/padding replay disagrees: {path}')
         result[offset:offset+len(coords)] = z
         coordinates[offset:offset+len(coords)] = coords
@@ -231,7 +236,7 @@ def collect_structural_inference(model, dataloader, cfg, out_dir, *, max_batches
         write_json(Path(out_dir)/'structural-inference-protocol.json', dict(protocol=model.protocol,
             settings=settings, frames=records, completed_centers=offset,
             batch_replay_enforced=settings.get("enforce_batch_replay", True),
-            representation='Raw trained 128-channel center encoder state; no projector or target heads.',
+            representation=model.representation,
             boundaries='Full nonperiodic source neighborhoods; verified interior centers; no inferred box.',
             precision=model.precision, execution=model.execution,
             input_precision='Native float64 subtraction to float32 offsets, fixed material scaling; TF32 disabled.',

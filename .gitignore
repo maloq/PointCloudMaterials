@@ -16,13 +16,25 @@ checkpoints
 !/output/**/RESULTS.md
 !/output/**/tables/*.csv
 !/output/**/tables/METRICS.md
+!/output/**/tables/METRIC_INDEX.md
+!/output/**/tables/metric-definitions/*.md
+!/output/*/*/run.json
+!/output/**/analyses/*/analysis.json
+!/output/**/analyses/*/artifacts.json
 # Training history is noisy; publish collected comparison/score tables instead.
 /output/**/tables/metrics.csv
+/output/**/tables/history.csv
+# Named analysis bundles contain evaluation summaries, not training histories.
+!/output/**/analyses/*/tables/metrics.csv
 # Keep PDF exports local, including uppercase file extensions.
 /output/**/*.[pP][dD][fF]
 # Keep only the frozen metric contract from each run's technical directory.
 /output/**/technical/**
 !/output/**/technical/metric-contract.json
+!/output/**/technical/metric-contracts/
+!/output/**/technical/metric-contracts/*.json
+!/output/**/technical/table-contracts/
+!/output/**/technical/table-contracts/*.json
 # These operational/generated trees never belong in a results publication.
 /output/maintenance/
 /output/registry/

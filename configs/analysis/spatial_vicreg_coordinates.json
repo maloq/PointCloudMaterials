@@ -1,0 +1,20 @@
+{
+  "checkpoint": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/detached/vicreg_geoframe_v2_factor_sn_grouped_scratch_20260831_160541/GF_V2_FACTOR_SN_GROUPED_SCRATCH_G0.1_N0.1_B16384-epoch=34.ckpt",
+  "checkpoint_sha256": "1657975ea859ca27916ecce528cae533bb99d30f29e739c8ee7053b8ea7de775",
+  "reference": "/work/PERSO/vmorozov/analysis/encoder_quality/latest-mace-20260926/technical/reference",
+  "reference_sha256": "a21ca6b73e23c9f13d984ba776ca7eb2edb431f7c52068efe69a3974d9fcb6be",
+  "output": "/home/infres/vmorozov/PointCloudMaterials/output/spatial_vicreg_bias/archived-geof34-coordinates-20260929/analyses/coordinate-profiles-v2",
+  "frames": [
+    0,
+    1,
+    2
+  ],
+  "selection_frame": 1,
+  "workers": 4,
+  "full_reference_files": {
+    "full-reference-00.npz": "123421d20d15dcb890d3d72788d52ad3fc17c7162966987a81fd4ea2d0c5639a",
+    "full-reference-01.npz": "f6c3069f503735332b4e252e773021513c2be62c656503a29bfc24aab4d46a38",
+    "full-reference-02.npz": "e7cae956fc97ea88343e2571d7f026dca6ad5fb131a87fa286b8aea14be2e59f"
+  },
+  "repository_root": "/home/infres/vmorozov/PointCloudMaterials"
+}

@@ -103,6 +103,7 @@ def _save_fixed_k_cluster_figure_set(
         "02_md_clusters_*_k*.png",
         "03_cluster_count_icl_k*.png",
         "04_cluster_representatives_k*.png",
+        "04_cluster_representatives_k*.html",
         "05_cluster_representatives_fcc_shell_k*.png",
         "06_cluster_representatives_two_shells_pca_center_first_k*.png",
         "07_cluster_representatives_two_shells_pca_intrashell_k*.png",
@@ -202,7 +203,6 @@ def _save_fixed_k_cluster_figure_set(
         out_dir / f"04_cluster_representatives_k{k_value}.png",
         point_scale=float(point_scale),
         target_points=int(representative_points),
-        knn_k=4,
         orientation_method=str(representative_orientation_method),
         view_elev=float(representative_view_elev),
         view_azim=float(representative_view_azim),
@@ -436,7 +436,6 @@ def _save_fixed_k_cluster_figure_set(
         "icl_enabled": bool(icl_enabled),
         "panel_icl": panel_icl,
         "panel_representatives": panel_reps,
-        "panel_representatives_two_shells_pca": panel_reps["pca_two_shell_figures"],
         "panel_representatives_structure_analysis": panel_reps.get("structure_analysis"),
         "md_render_settings": {
             "max_points": None if md_max_points is None else int(md_max_points),

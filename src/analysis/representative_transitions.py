@@ -30,11 +30,6 @@ def select_transition_representative_rows(
     """Select distinct real samples nearest a cluster-centroid line."""
     latents = np.asarray(pair_latents, dtype=np.float64)
     labels = np.asarray(pair_labels, dtype=np.int64).reshape(-1)
-    if latents.ndim != 2 or len(latents) != len(labels):
-        raise ValueError(
-            "Transition representative selection expects latents (N,D) and labels (N,), "
-            f"got {latents.shape} and {labels.shape}."
-        )
     if int(steps) < 3:
         raise ValueError(f"Transition representative steps must be >= 3, got {steps}.")
     mask_a = labels == int(cluster_a)
@@ -84,11 +79,6 @@ def select_within_cluster_representative_rows(
 ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Select distinct real samples along a cluster's dominant latent direction."""
     latents = np.asarray(cluster_latents, dtype=np.float64)
-    if latents.ndim != 2:
-        raise ValueError(
-            "Within-cluster transition selection expects latents (N,D), "
-            f"got {latents.shape}."
-        )
     if int(steps) < 3:
         raise ValueError(f"Transition representative steps must be >= 3, got {steps}.")
     if len(latents) < int(steps):
@@ -160,11 +150,6 @@ def _prepare_local_structure(
     order = np.argsort(np.linalg.norm(centered, axis=1), kind="mergesort")
     keep = order[: min(int(target_points), len(order))]
     local = np.asarray(centered[keep], dtype=np.float32)
-    if local.shape[0] < 2:
-        raise ValueError(
-            "Interactive transition representative needs at least two local atoms. "
-            f"sample_index={sample_index}, retained_shape={local.shape}."
-        )
     return local
 
 
@@ -489,11 +474,6 @@ def render_within_cluster_transition_3d(
     """Render real structures across an isolated cluster's dominant latent direction."""
     latents = np.asarray(cluster_latents, dtype=np.float64)
     sample_indices = np.asarray(cluster_sample_indices, dtype=np.int64).reshape(-1)
-    if latents.ndim != 2 or len(latents) != len(sample_indices):
-        raise ValueError(
-            "Within-cluster transition expects latents (N,D) aligned with sample indices "
-            f"(N,), got {latents.shape} and {sample_indices.shape}."
-        )
     if int(cluster_id) not in cluster_color_map:
         raise KeyError(
             f"Within-cluster transition is missing a color for cluster {cluster_id}."
@@ -554,11 +534,6 @@ def render_cluster_representatives_3d(
 
     labels = np.asarray(cluster_labels, dtype=np.int64).reshape(-1)
     latent_array = np.asarray(latents, dtype=np.float32)
-    if latent_array.ndim != 2 or len(latent_array) != len(labels):
-        raise ValueError(
-            "Interactive cluster gallery expects latents (N,D) aligned with labels (N,), "
-            f"got {latent_array.shape} and {labels.shape}."
-        )
     representatives = _compute_cluster_representative_indices(
         latent_array,
         labels,

@@ -1,0 +1,3200 @@
+{
+  "dataset_id": "distance-encoder-md-dense6-training-20260926",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "4f2ace9d8e1bcb61226f5836a57b31fcbc4af6bdd1adcb9e3e1d5bd4302d1121",
+      "kind": "metadata",
+      "keys": [
+        "anchors",
+        "coordinate_dtype",
+        "frames",
+        "identity",
+        "normalization",
+        "parent_manifest_sha256",
+        "parent_plan_sha256",
+        "parent_root",
+        "producer_sha256",
+        "protocol",
+        "sources",
+        "structural_root"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "six_consecutive_md_frames_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "normalization.protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "sources[0].source.material",
+            "occurrences": 226
+          },
+          {
+            "value": "Mg",
+            "first_json_path": "sources[113].source.material",
+            "occurrences": 12
+          },
+          {
+            "value": "Ti",
+            "first_json_path": "sources[119].source.material",
+            "occurrences": 14
+          },
+          {
+            "value": "Ta",
+            "first_json_path": "sources[126].source.material",
+            "occurrences": 12
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "sources[0].source.split",
+            "occurrences": 117
+          },
+          {
+            "value": "selection",
+            "first_json_path": "sources[15].source.split",
+            "occurrences": 15
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[15].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[16].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[17].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[18].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[19].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[20].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[21].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[22].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[23].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[24].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[25].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[26].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[27].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[28].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[29].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[30].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[31].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[32].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[33].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[34].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[35].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[36].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[37].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[38].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[39].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[40].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[41].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[42].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[43].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[44].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[45].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[46].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[47].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[48].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[49].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[50].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[51].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[52].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[53].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[54].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[55].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[56].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[57].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[58].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[59].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[60].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[61].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[62].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[63].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[64].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[65].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[66].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[67].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[68].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[69].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[70].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[71].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[72].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[73].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[74].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[75].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[76].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[77].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[78].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[79].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[80].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[81].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[82].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[83].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[84].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[85].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[86].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[87].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[88].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[89].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[90].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[91].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[92].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[93].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[94].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[95].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[96].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[97].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[98].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[99].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[100].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[101].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[102].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[103].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[104].source.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "sources[105].source.lineage",
+            "occurrences": 6
+          },
+          {
+            "value": "al-1m-independent-melt-911001",
+            "first_json_path": "sources[111].source.lineage",
+            "occurrences": 2
+          },
+          {
+            "value": "Mg-archived-root",
+            "first_json_path": "sources[113].source.lineage",
+            "occurrences": 6
+          },
+          {
+            "value": "Ti-archived-root",
+            "first_json_path": "sources[119].source.lineage",
+            "occurrences": 7
+          },
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "sources[126].source.lineage",
+            "occurrences": 6
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].source.timestep_fs",
+            "occurrences": 105
+          },
+          {
+            "value": 1.0,
+            "first_json_path": "sources[105].source.timestep_fs",
+            "occurrences": 21
+          },
+          {
+            "value": 2.0,
+            "first_json_path": "sources[126].source.timestep_fs",
+            "occurrences": 6
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].source.frame_count",
+            "occurrences": 105
+          },
+          {
+            "value": 241,
+            "first_json_path": "sources[105].source.frame_count",
+            "occurrences": 18
+          },
+          {
+            "value": 3001,
+            "first_json_path": "sources[111].source.frame_count",
+            "occurrences": 1
+          },
+          {
+            "value": 4001,
+            "first_json_path": "sources[112].source.frame_count",
+            "occurrences": 1
+          },
+          {
+            "value": 2401,
+            "first_json_path": "sources[119].source.frame_count",
+            "occurrences": 6
+          },
+          {
+            "value": 7241,
+            "first_json_path": "sources[125].source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].source.atom_count",
+            "occurrences": 105
+          },
+          {
+            "value": 1048576,
+            "first_json_path": "sources[105].source.atom_count",
+            "occurrences": 12
+          },
+          {
+            "value": 1000000,
+            "first_json_path": "sources[111].source.atom_count",
+            "occurrences": 2
+          },
+          {
+            "value": 100000,
+            "first_json_path": "sources[119].source.atom_count",
+            "occurrences": 7
+          },
+          {
+            "value": 10000422,
+            "first_json_path": "sources[126].source.atom_count",
+            "occurrences": 5
+          },
+          {
+            "value": 1024000,
+            "first_json_path": "sources[131].source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "sources[0].cadence_ps",
+            "occurrences": 105
+          },
+          {
+            "value": 0.09999999999999964,
+            "first_json_path": "sources[105].cadence_ps",
+            "occurrences": 18
+          },
+          {
+            "value": 0.09999999999999432,
+            "first_json_path": "sources[111].cadence_ps",
+            "occurrences": 8
+          },
+          {
+            "value": 0.10000000000000853,
+            "first_json_path": "sources[125].cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-1004/complete.json",
+      "relative_path": "sources/native-1004/complete.json",
+      "sha256": "eeca6921cd4da5b0fad794e5f5232a41a27127b99a46e9341b65d7ae5259fba0",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-860/complete.json",
+      "relative_path": "sources/native-860/complete.json",
+      "sha256": "aa45aa1a773ed4b15b9faa13b6949b490ae86d4468ae6359c1470158442eb2f4",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-861/complete.json",
+      "relative_path": "sources/native-861/complete.json",
+      "sha256": "22edcfd7b7f573b2918dde66178695dd3f71a44c7b158fa21cf5e0d91d8fbd9b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-862/complete.json",
+      "relative_path": "sources/native-862/complete.json",
+      "sha256": "fa73f0c464844f71fb02cc1c29e66c35d51f8388d5e1677b619246176e8ddf3c",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-863/complete.json",
+      "relative_path": "sources/native-863/complete.json",
+      "sha256": "76b68eb6f95ce60b9d356cc33c7863088d774ed6dfe6fd1e8d899db13bb3c0e3",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-864/complete.json",
+      "relative_path": "sources/native-864/complete.json",
+      "sha256": "c3a8b13ecf8631ae011a9926d67804f35d9ec5b4575dce9b8485ec1fe1e8f408",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-865/complete.json",
+      "relative_path": "sources/native-865/complete.json",
+      "sha256": "2b2fb82a6d207d1d675af8a9a3043534f91d48bf344f6b7519bbf1e387ce7361",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-866/complete.json",
+      "relative_path": "sources/native-866/complete.json",
+      "sha256": "59dcdd9967dd7556a9dc0eea8ba286f1e1c3df4bf1bb9894c95947bb7780fcc1",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-867/complete.json",
+      "relative_path": "sources/native-867/complete.json",
+      "sha256": "f3efb1b289ae5030889fe39b7bc773cf34fb772eef1b5c02c281ab617fd5b46b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-868/complete.json",
+      "relative_path": "sources/native-868/complete.json",
+      "sha256": "ac5624fafcb89b2b1e0bc4ecccd21980b2527931a89156a7952c6a190af9ac54",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-869/complete.json",
+      "relative_path": "sources/native-869/complete.json",
+      "sha256": "75db79f0f15cdaaf69db1584a40ba02fe1c5894fbc0bfa59cdbc1601c4d4fd73",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-870/complete.json",
+      "relative_path": "sources/native-870/complete.json",
+      "sha256": "d0795a404fe0ed5ed3af156c5d73a47a53d4ac002481d37fb32d95427452c1bf",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-871/complete.json",
+      "relative_path": "sources/native-871/complete.json",
+      "sha256": "36f139ebe76b685e6d44e994e96b19db1333d898af9b5f9861a31f81eec01339",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-872/complete.json",
+      "relative_path": "sources/native-872/complete.json",
+      "sha256": "bf5f63b8d4eb5f411f1b167d25a7f31a0f693068b7d3d50c4576328a6831eec0",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-873/complete.json",
+      "relative_path": "sources/native-873/complete.json",
+      "sha256": "ac1cd334c83efe108730b1012aa4171bbc543ec046990c05577aa603f82983eb",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-874/complete.json",
+      "relative_path": "sources/native-874/complete.json",
+      "sha256": "fa863c7d84c3dec4672b227c1235cae51344777be071b55f251f9d4854b9fb14",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-876/complete.json",
+      "relative_path": "sources/native-876/complete.json",
+      "sha256": "d049857f6454056ee6fad95115f9b926219c4db765ff7f792040cbf56aef2543",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-878/complete.json",
+      "relative_path": "sources/native-878/complete.json",
+      "sha256": "a2c6678691253885815f3c3ebf2eb1c9a5b31019bf7abf673692f500e9044b07",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-879/complete.json",
+      "relative_path": "sources/native-879/complete.json",
+      "sha256": "71d4fe04eef29fb6d3c322cbc9d049cab185f0971113761d0f5d2a7fe4471b7a",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-884/complete.json",
+      "relative_path": "sources/native-884/complete.json",
+      "sha256": "688f1273106a63d3aee0b879e8b3525b32108531ae97db5cefad4a5306f15169",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-885/complete.json",
+      "relative_path": "sources/native-885/complete.json",
+      "sha256": "f853ab67aec17fbc9c63ea98dc9823f730a826b0241ad291953ce74f5ef83dca",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-886/complete.json",
+      "relative_path": "sources/native-886/complete.json",
+      "sha256": "02ce9e99e733cb9db21e0c795bf300bf7440dd6661b69d9397fab044c36c089e",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-887/complete.json",
+      "relative_path": "sources/native-887/complete.json",
+      "sha256": "2235eb20504af608f0861c8def9b3a5e5e130e0907bde48dfe0bb1ce2a068d6a",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-888/complete.json",
+      "relative_path": "sources/native-888/complete.json",
+      "sha256": "cfa7d9a1da10151af59584cae112dae1e3eae95dd04aa05a291962389c6a8611",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-889/complete.json",
+      "relative_path": "sources/native-889/complete.json",
+      "sha256": "a928891fac0a40df0ec37f896749917c3deac4a1a1fe3f325cbf6bda42dcba32",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-890/complete.json",
+      "relative_path": "sources/native-890/complete.json",
+      "sha256": "11dc9e822f7ec0c5cce34f476a4be885d76fe3d5b64a78b7e73c34fc377a22b3",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-891/complete.json",
+      "relative_path": "sources/native-891/complete.json",
+      "sha256": "46747458559220488ae72fde13cf61342e28f300a710525d29203753d0a55bf6",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-892/complete.json",
+      "relative_path": "sources/native-892/complete.json",
+      "sha256": "32ea0edcc44a3e52f49c19addbc3203ae6b56857b6da59a2e682dc75849454a6",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-893/complete.json",
+      "relative_path": "sources/native-893/complete.json",
+      "sha256": "00a6adca4806bf8875515658729d4ddb2226ca6c80441695b66e3702571ff279",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-894/complete.json",
+      "relative_path": "sources/native-894/complete.json",
+      "sha256": "7fae98d429dc1a22bab71313eafe725d3bce52c295881c72fea33a4b1bf62cb2",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-895/complete.json",
+      "relative_path": "sources/native-895/complete.json",
+      "sha256": "e738803cc5891af1d9fb423181623599518969bd6564bae9420077662b5fa824",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-896/complete.json",
+      "relative_path": "sources/native-896/complete.json",
+      "sha256": "03d2454f42bbee3bb95b832f1f7be1de6c0c1c4fd5b88514ff154f26dfed7732",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-897/complete.json",
+      "relative_path": "sources/native-897/complete.json",
+      "sha256": "7972e1a35719f65e8126d2cb66ab4a7ea5b2c08be6acbbef776356eb6919a32a",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-898/complete.json",
+      "relative_path": "sources/native-898/complete.json",
+      "sha256": "afc5fa02c04ecc8985e78eb32af33abe610ef15df96670542cc9b669449a205b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-899/complete.json",
+      "relative_path": "sources/native-899/complete.json",
+      "sha256": "1fa5d7ab27677b32e1b9e626da94ea08e87cbbfee22399ac93afa9edd4917e1a",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-900/complete.json",
+      "relative_path": "sources/native-900/complete.json",
+      "sha256": "571c60a366e4e7619a641b4408c839cab397194131e1707ac1c0e6d1c292b51e",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-901/complete.json",
+      "relative_path": "sources/native-901/complete.json",
+      "sha256": "66e74bea5e83940c452bdda24673b3c43b5091fa12bab74647ad2f25dfc9e1f1",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-902/complete.json",
+      "relative_path": "sources/native-902/complete.json",
+      "sha256": "6f88c8f46a9f8f42192da67b89c8bfcc3c6da1d6ac6ebe62c490ac42f14d154f",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-903/complete.json",
+      "relative_path": "sources/native-903/complete.json",
+      "sha256": "a017aff1ae8fea3fe8f4e10c937b6ccbdad08ab50ead507fc16f6e424ce0e90f",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-906/complete.json",
+      "relative_path": "sources/native-906/complete.json",
+      "sha256": "45ffbcfac3fa871a610b49394fe67a5f39bf075131010e1bf6dc27e900577fa2",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-914/complete.json",
+      "relative_path": "sources/native-914/complete.json",
+      "sha256": "353d50d9769fea2d7cd0aac131de04907068edcf8aa3f068f557593431a7389c",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-915/complete.json",
+      "relative_path": "sources/native-915/complete.json",
+      "sha256": "9ee0b5bd57ef5b0fb336954abf3c9e0f2ec04d08ff6b1abf3d8357aa9abaea94",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-916/complete.json",
+      "relative_path": "sources/native-916/complete.json",
+      "sha256": "b6d55507b811a41c606198341e52365c8f3d22f1fa4a7af8dcf9bd19e9252cba",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-917/complete.json",
+      "relative_path": "sources/native-917/complete.json",
+      "sha256": "86f732072326fa3e7ce48bc9e869a74a3e3bb641332c3e797b74f6c3fc1581d2",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-918/complete.json",
+      "relative_path": "sources/native-918/complete.json",
+      "sha256": "4a3ae28c2bde907d9dff3e03bf34e22e916d8bc4a7ce7223de4d4a4ab8866709",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-919/complete.json",
+      "relative_path": "sources/native-919/complete.json",
+      "sha256": "e1e6617013bb32e6ea96de0a8f4fcff40370e511259d85a6f80964fcb187bd6d",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-920/complete.json",
+      "relative_path": "sources/native-920/complete.json",
+      "sha256": "fe435f8915c1800ce1c1c9744032a2733067a633517fea51d8b30cb09f8ff755",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-921/complete.json",
+      "relative_path": "sources/native-921/complete.json",
+      "sha256": "9b41d22b9ffee55205120a871b8b3c1e73c3b6dffbe716d79d27ef8da2ae2b89",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-922/complete.json",
+      "relative_path": "sources/native-922/complete.json",
+      "sha256": "acff38ffd6771bd8d24ebe22a5a309eeb5eabefcaa67a669bb829cc47fa594e0",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-923/complete.json",
+      "relative_path": "sources/native-923/complete.json",
+      "sha256": "ee17b4258f9a325547cb87439eb6db9579fca06a160f3ca4a35bb46a38238929",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-924/complete.json",
+      "relative_path": "sources/native-924/complete.json",
+      "sha256": "d0dbbb3d4b0ad5857180695706f0ff1f95b5a984c577dcf1a18cff6d8bef8696",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-925/complete.json",
+      "relative_path": "sources/native-925/complete.json",
+      "sha256": "19a79e37f23c00e58b67b91817f93dd669897155c5d3758a527ecf4690194892",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-926/complete.json",
+      "relative_path": "sources/native-926/complete.json",
+      "sha256": "64e0b1fe1e18a2d1764935cdfa304b311c70f209979eddfaaef72827247fb0ea",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-927/complete.json",
+      "relative_path": "sources/native-927/complete.json",
+      "sha256": "0233cef6ca2de4e265b6977592ef45c2c5baf4d7680192d9f1f214cf8d57478b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-928/complete.json",
+      "relative_path": "sources/native-928/complete.json",
+      "sha256": "5b85eefba7b333a1596aad673b545df5bc8710d231cf5ad7783171cebad8d886",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-929/complete.json",
+      "relative_path": "sources/native-929/complete.json",
+      "sha256": "4369fc6a3c4fbb562100bd5168e796e493bb8b11b38d1f791c4357da351db8f6",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-930/complete.json",
+      "relative_path": "sources/native-930/complete.json",
+      "sha256": "66cc88ef5b59295882917586e53afbeba2c9d100c649827c166d0407989bf16e",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-931/complete.json",
+      "relative_path": "sources/native-931/complete.json",
+      "sha256": "7f26f6110f6d0a9f0d6657d7bbc8efd74d0115ee14068000da587c9314c42f75",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-935/complete.json",
+      "relative_path": "sources/native-935/complete.json",
+      "sha256": "4d50002076b5c926addfc990e4514318befdbd4dd56ec10a1465acfcdcca4ef5",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-936/complete.json",
+      "relative_path": "sources/native-936/complete.json",
+      "sha256": "5b30c6daa963901a04aa1b30f2833215f8c0b6050da1470cb3f28fef9acc2bfd",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-937/complete.json",
+      "relative_path": "sources/native-937/complete.json",
+      "sha256": "4c536d55e2b14656be371b4ece2235b27d0b6da59256e3e13b515a8adbc47a59",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-944/complete.json",
+      "relative_path": "sources/native-944/complete.json",
+      "sha256": "ce9e114eeae4292704dd1fb1c0a0c838a4135eb5246c6d5ef8bf21b416896d97",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-945/complete.json",
+      "relative_path": "sources/native-945/complete.json",
+      "sha256": "1d0c143fcaadda254d29f37b5a768aa23f6932aa34cb136b6ac54d7c89cbeae4",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-946/complete.json",
+      "relative_path": "sources/native-946/complete.json",
+      "sha256": "f3cc0415192196b5560b8b76eaeac1ed1567e0f4052ffbcc370217206ed07e28",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-947/complete.json",
+      "relative_path": "sources/native-947/complete.json",
+      "sha256": "2248d1b44d17868d0ccb57d4b1f84a58fea04b70aeae6401191c532a8491c25b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-948/complete.json",
+      "relative_path": "sources/native-948/complete.json",
+      "sha256": "b6c0c27141377e165b54ae322dba18af5031b39dc81dd9cd388f12c9e6463f57",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-949/complete.json",
+      "relative_path": "sources/native-949/complete.json",
+      "sha256": "1aed840d12b5e3b352e3708cd914bf564a6fbb95844eb21d031f6e5e2cd87a41",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-950/complete.json",
+      "relative_path": "sources/native-950/complete.json",
+      "sha256": "e394ca2bacd1155173c8c5224c64bb53ccec982dad95c5cfe0b8943be4fce76c",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-951/complete.json",
+      "relative_path": "sources/native-951/complete.json",
+      "sha256": "b1c968b63d4cf0384e26737c7b6032e8503f350dc8a6daedb3ee77e82fbfaa92",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-952/complete.json",
+      "relative_path": "sources/native-952/complete.json",
+      "sha256": "6345f688afe2e6ad27855e0c7bc9fe013af4b783f1a1ca8510fbcb6a429aeeb8",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-953/complete.json",
+      "relative_path": "sources/native-953/complete.json",
+      "sha256": "f2e723f83eb2607f170e8bc74b52cfcfb15823cda43ccbe9633c4892b549aa0c",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-954/complete.json",
+      "relative_path": "sources/native-954/complete.json",
+      "sha256": "ab84dc2250d2f0b72abd79eaaa47608fe26813402da78efe01cacd5c2bd70faa",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-955/complete.json",
+      "relative_path": "sources/native-955/complete.json",
+      "sha256": "21a744e7baf9c23b8c2b2e297822c71f9ac0c6ba42d0a854b2c5c5d259854a27",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-956/complete.json",
+      "relative_path": "sources/native-956/complete.json",
+      "sha256": "0ef0d3eb069dc39f8702e499f2aa75fd6e423828403220fd03f85d4f441ef48b",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-957/complete.json",
+      "relative_path": "sources/native-957/complete.json",
+      "sha256": "e0d290509c65ea7d5bc48602a221e8be2ed497905306f49355530cceebca8bb3",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-958/complete.json",
+      "relative_path": "sources/native-958/complete.json",
+      "sha256": "1d1b253201c0a36c0e019beabccd047b250823a3a2d9a6f33c3155a76ea9ba25",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-959/complete.json",
+      "relative_path": "sources/native-959/complete.json",
+      "sha256": "9271e6344d43fd79151f04e7d0d699797aee985492c624e65c579b61e8243ffe",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-960/complete.json",
+      "relative_path": "sources/native-960/complete.json",
+      "sha256": "57632acdc6203b15e1486c6f1beaeb92543f1aa0d9b130beeb0b6ad00d91c816",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-961/complete.json",
+      "relative_path": "sources/native-961/complete.json",
+      "sha256": "daebb38c26ad2caf83acc95855e43489f310641cad3b43a6d942b839bcda1aa8",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-963/complete.json",
+      "relative_path": "sources/native-963/complete.json",
+      "sha256": "5de20f31bd5162a8e15b5c19e5e6e7c24645c11b7a21d334f5e9ff64c5eae627",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-965/complete.json",
+      "relative_path": "sources/native-965/complete.json",
+      "sha256": "922d81c58e3d180992b99f2fb33f61a3ec80b697f4680baa71573cca8a205521",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-967/complete.json",
+      "relative_path": "sources/native-967/complete.json",
+      "sha256": "5411cc2f96ab920dfde41a7b8726cac34a79c2d1292101595e2940ec893d7f1c",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-974/complete.json",
+      "relative_path": "sources/native-974/complete.json",
+      "sha256": "cf993762fe1167d4c9c3e928a3c5cf0d4d479a03d6af04ec999db651795f1a8d",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-975/complete.json",
+      "relative_path": "sources/native-975/complete.json",
+      "sha256": "0d4278ffb1f10cd1b3b2ac353aeae997fec5b427de8cc6efa0f6cf94dd37b921",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-976/complete.json",
+      "relative_path": "sources/native-976/complete.json",
+      "sha256": "3b199f58a5a22635adb9111e2f06f619766868692779fcae77b4148171edf62e",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-977/complete.json",
+      "relative_path": "sources/native-977/complete.json",
+      "sha256": "780d8495f4265bb84810ea7f43b0c7cf08e0cebe1af1da2b50a58d4fc55d27b4",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-978/complete.json",
+      "relative_path": "sources/native-978/complete.json",
+      "sha256": "e42adf141cb800ceac102be4312df460343825d4f8f9f23729f322e77a2c1416",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-979/complete.json",
+      "relative_path": "sources/native-979/complete.json",
+      "sha256": "43ab3b68683f42cf5eb2ae5a640a0eb276546738c837c6207b332f5052d95915",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-982/complete.json",
+      "relative_path": "sources/native-982/complete.json",
+      "sha256": "4be090d813128f3410e6afd1c0c1e568160beaa8c13d271b099364db7daa2920",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-983/complete.json",
+      "relative_path": "sources/native-983/complete.json",
+      "sha256": "40e12678ce762530f20a0c43b6a5ebd4abe41cd41cb1619fa57c200c0e06fd02",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-985/complete.json",
+      "relative_path": "sources/native-985/complete.json",
+      "sha256": "cdadd04ba1749b3bf4a5c990a22155b6f8fc04802e1dca7afca5f25464ce58ed",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-987/complete.json",
+      "relative_path": "sources/native-987/complete.json",
+      "sha256": "b4e396772378d650bca57b7415b8b167f8bcccdbb95f611aff2681dcdf0c1ffc",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-989/complete.json",
+      "relative_path": "sources/native-989/complete.json",
+      "sha256": "68dbbb37addb1c4839682a78cc206f1e99e9d870f1e4068f7972e055f23587cf",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-991/complete.json",
+      "relative_path": "sources/native-991/complete.json",
+      "sha256": "1b630557dfd1e1bc84b4118b84c73a2c0166970f200533e1fb907d421977e759",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-training-20260926/sources/native-997/complete.json",
+      "relative_path": "sources/native-997/complete.json",
+      "sha256": "317ebea7b433d9e1ba77e90f3c36007f48c32a3b0e346348ad9b37d94ed89659",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "role",
+        "rows",
+        "source",
+        "unique_patches"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

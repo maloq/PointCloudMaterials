@@ -1,29 +1,21 @@
 checkpoint:
-  # Fill this with the trained TMF checkpoint.
   path: output/2026-04-16/21-26-34/TMF_l256_S32_B16_C5_RI_MAE_Invariant-epoch=05.ckpt
-  # null -> <checkpoint_dir>/analysis
   output_dir: output/temporal-motif/standard
   cuda_device: 0
-
 inputs:
-  # Keep this null for TMF so analysis reuses the temporal_lammps checkpoint data setup.
   data_config: null
   static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
   max_samples_total: 0
-
 cache:
   enabled: true
   force_recompute: false
   file: analysis_inference_cache.npz
-
 runtime:
   progress_every_batches: 20
   seed_base: 123
-
 clustering:
-  # Keep this as a fallback / comparison, even if model-native motifs are available.
   primary_k: 8
   k_values: null
   method: spherical_kmeans
@@ -32,7 +24,6 @@ clustering:
   standardize: true
   pca_variance: 0.98
   pca_max_components: 32
-
   hdbscan:
     enabled: false
     fit_fraction: 0.25
@@ -45,13 +36,11 @@ clustering:
     cluster_selection_epsilon: 0.0
     cluster_selection_method: leaf
     refit_full_data: true
-
 md:
   overlap_boost: 0.0
   overlap_fraction: null
   use_all_points: true
   interactive_max_points: 0
-
 tsne:
   max_samples: 8000
   n_iter: 1000
@@ -61,14 +50,11 @@ tsne:
   umap_neighbors: 30
   umap_min_dist: 0.15
   umap_metric: euclidean
-
 figure_set:
   enabled: true
-  figure_only: false
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
-
   md:
     max_points: null
     point_size: 5.6
@@ -79,14 +65,12 @@ figure_set:
     view_elev: 24.0
     view_azim: 35.0
     num_views: 2
-
   icl:
     enabled: false
     k_min: 2
     k_max: 20
     max_samples: 20000
     covariance: diag
-
   representatives:
     points: null
     orientation: pca
@@ -96,10 +80,9 @@ figure_set:
     ptm_enabled: true
     cna_enabled: true
     cna_max_signatures: 5
-    center_atom_tolerance: 1.0e-6
+    center_atom_tolerance: 1.0e-06
     shell_min_neighbors: 8
     shell_max_neighbors: 24
-
   raytrace:
     enabled: false
     blender_executable: blender
@@ -114,16 +97,13 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-
 real_md:
   enabled: true
-
   time_series:
     paper_enabled: true
     alpha: 0.78
     bar_alpha: 0.82
     paper_alpha: 0.72
-
   profiles:
     enabled: true
     samples_per_cluster: 6
@@ -132,7 +112,6 @@ real_md:
     max_cluster_property_samples: 256
     cluster_group_order: []
     cluster_groups: {}
-
   spatial:
     enabled: true
     max_points: 25000
@@ -147,7 +126,6 @@ real_md:
     auto_zoom_half_extent: 18.0
     auto_zoom_search_radius: 14.0
     zoom_specs: []
-
   projection:
     method: umap
     umap_backend: cpu
@@ -157,19 +135,19 @@ real_md:
     umap_metric: euclidean
     scalar_alpha: 0.86
     scalar_background_alpha: 0.06
-
   descriptors:
     enabled: false
     max_samples: 6000
     physical_scalar: coord_mean
     scalar_columns: []
-
   optional:
     steinhardt:
       enabled: false
-      l_values: [4, 6]
+      l_values:
+      - 4
+      - 6
       append_shell_size: true
-      center_atom_tolerance: 1.0e-6
+      center_atom_tolerance: 1.0e-06
       shell_min_neighbors: 8
       shell_max_neighbors: 24
     cna:
@@ -177,7 +155,7 @@ real_md:
       max_signatures: 12
       append_shell_size: true
       fit_max_pointclouds: 4000
-      center_atom_tolerance: 1.0e-6
+      center_atom_tolerance: 1.0e-06
       shell_min_neighbors: 8
       shell_max_neighbors: 24
     soap:
@@ -193,10 +171,9 @@ real_md:
       pca_components: 16
       fit_max_pointclouds: 4000
       n_jobs: 1
-      center_atom_tolerance: 1.0e-6
+      center_atom_tolerance: 1.0e-06
       shell_min_neighbors: 8
       shell_max_neighbors: 24
-
   transitions:
     enabled: true
     require_mutual: true
@@ -206,11 +183,9 @@ real_md:
     save_svg: false
     pair_plots_enabled: false
     pair_plots_max_count: 0
-
 equivariance:
   enabled: true
   max_batches: 2
-
 dynamic_motif:
   enabled: true
   export_per_sample_arrays: true
@@ -218,17 +193,15 @@ dynamic_motif:
   stable_k: null
   bridge_k: null
   representative_samples_per_motif: 12
-  transition_snapshot_flow_count: 5
   bridge_min_support: 50
   dwell_min_length: 1
   recurrence_max_gap: 64
-
+  transition_snapshot_flow_count: 5
   render:
     heatmaps: true
     timelines: true
     representatives: true
     event_gallery: true
     sankey: true
-
   field:
     enabled: false

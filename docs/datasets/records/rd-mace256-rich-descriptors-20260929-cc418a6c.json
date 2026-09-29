@@ -1,0 +1,55 @@
+{
+  "dataset_id": "rd-mace256-rich-descriptors-20260929",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/analysis/liquid_predictability/rd-mace256-l3-z256-20260929/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "2aa5e17a4d26a7a36077252f02c20c11b8c0b7d0b5e3c04b0cafdcd8cb8f224d",
+      "kind": "metadata",
+      "keys": [
+        "activation_checkpointing",
+        "batch_search",
+        "branch",
+        "data",
+        "encoder_config",
+        "fixed_dataset",
+        "metric_family",
+        "name",
+        "output",
+        "patch_chunk",
+        "predictor",
+        "protocol",
+        "regularization",
+        "runtime",
+        "seed",
+        "training",
+        "wandb"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "encoder_config.radius",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "rich_descriptor_mace_full_epochs_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260929,
+            "first_json_path": "seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

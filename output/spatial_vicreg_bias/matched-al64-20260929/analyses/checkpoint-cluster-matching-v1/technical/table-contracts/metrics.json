@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "3b33dc94f9b6979bf538cdaa642fa8c3fd8a053387b0ca858e970f6c81627105",
+  "family": "checkpoint_cluster_matching",
+  "contract": "technical/metric-contracts/checkpoint_cluster_matching.json",
+  "definitions": "tables/metric-definitions/checkpoint_cluster_matching.md"
+}

@@ -1,0 +1,865 @@
+{
+  "dataset_id": "distance-encoder-md-dense6-evaluation-20260926",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/875/complete.json",
+      "relative_path": "875/complete.json",
+      "sha256": "d6c489ad357337765953a8139181846d84028739818f97daaf4b9415388349e7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/876/complete.json",
+      "relative_path": "876/complete.json",
+      "sha256": "7ef6e26fa6ff98a7503fcab106877420c40eeeaabd2a45e026f2f9e30c4e8e85",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/877/complete.json",
+      "relative_path": "877/complete.json",
+      "sha256": "c176b1362dc9f1583e5ce8fc9d2ec1dd4d6aadc982f6c1edd9a9285777202e7c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/878/complete.json",
+      "relative_path": "878/complete.json",
+      "sha256": "9c6621739ee3c1b66aecd4876c2ea59fdabfda0292c568cf10807a274ee3185d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/879/complete.json",
+      "relative_path": "879/complete.json",
+      "sha256": "2287c4bf61b3505902b5c176047cbc8f2ec9c2bc67c9ee8bf0a8b1da5bc7d1a6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/880/complete.json",
+      "relative_path": "880/complete.json",
+      "sha256": "d076935ab75869cfe5c2f9598cd74acf6c6f5d487a62e132ce3a31b8563cafe9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/881/complete.json",
+      "relative_path": "881/complete.json",
+      "sha256": "e292125b6783d725174902d1c598a29f5261450261a0e35f240eff0d1ae44c4d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/882/complete.json",
+      "relative_path": "882/complete.json",
+      "sha256": "cf501f9f27bc85fdca1ca049b842d2ffbb1ab1b9ff34e8bb6233299450a1d3b8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/883/complete.json",
+      "relative_path": "883/complete.json",
+      "sha256": "ddfe1baeacebde1bfd4ba716b08eed61473114336cf1282e23aebcad2b24d9d7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/902/complete.json",
+      "relative_path": "902/complete.json",
+      "sha256": "a93b8b444d71e1ec2fa730874fc106d8034486f2752d4db6e9d54ffa7606b6c0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/903/complete.json",
+      "relative_path": "903/complete.json",
+      "sha256": "461ec8270bfe4ee7fc77be345e3db67a420ee1d4e3ea7adb5ac7aa5113e8ed33",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/904/complete.json",
+      "relative_path": "904/complete.json",
+      "sha256": "ffaacc8d1b9a77273c56c5560a9fecfe1d3177a2e5a266737aa18f1f21cff825",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/905/complete.json",
+      "relative_path": "905/complete.json",
+      "sha256": "4d73fc1b6a521069304f67a17c9e3cda9afb62e4336189dca56017e1a270f252",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/906/complete.json",
+      "relative_path": "906/complete.json",
+      "sha256": "6a5c033036965d1865ab9b30270b491bc67ddb3512a7984cb101a4ed3e1d9018",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/907/complete.json",
+      "relative_path": "907/complete.json",
+      "sha256": "3193c246d7993a151b90543e9fd483b94e9b4c848220e9c11f55f4d0ca48be88",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/908/complete.json",
+      "relative_path": "908/complete.json",
+      "sha256": "017fdbe32b4451caf2aba89b1c165bc8989aadc44bbc7b428974cbbe7dd53f25",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/909/complete.json",
+      "relative_path": "909/complete.json",
+      "sha256": "fb56e094e0579f115f5fef1ea3aeaf42e8579a6b6a1e92f400ad8199d532fc4f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/910/complete.json",
+      "relative_path": "910/complete.json",
+      "sha256": "228c3da86a985dc83b02521312eed7d666dd651cac9f9075f8a599bd45bda87f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/911/complete.json",
+      "relative_path": "911/complete.json",
+      "sha256": "c7e21d4b55f49a53baa900337cf9fcbf5f4bc790275182379e5267d79f0dcb16",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/912/complete.json",
+      "relative_path": "912/complete.json",
+      "sha256": "1e04bcee9edf988be7e77e0a24c0be32c1fa9da3f85d1d0177d4cc4bc115438a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/913/complete.json",
+      "relative_path": "913/complete.json",
+      "sha256": "0152b94e3f639f0721e1a0a6872cc7b06d7d70803e98457099f0bcfe7c6d7300",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/932/complete.json",
+      "relative_path": "932/complete.json",
+      "sha256": "5706d9a0aabe56fc153ab8d97552e7d5db52c3cabb6c0101d497cdb2e0e36a6c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/933/complete.json",
+      "relative_path": "933/complete.json",
+      "sha256": "b7079d756390eb76fa5b86db66cffab1978d1afd4752294f93a3f11d233bdda2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/934/complete.json",
+      "relative_path": "934/complete.json",
+      "sha256": "8d97b126dd8ae67cf4593d0cb0f19b471d37b577035814af5b97f425116e790f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/935/complete.json",
+      "relative_path": "935/complete.json",
+      "sha256": "6c31abd5340f101806359466353ea3adc7fb7c8861c26f923caf6ceae189366d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/936/complete.json",
+      "relative_path": "936/complete.json",
+      "sha256": "7e42a7993d3498533b43c7c760b304cda113a5cc99c80fd727fff0572968557f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/937/complete.json",
+      "relative_path": "937/complete.json",
+      "sha256": "572508b61c92894bb862d4ddc0d8f97db63c35462c3a5b5b030513a395f46084",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/938/complete.json",
+      "relative_path": "938/complete.json",
+      "sha256": "455ca02482fd580577c14c7b3d5656a30f46f1c3e0b09979d96804ae285db564",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/939/complete.json",
+      "relative_path": "939/complete.json",
+      "sha256": "96271384f0ce36873aa9add2a728435858d5e0289decc9367dd83bb67561563a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/940/complete.json",
+      "relative_path": "940/complete.json",
+      "sha256": "e390032010ea2e2618f61156c8fb39fa108f76324cdb5151f8fcd914a2d5fcf0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/941/complete.json",
+      "relative_path": "941/complete.json",
+      "sha256": "ff53aa8cde75633713d172cc0abcb0930ab116402405f5eb9b6aff55ab6d1f60",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/942/complete.json",
+      "relative_path": "942/complete.json",
+      "sha256": "b0508278ee0e8cbd5767ae5fb50ed4254a9dbfaf591d0320dfc8e61c7a7a4965",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/943/complete.json",
+      "relative_path": "943/complete.json",
+      "sha256": "3b61c1a60879eca1d6e5e3f6e235d75d0f975986f8c97b5b1964955c7fa6df8b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/962/complete.json",
+      "relative_path": "962/complete.json",
+      "sha256": "79e1a1bcc87e787ef305d1cb09d7aaca6d669e64502a79599dfc89b44407a6a2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/963/complete.json",
+      "relative_path": "963/complete.json",
+      "sha256": "e935458385c0b864f0e2bc6650f6ed91bb1db56b1e72893c973af2afc6ad4ed3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/964/complete.json",
+      "relative_path": "964/complete.json",
+      "sha256": "b265d01897663a28205bc50b1b6f8e8934e76ef20a00ce15f2b04aa8be22514a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/965/complete.json",
+      "relative_path": "965/complete.json",
+      "sha256": "f773948feb8f60ed715f6e1f2fec7401cc962dc391b3ba531a8347c4a86435f5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/966/complete.json",
+      "relative_path": "966/complete.json",
+      "sha256": "01bbe9155744573923e0bba3df5de6edc65b091d02c73bb0f5e0f172146fb4dd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/967/complete.json",
+      "relative_path": "967/complete.json",
+      "sha256": "e389bbc266390c1579c2520e50201294c189714b153afd95519b569f8ddf0d94",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/968/complete.json",
+      "relative_path": "968/complete.json",
+      "sha256": "c1a98b275bb1d5f5bef6f55656d60af134832e6be4368ab58f919d9f51a13591",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/969/complete.json",
+      "relative_path": "969/complete.json",
+      "sha256": "3a4ee4e9a43e53978262f940052188b22d27261e399a635cf29db2c9dc3bb4f7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/972/complete.json",
+      "relative_path": "972/complete.json",
+      "sha256": "d01fe6dee84ccf6f8839224e702ee976f99bcca4d4ea2c286b86ac64e6fa73a5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-evaluation-20260926/973/complete.json",
+      "relative_path": "973/complete.json",
+      "sha256": "1f9346d5015a3d9526647b1ef2ccebc8a6972443f669eaca82c34a3e4d695678",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -1,0 +1,147 @@
+{
+  "protocol": "rich_liquid_descriptors_v1",
+  "parent_config": "${storage:analysis}/liquid_predictability/al64-20260928/technical/code/config.json",
+  "parent_config_sha256": "e4d7eb4146b6c5970baf2623cab4af1e8f1bad9b5d4287c2fd9ae7e489d447d5",
+  "output": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928",
+  "cache": "${storage:cache}/liquid-predictability/descriptors-al64-20260928",
+  "seed": 20260928,
+  "distance_edges_A": [
+    0,
+    16,
+    20,
+    24,
+    28,
+    32,
+    40,
+    48,
+    56,
+    64
+  ],
+  "preparation": {
+    "tasks": 8,
+    "workers": 8,
+    "chunk_size": 64
+  },
+  "fit_threads": 8,
+  "bootstrap_draws": 2000,
+  "patience": 100,
+  "catboost": {
+    "iterations": 1000,
+    "depth": 6,
+    "learning_rate": 0.04,
+    "l2_leaf_reg": 10,
+    "border_count": 64,
+    "task_type": "GPU",
+    "devices": "0",
+    "gpu_ram_part": 0.85,
+    "boosting_type": "Plain",
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1
+  },
+  "mlp": {
+    "width": 256,
+    "dropout": 0.15,
+    "learning_rate": 0.0002,
+    "weight_decay": 0.001,
+    "blocks": 12,
+    "updates_per_block": 256,
+    "batch_size": 512
+  },
+  "arms": [
+    {
+      "name": "prior",
+      "model": "prior",
+      "families": []
+    },
+    {
+      "name": "all_catboost",
+      "model": "catboost",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna",
+        "tda"
+      ]
+    },
+    {
+      "name": "geometry_catboost",
+      "model": "catboost",
+      "families": [
+        "geometry"
+      ]
+    },
+    {
+      "name": "bond_order_catboost",
+      "model": "catboost",
+      "families": [
+        "bond_order"
+      ]
+    },
+    {
+      "name": "cna_catboost",
+      "model": "catboost",
+      "families": [
+        "cna"
+      ]
+    },
+    {
+      "name": "tda_catboost",
+      "model": "catboost",
+      "families": [
+        "tda"
+      ]
+    },
+    {
+      "name": "without_tda_catboost",
+      "model": "catboost",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna"
+      ]
+    },
+    {
+      "name": "tda_order_catboost",
+      "model": "catboost",
+      "families": [
+        "tda",
+        "bond_order"
+      ]
+    },
+    {
+      "name": "all_catboost_shallow",
+      "model": "catboost",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna",
+        "tda"
+      ],
+      "parameters": {
+        "depth": 4,
+        "l2_leaf_reg": 20
+      }
+    },
+    {
+      "name": "all_mlp",
+      "model": "mlp",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna",
+        "tda"
+      ]
+    }
+  ],
+  "gpu_lanes": 2,
+  "gpu_partition": "RTX6000PRO,H100",
+  "prepared_launch": "${storage:analysis}/liquid_predictability/descriptors-al64-20260928/technical/launch.json",
+  "backend_change": {
+    "request": "User requested GPU boosting before any CPU scientific fit began",
+    "superseded_output": "${storage:analysis}/liquid_predictability/descriptors-al64-20260928",
+    "feature_subsampling": "CPU rsm=0.7 removed: GPU MultiClass supports all features, not rsm subsampling",
+    "inputs_targets_splits_unchanged": true,
+    "mlp_device": "CPU",
+    "catboost_device": "one dedicated Slurm GPU per fit lane"
+  }
+}

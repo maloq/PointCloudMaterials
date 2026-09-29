@@ -14,7 +14,6 @@ from matplotlib.patches import Rectangle
 import numpy as np
 import torch
 import torch.nn.functional as F
-from omegaconf import OmegaConf
 from scipy.optimize import linear_sum_assignment
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 
@@ -23,7 +22,6 @@ from src.vis_tools.md_cluster_plot import save_interactive_md_plot
 
 from .cluster_colors import _build_cluster_color_map
 from .cluster_geometry import _compute_cluster_representative_indices
-from .config import _cfg_bool, _cfg_int, _cfg_select
 from .figure_sets import render_cluster_figure_outputs
 from .output_layout import write_json
 
@@ -1283,7 +1281,7 @@ def _render_swav_prototype_figure_set(
     prototype_color_map: dict[int, str],
     step: Any,
 ) -> dict[str, Any]:
-    enabled = _cfg_bool(swav_cfg, "figure_set", True)
+    enabled = swav_cfg.get('figure_set', True)
     if not enabled:
         return {"enabled": False}
     if figure_settings is None or not bool(getattr(figure_settings, "enabled", False)):
@@ -1367,8 +1365,8 @@ def run_swav_prototype_evaluation(
     figure_analysis_source_names: list[str] | None = None,
     step=None,
 ) -> dict[str, Any]:
-    swav_cfg = OmegaConf.select(analysis_cfg, "swav", default=None)
-    enabled = bool(_cfg_bool(swav_cfg, "enabled", default=_swav_is_available(model)))
+    swav_cfg = analysis_cfg.get("swav", {})
+    enabled = bool(swav_cfg.get('enabled', _swav_is_available(model)))
     if not enabled:
         return {}
 
@@ -1377,38 +1375,30 @@ def run_swav_prototype_evaluation(
 
     out_root = Path(out_dir) / "swav_prototypes"
     out_root.mkdir(parents=True, exist_ok=True)
-    batch_size = _cfg_int(swav_cfg, "batch_size", 8192)
-    assignment_method = str(_cfg_select(swav_cfg, "assignment_method", "sinkhorn")).strip().lower()
-    assignment_device = str(_cfg_select(swav_cfg, "assignment_device", "auto")).strip().lower()
-    sinkhorn_iterations_raw = _cfg_select(swav_cfg, "sinkhorn_iterations", None)
+    batch_size = swav_cfg.get('batch_size', 8192)
+    assignment_method = str(swav_cfg.get('assignment_method', 'sinkhorn')).strip().lower()
+    assignment_device = str(swav_cfg.get('assignment_device', 'auto')).strip().lower()
+    sinkhorn_iterations_raw = swav_cfg.get('sinkhorn_iterations', None)
     sinkhorn_iterations = (
         None if sinkhorn_iterations_raw is None else int(sinkhorn_iterations_raw)
     )
-    representative_top_k = _cfg_int(swav_cfg, "representative_top_k", 12)
-    plots_enabled = _cfg_bool(swav_cfg, "plots", True)
-    md_outputs_enabled = _cfg_bool(swav_cfg, "md_outputs", True)
-    md_max_points_raw = _cfg_select(swav_cfg, "md_max_points", None)
+    representative_top_k = swav_cfg.get('representative_top_k', 12)
+    plots_enabled = swav_cfg.get('plots', True)
+    md_outputs_enabled = swav_cfg.get('md_outputs', True)
+    md_max_points_raw = swav_cfg.get('md_max_points', None)
     md_max_points = (
         None
         if md_max_points_raw is None or int(md_max_points_raw) <= 0
         else int(md_max_points_raw)
     )
-    export_assignment_csv = _cfg_bool(swav_cfg, "export_assignment_csv", True)
-    max_assignment_csv_rows_raw = _cfg_select(
-        swav_cfg,
-        "max_assignment_csv_rows",
-        100000,
-    )
+    export_assignment_csv = swav_cfg.get('export_assignment_csv', True)
+    max_assignment_csv_rows_raw = swav_cfg.get('max_assignment_csv_rows', 100000)
     max_assignment_csv_rows = (
         None
         if max_assignment_csv_rows_raw is None or int(max_assignment_csv_rows_raw) <= 0
         else int(max_assignment_csv_rows_raw)
     )
-    cluster_representative_top_n = _cfg_int(
-        swav_cfg,
-        "cluster_representative_top_prototypes",
-        3,
-    )
+    cluster_representative_top_n = swav_cfg.get('cluster_representative_top_prototypes', 3)
 
     assignments = compute_swav_assignments(
         model,
@@ -1443,7 +1433,7 @@ def run_swav_prototype_evaluation(
     _write_dict_rows_csv(representatives_csv, representatives)
 
     comparisons = {}
-    if _cfg_bool(swav_cfg, "compare_to_clustering", True):
+    if swav_cfg.get('compare_to_clustering', True):
         comparisons = _compare_to_clustering(
             out_dir=out_root,
             prototype_labels=assignments["labels"],
@@ -1493,7 +1483,7 @@ def run_swav_prototype_evaluation(
     )
 
     frame_outputs: dict[str, Any] = {}
-    if _cfg_bool(swav_cfg, "frame_proportions", True):
+    if swav_cfg.get('frame_proportions', True):
         frame_proportion_groups = (
             proportion_frame_groups
             if proportion_frame_groups is not None
@@ -1522,7 +1512,7 @@ def run_swav_prototype_evaluation(
                 frame_outputs["prototype_proportions_by_frame_png"] = str(frame_plot)
 
     transition_outputs: dict[str, Any] = {}
-    if _cfg_bool(swav_cfg, "transitions", True):
+    if swav_cfg.get('transitions', True):
         transition_rows, skipped_reason = _transition_rows(
             assignments["labels"],
             np.asarray(cache["instance_ids"]),

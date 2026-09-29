@@ -107,7 +107,7 @@
         ]
       },
       "provenance": {
-        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
+        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304.",
         "zr_removal": {
           "removed_at_utc": "2026-09-06T22:17:24.026705+00:00",
           "reason": "User rejected reconstructed-potential Zr simulations; replace with author-supplied Kavousi 2019 pure Ti simulations.",
@@ -207,7 +207,7 @@
             "branches/Zr/310ps/trajectory_binary_float16/timesteps.npy"
           ]
         },
-        "protocol_provenance": "Becker et al., Scientific Reports 12, 3195 (2022), DOI 10.1038/s41598-022-06963-5, and the preceding Zr study, Physical Review E 105, 045304 (2022), DOI 10.1103/PhysRevE.105.045304.",
+        "scientific_scope": "New position-conditioned paths from all six archived thermal coordinate snapshots per material. Source velocities and Nose-Hoover state are absent; these are not exact restarts.",
         "potentials": {
           "Al": {
             "files": [

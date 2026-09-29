@@ -1,0 +1,15 @@
+{
+  "family": "static_interface",
+  "exported_at": "2026-09-29T13:00:42.057347+00:00",
+  "files": {
+    "docs/metrics/static_interface.md": "91c5814acd3f9bccde3ebc5e528ae14049ff349ffd3f9f47f440721ba30fdf37",
+    "src/research/spatial_vicreg_bias/static_md.py": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+    "src/research/spatial_vicreg_bias/dense_md.py": "a20941dabfb4c03f5e54050d6d5fa42e9eb4d2f7b53c962e51b01b6416752fc3",
+    "src/research/spatial_vicreg_bias/data.py": "bbb4d1a60ab52467eaf2d30718e5bda9294c69ad3b2e6b78257158e553830b11",
+    "src/research/spatial_vicreg_bias/correspondence.py": "c319e749dc83024372a9d9b9b3765f0ec7a9252318ef5e1613714f6faba9e4cb",
+    "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
+    "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
+    "src/research/spatial_vicreg_bias/pacmap_md_view.html": "b004499003ccaf33d7a6d348fdd4048e70a402b1072b1f14c04224c84675a7a6"
+  },
+  "verified": true
+}

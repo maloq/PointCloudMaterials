@@ -185,7 +185,8 @@ to `output/mace/<variant>-seed<seed>/` and `output/mace/full/`; start at
 [`output/mace/index.html`](../output/mace/index.html). Both UMAP and t-SNE are
 enabled; the fast profile no longer replaces the configured MD UMAP with PCA.
 For a batch, `--publish-only` copies completed results into those galleries;
-`--rerun` recomputes completed analyses, reusing inference caches when present.
+completed numerical outputs are immutable, so recomputation needs a new output
+directory. The batch launcher reuses completed results; there is no `--rerun` mode.
 The comparison specification's `report_root` selects these flat metrics.
 New run and gallery layouts use `plots/`, `tables/` and `technical/`; see [the layout guide](research_layout.md). Detailed MACE analysis artifacts now live on IDS. The two MACE templates set
 `cache.retain_after_analysis: false`, suppress topology embedding caches and

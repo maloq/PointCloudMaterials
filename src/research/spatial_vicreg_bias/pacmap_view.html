@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__</title><script src="../assets/plotly.min.js"></script>
+<style>body{font:15px system-ui;margin:20px;color:#172233}h1{font-size:22px}label{display:inline-block;margin:8px 18px 8px 0}select{padding:6px;max-width:300px}.plots{display:grid;grid-template-columns:1fr 1fr;gap:12px}.plot{height:74vh;min-height:400px}.note{max-width:1100px;color:#495668;line-height:1.5}#status{margin:8px 0}@media(max-width:900px){.plots{grid-template-columns:1fr}}</style></head>
+<body><p><a href="../index.html">← Gallery</a></p><h1>__TITLE__</h1>
+<p class="note">Frozen encoders; no neural training. These are independent 2D and 3D PaCMAP projections of the same atoms. Cluster colors come from the original high-dimensional spaces. Rotate and zoom the 3D view; hover for atom identity. Separate layouts have arbitrary axes and orientation.</p>
+<label>Color <select id="color"></select></label>
+<label>Region <select id="region"><option value="all">All displayed atoms</option><option value="near">Within 12 Å of interface</option><option value="boundary">Boundary atoms</option><option value="crystal">PTM crystalline centers</option><option value="liquid">Connected disorder near interface</option><option value="pocket">Small disordered pockets near interface</option></select></label>
+<label>Source <select id="source"><option value="all">All sources</option></select></label>
+<label>Frame <select id="frame"><option value="all">All sampled frames</option></select></label>
+<label>Point size <input id="size" type="range" min="1" max="6" step="0.5" value="2"></label>
+<div id="status"></div><div class="plots"><div id="two" class="plot"></div><div id="three" class="plot"></div></div>
+<p class="note">Physical region codes: 0 boundary atom, 1 nearby crystalline center, 2 nearby connected disorder, 3 nearby small disordered pocket, 4 farther than 12 Å, 5 no qualifying interface. PTM codes: 0 unclassified, 1 FCC, 2 HCP, 3 BCC; other codes retain their producer values. Interface distance is negative on the crystalline side and positive on the disordered side, measured to the nearest crystal-side boundary atom; it is not an exact continuum surface. Missing interfaces are gray. Independently fitted cluster IDs do not share a physical identity. Filtering retains the existing layout; it does not refit PaCMAP.</p>
+<script>
+const D=__DATA__;
+const palette=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
+const color=document.getElementById('color'),region=document.getElementById('region'),source=document.getElementById('source'),frame=document.getElementById('frame'),size=document.getElementById('size');
+Object.keys(D.fields).forEach(k=>color.add(new Option(k,k)));
+[...new Set(D.source)].sort((a,b)=>a-b).forEach(k=>source.add(new Option(k,k)));
+[...new Set(D.frame)].sort((a,b)=>a-b).forEach(k=>frame.add(new Option(k,k)));
+function draw(){
+  const selected=[];
+  for(let i=0;i<D.source.length;i++){
+    if(source.value!=='all'&&D.source[i]!==Number(source.value))continue;
+    if(frame.value!=='all'&&D.frame[i]!==Number(frame.value))continue;
+    if(region.value==='near'&&(D.distance[i]===null||D.distance[i]>12))continue;
+    if(region.value==='boundary'&&D.region[i]!==0)continue;
+    if(region.value==='crystal'&&!D.solid[i])continue;
+    if(region.value==='liquid'&&D.region[i]!==2)continue;
+    if(region.value==='pocket'&&D.region[i]!==3)continue;
+    selected.push(i);
+  }
+  const key=color.value,continuous=key.startsWith('Interface distance')||key==='Input crystal fraction';
+  const traces=(dim)=>{
+    const coord=dim===2?D.y2:D.y3;
+    const make=(ids,label,value)=>{
+      const marker={size:Number(size.value),opacity:.72,color:value};
+      if(continuous&&Array.isArray(value)){marker.colorscale=key.startsWith('Interface distance')?'RdBu':'Viridis';marker.reversescale=key.startsWith('Interface distance');marker.cmin=key.startsWith('Interface distance')?-20:0;marker.cmax=key.startsWith('Interface distance')?20:1;marker.colorbar={title:{text:key},thickness:12};marker.showscale=true;}
+      const t={type:dim===2?'scattergl':'scatter3d',mode:'markers',name:label,marker,
+        x:ids.map(i=>coord[i][0]),y:ids.map(i=>coord[i][1]),
+        customdata:ids.map(i=>[D.source[i],D.frame[i],D.atom[i],D.distance[i]===null?'absent':D.distance[i].toFixed(2),D.fields[key][i]]),
+        hovertemplate:'Source %{customdata[0]} · frame %{customdata[1]}<br>Atom %{customdata[2]}<br>Interface distance: %{customdata[3]} Å<br>'+key+': %{customdata[4]}<extra></extra>'};
+      if(dim===3)t.z=ids.map(i=>coord[i][2]);return t;
+    };
+    if(continuous){const good=selected.filter(i=>D.fields[key][i]!==null),missing=selected.filter(i=>D.fields[key][i]===null);const out=[make(good,key,good.map(i=>D.fields[key][i]))];if(missing.length)out.push(make(missing,'Missing interface','#999999'));return out;}
+    return [...new Set(selected.map(i=>D.fields[key][i]))].sort((a,b)=>a-b).map(v=>make(selected.filter(i=>D.fields[key][i]===v),String(v),palette[v%palette.length]));
+  };
+  const common={margin:{t:38,b:40,l:45,r:30},uirevision:'fixed',legend:{orientation:'h'},paper_bgcolor:'white',plot_bgcolor:'white'};
+  Plotly.react('two',traces(2),{...common,title:{text:'2D PaCMAP'},xaxis:{title:{text:'PaCMAP 1'}},yaxis:{title:{text:'PaCMAP 2'}}},{responsive:true,displaylogo:false});
+  Plotly.react('three',traces(3),{...common,title:{text:'3D PaCMAP'},scene:{aspectmode:'data',uirevision:'fixed',xaxis:{title:{text:'PaCMAP 1'}},yaxis:{title:{text:'PaCMAP 2'}},zaxis:{title:{text:'PaCMAP 3'}}}},{responsive:true,displaylogo:false});
+  document.getElementById('status').textContent=selected.length.toLocaleString()+' / '+D.source.length.toLocaleString()+' atoms shown. Cluster IDs refer to this color choice only.';
+}
+[color,region,source,frame,size].forEach(e=>e.addEventListener('change',draw));draw();
+</script></body></html>

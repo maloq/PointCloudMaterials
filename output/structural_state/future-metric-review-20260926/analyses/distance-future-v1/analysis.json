@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "id": "f830e63c9e2ccba70ce7e6771342e6faab1f7e7f992b833b9642286110eb54a7",
+  "title": "Distance and future information \u2014 two-seed comparison",
+  "context": "Eight completed historical encoder fits, four treatments and two seeds. Frozen readouts and paired source comparisons remain at their original paths. Source intervals do not measure training-seed uncertainty. Historical physical-reconstruction treatments are retained as evidence, not recommended future queues.",
+  "checkpoint_sha256": null,
+  "protocol": "fixed_geometry_future_relation_v3",
+  "inputs": {
+    "evidence": "${storage:repo}/experiments/structural_state_future_20260923/README.md",
+    "note": "Original relaxed-input and readout contracts; not relabeled condition-free."
+  },
+  "population": {
+    "seeds": [
+      20260923,
+      20260924
+    ],
+    "track": "historical; not fixed Al64",
+    "evidence": "${storage:repo}/output/structural_state/future-metric-20260923/tables/METRICS.md"
+  },
+  "selection": {
+    "encoder": "Fixed final update 4096; best tuning checkpoint secondary",
+    "readouts": "Original recorded selectors"
+  },
+  "stages": {
+    "saved_analysis": {
+      "state": "complete",
+      "evidence": "${storage:output}/structural_state/future-metric-20260923/tables/onset.csv",
+      "note": "Saved metrics exist; historical optional-stage completion is not inferred."
+    },
+    "optional_stages": {
+      "state": "unknown",
+      "note": "Consult the original configuration and reports."
+    }
+  },
+  "artifacts": [
+    {
+      "id": "321f738968919f1d050e00c1079d1f76436b1e8c0073a6cdb73094866f6b97e4",
+      "path": "${storage:output}/structural_state/future-metric-20260923/README.md",
+      "role": "provenance",
+      "relative": "README.md",
+      "section": "overview",
+      "bytes": 1606,
+      "sha256": "d52caf75b6e430116becbdb5f96891f99a26ae8dec9988d820139dddf99a2ae7",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6c49b4673c6bbc9e9bf7269f67abb93c6cb8c06cfdcbe482a577a4a17f55ac55",
+      "path": "${storage:output}/structural_state/future-metric-20260923/RESULTS.md",
+      "role": "provenance",
+      "relative": "RESULTS.md",
+      "section": "overview",
+      "bytes": 5703,
+      "sha256": "44cee02df784c8dd21f1d751e5a1c03156d9dfcc562249df6fe23c25b7b53ef2",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7c0ac53284adfd035067cb6622a00a5206bb5673fbc3812d4c6b91627ea722b9",
+      "path": "${storage:output}/structural_state/future-metric-20260923/plots/onset-factorial.png",
+      "role": "figure",
+      "relative": "plots/onset-factorial.png",
+      "section": "plots",
+      "bytes": 83306,
+      "sha256": "ed6caf13459c36cac60eb9da8977a66f9846f5c7e5ac645786be098e5a3ed722",
+      "verification": "hashed",
+      "retention": "preserve",
+      "published_path": "${storage:output}/structural_state/future-metric-review-20260926/analyses/distance-future-v1/plots/plots/onset-factorial.png"
+    },
+    {
+      "id": "1a7ddeb28e9d188cb79b1f7a7c6bd920d448e2d19c7db62ce75a057e291b138b",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/METRICS.md",
+      "relative": "tables/METRICS.md",
+      "role": "metric_definition",
+      "section": "tables",
+      "bytes": 5062,
+      "sha256": "88c2105db0529ca6932ae90f0feda49a6619e2e2d97163eb2947f842a7b8275c",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "cf146d7d978179edeb054bfd4c6e1f2deec2723982bce7df69de6bd725a9bbf1",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/comparisons.csv",
+      "relative": "tables/comparisons.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 308433,
+      "sha256": "a1558c0b827dbd73885c65dcf24e2486dd5e34d5b871cdb9dd3b815155bd40de",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "0d4231f52efc0971a303ef63657a993e01e0d770c5224692c2a5ad03f9d7f1ae",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/embedding_geometry.csv",
+      "relative": "tables/embedding_geometry.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 6654,
+      "sha256": "79de32aa2e63d8dd913a153d9f431608195591da21b308e12dcf85cfb80c0105",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "ceffc8c0d00520a26e9113eadcf48471d33935643899a7643e4023104ceb3a4d",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/mean_seed_effects.csv",
+      "relative": "tables/mean_seed_effects.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 7641,
+      "sha256": "7c1dd33431982f9e49fe5fd3afe7393f03ac77ccf84d9118da7dbfbf6226cd14",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "abe4a3d2dc658f85d94cc965f583e9fd88b1cc593983a70191817ba2a9a3f815",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/mechanism_effects.csv",
+      "relative": "tables/mechanism_effects.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 1857,
+      "sha256": "e9778bfd872473c9752c4f83e653de78f046d2a36f504699410ad7bcd4883201",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "20b79dd262f9bd85fcbf52b2f3b1d88d93c869522feb64ab18e4ebc6d4a2c7ba",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/neighbors.csv",
+      "relative": "tables/neighbors.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 43184,
+      "sha256": "ebb4ed8d919c3a23b869c6bba0c14731e9981948ace92d9550fde6533be78d1e",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "5776d8151c26a855ef7533feb6334f2985d9a765a81d0a7600fe28456744bdda",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/onset.csv",
+      "relative": "tables/onset.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 20700,
+      "sha256": "d8691e15a10bcf16358e9b28b1140fac96ffcd17646c75e4fb6283ab294b9ad6",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "029f0ebaca1bb7817d66b398515c6edbfb436be8f0eb6fa60094bd74533e7df5",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/paired_onset.csv",
+      "relative": "tables/paired_onset.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 10690,
+      "sha256": "e3e04d07ceace2006768f5a251832215f1da0e855df06680cc479d90411586d6",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "d6f1e462fd306c1775df12ffc18714c327421217d11373daa1d7bb6e3c123bb8",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/physical.csv",
+      "relative": "tables/physical.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 749475,
+      "sha256": "5b319a06785fdb0821bece09631d7ee8fbd999aeddddcb0eddb2fde9f5e25f66",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "ea3845144c63f893580f89b6e60632341b1a444d6efff2b88d63ab2b7f28f59e",
+      "path": "${storage:output}/structural_state/future-metric-20260923/tables/training_heads.csv",
+      "relative": "tables/training_heads.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 56092,
+      "sha256": "75789d436633c707109ee89b668d1f0a4c7e4e9fbced044c7a7f55891ace7fdd",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "72241a59256aecf9747f0af034464ea9d6a6d4bd7181bcade8335c1c473062e9",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/collect.lock",
+      "role": "execution",
+      "relative": "technical/collect.lock",
+      "section": "technical",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "999f6498d28db4503216047a2a3ce98774b650a5cd54469300b68496b2c73bc6",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/collector-recovery.json",
+      "role": "provenance",
+      "relative": "technical/collector-recovery.json",
+      "section": "technical",
+      "bytes": 749,
+      "sha256": "c13637e564e326012ca1d6dea7f64f39f0e2685afa8d3109c11f3b6248076124",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6f9411663205a10b4b8ffe0e366787914f3275a4f68f8730d15f183197779d16",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/collector-recovery.log",
+      "role": "execution",
+      "relative": "technical/collector-recovery.log",
+      "section": "technical",
+      "bytes": 850,
+      "sha256": "2061cf81b9ffd926aa6fc46fe0badb52a073f22a4ca30d1777bef81d857284ac",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "79d31b10ae6b878bfc2efc78059d68f76276b491a5931fbe95a60d4e2f32a375",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/cuda-initial-repeat-audit.json",
+      "role": "provenance",
+      "relative": "technical/cuda-initial-repeat-audit.json",
+      "section": "technical",
+      "bytes": 718,
+      "sha256": "2d2a8e1ed1c1293a8dbc2b052da7e4aa9bed242fe7cbf7970aa8a5904d3de4c0",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "1f0aa05e92db206c9c238b198dc025224875fe0b2967a60f48ccbd4e92365178",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/execution.json",
+      "role": "provenance",
+      "relative": "technical/execution.json",
+      "section": "technical",
+      "bytes": 1125,
+      "sha256": "26020050c328bf61b2dba0bd886f0b3152f53c787e3ad3c6bb5cb459f47affbd",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "54404054ca7d108ed5c8887e9915cc429413926ad30fe8337f1ee3c3bc095d62",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/metric-contract.json",
+      "relative": "technical/metric-contract.json",
+      "role": "metric_contract",
+      "section": "provenance",
+      "bytes": 3166,
+      "sha256": "46a06dad5c7cba42b05e475d1edda558a03c105edf3c46843c1d0af49ba6fa49",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "f300fca6fd1acf3b1dc74b26184b783c965b6e8ef1a76d6b5edb2c0e163caeb6",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/status.json",
+      "role": "provenance",
+      "relative": "technical/status.json",
+      "section": "technical",
+      "bytes": 23766,
+      "sha256": "48db833c6886fef6577211fedc746b775cc11d9f7d0f3b6605e8ae6d23d92a84",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "2b20cfc97ea1cdf366c8bd583d3a2a58ab632c0b465512d8ee5cc5986a9cf910",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/initial-report-version/README.md",
+      "role": "provenance",
+      "relative": "technical/initial-report-version/README.md",
+      "section": "technical",
+      "bytes": 1494,
+      "sha256": "ce4d8ab932032ee58fc1fdfbdfa960abdcc456072f235b6b0ce9e4c2d674dc25",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "02b322b2a6178ca744500af3bb231eecdf11e89f2e5134ddc88cff530091577c",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/initial-report-version/tables/METRICS.md",
+      "role": "metric_definition",
+      "relative": "technical/initial-report-version/tables/METRICS.md",
+      "section": "technical",
+      "bytes": 4024,
+      "sha256": "8470649b3be481b4fe1b623ac0c6a9115d82f33d187b3c35bc4dced351c8e820",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7ea536105f0a25b603f8257249f167714419798c267d77c8004c03f0946c8220",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/initial-report-version/technical/metric-contract.json",
+      "role": "metric_contract",
+      "relative": "technical/initial-report-version/technical/metric-contract.json",
+      "section": "technical",
+      "bytes": 3166,
+      "sha256": "f56a9d890b5ed8aad02599e7e75c8ed7d81aa54d10ac4e8c952d0841d229e3e6",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "cfd755224fa118a9f3d7c4cc4c5d8b073cabd7b06216506c882684c076895c60",
+      "path": "${storage:output}/structural_state/future-metric-20260923/technical/initial-report-version/technical/status.json",
+      "role": "provenance",
+      "relative": "technical/initial-report-version/technical/status.json",
+      "section": "technical",
+      "bytes": 157,
+      "sha256": "e5ccb77abc4b54efeaa69f1936b31fcca1264ad673d5a09dd0fe8fb629a02246",
+      "verification": "hashed",
+      "retention": "preserve"
+    }
+  ],
+  "page": "${storage:output}/structural_state/future-metric-review-20260926/analyses/distance-future-v1/index.html",
+  "source": "${storage:output}/structural_state/future-metric-20260923",
+  "numerical_evidence": {
+    "path": "${storage:output}/structural_state/future-metric-20260923/tables/onset.csv",
+    "sha256": "d8691e15a10bcf16358e9b28b1140fac96ffcd17646c75e4fb6283ab294b9ad6"
+  }
+}

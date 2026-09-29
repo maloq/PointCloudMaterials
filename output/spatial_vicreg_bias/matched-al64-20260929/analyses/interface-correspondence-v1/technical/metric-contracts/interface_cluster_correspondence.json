@@ -1,0 +1,13 @@
+{
+  "family": "interface_cluster_correspondence",
+  "exported_at": "2026-09-29T11:06:11.113135+00:00",
+  "files": {
+    "src/research/spatial_vicreg_bias/correspondence.py": "a8cbe2bc2ed6000c5a6946018a3af767d33b1eaab27227932f8dbfe45e4a8df8",
+    "src/research/spatial_vicreg_bias/data.py": "bbb4d1a60ab52467eaf2d30718e5bda9294c69ad3b2e6b78257158e553830b11",
+    "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
+    "src/research/crystal_vector/interface.py": "af19c4aac979b8ccf7ca77d0b720da29d79c220360ba148662b55759174b5e38",
+    "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+    "docs/metrics/interface_cluster_correspondence.md": "afe6ca5e442befd527937b22ae6d529147630ec772a81f12cb3fd7f6e927490a"
+  },
+  "verified": true
+}

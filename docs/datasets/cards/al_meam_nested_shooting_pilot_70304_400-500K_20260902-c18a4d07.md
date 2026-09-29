@@ -12,7 +12,7 @@ Inspect current producer records and array headers; historical directory labels 
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 146; these are not independent-source counts.
 - Stored frames: 12011; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 19.893 GiB
+- Allocated storage, excluding registered nested datasets: 19.823 GiB
 - Missing metadata: ensemble
 
 ## Notes and relationships
@@ -59,6 +59,6 @@ All 647 producer records, their hashes, field paths and current array schemas: [
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

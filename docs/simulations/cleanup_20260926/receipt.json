@@ -1,0 +1,38 @@
+{
+  "started_at": "2026-09-26T14:54:32.387416+00:00",
+  "finished_at": "2026-09-26T14:54:35.247467+00:00",
+  "state": "complete",
+  "deleted_files": 432,
+  "retired_binary_manifests": 36,
+  "removed_allocated_bytes": 41175299584,
+  "removed_apparent_bytes": 41594292587,
+  "protected_main_sources": 150,
+  "protected_main_files_unchanged": 1800,
+  "active_allocated_nodes_checked": [
+    "node59",
+    "nodecpu04",
+    "nodecpu03",
+    "nodecpu09",
+    "nodecpu08",
+    "nodecpu07",
+    "node50",
+    "nodecpu06",
+    "node60",
+    "node58",
+    "node53"
+  ],
+  "retired_registry_ids": [
+    "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
+    "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
+    "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
+    "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
+    "interrupted_attempts",
+    "local_overnight_lamedell11_20260905.startup_attempt_010736",
+    "memory-al-precision-20260917-source003-T500-failed",
+    "memory-al-precision-20260917-source004-T500-failed",
+    "al_meam_1m_450K_400ps_20260913T205149Z",
+    "al_meam_crystallization_1m_450K_20260913T203458Z",
+    "al_meam_crystallization_1m_source_only_450K_20260913T203616Z"
+  ],
+  "plan_sha256": "f6a417625e7ed10b7f0b2b945579ef717823898fa9a4e7a89614e0cd1817c6b4"
+}

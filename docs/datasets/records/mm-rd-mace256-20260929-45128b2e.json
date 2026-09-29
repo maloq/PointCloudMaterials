@@ -1,0 +1,185 @@
+{
+  "dataset_id": "mm-rd-mace256-20260929",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/analysis/liquid_predictability/mm-rd-mace256-l3-z256-20260929/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "0ca5f3174a889991d130b55c40f694d2ab39800933d3448dd3c0690d63e593cd",
+      "kind": "metadata",
+      "keys": [
+        "activation_checkpointing",
+        "batch_search",
+        "branch",
+        "cache",
+        "data",
+        "encoder_config",
+        "evaluation",
+        "fixed_dataset",
+        "loader",
+        "metric_family",
+        "name",
+        "output",
+        "patch_chunk",
+        "preparation",
+        "protocol",
+        "regularization",
+        "runtime",
+        "seed",
+        "structural_dataset",
+        "training",
+        "vector_channels",
+        "wandb"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "encoder_config.radius",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260929,
+            "first_json_path": "seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "rich_multimaterial_patch_descriptors_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "structural_dataset.normalization.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/liquid_predictability/mm-rd-mace256-l3-z256-20260929/technical/gpu-code-v2/config.json",
+      "relative_path": "technical/gpu-code-v2/config.json",
+      "sha256": "0ca5f3174a889991d130b55c40f694d2ab39800933d3448dd3c0690d63e593cd",
+      "kind": "metadata",
+      "keys": [
+        "activation_checkpointing",
+        "batch_search",
+        "branch",
+        "cache",
+        "data",
+        "encoder_config",
+        "evaluation",
+        "fixed_dataset",
+        "loader",
+        "metric_family",
+        "name",
+        "output",
+        "patch_chunk",
+        "preparation",
+        "protocol",
+        "regularization",
+        "runtime",
+        "seed",
+        "structural_dataset",
+        "training",
+        "vector_channels",
+        "wandb"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "encoder_config.radius",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260929,
+            "first_json_path": "seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "rich_multimaterial_patch_descriptors_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "structural_dataset.normalization.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/liquid_predictability/mm-rd-mace256-l3-z256-20260929/technical/submission-attempts/01/code/config.json",
+      "relative_path": "technical/submission-attempts/01/code/config.json",
+      "sha256": "a33f3d82bdc66877bcca4a88e13b766c239bfb1331adf619fd521dc192c045f8",
+      "kind": "metadata",
+      "keys": [
+        "activation_checkpointing",
+        "batch_search",
+        "branch",
+        "cache",
+        "data",
+        "encoder_config",
+        "evaluation",
+        "fixed_dataset",
+        "loader",
+        "metric_family",
+        "name",
+        "output",
+        "patch_chunk",
+        "preparation",
+        "protocol",
+        "regularization",
+        "runtime",
+        "seed",
+        "structural_dataset",
+        "training",
+        "vector_channels",
+        "wandb"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "radius": [
+          {
+            "value": 8.0,
+            "first_json_path": "encoder_config.radius",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260929,
+            "first_json_path": "seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "rich_multimaterial_patch_descriptors_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "structural_dataset.normalization.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

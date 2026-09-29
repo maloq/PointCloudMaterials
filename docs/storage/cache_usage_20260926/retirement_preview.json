@@ -1,0 +1,17 @@
+{
+  "state": "proposal_only_no_files_deleted",
+  "files": 2110,
+  "reclaimable_allocated_bytes": {
+    "/home/ids/vmorozov/training-cache/embedding-forecast-spatial-context-20260913": 271533403648,
+    "/store/PERSO/vmorozov/training-cache-archive-20260925/embedding-forecast-spatial-context-20260913": 341744820224,
+    "/store/PERSO/vmorozov/training-cache-archive-20260926/embedding-forecast-full-20260911": 70183010304
+  },
+  "external_hardlinks_excluded": [],
+  "options_GB": {
+    "remove_spatial_archive_only": 341.744820224,
+    "remove_both_spatial_caches_keep_base_embeddings": 613.278223872,
+    "retire_all_old_forecast_cache_payloads": 683.461234176
+  },
+  "retain": "All manifests, configs, completion/checksum receipts, atom IDs and timeline arrays; all source trajectories, original encoder/config/source snapshots, model checkpoints, predictions and metrics.",
+  "before_execution": "Recheck current process/config dependencies and file identities. For archive-only removal while promising an equivalent retained copy, verify each candidate payload against IDS; path/length/manifest equality alone is not a completed byte verification."
+}

@@ -46,6 +46,9 @@ def encode(encoder,x,chunk):
 
 
 def run(study,method,device,deadline):
+    if 'structural_dataset' in study.config:
+        from .stream_pretrain import run as streamed_run
+        return streamed_run(study,method,device,deadline)
     c=study.config;settings=c['pretraining'];root=study.root/'pretraining'/method;technical=root/'technical'
     technical.mkdir(parents=True,exist_ok=True)
     done=technical/'complete.json'

@@ -1,0 +1,80 @@
+{
+  "protocol": "continuous_spatial_distance_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/spatial_distance/al64-uniform-20260926",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "population_cache": "${storage:cache}/fixed-cohort/al64-v1-20260925/benchmark",
+  "feature_pointer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/technical/feature-cache-hot.json",
+  "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/base-hot/technical/runs/O-NLL/best.pt",
+  "audit": "${storage:analysis}/crystallization_origin/al64-20260925",
+  "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+  "distance_bins_A": [
+    4,
+    8,
+    12,
+    20,
+    32
+  ],
+  "paths": {
+    "frames": "all fixed observation origins",
+    "pairs_per_frame": 2,
+    "minimum_start_A": 36,
+    "maximum_start_A": 60,
+    "control_clearance_A": 32,
+    "step_A": 2
+  },
+  "variants": [
+    "mace_local",
+    "visibility_only",
+    "vector_messages",
+    "harmonic_hierarchy",
+    "symmetric_invariant"
+  ],
+  "seed": 20260926,
+  "batch_size": 256,
+  "microbatch": 256,
+  "compile": true,
+  "cpu_workers": 6,
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2,
+    "encoder_channels": 128
+  },
+  "training": {
+    "epochs": 16,
+    "minimum_selection_epoch": 12,
+    "learning_rate": 0.0005
+  },
+  "false_alarm_rate": 0.05,
+  "bootstrap": 500,
+  "external_inputs": [],
+  "cache_policy": {
+    "features": "${storage:scratch}/training-cache/context-features",
+    "encoders_kept": 6
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "spatial-distance-20260926"
+  },
+  "parent_run": "${storage:analysis}/spatial_approach/al64-20260926",
+  "distance_cap_A": 64,
+  "augmentation": {
+    "atoms_per_frame": 16,
+    "sampling": "uniform atoms on the fixed observation frames",
+    "roles": [
+      "train",
+      "selection"
+    ],
+    "mixture_weight": 0.5
+  },
+  "geometry_cache": "${storage:cache}/spatial-distance-geometry",
+  "fixed_geometry_pointer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/technical/geometry-cache-hot.json",
+  "extraction_batch_size": 512
+}

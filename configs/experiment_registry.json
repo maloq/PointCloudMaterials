@@ -1,5 +1,24 @@
 {
   "schema_version": 1,
+  "classifications": {
+    "maintenance": "operations",
+    "hardware_benchmark": "operations",
+    "environment": "operations",
+    "wandb": "operations",
+    "training_jobs": "operations",
+    "slurm_outputs": "operations",
+    "ti_mlip_handoff_20260916": "operations",
+    "relaxed_tda": "dataset",
+    "synthetic_data": "dataset",
+    "temporal_cache": "dataset",
+    "al_crystallization": "simulation",
+    "structural_static": "research",
+    "encoder_supervised": "research",
+    "encoder_supervised/runtime-audit-20260925": "operations",
+    "encoder_supervised/pipeline-audit-20260925": "operations",
+    "encoder_supervised/pipeline-fixes-20260925": "operations",
+    "encoder_supervised/runtime-refactor-20260925": "operations"
+  },
   "storage_roots": [
     {
       "id": "simulations",
@@ -18,12 +37,12 @@
     },
     {
       "id": "forecast_analysis",
-      "kind": "experiment",
+      "kind": "research",
       "path": "${storage:analysis}/embedding_forecast"
     },
     {
       "id": "structural_static_analysis",
-      "kind": "experiment",
+      "kind": "research",
       "path": "${storage:analysis}/structural_static"
     }
   ]

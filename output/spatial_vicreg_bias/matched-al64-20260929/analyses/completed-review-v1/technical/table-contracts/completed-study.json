@@ -1,0 +1,7 @@
+{
+  "table": "tables/completed-study.csv",
+  "sha256": "3cce1bd9bbba67929369cc1fdfb2e0e1d2dea6f5e67f5af3307025da4083318b",
+  "family": "spatial_vicreg_results",
+  "contract": "technical/metric-contracts/spatial_vicreg_results.json",
+  "definitions": "tables/metric-definitions/spatial_vicreg_results.md"
+}

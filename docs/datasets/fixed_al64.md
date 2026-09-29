@@ -5,6 +5,9 @@ The default data contract for **new matched Al encoder comparisons** is
 `${storage:cache}/fixed-cohort/al64-v1-20260925`. Running and historical experiments
 retain their original data and input records.
 
+The separate [256-center mixed-material structural expansion](structural_multimaterial_256.md)
+increases pretraining observations while keeping this benchmark intact.
+
 Release status: **complete**, identity
 `e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d`.
 The exact [source roles and center IDs](../../configs/fixed_cohort/al64_v1.splits.json)

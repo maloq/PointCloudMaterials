@@ -104,25 +104,28 @@ python -m src.research.equivariant_context.queue submit --config configs/equivar
 ```
 
 Submission requires matching checks, source/config/data hashes and the prepared
-inventory. It freezes code, configs, tests and metric definitions. It submits
-two independent GPU preparation jobs, one per coordinate domain. Each trains
-its shared local encoder, then extracts frozen scalar/tensor features. Four
-GPU predictor jobs depend on successful completion of their corresponding
-preparation job. A failed dependency cancels its waiting children.
+inventory. It freezes code, configs and metric definitions. New source submits
+two independent GPU pipeline jobs, one per coordinate domain. Each trains
+its shared local encoder, extracts frozen scalar/tensor features, and fits all
+declared predictors from one resident corpus. A dependent CPU metrics job
+calibrates and scores each domain's predictions. A failed dependency cancels
+its waiting child. Historical submissions retain their original job layout.
 
 The current partition is RTX6000PRO on node59, one GPU, eight CPUs and 32 GB host
 memory per task. The current allocation supplies two GPUs and 64 GB in total.
-For the alternative fresh-job submission route, limits are eight hours per preparation job and two hours per
-predictor job: **32 GPU-hours of maximum requested allocation**, not an elapsed
-time estimate. The scheduler may run independent fits concurrently. Extraction
-has not been timed over the full cohort. Predictors use resident GPU feature
+For the alternative fresh-job submission route, limits are eight hours per GPU
+pipeline and two hours per CPU metrics job: **16 GPU-hours of maximum requested
+allocation**, not an elapsed time estimate. The scheduler may run the two
+domains concurrently. Predictors use resident GPU feature
 arrays; learned features are cached only after the shared encoder is frozen.
 The encoder uses cuEquivariance fused ir_mul operations and the existing compiled
 spatial training path. W&B online is mandatory for the ten scientific fits.
 
 All paths resolve through `machine.local.yaml`. Results are under
-`${storage:analysis}/equivariant_context/node59-b512-v2-20260925`, features under
-`${storage:cache}/equivariant-context/node59-b512-v2-20260925`. The top-level
+`${storage:analysis}/equivariant_context/node59-b512-v2-20260925` for that historical
+recipe; use fresh output paths for new source. New disposable features use
+`${storage:scratch}/training-cache/context-features`, with six entries retained.
+The top-level
 `technical/plan.json`, `inventory.json`, `checks.json` and later
 `submissions.json` provide the preparation/submission receipts. Each predictor
 exports readable `tables/metrics.csv` and frozen `tables/METRICS.md`, while
@@ -134,8 +137,17 @@ After jobs complete, collect paired comparisons:
 python -m src.research.equivariant_context.queue collect --config configs/equivariant_context/comparison_20260925.json
 ```
 
+New source uses a `pipeline` worker per domain (encoder, feature export, then all
+declared predictors with one shared corpus load) followed by a CPU `metrics`
+worker. Feature caches are limited globally to six recently used encoders;
+active leases protect exports and fits. A single shared cohort geometry cache
+avoids rebuilding neighborhoods per encoder. See the
+[cache and scheduling policy](encoder_context.md#shared-caches-and-training-scheduling).
+Existing launched jobs must continue with their frozen source and original
+stage names; do not resume them from this changed implementation.
+
 Collection reports partial completion honestly and never starts training. Final
-per-run metrics are already written by each predictor worker. Collection writes
+per-run metrics are already written by each CPU metrics worker. Collection writes
 `tables/comparison.csv` with paired whole-source uncertainty against the invariant
 control and `technical/comparison.json` with the full nested records.
 

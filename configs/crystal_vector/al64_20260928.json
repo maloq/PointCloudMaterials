@@ -1,0 +1,129 @@
+{
+  "protocol": "joint_snapshot_crystal_vector_random_v2",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/crystal_vector/al64-random-20260928",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "dataset": {
+    "root": "${storage:cache}/crystal-vector/al64-covering-20260927",
+    "audit": "${storage:analysis}/crystallization_origin/al64-20260925",
+    "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+    "scan_parent": "${storage:analysis}/spatial_approach/al64-20260926",
+    "shells": [
+      [
+        4.0,
+        14.0,
+        12
+      ],
+      [
+        14.0,
+        24.0,
+        12
+      ]
+    ],
+    "uniform_seed": 20260926,
+    "uniform_per_frame": 16,
+    "tie_tolerance_A": 1e-05,
+    "workers": 8
+  },
+  "initial_encoder": "${storage:analysis}/distance_encoder/multimaterial-early-20260926/technical/best.pt",
+  "initial_encoder_sha256": "7b4dcb17ddcb2952d5f5ea20f0fd8e1d2d0c0164146d8676a39ceca71d1fda7f",
+  "variants": [
+    "distance_direction_vcreg",
+    "distance_direction",
+    "distance_only"
+  ],
+  "seed": 20260927,
+  "batch_size": 256,
+  "microbatch": 256,
+  "patch_chunk": 256,
+  "activation_checkpointing": true,
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2
+  },
+  "loss": {
+    "distance_cap": 64.0,
+    "early_radii": [
+      8,
+      12,
+      20,
+      32
+    ],
+    "early_weights": [
+      0.05,
+      0.15,
+      0.4,
+      0.4
+    ],
+    "early_weight": 2.0,
+    "direction_weight": 1.0,
+    "direction_kappa": 8.0,
+    "direction_scale_A": 16.0
+  },
+  "regularization": {
+    "variance_weight": 0.05,
+    "covariance_weight": 0.01,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_updates": 512
+  },
+  "training": {
+    "epochs": 16,
+    "minimum_selection_epoch": 12,
+    "encoder_lr": 1e-05,
+    "head_lr": 0.0002,
+    "weight_decay": 1e-05,
+    "warmup_updates": 128,
+    "save_every": 64,
+    "log_every": 16
+  },
+  "runtime": {
+    "compile": true,
+    "precision": "bf16",
+    "hours": 7.5
+  },
+  "evaluation": {
+    "noise_rms_fractions": [
+      0.001,
+      0.005,
+      0.01,
+      0.03
+    ],
+    "diagnostic_rows": 512,
+    "stability_lag_ps": 0.75
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "cdv-mace128-random-20260928"
+  },
+  "external_inputs": [],
+  "sampling": {
+    "method": "independent_random_target_population",
+    "target_population": "half fixed-at-risk, half uniform centers; equal source mass within each half",
+    "replacement": true,
+    "loss_weights": "unit",
+    "labels_used_to_sample": false
+  },
+  "provenance": {
+    "supersedes": "${storage:analysis}/crystal_vector/al64-balanced-20260927",
+    "change": "independent random population batches; no per-distance quotas or inverse sampling weights",
+    "initialization": "fresh identical parent weights and optimizer for all three arms; no mixed-sampler continuation",
+    "prepared_data": "reuse sealed Al64 context geometry produced by frozen 2026-09-27 code"
+  }
+}

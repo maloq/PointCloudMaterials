@@ -1,0 +1,2419 @@
+{
+  "dataset_id": "liquid-predictability-al64-20260928",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "299a769c2d476de80473165c9d21ba3227572ad7cafb3775d2ef6e22bbfd774b",
+      "kind": "metadata",
+      "keys": [
+        "dataset_identity",
+        "identity",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "a97425453b6b24aed512c93197befb80b1e6180750e84cd166a7d031de6d95fd",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "05aadc736c00d23f5d830089832767c39690be6d593f2d030b293a3a08cab4fb",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "0d713279abd14f32994b2e20756471c2afdaad7e9243ad02cfacc2f59c99ff3f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "b71c48ecbf59273a66f2065daa58180c04e544ac9490a7d411ca4f9bf64869a4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "65c05ac5cc8c3aed2d0187f3f5e99dc4b728878812dc83d4ae09936e34ff5a9c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "30a716bba8fd76c81c31eaae4e8010303fdfee21cdfa2de5a10cc21c305ad1fc",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "391833c7b31689b11403d71f62b7de4b52d2ec3019521c2701c74119c8c4c579",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "e6a774a76623e9cb8ccc76e34bc103b367cb525ad9dad29c802ee35d96c50a05",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "64ebf2736946c84385385b7ea8159b77e4d51e281359cc7cd20216df8d50670a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "bda667c7b6d0c8d1b71a168ecfbafec3de46706860a08f031919b4de6be7f689",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "a2425e93ca5bb62c4831e690150c5a4685467a4588466afa00f2507e5d051d3e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "71192ebc17010b4b920ea29b2cfc88ce4fee2bffe6aef66155259d61846a6d2d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "ec07a7a352ff2b9a7f5a9ecd59fce53cc0d2d01bbab318ec019c3e5acc74f642",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "fa3f51731c814628d7a14cd3cc4c5f35abed14a8f519353a8fc7bf598645592a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "0ec2ff224ef46606ff1b93542d3a43fb38cde4ddf992fdd123d1517fdb39845e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "d9eee55800acf86062bf0cb2edcf903cb2615f86d49d12090e3ccaf999146ff4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "7d5f92f0bc16dad7da8bda0b4305d254f4e833e352a3ff72400425ea3531b84d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "f72a4934597ae50e73a950c343b972f6c5ccaf09a15cbe0f200fc40c2b5bd7eb",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "36d65416277974a829da412ba5bae673a5485e906677c2a79664abde73b2ecc9",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "dd8cbffb428911ffeb98ee55cbaec9bed976bc8522668c0607dea142377b5a1f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "b402aeaf71924660220b4eacefd61b090ab1441953d088258787ddc367e46b91",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "da867c0e747484846d3edcc0cb54aa0792da4a207813a6aeda61ca9eb3835e62",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "c9cdac74d0450e891130f64e6bd4c50deae0de2e5ea08ec6fedf0972e89b9eb3",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "89823309bd2801d8059b2926c124478db35618f46a2b39b6c84b583a80e88427",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "65f1da3a92314d626dae13fc5fe0b58ff16ed2c66b5ab2f7e455c10b1556e34c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "777546dd14f1279c8a001244340d513f8326cc327d10b5eed49ea261dc1a4c93",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "dc08a618807bbf503d37d8394d7f4d300648e1ce95eacf7bf2fe13d3434b2b7a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "402b09a7f3588376c9de7d2621276faf5b9844695c6eb08be0d625d19307f23b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "efbf2a8f8329678cd406d027df2ac7c46fd16fb40725aa29c191029a456f4140",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "cdd0f415eb308cce3aeda5d8f32af8c5703cc6caf625c8c1e12baa1157b41de9",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "f4e1741252f7f6041eb9a6a32cd5eb8785fdc31aeb0c30373088ad3f65dcc5e2",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "a9c723df7316af5725e3dd0083cbbebbd023783995182c20360011573bd12b5d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "01f088831ecb88b864ee11449092613cb5062f785687f437e19495563a138838",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "ed686e92acdfef1696027aca4f10176ea6141a26f51bcdfad4601fd6ad564625",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "64f91805a8b32b4fe2aa49d9326cefab350035dcd18dacb4c0c343aa82d27531",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "ce555bef5c1ab05627ec8730d6db98dcf89c810033a768332b7e051473c88146",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "27bd13c441c85bbc62abfc666f3a4d0643408131076ba6573a1301bdbfdb9702",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "ef93dd5edfd1cd797e51392765df5ce6c32c601214b3a31befeb4187d3c702b5",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "8ab471778a74e93a83b777188930f2868cecd74f70ed537427bd30b50a61f949",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "de5f812bde56c2987c98b4dcc6e808572199dbcdfd8203f53ad108c5003cc319",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "3d40c821790e39bb0ed8f1a7e640c76fad52280432658990a9b7682d498718fe",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "92c966d61774b242cc4e3bddbb58d7377dd12bcb064071024f4d7a53e5f530d6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "503a98dd869281ed66f3181db1d79ee025c7353b09b7cdba3e25668eed9e2664",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "81027b5efe19d09888400055d4f3035262766f4ee2235deb4b6afb1568dc6b12",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "05d7e6e3fcb4897252aa5a882c6bd2512cfc410ed13ea4c0d1e82da4d27d6243",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "f42bf19fb17176a11069e487a21a162fbb3e301995bce3aa79bf2f69a0c3590f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "f6620e5cb1bd016a5dd055f337ad04e5f8b5c5213039c045a51b16c649010e41",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "07bef2bedcafe2d225a69e3ec72285c38832b3d5e9691b645994ba92fbb6baa6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "4a0ad9a345ada7da04eaa71eaee22ba6b7ac40ec77755ea53f65a97198a07715",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "86ce5b70a38702fabc285e9cd646eab9cabc338312667b19bdf7a556d8185cb9",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "f20d56d944ccd15d5a6d0a28a469bb0eeac661f0d782d97e560767ef8da93019",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "99da8f000fab215d951c277a83506acf7455d6509a6ec37ef6341daa47fec2d4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "f256ab6a68073558da2589110addfba6539d0185de5efc7dd9bdd70fc1a9b75c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "4e829f2e3af2dae7de9e31d950be3cd15317ee70712f31398fff8ccfd7948d2d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "a17a66b4f382c106a10f20913848090f907a82767d3a99f7bcaba00556c04b32",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "cca8fb62d04466131d043a7e40589c91c659d253406c3982dd041a96aafc8676",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "aaccff78592ccbb935c8ddac0c7608a55f20463b285ab3aa92556c4817b67934",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "c74899af3083061203171ae853f98845938513c100d64159e7bb5008268c8f7a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "2849e5569672ba4ed3025c81fbc0cd16ef6b6024a402e27e593e5101aa6f3ff2",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "62259229f2cd4c1de4df2d8cfc66897c0d0506dede3d3c036010708159d6af1a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "d6dd55985732fcb8a0817aa0a6ee1dc7c11aa195d80f55189b9d3830367115c0",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "61222bee2cc27234720869e67c8500296dad45ec1a47de55e27b7d82d0422900",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "87e9c795b68eceaa34e43b1f846c3a679703c317468ce3c363053f5849d8b194",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "bc833aee41eca1ddf54ded885aaed271b29bd39686d07c618352c23ebef92918",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "3994729b799a2899420148ef5eb2c1dc11d50f2c1c84fee62a5314b4b0adc35c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "f719bed2c4fdca6a16e3ae1b68cd48e60244707206bd73fd2503c1826231a118",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "58d6a61ffa6c4e60695f7fa2c8df31bf05bb9e92d8ec17e7dc023f179c8c2383",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "2d1606bb981fbd295bd66f647246a95ecb84a8352ddf51f1cd414d7e0358e7f7",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "431ad9e4252ad667833a343636ddfb253173a9472c46c40210c55e4ad8bd2471",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "be8fb6a8a5ccb3fac9a42ac0eee23262d8856ef7d0516f3f79f49f0d947ef05b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "0ec2826f7b534452164dc1408256db4fc3a5c7a73add4b31fb7458662f56144a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "c650dbaa1119adc8814896806b471124dfa918f3ce6a6e252f6a31766e147de1",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "c7e7ca96d318f78c00a023dcd63e7acf9d40894ad25b6103ef84d453fb2c28ae",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "c187becaa4ebed67d77f2270257c513334bac59b7403d45a04b3ad8ada62dc2e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "6274d0ad2ec7d9403acb4904d580783e7fa935aff0475ad1b12d95655bca8a6d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "0b4dcea5895629c7dcade1b576b7a514a2ab3201ad49102c096aa8e9ac070d3a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "adc566694893be8ace1dcd2bc3fd6fc089a6d1b4631d27b681b3259714f2a27f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "24f8de477a00909a224a1cf86adfd85f4c973d14f20e815fc4d8d8970d0d6013",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "2c514d20ba34daa4341f288f7a43f6143b4e80669b51c542316d5de6d86c2802",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "08bb3bfac7d4da3e3ffb3ebc7c2200e05c8358669252a0baf1b5a3c98153fa8e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "32c52f4ae9ebc59ec9fc9fe07ef5eb614bb1dc11908359e601e83bb3bb9c0bf1",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "3362f5aeb7ab362de75cc10f3dcafefbe343f649996d9b9a2efd2ceab697a818",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "636f9d9361d7916c39f3680bef3c7687ad4a0527a42c31aae90fa3252c1a0512",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "f8cfc506bfc571725dc8c36f36b7087498ed18a0d05528ba3f8a4a29404a907d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "c4052af9b06de39deff21c5de436b3e8852bcd07daa303d62880f49073d5f2ed",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "f4ed2e2de9441d5caaca810ce67b0ac17adca3426231e8d9bf903f1c7069b63d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "001218c7d1d78c96a255386909f784d967200c987c46354872bf45fcb4fb1c09",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "de80d38275e9509795c411632a6a0b6da2055b148448b5cd418c2eb4dc40bef4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "5e1f60ddd1b0edcc6c64956413f27c60366c2062bf75ad5d4fd200ed74e36524",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "a79b14aaaef0a46f811e0bf6439c75237f9725c8427fa6c1fe41884819323eba",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "deb2e7c812ecce1fa3d03c81e9c315fb7a330f2eefcd611772dadff68f4f7b27",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "3cc829ffd6a034221a3a17defbf8e847b68b2e48c7b8bb5de0787ae69fd4fe32",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "f59f05a231f01158d427ea225f38387e7bcd2e07f95da7e9a65c351d1884c03d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "815c281686f4ad1fe7389013897a7e9e0df2b8d34bf1d34cff9df3753558aa36",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "39c82576af4f62afb8b2db4aab9bab7afd37caf262991e89f8bed12a1b21983b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "a436f350290b29895adb504af028de4ae7de0b9069ca3133d9ba105a9c7631da",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "8153f343f91362091bc38928e1a9b7f8272e00195e606458be7b971f5638cbc6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "fe5203dce7078808ffd8d10e556722983fec16646a41850be9ec83e273699f2c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "7834e17da63a565f3ee59aee9f4e70fd7b2387af9b68e42ae484a67b8e55e84e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "909d095c4b5e7eacecff796ebd190fd37a0cc1a567a7214ab58c7da3a644bd3d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "81bb5404f53bedf0d5bbe805110d1cd9bd98ce515de80cf9616e6dc61d05e072",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "263de3cfda3af551e00be272696be31b2f5ec7ed18010eddeb7d47a27f2986d6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "46c5a768d3ad41a7ae6b4566c79c2d066f5800c2bdb304c5fab28a498a5a9e67",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "fcde687d239d7998f574d82666d2d65bf59fb3ebe2bad968c8e95826c1b7d5b2",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "c3ea4344a2d45ba8bed0688bf3caa9cc9a7b24d70c1affca3a488444246c3b7d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "4c053ce99eba7faf4304ec075b735ee6d347438a2e28f4e4840ee1bfed4387de",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "fe76df57c1117e5f8f5a367308dccdb4ad510cd3de038f8ba881ae5db984cb90",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "09305e73343e4cb3a490690bca6ff0eefaff05255167c758959430420bf39f00",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "97c6a279b88ed8b94f4b0db4cb1ec38d9e610fe2edda2c534f8e4f5fa842856e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "dc26be782978a784c40dcc4fee86342928cde896cc69ca59da484c7dbd434e16",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "1edd73a3432a9f18fff122983c1a5eadbc1b69e245b845bb8e1a3509cd94f9fe",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "e083fbcb54f1796c9c318069c78de46d9ad19821b945e3508499545dbef1e9a4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "0af1a3259a54f40d7ecc9ec4322d1313950f8e84998a97b5b1fc277afaf2fce5",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "9c63a8786cd0f54c2f329601ec1b7bf9d3fd3a7cb1c401c88b333bfd3d1349f4",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "3c8264d1b7d026cdf5bb58be8e1b49733d9d5193dbe0bc0e6de138c03547db62",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "0702165effd6a379a1d7fe10a9d154076867621623230f5abb6d3ce28eba1856",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "80b4923d2c07c98742508152123d0f40e6a64b2a228bc0be58d1d51053e0f01d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "0847d1e4c80b0885decb2719b69f0166e622ec001ed2884d6c6dd28920903725",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "e805a53319c199b786c961bc1a6d3b903b08f0665bd2cddf28875c81a6f033a7",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "6a0623f9e291406bba6e9de974dab39a2f244b878c1cde0afdcf193683297458",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "e04bb8c5e2f42453ae817912f8b489506f5f0c0b9d1b03ea0d4e455a7bad9b4c",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "e4756325446bca5df3cdad27060f0ee4825505504e33e83eb80a5695a3684f9f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "f61c4185499e6decc095125cd873afd58f4d51a6c646c3c01cb4f3f8079db20e",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "76baf130c14eca43a416c48f136c7f2e15090c41f4c83e6dce1a9b13a35590c5",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "ccf08571c631f69c412736249cec2191f6d1e3033f848bdd2d6d220bda9293f5",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "4808f90cc43ecbcecfe29b78a283ca28b46e1c94cd31d83061e51036d18a6d9a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "5b8c51a871137066b95259776fbad5d0200b99b2abf79061d7a62ca7c538c150",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "f87acd9238d2b8793fd23f0507c13eb05b9670489aa00b4353d74a79dcfbbf5d",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "62d7a438bdc401e30ccb89768bc8f3df5e9f7e1ba910be24246cb11de1a478d6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "c81496740fca0e6fd311295dcae493c82d9cfd6e17f449150e65b12483fb64d3",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "b9bac4ab8f8bbcfa851e7b55e0a8d8a123a9c538d0f95a87183d8b2d3557c55f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "e66f0e259be46bed6388c83a0ecb7111e88d097d5a7d0887928c37d5aeb33050",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "9a0b50134e416dd72757128be5f05071611c0ebf95bc26534682b7f757679150",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "14fa9f662d2be0057482862b8a270fc947451d267e5f86cab50064877ff1429f",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "0b3c1dfeb2efa57deaa937459497a65b2c8baaa713247d90cf73595db76d9a53",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "5ce795f0f89f4c3eb6e6e5512c07f5d3d6f60d3c27454b667442dfd696ce14ba",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "310e570b3cee39d13636300c0b7cb8a66143931aa9df93e904ac385a80f7069a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "f45306ef0c3660b87a1ff5c91a8529fa8ff0ebfb0edae4787f4e4f1081921e26",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "235799eb08748150957c3bbc2e72daada2094c441d66edddc1d96963dde5dff1",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "f018b0626e9c9a7caa7d517964e5566fdbe62f87f3d0c971570282f172d764ac",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "a7aafd07da4f0b2a5aca59fd6ffcd191e5a097e743b3641e27aba2ffbe718797",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "d8878612a98533c7de8ad7bba00ab5500ab390ec2aed38cba9581556552144c6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "2491480f20f6a16a1614fe6cded01a2438784c83befead4440d80ec9891cf488",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "8a13ff7272d2fbf6d5cba6660d29e91394bf34b48cc481e225da8753d8928b9a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "14d1f5181f21d0b726e691962140408206530e2cd393a3fc1c11dcd9e287f49a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "137778d54a1d614a9d6e2288b06941f5205616d067f24865671f17fbbbc34641",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "1e6a2f7443512c5510e82cf8b8d10dc028f944b1d769857e64d15fb52890be5b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "5fa9ed37059b4fce34c7f9d89623ccc8894b7dc9450e27c8b3cfc975d3b5334b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "09a7ceb61a8c7bbdd82feb5654ed11526dadb85ac56ab2dddcc8e86af73f7466",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/liquid-predictability/al64-20260928/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "fc39a9f9d1ecb82318261fce01ee89dcec0a3e53e5897ffd08ed35a867f8c1bd",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "identity",
+        "rows",
+        "sha256",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -15,6 +15,11 @@
   historical AP-trained artifacts with their true labels. See
   docs/encoder_research/training_branches.md.
 
+- Physical-reconstruction encoder pretraining is discontinued (user instruction,
+  2026-09-25). Omit that treatment and its dependent fits from future queues
+  unless explicitly requested again. Preserve historical artifacts and keep
+  physical-information readouts as evaluation diagnostics.
+
 - Prediction-context policy (user instruction, 2026-09-25): do not feed temperature,
   simulation age, absolute time, or other explicit time covariates to encoders,
   predictors, probes or baselines unless the user explicitly requests them again.
@@ -26,9 +31,23 @@
   do not relabel them as condition-free. See docs/encoder_research/prediction_context.md.
 
 - Use conda `pointnet-torch214`
+- MD-history experiments must use the same physical observation spacing and
+  offsets across training and held-out sources (user instruction, 2026-09-26).
+  Use separate protocols for different cadences and check actual source timelines.
+  Explicit exception approved 2026-09-26: the nominal 0.75-ps six-frame run may
+  use exact 0.70-ps observations for external sources saved every 0.10 ps.
+  Record actual per-source intervals/spans; do not interpolate or label 0.70 ps
+  as an exact 0.75 ps. The separate 0.10-ps experiment uses exact 0.10 ps throughout.
 - Default new native spatial MACE encoders to 128 channels and a 128-dimensional
   exported embedding (user preference, 2026-09-25). Explicit capacity ablations
   retain their recorded widths; historical configurations are not rewritten.
+- Keep new native MACE encoders geometry-only with one constant atom channel,
+  including mixed-material pretraining (user instruction, 2026-09-25). Do not add
+  species embeddings, element one-hot inputs, material IDs or scale features to
+  the encoder/decoder. Use the established fixed material length normalization
+  in preprocessing; retain material and potential as audit metadata. See
+  docs/datasets/structural_multimaterial_256.md. Historical models keep their
+  actual recorded input contracts.
 - Default new encoder training to batch_size=256 and microbatch=256 (user
   preference, 2026-09-25). Record explicit deviations; preserve the recorded
   settings of frozen/running experiments.
@@ -39,6 +58,11 @@
   Log only scientific training runs and their associated evaluation metrics.
   Keep debug runs, smoke checks and hardware benchmarks local; do not create
   online runs for these checks.
+  Frozen diagnostic probes, descriptor controls and per-checkpoint evaluation
+  sweeps also stay local (user instruction, 2026-09-26). Do not create W&B runs
+  for each evaluation or cached readout. Associated final evaluation metrics
+  update the recorded training run through its existing ID, without restarting
+  that run. Scientific encoder/predictor training remains online.
 - Research correctness comes first: fail loudly with useful context. Trace values
   to their repository producer; use its actual types, shapes and fields. Avoid
   silent fallbacks, generic compatibility code and unnecessary defensive checks.
@@ -57,7 +81,10 @@
   unused training/simulation variants with their dependency references.
   See [storage](docs/data_storage.md) and [simulations](docs/simulations/README.md).
 - Follow [the result layout](docs/research_layout.md): `output/<question>/<run>/`,
-  readable `plots/` and `tables/`, machine artifacts/logs in `technical/`.
+  named scientific bundles in `analyses/`, readable grouped `plots/` and `tables/`,
+  and execution/provenance in `technical/`. Preserve historical producer paths;
+  use the [result publication workflow](docs/research_results_system.md) to expose
+  existing analyses without recomputing metrics or replacing frozen definitions.
 - Export metric CSVs with `tables/METRICS.md` and implementation hashes through
   `src/experiment_runner/metric_docs.py`. Change `docs/metrics/` and `contracts.json`
   with calculations; preserve historical exported definitions.
@@ -74,6 +101,10 @@
   uses only train ancestors; selection is validation, calibration/test are excluded.
 
 # Preservation and cleanup
+
+- Keep the six most recently used generated encoder feature caches across GPU
+  lanes (user instruction, 2026-09-25). Protect active leases; evict only
+  disposable caches. Keep checkpoints, predictions and metrics.
 
 - Use `scripts/convert_trajectory.py` for conversions: new simulation positions are
   verified float16, boxes float32, identity/timeline arrays exact. Preserve LAMMPS

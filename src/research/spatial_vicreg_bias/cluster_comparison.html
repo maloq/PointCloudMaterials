@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>__TITLE__</title><script src="../assets/plotly.min.js"></script>
+<style>
+body{font:13px system-ui;margin:12px;color:#172233}nav{font-size:12px}h1{font-size:20px;margin:8px 0}h2{font-size:16px;margin:6px 0 2px}a{color:#145bc0}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;padding:6px 8px;background:#f3f6fa;border-radius:9px}
+label{display:flex;align-items:center;gap:6px}select{padding:4px;max-width:350px}.plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.plot,.mdplot{width:100%;aspect-ratio:1;height:auto;min-height:0}.metricplot{height:410px}.status,.muted{color:#536174;font-size:12px;margin:4px 0}
+.main-plots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:8px 0 20px;scroll-margin-top:8px}.panel{min-width:0;border:1px solid #e3e8ef;border-radius:10px;background:white;overflow:hidden}.panel header{display:flex;justify-content:space-between;align-items:center;padding:8px 10px}.panel h2{margin:0;font-size:15px}.expand{border:1px solid #d8e0e9;background:#f7f9fc;color:#32455b;border-radius:5px;padding:4px 7px;cursor:pointer}.statusbar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}.panel.expanded{position:fixed;inset:12px;z-index:1000;box-shadow:0 0 0 100vmax #17223388}.panel.expanded .plot{height:calc(100vh - 120px);aspect-ratio:auto;min-height:0}@media(max-width:850px){.main-plots{grid-template-columns:1fr}}
+.sampleplot{height:480px}.samplecontrols{display:flex;flex-wrap:wrap;gap:12px;margin:8px 0}
+label:has(>#frame){display:none}.frameSlider{width:180px}output{min-width:48px;font-variant-numeric:tabular-nums}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin:12px 0}.stats span{font-size:13px;color:#536174}.stats b{font-size:22px;font-weight:600;color:#172233;margin-left:8px}
+details{margin:6px 0;color:#536174;font-size:12px;max-width:950px}details p{line-height:1.5}.error{color:#a82420}@media(max-width:850px){.plots{grid-template-columns:1fr}.plot,.mdplot{height:auto;min-height:0}select{max-width:250px}}
+.clusterLegend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:8px 12px 12px}.clusterLegend button{display:flex;align-items:center;gap:7px;border:0;background:none;color:#253548;cursor:pointer;padding:4px;font:inherit}.clusterLegend i{display:block;width:15px;height:15px;flex-shrink:0;border-radius:50%}.clusterLegend button[aria-pressed="false"]{opacity:.3}.pathplot{height:440px;width:100%}.travel-plots{margin:12px 0 16px}.travel-plots section{min-width:0}.travel-plots h3,.travel-coordinates h3{font-size:15px;margin:10px 12px}.travel-coordinates{margin-top:20px}.pathLegend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:0 12px 12px;min-height:20px}.pathLegend span{display:flex;align-items:center;gap:8px}.pathLegend i{width:24px;border-top:3px solid;display:inline-block}
+</style></head><body>
+__DATASET_NAV__
+<h1>Neural ↔ descriptor clusters</h1>
+<div class="controls">
+<label>Neural <select id="nnSpace"></select></label><label>Descriptors <select id="descriptorSpace"></select></label>
+<label>Colors <select id="color"><option value="matched">Optimal match</option><option value="original">Original IDs</option><option>PTM type</option><option>Physical region</option><option>Input crystal fraction</option><option>Interface distance (Å, clipped ±20)</option></select></label>
+</div>
+<div class="controls" style="margin-top:8px">
+<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>
+<label>Region <select id="region"><option value="all">All displayed centers</option><option value="near">Within 12 Å of interface</option><option value="boundary">Boundary</option><option value="crystal">Crystalline centers</option><option value="liquid">Nearby connected disorder</option><option value="pocket">Nearby disordered pockets</option></select></label>
+<label>Points <input id="size" type="range" min="1" max="7" step="0.5" value="2"></label>
+</div>
+<div class="controls" style="margin-top:8px"><label>MD points <input id="mdSize" type="range" min="0.5" max="5" step="0.5" value="2"></label><label>z from <input id="zLow" type="range" min="0" max="100" value="0">%</label><label>to <input id="zHigh" type="range" min="0" max="100" value="100">%</label></div>
+<div class="statusbar"><div id="status" class="status"></div><div id="mdStatus" class="status"></div></div>
+<div class="main-plots">
+<section class="panel"><header><h2>Neural 3D PaCMAP</h2><button class="expand" data-plot="two" aria-label="Expand neural PaCMAP">Expand</button></header><div id="two" class="plot"></div><div id="twoLegend" class="clusterLegend"></div></section>
+<section class="panel"><header><h2>Descriptor 3D PaCMAP</h2><button class="expand" data-plot="three" aria-label="Expand descriptor PaCMAP">Expand</button></header><div id="three" class="plot"></div><div id="threeLegend" class="clusterLegend"></div></section>
+<section class="panel"><header><h2>Neural MD</h2><button class="expand" data-plot="mdNN" aria-label="Expand neural MD">Expand</button></header><div id="mdNN" class="plot mdplot"></div><div id="mdNNLegend" class="clusterLegend"></div></section>
+<section class="panel"><header><h2>Descriptor MD</h2><button class="expand" data-plot="mdFeatures" aria-label="Expand descriptor MD">Expand</button></header><div id="mdFeatures" class="plot mdplot"></div><div id="mdFeaturesLegend" class="clusterLegend"></div></section>
+</div>
+<div class="controls" id="timelineControls"><label>Frame <input id="frameSlider" class="frameSlider" type="range" min="0" step="1"><output id="frameLabel"></output></label><label><input id="allFrames" type="checkbox" checked>All PaCMAP frames</label><label id="mdFrameControl">MD snapshot <select id="mdSnapshot" hidden></select><input id="mdFrameSlider" class="frameSlider" type="range" min="0" step="1" hidden><output id="mdFrameLabel"></output></label></div>
+<section id="environmentSamples" hidden>
+<h2>Cluster samples · 3D atomic environments</h2>
+<p class="status">Real 80-atom neighborhoods · cluster colors · sparse display connections</p>
+<div class="controls"><label><input id="sampleStructure" type="checkbox">Local crystal fit</label><label><input id="sampleGrid" type="checkbox">Ideal lattice</label><label><input id="sampleResidual" type="checkbox">Deviations</label></div>
+<div class="plots">
+<section><div class="samplecontrols"><label>Neural cluster <select id="sampleNeuralCluster"></select></label><label>Example <select id="sampleNeuralIndex"></select></label></div><div id="sampleNeuralInfo" class="status"></div><div id="sampleNeural" class="sampleplot"></div></section>
+<section><div class="samplecontrols"><label>Descriptor cluster <select id="sampleDescriptorCluster"></select></label><label>Example <select id="sampleDescriptorIndex"></select></label></div><div id="sampleDescriptorInfo" class="status"></div><div id="sampleDescriptor" class="sampleplot"></div></section>
+</div></section>
+<section id="correspondenceSection"><h2>Cluster correspondence</h2>
+<div class="stats"><span>Displayed centers<b id="count">—</b></span><span>Matched overlap<b id="overlap">—</b></span><span>Adjusted Rand index<b id="ari">—</b></span></div>
+<div class="plots"><section><label>Membership <select id="matrixScale"><option value="fraction">% within neural cluster</option><option value="count">Counts</option></select></label><div id="matrix" class="metricplot"></div></section><section><h2>Matched-pair intersection / union</h2><div id="pairOverlap" class="metricplot"></div></section></div>
+</section><details><summary>Methods</summary><p>Neural colors maximize shared membership with descriptor clusters using a one-to-one assignment on all 684,723 grid centers. The mapping stays fixed across snapshots and filters for each model/descriptor pair. Labels N and D retain the original neural and descriptor IDs. Shared colors indicate an assigned pair; the matrix and intersection/union bars show its actual overlap.</p><p>Correspondence statistics use the currently displayed PaCMAP centers. Static frame sliders synchronize PaCMAP and MD; region and z filters remain independent. All frames restores pooled PaCMAP. Axes are independent projections. Coordinates, clusters and models are unchanged. MD outlines show nonperiodic coordinate bounds. Local examples are uniform samples from the full selected snapshot, not fitted centroids; each has 80 atoms and an original center ID. <a href="../../cluster-color-matching-v1/tables/METRICS.md">Metric definitions</a>.</p></details>
+<section id="embeddingTravel" hidden><h2>Travel between environments</h2>
+<div class="controls"><label>Path <select id="pathKind"><option value="spatial">Spatial neighbors</option><option value="embedding">Embedding neighbors</option></select></label><label>From cluster <select id="pathFrom"></select></label><label>To cluster <select id="pathTo"></select></label><label>Endpoint example <input id="pathExample" type="range" min="0" max="9" value="0"></label><button id="pathBuild">Trace path</button></div>
+<p id="pathStatus" class="status"></p>
+<div class="plots travel-plots">
+<section class="panel"><h3>Path in MD space</h3><div id="pathMD" class="pathplot"></div></section>
+<section class="panel"><h3>Full-vector embedding changes</h3><div id="pathProfile" class="pathplot"></div><div class="pathLegend"><span><i style="border-color:#35577f"></i>Distance from start</span><span><i style="border-color:#b55c15"></i>Change from previous atom</span></div></section>
+</div>
+<div class="controls"><label>Position <input id="pathStep" type="range" min="0" value="0"><output id="pathStepLabel"></output></label></div><section class="panel travel-coordinates"><h3>Embedding coordinates along the path</h3><div id="pathCoordinates" class="metricplot"></div></section>
+<p class="status">Paths connect sampled atoms in one snapshot. Embedding neighbors may be far apart in MD space; these are not time trajectories. Embedding changes use the full exported vector; axes and distances are not PaCMAP distances.</p></section>
+<script>const D=__DATA__;
+const palette=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b','#e377c2','#7f7f7f','#bcbd22','#17becf'];
+</script><script src="../assets/viewer_extensions.js?v=__EXTENSION_HASH__"></script><script src="../assets/cluster_comparison.js?v=__SCRIPT_HASH__"></script></body></html>

@@ -8,4 +8,6 @@ Large artifacts use the configured analysis storage because the home quota is fu
 - [Launch receipt](/work/PERSO/vmorozov/analysis/encoder_research/mace-vicreg-epi-20260923/technical/launch.json)
 - [Protocol](../../../experiments/mace_paired_epi_20260923/README.md)
 
-No scientific results are available at submission time.
+All six fits and 24 checkpoint evaluations completed. See the
+[26 September results review](RESULTS-20260926.md) for training curves, interface
+readouts, predictive proper scores and the broader parameter queue's status.

@@ -7,12 +7,12 @@ Existing 150 independent 70304-atom Al runs at 400–520 K; 16 outcome-independe
 - ID: `crystallization-transfer-mace-20260919`
 - Materials: Al
 - Classification: **derived**; role: training_cache
-- Location: `/home/ids/vmorozov/training-cache/crystallization-transfer-mace-20260919`
+- Location: `/store/PERSO/vmorozov/training-cache-archive-20260926/crystallization-transfer-mace-20260919`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 41.186 GiB
+- Allocated storage, excluding registered nested datasets: 72.682 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -52,6 +52,6 @@ All 150 producer records, their hashes, field paths and current array schemas: [
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

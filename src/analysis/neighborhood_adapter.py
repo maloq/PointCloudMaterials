@@ -75,7 +75,6 @@ def export(config):
 @torch.no_grad()
 def verify(config):
     from src.utils.model_utils import load_model_from_checkpoint
-    from src.training_methods.shared_pretraining.compilation import compile_encoder
     output = Path(config['output'])/'technical'
     cfg = OmegaConf.load(output/'encoder/.hydra/config.yaml')
     model = load_model_from_checkpoint(output/'encoder/encoder.ckpt', cfg, device='cuda:0', module=NeighborhoodAnalysis)

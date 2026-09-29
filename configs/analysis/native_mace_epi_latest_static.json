@@ -1,0 +1,10 @@
+{
+  "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/pretraining/epi_variance/technical/epoch-012.pt",
+  "checkpoint_sha256": "3e68daa47447751cf8a3f36ce5d28763c92de6f1644bed267fca8fcc250c9d00",
+  "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/technical/code",
+  "output": "${storage:analysis}/structural_static/mace-epi-epoch12-al-20260926",
+  "data_config": "${storage:repo}/configs/data/loaders/static_al_native_mace.yaml",
+  "device": "cuda:1",
+  "verification_inputs": "${storage:analysis}/encoder_research/mace-vicreg-epi-20260923/technical/inputs",
+  "verification_reference": "${storage:analysis}/encoder_quality/latest-mace-20260926/technical/reference"
+}

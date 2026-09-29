@@ -1,0 +1,160 @@
+{
+  "protocol": "joint_snapshot_interface_unseen_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/crystal_interface/al64-unseen-dense-vcreg-20260928",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "dataset": {
+    "root": "${storage:cache}/crystal-interface/al64-dense-clear-20260928",
+    "audit": "${storage:analysis}/crystallization_origin/al64-20260925",
+    "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+    "scan_parent": "${storage:analysis}/spatial_approach/al64-20260926",
+    "shells": [
+      [
+        4.0,
+        14.0,
+        12
+      ],
+      [
+        14.0,
+        24.0,
+        12
+      ]
+    ],
+    "uniform_seed": 20260926,
+    "uniform_per_frame": 16,
+    "tie_tolerance_A": 1e-05,
+    "workers": 8,
+    "expanded_clear_only": true
+  },
+  "initial_encoder": "${storage:analysis}/distance_encoder/multimaterial-early-20260926/technical/best.pt",
+  "initial_encoder_sha256": "7b4dcb17ddcb2952d5f5ea20f0fd8e1d2d0c0164146d8676a39ceca71d1fda7f",
+  "variants": [
+    "distance_direction_vcreg"
+  ],
+  "seed": 20260927,
+  "batch_size": 512,
+  "microbatch": 512,
+  "patch_chunk": 256,
+  "activation_checkpointing": true,
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2
+  },
+  "loss": {
+    "distance_cap": 64.0,
+    "early_radii": [
+      8,
+      12,
+      20,
+      32
+    ],
+    "early_weights": [
+      0.05,
+      0.15,
+      0.4,
+      0.4
+    ],
+    "early_weight": 2.0,
+    "direction_weight": 1.0,
+    "direction_kappa": 8.0,
+    "direction_scale_A": 16.0
+  },
+  "regularization": {
+    "variance_weight": 0.05,
+    "covariance_weight": 0.01,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_updates": 512
+  },
+  "training": {
+    "epochs": 16,
+    "minimum_selection_epoch": 12,
+    "encoder_lr": 1e-05,
+    "head_lr": 0.0002,
+    "weight_decay": 1e-05,
+    "warmup_updates": 128,
+    "save_every": 64,
+    "log_every": 16,
+    "updates_per_epoch": 512
+  },
+  "runtime": {
+    "compile": true,
+    "precision": "bf16",
+    "hours": 14.5,
+    "gpus": 2
+  },
+  "evaluation": {
+    "noise_rms_fractions": [
+      0.001,
+      0.005,
+      0.01,
+      0.03
+    ],
+    "diagnostic_rows": 512,
+    "stability_lag_ps": 0.75
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "civ-mace128-unseen-dense-vcreg-20260928"
+  },
+  "external_inputs": [],
+  "sampling": {
+    "method": "independent_random_target_population",
+    "target_population": "original mixture conditioned on no interface atom in any of the 25 input patches",
+    "replacement": true,
+    "loss_weights": "unit",
+    "labels_used_to_sample": true,
+    "label_use": "interface visibility only for requested eligibility; no distance quotas"
+  },
+  "provenance": {
+    "comparison": "requested no-visible-interface training population; original fixed rows retained for paired diagnostic inference",
+    "treatment": "distance plus direction plus VCReg retained explicitly by user",
+    "initialization": "same original snapshot supervised parent; fresh context predictor and optimizer, not a last-run continuation",
+    "prior_exposure": "parent encoder historically trained on its recorded training sources, including visible-crystal examples; new adaptation uses only interface-invisible queries",
+    "training_budget": "16 nominal blocks x 512 updates, global batch 512; 8192 updates and 4194304 replacement draws. Nominal epochs are not exhaustive passes through expanded data.",
+    "parallelism": "one synchronous fit on 2 GPUs, 256 examples per rank, globally differentiable VCReg moments and averaged gradients"
+  },
+  "target": {
+    "kind": "crystal_interface_layer",
+    "geometry_parent": "${storage:cache}/crystal-vector/al64-covering-20260927",
+    "parent_manifest_sha256": "e8633d04fefbedd039c6fc027650d4b53f7ddc7bde297e2f15557b77b6a028e0",
+    "neighbor_cutoff_A": 3.6,
+    "minimum_disordered_component_atoms": 64,
+    "distance": "unsigned nearest crystal-side interface atom, periodic",
+    "empty_interface": "right-censored at 64 A, never zero",
+    "uniform_heldout_centers_per_frame": 16
+  },
+  "queue": {
+    "prepare_sources_per_task": 10,
+    "prepare_parallel_tasks": 8,
+    "max_concurrent_gpus": 2,
+    "partition": "RTX6000PRO,H100",
+    "training_walltime": "12:00:00"
+  },
+  "observation_filter": "no_visible_interface",
+  "comparison_reference": "${storage:analysis}/crystal_interface/al64-random-20260928/distance_direction_vcreg",
+  "expansion": {
+    "parent": "${storage:cache}/crystal-interface/al64-covering-20260928",
+    "parent_manifest_sha256": "4094738b9ff75037c0f4ecbd8b8aa980d6b029032c6a6b372f99db007863ce6c",
+    "frames_per_source": 64,
+    "centers_per_frame": 256,
+    "seed": 20260928,
+    "selection": "uniform atom IDs without replacement per evenly spaced retained frame; visibility rejection only; no distance-based mining"
+  }
+}

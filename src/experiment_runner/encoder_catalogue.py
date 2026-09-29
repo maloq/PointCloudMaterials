@@ -169,6 +169,15 @@ def make_database(path: Path):
 
 
 def nearby_contract(path, root):
+    if path.parent.name == 'tables':
+        binding = path.parent.parent / 'technical/table-contracts' / f'{path.stem}.json'
+        if binding.is_file():
+            record = json.loads(binding.read_text())
+            if record['sha256'] != digest(path.read_bytes()):
+                raise ValueError(f'{path}: table differs from its exported metric binding {binding}')
+            base = path.parent.parent
+            return (str((base/record['definitions']).relative_to(root)),
+                    str((base/record['contract']).relative_to(root)))
     for directory in [path.parent, *path.parent.parents]:
         if not directory.is_relative_to(root):
             break
@@ -193,6 +202,7 @@ def render_dashboard(manifest, artifacts, headlines, stats, output):
 <title>Encoder research catalogue</title><style>
 body{font:16px system-ui;max-width:1450px;margin:30px auto;padding:0 24px;color:#17263b;background:#f5f7fa}a{color:#1553a1}h1{margin-bottom:8px}p{max-width:1000px;line-height:1.5}input,select,button{padding:10px;margin:4px;border:1px solid #a6b5c5;border-radius:5px;background:white}input{width:320px}table{border-collapse:collapse;background:white;width:100%;font-size:14px}td,th{text-align:left;padding:10px;border-bottom:1px solid #dae1e9;vertical-align:top;overflow-wrap:anywhere}th{position:sticky;top:0;background:#e4edf6}small{color:#4c5c70}.bar{position:sticky;top:0;background:#f5f7fa;padding:10px 0;z-index:2}.limit{color:#8a3c11}button{cursor:pointer}
 </style><h1>Encoder research catalogue</h1>
+<p><a href="../../registry/index.html">Registered runs, analysis bundles and stage coverage</a></p>
 <p>__STATS__ · <a href="../../../docs/encoder_research/README.md">Research guide</a> · <a href="technical/results.sqlite">SQLite database</a> · <a href="tables/headlines.csv">Curated results CSV</a> · <a href="tables/artifacts.csv">All artifacts CSV</a></p>
 <p class="limit">Different cohorts and metrics are not a leaderboard. Historical, smoke, superseded and reported-only evidence remains visible. Repeated files and report tables are not independent fits. Source files are linked, never modified.</p>
 <div class="bar"><label>Search <input id="search" placeholder="model, protocol, metric or path"></label><label>Family <select id="family"><option value="">All families</option></select></label><label>View <select id="view"><option value="headlines">Curated results</option><option value="studies">Study records</option><option value="artifacts">Reports, tables and galleries</option></select></label><label>Kind <select id="kind"><option value="">All kinds</option><option>csv</option><option>report</option><option>json_result</option><option>gallery</option></select></label><button id="previous">Previous</button><button id="next">Next</button><span id="count"></span></div><div id="table"></div>
@@ -222,11 +232,19 @@ def build(repo=REPO, *, manifest_path=None, output=None, highlights_path=None):
             raise FileNotFoundError(f'Catalogue source {name} unavailable: {path}; configure machine.local.yaml before refresh')
     highlights_path = Path(highlights_path or repo / 'docs/encoder_research/highlights.json')
     headlines = json.loads(highlights_path.read_text())
+    missing = set()
+    for label, rows in [('curated evidence', headlines), ('study', manifest['studies']),
+                        ('collection', manifest['collections'])]:
+        for row in rows:
+            path = sources[row['source']] / row['path']
+            available = path.is_dir() if label == 'collection' else path.is_file()
+            if not available:
+                missing.add(f'{label}: {path}')
+    if missing:
+        raise FileNotFoundError('Registered historical evidence unavailable; existing catalogue retained:\n'
+                                + '\n'.join(sorted(missing)))
     for row in headlines:
         row['sha256'] = validate_highlight(row, sources)
-    for study in manifest['studies']:
-        if not (sources[study['source']] / study['path']).is_file():
-            raise FileNotFoundError(f'Missing study record: {study}')
     for part in ('technical', 'tables', 'storage'):
         (output / part).mkdir(parents=True, exist_ok=True)
     for name, path in sources.items():
@@ -301,9 +319,12 @@ def build(repo=REPO, *, manifest_path=None, output=None, highlights_path=None):
                 artifacts.append(row)
         count = sum(a['row_count'] for a in artifacts)
         stored_count = con.execute('SELECT count(*) FROM record_data').fetchone()[0]
+        from .result_records import ingest_records, registered_records
+        ingest_records(con, registered_records())
         if con.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or con.execute('PRAGMA foreign_key_check').fetchall():
             raise RuntimeError('Encoder catalogue SQLite integrity check failed')
         con.commit()
+    snapshot_metric_docs(output, 'encoder_research', generated_catalogue=True)
     temporary.replace(output / 'technical/results.sqlite')
     stats = {'captured_at':datetime.now(timezone.utc).isoformat(), 'families':len(manifest['families']),
              'studies':len(manifest['studies']), 'collections':len(manifest['collections']),
@@ -315,7 +336,6 @@ def build(repo=REPO, *, manifest_path=None, output=None, highlights_path=None):
     for name, rows in [('artifacts',artifacts), ('headlines',headlines), ('studies',manifest['studies'])]:
         with (output / f'tables/{name}.csv').open('w',newline='') as handle:
             writer=csv.DictWriter(handle,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
-    snapshot_metric_docs(output, 'encoder_research')
     write_json(output / 'technical/coverage.json',stats)
     write_json(output / 'technical/catalogue-snapshot.json',manifest)
     render_dashboard(manifest,artifacts,headlines,stats,output)

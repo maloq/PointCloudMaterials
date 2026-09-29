@@ -24,17 +24,11 @@ def _prepare_icl_features(
     random_state: int,
 ) -> tuple[np.ndarray, dict[str, Any]]:
     x = np.asarray(latents, dtype=np.float32)
-    if x.ndim != 2:
-        raise ValueError(f"ICL latents must have shape (N, D), got {x.shape}.")
     if not np.isfinite(x).all():
         first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
         raise ValueError(
             "ICL features contain non-finite values. "
             f"first_nonfinite_index={first_bad}, shape={x.shape}."
-        )
-    if x.shape[0] < 3:
-        raise ValueError(
-            f"Need at least 3 samples to compute ICL curve, got {x.shape[0]}."
         )
 
     info: dict[str, Any] = {
@@ -88,20 +82,12 @@ def _compute_icl_curve(
     random_state: int = 42,
 ) -> dict[int, dict[str, float]]:
     x = np.asarray(features, dtype=np.float32)
-    if x.ndim != 2:
-        raise ValueError(f"features must be 2D, got shape {x.shape}.")
-    if x.shape[0] < 3:
-        raise ValueError(f"Need at least 3 samples for ICL curve, got {x.shape[0]}.")
 
     curve: dict[int, dict[str, float]] = {}
     for k in k_values:
         k_eff = int(k)
         if k_eff < 2:
             raise ValueError(f"Invalid k value {k_eff}; expected >= 2.")
-        if k_eff >= x.shape[0]:
-            raise ValueError(
-                f"Invalid k value {k_eff}: must be < number of samples ({x.shape[0]})."
-            )
         model = KMeans(n_clusters=k_eff, random_state=random_state, n_init=10)
         try:
             labels = model.fit_predict(x)

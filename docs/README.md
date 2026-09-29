@@ -1,5 +1,29 @@
 # Project documentation
 
+- [Code cleanup review and prioritized implementation backlog, 2026-09-29](code_cleanup_review_20260929.md)
+
+- [Multimaterial MACE256 local descriptors: normalized residual head, 60 epochs](rich_multimaterial_encoder.md)
+
+[RD-MACE256-L3-Z256](rich_descriptor_encoder.md): larger/deeper MACE learns all rich descriptors over 60 complete raw-data passes.
+
+[Liquid sensitivity and paired relaxation](liquid_controls.md): generated-label controls, rich-feature MACE learning and original/relaxed label comparisons.
+
+
+[Rich liquid descriptor controls](liquid_descriptors.md): TDA, bond order, CNA, geometry, gradient boosting and MLP.
+
+
+- [Liquid structure predictability](liquid_predictability.md): detached CPU/GPU study, physical profiles, fixed-source comparisons and practical-effect bounds.
+
+- [Joint MACE distance encoder](distance_encoder.md): large multi-material training, early spatial detection loss, detached execution and context-predictor follow-up. [Trainable MD history](distance_encoder_history.md) adds tracked-atom history and a repeated-current control.
+
+- [Research results system and commands](research_results_system.md): grouped historical galleries, explicit result records, evidence verification and catalogue refresh.
+
+- [Local-order figures over saved clusters](analysis_visualization.md#local-order-figures): sparse representatives, highlighted PTM matches, and population/multiple-sample diagnostics in the existing cluster style.
+
+- [Latest native MACE quality evaluation](encoder_quality.md): static liquid/interface structure, geometric and noise controls, matched predictive readouts and information add-back.
+
+- [Research results system: audit and proposal](research_results_system_proposal.md): analysis bundles, structured galleries, explicit experiment identities and a staged migration of existing evidence.
+
 - [GeoFrame checkpoint evolution and Ta/Zr structured-liquid regions](geoframe_evolution.md)
 
 - [Encoder research handbook](encoder_research/README.md): GeoFrame-to-current training methods, evaluation protocols, searchable results database, analysis tools and workflow improvements.

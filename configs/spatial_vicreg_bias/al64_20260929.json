@@ -1,0 +1,97 @@
+{
+  "protocol": "spatial_vicreg_bias_al64_v1",
+  "output": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929",
+  "cache": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929",
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "ptm_audit": "${storage:analysis}/crystallization_origin/al64-20260925",
+  "encoder_recipe": "${storage:repo}/configs/spatial_vicreg_bias/geoframe_plain.yaml",
+  "feature_cache": "${storage:cache}/spatial-vicreg-bias/features",
+  "geometry": {
+    "parent_points": 128,
+    "view_points": 80,
+    "neighbor_candidates": 8,
+    "length_scale_A": 9.192189,
+    "jitter_A": 0.01,
+    "mirror_probability": 0.5,
+    "observed": true,
+    "periodic": true
+  },
+  "assay": {
+    "frames": [
+      0,
+      64,
+      128,
+      192,
+      256,
+      320,
+      384,
+      448,
+      512,
+      576,
+      640,
+      704,
+      768
+    ],
+    "seed": 20260929,
+    "ks": [
+      3,
+      6,
+      7,
+      10
+    ],
+    "epochs": [
+      0,
+      1,
+      4,
+      8,
+      12,
+      18,
+      24
+    ],
+    "primary_epochs": [
+      12,
+      24
+    ],
+    "ridge_alpha": 10.0,
+    "cluster_mean_shrinkage": 20,
+    "bootstrap_sources": 1000
+  },
+  "training": {
+    "epochs": 24,
+    "batch_size": 256,
+    "microbatch": 256,
+    "learning_rate": 0.0001,
+    "min_learning_rate": 1e-06,
+    "weight_decay": 0.0001,
+    "warmup_epochs": 1,
+    "precision": "bfloat16",
+    "gradient_clip": 1.0,
+    "seed_values": [
+      17,
+      29,
+      43
+    ],
+    "alphas": [
+      0.0,
+      0.5,
+      1.0
+    ],
+    "checkpoint_every_updates": 256,
+    "compile_forward": true
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "spatial-vicreg-bias-al64-20260929"
+  },
+  "execution": {
+    "preparation_lanes": 6,
+    "gpu_partition": "RTX6000PRO",
+    "exclude": "node58",
+    "train_hours": 23,
+    "gpu_lanes": 3
+  },
+  "ptm_contract_sha256": "5ad987dc4ed1498930376cd4891956d45c2b4624cde348af30667be64fff913f"
+}

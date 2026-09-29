@@ -21,7 +21,7 @@ from sklearn.model_selection import GroupKFold
 
 from src.baselines.descriptor_baselines import CNADescriptorBaseline
 
-from .cluster_profiles import _load_point_cloud_from_dataset
+from .cluster_geometry import _load_points_from_dataset
 from .output_layout import log_saved_figure, write_json
 
 
@@ -213,13 +213,6 @@ def _align_trajectories(
     ids_arr = np.asarray(instance_ids, dtype=np.int64).reshape(-1)
     coords_arr = np.asarray(coords, dtype=np.float32)
     frames_arr = np.asarray(anchor_frame_indices, dtype=np.int64).reshape(-1)
-    row_count = labels_arr.size
-    if ids_arr.size != row_count or frames_arr.size != row_count or coords_arr.shape != (row_count, 3):
-        raise ValueError(
-            "Gateway analysis requires aligned labels, instance_ids, coords, and anchor frames. "
-            f"labels={labels_arr.shape}, ids={ids_arr.shape}, coords={coords_arr.shape}, "
-            f"frames={frames_arr.shape}."
-        )
     frame_values = np.unique(frames_arr)
     if frame_values.size < 3:
         raise ValueError(
@@ -445,11 +438,6 @@ def _frame_box_lengths(dataset: Any, frame_indices: np.ndarray) -> np.ndarray | 
         return None
     box_lengths = np.asarray(dataset.box_lengths, dtype=np.float32)
     frames = np.asarray(frame_indices, dtype=np.int64)
-    if frames.min() < 0 or frames.max() >= box_lengths.shape[0]:
-        raise IndexError(
-            "Gateway anchor frames exceed temporal dataset box metadata: "
-            f"frames=[{int(frames.min())}, {int(frames.max())}], boxes={box_lengths.shape[0]}."
-        )
     return box_lengths[frames]
 
 
@@ -611,7 +599,7 @@ def _cna_analysis(
     )
     point_clouds: list[np.ndarray] = []
     for sample_index in sample_indices:
-        points = _load_point_cloud_from_dataset(dataset, int(sample_index), point_scale=1.0)
+        points = _load_points_from_dataset(dataset, int(sample_index), point_scale=1.0)
         point_clouds.append(np.asarray(points, dtype=np.float32))
     clouds = np.stack(point_clouds)
     baseline = CNADescriptorBaseline(

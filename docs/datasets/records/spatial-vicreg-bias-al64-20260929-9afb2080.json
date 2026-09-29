@@ -1,0 +1,1814 @@
+{
+  "dataset_id": "spatial-vicreg-bias-al64-20260929",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "9904773f1c21b2ca8c1aca58d4571caafb8995379fd207ca372bba0deb1159c2",
+      "kind": "metadata",
+      "keys": [
+        "assay",
+        "descriptor_producer_sha256",
+        "fixed_identity",
+        "geometry",
+        "identity",
+        "population_sha256",
+        "potential_sha256",
+        "producer_sha256",
+        "protocol",
+        "sources",
+        "structural_frames"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "spatial_vicreg_bias_al64_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "periodic": [
+          {
+            "value": true,
+            "first_json_path": "geometry.periodic",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260929,
+            "first_json_path": "assay.seed",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].lineage",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 150
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 150
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].audit_metadata.temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": [
+          "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        ]
+      }
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "9d982d7299b7b58746ceaceb8042a25b65072f116be498c9b3b6c23b2d05b77f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "01ef055926cbcf43f8bbb4f49216f99771b595ef05f2ea829486ed2c8df651cd",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "9256a74f99f55b73051af698c3444bc6bf4dd00298999e560096ddb12628abf1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "3860e7548457c25f652ec3f0239e3d2df31d38127ed558078922a122fb601364",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "6ccc551bfd947de8c0fb0838abf126ff121c75208d333fc1d6cd7c3dce5f74f4",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "be46338ce0375ee49e1239b3f208fe3a371b8cc03ccd3eb9f28c305273d47720",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "258821053462aabbc38cead6ae93749758bd6c691c7a8a98d7c138dd9e0df0c4",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "fc8134fcafcccf0981f205be2e48851a6fd9b6ec7a97fc63b98639161f933111",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "77ed40ed67d8830b566283ba766c30959b67cdc9aa63f9230692b71b1c7929ec",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "de547eeff501cd39ea3d99ccf76dd542ad8e47709344ebcea9027495c5fc0a3c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "ff43aea9b9a765d809678401f5dbaa517d6418ba80ebc2a48892e9180c045cc1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "b62e803c14a6aa6f6de69729fe5fce054458be0c615f07cbe0c2b0bed7075150",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "e86c640aa99a32fb829d7c9edf672f1546aea03b112e48b54e82aca77cdf2786",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "4f0948952f8ff2561451c315ccf9eddb8e8aa4a99658288aaf2466536f17887a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "5c46be706b84f24aa32e15517a6f8a6c0bb8bcf0e6d0216b590307f5fdcdf518",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "27a195b83fe16fe9a9ecb83380f9a9544d866bc6a0d894a5e605c5b24fd2a681",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "63dcca5b3aa72c1625d71ba099051255556dae33b6bd0285f87761055e7ee8f1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "bff686b8ed0af0ecf1663beec6163d0208a9e99beeb1db06ae1d798528e509bf",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "6c0faa5f870bcfb3288df5c95a0608cea87e3538a6226a127d910db40f75b8d8",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "e6e149c6af242c9d7302879d12a39fd3204b0a4c000a047fa88e3c41e6ed26df",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "72dff9b4c6b0de494e811eed80314e297e40c6bac4cd45ca05bef2796eb7c935",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "f4d4463a9cdb8f9493c9dae277a88310b7aa7680e3124663b413194ee91994ef",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "252e7dc9127487714b9a96d2cd12c089ce4906ba4977172590323b57b8954e31",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "5e55242dafb4fabd4e9b3640075b6667f69763b3cd6ed06f9f0fa77631a46c97",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "eb4bc69f252641be24e3f59d4eb5056310b36795a29dcf4955bb88181a3726a4",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "9ab38ecd14665591b8a9af1d0ccf1af87438dd4f1e7ae16f03d54324aad6f31c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "d8bb2e86c8f9286e7c89ba110165fe575bf40edaa3d71ced02f89a8b2f4001ca",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "7bd5cc9edf33a6c8082162d731197c2d04281aa17e017b4f7e0c0dc5f7498636",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "6471f8acefcf3a8705526c28014efd9c2d239de0a2cce4b7d4e7a7392b08a359",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "68f61ee5346d9d8f9d934fba97e1cfd0ef4ca2ab1c7a493c1c126539bf816d0c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "7348d550c844679ca37f865f12c842d174b1d787f250abb7622021a0b1be537b",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "070e946740b45b84c8a86a49b075471cbe9354d1f89c59019e12e2f5b5bc0d34",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "a0569786351e86c99175f3289bbc4227ed75859cb2f48a678321ba6746e7550a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "7593abd9a0a4de82d7397bea0efc82fee442109fc87070cef37acf28ca8c66f4",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "f0a29b8a65704700af59656e25937b6ca1d6991932087c30fa984c40caa406fc",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "c29954ad14c65bc1b0a1e86a743fa6e2d3b02dcbebf0e17fd40c3c290f4fb02d",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "1d903ba0390d15648042549596cb98d9b08d6d8184dbd4da9672e289c4bce281",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "c529fdcc2d2ea1ef7888d329da17efec5b3cab1770d38a71efefe437f61b3c67",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "9d352acf139a26b5b3c7603d50062ec08eb664cd83a73c237ded7d99d6bcbaa1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "42f1fb326c8556d353504996363058c2ecf6ee443a64591b52ee559c06e60307",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "3bc17b4744586f8ace477303c3084cefb91b5c3566a482926fdb5ea36e4a6c20",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "0534ba8257b561b699d12fd0435eca297379b641ce6640dbe1f8fcdfca8fc254",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "a9a0c435ccc35982d7881318872d133f80d5110cf8d4ef5e896e3bb661ec85ec",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "c3947cd4f1c38725b2c189fde6b99ef1c7fc7b42f1d5ac3ba3ce5a0d6cd6653a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "1849ac5855ab4c824614282fed485115d3e5b1aa8cc6d8e839646151ff786784",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "d95dcd454f8cd86ad3034dcd9a14479ed21701510378df08673cfcaf5268dbf4",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "f759feeb4dcae38efa497c9870fb367657dc971e7df92c81dbde51f76bc762bd",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "347545517c059597844da56ef112c7b0cf63928ca5a1b7607e210b453ce8ae95",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

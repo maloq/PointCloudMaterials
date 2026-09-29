@@ -849,6 +849,11 @@
       "source": "repo",
       "path": "output/encoder_research/parameter-search-20260923",
       "family": "diagnostics"
+    },
+    {
+      "source": "analysis",
+      "path": "encoder_quality",
+      "family": "diagnostics"
     }
   ],
   "studies": [

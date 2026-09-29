@@ -1,0 +1,26 @@
+{
+  "protocol": "nucleus-harvest-training-audit-v1",
+  "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+  "output": "${storage:analysis}/nucleus_harvest/train-audit-20260926",
+  "role": "train",
+  "seed": 20260926,
+  "horizons_ps": [3.0, 6.0],
+  "lead_frames": [1, 2, 3, 4, 5, 6, 7, 8],
+  "history_ps": [0.0, 3.0, 6.0, 12.0],
+  "reference_history_ps": 12.0,
+  "centers_per_event": 4,
+  "control_origins_per_source": 24,
+  "control_centers_per_origin": 128,
+  "order_controls_per_source": 256,
+  "review_sources": [860, 884, 914, 944, 974],
+  "review_radius_A": 24.0,
+  "review_offsets_frames": [-8, -4, -1, 0, 2, 8],
+  "input_contract": {
+    "encoder": "not trained; saved rows reference ordinary atom-centered observed geometry",
+    "predictor": "not trained; future events and bond-order diagnostics are audit-only",
+    "conditions": "none",
+    "relaxation": "none",
+    "training_only_teachers": "none",
+    "history": "availability at 0, 3, 6 and 12 ps; no future frames as inputs"
+  }
+}

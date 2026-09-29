@@ -1,0 +1,256 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ta known-parent shooting distance evaluation</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ta known-parent shooting distance evaluation</h1><p>Four completed 1,024,000-atom branches; shot00 selection, shots01-03 test. 10,240 tracked centers, six 0.70-ps observations, six anchors per branch.</p><span class="badge">research</span><p><code>distance-encoder-ta-material-eval-20260927</code> · Ta</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2">/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2</a></p><p>18 owned files · 0.997 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ta known-parent shooting distance evaluation&quot;,
+  &quot;materials&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;role&quot;: &quot;evaluation_cache&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;ta-zhong2014-eam&quot;
+  ],
+  &quot;description&quot;: &quot;Four completed 1,024,000-atom branches; shot00 selection, shots01-03 test. 10,240 tracked centers, six 0.70-ps observations, six anchors per branch.&quot;,
+  &quot;ancestry&quot;: &quot;One archived Ta preparation; parent encoder saw a different trajectory from the same initial structure.&quot;,
+  &quot;limitations&quot;: [
+    &quot;Conditional new-velocity evaluation, not independent-preparation generalization.&quot;,
+    &quot;Parent was already trained on all six older Ta trajectories.&quot;
+  ],
+  &quot;evidence&quot;: [
+    &quot;configs/distance_encoder/material_ta_20260927.json&quot;,
+    &quot;docs/distance_encoder_material_finetune.md&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/distance_encoder/material_ta_20260927.json">configs/distance_encoder/material_ta_20260927.json</a></li><li><a href="../../distance_encoder_material_finetune.md">docs/distance_encoder_material_finetune.md</a></li></ul><p>Dependencies: <a href="ta-shooting-20260926-parent00-81ebb020.html">ta-shooting-20260926-parent00</a>, <a href="potential-ta-zhong2014-5e359ea0.html">potential-ta-zhong2014</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>cadence_ps</td><td><code>[0.5, 0.7]</code></td></tr><tr><td>protocol</td><td><code>[&quot;external-crystallization-origin-v1&quot;]</code></td></tr><tr><td>ptm_rmsd_cutoff</td><td><code>[0.1]</code></td></tr><tr><td>horizons_ps</td><td><code>[[3.0, 6.0]]</code></td></tr><tr><td>seed</td><td><code>[20260926, 20260927]</code></td></tr><tr><td>lineage</td><td><code>[{&quot;interface_distance_A&quot;: 8.233252184899222, &quot;local_birth_radius_A&quot;: 8.233252184899222, &quot;maximum_missing_frames&quot;: 1, &quot;minimum_overlap_fraction&quot;: 0.25, &quot;minimum_shared_atoms&quot;: 4, &quot;minimum_tracked_size&quot;: 4, &quot;neighbor_cutoff_A&quot;: 3.70496348320465, &quot;thresholds&quot;: [{&quot;name&quot;: &quot;primary&quot;, &quot;persistence_frames&quot;: 4, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 64}, {&quot;name&quot;: &quot;size32&quot;, &quot;persistence_frames&quot;: 4, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 32}, {&quot;name&quot;: &quot;size128&quot;, &quot;persistence_frames&quot;: 4, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 128}, {&quot;name&quot;: &quot;persistent3ps&quot;, &quot;persistence_frames&quot;: 7, &quot;persistence_ps&quot;: 3.0, &quot;size&quot;: 64}]}, {&quot;interface_distance_Al_equivalent_A&quot;: 8.0, &quot;local_birth_radius_Al_equivalent_A&quot;: 8.0, &quot;maximum_missing_frames&quot;: 1, &quot;minimum_overlap_fraction&quot;: 0.25, &quot;minimum_shared_atoms&quot;: 4, &quot;minimum_tracked_size&quot;: 4, &quot;neighbor_cutoff_Al_equivalent_A&quot;: 3.6, &quot;thresholds&quot;: [{&quot;name&quot;: &quot;primary&quot;, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 64}, {&quot;name&quot;: &quot;size32&quot;, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 32}, {&quot;name&quot;: &quot;size128&quot;, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 128}, {&quot;name&quot;: &quot;persistent3ps&quot;, &quot;persistence_ps&quot;: 3.0, &quot;size&quot;: 64}]}]</code></td></tr><tr><td>material</td><td><code>[&quot;Ta&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[1024000]</code></td></tr><tr><td>frame_count</td><td><code>[49]</code></td></tr><tr><td>parent_id</td><td><code>[&quot;model_1m&quot;]</code></td></tr><tr><td>velocity_seed</td><td><code>[186999831, 32816276, 608134340, 688081017]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 18,
+    &quot;apparent_bytes&quot;: 1432981040,
+    &quot;allocated_bytes&quot;: 1070716928,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 10,
+      &quot;.npy&quot;: 4,
+      &quot;.npz&quot;: 4
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 6,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot00/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot00/samples.npz&quot;,
+      &quot;members&quot;: {
+        &quot;index&quot;: {
+          &quot;shape&quot;: [
+            61440,
+            6
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;distance&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;raw_frame&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot01/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot01/samples.npz&quot;,
+      &quot;members&quot;: {
+        &quot;index&quot;: {
+          &quot;shape&quot;: [
+            61440,
+            6
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;distance&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;raw_frame&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot02/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot02/samples.npz&quot;,
+      &quot;members&quot;: {
+        &quot;index&quot;: {
+          &quot;shape&quot;: [
+            61440,
+            6
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;distance&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;raw_frame&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot03/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ta-parent00-shot03/samples.npz&quot;,
+      &quot;members&quot;: {
+        &quot;index&quot;: {
+          &quot;shape&quot;: [
+            61440,
+            6
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;distance&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;raw_frame&quot;: {
+          &quot;shape&quot;: [
+            61440
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (6 records)</summary><p><a href="../records/distance-encoder-ta-material-eval-20260927-b02db3b2.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/manifest.json">manifest.json</a> · complete · <code>52f9acc8c4832b515568e0c4b13d90e995c7eeb69c398ba7096c5a65d2ad556e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/plan.json">plan.json</a> · metadata · <code>e5bf68b058d791dd632e10bf05ee80132fcb551507efab5949ea3f22e1be78e9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot00/complete.json">sources/ta-parent00-shot00/complete.json</a> · metadata · <code>c21117f0a5a9467f639fe154a09c29b0f2ae784e55b4373d0bf36c3f23ff20bb</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot01/complete.json">sources/ta-parent00-shot01/complete.json</a> · metadata · <code>a83cb6e031bc03e32e947d8cace3f02ec6b479339f02eeeeaaa1aaab273eaf70</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot02/complete.json">sources/ta-parent00-shot02/complete.json</a> · metadata · <code>17afd18ed111f6033c5bc81c61d45e7475e50fdb568932d904fe534d0652b519</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot03/complete.json">sources/ta-parent00-shot03/complete.json</a> · metadata · <code>711d239bb4921ce6ad13569e25d71af042e1a47b33f02f01f5c9c5971a44e2ca</code></li></ul></details><p class="muted">Observed 2026-09-28T23:47:41.345301+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

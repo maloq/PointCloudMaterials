@@ -1,0 +1,11 @@
+{
+  "family": "al_replay",
+  "exported_at": "2026-09-29T12:19:27.200925+00:00",
+  "files": {
+    "docs/metrics/al_replay.md": "2a93412cd9e1e4a635550165449de0745c7172ac2afae8578c3f4744fbe49b91",
+    "src/analysis/al_replay.py": "eac933472aa718a27516b36e155779f8dcc8feb4bdb189830a53387067a1b6bd",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+    "src/simulation/campaigns/common.py": "b81248e3f930d86e0f7abc7a28e8c26a0ab175a47b59de0c3751522b29cff0ad"
+  },
+  "verified": true
+}

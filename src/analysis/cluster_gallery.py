@@ -15,10 +15,6 @@ def _normalize_image_rgba(image: np.ndarray, *, path: Path) -> np.ndarray:
     arr = np.asarray(image)
     if arr.ndim == 2:
         arr = np.repeat(arr[:, :, None], 3, axis=2)
-    if arr.ndim != 3 or arr.shape[2] not in {3, 4}:
-        raise ValueError(
-            f"Expected image with shape (H, W, 3/4) for {path}, got {arr.shape}."
-        )
     if np.issubdtype(arr.dtype, np.integer):
         arr = arr.astype(np.float32) / 255.0
     else:
@@ -49,10 +45,6 @@ def _save_horizontal_image_gallery(
     spacing_px = max(0, int(spacing_px))
     outer_padding_px = max(0, int(outer_padding_px))
     bg = np.asarray(background_rgba, dtype=np.float32)
-    if bg.shape != (4,):
-        raise ValueError(
-            f"background_rgba must contain exactly 4 values, got shape {bg.shape}."
-        )
     bg = np.clip(bg, 0.0, 1.0)
     title_band_px = 44 if panel_titles else 0
 

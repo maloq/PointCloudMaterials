@@ -14,7 +14,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-from src.training_methods.predictive_structure.train import Predictor,NEURAL,FAMILIES,FUTURE_SLICES,CURRENT_SLICES,ROOT,write_json,future_errors
+from src.training_methods.predictive_structure.train import Predictor,NEURAL,FAMILIES,FUTURE_SLICES,CURRENT_SLICES,ROOT,write_json
 from src.project_runtime.paths import dataset_path
 
 

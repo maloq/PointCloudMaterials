@@ -1,5 +1,38 @@
 # Standard checkpoint analysis metrics — 2026-09-12
 
+The September 26 analysis cleanup consolidates recipe loading and inference
+collection without changing these calculations. The collector retains loader
+order, sample caps, seed restoration and blocking CPU copies; BF16 exports use
+float32 storage. Closed-loop tensor/table producers supply their native schema.
+Scientific checks for source identity, temporal ordering and invalid latent
+values remain. Numerical reruns use new outputs; rendering/publication preserves
+existing exported definitions. Blender Cycles, HDBSCAN and SwAV remain supported.
+
+TMF snapshot flows use evenly spaced retained frame indices. Each pair counts
+only source/atom tracks observed at both endpoints, through the same transition
+counter as the full trajectory. Pairs with no common tracks emit no flow plot.
+This repairs missing snapshot-flow helpers; aggregate transition metrics are
+unchanged.
+
+Representative PNG/HTML views share up to 64 nearest displayed atoms and sparse
+connections, with all cutoff-valid edges inside the focal CNA shell and mutual
+two-nearest edges outside it. With CNA disabled, the declared drawing cutoff is
+1.2 times the median of the first 12 neighbor distances. These are display rules;
+representative selection and configured PTM/CNA analysis support are unchanged.
+Saved-run restyling preserves original numerical evidence and frozen definitions.
+
+The native capacity-MACE static adapter (`native_capacity_mace_static_v1`)
+uses these same descriptive metrics on the trained 128-D projection plus residual
+of normalized center/pooled scalar channels. It preserves the checkpoint's
+geometry-only nearest-80 input, fixed material length normalization, radius mask,
+taper, graph edges and compiled FP32 execution. A focal-atom indicator and one
+constant atom channel are used; temperature, time, species and material IDs are
+not inputs. Static relaxed snapshots are exploratory transfer evidence, not a
+matched fixed-Al64 predictive evaluation. Native-input/output and batch-replay
+verification is recorded with the export; the numerical tolerance is 2e-4,
+matching the existing native encoder-quality assay. The latest EPI-variance
+checkpoint is fixed epoch 12, not selected by predictive labels.
+
 The active mixed GATr static export can use an immutable latest optimizer state.
 This uses unchanged static metric calculations and the raw snapshot encoder,
 excluding grouped auxiliary heads. Its pinned source is labelled `latest` and

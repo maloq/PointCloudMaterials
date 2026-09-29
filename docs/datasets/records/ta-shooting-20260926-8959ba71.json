@@ -1,0 +1,240 @@
+{
+  "dataset_id": "ta-shooting-20260926",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "cb2fcd96b64e5d440051915baa2104634658fa66865a6e29d21371809ca9b62f",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "created_at",
+        "launch_root",
+        "material",
+        "parent_count",
+        "potential_files",
+        "runs",
+        "schema_version",
+        "scientific_scope",
+        "shooting_potential",
+        "shot_count",
+        "source_generating_potential"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "ta_replicated_position_shooting_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "config.parents[0].atom_count",
+            "occurrences": 2
+          },
+          {
+            "value": 10000422,
+            "first_json_path": "config.parents[1].atom_count",
+            "occurrences": 10
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 608134340,
+            "first_json_path": "runs[0].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 186999831,
+            "first_json_path": "runs[0].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 688081017,
+            "first_json_path": "runs[0].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 32816276,
+            "first_json_path": "runs[0].branches[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 897840983,
+            "first_json_path": "runs[1].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 779428654,
+            "first_json_path": "runs[1].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 533918726,
+            "first_json_path": "runs[1].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 376325111,
+            "first_json_path": "runs[1].branches[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 254269500,
+            "first_json_path": "runs[2].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 852288974,
+            "first_json_path": "runs[2].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 47085415,
+            "first_json_path": "runs[2].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 241723527,
+            "first_json_path": "runs[2].branches[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 869939435,
+            "first_json_path": "runs[3].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 381745835,
+            "first_json_path": "runs[3].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 80229349,
+            "first_json_path": "runs[3].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 796497251,
+            "first_json_path": "runs[3].branches[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 395820186,
+            "first_json_path": "runs[4].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 436100696,
+            "first_json_path": "runs[4].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 145515637,
+            "first_json_path": "runs[4].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 591518361,
+            "first_json_path": "runs[4].branches[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827237809,
+            "first_json_path": "runs[5].branches[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 549417302,
+            "first_json_path": "runs[5].branches[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 357008615,
+            "first_json_path": "runs[5].branches[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 535089732,
+            "first_json_path": "runs[5].branches[3].velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "model_1m",
+            "first_json_path": "runs[0].branches[0].parent_id",
+            "occurrences": 4
+          },
+          {
+            "value": "2.7ns",
+            "first_json_path": "runs[1].branches[0].parent_id",
+            "occurrences": 4
+          },
+          {
+            "value": "2.8ns",
+            "first_json_path": "runs[2].branches[0].parent_id",
+            "occurrences": 4
+          },
+          {
+            "value": "2.9ns",
+            "first_json_path": "runs[3].branches[0].parent_id",
+            "occurrences": 4
+          },
+          {
+            "value": "3.0ns",
+            "first_json_path": "runs[4].branches[0].parent_id",
+            "occurrences": 4
+          },
+          {
+            "value": "3.60ns",
+            "first_json_path": "runs[5].branches[0].parent_id",
+            "occurrences": 4
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "scientific_scope": [
+          {
+            "value": "Finite-horizon position-conditioned outcomes; no committor basins defined.",
+            "first_json_path": "scientific_scope",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "scientific_scope": "Finite-horizon position-conditioned outcomes; no committor basins defined.",
+        "potential_files": [
+          {
+            "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
+            "sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+          }
+        ]
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/status.json",
+      "relative_path": "status.json",
+      "sha256": "143e0736f1869503d40cc2cb63b741ce14b3dfca03feaa60822f1c03ee93e04a",
+      "kind": "metadata",
+      "keys": [
+        "collected_at",
+        "completed_shots",
+        "expected_shots",
+        "parents",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

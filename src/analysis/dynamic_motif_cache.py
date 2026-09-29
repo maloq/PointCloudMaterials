@@ -29,12 +29,6 @@ def _concat_cache_chunks(chunks: dict[str, list[np.ndarray]]) -> dict[str, np.nd
     for key, values in chunks.items():
         if not values:
             continue
-        first = np.asarray(values[0])
-        if first.ndim == 0:
-            raise ValueError(
-                "Dynamic motif cache only supports per-sample arrays. "
-                f"Key {key!r} produced a scalar array."
-            )
         cache[key] = np.concatenate(values, axis=0)
     return cache
 
@@ -50,11 +44,6 @@ def collect_tmf_inference_cache(
     progress_every_batches: int,
     verbose: bool,
 ) -> dict[str, np.ndarray]:
-    if not hasattr(model, "forward_sequence"):
-        raise TypeError(
-            "collect_tmf_inference_cache requires a model exposing forward_sequence(batch). "
-            f"Got model type {type(model)!r}."
-        )
     anchor_index = getattr(model, "anchor_index", None)
     if anchor_index is None:
         raise AttributeError(
@@ -74,19 +63,7 @@ def collect_tmf_inference_cache(
             for batch_idx, batch in enumerate(dataloader):
                 if max_batches is not None and batch_idx >= int(max_batches):
                     break
-                if not isinstance(batch, dict):
-                    raise TypeError(
-                        "TMF inference cache collection expects temporal dict batches. "
-                        f"Got batch type {type(batch)!r} at batch_idx={batch_idx}. "
-                        "If you set inputs.data_config to a static dataset override, remove it "
-                        "or point it to a temporal_lammps config for TMF evaluation."
-                    )
                 points = batch["points"]
-                if points.ndim != 4 or points.shape[-1] != 3:
-                    raise ValueError(
-                        "TMF inference cache collection expects batch['points'] with shape (B, T, N, 3), "
-                        f"got {tuple(points.shape)} at batch_idx={batch_idx}."
-                    )
                 batch_size = int(points.shape[0])
 
                 outputs = (

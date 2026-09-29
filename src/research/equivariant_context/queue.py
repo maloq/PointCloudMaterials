@@ -17,11 +17,10 @@ from .common import Study
 def stages(config):
     result=[]
     for domain in config['domains']:
-        result.append(dict(name=f'prepare-{domain}',stage='features',domain=domain,variant=None,
+        result.append(dict(name=f'pipeline-{domain}',stage='pipeline',domain=domain,
             dependencies=[],walltime=config['slurm']['feature_walltime']))
-        for variant in config['variants']:
-            result.append(dict(name=f'{domain}-{variant}',stage='predictor',domain=domain,variant=variant,
-                dependencies=[f'prepare-{domain}'],walltime=config['slurm']['predictor_walltime']))
+        result.append(dict(name=f'metrics-{domain}',stage='metrics',domain=domain,
+            dependencies=[f'pipeline-{domain}'],walltime=config['slurm']['predictor_walltime']))
     return result
 
 
@@ -45,7 +44,7 @@ def prepare(study):
     record=dict(state='prepared_not_submitted',identity=study.identity,stages=stages(study.config),
         inventory_sha256=sha(study.technical/'inventory.json'),
         predictor_parameters=counts,shared_encoder_parameters=634496,rows=available['rows'],
-        extraction_runtime=study.config['extraction'],
+        extraction_runtime=study.config['extraction'],cache_policy=study.config['cache_policy'],
         sources=available['source_count'],frames=available['frames'],new_simulations=0,
         prediction_context=dict(encoder='same 128-channel/128-export MACE for all patches within each domain',
             patches=25,stencil_radii_A=[10,20],query_max_offset_A=4,patch_radius_A=8,
@@ -115,12 +114,13 @@ def script(study,job,code,dependency_ids):
     config=code/study.path.relative_to(Path.cwd().resolve())
     command=[sys.executable,'-u','-m','src.research.equivariant_context.queue','worker','--config',str(config),
         '--stage',job['stage'],'--domain',job['domain']]
-    if job['variant'] is not None:command+=['--variant',job['variant']]
     lines=['#!/bin/bash',f'#SBATCH --job-name=eqctx-{job["name"]}',
-        f'#SBATCH --partition={cfg["partitions"]}','#SBATCH --gres=gpu:1',
+        f'#SBATCH --partition={cfg["partitions"]}',
         f'#SBATCH --cpus-per-task={cfg["cpus"]}',f'#SBATCH --mem={cfg["memory"]}',
         f'#SBATCH --time={job["walltime"]}',f'#SBATCH --output={study.technical}/logs/{job["name"]}-%j.log',
         '#SBATCH --kill-on-invalid-dep=yes']
+    if job['stage']=='pipeline':lines.append('#SBATCH --gres=gpu:1')
+    else:command+=['--device','cpu']
     if dependency_ids:lines.append('#SBATCH --dependency=afterok:'+':'.join(dependency_ids))
     lines.append(f'#SBATCH --nodelist={cfg["node"]}')
     lines+=['set -euo pipefail',f'cd {q(str(code))}',f'export PCM_PROJECT_ROOT={q(str(code))}',
@@ -150,36 +150,60 @@ def submit(study):
     return jobs
 
 
-def worker(study,stage,domain,variant,device):
+def fit_encoder(study,domain,device,deadline):
     import torch
+    from src.research.supervised_onset.common import Study as BaseStudy
+    from src.research.supervised_onset.data import prepare as prepare_base,Corpus
+    from src.research.supervised_onset.train import fit,make_banks
+    base=BaseStudy(resolve_path(study.config['base_configs'][domain]));prepare_base(base);base.bind()
+    arm=base.config['arms'][0]['name'];run=base.technical/'runs'/arm
+    state=run/'training-state.json'
+    done=json.loads(state.read_text()) if state.exists() else None
+    if done is None or done['updates']<study.config['encoder_updates']:
+        corpus=Corpus(base);banks=make_banks(base,corpus,device)
+        done=fit(base,corpus,banks,arm,until=deadline-600,max_updates=study.config['encoder_updates'],device=device)
+        del banks,corpus;torch.cuda.empty_cache()
+    if done['updates']!=study.config['encoder_updates']:
+        raise TimeoutError('Encoder fixed update budget incomplete; resume pipeline job')
+    return run/'best.pt'
+
+
+def pipeline(study,domain,device,deadline):
+    """One encoder lease and one corpus load for all declared context heads."""
+    from .cache import encoder_cache
+    from .data import extract,ContextCorpus
+    from .train import fit
+    pending=[]
+    for variant in study.config['variants']:
+        path=study.root/f'{domain}-{variant}'/'technical/gpu-complete.json'
+        if path.exists():
+            record=json.loads(path.read_text())
+            if record['identity']!=study.identity or record['raw_predictions_sha256']!=sha(path.parent/'raw-predictions.npz'):
+                raise ValueError(f'Changed completed predictor: {path}')
+        else:pending.append(variant)
+    if not pending:return
+    checkpoint=fit_encoder(study,domain,device,deadline)
+    with encoder_cache(study,domain,checkpoint,deadline) as root:
+        extract(study,domain,checkpoint,device,deadline,root)
+        corpus=ContextCorpus(study,domain,pending,device,root)
+        for variant in pending:
+            fit(study,domain,variant,device,deadline,corpus.view(variant))
+
+
+def worker(study,stage,domain,device):
     from src.training_methods.shared_pretraining.queue import deadline_for_job
-    study.bind();deadline=deadline_for_job()
-    name=f'prepare-{domain}' if stage=='features' else f'{domain}-{variant}'
+    study.bind();deadline=deadline_for_job();name=f'{stage}-{domain}'
     with (study.technical/f'{name}.lock').open('a') as lock:
         fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
         path=study.technical/f'{name}-state.json'
         try:
-            write_json(path,dict(state='running',job=os.environ['SLURM_JOB_ID']))
-            if stage=='features':
-                from src.research.supervised_onset.common import Study as BaseStudy
-                from src.research.supervised_onset.data import prepare as prepare_base,Corpus
-                from src.research.supervised_onset.train import fit,make_banks
-                from .data import extract
-                base=BaseStudy(resolve_path(study.config['base_configs'][domain]));prepare_base(base);base.bind()
-                arm=base.config['arms'][0]['name'];run=base.technical/'runs'/arm
-                state=run/'training-state.json'
-                done=json.loads(state.read_text()) if state.exists() else None
-                if done is None or done['updates']<study.config['encoder_updates']:
-                    corpus=Corpus(base);banks=make_banks(base,corpus,device)
-                    done=fit(base,corpus,banks,arm,until=deadline-600,max_updates=study.config['encoder_updates'],device=device)
-                    del banks,corpus;torch.cuda.empty_cache()
-                if done['updates']!=study.config['encoder_updates']:
-                    raise TimeoutError('Encoder fixed update budget incomplete; resume features job')
-                extract(study,domain,run/'best.pt',device,deadline)
-            else:
-                from .train import fit
-                fit(study,domain,variant,device,deadline)
-            write_json(path,dict(state='complete',identity=study.identity,job=os.environ['SLURM_JOB_ID']))
+            write_json(path,dict(state='running',job=os.environ.get('SLURM_JOB_ID')))
+            if stage=='pipeline':pipeline(study,domain,device,deadline)
+            elif stage=='metrics':
+                from .train import finalize
+                for name in study.config['variants']:finalize(study,domain,name)
+            else:raise ValueError(stage)
+            write_json(path,dict(state='complete',identity=study.identity,job=os.environ.get('SLURM_JOB_ID')))
         except Exception as error:
             write_json(path,dict(state='checkpointed' if isinstance(error,TimeoutError) else 'failed',
                 error=repr(error),traceback=traceback.format_exc()))
@@ -225,7 +249,7 @@ def launch(study):
 
 
 def lane(study):
-    """One shared encoder preparation and four independent predictor fits/GPU."""
+    """One shared encoder/corpus and the declared predictor fits per GPU."""
     import torch
     import resource
     soft,hard=resource.getrlimit(resource.RLIMIT_NOFILE)
@@ -242,7 +266,6 @@ def lane(study):
             write_json(state,dict(binding,state='running',stage=job['name'],completed=completed))
             command=[sys.executable,'-u','-m','src.research.equivariant_context.queue','worker',
                 '--config',str(study.path),'--stage',job['stage'],'--domain',domain]
-            if job['variant'] is not None:command+=['--variant',job['variant']]
             with (study.technical/f'{job["name"]}.log').open('ab',buffering=0) as log:
                 subprocess.run(command,check=True,stdout=log,stderr=subprocess.STDOUT)
             completed.append(job['name'])
@@ -257,8 +280,8 @@ def main():
     parser=argparse.ArgumentParser(__doc__)
     parser.add_argument('action',choices=('prepare','check','submit','launch','lane','worker','collect','sync-tracking'))
     parser.add_argument('--config',required=True);parser.add_argument('--device',default='cuda')
-    parser.add_argument('--stage',choices=('features','predictor'));parser.add_argument('--domain',choices=('hot','cold'))
-    parser.add_argument('--variant');args=parser.parse_args()
+    parser.add_argument('--stage',choices=('pipeline','metrics'));parser.add_argument('--domain',choices=('hot','cold'))
+    args=parser.parse_args()
     import torch
     torch.set_num_threads(1);torch.backends.cuda.matmul.allow_tf32=False
     study=Study(args.config)
@@ -271,9 +294,9 @@ def main():
         from .tracking import sync_completed
         result=sync_completed(study)
     elif args.action=='worker':
-        if args.stage is None or args.domain is None or (args.stage=='predictor' and args.variant not in study.config['variants']):
-            parser.error('worker requires a stage/domain and a declared predictor variant')
-        result=worker(study,args.stage,args.domain,args.variant,args.device)
+        if args.stage is None or args.domain is None:
+            parser.error('worker requires a stage/domain')
+        result=worker(study,args.stage,args.domain,args.device)
     else:
         from .train import collect
         study.bind();result=collect(study)

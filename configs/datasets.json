@@ -37,7 +37,7 @@
         "/work/PERSO/vmorozov/datasets/Al50Ni50"
       ],
       "metadata": {
-        "title": "Al\u2013Ni alloy static structures",
+        "title": "Al–Ni alloy static structures",
         "materials": [
           "Al",
           "Ni"
@@ -212,13 +212,16 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "review_required",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}"
-        ]
-      }
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}",
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_independent_sources_recovery_20260909T203221Z": {
       "root": "simulations",
@@ -244,7 +247,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 stopped 100,000-atom crystallization source",
+        "title": "Al · stopped 100,000-atom crystallization source",
         "materials": [
           "Al"
         ],
@@ -262,7 +265,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 independent melts, 400\u2013500 K",
+        "title": "Al · independent melts, 400–500 K",
         "materials": [
           "Al"
         ],
@@ -283,7 +286,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 independent melts, 510\u2013520 K",
+        "title": "Al · independent melts, 510–520 K",
         "materials": [
           "Al"
         ],
@@ -322,7 +325,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 event-stopped nested shooting",
+        "title": "Al · event-stopped nested shooting",
         "materials": [
           "Al"
         ],
@@ -344,7 +347,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 fixed-24 ps nested continuations",
+        "title": "Al · fixed-24 ps nested continuations",
         "materials": [
           "Al"
         ],
@@ -366,7 +369,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 accepted 15 ps shooting top-up",
+        "title": "Al · accepted 15 ps shooting top-up",
         "materials": [
           "Al"
         ],
@@ -388,7 +391,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 48 ps shooting, one-shot supplement",
+        "title": "Al · 48 ps shooting, one-shot supplement",
         "materials": [
           "Al"
         ],
@@ -410,7 +413,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 48 ps shooting, two-shot supplement",
+        "title": "Al · 48 ps shooting, two-shot supplement",
         "materials": [
           "Al"
         ],
@@ -432,7 +435,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 48 ps shooting, 40-branch supplement",
+        "title": "Al · 48 ps shooting, 40-branch supplement",
         "materials": [
           "Al"
         ],
@@ -454,7 +457,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 partially completed 48 ps top-up",
+        "title": "Al · partially completed 48 ps top-up",
         "materials": [
           "Al"
         ],
@@ -520,7 +523,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 original 48 ps shooting, eight shots per parent",
+        "title": "Al · original 48 ps shooting, eight shots per parent",
         "materials": [
           "Al"
         ],
@@ -610,13 +613,16 @@
       "metadata": {
         "title": "interrupted attempts",
         "materials": [],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:interrupted_attempts}"
-        ]
-      }
+          "${dataset:interrupted_attempts}",
+          "${dataset:interrupted_attempts}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "local_overnight_lamedell11_20260905": {
       "root": "simulations",
@@ -642,13 +648,16 @@
       "metadata": {
         "title": "local overnight lamedell11 20260905.startup attempt 010736",
         "materials": [],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}"
-        ]
-      }
+          "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}",
+          "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "nested_shooting_prepare_logs": {
       "root": "simulations",
@@ -789,7 +798,7 @@
       "kind": "cache",
       "dependencies": [],
       "metadata": {
-        "title": "Al/Mg/Ta/Ti \u00b7 mixed relaxed-MACE training views",
+        "title": "Al/Mg/Ta/Ti · mixed relaxed-MACE training views",
         "materials": [
           "Al",
           "Mg",
@@ -816,7 +825,7 @@
       "kind": "cache",
       "dependencies": [],
       "metadata": {
-        "title": "Al \u00b7 earlier relaxed-MEAM training views",
+        "title": "Al · earlier relaxed-MEAM training views",
         "materials": [
           "Al"
         ],
@@ -856,13 +865,16 @@
       "metadata": {
         "title": "embedding-forecast-full-20260911",
         "materials": [],
-        "role": "training_cache",
-        "classification": "derived",
-        "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "Bulk forecasting cache arrays deleted at user request on 2026-09-27. Metadata, identity/timeline arrays and rebuild provenance remain. This cache must be rebuilt before use; see docs/storage/cache_cleanup_20260927/README.md.",
         "evidence": [
-          "${dataset:embedding-forecast-full-20260911}"
-        ]
-      }
+          "${dataset:embedding-forecast-full-20260911}",
+          "${dataset:embedding-forecast-full-20260911}/retirement.json"
+        ],
+        "retirement_record": "docs/storage/cache_cleanup_20260927/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "potential-ti-kavousi2019": {
       "root": "repo",
@@ -1200,13 +1212,16 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "review_required",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828}"
-        ]
-      }
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828}",
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830": {
       "root": "archive",
@@ -1236,13 +1251,16 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "review_required",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827}"
-        ]
-      }
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827}",
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827": {
       "root": "archive",
@@ -1254,13 +1272,16 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "review_required",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827}"
-        ]
-      }
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827}",
+          "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_liquid_source_70304_mpa_seed12345_500K": {
       "root": "archive",
@@ -1410,7 +1431,7 @@
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_520K_remaining24_20260913T204114Z"
       ],
       "metadata": {
-        "title": "Al \u00b7 completed 520 K source extension",
+        "title": "Al · completed 520 K source extension",
         "materials": [
           "Al"
         ],
@@ -1437,7 +1458,7 @@
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z"
       ],
       "metadata": {
-        "title": "Al \u00b7 million-atom source and melt history",
+        "title": "Al · million-atom source and melt history",
         "materials": [
           "Al"
         ],
@@ -1457,7 +1478,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al \u00b7 causal-MACE physical training cache",
+        "title": "Al · causal-MACE physical training cache",
         "materials": [
           "Al"
         ],
@@ -1480,7 +1501,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al \u00b7 predictive-memory partial-observation cache",
+        "title": "Al · predictive-memory partial-observation cache",
         "materials": [
           "Al"
         ],
@@ -1571,7 +1592,7 @@
       "root": "archive",
       "path": "simulations/memory-al-precision-20260917-source003-T500-failed",
       "kind": "simulation",
-      "state": "failed",
+      "state": "payload_deleted",
       "dependencies": [
         "potentials"
       ],
@@ -1581,19 +1602,21 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:memory-al-precision-20260917-source003-T500-failed}"
-        ]
+          "${dataset:memory-al-precision-20260917-source003-T500-failed}",
+          "${dataset:memory-al-precision-20260917-source003-T500-failed}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
       }
     },
     "memory-al-precision-20260917-source004-T500-failed": {
       "root": "archive",
       "path": "simulations/memory-al-precision-20260917-source004-T500-failed",
       "kind": "simulation",
-      "state": "failed",
+      "state": "payload_deleted",
       "dependencies": [
         "potentials"
       ],
@@ -1603,12 +1626,14 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "evidence": [
-          "${dataset:memory-al-precision-20260917-source004-T500-failed}"
-        ]
+          "${dataset:memory-al-precision-20260917-source004-T500-failed}",
+          "${dataset:memory-al-precision-20260917-source004-T500-failed}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
       }
     },
     "al_relaxed_cells_expanded_20260917": {
@@ -1869,16 +1894,19 @@
       "aliases": [],
       "metadata": {
         "title": "embedding-forecast-spatial-context-20260913",
-        "role": "training_cache",
-        "classification": "derived",
+        "role": "provenance_only",
+        "classification": "retired",
         "materials": [
           "Al"
         ],
-        "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+        "description": "Bulk forecasting cache arrays deleted at user request on 2026-09-27. Metadata, identity/timeline arrays and rebuild provenance remain. This cache must be rebuilt before use; see docs/storage/cache_cleanup_20260927/README.md.",
         "evidence": [
-          "${dataset:embedding-forecast-spatial-context-20260913}"
-        ]
-      }
+          "${dataset:embedding-forecast-spatial-context-20260913}",
+          "${dataset:embedding-forecast-spatial-context-20260913}/retirement.json"
+        ],
+        "retirement_record": "docs/storage/cache_cleanup_20260927/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "local-predictability-20260917-broad": {
       "root": "cache",
@@ -1887,7 +1915,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al \u00b7 full-timeline physical descriptors",
+        "title": "Al · full-timeline physical descriptors",
         "role": "training_cache",
         "classification": "derived",
         "materials": [
@@ -1909,7 +1937,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al \u00b7 instantaneous TDA readout targets",
+        "title": "Al · instantaneous TDA readout targets",
         "role": "training_targets",
         "classification": "derived",
         "materials": [
@@ -2145,16 +2173,19 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "potential_ids": [
           "al-lee2003-meam"
         ],
         "evidence": [
-          "${dataset:al_meam_1m_450K_400ps_20260913T205149Z}/status.json"
-        ]
-      }
+          "${dataset:al_meam_1m_450K_400ps_20260913T205149Z}/status.json",
+          "${dataset:al_meam_1m_450K_400ps_20260913T205149Z}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_meam_crystallization_1m_450K_20260913T203458Z": {
       "root": "simulation_runs",
@@ -2167,16 +2198,19 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "potential_ids": [
           "al-lee2003-meam"
         ],
         "evidence": [
-          "${dataset:al_meam_crystallization_1m_450K_20260913T203458Z}/status.json"
-        ]
-      }
+          "${dataset:al_meam_crystallization_1m_450K_20260913T203458Z}/status.json",
+          "${dataset:al_meam_crystallization_1m_450K_20260913T203458Z}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "al_meam_crystallization_1m_source_only_450K_20260913T203616Z": {
       "root": "simulation_runs",
@@ -2189,16 +2223,19 @@
         "materials": [
           "Al"
         ],
-        "role": "raw_dynamics",
-        "classification": "incomplete_or_rejected",
-        "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+        "role": "provenance_only",
+        "classification": "retired",
+        "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
         "potential_ids": [
           "al-lee2003-meam"
         ],
         "evidence": [
-          "${dataset:al_meam_crystallization_1m_source_only_450K_20260913T203616Z}/status.json"
-        ]
-      }
+          "${dataset:al_meam_crystallization_1m_source_only_450K_20260913T203616Z}/status.json",
+          "${dataset:al_meam_crystallization_1m_source_only_450K_20260913T203616Z}/retirement.json"
+        ],
+        "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
+      },
+      "state": "payload_deleted"
     },
     "memory-al-precision-campaign-20260917": {
       "root": "simulation_runs",
@@ -2399,7 +2436,7 @@
         ],
         "role": "training_cache",
         "classification": "derived",
-        "description": "Existing 150 independent 70304-atom Al runs at 400\u2013520 K; 16 outcome-independent tracked centers, 3 ps origins, fixed 90/15/15/30 lineage split. Local MACE graphs and native scalar/tensor features at sparse historical times and seven geometric context centers. Cached verified PTM labels from the local-predictability assay. No simulations generated.",
+        "description": "Existing 150 independent 70304-atom Al runs at 400–520 K; 16 outcome-independent tracked centers, 3 ps origins, fixed 90/15/15/30 lineage split. Local MACE graphs and native scalar/tensor features at sparse historical times and seven geometric context centers. Cached verified PTM labels from the local-predictability assay. No simulations generated.",
         "potential_ids": [
           "al-lee2003-meam"
         ],
@@ -2788,7 +2825,8 @@
           "configs/bcr/real_overfit.json"
         ],
         "limitations": [
-          "Single shared prepared-liquid root, no independent test split. Positions float32; explicit native-ULP rounding bound and periodic image identities."
+          "Single shared prepared-liquid root, no independent test split. Positions float32; explicit native-ULP rounding bound and periodic image identities.",
+          "Original coarse Al source payload was deleted at user request on 2026-09-26. The existing derived cache is retained; rebuilding it from that source is no longer possible."
         ]
       }
     },
@@ -3438,6 +3476,2265 @@
           "Nearest80 cropped at 8 Angstrom, without computational halo."
         ]
       }
+    },
+    "structural-native-multimaterial-256-20260925": {
+      "root": "scratch",
+      "path": "training-cache/structural-pretraining/multimaterial-256-20260925",
+      "kind": "training_cache",
+      "dependencies": [
+        "al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+        "al-eam-six-24ps",
+        "mg-eam-six-24ps",
+        "ti-meam-source-and-six-branches",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905",
+        "Mg",
+        "Ta",
+        "Zr"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Native structural pretraining: 256 native centers plus 1% external cells",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta",
+          "Zr"
+        ],
+        "role": "structural_pretraining",
+        "classification": "prepared",
+        "description": "Raw sharded geometry in Angstrom with material/atomic-number audit metadata. The model loader applies fixed training-material length scales, anchored to Al; the encoder receives geometry only with one constant atom channel. Fixed Al64 train/selection ancestry; calibration/test excluded. Existing relaxed Al teachers retained.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "evidence": [
+          "configs/structural_pretraining/multimaterial_256_20260925.json",
+          "${dataset:structural-native-multimaterial-256-20260925}/plan.json",
+          "${dataset:structural-native-multimaterial-256-20260925}/manifest.json"
+        ],
+        "lineage": "Inherits fixed Al64 90 train / 15 selection roles. Additional archived families are train-only; branches and static frames may share ancestry. Million-atom melt and measurement share one lineage.",
+        "limitations": [
+          "Static generating potentials remain unknown; exact dynamic potential IDs are retained per source.",
+          "This is a structural expansion; all64/legacy16 crystallization evaluation rows remain unchanged."
+        ]
+      }
+    },
+    "nucleus-harvest-train-audit-20260926": {
+      "root": "analysis",
+      "path": "nucleus_harvest/train-audit-20260926",
+      "kind": "dataset",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Al regional-emergence training-source harvest audit",
+        "materials": [
+          "Al"
+        ],
+        "role": "label_availability_audit",
+        "classification": "derived",
+        "description": "Exploratory atom-origin references, causal region eligibility, event/control outcomes, precursor bond order and visual review. Only the original 90 Al training ancestors; no fitting, simulation or held-out export.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Inherits exact fixed Al64 train source IDs and independent melt ancestry; references and event crops within a source are correlated.",
+        "evidence": [
+          "configs/analysis/nucleus_harvest_20260926.json",
+          "${dataset:nucleus-harvest-train-audit-20260926}/technical/plan.json",
+          "${dataset:nucleus-harvest-train-audit-20260926}/technical/state.json",
+          "docs/metrics/nucleus_harvest.md"
+        ],
+        "limitations": [
+          "Operational establishment candidates, not validated critical nuclei.",
+          "Enriched event references and overlapping uniform controls are not a finalized probability-training population.",
+          "Future-centered review crops are for inspection only, never model inputs."
+        ]
+      }
+    },
+    "spatial-approach-al64-20260926": {
+      "root": "analysis",
+      "path": "spatial_approach/al64-20260926",
+      "kind": "analysis",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Fixed-snapshot Al64 crystal approach labels and probe paths",
+        "materials": [
+          "Al"
+        ],
+        "role": "spatial_distance_labels",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Same 126545 fixed sample IDs/source roles with present crystal-distance labels; additional calibration/test scan routes. Preparation pending until technical/prepared.json is complete. No new simulation.",
+        "lineage": "Inherits 150 independent-melt source roles from fixed Al64. Path positions within a source are correlated.",
+        "evidence": [
+          "${dataset:spatial-approach-al64-20260926}/technical/prepared.json",
+          "configs/analysis/spatial_approach_20260926.json",
+          "docs/metrics/spatial_approach.md"
+        ],
+        "limitations": [
+          "Historical at-risk population, not uniform liquid volume.",
+          "Known-target scan routes are conditional diagnostics.",
+          "Previously inspected test sources, not a fresh test."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926": {
+      "root": "simulation_runs",
+      "path": "al-birth-uniform-20260926",
+      "kind": "simulation",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al spontaneous births: 22 independent melts",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "building",
+        "evidence": [
+          "${dataset:al-birth-uniform-20260926}/manifest.json"
+        ],
+        "lineage": "22 fresh independently melted roots; every source is development/train only",
+        "description": "Continuous position/velocity observations from target-temperature initialization; 0.15 ps cadence; early stopping after 10% PTM crystalline plus 12 ps.",
+        "limitations": [
+          "Prepared/running sources are not completed data.",
+          "Outcome-dependent training collection; not a representative fixed-duration evaluation cohort.",
+          "Temperature and age are audit metadata, never model inputs."
+        ]
+      }
+    },
+    "spatial-distance-uniform-al64-20260926": {
+      "root": "cache",
+      "path": "spatial-distance-geometry",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Uniform atom centers for continuous crystal-distance readouts",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "derived",
+        "description": "16 uniformly sampled atom centers per frozen observation frame in 90 train and 15 selection sources; 25 observed geometry patches per center. Current confirmed-crystal distance/visibility labels; no new simulation.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Exact fixed Al64 source roles and raw frame identities; seed 20260926; calibration/test sources excluded. Version directory is the bound experiment identity.",
+        "evidence": [
+          "configs/analysis/spatial_distance_20260926.json",
+          "docs/spatial_distance.md"
+        ],
+        "limitations": [
+          "Observation frames inherit the historical at-risk sampling; atom sampling is uniform within these frames, not an unbiased simulation-time population.",
+          "Nearest80 cropped at 8 Angstrom; spatial support is not a complete radius ball."
+        ]
+      }
+    },
+    "ta-shooting-20260926": {
+      "root": "archive",
+      "path": "simulation-launches/ta-shooting-20260926",
+      "kind": "simulation",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta_initial_model_1m_24ps_npt_20260905",
+        "ta-eam-five-24ps"
+      ],
+      "metadata": {
+        "title": "Ta shooting: six archived parents, four fresh velocity replicas each",
+        "materials": [
+          "Ta"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "description": "Prepared replicated full-cell 24 ps NPT shots at 1900 K; manifest records current completion separately.",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "limitations": [
+          "Archived parent generation potential and precise common ancestry are unknown.",
+          "Parents and shots must not be split as independent preparation lineages.",
+          "Four shots per parent are an exploratory pilot, not a precise committor estimate."
+        ],
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/status.json"
+        ]
+      }
+    },
+    "distance-encoder-multimaterial-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/multimaterial-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "structural-native-multimaterial-256-20260925"
+      ],
+      "metadata": {
+        "title": "Confirmed crystal distances for dynamic multi-material MACE training",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "role": "supervised_training_labels",
+        "classification": "derived",
+        "description": "12,747,736 training and 192,000 Al selection neighborhoods; existing dynamic structural centers at multiple timesteps, excluding initial unconfirmed history. Labels only; coordinates reused from the sealed structural release.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "lineage": "Frozen native Al 90/15 train/selection ancestry; external branches train-only with their recorded shared preparation groups. No new simulation.",
+        "evidence": [
+          "configs/distance_encoder/multimaterial_early_20260926.json",
+          "docs/distance_encoder.md",
+          "${dataset:distance-encoder-multimaterial-20260926}/manifest.json"
+        ],
+        "limitations": [
+          "External branches are not independent replicates; no external-material validation/test claim.",
+          "Distances and inputs use fixed Al-reference length normalization; no material/temperature/time input.",
+          "Targets refer to already confirmed crystal components, not future nucleation."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926-source000-T400": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source000-T400",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source000-T400"
+      ]
+    },
+    "al-birth-uniform-20260926-source004-T440": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source004-T440",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source004-T440"
+      ]
+    },
+    "al-birth-uniform-20260926-source002-T420": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source002-T420",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source002-T420"
+      ]
+    },
+    "al-birth-uniform-20260926-source003-T430": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source003-T430",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source003-T430"
+      ]
+    },
+    "al-birth-uniform-20260926-source001-T410": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source001-T410",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source001-T410"
+      ]
+    },
+    "al-birth-uniform-20260926-source005-T450": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source005-T450",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source005-T450"
+      ]
+    },
+    "ta-shooting-20260926-parent00": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent00",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent00"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent model_1m: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "model_1m",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos",
+          "source_sha256": "1038b1c87e081ce501ca2724d3c16d73d93531a14bbb3f9ea55649d822c36856",
+          "source_step": 1480000,
+          "atom_count": 1024000
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926-source006-T460": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source006-T460",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source006-T460"
+      ]
+    },
+    "al-birth-uniform-20260926-source010-T500": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source010-T500",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source010-T500"
+      ]
+    },
+    "distance-encoder-md-history6-evaluation-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-history6-evaluation-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "spatial-approach-al64-20260926"
+      ],
+      "metadata": {
+        "title": "Tracked-atom MD histories for unchanged crystal-front evaluation",
+        "materials": [
+          "Al"
+        ],
+        "role": "evaluation_geometry",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Original fixed Al64 selection/calibration/test source roles; no source resplitting.",
+        "description": "Geometry at -6/-3/0 ps for every original held-out fixed observation and controlled scan-position atom. Same atom ID followed through MD; no new simulation.",
+        "evidence": [
+          "configs/distance_encoder/md_history6_20260926.json",
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "Al held-out evaluation only; external material generalization is not evaluated.",
+          "History visibility includes all observed MD frames; not interchangeable with snapshot visibility."
+        ]
+      }
+    },
+    "distance-encoder-md-dense6-training-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-training-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "distance-encoder-multimaterial-20260926"
+      ],
+      "metadata": {
+        "title": "Withdrawn mixed-cadence six-frame geometry preparation",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "role": "training_geometry",
+        "classification": "derived",
+        "description": "Withdrawn before any GPU training after the user required uniform physical observation spacing. Preparation also encountered IDS quota. Frozen preparation receipts are preserved; disposable geometry may be reused or removed.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ti-kavousi2019-meam",
+          "ta-zhong2014-eam"
+        ],
+        "lineage": "Inherited fixed Al64 source roles; external branches train-only with their original shared ancestry. No new simulation.",
+        "evidence": [
+          "${storage:analysis}/distance_encoder/md-dense6-20260926/technical/code/config.json",
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "Cadence is .75 ps on native Al, .10 ps on external training sources; no cadence value is a model input.",
+          "Held-out performance is evaluated on Al only."
+        ]
+      },
+      "state": "stopped"
+    },
+    "distance-encoder-md-dense6-evaluation-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-evaluation-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "spatial-approach-al64-20260926"
+      ],
+      "metadata": {
+        "title": "Six closest MD frames for crystal distance: evaluation",
+        "materials": [
+          "Al"
+        ],
+        "role": "evaluation_geometry",
+        "classification": "derived",
+        "description": "Six preceding/current local MD observations for unchanged fixed Al64 held-out rows and spatial scan-position atoms. Float32 relative coordinates, reused from existing trajectories without additional quantization.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Unchanged fixed Al64 selection/calibration/test source roles and spatial scan-position atoms.",
+        "evidence": [
+          "configs/distance_encoder/md_dense6_075nominal_20260926.json",
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "All observations have uniform 0.75-ps cadence.",
+          "Held-out performance is Al only."
+        ]
+      },
+      "state": "stopped"
+    },
+    "al-birth-uniform-20260926-source007-T470": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source007-T470",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source007-T470"
+      ]
+    },
+    "distance-encoder-md-dense6-075ps-training-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-075ps-training-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "distance-encoder-multimaterial-20260926"
+      ],
+      "metadata": {
+        "title": "Unsubmitted native-only six-frame candidate",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_geometry",
+        "classification": "derived",
+        "description": "Shared float32 geometry bank for six tracked-atom observations, 0.75 ps apart in every source. 4,561,920 training and 190,080 selection windows; no new simulation.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Fixed Al64 native source roles: 90 train, 15 selection. No external trajectory ancestry included. Anchor rows match the native subset of the wider-history arm.",
+        "evidence": [
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "Al only; external sources with 0.10-ps cadence excluded.",
+          "The wider-history arm includes external training sources, so comparing it directly cannot isolate sampling cadence.",
+          "Superseded by the user-approved all-data nominal .75/.70-ps experiment before training."
+        ]
+      },
+      "state": "stopped"
+    },
+    "al-birth-uniform-20260926-source008-T480": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source008-T480",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source008-T480"
+      ]
+    },
+    "distance-encoder-md-dense6-075ps-evaluation-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-075ps-evaluation-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "spatial-approach-al64-20260926"
+      ],
+      "metadata": {
+        "title": "Six closest MD frames for crystal distance: evaluation",
+        "materials": [
+          "Al"
+        ],
+        "role": "evaluation_geometry",
+        "classification": "derived",
+        "description": "Six preceding/current local MD observations for unchanged fixed Al64 held-out rows and spatial scan-position atoms. Float32 relative coordinates, reused from existing trajectories without additional quantization. Includes verified geometry reused from the stopped D6 preparation; run receipts bind old/new producer identities.",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "lineage": "Unchanged fixed Al64 selection/calibration/test source roles and spatial scan-position atoms.",
+        "evidence": [
+          "configs/distance_encoder/md_dense6_075nominal_20260926.json",
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "All observations have uniform 0.75-ps cadence.",
+          "Held-out performance is Al only."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926-source009-T490": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source009-T490",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source009-T490"
+      ]
+    },
+    "distance-encoder-md-dense6-075nominal-training-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-075nominal-training-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "distance-encoder-multimaterial-20260926"
+      ],
+      "metadata": {
+        "title": "Six-frame nominal 0.75-ps all-data distance training",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "role": "training_geometry",
+        "classification": "derived",
+        "description": "11,375,472 train and 190,080 selection windows. Native exact .75 ps; external exact .70 ps, explicitly accepted as nominal .75 ps. No interpolation.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ti-kavousi2019-meam",
+          "ta-zhong2014-eam"
+        ],
+        "lineage": "Fixed native Al roles unchanged; all external ancestry stays train-only.",
+        "evidence": [
+          "configs/distance_encoder/md_dense6_075nominal_20260926.json",
+          "docs/distance_encoder_history.md"
+        ],
+        "limitations": [
+          "Nominal cadence is not a claim of identical physical intervals: actual native/external spans are 3.75/3.50 ps."
+        ]
+      }
+    },
+    "distance-encoder-md-dense6-010ps-training-20260926": {
+      "root": "cache",
+      "path": "distance-encoder/md-dense6-010ps-training-20260926",
+      "kind": "cache",
+      "dependencies": [
+        "distance-encoder-multimaterial-20260926"
+      ],
+      "metadata": {
+        "title": "Six-frame exact 0.10-ps external distance study",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "role": "training_geometry",
+        "classification": "derived",
+        "description": "3,374,496 train, 377,496 selection and 3,061,560 test windows, all at .10-ps intervals and .50-ps span; no interpolation.",
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ti-kavousi2019-meam",
+          "ta-zhong2014-eam"
+        ],
+        "lineage": "Train Al-million/Mg/Ti families; selection Al archive; test Ta archive. Entire ancestry groups stay together. This is a separate external assay, not a change to Al64 roles.",
+        "evidence": [
+          "configs/distance_encoder/md_dense6_010ps_20260926.json",
+          "docs/metrics/distance_encoder_dense_external.md"
+        ],
+        "limitations": [
+          "Selection/test each have one ancestry family; test is also transfer to unseen Ta.",
+          "Not directly comparable to fixed-Al spatial-path warning metrics."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926-source016-T450": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source016-T450",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source016-T450"
+      ]
+    },
+    "al-birth-uniform-20260926-source012-T410": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source012-T410",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source012-T410"
+      ]
+    },
+    "al-birth-uniform-20260926-source013-T420": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source013-T420",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source013-T420"
+      ]
+    },
+    "al-birth-uniform-20260926-source014-T430": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source014-T430",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source014-T430"
+      ]
+    },
+    "al-birth-uniform-20260926-source015-T440": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source015-T440",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source015-T440"
+      ]
+    },
+    "al-birth-uniform-20260926-source018-T470": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source018-T470",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source018-T470"
+      ]
+    },
+    "al-birth-uniform-20260926-source019-T480": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source019-T480",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source019-T480"
+      ]
+    },
+    "al-birth-uniform-20260926-source020-T490": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source020-T490",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source020-T490"
+      ]
+    },
+    "al-birth-uniform-20260926-source021-T500": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source021-T500",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source021-T500"
+      ]
+    },
+    "al-birth-uniform-20260926-source011-T400": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source011-T400",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source011-T400"
+      ]
+    },
+    "ta-shooting-20260926-parent01": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent01",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent01"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent 2.7ns: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "2.7ns",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos",
+          "source_sha256": "e3eeeccd3b982361947fb427b9f311ff0251c2ee317e21976033f08c32f9fc19",
+          "source_step": 1350000,
+          "atom_count": 10000422
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "al-birth-uniform-20260926-source017-T460": {
+      "root": "archive",
+      "path": "simulations/al-birth-uniform-20260926-source017-T460",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/runs/al-birth-uniform-20260926-source017-T460"
+      ]
+    },
+    "distance-encoder-ta-material-eval-20260927": {
+      "root": "cache",
+      "path": "distance-encoder/ta-shooting-material-eval-20260927-v2",
+      "kind": "training_cache",
+      "dependencies": [
+        "ta-shooting-20260926-parent00",
+        "potential-ta-zhong2014"
+      ],
+      "metadata": {
+        "title": "Ta known-parent shooting distance evaluation",
+        "materials": [
+          "Ta"
+        ],
+        "role": "evaluation_cache",
+        "classification": "research",
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "description": "Four completed 1,024,000-atom branches; shot00 selection, shots01-03 test. 10,240 tracked centers, six 0.70-ps observations, six anchors per branch.",
+        "ancestry": "One archived Ta preparation; parent encoder saw a different trajectory from the same initial structure.",
+        "limitations": [
+          "Conditional new-velocity evaluation, not independent-preparation generalization.",
+          "Parent was already trained on all six older Ta trajectories."
+        ],
+        "evidence": [
+          "configs/distance_encoder/material_ta_20260927.json",
+          "docs/distance_encoder_material_finetune.md"
+        ]
+      }
+    },
+    "al-main-010ps-20260927": {
+      "root": "simulation_runs",
+      "path": "al-main-010ps-20260927",
+      "kind": "simulation",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "potentials"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Main Al sources rerun at exact 0.1 ps with velocities",
+        "description": "150 prepared-liquid descendants, 70304 atoms, 600 ps measurement, 2 fs integration; frozen ancestor roles retained.",
+        "ancestry": "Same 150 independent melt ancestors as fixed_al64_v1; not 150 additional independent lineages.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927/manifest.json",
+          "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927/status.json"
+        ]
+      }
+    },
+    "ta-shooting-20260926-parent02": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent02",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent02"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent 2.8ns: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "2.8ns",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos",
+          "source_sha256": "7d20d67091eedf2f24a27978a5bc2e33c1755ed12f3ecd37ccfcfafff6b2376a",
+          "source_step": 1400000,
+          "atom_count": 10000422
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0863": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0863",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0863"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_804308644",
+        "split": "train",
+        "source_id": 863,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0863/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0862": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0862",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0862"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_691988874",
+        "split": "train",
+        "source_id": 862,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0862/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0867": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0867",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0867"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_144370470",
+        "split": "train",
+        "source_id": 867,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0867/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0861": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0861",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0861"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_455949696",
+        "split": "train",
+        "source_id": 861,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0861/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0860": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0860",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0860"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_511618678",
+        "split": "train",
+        "source_id": 860,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0860/input_metadata.json"
+        ]
+      }
+    },
+    "ta-shooting-20260926-parent03": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent03",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent03"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent 2.9ns: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "2.9ns",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos",
+          "source_sha256": "5519012640516f89ddd5a82c7ed00c3c5ca471201610d23576ce47a6fa5bdfc3",
+          "source_step": 1450000,
+          "atom_count": 10000422
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0866": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0866",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0866"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_200290231",
+        "split": "train",
+        "source_id": 866,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0866/input_metadata.json"
+        ]
+      }
+    },
+    "crystal-vector-al64-covering-20260927": {
+      "root": "cache",
+      "path": "crystal-vector/al64-covering-20260927",
+      "kind": "dataset",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "spatial-distance-uniform-al64-20260926"
+      ],
+      "metadata": {
+        "title": "CDV-MACE128 fixed Al64 spatial distance and direction",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Single-snapshot 25-patch distance-only covering, existing fixed Al64 samples plus uniform centers and original scans; past-confirmed crystal vectors, no history inputs. 177929 contexts over 150 source roles. Parent encoder was mixed-material.",
+        "evidence": [
+          "${storage:cache}/crystal-vector/al64-covering-20260927/plan.json",
+          "${storage:cache}/crystal-vector/al64-covering-20260927/manifest.json",
+          "experiments/crystal_vector_20260927/README.md"
+        ],
+        "limitations": [
+          "Correlated frames/centers; fixed source/ancestry roles inherited; directional targets undefined at zero/censored/equal-nearest distances.",
+          "Changed context sampler compared with historical lab-fixed stencil; new arms matched to one another."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0871": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0871",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0871"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_294342775",
+        "split": "train",
+        "source_id": 871,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0871/input_metadata.json"
+        ]
+      }
+    },
+    "crystal-interface-al64-20260928": {
+      "root": "cache",
+      "path": "crystal-interface/al64-covering-20260928",
+      "kind": "dataset",
+      "dependencies": [
+        "crystal-vector-al64-covering-20260927",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "CIV-MACE128 crystal-interface targets and uniform held-out interiors",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Derived labels on the original fixed Al64 geometry; crystal-side interface adjacent to non-crystal components >=64 atoms on the periodic 3.6-A graph. Original source/ancestry roles retained, with 16 outcome-blind uniform centers per held-out frame for interior evaluation. No new simulations. Training parent was a mixed-material snapshot encoder.",
+        "provenance": "Existing al64-covering-20260927 coordinates and past-confirmed PTM lineages; producer src/research/crystal_vector/interface.py",
+        "ancestry": "Inherited frozen al64-v1 independent-melt train/selection/calibration/test roles; added centers are correlated observations, not new sources.",
+        "evidence": [
+          "${storage:cache}/crystal-interface/al64-covering-20260928/plan.json",
+          "${storage:cache}/crystal-interface/al64-covering-20260928/manifest.json",
+          "experiments/crystal_interface_20260928/README.md"
+        ],
+        "limitations": [
+          "Atom-layer edge convention; large disordered internal pockets and grain boundaries may contribute.",
+          "Empty interface is censored, not zero; direction undefined on the layer and at ties.",
+          "Fixed at-risk benchmark lacks interior rows; read uniform held-out phase results separately."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0875": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0875",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0875"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_556912370",
+        "split": "calibration",
+        "source_id": 875,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0875/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0865": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0865",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0865"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_434160560",
+        "split": "train",
+        "source_id": 865,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0865/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0864": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0864",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0864"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_808961974",
+        "split": "train",
+        "source_id": 864,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0864/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0879": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0879",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0879"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_340453041",
+        "split": "selection",
+        "source_id": 879,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0879/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0870": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0870",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0870"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_746071054",
+        "split": "train",
+        "source_id": 870,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0870/input_metadata.json"
+        ]
+      }
+    },
+    "ta-shooting-20260926-parent04": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent04",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent04"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent 3.0ns: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "3.0ns",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos",
+          "source_sha256": "8e962c9d3d7f584105e22acb13edebfa8dbda3c715936cd85f1b4605e0f4f805",
+          "source_step": 1500000,
+          "atom_count": 10000422
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0883": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0883",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0883"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_82221119",
+        "split": "test",
+        "source_id": 883,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0883/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0869": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0869",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0869"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_77880009",
+        "split": "train",
+        "source_id": 869,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0869/input_metadata.json"
+        ]
+      }
+    },
+    "ta-shooting-20260926-parent05": {
+      "root": "archive",
+      "path": "simulations/ta-shooting-20260926-parent05",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "Ta",
+        "potential-ta-zhong2014",
+        "ta-eam-five-24ps",
+        "ta_initial_model_1m_24ps_npt_20260905"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent05"
+      ],
+      "metadata": {
+        "materials": [
+          "Ta"
+        ],
+        "potential_ids": [
+          "ta-zhong2014-eam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Ta shooting parent 3.60ns: 4/4 shots complete",
+        "ancestry": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+        "parent": {
+          "name": "3.60ns",
+          "source": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos",
+          "source_sha256": "d451ebf7f7169e201f6af75ecc42ac17ce1139dc0739c425a8a005ce3bbf421e",
+          "source_step": 1800000,
+          "atom_count": 10000422
+        },
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/manifest.json",
+          "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/status.json"
+        ],
+        "limitations": [
+          "Position-conditioned shots share an archived parent; original generating potential is unknown."
+        ]
+      }
+    },
+    "crystal-interface-al64-dense-clear-20260928": {
+      "root": "cache",
+      "path": "crystal-interface/al64-dense-clear-20260928",
+      "kind": "dataset",
+      "dependencies": [
+        "crystal-interface-al64-20260928",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Dense interface-invisible Al contexts, unchanged fixed source roles",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Sealed expansion from 2,457,600 uniform candidate contexts: 256 centers on 64 evenly spaced frames from each of 150 existing Al trajectories. New geometry retained only when no interface is observed; all original rows preserved. Contains 1133196 cached contexts. Active liquid-distance training additionally excludes all observed established crystal and crystal-absent cells.",
+        "provenance": "src/research/crystal_vector/expand.py; parent interface/PTM definitions unchanged; no new MD simulation.",
+        "ancestry": "Inherited frozen al64-v1 independent-melt train/selection/calibration/test roles 90/15/15/30. Added frames and centers are correlated observations, not new independent sources.",
+        "evidence": [
+          "${storage:cache}/crystal-interface/al64-dense-clear-20260928/plan.json",
+          "${storage:cache}/crystal-interface/al64-dense-clear-20260928/manifest.json",
+          "configs/crystal_vector/interface_unseen_20260928.json",
+          "experiments/crystal_interface_20260928/UNSEEN.md",
+          "configs/crystal_vector/liquid_distance_20260928.json",
+          "experiments/crystal_interface_20260928/LIQUID_DISTANCE.md"
+        ],
+        "limitations": [
+          "Visibility is a label-side selection criterion, not an input or deployable absence oracle.",
+          "Pre-rejection candidate denominators retained for conditional population weights.",
+          "Geometry only; Al-only adaptation, with historically mixed-material supervised initialization.",
+          "The active liquid-distance fit applies a stricter view: no established crystal anywhere in observed patches and a finite external-crystal target. Crystal-absent examples are evaluated separately."
+        ]
+      },
+      "state": "complete"
+    },
+    "al-main-010ps-20260927-source0868": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0868",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0868"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_76681035",
+        "split": "train",
+        "source_id": 868,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0868/input_metadata.json"
+        ]
+      }
+    },
+    "liquid-predictability-al64-20260928": {
+      "root": "cache",
+      "path": "liquid-predictability/al64-20260928",
+      "kind": "dataset",
+      "state": "preparing",
+      "dependencies": [
+        "crystal-interface-al64-dense-clear-20260928",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Liquid predictability physical descriptors and consumed-input clearance",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "description": "Derived 224 geometry-only context descriptors and exact crystal clearance for eligible liquid queries; separate clear and visible populations. No new simulation.",
+        "provenance": "src/research/liquid_predictability/data.py; sealed dense Al64 geometry and past-confirmed crystal lineages",
+        "ancestry": "Frozen independent-melt roles inherited unchanged; additional centers remain correlated observations.",
+        "evidence": [
+          "configs/liquid_predictability/al64_20260928.json",
+          "${storage:cache}/liquid-predictability/al64-20260928/manifest.json",
+          "docs/liquid_predictability.md"
+        ],
+        "limitations": [
+          "Clearance is label-side analysis only, never an input.",
+          "Condition on an external crystal existing; no crystal-presence claim."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0874": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0874",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0874"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_330985692",
+        "split": "train",
+        "source_id": 874,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0874/input_metadata.json"
+        ]
+      }
+    },
+    "liquid-descriptors-al64-20260928": {
+      "root": "cache",
+      "path": "liquid-predictability/descriptors-al64-20260928",
+      "kind": "dataset",
+      "state": "complete",
+      "dependencies": [
+        "crystal-interface-al64-dense-clear-20260928",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Rich TDA, bond-order, CNA and geometry features for liquid distance prediction",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "description": "442 fixed patch features aggregated into 3536 invariant context features. Same 25 observed radius-8 patches, source roles and eligible rows as the sealed liquid-predictability assay.",
+        "provenance": "src/research/liquid_predictability/descriptors.py and descriptor_data.py; no new simulations",
+        "ancestry": "Inherited independent-melt roles unchanged; correlated extra atom centers retain their source.",
+        "evidence": [
+          "configs/liquid_predictability/descriptors_al64_20260928.json",
+          "${storage:cache}/liquid-predictability/descriptors-al64-20260928/manifest.json",
+          "docs/liquid_descriptors.md"
+        ],
+        "limitations": [
+          "Conditional on a crystal existing outside consumed input atoms.",
+          "CNA uses consumed geometry only; not stored PTM labels.",
+          "Fixed test sources have informed earlier research."
+        ]
+      }
+    },
+    "liquid-controls-relaxed-20260928": {
+      "root": "cache",
+      "path": "liquid-predictability/controls-relaxed-20260928",
+      "kind": "dataset",
+      "state": "preparing",
+      "dependencies": [
+        "liquid-descriptors-al64-20260928",
+        "relaxed-encoder-expanded-cells-20260921",
+        "relaxed-encoder-large-test-cells-20260921"
+      ],
+      "metadata": {
+        "title": "Liquid known/null signals and paired archived relaxed observations",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "description": "Seven generated-label controls on unchanged raw observations; exact archive intersection with paired raw/relaxed inputs and original/relaxed cluster distances. Synthetic labels are not physical distances.",
+        "provenance": "control_data.py, existing verified full-cell FIRE quenches; no MD/minimization launched",
+        "ancestry": "Original fixed Al64 independent-melt source roles, unchanged; availability/common-phase conditioning exported.",
+        "evidence": [
+          "configs/liquid_predictability/controls_relaxed_20260928.json",
+          "docs/liquid_controls.md"
+        ],
+        "limitations": [
+          "Full-cell relaxation incorporates external context.",
+          "Archived cold coordinates are float16; extraction is float32.",
+          "New labels use instantaneous PTM clusters, not sustained MD establishment.",
+          "One seed and one synthetic label realization."
+        ]
+      }
+    },
+    "liquid-full-relaxation-20260928": {
+      "root": "cache",
+      "path": "liquid-predictability/full-relaxation-20260928",
+      "kind": "dataset",
+      "state": "preparing",
+      "dependencies": [
+        "liquid-descriptors-al64-20260928",
+        "relaxed-encoder-expanded-cells-20260921",
+        "relaxed-encoder-large-test-cells-20260921"
+      ],
+      "metadata": {
+        "title": "Full frozen liquid-cohort Al FIRE cells",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "relaxed_cells",
+        "classification": "research",
+        "description": "All original eligible source/frame cells; reuse 976 existing and produce 2130 missing full periodic fixed-box FIRE quenches. Original MD and instantaneous relaxed labels are separately recorded.",
+        "provenance": "control_relaxation.py and control_data.py; same original MD sources, new minimizations only",
+        "ancestry": "Original fixed Al64 independent-melt source roles, unchanged; availability/common-phase conditioning exported.",
+        "evidence": [
+          "configs/simulation/liquid_full_relaxation_20260928.json",
+          "docs/simulations/liquid_full_relaxation_20260928.md"
+        ],
+        "limitations": [
+          "Full-cell relaxation incorporates external context.",
+          "Archived cold coordinates are float16; extraction is float32.",
+          "New labels use instantaneous PTM clusters, not sustained MD establishment.",
+          "One seed and one synthetic label realization."
+        ]
+      }
+    },
+    "liquid-controls-full-relaxed-20260928": {
+      "root": "cache",
+      "path": "liquid-predictability/controls-full-relaxed-20260928",
+      "kind": "dataset",
+      "state": "preparing",
+      "dependencies": [
+        "liquid-descriptors-al64-20260928",
+        "relaxed-encoder-expanded-cells-20260921",
+        "relaxed-encoder-large-test-cells-20260921"
+      ],
+      "metadata": {
+        "title": "Full-coverage paired liquid geometry and labels",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "training_cache",
+        "classification": "research",
+        "description": "All original eligible source/frame cells; reuse 976 existing and produce 2130 missing full periodic fixed-box FIRE quenches. Original MD and instantaneous relaxed labels are separately recorded.",
+        "provenance": "control_relaxation.py and control_data.py; same original MD sources, new minimizations only",
+        "ancestry": "Original fixed Al64 independent-melt source roles, unchanged; availability/common-phase conditioning exported.",
+        "evidence": [
+          "configs/simulation/liquid_full_relaxation_20260928.json",
+          "docs/simulations/liquid_full_relaxation_20260928.md"
+        ],
+        "limitations": [
+          "Full-cell relaxation incorporates external context.",
+          "Archived cold coordinates are float16; extraction is float32.",
+          "New labels use instantaneous PTM clusters, not sustained MD establishment.",
+          "One seed and one synthetic label realization."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0873": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0873",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0873"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_160380922",
+        "split": "train",
+        "source_id": 873,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0873/input_metadata.json"
+        ]
+      }
+    },
+    "rd-mace256-rich-descriptors-20260929": {
+      "root": "analysis",
+      "path": "liquid_predictability/rd-mace256-l3-z256-20260929",
+      "kind": "experiment",
+      "state": "stopped",
+      "dependencies": [
+        "liquid-descriptors-al64-20260928",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "RD-MACE256-L3-Z256: raw rich-descriptor learning, 60 full epochs",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "trained_encoder",
+        "classification": "research",
+        "description": "Geometry-only MACE256, three interactions and 256-D patch/context states; same 3536 rich targets. All 183596 raw train contexts, immutable source splits. Large measured batch; 0.004 five-epoch warmup/cosine LR. No relaxation or physical distance supervision.",
+        "provenance": "src/research/liquid_predictability/rich_encoder.py; sealed existing raw descriptor/geometry caches reused read-only.",
+        "ancestry": "Existing fixed-Al64 melt-source roles; 88 eligible train sources, 15 selection, 15 calibration, 28 test. Added atoms are correlated within sources.",
+        "evidence": [
+          "configs/liquid_predictability/rich_mace256_20260929.json",
+          "docs/rich_descriptor_encoder.md",
+          "${storage:analysis}/liquid_predictability/rd-mace256-l3-z256-20260929/technical/launch.json"
+        ],
+        "limitations": [
+          "Combined width/depth/state-size/batch/LR/duration intervention does not isolate their effects.",
+          "One training seed; prior test-source reuse.",
+          "Descriptor reconstruction is not itself evidence of crystal-distance information."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0872": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0872",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0872"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_184384186",
+        "split": "train",
+        "source_id": 872,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0872/input_metadata.json"
+        ]
+      }
+    },
+    "rich-descriptors-multimaterial-raw-20260929": {
+      "root": "cache",
+      "path": "rich-descriptors/multimaterial-raw-20260929",
+      "kind": "training_cache",
+      "state": "complete",
+      "dependencies": [
+        "structural-native-multimaterial-256-20260925",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Raw Al/Mg/Ti/Ta local rich descriptors",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "role": "structural_pretraining",
+        "classification": "prepared",
+        "description": "Derived 442 local geometry/bond-order/CNA/TDA targets and normalized nearest80 geometry from 13423868 raw dynamic training patches; static/relaxed views excluded. Original Al structural selection plus exact fixed Al64 calibration/test IDs. Scientific training uses a separately sealed compute-budget subset.",
+        "provenance": "src/research/liquid_predictability/rich_multimaterial_data.py; existing immutable structural and Al64 releases.",
+        "ancestry": "Original native Al train ancestors; external branches retain shared lineage metadata and remain train-only. No resplit.",
+        "evidence": [
+          "configs/liquid_predictability/rich_multimaterial_20260929.json",
+          "docs/rich_multimaterial_encoder.md",
+          "${storage:cache}/rich-descriptors/multimaterial-raw-20260929/plan.json"
+        ],
+        "limitations": [
+          "All phases, not a liquid-only cohort.",
+          "External materials have no independent validation/test sources in this release.",
+          "442 local targets differ from the earlier 3536 context summaries."
+        ]
+      }
+    },
+    "mm-rd-mace256-20260929": {
+      "root": "analysis",
+      "path": "liquid_predictability/mm-rd-mace256-l3-z256-20260929",
+      "kind": "experiment",
+      "state": "failed",
+      "dependencies": [
+        "rich-descriptors-multimaterial-raw-20260929"
+      ],
+      "metadata": {
+        "title": "MM-RD-MACE256-L3-Z256: 60 epochs in a measured 10-hour fit budget",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "role": "trained_encoder",
+        "classification": "research",
+        "description": "Geometry-only MACE width256/depth3/state256, direct 442 descriptor head, global scalar/vector VCReg; no context predictor. Uniform fixed subset sized by two-GPU timing, 60 exact epochs, 5-epoch warmup to .004 then cosine, validation every5. 10-hour training reservation; batch and subset frozen before online scientific fit.",
+        "provenance": "src/research/liquid_predictability/rich_multimaterial_queue.py; frozen code and source identities.",
+        "ancestry": "Existing structural train ancestors only; unchanged Al64 held-out sources.",
+        "evidence": [
+          "configs/liquid_predictability/rich_multimaterial_20260929.json",
+          "docs/rich_multimaterial_encoder.md"
+        ],
+        "limitations": [
+          "Training subset count is only final after timing job; do not report the full 13.42M pool as fitted rows.",
+          "One seed; broad local task is not directly comparable to 25-patch liquid context reconstruction."
+        ]
+      }
+    },
+    "spatial-vicreg-bias-al64-20260929": {
+      "root": "cache",
+      "path": "spatial-vicreg-bias/al64-v1-20260929",
+      "kind": "cache",
+      "dependencies": [
+        "fixed-al64-structural-v1-20260925",
+        "fixed-al64-benchmark-v1-20260925"
+      ],
+      "metadata": {
+        "title": "Matched spatial VICReg Al64 parents and structure assays",
+        "materials": [
+          "Al"
+        ],
+        "role": "training_and_evaluation_cache",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Frozen 128-atom parents at fixed Al64 anchors, eight nearby 80-atom views, complete unfiltered structural training population, uniform plus exact original evaluation rows, independent full-cell PTM visibility and 412 local geometric/bond/CNA/TDA descriptors.",
+        "lineage": "Same 150 independent melts and frozen source roles as fixed Al64 v1; no new MD, descendants or resplit.",
+        "evidence": [
+          "${dataset:spatial-vicreg-bias-al64-20260929}/manifest.json",
+          "configs/spatial_vicreg_bias/al64_20260929.json",
+          "docs/spatial_vicreg_bias.md"
+        ],
+        "limitations": [
+          "Observed geometry; not relaxed archived static data.",
+          "Evaluation sources historically examined.",
+          "All 80 input atoms are retained without the historical radius-8 mask.",
+          "Neighbor crop is nearest80 within the central nearest128 pool.",
+          "PTM-clear is an evaluation annotation, not an encoder-training filter or proof of absence of order."
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0878": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0878",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0878"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_24993146",
+        "split": "selection",
+        "source_id": 878,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0878/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0877": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0877",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0877"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_480262437",
+        "split": "calibration",
+        "source_id": 877,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0877/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0881-failed": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0881-failed",
+      "kind": "simulation",
+      "state": "failed",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "ancestry": "independent_melt_410549883",
+        "split": "test",
+        "source_id": 881,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881-failed/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0882-failed": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0882-failed",
+      "kind": "simulation",
+      "state": "failed",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "ancestry": "independent_melt_617047783",
+        "split": "test",
+        "source_id": 882,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0882-failed/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0876-failed": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0876-failed",
+      "kind": "simulation",
+      "state": "failed",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "ancestry": "independent_melt_780540798",
+        "split": "selection",
+        "source_id": 876,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876-failed/input_metadata.json"
+        ]
+      }
+    },
+    "mm-rd-mace256-repair-20260929": {
+      "root": "analysis",
+      "path": "liquid_predictability/mm-rd-mace256-l3-z256-repair-20260929",
+      "kind": "experiment",
+      "state": "cancelled",
+      "dependencies": [
+        "rich-descriptors-multimaterial-raw-20260929"
+      ],
+      "metadata": {
+        "title": "MM-RD-MACE256-L3-Z256-R2: bounded batch, 60 epochs / 10h on two GPUs",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "role": "trained_encoder",
+        "classification": "research",
+        "description": "Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head and global scalar/vector VCReg. Reuses sealed raw Al/Mg/Ti/Ta cache. Batch at most2048/GPU, frozen uniform subset sized by two-GPU timing; 60 full epochs; encoder/head peak LR1e-4/2e-4 with five-epoch warmup/cosine. Online W&B; no Al context restart.",
+        "provenance": "src/research/liquid_predictability/rich_multimaterial_queue.py; frozen code and source identities.",
+        "ancestry": "Existing structural train ancestors only; unchanged Al64 held-out sources.",
+        "evidence": [
+          "configs/liquid_predictability/rich_multimaterial_repair_20260929.json",
+          "docs/rich_multimaterial_encoder.md",
+          "${storage:analysis}/liquid_predictability/mm-rd-mace256-l3-z256-repair-20260929/technical/launch.json"
+        ],
+        "limitations": [
+          "Training subset count is only final after timing job; do not report the full 13.42M pool as fitted rows.",
+          "One seed; broad local task is not directly comparable to 25-patch liquid context reconstruction."
+        ]
+      }
+    },
+    "mm-rd-mace256-lr004-20260929": {
+      "root": "analysis",
+      "path": "liquid_predictability/mm-rd-mace256-l3-z256-lr004-20260929",
+      "kind": "experiment",
+      "state": "cancelled",
+      "dependencies": [
+        "rich-descriptors-multimaterial-raw-20260929"
+      ],
+      "metadata": {
+        "title": "MM-RD-MACE256-L3-Z256-LR004: restored requested LR, bounded batch, 60 epochs / 10h",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "role": "trained_encoder",
+        "classification": "research",
+        "description": "Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head and global scalar/vector VCReg. Reuses sealed raw Al/Mg/Ti/Ta cache. Batch at most2048/GPU, frozen uniform subset sized by two-GPU timing; 60 full epochs; common encoder/head peak LR0.004 with five-epoch warmup/cosine. Online W&B; no Al context restart.",
+        "provenance": "src/research/liquid_predictability/rich_multimaterial_queue.py; frozen code and source identities.",
+        "ancestry": "Existing structural train ancestors only; unchanged Al64 held-out sources.",
+        "evidence": [
+          "configs/liquid_predictability/rich_multimaterial_lr004_20260929.json",
+          "docs/rich_multimaterial_encoder.md",
+          "${storage:analysis}/liquid_predictability/mm-rd-mace256-l3-z256-lr004-20260929/technical/launch.json"
+        ],
+        "limitations": [
+          "Training subset count is only final after timing job; do not report the full 13.42M pool as fitted rows.",
+          "One seed; broad local task is not directly comparable to 25-patch liquid context reconstruction."
+        ]
+      }
+    },
+    "mm-rd-mace256-h100-20260929": {
+      "root": "analysis",
+      "path": "liquid_predictability/mm-rd-mace256-l3-z256-h100-20260929",
+      "kind": "experiment",
+      "state": "running",
+      "dependencies": [
+        "rich-descriptors-multimaterial-raw-20260929"
+      ],
+      "metadata": {
+        "title": "MM-RD-MACE256-L3-Z256: H100 start, checkpointed two-GPU continuation",
+        "materials": [
+          "Al",
+          "Mg",
+          "Ti",
+          "Ta"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam",
+          "al-mendelev2008-eam",
+          "mg-wilson2016-eam",
+          "ta-zhong2014-eam",
+          "ti-kavousi2019-meam"
+        ],
+        "role": "trained_encoder",
+        "classification": "research",
+        "description": "Raw multimaterial width256/depth3/state256, direct442-descriptor head, VCReg, global batch4096, max LR0.004. Fixed1056768 raw patches from117 training sources,60 epochs. User amended execution allowance to20 GPU-hours; same data/model/AdamW/LR/W&B identity across H100 and two-GPU continuation. Initial10-hour sizing metadata preserved. No Al context restart.",
+        "provenance": "src/research/liquid_predictability/rich_multimaterial_queue.py; frozen code and source identities.",
+        "ancestry": "Existing structural train ancestors only; unchanged Al64 held-out sources.",
+        "evidence": [
+          "configs/liquid_predictability/rich_multimaterial_h100_20260929.json",
+          "docs/rich_multimaterial_encoder.md",
+          "${storage:analysis}/liquid_predictability/mm-rd-mace256-l3-z256-h100-20260929/technical/launch.json"
+        ],
+        "limitations": [
+          "Training subset count is only final after timing job; do not report the full 13.42M pool as fitted rows.",
+          "One seed; broad local task is not directly comparable to 25-patch liquid context reconstruction."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [
@@ -3450,7 +5747,7 @@
   ],
   "potential_registry": {
     "al-lee2003-meam": {
-      "name": "Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM",
+      "name": "Lee–Shim–Baskes 2003 Al 2NN-MEAM",
       "family": "MEAM",
       "elements": [
         "Al"
@@ -3506,7 +5803,7 @@
       ],
       "pair_style": "eam/alloy",
       "mapping": "Ta",
-      "citation": "Zhong et al., Nature 512, 177\u2013180 (2014)",
+      "citation": "Zhong et al., Nature 512, 177–180 (2014)",
       "files": [
         {
           "path": "${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam",
@@ -3539,7 +5836,7 @@
       "license": "Not recorded here; consult the original distribution before redistribution."
     },
     "mg-wilson2016-eam": {
-      "name": "Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)",
+      "name": "Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)",
       "family": "EAM/FS",
       "elements": [
         "Mg"

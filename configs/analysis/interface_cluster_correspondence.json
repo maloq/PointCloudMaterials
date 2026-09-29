@@ -1,0 +1,22 @@
+{
+  "protocol": "interface_cluster_correspondence_v1",
+  "parent": "configs/spatial_vicreg_bias/al64_20260929.json",
+  "output": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1",
+  "publication": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1",
+  "cache_identity": "c580bd469e360b76d60a2d88fb3ed3b6c9eccec06eaefd22776d97c831e74d39",
+  "interface": {
+    "cutoff_A": 3.6,
+    "minimum_crystal_component": 64,
+    "minimum_disordered_component": 64,
+    "fit_band_A": 12.0,
+    "shell_edges_A": [0, 3.6, 8, 12, 20]
+  },
+  "families": ["tda", "bond_order", "cna", "joint"],
+  "fit_populations": ["all", "interface12"],
+  "ks": [3, 6, 7, 10],
+  "cluster_seeds": [17, 29, 43],
+  "primary_cluster_seed": 17,
+  "bootstrap_sources": 1000,
+  "matched_permutations": 99,
+  "workers": 6
+}

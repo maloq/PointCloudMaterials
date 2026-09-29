@@ -1,0 +1,7 @@
+{
+  "table": "tables/cluster-correspondence.csv",
+  "sha256": "1179bb9a43b51bb50ade619c835d9c173d1bcd1d0dc48ec3a2368b2486a8dd3b",
+  "family": "interface_cluster_correspondence",
+  "contract": "technical/metric-contracts/interface_cluster_correspondence.json",
+  "definitions": "tables/metric-definitions/interface_cluster_correspondence.md"
+}

@@ -50,8 +50,6 @@ class LazyStaticAnalysisDataset(Dataset):
         if str(getattr(data_cfg, "sample_type", "regular")).lower() != "regular":
             raise ValueError("Cache-backed static analysis requires data.sample_type='regular'.")
         coords = np.asarray(expected_coords, dtype=np.float32)
-        if coords.ndim != 2 or coords.shape[1] != 3:
-            raise ValueError(f"Cached coordinates must have shape (N, 3), got {coords.shape}.")
 
         self.num_points = int(data_cfg.num_points)
         self.normalize = bool(getattr(data_cfg, "normalize", True))

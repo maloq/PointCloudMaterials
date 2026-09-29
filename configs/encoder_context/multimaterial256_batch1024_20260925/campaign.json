@@ -1,0 +1,90 @@
+{
+  "protocol": "encoder_context_epochs_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925",
+  "cache": "${storage:scratch}/training-cache/encoder-context/multimaterial256-epochs-20260925",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "methods": [
+    "scratch",
+    "physical",
+    "vicreg",
+    "epi_variance"
+  ],
+  "variants": [
+    "vector_messages",
+    "harmonic_hierarchy"
+  ],
+  "seed": 20260924,
+  "batch_size": 1024,
+  "microbatch": 1024,
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "pretraining": {
+    "epochs": 12,
+    "learning_rate": 0.0001,
+    "normalization": "8192 fixed train-only rows after fixed material-cutoff normalization; Al reference",
+    "sampling": "One complete pass per epoch; shuffled blocks of 16 shards; no oversampling"
+  },
+  "supervised_epochs": 24,
+  "predictor_epochs": 24,
+  "runtime": {
+    "compile": true
+  },
+  "bootstrap": 1000,
+  "slurm": {
+    "partitions": "RTX6000PRO",
+    "cpus": 8,
+    "memory": "32G",
+    "feature_walltime": "08:00:00",
+    "predictor_walltime": "02:00:00",
+    "node": "node61",
+    "allocation": "1009176"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-context-multimaterial256-b1024-20260925"
+  },
+  "lanes": [
+    [
+      "physical",
+      "scratch"
+    ],
+    [
+      "vicreg",
+      "epi_variance"
+    ]
+  ],
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  }
+}

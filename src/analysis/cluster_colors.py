@@ -94,8 +94,6 @@ def _build_cluster_color_map(
     cluster_color_assignment: dict[int, Any] | None = None,
 ) -> dict[int, str]:
     labels = np.asarray(cluster_labels, dtype=int)
-    if labels.ndim != 1:
-        raise ValueError(f"Cluster labels must have shape (N,), got {labels.shape}.")
     valid_ids = sorted(int(v) for v in np.unique(labels) if int(v) >= 0)
     if not valid_ids:
         raise ValueError("Cannot build cluster color map: no non-negative cluster IDs were found.")

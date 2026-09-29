@@ -20,6 +20,10 @@ class Study:
         c['extraction']=dict(chunk=c['microbatch'],workers=2,prefetch=2,compile=True)|c.get('extraction',{})
         if any(c['extraction'][k]<1 for k in ('chunk','workers','prefetch')):
             raise ValueError('Positive extraction chunk, workers and prefetch capacity required')
+        c['cache_policy']=dict(features='${storage:scratch}/training-cache/context-features',
+            geometry='${storage:scratch}/training-cache/context-geometry',encoders_kept=6)|c.get('cache_policy',{})
+        if c['cache_policy']['encoders_kept']!=6:
+            raise ValueError('Keep exactly the six most recently used encoder caches')
         self.root=resolve_path(c['output']);self.cache=resolve_path(c['cache']);self.technical=self.root/'technical'
         self.technical.mkdir(parents=True,exist_ok=True)
 

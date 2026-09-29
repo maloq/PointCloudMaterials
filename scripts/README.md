@@ -1,5 +1,200 @@
 # Maintained commands
 
+`python -m src.research.spatial_vicreg_bias.mace_checkpoint infer|publish --config configs/analysis/mace_rich_interface_20260929.json` evaluates a frozen rich-MACE checkpoint in both interface viewers; [workflow](../docs/spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer).
+
+`python -m src.research.spatial_vicreg_bias.compact_view_assets --publication REPO_BUNDLE`
+creates lossless compact display assets from existing sample/embedding exports on
+Slurm CPU. Follow with `comparison_layout`; [viewer workflow](../docs/spatial_vicreg_bias.md#responsive-rendering).
+
+`python -m src.research.spatial_vicreg_bias.sample_lattice --publication REPO_BUNDLE --workers 4`
+exports PTM-oriented ideal-lattice overlays for saved samples on Slurm CPU.
+`embedding_travel infer|publish` exports frozen vector probes and spatial/feature
+neighbor graphs; run inference from the recorded frozen model source on Slurm GPU,
+then refresh with `comparison_layout`. [Definitions](../docs/metrics/interactive_structure_paths.md).
+
+`python -m src.research.spatial_vicreg_bias.sample_environments --source DENSE_BUNDLE --publication REPO_BUNDLE --dataset matched|static`
+exports up to five real 80-atom neighborhoods per cluster from saved dense labels
+on Slurm; follow with `comparison_layout` to show the rotatable examples. No fitting.
+
+`python -m src.research.spatial_vicreg_bias.comparison_layout --publication REPO_BUNDLE --dataset matched|static`
+refreshes the compact PaCMAP/MD layout and dataset selector using saved page
+payloads, without recomputing projections, clusters or correspondence metrics.
+
+`python -m src.research.spatial_vicreg_bias.checkpoint_explorer --dense-config RESOLVED_CHECKPOINT_DENSE_CONFIG`
+publishes the matched GeoFormer / descriptor explorer with epoch selection,
+advanced training variants, matched cluster colors and paired full-snapshot MD.
+Run inside Slurm after frozen dense inference for its declared checkpoints.
+[Workflow](../docs/spatial_vicreg_bias.md) · [definitions](../docs/metrics/checkpoint_cluster_matching.md).
+
+`python -m src.research.spatial_vicreg_bias.paired_pacmap --source COMPLETED_STATIC_BUNDLE --publication REPO_STATIC_BUNDLE`
+publishes saved neural/descriptor 3D PaCMAP with optimal matched colors,
+membership matrices, overlap bars and dense MD. Assignments use saved dense
+contingencies; no neural or cluster refitting. [Definitions](../docs/metrics/cluster_color_matching.md).
+
+`python -m src.research.spatial_vicreg_bias.static_md submit --config configs/analysis/static_al_interface.json`
+submits the six relaxed Al snapshots (166–240 ps) for frozen NN / rich-descriptor
+cluster comparison, paired dense MD views and PaCMAP; [workflow](../docs/spatial_vicreg_bias.md).
+
+`python -m src.analysis.al_replay --config configs/analysis/al_replay_completed20_20260929.json`
+compares old/new Al trajectories from the same native preparations at exact shared
+times; [paired protocol](../experiments/al_replay_20260929/README.md).
+
+`python -m src.research.spatial_vicreg_bias.island_audit --config configs/analysis/interface_pacmap.json --output OUTPUT_DIRECTORY` runs the screenshot-specific descriptor-island audit inside a Slurm CPU allocation; [definitions](../docs/metrics/pacmap_islands.md) and [findings](../experiments/spatial_vicreg_bias_20260929/PACMAP_ISLANDS.md).
+
+`python -m src.research.spatial_vicreg_bias.md_space --config RESOLVED_SUBMISSION_CONFIG --dense-config RESOLVED_DENSE_CONFIG` publishes two independent dense MD panels with cluster colors matching PaCMAP. `python -m src.research.spatial_vicreg_bias.dense_md prepare|infer --config RESOLVED_DENSE_CONFIG` computes their full-snapshot descriptors or frozen neural assignments on Slurm. [Workflow](../docs/spatial_vicreg_bias.md).
+
+`python -m src.research.spatial_vicreg_bias.pacmap_views submit --config configs/analysis/interface_pacmap.json` submits 2D and interactive 3D PaCMAP of frozen encoder/projector and rich descriptors; no neural training. [Workflow](../docs/spatial_vicreg_bias.md).
+
+`python -m src.research.spatial_vicreg_bias.correspondence submit --config configs/analysis/interface_cluster_correspondence.json` submits independent rich TDA/bond-order/CNA clustering and interface-local correspondence to frozen neural clusters; [protocol](../experiments/spatial_vicreg_bias_20260929/INTERFACE_CORRESPONDENCE.md).
+
+`python -m src.research.spatial_vicreg_bias.queue submit --config configs/spatial_vicreg_bias/al64_20260929.json`
+submits matched GeoFormer neighbor-alignment fits and physical cluster readouts;
+[workflow and existing submission](../docs/spatial_vicreg_bias.md).
+
+`python -m src.research.liquid_predictability.rich_multimaterial_queue launch --config configs/liquid_predictability/rich_multimaterial_h100_20260929.json --allocation ALLOCATION` starts a detached H100 fit from sealed descriptors and queues a checkpointed two-GPU continuation; [workflow](../docs/rich_multimaterial_encoder.md).
+
+
+`python -m src.research.liquid_predictability.rich_encoder probe|submit|worker|train --config configs/liquid_predictability/rich_mace256_20260929.json`
+runs 60 full passes of raw rich-descriptor learning with MACE256/L3/Z256;
+[workflow](../docs/rich_descriptor_encoder.md).
+
+`python -m src.research.liquid_predictability.control_relaxation submit --config configs/simulation/liquid_full_relaxation_20260928.json` submits full-cohort relaxation and its dependent study; [operations](../docs/simulations/liquid_full_relaxation_20260928.md).
+
+`python -m src.research.liquid_predictability.control_queue submit --config configs/liquid_predictability/controls_relaxed_20260928.json`
+queues known/null signal controls, rich-feature MACE training and paired relaxed-input/label comparisons; [workflow](../docs/liquid_controls.md).
+
+
+`python -m src.research.liquid_predictability.descriptor_baselines submit --config configs/liquid_predictability/descriptor_baselines_20260928.json`
+adds mean, affine ridge and linear-logit controls to the frozen GPU descriptor
+comparison; [workflow](../docs/liquid_descriptors.md#mean-and-linear-controls).
+
+`python -m src.research.liquid_predictability.descriptor_queue submit --config configs/liquid_predictability/descriptors_al64_20260928.json`
+compares rich TDA, bond order, CNA and geometry descriptors with GPU boosted trees
+and a small MLP on the fixed liquid-only cohort; [workflow](../docs/liquid_descriptors.md).
+
+
+`python -m src.research.encoder_mechanisms.results --config CONFIG --output OUTPUT`
+summarizes completed matched encoder trajectories and adaptation using saved
+metrics and source-paired predictions, with frozen metric definitions and
+scientific plots; [workflow](../docs/encoder_mechanisms.md).
+
+`python -m src.research.liquid_predictability.queue launch --config configs/liquid_predictability/al64_20260928.json`
+runs physical profiles, descriptor/frozen controls, joint distance-only VCReg MACE,
+source learning curves and a visible-crystal control; [workflow](../docs/liquid_predictability.md).
+
+`python -m src.research.crystal_vector.interface_queue launch --config configs/crystal_vector/liquid_distance_20260928.json --gpu 0`
+reuses the expanded cohort for strict liquid-only external-crystal localization,
+with two GPUs, batch 512 and VCReg; [workflow](../docs/crystal_liquid_distance.md).
+
+`python -m src.research.crystal_vector.feature_audit probes|interventions --config configs/analysis/crystal_feature_dominance_20260928.json`
+audits dominant features with training-only readouts and frozen-head interventions;
+[local diagnostic workflow](../docs/crystal_interface_unseen.md#feature-dominance-audit).
+
+`python -m src.research.crystal_vector.interface_queue launch --config configs/crystal_vector/interface_unseen_20260928.json --gpu 0`
+prepares dense interface-invisible contexts on CPUs, then runs one detached
+two-GPU VCReg fit with global batch 512; [workflow and saved-prediction audit](../docs/crystal_interface_unseen.md).
+
+`python -m src.research.crystal_vector.interface_queue submit --config configs/crystal_vector/interface_al64_20260928.json`
+prepares the separate interface-layer targets and queues three joint encoder/context
+treatments, including crystal-interior evaluation; [workflow](../docs/crystal_interface.md).
+
+`python -m src.research.crystal_vector.queue prepare|launch|worker|train|evaluate --config CONFIG`
+runs the joint snapshot crystal-distance/vector experiment with random batches;
+[workflow](../docs/crystal_vector.md).
+
+`python -m src.simulation.campaigns.dense_al prepare|submit|worker|collect`
+reruns the main Al preparations at exact 0.1 ps, preserving ancestor roles;
+`convert_trajectory.py dense-al RUN_DIR` verifies their canonical exports.
+[Campaign and execution](../docs/simulations/al_main_010ps_20260927/README.md).
+
+`python -m src.research.distance_encoder.material_queue submit|worker --config CONFIG --allocation JOB --gpu INDEX`
+fine-tunes CD-MACE128-D6 separately for Al and Ta, followed by paired parent
+evaluations; [workflow](../docs/distance_encoder_material_finetune.md).
+
+`python -m src.analysis.saved_representatives --run RUN_DIR` updates published
+native-MACE snapshot representatives from frozen sample IDs and source coordinates;
+[display-only workflow](../docs/analysis_visualization.md#snapshot-representatives).
+
+`python -m src.analysis.cluster_explorer --config configs/analysis/cd_mace128_explorer.json --stage compute|render`
+builds the offline linked static explorer over published standard/order analyses;
+[workflow](../docs/analysis_visualization.md#linked-structure-exploration).
+The [CD-MACE128 static recipe](../docs/structural_static_analysis.md#cd-mace128-distance-supervised-encoder)
+exports and verifies the completed distance-trained encoder before analysis.
+
+`python scripts/project.py simulations --details --output DIRECTORY` exports
+measured simulation holdings, per-trajectory timelines, sampled velocity fields,
+formats and disk allocation. It reads producer records and array headers; it does
+not delete, convert or rerun simulations. [Current inventory](../docs/simulations/inventory_20260926/README.md).
+
+`python -m src.research.distance_encoder.history_queue submit|worker|prepare --config configs/distance_encoder/md_history6_20260926.json` runs the end-to-end MD-history distance comparison; [workflow](../docs/distance_encoder_history.md).
+
+`python -m src.research.encoder_mechanisms.workflow submit|check|worker --config configs/encoder_mechanisms/alignment_readout_20260926.json`
+runs the matched alignment/readout/adaptation queue;
+[execution, resume and CPU birth audit](../docs/encoder_mechanisms.md).
+`python -m src.research.encoder_mechanisms.recovery submit --config CONFIG --output OUTPUT`
+resumes its saved encoder checkpoints with isolated evaluation processes and
+the originally declared adaptation fits; completed analyses keep their provenance.
+
+`python -m src.research.distance_encoder.queue submit|worker --config ...`
+submits the CD-MACE128-VC comparison; `distance_encoder.local` evaluates a single
+local embedding without context predictors. [Workflow](../docs/distance_encoder.md).
+
+`python -m src.simulation.campaigns.position_shooting prepare|submit|worker|collect`
+queues replicated full-cell Ta shots through the elemental producer, with verified
+STORE publication and a dependent failure-preservation job. See the
+[shooting record and CLI arguments](../docs/simulations/ta_shooting_20260926.md).
+
+`python -m src.research.distance_encoder.prepare plan|lane|seal` attaches distance
+labels to the dynamic multi-material release. `distance_encoder.train` runs
+distributed end-to-end training; `distance_encoder.context` evaluates/refits the
+selected context predictors. [Workflow](../docs/distance_encoder.md).
+
+`python -m src.analysis.native_mace_adapter --config configs/analysis/native_mace_epi_latest_static.json --stage export|verify`
+bridges native self-supervised MACE checkpoints into the full static gallery;
+then run `python -m src.analysis.pipeline configs/analysis/static_native_mace_epi_latest_al.yaml`.
+See [checkpoint fidelity and the six-snapshot protocol](../docs/structural_static_analysis.md).
+
+`python -m src.analysis.cluster_order --config configs/analysis/mace_epi_epoch12_order.json --stage compute|render`
+analyzes full-source PTM and a fixed stratified sample over saved clusters, then
+renders representatives, detected order and the multi-sample summary. CPU only;
+no encoder or clustering fit. [Workflow and figures](../docs/analysis_visualization.md#local-order-figures).
+
+`python -m src.research.spatial_distance.queue prepare|worker --config configs/analysis/spatial_distance_20260926.json`
+trains continuous crystal-distance readouts; `spatial_distance.confidence`
+exports fixed probability-threshold diagnostics. [Workflow](../docs/spatial_distance.md).
+
+`run_lammps_campaign.py birth-sources prepare|submit|worker` produces fresh Al
+birth-screen sources on CPUs; `convert_trajectory.py birth-pair RUN_DIR` verifies
+their paired precision exports. See the [uniform-temperature campaign](../docs/simulations/al_birth_uniform_20260926.md).
+
+`python scripts/experiment_registry.py publish --plan configs/analysis/result_publication_20260926.json`
+publishes grouped galleries over retained artifacts without fitting or metric
+recomputation. `publish --record PATH/to/run.json` refreshes one existing gallery,
+including its interactive HTML entry pages; `--include-paper-svg` exposes retained
+cluster-proportion paper SVGs. `results` refreshes explicit receipts in the existing SQLite
+catalogue; `verify-results --record PATH/to/run.json` checks evidence hashes and
+links. `build --from-snapshot` repairs saved inventory grouping/classification
+while retaining its observation date. See the
+[result system](../docs/research_results_system.md).
+
+`python -m src.research.encoder_quality.queue submit|worker|report --config configs/analysis/encoder_quality_latest_20260926.json`
+evaluates eight frozen native MACE checkpoints; [checks, Slurm execution and results](../docs/encoder_quality.md).
+
+`python -m src.research.crystallization_origin.harvest --config configs/analysis/nucleus_harvest_20260926.json`
+audits training-source birth coverage, causal eligibility, competing contacts
+and bond order; [CPU operations](../docs/nucleus_harvest.md).
+
+`python -m src.research.spatial_approach.queue prepare|worker|collect --config configs/analysis/spatial_approach_20260926.json`
+runs fixed-snapshot spatial warning-distance probes; [workflow](../docs/spatial_approach.md).
+
+`python -m src.research.crystallization_origin.cpu|external_data|external_audit`
+resumes the fixed audit on CPUs and processes large Al/Mg/Ti/Ta histories in
+parallel chunks; [CPU commands and deadlines](../docs/crystallization_origin_cpu.md).
+
+`python -m src.research.crystallization_origin.extract|audit --config configs/analysis/crystallization_origin_20260925.json`
+audits full-cell crystal ancestry and label availability without fitting;
+[commands and definitions](../docs/encoder_research/crystallization_origins.md).
+
 `python -m src.data.fixed_cohort.prepare --config configs/fixed_cohort/al64_v1.json --workers 4`
 builds the immutable 64-center Al benchmark and source-disjoint structural
 pretraining corpus; [data contract and loaders](../docs/datasets/fixed_al64.md).

@@ -76,6 +76,8 @@ def convert(directory, delete_source=False, local_cloud_dtype='float16'):
         source_sha256=source_hash,
         quantization=error.report(),
         training_precision=(
+            'No local clouds were extracted before conversion; downstream neighborhoods use the archived float16 full cell.'
+            if local_cloud_dtype == 'none' else
             'Training neighborhoods are extracted before global float16'
             f' storage, then stored as centered {local_cloud_dtype} offsets.'
         ),
@@ -94,6 +96,6 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('directory', type=Path)
     parser.add_argument('--delete-source', action='store_true')
-    parser.add_argument('--local-cloud-dtype', choices=('float16', 'float32'), default='float16')
+    parser.add_argument('--local-cloud-dtype', choices=('float16', 'float32', 'none'), default='float16')
     args = parser.parse_args(argv)
     print(json.dumps(convert(args.directory, args.delete_source, args.local_cloud_dtype), indent=2))

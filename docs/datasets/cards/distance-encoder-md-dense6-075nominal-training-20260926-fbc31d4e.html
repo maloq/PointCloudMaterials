@@ -1,0 +1,1640 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Six-frame nominal 0.75-ps all-data distance training</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Six-frame nominal 0.75-ps all-data distance training</h1><p>11,375,472 train and 190,080 selection windows. Native exact .75 ps; external exact .70 ps, explicitly accepted as nominal .75 ps. No interpolation.</p><span class="badge">derived</span><p><code>distance-encoder-md-dense6-075nominal-training-20260926</code> · Al, Mg, Ta, Ti</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926">/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926</a></p><p>305 owned files · 38.260 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Six-frame nominal 0.75-ps all-data distance training&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;,
+    &quot;Mg&quot;,
+    &quot;Ti&quot;,
+    &quot;Ta&quot;
+  ],
+  &quot;role&quot;: &quot;training_geometry&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;11,375,472 train and 190,080 selection windows. Native exact .75 ps; external exact .70 ps, explicitly accepted as nominal .75 ps. No interpolation.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;,
+    &quot;al-mendelev2008-eam&quot;,
+    &quot;mg-wilson2016-eam&quot;,
+    &quot;ti-kavousi2019-meam&quot;,
+    &quot;ta-zhong2014-eam&quot;
+  ],
+  &quot;lineage&quot;: &quot;Fixed native Al roles unchanged; all external ancestry stays train-only.&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/distance_encoder/md_dense6_075nominal_20260926.json&quot;,
+    &quot;docs/distance_encoder_history.md&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Nominal cadence is not a claim of identical physical intervals: actual native/external spans are 3.75/3.50 ps.&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/distance_encoder/md_dense6_075nominal_20260926.json">configs/distance_encoder/md_dense6_075nominal_20260926.json</a></li><li><a href="../../distance_encoder_history.md">docs/distance_encoder_history.md</a></li></ul><p>Dependencies: <a href="distance-encoder-multimaterial-20260926-d7e3e963.html">distance-encoder-multimaterial-20260926</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>cadence_ps</td><td><code>[0.7, 0.75]</code></td></tr><tr><td>protocol</td><td><code>[&quot;fixed_material_cutoff_al_reference_v1&quot;, &quot;six_declared_cadence_md_observations_v3&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;selection&quot;, &quot;train&quot;]</code></td></tr><tr><td>lineage</td><td><code>[&quot;Al-archived-root&quot;, &quot;Mg-archived-root&quot;, &quot;Ta-archived-root&quot;, &quot;Ti-archived-root&quot;, &quot;al-1m-independent-melt-911001&quot;, &quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_142641279&quot;, &quot;independent_melt_144370470&quot;, &quot;independent_melt_146234076&quot;] … (110 values; see JSON)</code></td></tr><tr><td>timestep_fs</td><td><code>[1.0, 2.0, 3.0]</code></td></tr><tr><td>frame_count</td><td><code>[2401, 241, 3001, 4001, 7241, 801]</code></td></tr><tr><td>atom_count</td><td><code>[100000, 1000000, 10000422, 1024000, 1048576, 70304]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 305,
+    &quot;apparent_bytes&quot;: 57555670068,
+    &quot;allocated_bytes&quot;: 41081467904,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 173,
+      &quot;.npy&quot;: 132
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 134,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;sources/1ccb83e1325a791d6acc/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/2a5950291b0e67495ad3/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/2b458cb655817bacdb6e/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/364338e8a8f288048934/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/48689a30826dc7ccbca8/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/557f9d4494e4c16b42ca/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/56c826cef2fbbcf12577/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/5a96282209df75111d22/positions.npy&quot;,
+      &quot;shape&quot;: [
+        588,
+        10000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/5cce9fb961a09dba0210/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/6c906a946baf3b722a98/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/6ff0c67b8139acdf1065/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/73b397e6a1a9ceb35ee5/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/76802cc009c7cbd98448/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/7aa3910f511bc57fa96d/positions.npy&quot;,
+      &quot;shape&quot;: [
+        786,
+        10000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8aee8bb8abe645c96f1f/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8b2bfefd81620234fd52/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1434,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8ee5e077946023ab0f92/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/9170aa4e647b6d2e7394/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/9dbd8029253ea9cf68ec/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/b1810a2378bec540378b/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/b6a10214ca3c5d213848/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/bc7c1b0a874f631b214a/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/be004f3d2506ad691cd6/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/db84b69babd29edfc80f/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/dde82c07f1e6160f739b/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ec5ecc1b13dd3976d5df/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/f7ecb979a367ce1b6ebb/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-1004/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-1005/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-1006/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-860/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-861/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-862/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-863/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-864/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-865/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-866/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-867/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-868/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-869/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-870/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-871/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-872/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-873/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-874/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-876/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-878/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-879/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-884/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-885/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-886/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-887/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-888/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-889/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-890/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-891/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-892/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-893/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-894/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-895/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-896/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-897/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-898/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-899/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-900/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-901/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-902/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-903/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-906/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-914/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-915/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-916/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-917/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-918/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-919/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-920/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-921/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-922/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-923/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-924/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-925/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-926/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-927/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-928/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-929/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-930/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-931/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-935/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-936/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-937/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-944/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-945/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-946/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-947/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-948/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-949/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-950/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-951/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-952/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-953/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-954/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-955/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-956/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-957/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-958/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-959/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-960/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-961/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-963/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-965/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-967/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-974/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-975/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-976/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-977/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-978/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-979/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-980/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-981/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-982/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-983/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-984/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-985/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-986/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-987/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-988/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-989/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-990/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-991/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-992/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-994/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/native-997/positions.npy&quot;,
+      &quot;shape&quot;: [
+        794,
+        64,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (134 records)</summary><p><a href="../records/distance-encoder-md-dense6-075nominal-training-20260926-fbc31d4e.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/manifest.json">manifest.json</a> · complete · <code>030e15f20fc5f9674d1421067806ae6f152f6a85de29b3eccc6e3ab4da495cd8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/plan.json">plan.json</a> · metadata · <code>6598360a6af5ab58f03bcd1cb989a1e65a6fd53a19e6dd14c70b8686eb7527aa</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/1ccb83e1325a791d6acc/complete.json">sources/1ccb83e1325a791d6acc/complete.json</a> · metadata · <code>cb4c56162607839e854b771313aab01daaab8eed9a9b8789afb323867055002c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/2a5950291b0e67495ad3/complete.json">sources/2a5950291b0e67495ad3/complete.json</a> · metadata · <code>e55855b3f8874128758809fa3a31bb5fba3b8636de5f2118f1fb974e9b3d7303</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/2b458cb655817bacdb6e/complete.json">sources/2b458cb655817bacdb6e/complete.json</a> · metadata · <code>65e44bdb2bc451f4d6ce96a67d12e0eaa77d27d2feda79302fd9cd431caf8868</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/364338e8a8f288048934/complete.json">sources/364338e8a8f288048934/complete.json</a> · metadata · <code>68f79989d7cff45e83479058c146833341b43e568a8808d6f40e4e84f7a69569</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/48689a30826dc7ccbca8/complete.json">sources/48689a30826dc7ccbca8/complete.json</a> · metadata · <code>c9bb21e3994bfa56db71c4bf4c2cfae46fe3feb2133598d92e2651394f0b9552</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/557f9d4494e4c16b42ca/complete.json">sources/557f9d4494e4c16b42ca/complete.json</a> · metadata · <code>b4cb837ca92de6400184872649937fe80ffda774ddf51d3857052c4bade7300b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/56c826cef2fbbcf12577/complete.json">sources/56c826cef2fbbcf12577/complete.json</a> · metadata · <code>9dcb79c268ed4957f71ae48bcfd66f944965a2c84b0b6a5a1b5441d87fa42541</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/5a96282209df75111d22/complete.json">sources/5a96282209df75111d22/complete.json</a> · metadata · <code>23b794722b225e40670eb31bfa2791fd31f010dbb6bcc18b0215467c417dd4c5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/5cce9fb961a09dba0210/complete.json">sources/5cce9fb961a09dba0210/complete.json</a> · metadata · <code>f09f9aa2bc7b091ac8e7510324a1dc6a655803ca98e6abe69f9cab8fcb79fef0</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/6c906a946baf3b722a98/complete.json">sources/6c906a946baf3b722a98/complete.json</a> · metadata · <code>a42f4f350625f5e09f1410b6cbfdbf256caac62832f3779af86ae0928fcff560</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/6ff0c67b8139acdf1065/complete.json">sources/6ff0c67b8139acdf1065/complete.json</a> · metadata · <code>9e1be693e5416f7ee20bed7691379fe460eba979616581fb74ad8ef8bac94e13</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/73b397e6a1a9ceb35ee5/complete.json">sources/73b397e6a1a9ceb35ee5/complete.json</a> · metadata · <code>4b1446760256deb7a043606b269ca4389ce53ef21e15d50dccefc112d41c2c87</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/76802cc009c7cbd98448/complete.json">sources/76802cc009c7cbd98448/complete.json</a> · metadata · <code>e72bad0f10bbba1dff01e9d6d36dacec25ad54c77b8fcfdf5d13bfc0a40d133f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/7aa3910f511bc57fa96d/complete.json">sources/7aa3910f511bc57fa96d/complete.json</a> · metadata · <code>a7a8ddb099ca3ffcc94e0e3f3360cf09f50282d68f96bebbe2c6b7feff35f121</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/8aee8bb8abe645c96f1f/complete.json">sources/8aee8bb8abe645c96f1f/complete.json</a> · metadata · <code>692e5edf5beb542be6f17721de776a6d3bc1b49f9869a04ec06b38a1acd63dc3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/8b2bfefd81620234fd52/complete.json">sources/8b2bfefd81620234fd52/complete.json</a> · metadata · <code>d2b1906cc5b4897ae7fa2e00c530c137ac4693b6f0450dcf64e1e2299da5b38d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/8ee5e077946023ab0f92/complete.json">sources/8ee5e077946023ab0f92/complete.json</a> · metadata · <code>a2f8ef8432a44d0180796c65ed2a96066b8b5be7692d422de970d12983f41311</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/9170aa4e647b6d2e7394/complete.json">sources/9170aa4e647b6d2e7394/complete.json</a> · metadata · <code>8eff87f6d067b868751b3a59b6fe29860f326184be73879321fe51f20a685200</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/9dbd8029253ea9cf68ec/complete.json">sources/9dbd8029253ea9cf68ec/complete.json</a> · metadata · <code>624ae9b1ffc00a3abff0ad627a624fc93ec49ba46e878caf9440a307e2693bfc</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/b1810a2378bec540378b/complete.json">sources/b1810a2378bec540378b/complete.json</a> · metadata · <code>c0a7e2c3c4d055393fcce1d908a7c9c4230847b6b99bb1769f315aae7d77bb2f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/b6a10214ca3c5d213848/complete.json">sources/b6a10214ca3c5d213848/complete.json</a> · metadata · <code>c0b8c82874b80f86887f23614ec0a94ff58198649cc58a97a97d83af110ac123</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/bc7c1b0a874f631b214a/complete.json">sources/bc7c1b0a874f631b214a/complete.json</a> · metadata · <code>593d7dcb4233a3d327dcaadc6fc5e0061d3703160af45bacb91a3f28e165de8a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/be004f3d2506ad691cd6/complete.json">sources/be004f3d2506ad691cd6/complete.json</a> · metadata · <code>bcdc28a9635cf7ba1d8c54abd97e773f153686f32417a2e00b8b0ae2887fefd7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/db84b69babd29edfc80f/complete.json">sources/db84b69babd29edfc80f/complete.json</a> · metadata · <code>62365a78d2ca416b76ffeaa8c3a631ebcb61375bcdcd5fe91cdbb9fdfe5bd6f4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/dde82c07f1e6160f739b/complete.json">sources/dde82c07f1e6160f739b/complete.json</a> · metadata · <code>7e9456e4ab657d06efa0ddd77067d98458d6a8dd73f77ff92852816849109fbd</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/ec5ecc1b13dd3976d5df/complete.json">sources/ec5ecc1b13dd3976d5df/complete.json</a> · metadata · <code>90789b5fcbdb5656e30547f907a532e160f9deb09131050dfbaccea90a752493</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/f7ecb979a367ce1b6ebb/complete.json">sources/f7ecb979a367ce1b6ebb/complete.json</a> · metadata · <code>3d0fa39753affd2fc0cb294a814721c012c3be84a33e99f971ec1071e603c5e9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-1004/complete.json">sources/native-1004/complete.json</a> · metadata · <code>b1f587bf7383f10c6708e1997103d857c32c10966332e5b798aeef141d9e894d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-1005/complete.json">sources/native-1005/complete.json</a> · metadata · <code>6bdd8e7afd8aae369d995d52639654be19f4f2ac6582e207f5e148f03747db50</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-1006/complete.json">sources/native-1006/complete.json</a> · metadata · <code>277ae3838c30163d597ab98bc2bc72dff56d3cbcd9d30216041d698edff47b1c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-860/complete.json">sources/native-860/complete.json</a> · metadata · <code>06ea05d1967b22d6a98940cb3714ba3b1298d3027ce9a027983be771f5206484</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-861/complete.json">sources/native-861/complete.json</a> · metadata · <code>6e6b2e87985600f9dafa902ac7b786cc5cefb090ba2f256f5fab75a376f2f59e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-862/complete.json">sources/native-862/complete.json</a> · metadata · <code>52536a4ed0d57cfe64a3e9d364c6772693f5c9220c484dce43bcfba1ec206e42</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-863/complete.json">sources/native-863/complete.json</a> · metadata · <code>613bbb3ecd2ac55549c4f3bd6a7bbfc1f368c5d7ecb6eaeb5956ca63afa46ffb</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-864/complete.json">sources/native-864/complete.json</a> · metadata · <code>97fe3e0412d3f9065dd027dc0dbe7583b42c511aa035bb837710b75301cb3a93</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-865/complete.json">sources/native-865/complete.json</a> · metadata · <code>015582bec606a026e98d2ee34b3df6d029efb7fcc47e792506f67c5073e4c76b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-866/complete.json">sources/native-866/complete.json</a> · metadata · <code>cfeddf15a0cb21ff4896df8f12bc63a6a7cda25e70d06db082f2e496692b86f6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-867/complete.json">sources/native-867/complete.json</a> · metadata · <code>013efcfd2dff5fac5cb748f4077917df08a91268129b571f64eead0d09619e77</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-868/complete.json">sources/native-868/complete.json</a> · metadata · <code>05739b35f3ab86592478241893ce9cdb7598ff2f33bdb44d7a247cc5c8a63327</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-869/complete.json">sources/native-869/complete.json</a> · metadata · <code>3c2a0e4f2b6e295dce6fd40df233bba32f4597aa8210abb1b2a36a756e8b806c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-870/complete.json">sources/native-870/complete.json</a> · metadata · <code>67f580ee392447f92d4112e4e61074ca5741eb8da1f76cfa88fca82c0bd3af07</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-871/complete.json">sources/native-871/complete.json</a> · metadata · <code>17aa5c58d70471038db033a2f9b1d11825b8840b3df6d30586ce912a8d0d39e2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-872/complete.json">sources/native-872/complete.json</a> · metadata · <code>3173dcb259a0b125518c2c4443bcb3214f3c9236b64f8e310a9b26beac6c2303</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-873/complete.json">sources/native-873/complete.json</a> · metadata · <code>092c37b02a58ec129ac5009e9d219249f8083662be935f9a3e8710b76794a3e7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-874/complete.json">sources/native-874/complete.json</a> · metadata · <code>8e9c48df69a8d0aced465e6e52599a7bacf3e165dd67d0bcfb40ed5d1a97f9c4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-876/complete.json">sources/native-876/complete.json</a> · metadata · <code>bb30d0b694790bf361edc6f8958b60b6f983d0f8126acdb4e7256611283eb87d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-878/complete.json">sources/native-878/complete.json</a> · metadata · <code>a9507335d5072d2245a00204cdcde4d205dcd0d42668b7d9d51395c9b97327f1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-879/complete.json">sources/native-879/complete.json</a> · metadata · <code>9ae99224dd4cf069c002231391ca83ff47740a8a3a44c4afad157a72efb92ddb</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-884/complete.json">sources/native-884/complete.json</a> · metadata · <code>8c1addfcd58fffe924f773cae7761680ba2fd8e48bf58ecfac8cee6860717bf1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-885/complete.json">sources/native-885/complete.json</a> · metadata · <code>2c6bc72174802b89f5cee531072761bc65cf3d0d0204db8479e31d049acea131</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-886/complete.json">sources/native-886/complete.json</a> · metadata · <code>b21e6c0ec5d75ddc10d721bcdfbcfc878c8a93ec7262cea7c9d0f363d0d02ed8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-887/complete.json">sources/native-887/complete.json</a> · metadata · <code>4035d1c9fb590bef38f36c2a07798b5542831fad1352cf4f4a292f9659aacac9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-888/complete.json">sources/native-888/complete.json</a> · metadata · <code>b68b240e5d81433aed8b2e94339cc483edcee33303242f3bd369a360e2bff03e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-889/complete.json">sources/native-889/complete.json</a> · metadata · <code>b5adc11d51c036eb47685151d16a8556db70dde52e66292b79f1501d29a745dd</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-890/complete.json">sources/native-890/complete.json</a> · metadata · <code>b25f81aa4ee8f8928fb5d51293707eee8355e72854e5e28f0cd19e73d70e37f9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-891/complete.json">sources/native-891/complete.json</a> · metadata · <code>c28cd56f1b8c196d74fb51f966df04a33ac5b8afbcbf254ed7e7a2361a91d172</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-892/complete.json">sources/native-892/complete.json</a> · metadata · <code>701bf1d0c9a4ce2f2e4b23310ab45ec3604220d97dc5dc7ed137a5079dbfad63</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-893/complete.json">sources/native-893/complete.json</a> · metadata · <code>82ab88d5f433ac8f200a94319fd74b8c262238976796dca3fdafcbb28dc053e6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-894/complete.json">sources/native-894/complete.json</a> · metadata · <code>40ac93b99c09d0503366c5fb60da9b1d46e742a482a3c7b25b72d7f4737436e5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-895/complete.json">sources/native-895/complete.json</a> · metadata · <code>b37d222129760e0320c4ca9dafadf4458eb713b6f8903fe4f6902211c0efddb5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-896/complete.json">sources/native-896/complete.json</a> · metadata · <code>43a2d2b19190fb22917d583c96d669c13cd2ad0e0ad91ea7187033c7f9897fc5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-897/complete.json">sources/native-897/complete.json</a> · metadata · <code>af2a205c380a6e678240488810924bfb6b49e1aeb6e41fb51cbd132b8191bfa4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-898/complete.json">sources/native-898/complete.json</a> · metadata · <code>8b34f2506d903e86023310f53fbccfed5be05aa1e291b10dd07d01b415efd42c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-899/complete.json">sources/native-899/complete.json</a> · metadata · <code>63cf2576a6f867fcba2c117635556b602e9308d91f62d7c6e503f0f5bd2c180a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-900/complete.json">sources/native-900/complete.json</a> · metadata · <code>83a653e58b7e0a2c49e1713b7033fae8589bde434a76d21349f92f41267596f6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-901/complete.json">sources/native-901/complete.json</a> · metadata · <code>df7da5a0ecbd02eb87c5db0280f2739d6e608411edb39ac03c354d038ce84f49</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-902/complete.json">sources/native-902/complete.json</a> · metadata · <code>f12e28375f5e360f07986a16c36ceeed5dc6407895368ff36068781c3de5c4e5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-903/complete.json">sources/native-903/complete.json</a> · metadata · <code>b8c0aa333c4268b0bc1c002887966d2ac61bae4159073da75800dbec82f0039b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-906/complete.json">sources/native-906/complete.json</a> · metadata · <code>1eb3c0dffe91286fa920dc328462f1d83ad5ec6a839faa23e3b097fe81595a54</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-914/complete.json">sources/native-914/complete.json</a> · metadata · <code>d5e483871335ed48b0ecd7fc4ee7dbddd472d59f631fca82f4da88e1f44cdf8a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-915/complete.json">sources/native-915/complete.json</a> · metadata · <code>c9040eb3d0e3e5a7f2f5cdc211de6639d8074f196f19087496d5387a92f1109d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-916/complete.json">sources/native-916/complete.json</a> · metadata · <code>6d3ce2c9b1e26588098a4e0388b6e42d08fd2b426cc0ebdd807c005137a5331e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-917/complete.json">sources/native-917/complete.json</a> · metadata · <code>db353bcc646bc5a2d1141a55a4248ec0a58cd0c84c3992b7ac71c348dee3c1c1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-918/complete.json">sources/native-918/complete.json</a> · metadata · <code>ee309ef9ff5638a27f500e572c760b848310c577b5b6d7b7c5b88e0d8ece78ed</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-919/complete.json">sources/native-919/complete.json</a> · metadata · <code>33afc21de95feb9cb9f0708baeb28f87fe6ae01f8f950c18a49a1d647cb0897c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-920/complete.json">sources/native-920/complete.json</a> · metadata · <code>8b9b471b6de7bfe07f115c56d94c6523e2a5acac87031a58e7f5e4883f7d37c6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-921/complete.json">sources/native-921/complete.json</a> · metadata · <code>00526565ee98aebda453159072e9a641fef00c2b32f401c4a6df7815d31d90e5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-922/complete.json">sources/native-922/complete.json</a> · metadata · <code>2e9a25877402a4dd54b44a4b456cff06c149d782d79ce04922d74ce27cdeb28c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-923/complete.json">sources/native-923/complete.json</a> · metadata · <code>92685f01cdcc832c18875b5dc76668d3d9b60203ead2b1529cedb0f08b3be5d8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-924/complete.json">sources/native-924/complete.json</a> · metadata · <code>af58351d51aee48a6f2e37ad7d5715a882f80fa10d99c324281498a0c3756bf6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-925/complete.json">sources/native-925/complete.json</a> · metadata · <code>038722e1f74dcbc9f2bfa018d9e2fcef7f002993f5a2343de5f45bc32edbbec6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-926/complete.json">sources/native-926/complete.json</a> · metadata · <code>85ea1fe89d1c9cb1e1a6a8211bc1bde70fd390fd55a3c7331c0d5458507e6471</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-927/complete.json">sources/native-927/complete.json</a> · metadata · <code>f237548d369ce9d2b6532a9d71a8b14088fdda98aaf5b04357e01e11cfd230e6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-928/complete.json">sources/native-928/complete.json</a> · metadata · <code>2e1090f67692aec57f9b7a165fabdb9a13d174252c72400273081f183fd81cf6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-929/complete.json">sources/native-929/complete.json</a> · metadata · <code>8baeb3a674575b7011a28897ff645bf5fa96a3c748b0e6dc938dac2c652af4ee</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-930/complete.json">sources/native-930/complete.json</a> · metadata · <code>d93850746d440a7cf04741ad467b65d9a7f54bf4ebcbeb227cb0fa37f1b3b57a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-931/complete.json">sources/native-931/complete.json</a> · metadata · <code>af7ffb5ee44c8a2fff868af53a1035d07d292c052008dbe38204c6e18dfff1d2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-935/complete.json">sources/native-935/complete.json</a> · metadata · <code>48a634c9cf0072dfc1f8c812a31275af4ac6e5cb1a184f070bd551472d8cde0c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-936/complete.json">sources/native-936/complete.json</a> · metadata · <code>9f288cdb71050aff50fdf7edace5bb62c724f24a5165344c3ec557e919939101</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-937/complete.json">sources/native-937/complete.json</a> · metadata · <code>dde00c77880c2ac622fab5e1f41321eb17165792e381daae8e812e8b3aee670d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-944/complete.json">sources/native-944/complete.json</a> · metadata · <code>eeb7172830a388ab88469d5f486643d8dd2615e13e9938d3259319a6c6899eaf</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-945/complete.json">sources/native-945/complete.json</a> · metadata · <code>38a1abd4d3c8540f778857cc2ad5853d734c2770b80bc2826a1a30d676b8f4bd</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-946/complete.json">sources/native-946/complete.json</a> · metadata · <code>e4fb9c1f2120157df6bd37c8755ecbba021af744ae73b1efaa1f72347edf86ef</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-947/complete.json">sources/native-947/complete.json</a> · metadata · <code>6a9ec8b03edbe6cd40aaa6193dcdaf48b006d6c4a5cd181f9ff333ba82944d28</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-948/complete.json">sources/native-948/complete.json</a> · metadata · <code>517a72c83991752679925f351ebd60853cd463dc68f9b25204d8e16a4bc4198a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-949/complete.json">sources/native-949/complete.json</a> · metadata · <code>e77fe46d89e08f6bd12e3c4c3887e711e09662ba9e821948f249a07506e8f258</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-950/complete.json">sources/native-950/complete.json</a> · metadata · <code>5e5be48b8e13010b5641acb0bd52dfc5512b0c9a245e6a7d71bd23ac5577dd04</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-951/complete.json">sources/native-951/complete.json</a> · metadata · <code>a0a481105200decf04670a27f725759d65a558b036d8437e04a6c8ea6d9c22c3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-952/complete.json">sources/native-952/complete.json</a> · metadata · <code>380bdb5ca47aa49ea0c8f117cdc31167ace152a7e013011273227faee714156c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-953/complete.json">sources/native-953/complete.json</a> · metadata · <code>7a9e0a161ad533580db0790876661dca96bb7108d24312ed82b143aea4c7bf21</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-954/complete.json">sources/native-954/complete.json</a> · metadata · <code>a6679c2ee2d54d8ecc2ed0fc38dd5995003b38643188f9755bee0f70d0e16698</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-955/complete.json">sources/native-955/complete.json</a> · metadata · <code>d0f40c7d0f4ed435003a4f3c62d1a34bf381f457b14920d631ab0ce6d1b12e0e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-956/complete.json">sources/native-956/complete.json</a> · metadata · <code>40781c009b4a7b1dc36af1fc04a48c1f3fdb7eb3148fbb648f05217111197d76</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-957/complete.json">sources/native-957/complete.json</a> · metadata · <code>458bed0f10569ef489ce754e89378a9727de785121976e75151e40139fc14db2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-958/complete.json">sources/native-958/complete.json</a> · metadata · <code>dc8488531af63fee96280e7c800923ff9ec8bec743154a0e365351ce8c670f65</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-959/complete.json">sources/native-959/complete.json</a> · metadata · <code>aac5055b8706d695b79ecbcf63e8cf69d3020fd3bd9585dd5414f779ff715b42</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-960/complete.json">sources/native-960/complete.json</a> · metadata · <code>e1461d9d734e7f4f383a488f2d158410b81746c19c37be87410203c11f0b6f09</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-961/complete.json">sources/native-961/complete.json</a> · metadata · <code>ae680385078165c9c50fd540615a131a7374566af0c55c94a091496484c3836e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-963/complete.json">sources/native-963/complete.json</a> · metadata · <code>6f0133d6998bd3e15c6cfb055d0faa9b94a336ab81375f3d1eb6f89854975aee</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-965/complete.json">sources/native-965/complete.json</a> · metadata · <code>687258bb04c121011a7af45d354d6da8eb43911b1fe46ea04e2368d1c3eaf824</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-967/complete.json">sources/native-967/complete.json</a> · metadata · <code>f05363bb5fc51381cf1117af6a6c4b888ee814c542ef70a90a6f1badf1793c9c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-974/complete.json">sources/native-974/complete.json</a> · metadata · <code>df56f7be2100ddbdc939fa0ddf48371b52dc5cc42357a41d4658c542400c43d5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-975/complete.json">sources/native-975/complete.json</a> · metadata · <code>1be154427f998f78956adfd5ea6e9a673195c44acdbdef3f3d61e4a02cc5aa76</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-976/complete.json">sources/native-976/complete.json</a> · metadata · <code>2b7a49f77db9d5c613f7da429edda953b998c8f526731438ee1f3566de542e20</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-977/complete.json">sources/native-977/complete.json</a> · metadata · <code>b0345108594dfc569614133d29312d42a3ae04348f1d419c0940d60a24f756df</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-978/complete.json">sources/native-978/complete.json</a> · metadata · <code>380e6a64e77d902bee4e64a5bd5406dab74abfe6e0a8073c7b0de5b973498818</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-979/complete.json">sources/native-979/complete.json</a> · metadata · <code>81dadd487a1358c63b8f90eeaf3bdedd71fc1e12be4ddee4988af2f4c4f4a234</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-980/complete.json">sources/native-980/complete.json</a> · metadata · <code>ff170e5921c1fc99198ae8c19d25ad41904fc987a2d4ccdf35e6e1b17010a13c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-981/complete.json">sources/native-981/complete.json</a> · metadata · <code>1f85e591af1c2084581a360c80d2901a7f543a84f8a1a753704bb57a4faad732</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-982/complete.json">sources/native-982/complete.json</a> · metadata · <code>c495d55962f8a62ab1944c4183f8ee11e4158216010eec02a7b010c75efad21a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-983/complete.json">sources/native-983/complete.json</a> · metadata · <code>22638cba8564c0c87e34ad7a10986aba326494729faf8fbe49ef0e3bdbaa5385</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-984/complete.json">sources/native-984/complete.json</a> · metadata · <code>b27aab83fa75f101bcc1b1df85dbd465fe54b247d3ac6604b814cd8b1f52ebb8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-985/complete.json">sources/native-985/complete.json</a> · metadata · <code>66dfdaf32320c2650c1ff6628485cb22c168dd902321cd518ac2cbd70564af54</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-986/complete.json">sources/native-986/complete.json</a> · metadata · <code>10e3622ea0d25f456bb9c6b8ddaf2f1e3e0cba3ba3c46020acfe895cdafb6800</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-987/complete.json">sources/native-987/complete.json</a> · metadata · <code>8d03f8542a07dcf853a356a0453a0aac855931d550780ee781f9c8cda8009117</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-988/complete.json">sources/native-988/complete.json</a> · metadata · <code>f28547e5d35defaa0ffe3eec5c4c84152e6793a3798cb0540d4b718635b36ac0</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-989/complete.json">sources/native-989/complete.json</a> · metadata · <code>097e883fd4bda6d36144f2ae2177fe3131f63e8e219050ed15060fb439f56f5b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-990/complete.json">sources/native-990/complete.json</a> · metadata · <code>80ac956bfe3a7c215bf19bfd7943d971a66ae656508021ca91e649d85215adb8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-991/complete.json">sources/native-991/complete.json</a> · metadata · <code>35b5fbe134f4d40d689b4e158382e57019b0b10638e3f15c3dedb21ee943ccb6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-992/complete.json">sources/native-992/complete.json</a> · metadata · <code>0b453b75b573a7fac4369e5fc46c3dc3b3e5192f69984eb73a65a52f2530960a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-994/complete.json">sources/native-994/complete.json</a> · metadata · <code>ad7a975de7527b5df5e26772384640085bc626e3c2a076d8457205ae82d367ae</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-075nominal-training-20260926/sources/native-997/complete.json">sources/native-997/complete.json</a> · metadata · <code>37f29997f789c22822a64f031c0c30063a926fc8e10359ec49fa57245c81e661</code></li></ul></details><p class="muted">Observed 2026-09-28T23:47:41.345301+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

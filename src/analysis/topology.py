@@ -40,8 +40,6 @@ def run_topology_analysis(*, model, cfg, analysis_cfg, checkpoint_path, out_dir,
     settings = OmegaConf.select(analysis_cfg, 'topology')
     if settings is None or not settings.enabled:
         return {}
-    if model is None:
-        raise ValueError('Topology diagnostics require model inference; disable figure_only.')
     step('Evaluating relaxed topology with source-held-out linear probes')
     data_cfg = OmegaConf.merge(cfg, {'data': settings.data, 'tda': {'target': 'blocks'}})
     with open_dict(data_cfg):

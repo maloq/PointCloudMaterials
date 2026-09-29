@@ -5,7 +5,7 @@ from src.models.encoders.spatial_mace import SpatialMACE
 
 
 class CapacityEncoder(SpatialMACE):
-    """Width-independent 128-D export with a trainable projected residual.
+    """Configurable state dimension with a trainable projected residual.
 
     Keep the exact geometry pathway and fitting-only pool normalization. A
     projection replaces concatenation so the atom width is independent of the
@@ -19,7 +19,7 @@ class CapacityEncoder(SpatialMACE):
         self.register_buffer('pooled_scale', torch.ones(width))
         self.projection = nn.Linear(width, output, bias=False)
         nn.init.orthogonal_(self.projection.weight)
-        self.readout = nn.Sequential(nn.Linear(width, 128), nn.SiLU(), nn.Linear(128, output))
+        self.readout = nn.Sequential(nn.Linear(width, output), nn.SiLU(), nn.Linear(output, output))
         nn.init.normal_(self.readout[-1].weight, std=.01)
         nn.init.zeros_(self.readout[-1].bias)
 

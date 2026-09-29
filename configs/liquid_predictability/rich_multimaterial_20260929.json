@@ -1,0 +1,116 @@
+{
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "encoder_config": {
+    "channels": 256,
+    "code_dim": 256,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true,
+    "d0": 2.6046457290649414,
+    "n_ref": 80.0,
+    "num_interactions": 3
+  },
+  "regularization": {
+    "variance_weight": 0.05,
+    "covariance_weight": 0.01,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_epochs": 5
+  },
+  "training": {
+    "epochs": 60,
+    "warmup_epochs": 5,
+    "max_lr": 0.004,
+    "min_lr": 1e-05,
+    "weight_decay": 1e-05,
+    "gradient_clip": 5.0,
+    "save_every_updates": 64,
+    "training_budget_hours": 10,
+    "budget_safety_fraction": 0.2,
+    "validation_every_epochs": 5
+  },
+  "seed": 20260929,
+  "branch": "self_supervised",
+  "protocol": "rich_multimaterial_patch_descriptors_v1",
+  "name": "MM-RD-MACE256-L3-Z256",
+  "output": "${storage:analysis}/liquid_predictability/mm-rd-mace256-l3-z256-20260929",
+  "cache": "${storage:cache}/rich-descriptors/multimaterial-raw-20260929",
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "data": {
+    "source_kind": "dynamic",
+    "domain": "hot",
+    "target": "442 local rich descriptors",
+    "phase_filter": null
+  },
+  "patch_chunk": 128,
+  "activation_checkpointing": true,
+  "vector_channels": 32,
+  "metric_family": "rich_multimaterial_encoder",
+  "runtime": {
+    "compile": true,
+    "precision": "bf16",
+    "gpus": 2,
+    "hours": 9.8,
+    "partition": "RTX6000PRO",
+    "walltime": "10:00:00",
+    "memory_GB": 96,
+    "cpu_threads": 8
+  },
+  "preparation": {
+    "lanes": 8,
+    "workers": 8,
+    "checkpoint_rows": 1024,
+    "walltime": "24:00:00"
+  },
+  "batch_search": {
+    "initial_per_gpu": 4096,
+    "increment": 2048,
+    "memory_fraction": 0.85,
+    "headroom_bytes": 2147483648,
+    "consecutive_steps": 3
+  },
+  "loader": {
+    "shards_per_block": 64,
+    "max_open_shards": 128,
+    "prefetch": 2
+  },
+  "evaluation": {
+    "training_audit_per_material": 8192,
+    "fixed_roles": [
+      "calibration",
+      "test"
+    ]
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "rich-multimaterial-20260929",
+    "display_name": "MM-RD-MACE256-L3-Z256 | measured 10h subset | 60 epochs"
+  }
+}

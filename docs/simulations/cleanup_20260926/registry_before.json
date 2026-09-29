@@ -1,0 +1,216 @@
+{
+  "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901": {
+    "root": "simulations",
+    "path": "al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al homogeneous unseeded 2nn meam 70304 400-500K 600ps 9independent runs 20260901",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "review_required",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_homogeneous_unseeded_2nn_meam_70304_400-500K_600ps_9independent_runs_20260901}"
+      ]
+    }
+  },
+  "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828": {
+    "root": "archive",
+    "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al homogeneous unseeded 2nn meam 70304 4temps 400-600K 600ps 6seeds 20260828",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "review_required",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828}"
+      ]
+    }
+  },
+  "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827": {
+    "root": "archive",
+    "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al homogeneous unseeded 2nn meam 70304 500K 600ps 7velocityseeds 20260827",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "review_required",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827}"
+      ]
+    }
+  },
+  "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827": {
+    "root": "archive",
+    "path": "projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al homogeneous unseeded 2nn meam 70304 500K 999ps velocity35803 20260827",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "review_required",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827}"
+      ]
+    }
+  },
+  "interrupted_attempts": {
+    "root": "simulations",
+    "path": "interrupted_attempts",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "interrupted attempts",
+      "materials": [],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:interrupted_attempts}"
+      ]
+    }
+  },
+  "local_overnight_lamedell11_20260905.startup_attempt_010736": {
+    "root": "simulations",
+    "path": "local_overnight_lamedell11_20260905.startup_attempt_010736",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "local overnight lamedell11 20260905.startup attempt 010736",
+      "materials": [],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}"
+      ]
+    }
+  },
+  "memory-al-precision-20260917-source003-T500-failed": {
+    "root": "archive",
+    "path": "simulations/memory-al-precision-20260917-source003-T500-failed",
+    "kind": "simulation",
+    "state": "failed",
+    "dependencies": [
+      "potentials"
+    ],
+    "aliases": [],
+    "metadata": {
+      "title": "memory-al-precision-20260917-source003-T500-failed",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:memory-al-precision-20260917-source003-T500-failed}"
+      ]
+    }
+  },
+  "memory-al-precision-20260917-source004-T500-failed": {
+    "root": "archive",
+    "path": "simulations/memory-al-precision-20260917-source004-T500-failed",
+    "kind": "simulation",
+    "state": "failed",
+    "dependencies": [
+      "potentials"
+    ],
+    "aliases": [],
+    "metadata": {
+      "title": "memory-al-precision-20260917-source004-T500-failed",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:memory-al-precision-20260917-source004-T500-failed}"
+      ]
+    }
+  },
+  "al_meam_1m_450K_400ps_20260913T205149Z": {
+    "root": "simulation_runs",
+    "path": "al_meam_1m_450K_400ps_20260913T205149Z",
+    "kind": "simulation",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "al meam 1m 450K 400ps 20260913T205149Z",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "evidence": [
+        "${dataset:al_meam_1m_450K_400ps_20260913T205149Z}/status.json"
+      ]
+    }
+  },
+  "al_meam_crystallization_1m_450K_20260913T203458Z": {
+    "root": "simulation_runs",
+    "path": "al_meam_crystallization_1m_450K_20260913T203458Z",
+    "kind": "simulation",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "al meam crystallization 1m 450K 20260913T203458Z",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "evidence": [
+        "${dataset:al_meam_crystallization_1m_450K_20260913T203458Z}/status.json"
+      ]
+    }
+  },
+  "al_meam_crystallization_1m_source_only_450K_20260913T203616Z": {
+    "root": "simulation_runs",
+    "path": "al_meam_crystallization_1m_source_only_450K_20260913T203616Z",
+    "kind": "simulation",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "al meam crystallization 1m source only 450K 20260913T203616Z",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "incomplete_or_rejected",
+      "description": "Retained earlier million-atom preparation/attempt. Inspect current status and arrays; do not substitute requested duration for completed data.",
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "evidence": [
+        "${dataset:al_meam_crystallization_1m_source_only_450K_20260913T203616Z}/status.json"
+      ]
+    }
+  }
+}

@@ -2,17 +2,17 @@
 
 [All datasets](../README.md) · [Browsable card](interrupted_attempts-241fcc9b.html) · [Full metadata](../records/interrupted_attempts-241fcc9b.json)
 
-Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.
+MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.
 
 - ID: `interrupted_attempts`
 - Materials: Unknown
-- Classification: **incomplete_or_rejected**; role: raw_dynamics
+- Classification: **retired**; role: provenance_only
 - Location: `/work/PERSO/vmorozov/simulations/interrupted_attempts`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.068 GiB
+- Allocated storage, excluding registered nested datasets: 0.001 GiB
 - Missing metadata: materials
 
 ## Notes and relationships
@@ -21,12 +21,14 @@ Inspect current producer records and array headers; historical directory labels 
 {
   "title": "interrupted attempts",
   "materials": [],
-  "role": "raw_dynamics",
-  "classification": "incomplete_or_rejected",
-  "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+  "role": "provenance_only",
+  "classification": "retired",
+  "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
   "evidence": [
-    "${dataset:interrupted_attempts}"
-  ]
+    "${dataset:interrupted_attempts}",
+    "${dataset:interrupted_attempts}/retirement.json"
+  ],
+  "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
 }
 ```
 
@@ -49,6 +51,6 @@ All 20 producer records, their hashes, field paths and current array schemas: [m
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

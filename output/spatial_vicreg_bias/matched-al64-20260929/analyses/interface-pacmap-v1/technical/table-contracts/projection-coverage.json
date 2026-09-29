@@ -1,0 +1,7 @@
+{
+  "table": "tables/projection-coverage.csv",
+  "sha256": "354c30ad3a231854cacc029acdd5c5a7a2617a85b719806a9183ebd115ce013d",
+  "family": "interface_pacmap",
+  "contract": "technical/metric-contracts/interface_pacmap.json",
+  "definitions": "tables/metric-definitions/interface_pacmap.md"
+}

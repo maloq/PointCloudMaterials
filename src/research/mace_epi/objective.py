@@ -7,12 +7,15 @@ from src.training_methods.structural_pretraining.objective import vicreg
 
 
 class Objective(nn.Module):
-    def __init__(self, treatment, epi_weight):
+    def __init__(self, treatment, epi_weight, *, alignment_weight=25/51):
         super().__init__()
         if treatment not in ('vicreg', 'epi', 'epi-variance'):
             raise ValueError(f'Unknown paired-MACE treatment: {treatment}')
         self.treatment = treatment
         self.epi_weight = epi_weight
+        if not 0 <= alignment_weight < float('inf'):
+            raise ValueError('Alignment weight must be finite and nonnegative')
+        self.alignment_weight = alignment_weight
         self.register_buffer('epi_initial_scale', torch.tensor(1.))
         self.diagnostics = {}
 
@@ -23,7 +26,7 @@ class Objective(nn.Module):
             raise ValueError(f'Expected two views for each of {n} anchors: {encoded.shape}')
         z = encoded[:, :128].float().reshape(n, 2, 128)
         _, details = vicreg(z[:, 0], z[:, 1])
-        terms = {'alignment': 25/51 * details['invariance']}
+        terms = {'alignment': self.alignment_weight * details['invariance']}
         if self.treatment in ('vicreg', 'epi-variance'):
             terms['variance'] = 25/51 * details['variance']
         if self.treatment == 'vicreg':

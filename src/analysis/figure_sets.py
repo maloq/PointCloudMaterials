@@ -1,4 +1,3 @@
-import json
 import re
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -9,6 +8,7 @@ import numpy as np
 import torch
 
 from .config import FigureSetSettings
+from .utils import _unwrap_subset_indices
 from .cluster_figures import (
     _build_cluster_color_map,
     _save_fixed_k_cluster_figure_set,
@@ -17,7 +17,6 @@ from .cluster_gallery import _save_horizontal_image_gallery
 from .output_layout import (
     snapshot_figure_set_dir,
     snapshot_outputs_root,
-    write_json,
 )
 
 
@@ -67,22 +66,6 @@ def filter_snapshot_figure_layout(
     )
 
 
-def _unwrap_dataset_with_subset_indices(
-    dataset: Any,
-) -> tuple[Any, list[int] | None]:
-    indices: list[int] | None = None
-    while isinstance(dataset, torch.utils.data.Subset):
-        current_indices = [int(v) for v in list(dataset.indices)]
-        if indices is None:
-            indices = current_indices
-        else:
-            indices = [indices[i] for i in current_indices]
-        dataset = dataset.dataset
-    while hasattr(dataset, "dataset") and not isinstance(dataset, torch.utils.data.Subset):
-        dataset = dataset.dataset
-    return dataset, indices
-
-
 def _resolve_sample_source_groups(
     dataset: Any,
     *,
@@ -93,7 +76,7 @@ def _resolve_sample_source_groups(
     if n_samples == 0:
         return []
 
-    base_dataset, subset_indices = _unwrap_dataset_with_subset_indices(dataset)
+    base_dataset, subset_indices = _unwrap_subset_indices(dataset)
     sample_source_names_raw = getattr(base_dataset, "sample_source_names", None)
     if sample_source_names_raw is None:
         return []
@@ -617,41 +600,6 @@ def render_cluster_figure_outputs(
     return None, snapshot_summary
 
 
-def write_figure_only_metrics(
-    *,
-    metrics_path: Path,
-    all_metrics: dict[str, Any],
-    multi_snapshot_real: bool,
-) -> dict[str, Any]:
-    merged_metrics = {}
-    if metrics_path.exists():
-        with metrics_path.open("r") as handle:
-            merged_metrics = json.load(handle)
-    existing_clustering = merged_metrics.get("clustering", {})
-    if isinstance(existing_clustering, dict):
-        existing_clustering.update(all_metrics["clustering"])
-        merged_metrics["clustering"] = existing_clustering
-    else:
-        merged_metrics["clustering"] = all_metrics["clustering"]
-    if "clustering_model_fit" in all_metrics:
-        merged_metrics["clustering_model_fit"] = all_metrics["clustering_model_fit"]
-    if "runtime_profile" in all_metrics:
-        merged_metrics["runtime_profile"] = all_metrics["runtime_profile"]
-    merged_metrics["inference_cache"] = all_metrics["inference_cache"]
-    if "cluster_figure_set" in all_metrics:
-        merged_metrics["cluster_figure_set"] = all_metrics["cluster_figure_set"]
-    elif multi_snapshot_real:
-        merged_metrics.pop("cluster_figure_set", None)
-    if "cluster_figure_sets_by_snapshot" in all_metrics:
-        merged_metrics["cluster_figure_sets_by_snapshot"] = all_metrics[
-            "cluster_figure_sets_by_snapshot"
-        ]
-    if "cluster_figure_sets_by_k" in all_metrics:
-        merged_metrics["cluster_figure_sets_by_k"] = all_metrics["cluster_figure_sets_by_k"]
-    write_json(metrics_path, merged_metrics)
-    return merged_metrics
-
-
 def print_figure_set_summary(
     all_metrics: dict[str, Any],
     *,
@@ -683,7 +631,8 @@ def print_figure_set_summary(
             )
             if raytrace_on:
                 print(f"  - ..._crystal_like_k{k_fig}[_view*]_raytrace.png")
-        print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}*.png")
+        print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}.png")
+        print(f"  - cluster_figure_set_k{k_fig}/04_cluster_representatives_k{k_fig}.html")
         rep_analysis = fs.get("panel_representatives_structure_analysis")
         if isinstance(rep_analysis, dict):
             print(

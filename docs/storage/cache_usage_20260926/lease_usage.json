@@ -1,0 +1,84 @@
+[
+  {
+    "cache": "context-features",
+    "key": "991291c0411cb159a869d5ad1c979c7d813e00099376eeead7e39764d892ecd0",
+    "last_used_utc": "2026-09-26T15:04:58.239783+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": true,
+    "metadata": {
+      "artifact": "encoder-quality",
+      "model": "R0-epoch000",
+      "checkpoint_sha256": "7d46910e2e358e316a1764ef5dc11196f78a33977657e842e1e41ad248123899"
+    }
+  },
+  {
+    "cache": "context-features",
+    "key": "4159fe0223af3db1423ed3676a6d784c303fac82a7c5f9fea2f6c9de01fb4244",
+    "last_used_utc": "2026-09-26T15:06:28.951126+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": true,
+    "metadata": {
+      "artifact": "encoder-quality",
+      "model": "R0-epoch004",
+      "checkpoint_sha256": "f8547fb98095ec9551ca7723d2810f22893f3fa51b357df8f073063c3189c2fa"
+    }
+  },
+  {
+    "cache": "context-features",
+    "key": "c889acefa5043ffc991876673dbdd18174605767854ad7d9e4f2ee81b1ae55c6",
+    "last_used_utc": "2026-09-26T15:19:15.600649+00:00",
+    "active_lease_at_audit": true,
+    "protected_by_policy": true,
+    "metadata": {
+      "artifact": "encoder-quality",
+      "model": "R2-epoch008",
+      "checkpoint_sha256": "4b5a73a4e5a2da781821b04d0ea8999ecbb2886a2c52c65fb6d56a683bc1e1b6"
+    }
+  },
+  {
+    "cache": "context-features",
+    "key": "c9df7bf2a354c68cc7805854b69a4676fa9f5f0a9ca863a0a850157572b2b93a",
+    "last_used_utc": "2026-09-26T15:17:20.105708+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": true,
+    "metadata": {
+      "artifact": "encoder-quality",
+      "model": "R2-epoch000",
+      "checkpoint_sha256": "14599971430d817a44862cb7e2cceb24ab2acddcb1c77b47defb290a3206b614"
+    }
+  },
+  {
+    "cache": "context-features",
+    "key": "0312eac519815713bc370a439e5a567a7dc387f24d6e6d49e6a1aee938ea5fff",
+    "last_used_utc": "2026-09-26T15:19:06.073370+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": true,
+    "metadata": {
+      "artifact": "encoder-quality",
+      "model": "R2-epoch004",
+      "checkpoint_sha256": "cc93b40c4004306c74213c65b5d79e151740b841c758819de6263a6c7a79d917"
+    }
+  },
+  {
+    "cache": "context-features",
+    "key": "7edd330f8b2e3fcbd2b625fa607d5dab3d2157dc89da01827de93d4900743d76",
+    "last_used_utc": "2026-09-26T14:46:07.584191+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": true,
+    "metadata": {
+      "identity": "cb5001bc0ab19439e1cf291ca50ca85387ddb3213aaf93c33e232a60adda0c7b",
+      "domain": "local-only",
+      "encoder_sha256": "40e0873fd32a4512b6a7395cb22d90a7e9300abb0266bfc4a9f4735665390a50"
+    }
+  },
+  {
+    "cache": "context-geometry",
+    "key": "49851c7b4d372a66d13d7e440f19c2ee54ef8130e13f90dd483266ff7dcf763e",
+    "last_used_utc": "2026-09-26T13:49:21.182732+00:00",
+    "active_lease_at_audit": false,
+    "protected_by_policy": false,
+    "metadata": {
+      "protocol": "paired_context_geometry_v1"
+    }
+  }
+]

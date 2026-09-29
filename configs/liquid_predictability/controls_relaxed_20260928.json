@@ -1,0 +1,207 @@
+{
+  "protocol": "liquid_signal_and_feature_controls_v1",
+  "output": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928",
+  "cache": "${storage:cache}/liquid-predictability/controls-relaxed-20260928",
+  "descriptor_parent": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928/technical/code/config.json",
+  "baseline_parent": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928/baselines-v1/technical/code/config.json",
+  "relaxation_plans": [
+    "output/relaxed_encoder/expanded-20260921/technical/plan.json",
+    "output/relaxed_encoder/large-test-20260921/technical/plan.json"
+  ],
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "seed": 20260928,
+  "synthetic_seed": 20260929,
+  "bootstrap_draws": 2000,
+  "signal_features": {
+    "local": "shell4_mean/bond_order/l6_q",
+    "spatial": "gradient_norm/bond_order/l6_q"
+  },
+  "signals": [
+    {
+      "name": "null",
+      "kind": "null",
+      "oracle_rmse_gain": 0.0
+    },
+    {
+      "name": "local_01pct",
+      "kind": "local",
+      "oracle_rmse_gain": 0.01
+    },
+    {
+      "name": "local_02pct",
+      "kind": "local",
+      "oracle_rmse_gain": 0.02
+    },
+    {
+      "name": "local_05pct",
+      "kind": "local",
+      "oracle_rmse_gain": 0.05
+    },
+    {
+      "name": "spatial_01pct",
+      "kind": "spatial",
+      "oracle_rmse_gain": 0.01
+    },
+    {
+      "name": "spatial_02pct",
+      "kind": "spatial",
+      "oracle_rmse_gain": 0.02
+    },
+    {
+      "name": "spatial_05pct",
+      "kind": "spatial",
+      "oracle_rmse_gain": 0.05
+    }
+  ],
+  "paired_protocols": [
+    "matched_raw",
+    "relaxed",
+    "matched_raw_newlabels",
+    "relaxed_newlabels"
+  ],
+  "relaxed_labels": {
+    "ptm_rmsd_cutoff": 0.1,
+    "crystal_types": [
+      1,
+      2,
+      3
+    ],
+    "neighbor_cutoff_A": 3.6,
+    "minimum_cluster_atoms": 64,
+    "temporal_confirmation": false
+  },
+  "preparation": {
+    "tasks": 8,
+    "workers": 8,
+    "chunk_size": 64
+  },
+  "gpu_partition": "RTX6000PRO,H100",
+  "batch_size": 256,
+  "microbatch": 256,
+  "patch_chunk": 256,
+  "activation_checkpointing": true,
+  "encoder_config": {
+    "channels": 128,
+    "code_dim": 128,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true,
+    "d0": 2.6046457290649414,
+    "n_ref": 80.0
+  },
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2
+  },
+  "regularization": {
+    "variance_weight": 0.05,
+    "covariance_weight": 0.01,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_updates": 512
+  },
+  "training": {
+    "blocks": 12,
+    "updates_per_block": 256,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0002,
+    "weight_decay": 1e-05
+  },
+  "runtime": {
+    "compile": true,
+    "precision": "bf16",
+    "hours": 15,
+    "gpus": 1
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "liquid-controls-relaxed-20260928"
+  },
+  "branch": "self_supervised",
+  "mace_arms": [
+    {
+      "name": "features_matched_raw",
+      "task": "features",
+      "domain": "matched_raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/matched_raw.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/matched_raw/geometry.json"
+    },
+    {
+      "name": "features_relaxed",
+      "task": "features",
+      "domain": "relaxed",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/relaxed.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/relaxed/geometry.json"
+    },
+    {
+      "name": "features_raw",
+      "task": "features",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928/technical/code/config.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/original/geometry.json"
+    },
+    {
+      "name": "null",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/null.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/null/geometry.json"
+    },
+    {
+      "name": "local_01pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/local_01pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/local_01pct/geometry.json"
+    },
+    {
+      "name": "local_02pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/local_02pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/local_02pct/geometry.json"
+    },
+    {
+      "name": "local_05pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/local_05pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/local_05pct/geometry.json"
+    },
+    {
+      "name": "spatial_01pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/spatial_01pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/spatial_01pct/geometry.json"
+    },
+    {
+      "name": "spatial_02pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/spatial_02pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/spatial_02pct/geometry.json"
+    },
+    {
+      "name": "spatial_05pct",
+      "task": "synthetic",
+      "domain": "raw",
+      "descriptor_config": "${storage:analysis}/liquid_predictability/controls-relaxed-20260928/technical/recipes/spatial_05pct.json",
+      "geometry": "${storage:cache}/liquid-predictability/controls-relaxed-20260928/spatial_05pct/geometry.json"
+    }
+  ],
+  "preflight_arms": [
+    "null",
+    "features_raw",
+    "features_relaxed"
+  ]
+}

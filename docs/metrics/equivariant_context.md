@@ -76,3 +76,24 @@ The separate encoder/context epoch campaign uses exact shuffled full passes,
 including partial batches, and NLL selection from epoch 12 onward. See
 [encoder/context metrics](encoder_context.md). Historical update-budget studies
 retain their original replacement sampling and checkpoint eligibility.
+
+Execution update (2026-09-25): shared geometry and a six-encoder LRU feature
+cache change storage/scheduling only. Predictors share train-only normalization
+statistics for common fields, with identical per-variant inputs. CPU calibration
+and source bootstrap now read the selected-checkpoint raw probabilities in a
+separate worker; formulas, populations, calibration split and selectors are
+unchanged. GPU fitting completion and final metric completion have separate
+receipts. Full diagnostics follow core fitting.
+
+
+## Mechanism queue extension (2026-09-26)
+
+The shared frozen readout now accepts an explicit256-unit capacity diagnostic. This does not change the default128-unit readout or historical exports.
+
+
+Tracking revision (2026-09-26): diagnostic frozen readouts and per-checkpoint
+evaluations keep their logs and results locally. Associated final scores update
+a recorded scientific training run through the API, without creating or
+restarting runs. Scientific training remains online. This changes logging and
+validates identity/hash before cached readout reuse; objectives, selectors,
+metric calculations and historical exported definitions are unchanged.

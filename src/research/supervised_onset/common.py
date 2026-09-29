@@ -60,7 +60,7 @@ class Study:
             raise ValueError(f'Frozen supervised study changed: {path}; use a fresh output')
         write_json(path, receipt)
         write_context(self.root, dict(protocol=self.config['protocol'], identity=self.identity,
-            branch=self.config['branch'], encoder_inputs=['centered local coordinates', 'center indicator', 'Al species'],
+            branch=self.config['branch'], encoder_inputs=['centered local coordinates', 'center indicator', 'constant atom channel'],
             predictor_inputs=[f"exported {self.config['encoder']['code_dim']}-dimensional state"], external_inputs=[],
             spatial=dict(maximum_atoms=80, radius_A=self.config['encoder']['radius'], halo=False,
                          edge_cutoff_A=self.config['encoder']['cutoff'], message_passing_layers=2,
@@ -77,6 +77,8 @@ class Study:
                   for a in self.config['arms']],
             probes='Exported state only; no metadata covariates',
             controls=[] if 'fixed_dataset' in self.config else ['constant', 'observed descriptors', 'relaxed descriptors', 'paired descriptors'],
+            encoder_initialization=self.config.get('initial_encoder'),
+            encoder_frozen=self.config['training'].get('freeze_encoder',False),
             fixed_dataset=self.config.get('fixed_dataset'),
             conditions_in_cache='Audit metadata are not model or readout inputs'))
         return self.identity

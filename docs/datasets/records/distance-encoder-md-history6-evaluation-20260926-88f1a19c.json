@@ -1,0 +1,1218 @@
+{
+  "dataset_id": "distance-encoder-md-history6-evaluation-20260926",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "7ac8fc31561c4f68652b464195742b6ffc59edcce9f95db86f20bc9c6b96aebd",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1000/complete.json",
+      "relative_path": "1000/complete.json",
+      "sha256": "a204ec1c78316b136f95bac163bf987404cb20799916e7cf2ba3db71c0d25769",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1001/complete.json",
+      "relative_path": "1001/complete.json",
+      "sha256": "7d48ccb3281dcec75b2fe08a6757612311ccd2b7efab47f833214c295647bb59",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1002/complete.json",
+      "relative_path": "1002/complete.json",
+      "sha256": "43b41203e239d02b55fcee148ffad1d794235885c54e9ab4bfec9ac9423af2bc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1003/complete.json",
+      "relative_path": "1003/complete.json",
+      "sha256": "2552cf694a845b0fcbeebf94c155cd9a67f4cec314fb30552669a7561057c7a8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1007/complete.json",
+      "relative_path": "1007/complete.json",
+      "sha256": "d0ce6c9ea0345d23fc1db78a057876e6727c4666cf4844c211ff544a147da3a6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1008/complete.json",
+      "relative_path": "1008/complete.json",
+      "sha256": "ce71300ef3956ace7fc05ce37289ac9bc2f41ee5c369b63e12ae1aecd71a5e4f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/1009/complete.json",
+      "relative_path": "1009/complete.json",
+      "sha256": "7a8eccdd8823d28518ad583ea1cbc40cffdd94dc7cc15d7ed0d3a1d07b3171b7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/875/complete.json",
+      "relative_path": "875/complete.json",
+      "sha256": "1f523cf356650eec606fcda2c3f992e5f8b5d625e849b1f7615c110971201724",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/876/complete.json",
+      "relative_path": "876/complete.json",
+      "sha256": "de899bb3a62632b5f4fe0d05240e03441b66a94e90f220bd95352389c8aea290",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/877/complete.json",
+      "relative_path": "877/complete.json",
+      "sha256": "a43205a904d72d3ebca672aa0f5b08c2cc03cd0c72a47721344a9433bdbcfbe0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/878/complete.json",
+      "relative_path": "878/complete.json",
+      "sha256": "b5b7d3a821b6aa9eff7833a0b8c8972a61cc717001564e723749e12a24b7e514",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/879/complete.json",
+      "relative_path": "879/complete.json",
+      "sha256": "66b1130366a508c16b94ebb6f34edd29b3532fd7daa6ada2f8e6dfa639ad195b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/880/complete.json",
+      "relative_path": "880/complete.json",
+      "sha256": "6d2d04cff4cef78294cfa64b798eabea2ae89fd92cd6e587488832a85e305591",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/881/complete.json",
+      "relative_path": "881/complete.json",
+      "sha256": "a07891f7573e06f4be3da96acf2856a7f702ea751ae9dd4522d8b3a9c7e18316",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/882/complete.json",
+      "relative_path": "882/complete.json",
+      "sha256": "c1121232963b85f9d9a5db265a183b90eb4dfb90ee39601bda371236913cbaee",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/883/complete.json",
+      "relative_path": "883/complete.json",
+      "sha256": "bab2005116e5305899123db91ba125bc2a8747a2d2a35b06485dd007fc21a50c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/902/complete.json",
+      "relative_path": "902/complete.json",
+      "sha256": "41f3c21845e8f1594d93b92502b7a441951bcf72b1d1d6e8ed5b41e3aa26547e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/903/complete.json",
+      "relative_path": "903/complete.json",
+      "sha256": "eb13dd560a05035bf392647ff7a49eb50305f7eb593cbebaceb6d2a2163d171c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/904/complete.json",
+      "relative_path": "904/complete.json",
+      "sha256": "8bb7bb359cf8d8ef66da7f10df86b6f3dbaa0b02b14ebfa69651c7942586e635",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/905/complete.json",
+      "relative_path": "905/complete.json",
+      "sha256": "6289dfbd3292f7b2363a0e3afc63bd83f29e1ce37f949fddfa304166613e6467",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/906/complete.json",
+      "relative_path": "906/complete.json",
+      "sha256": "c2f4252f5c316549e34a3894d6da59bd1fd192efdda56e1d7b8ae95586907656",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/907/complete.json",
+      "relative_path": "907/complete.json",
+      "sha256": "ce5e8b766caee65b6e948359c68c2f5e94dd2da172e8bf821a8648212255a6af",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/908/complete.json",
+      "relative_path": "908/complete.json",
+      "sha256": "d55311770d2476f5bcaebc8d36d2bcadff9facc4f2a27f1facee8a94f2dcf876",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/909/complete.json",
+      "relative_path": "909/complete.json",
+      "sha256": "facdb7dcc5a6b2a9f34f89035edb11efe46d48e662acc3ff199a57cb97a0555d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/910/complete.json",
+      "relative_path": "910/complete.json",
+      "sha256": "732a3aff78e2ccf72cdeb5584b81b4014faf99bf3fe5edc92b2686c323e04044",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/911/complete.json",
+      "relative_path": "911/complete.json",
+      "sha256": "3788d7aca628f5548914a701eb43c03b33a585439474e14bd30a3ee43a5a0757",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/912/complete.json",
+      "relative_path": "912/complete.json",
+      "sha256": "5368e249deff55977db74b136c91a0732ccaaa6e1b00037cf2f90e5ca1aeb751",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/913/complete.json",
+      "relative_path": "913/complete.json",
+      "sha256": "6026d088406b80c1bc09eae181d75a2120a7b93bcea7cf500eb96e62e0858a4e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/932/complete.json",
+      "relative_path": "932/complete.json",
+      "sha256": "881e5e0923603ef7d897a3c199b65e27227cda03df2ae4c16cc509bd3ab9110c",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/933/complete.json",
+      "relative_path": "933/complete.json",
+      "sha256": "57eb976cb3556707d80970611934e687349b5a9c2141d9de9b78f7218493b4a7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/934/complete.json",
+      "relative_path": "934/complete.json",
+      "sha256": "231e480f9575241d4017aa10ed7c7219268419b65d922d364fb518a50c5410f8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/935/complete.json",
+      "relative_path": "935/complete.json",
+      "sha256": "efa0e2c1c6b56bbaebf3d473dc7389cb7f6e4d2793061dc508b2fef1ec6dcd02",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/936/complete.json",
+      "relative_path": "936/complete.json",
+      "sha256": "5eec2552fd8223d252b53fdf102ec89fb17b1ae0804eadd6aed20e68fcb00c45",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/937/complete.json",
+      "relative_path": "937/complete.json",
+      "sha256": "c0dbe43950d977786eb62db088c3761973166249cd40f41e39cdff91e6f6ba4e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/938/complete.json",
+      "relative_path": "938/complete.json",
+      "sha256": "396bec92067d2905158335a9478a9702f8967099bac6e3704a2ee2410ab8a116",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/939/complete.json",
+      "relative_path": "939/complete.json",
+      "sha256": "1a5ec2493d7f938cea05d94f82855aa4e42ce6f7ba6c9080362cca106e68cbf7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/940/complete.json",
+      "relative_path": "940/complete.json",
+      "sha256": "743f0fe7d91f9410e7c13207f2c2503fa40f144112f2434a9ded507e21c1db21",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/941/complete.json",
+      "relative_path": "941/complete.json",
+      "sha256": "b4df1d6ad02f68d8f5d8824a45f101dfde860712fabe640589e2f367ac9da3ea",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/942/complete.json",
+      "relative_path": "942/complete.json",
+      "sha256": "c175f3d202b361c080f59ac0eb733e99c5d60fe3747fa78419f117e7ae80fdd1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/943/complete.json",
+      "relative_path": "943/complete.json",
+      "sha256": "ffbc42d11d113f610042dc938a1c401b1d9b55538e19cfd8dff0a1f089770a09",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/962/complete.json",
+      "relative_path": "962/complete.json",
+      "sha256": "a6f43cff1cd174a399ccdeac709182a1bb063a6a43654f467034529b356048ec",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/963/complete.json",
+      "relative_path": "963/complete.json",
+      "sha256": "3eea701513ecf249f03d28e84d81c6f4549f4a242e2a81b5b70f6a3c65ae03c3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/964/complete.json",
+      "relative_path": "964/complete.json",
+      "sha256": "fdc068c18cb69f18fce35e955e45551373468a81b84afa7f1e65a9f72f7b0fa0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/965/complete.json",
+      "relative_path": "965/complete.json",
+      "sha256": "cdf3b28b63a28a4e6fb12f9bb05bbc1708cb0f27e83c5a71f3ffd8d363120cbd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/966/complete.json",
+      "relative_path": "966/complete.json",
+      "sha256": "6232e7178d26b1325ae96fe5f1a78a0f64a6404fa0b001ae82c0afc1f4c4a360",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/967/complete.json",
+      "relative_path": "967/complete.json",
+      "sha256": "f75a05867eeef227e33b3624df9ae8491161fd3c7784ac15385626fcc53b4046",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/968/complete.json",
+      "relative_path": "968/complete.json",
+      "sha256": "3977d758ccedf9ea7b98aa232bbd875d89ece255754b608b76a4245024957ccc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/969/complete.json",
+      "relative_path": "969/complete.json",
+      "sha256": "a1f043655a6dff89b4c50dcfdaff8b0170aea23dae0db9666514bfb94dd3267f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/970/complete.json",
+      "relative_path": "970/complete.json",
+      "sha256": "c56884d10e35a0344c11eee0450b254e2a5aec687b58e4a692624a24bfbd34ae",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/971/complete.json",
+      "relative_path": "971/complete.json",
+      "sha256": "a671b83ab4c06b4c88c12f889f2c3236fb4a6f2783ae8ba52c3564a91d07ad8a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/972/complete.json",
+      "relative_path": "972/complete.json",
+      "sha256": "f2d2a00f26c09601cfffb220d88b0bb50740c0e1ecf94706e0f5bf2d8e7f93c7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/973/complete.json",
+      "relative_path": "973/complete.json",
+      "sha256": "632e44a54b85edfb6da3f2229f59bdcd499f5056008060eec8476497a48374fe",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/992/complete.json",
+      "relative_path": "992/complete.json",
+      "sha256": "61faa45fc5f3ee84d99dfa42ec3fc6d24c7659875c32b17202825ac6c50a8da8",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/993/complete.json",
+      "relative_path": "993/complete.json",
+      "sha256": "35cddd691bde5c18e95d92c97d2d3a91f92389076c6c1feebca77668f904ed8e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/994/complete.json",
+      "relative_path": "994/complete.json",
+      "sha256": "1930c9e943fac864746a461219949a8a385cbbdd2a37806df0aedb5f4b25cd0d",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/995/complete.json",
+      "relative_path": "995/complete.json",
+      "sha256": "94ebcbcefefd2e98c6306a012778754fb801830210f75d6378b5b7e97ef21edd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/996/complete.json",
+      "relative_path": "996/complete.json",
+      "sha256": "447da9624032a3247ecd7ce8b5e55760b15876a0066feda3fb2ef31228e68e13",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/997/complete.json",
+      "relative_path": "997/complete.json",
+      "sha256": "98ffc0b6463a5c06a145c5af6eafe0ee1853d401dbe5f9a06e9edf148e5647f0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/998/complete.json",
+      "relative_path": "998/complete.json",
+      "sha256": "6622491e3fffb8f432bd1439ff1a4f044a59f9679479c6496d21fcf14a5550c0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926/999/complete.json",
+      "relative_path": "999/complete.json",
+      "sha256": "d8b1e40e60b5b973a0e8886ee96f731ecb502259ad49dc30f06fc786220657b3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "graph_sha256",
+        "identity",
+        "paths",
+        "ptm_receipt_sha256",
+        "role",
+        "rows",
+        "source",
+        "source_manifest_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

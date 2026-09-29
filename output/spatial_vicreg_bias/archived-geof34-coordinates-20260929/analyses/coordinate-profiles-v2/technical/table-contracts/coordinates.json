@@ -1,0 +1,7 @@
+{
+  "table": "tables/coordinates.csv",
+  "sha256": "804599a8519f071318113688da7bcdb57433f02d6419f8e6585afd41709539ec",
+  "family": "spatial_vicreg_coordinates",
+  "contract": "technical/metric-contracts/spatial_vicreg_coordinates.json",
+  "definitions": "tables/metric-definitions/spatial_vicreg_coordinates.md"
+}

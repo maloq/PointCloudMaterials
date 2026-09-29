@@ -1,5 +1,11 @@
 # Experiments, simulations and ideas
 
+The [research results page](../output/registry/index.html) now opens explicit
+run/evaluation records and grouped scientific bundles. The older filesystem
+dashboard is retained as [the inventory](../output/registry/inventory.html).
+See the [result-system commands](research_results_system.md) for publication,
+incremental receipt refresh, verification and inventory reclassification.
+
 For encoder-specific scientific comparisons, use the
 [encoder research handbook](encoder_research/README.md) and its
 [searchable results database](../output/encoder_research/catalogue/index.html).
@@ -12,8 +18,8 @@ page and JSON, with no database server or service to maintain. Open the HTML in
 a browser; all plots, including representatives, latent analysis and spatial
 views, link to their original artifacts. Image galleries load on demand.
 
-The **Experiments**, **Simulations**, **Datasets & caches**, **Maintenance** and
-**Ideas** views separate scientific runs from storage and operational records.
+The **Research**, **Simulations**, **Datasets & caches**, **Operations**, **Unclassified**
+and **Ideas** inventory views separate scientific runs from operational records.
 Search matches run names, metric names, configs and artifact paths. Expand a run
 for numerical metric previews, reports, checkpoints, config files and plots.
 
@@ -169,8 +175,9 @@ and unchanged integration/restart precision.
 Regenerable neighbor and inference caches can be removed after retaining their
 inputs and specifications. Inference cache metadata must be archived and removed
 with its NPZ; an orphan sidecar makes the current loader fail. Rebuild caches using
-the original full analysis with `figure_set.figure_only=false` before figure-only
-analysis. Per-directory `CACHE_RETENTION.md` records this requirement.
+the original full analysis in a new output directory. Existing numerical results
+remain immutable; publication can expose retained figures without inference.
+Per-directory `CACHE_RETENTION.md` records the retained reconstruction inputs.
 
 Current MACE training caches are shared across fits under
 `/work/PERSO/vmorozov/training-cache/{mace-meam,mace-full,temporal}`. Old paths forward

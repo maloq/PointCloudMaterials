@@ -1,0 +1,3 @@
+# Optional visualization dependency; add to the existing pointnet-torch214 environment.
+pacmap==0.9.1
+faiss-cpu==1.15.1

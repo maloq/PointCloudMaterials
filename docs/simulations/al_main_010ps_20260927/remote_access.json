@@ -1,0 +1,11 @@
+{
+  "date": "2026-09-27",
+  "origin": "node61",
+  "requested_target": "vmorozov@lamedell11",
+  "direct_ssh": "Could not resolve hostname lamedell11: Name or service not known",
+  "qualified_dns_attempts": ["lamedell11.enst.fr", "lamedell11.telecom-paris.fr", "lamedell11.telecom-paristech.fr", "lamedell11.lame.enst.fr"],
+  "qualified_dns_result": "No address returned by getent hosts",
+  "gateway_attempt": "vmorozov@gpu-gw: Permission denied (publickey,password)",
+  "remote_computation_started": false,
+  "needed": "Reachable hostname/IP and any required jump host"
+}

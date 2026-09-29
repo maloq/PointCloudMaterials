@@ -26,6 +26,8 @@ def prepare(study):
         context=context_study(study,method);prepare_context(context)
         for path in context.config['base_configs'].values():BaseStudy(resolve_path(path)).bind()
     record=dict(identity=study.identity,methods=study.config['methods'],domains=['hot','cold'],
+        structural_dataset=study.config.get('structural_dataset',study.config['fixed_dataset']),
+        pretraining_inputs='Geometry only; constant atom channel; material scales are preprocessing only',
         encoder_fits=8,structural_initializations=3,context_fits=16,
         source_roles=dict(train=90,selection=15,calibration=15,test=30),
         observation='current geometry; no velocity, history, temperature or explicit time inputs',
@@ -37,7 +39,9 @@ def prepare(study):
         evaluation=dict(populations=['all64','legacy16'],lags_ps=[.75],relaxed_dense_available=False,
             metrics=['event NLL','AP3/AP6','raw/calibrated Brier and log loss','recall/FPR','linear/MLP probes',
                      'physical retention','dataset and movement spectra','normalized coordinate-noise response']),
-        objective='NLL with validation-only checkpoint selection after twelve full epochs; AP diagnostic only')
+        objective='NLL with validation-only checkpoint selection after twelve full epochs; AP diagnostic only',
+        execution=dict(shared_geometry=True,encoder_feature_cache_limit=6,corpus_loads_per_encoder=1,
+            cpu_metrics='overlap next fit',full_diagnostics='after lane training fits'))
     write_json(study.technical/'plan.json',record);return record
 
 
@@ -51,12 +55,24 @@ def check(study,device):
     from src.research.mace_epi.objective import Objective
     from .geometry import graph,physical_targets
     study.bind();c=study.config;n=c['batch_size']
-    dataset=StructuralDataset(c['fixed_dataset']['root'],'train',paired=True)
-    ids=np.linspace(0,len(dataset)-1,n,dtype=int);pairs=[dataset[i] for i in ids]
-    hot=torch.as_tensor(np.stack([v['inputs']['positions'] for v in pairs]),device=device)
-    cold=torch.as_tensor(np.stack([v['teacher']['positions'] for v in pairs]),device=device)
     results=[]
     for method in ('physical','vicreg','epi_variance'):
+        if 'structural_dataset' in c:
+            from src.data.structural_pretraining.native_dataset import NativeStructuralDataset
+            dataset=NativeStructuralDataset(c['structural_dataset']['root'],paired=method!='physical',
+                normalization=c['structural_dataset']['normalization'])
+            ids=np.linspace(0,len(dataset)-1,n,dtype=int);values=dataset.batch(ids)
+            hot=torch.as_tensor(values['hot'],device=device)
+            cold=None if method=='physical' else torch.as_tensor(values['cold'],device=device)
+            inputs=dict(structural_identity=dataset.identity,rows=len(dataset),
+                returned_fields=list(values),materials=sorted({s['material'] for s in dataset.shards}))
+            dataset.close()
+        else:
+            dataset=StructuralDataset(c['fixed_dataset']['root'],'train',paired=True)
+            ids=np.linspace(0,len(dataset)-1,n,dtype=int);pairs=[dataset[i] for i in ids]
+            hot=torch.as_tensor(np.stack([v['inputs']['positions'] for v in pairs]),device=device)
+            cold=torch.as_tensor(np.stack([v['teacher']['positions'] for v in pairs]),device=device)
+            inputs=dict(structural_identity=c['fixed_dataset']['identity'],rows=len(dataset))
         torch.manual_seed(c['seed']);model=CapacityEncoder(**c['encoder'],d0=2.8,n_ref=80.).to(device)
         if c['runtime']['compile']:compile_spatial_encoder(model,graph(hot,model))
         z=model(graph(hot,model))
@@ -69,7 +85,7 @@ def check(study,device):
         if not torch.isfinite(loss) or any(p.grad is None or not torch.isfinite(p.grad).all() for p in model.parameters()):
             raise ValueError(f'Invalid structural preflight gradient: {method}')
         if model.center_embedding.weight.grad.norm()==0:raise ValueError('Encoder receives no structural gradient')
-        results.append(dict(method=method,batch=n,loss=float(loss.detach()),finite_encoder_gradients=True))
+        results.append(dict(method=method,batch=n,loss=float(loss.detach()),finite_encoder_gradients=True,inputs=inputs))
         del model,z,loss
     # Existing production checks validate the actual focal geometry and both context heads.
     from src.research.equivariant_context.queue import check as context_check
@@ -93,13 +109,17 @@ def worker(study,stage,method,domain,device):
             elif stage=='dense':
                 from .dense import prepare as prepare_dense
                 prepare_dense(study)
-            elif stage=='pipeline':
+            elif stage=='geometry':
+                from src.research.equivariant_context.geometry_cache import prepare as prepare_geometry
+                context=context_study(study,'scratch');context.bind()
+                prepare_geometry(context,deadline)
+            elif stage in ('pipeline','metrics'):
                 from src.research.equivariant_context.queue import worker as context_worker
+                context=context_study(study,method);context.bind()
+                context_worker(context,stage,domain,device)
+            elif stage=='evaluate':
                 from .evaluate import run as evaluate
                 context=context_study(study,method);context.bind()
-                context_worker(context,'features',domain,None,device)
-                for variant in context.config['variants']:
-                    context_worker(context,'predictor',domain,variant,device)
                 evaluate(study,context,domain,device,deadline)
             else:raise ValueError(stage)
             write_json(state,dict(state='complete',identity=study.identity,stage=stage,method=method,domain=domain))
@@ -116,31 +136,76 @@ def lane(study):
     task=int(os.environ['SLURM_PROCID']);study.bind();done=[]
     binding=dict(task=task,job=os.environ['SLURM_JOB_ID'],step=os.environ['SLURM_STEP_ID'],
         gpu_uuid=str(torch.cuda.get_device_properties(0).uuid))
-    jobs=[]
-    if task==0:jobs.append(dict(stage='dense'))
+    jobs=[];evaluations=[];background=[]
     for method in study.config['lanes'][task]:
         if method!='scratch':jobs.append(dict(stage='pretrain',method=method))
-        for domain in ('hot','cold'):jobs.append(dict(stage='pipeline',method=method,domain=domain))
-    for job in jobs:
+        for domain in ('hot','cold'):
+            jobs.append(dict(stage='pipeline',method=method,domain=domain))
+            evaluations.append(dict(stage='evaluate',method=method,domain=domain))
+
+    def command(job,*,cpu=False):
+        result=[sys.executable,'-u','-m','src.research.encoder_context.queue','worker','--config',str(study.path)]
+        for key,value in job.items():result += ['--'+key,value]
+        if cpu:result+=['--device','cpu']
+        return result
+
+    def spawn_cpu(job):
         name='-'.join(job.values());state=study.technical/f'{name}-state.json'
-        if state.exists() and json.loads(state.read_text()).get('state')=='complete':done.append(name);continue
-        write_json(study.technical/f'lane-{task}.json',dict(binding,state='running',active=name,completed=done))
-        # Both lanes may need the same deterministic dense evaluation dataset.
-        if job['stage']=='pipeline' and job['domain']=='hot':
-            while not (study.cache/'dense-observed/manifest.json').exists():
-                dense=study.technical/'dense-state.json'
-                if dense.exists() and json.loads(dense.read_text()).get('state')=='failed':raise RuntimeError('Dense input preparation failed')
-                from src.training_methods.shared_pretraining.queue import deadline_for_job
-                if time.time()>deadline_for_job()-600:raise TimeoutError('Waiting for dense evaluation dataset')
-                time.sleep(30)
-        command=[sys.executable,'-u','-m','src.research.encoder_context.queue','worker','--config',str(study.path)]
-        for key,value in job.items():command += ['--'+key,value]
+        if state.exists() and json.loads(state.read_text()).get('state')=='complete':return
         with (study.technical/f'{name}.log').open('ab',buffering=0) as log:
-            process=subprocess.run(command,stdout=log,stderr=subprocess.STDOUT)
-        if process.returncode:
-            write_json(study.technical/f'lane-{task}.json',dict(binding,state='failed',active=name,completed=done))
-            raise RuntimeError(f'Failed stage {name}; see its saved error and log')
-        done.append(name)
+            process=subprocess.Popen(command(job,cpu=True),stdout=log,stderr=subprocess.STDOUT,
+                env=dict(os.environ,CUDA_VISIBLE_DEVICES='',OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1'))
+        background.append((name,process))
+
+    def drain(*,wait=False):
+        for name,process in background:
+            code=process.wait() if wait else process.poll()
+            if code is not None and code!=0:raise RuntimeError(f'Failed CPU stage {name}; see its state and log')
+
+    try:
+        # Geometry production overlaps fitting; frame locks allow on-demand readers.
+        if task==0:
+            spawn_cpu(dict(stage='geometry'))
+            spawn_cpu(dict(stage='dense'))
+        for job in jobs:
+            drain();name='-'.join(job.values());state=study.technical/f'{name}-state.json'
+            finished=state.exists() and json.loads(state.read_text()).get('state')=='complete'
+            if not finished:
+                write_json(study.technical/f'lane-{task}.json',dict(binding,state='running',active=name,completed=done))
+                with (study.technical/f'{name}.log').open('ab',buffering=0) as log:
+                    process=subprocess.run(command(job),stdout=log,stderr=subprocess.STDOUT)
+                if process.returncode:raise RuntimeError(f'Failed stage {name}; see its saved error and log')
+            done.append(name)
+            if job['stage']=='pipeline':
+                # At most one scoring child per lane, plus the shared geometry
+                # producer. No feature cache lease is needed for these scores.
+                for previous,process in background:
+                    if previous.startswith('metrics-') and process.wait()!=0:
+                        raise RuntimeError(f'Failed CPU stage {previous}')
+                spawn_cpu(dict(job,stage='metrics'))
+        drain(wait=True)
+        # GPU-dependent readout/noise/trajectory diagnostics run after the fitting
+        # sequence, never between consecutive encoder fits.
+        for job in evaluations:
+            name='-'.join(job.values())
+            write_json(study.technical/f'lane-{task}.json',dict(binding,state='evaluating',active=name,completed=done))
+            if job['domain']=='hot':
+                while not (study.cache/'dense-observed/manifest.json').exists():
+                    state=study.technical/'dense-state.json'
+                    if state.exists() and json.loads(state.read_text()).get('state')=='failed':
+                        raise RuntimeError('Dense input preparation failed')
+                    from src.training_methods.shared_pretraining.queue import deadline_for_job
+                    if time.time()>deadline_for_job()-600:raise TimeoutError('Waiting for dense evaluation dataset')
+                    time.sleep(10)
+            with (study.technical/f'{name}.log').open('ab',buffering=0) as log:
+                subprocess.run(command(job),stdout=log,stderr=subprocess.STDOUT,check=True)
+            done.append(name)
+    except BaseException:
+        for _,process in background:
+            if process.poll() is None:process.terminate()
+        for _,process in background:process.wait()
+        write_json(study.technical/f'lane-{task}.json',dict(binding,state='failed',completed=done))
+        raise
     write_json(study.technical/f'lane-{task}.json',dict(binding,state='complete',completed=done))
     # The last finished lane collects only after both independent pipelines finish.
     with (study.technical/'report.lock').open('a') as lock:

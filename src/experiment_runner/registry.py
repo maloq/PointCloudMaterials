@@ -77,7 +77,58 @@ def run_id(relative: Path) -> str:
     if len(relative.parts) > 2 and (first in containers or
             (len(first) == 10 and first[4] == '-' and first[7] == '-')):
         return '/'.join(relative.parts[:2])
+    if len(relative.parts) > 3 and relative.parts[1] == 'runs':
+        return '/'.join(relative.parts[:3])
+    if len(relative.parts) > 2 and relative.parts[1] not in {'technical', 'plots', 'tables', 'analyses'}:
+        return '/'.join(relative.parts[:2])
     return first
+
+
+def classifications(repo):
+    """Explicit collection classifications; unknown paths do not become experiments."""
+    settings = json.loads((repo/'configs/experiment_registry.json').read_text())
+    result = {}
+    manifest = json.loads((repo/'docs/encoder_research/catalogue.json').read_text())
+    for collection in manifest['collections']:
+        if collection['source']=='repo' and collection['path'].startswith('output/'):
+            result[collection['path'].removeprefix('output/')] = 'research'
+    result.update(settings.get('classifications', {}))
+    return result
+
+
+def classified_kind(identifier, mapping):
+    matches = [prefix for prefix in mapping if identifier==prefix or identifier.startswith(prefix+'/')]
+    return mapping[max(matches,key=len)] if matches else 'unclassified'
+
+
+def reclassify_snapshot(repo):
+    """Repair navigation over the saved inventory without claiming a fresh storage scan."""
+    path = repo/'output/registry/technical/experiments.json'
+    saved = json.loads(path.read_text())
+    mapping = classifications(repo)
+    grouped = {}
+    for old in saved['experiments']:
+        for artifact in old['artifacts']:
+            parts = Path(artifact['path']).parts
+            identifier = ('legacy/' if parts[0]=='outputs' else '') + run_id(Path(*parts[1:]))
+            row = grouped.setdefault(identifier,dict(id=identifier,kind=classified_kind(identifier,mapping),
+                artifacts=[],recipe=old['recipe'],git_commits=[],git_status='not recorded',statuses=[],metric_preview=[]))
+            row['artifacts'].append(artifact)
+            for key in ('git_commits','statuses','metric_preview'):
+                row[key].extend(v for v in old[key] if v['source']==artifact['path'])
+    for row in grouped.values():
+        row['bytes']=sum(a['bytes'] for a in row['artifacts'])
+        row['allocated_bytes']=sum(a['allocated_bytes'] for a in row['artifacts'])
+        row['git_status']='recorded' if row['git_commits'] else 'not recorded'
+    saved['experiments']=list(sorted(grouped.values(),key=lambda r:r['id']))
+    for entry in saved.get('external_runs',[]):
+        if entry['kind']=='experiment':entry['kind']='research'
+    saved['organization_updated_at']=datetime.now(timezone.utc).isoformat()
+    saved['organization_note']='Regrouped the saved inventory; generated_at remains the original filesystem observation.'
+    write_json(path,saved)
+    render(repo/'output/registry',saved)
+    return dict(entries=len(grouped),filesystem_observed_at=saved['generated_at'],
+                organization_updated_at=saved['organization_updated_at'])
 
 
 def scalar_metrics(value, prefix=''):
@@ -129,6 +180,7 @@ def build(repo: Path) -> dict:
     for path in files_under(repo / 'outputs'):
         groups['legacy/' + run_id(path.relative_to(repo / 'outputs'))].append(path)
     entries = []
+    kinds = classifications(repo)
     for identifier, paths in sorted(groups.items()):
         artifacts = []
         metrics = []
@@ -160,12 +212,7 @@ def build(repo: Path) -> dict:
                                  if not isinstance(v, float) or math.isfinite(v)}
                         metrics.append({'source': artifact['path'], 'values': clean})
             artifacts.append(artifact)
-        first = identifier.split('/')[0]
-        kind = 'experiment'
-        if first in {'synthetic_data', 'temporal_cache'}:
-            kind = 'dataset'
-        elif first in {'maintenance', 'wandb', 'training_jobs', 'slurm_outputs'} or first.startswith(('ids_', 'cache_float16', 'simulation_audit')):
-            kind = 'maintenance'
+        kind = classified_kind(identifier,kinds)
         recipe = repo / 'experiments' / identifier / 'README.md'
         entries.append({'id': identifier, 'kind': kind, 'artifacts': artifacts,
                         'recipe': str(recipe.relative_to(repo)) if recipe.is_file() else None,
@@ -190,6 +237,8 @@ def build(repo: Path) -> dict:
             writer.writerow((entry['id'], entry['kind'], round(entry['allocated_bytes']/2**30, 3),
                              len(entry['artifacts']), entry['recipe']))
     render(registry, catalogue)
+    from .result_records import refresh_results
+    refresh_results()
     previous = registry / 'experiments.json'
     if previous.exists():
         previous.rename(registry / 'technical' / ('previous-inventory-' + sha256(previous) + '.json'))
@@ -242,6 +291,8 @@ def external_runs(repo: Path, roots: list[dict]) -> list[dict]:
 
 
 def render(registry: Path, catalogue: dict) -> None:
+    write_json(registry/'technical/inventory-coverage.json',dict(
+        observed_at=catalogue['generated_at'],counts=dict(Counter(e['kind'] for e in catalogue['experiments']))))
     cards = []
     for idea in catalogue.get('ideas', []):
         cards.append('<article data-kind="idea"><h2>' + html.escape(idea['title']) + '</h2><p>'
@@ -301,21 +352,23 @@ a{color:#17528d;overflow-wrap:anywhere}summary{cursor:pointer;padding:7px 0}li{m
 .plots{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:15px;list-style:none;padding:0}.plots img{width:100%;height:190px;object-fit:contain}
 pre{white-space:pre-wrap;max-height:400px;overflow:auto;font-size:12px}article[hidden]{display:none}
 </style><header><h1>Materials experiment registry</h1>
+<p>Filesystem observation: __INVENTORY_TIME__. Recorded states do not establish live scheduler status.</p>
 <p><a href="../../docs/datasets/index.html"><strong>Dataset registry: materials, potentials and provenance</strong></a> · Configs, results, checkpoints and plots at their original paths. <a href="tables/experiments.csv">Experiment table</a> · <a href="technical/experiments.json">Technical inventory</a> · <a href="../../docs/output_registry.md">Retention &amp; reproduction guide</a></p>
 <input id="search" type="search" placeholder="Search experiment, model, metric or artifact…">
-<select id="kind"><option value="experiment">Experiments</option><option value="simulation">Simulations</option><option value="idea">Ideas</option><option value="">Everything</option><option value="dataset">Datasets &amp; caches</option><option value="maintenance">Maintenance</option></select>
+<select id="kind"><option value="research">Research</option><option value="simulation">Simulations</option><option value="idea">Ideas</option><option value="">Everything</option><option value="dataset">Datasets &amp; caches</option><option value="operations">Operations</option><option value="unclassified">Unclassified</option></select>
 <span id="count"></span></header>'''
     page += ''.join(cards) + '''<script>
 const search=document.querySelector('#search'),kind=document.querySelector('#kind'),cards=[...document.querySelectorAll('article')];
 function filter(){let n=0;const q=search.value.toLowerCase();for(const c of cards){c.hidden=!!((kind.value&&c.dataset.kind!==kind.value)||!c.textContent.toLowerCase().includes(q));if(!c.hidden)n++;}document.querySelector('#count').textContent=` ${n} entries`;}
+if(location.hash.startsWith('#kind='))kind.value=decodeURIComponent(location.hash.slice(6));
 search.addEventListener('input',filter);kind.addEventListener('change',filter);filter();
 </script></html>'''
-    (registry / 'index.html').write_text(page)
+    (registry / 'inventory.html').write_text(page.replace('__INVENTORY_TIME__',html.escape(catalogue['generated_at'])))
     rows = ['# Run registry', '', '[Open the searchable dashboard](index.html)', '',
             f'Generated: {catalogue["generated_at"]}', '',
             '| Experiment | Allocated GiB | Files |', '| --- | ---: | ---: |']
     for entry in catalogue['experiments']:
-        if entry['kind'] == 'experiment':
+        if entry['kind'] == 'research':
             target = ('outputs/' + entry['id'].removeprefix('legacy/') if entry['id'].startswith('legacy/') else 'output/' + entry['id'])
             rows.append(f'| [{entry["id"]}](../../{quote(target)}/) | {entry["allocated_bytes"]/2**30:.2f} | {len(entry["artifacts"])} |')
     (registry / 'README.md').write_text('\n'.join(rows) + '\n')
@@ -378,7 +431,7 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
     catalogue = json.loads(inventory.read_text())
     result = []
     for entry in catalogue['experiments']:
-        if entry['kind'] != 'experiment' and entry['id'] != 'wandb':
+        if entry['kind'] not in {'experiment', 'research'} and entry['id'] != 'wandb':
             continue
         paths = [repo / a['path'] for a in entry['artifacts'] if a['kind'] == 'logs'
                  and Path(a['path']).suffix in {'.log', '.out', '.err', '.wandb'}]
@@ -421,26 +474,61 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['build', 'encoders', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('command', choices=['build', 'encoders', 'results', 'publish', 'verify-results', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
     parser.add_argument('--root', action='append', help='Local output/ or outputs/ subtree; repeat to select several.')
     parser.add_argument('--inactive', action='store_true', help='Confirm the selected runs have no active readers, writers or queued jobs.')
     parser.add_argument('--min-mib', type=float, default=100, help='Large-file report threshold (allocated MiB).')
     parser.add_argument('--plan', type=Path)
     parser.add_argument('--spec', type=Path, help='Explicit run specification for the run command.')
-    parser.add_argument('--record', type=Path, help='run_record.json for the status command.')
+    parser.add_argument('--record', type=Path, help='Execution run_record.json for status; result run.json for results, publish or verify-results.')
     parser.add_argument('--wait-for-dependencies-until', help='Wait for local dependency records until this timezone-aware ISO deadline, then execute the spec.')
     parser.add_argument('--before', help='Timezone-aware ISO cutoff for packing old experiment logs.')
     parser.add_argument('--id', help='Existing idea ID to update.')
     parser.add_argument('--state', choices=['proposed', 'planned', 'running', 'blocked', 'completed', 'needs_review'])
     parser.add_argument('--next-action', help='Concrete next action for the idea.')
     parser.add_argument('--apply', action='store_true', help='Apply the verified explicit deletion plan; default is preview.')
+    parser.add_argument('--from-snapshot', action='store_true', help='For build: reorganize saved inventory without scanning storage.')
+    parser.add_argument('--include-paper-svg', action='store_true', help='For publish: expose retained cluster-proportion paper SVGs in the gallery.')
     args = parser.parse_args(argv)
     repo = Path(__file__).resolve().parents[2]
     if args.command == 'build':
-        build(repo)
+        if args.from_snapshot:
+            print(json.dumps(reclassify_snapshot(repo),indent=2))
+            from .result_records import refresh_results
+            refresh_results()
+        else:
+            build(repo)
     elif args.command == 'encoders':
         from .encoder_catalogue import build as build_encoders
-        build_encoders(repo)
+        status_path = repo/'output/registry/technical/historical-refresh-status.json'
+        from .artifacts import write_json as write_receipt
+        from .result_records import refresh_results
+        try:
+            build_encoders(repo)
+        except (OSError, ValueError, RuntimeError) as error:
+            write_receipt(status_path, dict(state='failed',error=str(error),
+                observed_at=datetime.now(timezone.utc).isoformat()))
+            refresh_results()
+            raise
+        write_receipt(status_path, dict(state='complete',observed_at=datetime.now(timezone.utc).isoformat()))
+        refresh_results()
+    elif args.command == 'results':
+        from .result_records import refresh_results, register_record
+        if args.record is not None:
+            register_record(args.record)
+        print(json.dumps(refresh_results(), indent=2))
+    elif args.command == 'publish':
+        if (args.plan is None) == (args.record is None):
+            parser.error('publish requires exactly one of --plan PATH or --record PATH/to/run.json')
+        from src.analysis.publication import publish_plan, refresh_publication_record
+        publisher = publish_plan if args.plan is not None else refresh_publication_record
+        result = publisher(args.plan or args.record, include_paper_svg=args.include_paper_svg)
+        print(json.dumps(result, indent=2))
+    elif args.command == 'verify-results':
+        if args.record is None:
+            parser.error('verify-results requires --record PATH/to/run.json')
+        from .result_records import verify_record
+        print(json.dumps(verify_record(args.record), indent=2))
     elif args.command == 'storage':
         from .storage import inventory
         inventory(repo, args.root, repo / 'output/maintenance/storage', args.min_mib)

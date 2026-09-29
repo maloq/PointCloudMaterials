@@ -1,0 +1,277 @@
+{
+  "protocol": "liquid_structure_predictability_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/liquid_predictability/al64-20260928",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "dataset": {
+    "root": "${storage:cache}/crystal-interface/al64-dense-clear-20260928",
+    "audit": "${storage:analysis}/crystallization_origin/al64-20260925",
+    "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+    "scan_parent": "${storage:analysis}/spatial_approach/al64-20260926",
+    "shells": [
+      [
+        4.0,
+        14.0,
+        12
+      ],
+      [
+        14.0,
+        24.0,
+        12
+      ]
+    ],
+    "uniform_seed": 20260926,
+    "uniform_per_frame": 16,
+    "tie_tolerance_A": 1e-05,
+    "workers": 8,
+    "expanded_clear_only": true
+  },
+  "initial_encoder": "${storage:analysis}/distance_encoder/multimaterial-early-20260926/technical/best.pt",
+  "initial_encoder_sha256": "7b4dcb17ddcb2952d5f5ea20f0fd8e1d2d0c0164146d8676a39ceca71d1fda7f",
+  "seed": 20260928,
+  "batch_size": 512,
+  "microbatch": 512,
+  "patch_chunk": 256,
+  "activation_checkpointing": true,
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "predictor": {
+    "width": 128,
+    "field_channels": 16,
+    "depth": 2
+  },
+  "loss": {
+    "distance_cap": 64.0,
+    "early_radii": [
+      20,
+      32,
+      48
+    ],
+    "early_weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ],
+    "early_weight": 0.0,
+    "direction_weight": 0.0,
+    "direction_kappa": 8.0,
+    "direction_scale_A": 16.0
+  },
+  "regularization": {
+    "variance_weight": 0.05,
+    "covariance_weight": 0.01,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_updates": 512
+  },
+  "training": {
+    "epochs": 12,
+    "minimum_selection_epoch": 1,
+    "encoder_lr": 1e-05,
+    "head_lr": 0.0002,
+    "weight_decay": 1e-05,
+    "warmup_updates": 128,
+    "save_every": 32,
+    "log_every": 16,
+    "updates_per_epoch": 256
+  },
+  "runtime": {
+    "compile": true,
+    "precision": "bf16",
+    "hours": 10,
+    "gpus": 1
+  },
+  "evaluation": {
+    "noise_rms_fractions": [
+      0.001,
+      0.005,
+      0.01,
+      0.03
+    ],
+    "diagnostic_rows": 512,
+    "stability_lag_ps": 0.75,
+    "primary_population": "liquid query, no established crystal in any consumed patch, crystal exists elsewhere",
+    "absence_population": "same observation restriction with no established crystal in cell; separate challenge, not selector",
+    "bootstrap_draws": 2000,
+    "clearance_bins_A": [
+      0,
+      2,
+      4,
+      8,
+      16,
+      1000
+    ],
+    "distance_bins_A": [
+      0,
+      20,
+      32,
+      48,
+      64,
+      1000
+    ],
+    "meaningful_rmse_reduction_fraction": 0.02
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "liquid-predictability-20260928"
+  },
+  "external_inputs": [],
+  "sampling": {
+    "method": "independent_random_target_population",
+    "target_population": "half fixed-at-risk / half uniform, equal sources before conditioning; liquid query with no established crystal in any input patch and a nearest established crystal elsewhere",
+    "replacement": true,
+    "loss_weights": "unit",
+    "labels_used_to_sample": true,
+    "label_use": "liquid/query phase, absence of observed established crystal, existence elsewhere; no distance quotas"
+  },
+  "provenance": {
+    "question": "Information in crystal-free liquid geometry about existing crystal distance",
+    "parent_config": "configs/crystal_vector/liquid_distance_20260928.json",
+    "initialization": "same original CD-MACE snapshot parent; no current LCD checkpoint",
+    "training_budget": "12 blocks x 256 updates, batch 512, one seed; same updates at all source fractions",
+    "selector": "validation distance NLL from first block; VCReg excluded",
+    "diagnostic_tracking": "prior, descriptors and frozen readout local; joint encoders online",
+    "positive_control": "separate crystal-visible observations with liquid query, same crystal-distance target; no direct absolute comparison to clear population",
+    "learning_curves": "Nested 25/50/100% source subsets: descriptor MLP and scratch MACE. Parent-initialized MACE and frozen parent are a separate full-data pair."
+  },
+  "target": {
+    "kind": "nearest_external_crystal",
+    "geometry_parent": "${storage:cache}/crystal-vector/al64-covering-20260927",
+    "parent_manifest_sha256": "e8633d04fefbedd039c6fc027650d4b53f7ddc7bde297e2f15557b77b6a028e0",
+    "neighbor_cutoff_A": 3.6,
+    "minimum_disordered_component_atoms": 64,
+    "distance": "periodic distance to nearest established crystal from liquid-only observed context; exact equality to inherited interface distances enforced on eligible rows",
+    "empty_interface": "crystal-absent observations excluded from fitting/selection, evaluated separately",
+    "uniform_heldout_centers_per_frame": 16,
+    "direction": "inherited nearest interface-atom vector also targets nearest crystal on verified equal-distance domain; retained interface tie mask"
+  },
+  "queue": {
+    "prepare_sources_per_task": 20,
+    "prepare_parallel_tasks": 8,
+    "max_concurrent_gpus": 2,
+    "partition": "RTX6000PRO,H100",
+    "training_walltime": "10:00:00",
+    "wait_for": "/work/PERSO/vmorozov/analysis/crystal_liquid_distance/al64-dense-vcreg-20260928/technical/variant-0.json"
+  },
+  "prepared_data": {
+    "identity": "0720998c0c019d4314c44cc8f26981e77fa991e627c0fd7803b61cefa1c9c4eb",
+    "prepare_job": "1012822",
+    "seal_job": "1012823"
+  },
+  "study_cache": "${storage:cache}/liquid-predictability/al64-20260928",
+  "cache_policy": {
+    "features": "${storage:cache}/context-features",
+    "encoders_kept": 6
+  },
+  "arms": [
+    {
+      "name": "prior",
+      "model": "prior",
+      "population": "clear",
+      "source_fraction": 1,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "descriptor_linear",
+      "model": "linear",
+      "population": "clear",
+      "source_fraction": 1,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "descriptor_mlp25",
+      "model": "mlp",
+      "population": "clear",
+      "source_fraction": 0.25,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "descriptor_mlp50",
+      "model": "mlp",
+      "population": "clear",
+      "source_fraction": 0.5,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "descriptor_mlp",
+      "model": "mlp",
+      "population": "clear",
+      "source_fraction": 1,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "visible_prior",
+      "model": "prior",
+      "population": "visible_control",
+      "source_fraction": 1,
+      "lane": "cpu",
+      "initialization": "training_quantiles"
+    },
+    {
+      "name": "joint_mace",
+      "model": "joint",
+      "population": "clear",
+      "source_fraction": 1,
+      "lane": 0,
+      "initialization": "snapshot_parent"
+    },
+    {
+      "name": "joint_scratch25",
+      "model": "joint",
+      "population": "clear",
+      "source_fraction": 0.25,
+      "lane": 0,
+      "initialization": "scratch"
+    },
+    {
+      "name": "frozen_mace",
+      "model": "frozen",
+      "population": "clear",
+      "source_fraction": 1,
+      "lane": 1,
+      "initialization": "snapshot_parent"
+    },
+    {
+      "name": "joint_scratch50",
+      "model": "joint",
+      "population": "clear",
+      "source_fraction": 0.5,
+      "lane": 1,
+      "initialization": "scratch"
+    },
+    {
+      "name": "visible_mace",
+      "model": "joint",
+      "population": "visible_control",
+      "source_fraction": 1,
+      "lane": 1,
+      "initialization": "snapshot_parent"
+    },
+    {
+      "name": "joint_scratch",
+      "model": "joint",
+      "population": "clear",
+      "source_fraction": 1.0,
+      "lane": 0,
+      "initialization": "scratch"
+    }
+  ]
+}

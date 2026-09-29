@@ -114,7 +114,7 @@ def clean_caches(repo, roots, *, apply=False, inactive=False):
     plan = technical / 'cleanup-plan.json'
     write_json(plan, dict(remove=remove, required=list(required.values())))
     lines = ['# Inference cache cleanup', '', f'{len(remove)//2} cache/sidecar pairs selected.', '',
-             'Rebuild with the original analysis config and checkpoint, with `figure_set.figure_only=false`. '
+             'Rebuild with the original analysis config and checkpoint, in a new output directory. '
              'The original metadata under `technical/retained-cache-metadata/` records the dataset, '
              'sample selection, batching, checkpoint and seed. Keep the original datasets and source snapshots. '
              'This command does not delete them or training caches. It does not verify scheduler quiescence.', '',

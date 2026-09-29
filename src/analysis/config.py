@@ -1,38 +1,27 @@
-from dataclasses import dataclass
+"""Configuration for the repository's explicit analysis protocols."""
+
+from dataclasses import asdict, dataclass
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from omegaconf import DictConfig, OmegaConf, open_dict
-
 from src.utils.model_utils import resolve_config_path
 
-
-def _resolve_project_root() -> Path:
-    this_file = Path(__file__).resolve()
-    for parent in this_file.parents:
-        if (parent / "src").is_dir() and (parent / "configs").is_dir():
-            return parent
-    raise RuntimeError(
-        "Could not resolve project root from analysis config module path. "
-        f"Expected an ancestor of {this_file} containing both 'src' and 'configs'."
-    )
-
-
-PROJECT_ROOT = _resolve_project_root()
-DEFAULT_ANALYSIS_CONFIG_PATH = (
-    PROJECT_ROOT / "configs" / "analysis" / "static.yaml"
-)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_ANALYSIS_CONFIG_PATH = PROJECT_ROOT / "configs/analysis/static.yaml"
 
 
 def default_analysis_config_for_checkpoint(checkpoint_path: str) -> Path:
     cfg = load_checkpoint_training_config(checkpoint_path)
-    if cfg.data.kind == 'relaxed_histories':
-        name = ('relaxed_histories.yaml' if cfg.encoder.name == 'PretrainedMACEHistoryGeometry'
-                else 'static_topology.yaml')
-        return DEFAULT_ANALYSIS_CONFIG_PATH.parent/name
+    if cfg.data.kind == "relaxed_histories":
+        name = (
+            "relaxed_histories.yaml"
+            if cfg.encoder.name == "PretrainedMACEHistoryGeometry"
+            else "static_topology.yaml"
+        )
+        return DEFAULT_ANALYSIS_CONFIG_PATH.parent / name
     return DEFAULT_ANALYSIS_CONFIG_PATH
 
 
@@ -50,6 +39,7 @@ class InputSettings:
     inference_batch_size: int | None
     max_batches_latent: int | None
     max_samples_total: int | None
+
 
 @dataclass(frozen=True)
 class ClusteringFitSettings:
@@ -98,10 +88,10 @@ class DynamicMotifSettings:
     stable_k: int | None
     bridge_k: int | None
     representative_samples_per_motif: int
-    transition_snapshot_flow_count: int
     bridge_min_support: int
     dwell_min_length: int
     recurrence_max_gap: int
+    transition_snapshot_flow_count: int
     render: DynamicMotifRenderSettings
     field: DynamicMotifFieldSettings
 
@@ -135,7 +125,6 @@ class AnalysisSettings:
 @dataclass(frozen=True)
 class FigureSetSettings:
     enabled: bool
-    figure_only: bool
     k: int
     md_max_points: int | None
     md_point_size: float
@@ -184,922 +173,303 @@ class FigureSetSettings:
             "dataset": dataset,
             "latents": latents,
             "coords": coords,
-            "k_value": int(self.k),
-            "point_scale": float(point_scale),
-            "l2_normalize": bool(l2_normalize),
-            "standardize": bool(standardize),
+            "k_value": self.k,
+            "point_scale": point_scale,
+            "l2_normalize": l2_normalize,
+            "standardize": standardize,
             "pca_variance": pca_variance,
-            "pca_max_components": int(pca_max_components),
+            "pca_max_components": pca_max_components,
             "md_max_points": self.md_max_points,
-            "icl_enabled": bool(self.icl_enabled),
-            "icl_k_min": int(self.icl_k_min),
-            "icl_k_max": int(self.icl_k_max),
+            "icl_enabled": self.icl_enabled,
+            "icl_k_min": self.icl_k_min,
+            "icl_k_max": self.icl_k_max,
             "icl_max_samples": self.icl_max_samples,
-            "representative_points": int(self.representative_points),
-            "md_point_size": float(self.md_point_size),
-            "md_point_alpha": float(self.md_alpha),
-            "md_halo_scale": float(self.md_halo_scale),
-            "md_halo_alpha": float(self.md_halo_alpha),
-            "md_saturation_boost": float(self.md_saturation_boost),
-            "md_view_elev": float(self.md_view_elev),
-            "md_view_azim": float(self.md_view_azim),
-            "md_num_views": int(self.md_num_views),
-            "representative_orientation_method": str(self.representative_orientation),
-            "representative_view_elev": float(self.representative_view_elev),
-            "representative_view_azim": float(self.representative_view_azim),
-            "representative_projection": str(self.representative_projection),
-            "representative_ptm_enabled": bool(self.representative_ptm_enabled),
-            "representative_cna_enabled": bool(self.representative_cna_enabled),
-            "representative_cna_max_signatures": int(self.representative_cna_max_signatures),
-            "representative_center_atom_tolerance": float(
-                self.representative_center_atom_tolerance
-            ),
-            "representative_shell_min_neighbors": int(
-                self.representative_shell_min_neighbors
-            ),
-            "representative_shell_max_neighbors": int(
-                self.representative_shell_max_neighbors
-            ),
+            "representative_points": self.representative_points,
+            "md_point_size": self.md_point_size,
+            "md_point_alpha": self.md_alpha,
+            "md_halo_scale": self.md_halo_scale,
+            "md_halo_alpha": self.md_halo_alpha,
+            "md_saturation_boost": self.md_saturation_boost,
+            "md_view_elev": self.md_view_elev,
+            "md_view_azim": self.md_view_azim,
+            "md_num_views": self.md_num_views,
+            "representative_orientation_method": self.representative_orientation,
+            "representative_view_elev": self.representative_view_elev,
+            "representative_view_azim": self.representative_view_azim,
+            "representative_projection": self.representative_projection,
+            "representative_ptm_enabled": self.representative_ptm_enabled,
+            "representative_cna_enabled": self.representative_cna_enabled,
+            "representative_cna_max_signatures": self.representative_cna_max_signatures,
+            "representative_center_atom_tolerance": self.representative_center_atom_tolerance,
+            "representative_shell_min_neighbors": self.representative_shell_min_neighbors,
+            "representative_shell_max_neighbors": self.representative_shell_max_neighbors,
             "cluster_color_assignment": self.cluster_color_assignment,
-            "random_state": int(random_state),
-            "raytrace_render_enabled": bool(self.raytrace_enabled),
+            "random_state": random_state,
+            "raytrace_render_enabled": self.raytrace_enabled,
             **self.raytrace_kwargs,
         }
 
 
-def _as_list_of_str(value: Any) -> list[str] | None:
-    if value is None:
-        return None
-    if not isinstance(value, list) and not OmegaConf.is_list(value):
-        raise TypeError(f"Expected a list of strings, got {type(value)!r}.")
-    return [str(v) for v in value]
+def _positive_int_or_none(value):
+    return value or None
 
 
-def _to_plain(value: Any) -> Any:
-    if OmegaConf.is_config(value):
-        return OmegaConf.to_container(value, resolve=True)
-    return value
-
-
-def _cfg_select(cfg: Any, key: str, default: Any = None) -> Any:
-    if cfg is None:
-        return default
-    return OmegaConf.select(cfg, key, default=default)
-
-
-def _cfg_bool(cfg: Any, key: str, default: bool) -> bool:
-    return bool(_cfg_select(cfg, key, default=default))
-
-
-def _cfg_int(cfg: Any, key: str, default: int) -> int:
-    return int(_cfg_select(cfg, key, default=default))
-
-
-def _as_list_of_int(value: Any, *, field_name: str = "value") -> list[int] | None:
-    if value is None:
-        return None
-    if not isinstance(value, list) and not OmegaConf.is_list(value):
-        raise TypeError(f"{field_name} must be a list of integers, got {type(value)!r}.")
-    values = list(value)
-    if not values:
-        return None
-    return [int(v) for v in values]
-
-
-def _positive_int_or_none(value: Any) -> int | None:
-    if value is None:
-        return None
-    resolved = int(value)
-    if resolved < 0:
-        raise ValueError(f"Expected a non-negative integer or null, got {value!r}.")
-    return None if resolved == 0 else resolved
-
-
-def _validate_overlap_fraction(value: Any) -> float:
-    resolved = float(value)
-    if not 0.0 <= resolved < 1.0:
-        raise ValueError(
-            f"Overlap fraction must be in the half-open interval [0, 1), got {value!r}."
-        )
-    return resolved
-
-
-def _resolve_optional_cluster_k(value: Any, *, field_name: str) -> int | None:
-    if value is None:
-        return None
-    return int(value)
-
-
-def _resolve_input_path(
-    path: str,
-    *,
-    base_dir: Path | None = None,
-) -> Path:
-    expanded = Path(os.path.expanduser(path))
-    if expanded.is_absolute():
-        return expanded
-    candidates: list[Path] = []
-    if base_dir is not None:
-        candidates.append(base_dir / expanded)
-    candidates.append(Path(os.getcwd()) / expanded)
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return candidates[0]
-
-
-def _load_dict_config_from_path(path: str | Path, *, field_name: str) -> DictConfig:
-    resolved = _resolve_input_path(path)
-    loaded_cfg = OmegaConf.load(resolved)
-    if not isinstance(loaded_cfg, DictConfig):
-        raise TypeError(
-            f"{field_name} must load to a mapping, got {type(loaded_cfg)!r} from {resolved}."
-        )
-    return loaded_cfg
-
-
-def _parse_color_value(value: Any) -> int | str:
-    if isinstance(value, (int, np.integer)):
-        return int(value)
-    text = str(value).strip()
-    if text.lstrip("+-").isdigit():
-        return int(text)
-    return text
-
-
-def _normalize_cluster_color_assignment(
-    value: Any,
-    *,
-    field_name: str,
-) -> dict[int, int | str] | None:
-    if value is None:
-        return None
-    if OmegaConf.is_config(value):
-        value = OmegaConf.to_container(value, resolve=True)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"{field_name} must be a mapping from cluster ID to palette index or color, "
-            f"got {type(value)!r}."
-        )
-    return {int(k): _parse_color_value(v) for k, v in value.items()} or None
-
-
-def _load_cluster_color_assignment_file(
-    path: str,
-    *,
-    base_dir: Path | None = None,
-) -> dict[int, int | str]:
-    resolved = _resolve_input_path(path, base_dir=base_dir)
-    with resolved.open("r") as handle:
-        payload = json.load(handle)
-    if not isinstance(payload, dict) or "assignment" not in payload:
-        raise ValueError(
-            "Cluster color assignment files must use the repository-produced schema "
-            f"with an 'assignment' mapping. Invalid file: {resolved}."
-        )
-    assignment = _normalize_cluster_color_assignment(
-        payload["assignment"],
-        field_name=f"cluster_color_assignment_file({resolved})",
-    )
-    if assignment is None:
-        raise ValueError(f"No assignments found in {resolved}")
-    return assignment
-
-
-def _merge_cluster_color_assignments(
-    *assignments: dict[int, int | str] | None,
-) -> dict[int, int | str] | None:
-    merged: dict[int, int | str] = {}
-    for assignment in assignments:
-        if assignment:
-            merged.update(assignment)
-    return merged or None
+def _resolve_input_path(path, *, base_dir=None):
+    path = Path(path).expanduser()
+    return path if path.is_absolute() else (base_dir or PROJECT_ROOT) / path
 
 
 def _resolve_run_settings(
-    analysis_cfg: DictConfig,
+    analysis_cfg,
     *,
-    checkpoint_path_override: str | None,
-    output_dir_override: str | None,
-    cuda_device_override: int | None,
-) -> RunSettings:
-    checkpoint_path_raw = (
-        checkpoint_path_override
-        if checkpoint_path_override is not None
-        else OmegaConf.select(analysis_cfg, "checkpoint.path", default=None)
-    )
-    if checkpoint_path_raw is None or str(checkpoint_path_raw).strip() == "":
-        raise ValueError(
-            "Missing checkpoint path. Set checkpoint.path in "
-            f"{DEFAULT_ANALYSIS_CONFIG_PATH} or pass a runtime override."
-        )
-    checkpoint_path = str(_resolve_input_path(str(checkpoint_path_raw))).strip()
-    if not os.path.exists(checkpoint_path):
-        raise FileNotFoundError(f"Checkpoint not found: {checkpoint_path}")
-
-    output_dir_raw = (
-        output_dir_override
-        if output_dir_override is not None
-        else OmegaConf.select(analysis_cfg, "checkpoint.output_dir", default=None)
-    )
-    output_dir = (
-        Path(checkpoint_path).resolve().parent / "analysis"
-        if output_dir_raw is None or str(output_dir_raw).strip() == ""
-        else _resolve_input_path(str(output_dir_raw))
-    )
-    cuda_device = (
-        int(cuda_device_override)
-        if cuda_device_override is not None
-        else int(OmegaConf.select(analysis_cfg, "checkpoint.cuda_device", default=0))
-    )
+    checkpoint_path_override=None,
+    output_dir_override=None,
+    cuda_device_override=None,
+):
+    cfg = analysis_cfg.checkpoint
+    checkpoint = _resolve_input_path(checkpoint_path_override or cfg.path).resolve()
+    output = output_dir_override or cfg.output_dir
     return RunSettings(
-        checkpoint_path=str(Path(checkpoint_path).resolve()),
-        output_dir=Path(output_dir).resolve(),
-        cuda_device=int(cuda_device),
+        str(checkpoint),
+        _resolve_input_path(output).resolve() if output else checkpoint.parent / "analysis",
+        cfg.cuda_device if cuda_device_override is None else cuda_device_override,
     )
 
 
-def _resolve_input_settings(analysis_cfg: DictConfig) -> InputSettings:
+def _resolve_input_settings(analysis_cfg):
+    cfg = analysis_cfg.inputs
     return InputSettings(
-        static_data_files=_as_list_of_str(
-            OmegaConf.select(analysis_cfg, "inputs.static_data_files", default=None)
-        ),
-        dataloader_num_workers=int(
-            OmegaConf.select(analysis_cfg, "inputs.dataloader_num_workers", default=4)
-        ),
-        inference_batch_size=_positive_int_or_none(
-            OmegaConf.select(analysis_cfg, "inputs.inference_batch_size", default=None)
-        ),
-        max_batches_latent=_positive_int_or_none(
-            OmegaConf.select(analysis_cfg, "inputs.max_batches_latent", default=None)
-        ),
-        max_samples_total=_positive_int_or_none(
-            OmegaConf.select(analysis_cfg, "inputs.max_samples_total", default=None)
-        ),
+        cfg.get("static_data_files"),
+        cfg.get("dataloader_num_workers", 4),
+        cfg.get("inference_batch_size") or None,
+        cfg.get("max_batches_latent") or None,
+        cfg.get("max_samples_total") or None,
     )
 
 
-def _resolve_clustering_fit_settings(
-    analysis_cfg: DictConfig,
-) -> ClusteringFitSettings | None:
-    fit_cfg = OmegaConf.select(analysis_cfg, "clustering.fit_inputs", default=None)
-    enabled = bool(_cfg_select(fit_cfg, "enabled", default=False))
-    if not enabled:
+def _resolve_clustering_fit_settings(analysis_cfg):
+    cfg = analysis_cfg.clustering.get("fit_inputs", {})
+    if not cfg.get("enabled", False):
         return None
-
-    if bool(_cfg_select(fit_cfg, "temporal_real.enabled", default=False)):
-        raise ValueError(
-            "clustering.fit_inputs.temporal_real is not supported. "
-            "Provide a static/synthetic fit dataset through "
-            "clustering.fit_inputs.data_config and optional "
-            "clustering.fit_inputs.static_data_files."
-        )
-
-    parent_inputs = _resolve_input_settings(analysis_cfg)
-    data_config_path = _cfg_select(
-        fit_cfg,
-        "data_config",
-        default=OmegaConf.select(analysis_cfg, "inputs.data_config", default=None),
-    )
-    cache_cfg = _cfg_select(fit_cfg, "cache", default=None)
-    cache_file = str(
-        _cfg_select(cache_cfg, "file", default="clustering_fit_inference_cache.npz")
-    ).strip()
-    if cache_file == "":
-        raise ValueError("clustering.fit_inputs.cache.file must be a non-empty file name.")
-
+    inputs = asdict(_resolve_input_settings(analysis_cfg))
+    inputs.update({key: cfg[key] for key in inputs if key in cfg})
+    for key in ("inference_batch_size", "max_batches_latent", "max_samples_total"):
+        inputs[key] = inputs[key] or None
+    cache = cfg.get("cache", {})
     return ClusteringFitSettings(
-        enabled=True,
-        data_config_path=(
-            None if data_config_path is None else str(data_config_path).strip() or None
-        ),
-        input_settings=InputSettings(
-            static_data_files=_as_list_of_str(
-                _cfg_select(
-                    fit_cfg,
-                    "static_data_files",
-                    default=parent_inputs.static_data_files,
-                )
-            ),
-            dataloader_num_workers=int(
-                _cfg_select(
-                    fit_cfg,
-                    "dataloader_num_workers",
-                    default=parent_inputs.dataloader_num_workers,
-                )
-            ),
-            inference_batch_size=_positive_int_or_none(
-                _cfg_select(
-                    fit_cfg,
-                    "inference_batch_size",
-                    default=parent_inputs.inference_batch_size,
-                )
-            ),
-            max_batches_latent=_positive_int_or_none(
-                _cfg_select(
-                    fit_cfg,
-                    "max_batches_latent",
-                    default=parent_inputs.max_batches_latent,
-                )
-            ),
-            max_samples_total=_positive_int_or_none(
-                _cfg_select(
-                    fit_cfg,
-                    "max_samples_total",
-                    default=parent_inputs.max_samples_total,
-                )
-            ),
-        ),
-        cache_enabled=bool(_cfg_select(cache_cfg, "enabled", default=True)),
-        cache_force_recompute=bool(_cfg_select(cache_cfg, "force_recompute", default=False)),
-        cache_file=cache_file,
+        True,
+        cfg.get("data_config", analysis_cfg.inputs.get("data_config")),
+        InputSettings(**inputs),
+        cache.get("enabled", True),
+        cache.get("force_recompute", False),
+        cache.get("file", "clustering_fit_inference_cache.npz"),
     )
 
 
-def _resolve_analysis_files(
-    model_cfg: DictConfig,
-    input_settings: InputSettings,
-) -> list[str] | None:
-    if str(model_cfg.data.kind).strip().lower() != "static":
+def _resolve_analysis_files(model_cfg, input_settings):
+    if model_cfg.data.kind != "static":
         return None
-    if input_settings.static_data_files:
-        return input_settings.static_data_files
-    data_files = _as_list_of_str(OmegaConf.select(model_cfg, "data.data_files", default=None))
-    if not data_files:
-        raise ValueError(
-            "Cannot resolve analysis data files: data.data_files is missing or empty, "
-            "and inputs.static_data_files was not provided in the analysis config."
-        )
-    return data_files
+    return list(input_settings.static_data_files or model_cfg.data.data_files)
 
 
-def _resolve_dynamic_motif_settings(analysis_cfg: DictConfig) -> DynamicMotifSettings:
-    dynamic_cfg = OmegaConf.select(analysis_cfg, "dynamic_motif", default=None)
-    render_cfg = _cfg_select(dynamic_cfg, "render", default=None)
-    field_cfg = _cfg_select(dynamic_cfg, "field", default=None)
-    representative_samples = int(
-        _cfg_select(dynamic_cfg, "representative_samples_per_motif", default=12)
-    )
-    snapshot_flow_count = int(
-        _cfg_select(dynamic_cfg, "transition_snapshot_flow_count", default=0)
-    )
-    bridge_min_support = int(
-        _cfg_select(dynamic_cfg, "bridge_min_support", default=50)
-    )
-    dwell_min_length = int(_cfg_select(dynamic_cfg, "dwell_min_length", default=1))
-    recurrence_max_gap = int(_cfg_select(dynamic_cfg, "recurrence_max_gap", default=64))
-    if representative_samples < 1:
-        raise ValueError("dynamic_motif.representative_samples_per_motif must be >= 1.")
-    if snapshot_flow_count < 0:
-        raise ValueError("dynamic_motif.transition_snapshot_flow_count must be >= 0.")
-    if bridge_min_support < 1:
-        raise ValueError("dynamic_motif.bridge_min_support must be >= 1.")
-    if dwell_min_length < 1:
-        raise ValueError("dynamic_motif.dwell_min_length must be >= 1.")
-    if recurrence_max_gap < 1:
-        raise ValueError("dynamic_motif.recurrence_max_gap must be >= 1.")
+def _resolve_dynamic_motif_settings(analysis_cfg):
+    cfg = analysis_cfg.get("dynamic_motif", {})
+    render = cfg.get("render", {})
     return DynamicMotifSettings(
-        enabled=bool(_cfg_select(dynamic_cfg, "enabled", default=False)),
-        export_per_sample_arrays=bool(_cfg_select(dynamic_cfg, "export_per_sample_arrays", default=True)),
-        use_model_outputs=bool(_cfg_select(dynamic_cfg, "use_model_outputs", default=True)),
-        stable_k=_resolve_optional_cluster_k(
-            _cfg_select(dynamic_cfg, "stable_k", default=None),
-            field_name="dynamic_motif.stable_k",
-        ),
-        bridge_k=_resolve_optional_cluster_k(
-            _cfg_select(dynamic_cfg, "bridge_k", default=None),
-            field_name="dynamic_motif.bridge_k",
-        ),
-        representative_samples_per_motif=representative_samples,
-        transition_snapshot_flow_count=snapshot_flow_count,
-        bridge_min_support=bridge_min_support,
-        dwell_min_length=dwell_min_length,
-        recurrence_max_gap=recurrence_max_gap,
+        enabled=cfg.get("enabled", False),
+        export_per_sample_arrays=cfg.get("export_per_sample_arrays", True),
+        use_model_outputs=cfg.get("use_model_outputs", True),
+        stable_k=cfg.get("stable_k"),
+        bridge_k=cfg.get("bridge_k"),
+        representative_samples_per_motif=cfg.get("representative_samples_per_motif", 12),
+        bridge_min_support=cfg.get("bridge_min_support", 50),
+        dwell_min_length=cfg.get("dwell_min_length", 1),
+        recurrence_max_gap=cfg.get("recurrence_max_gap", 64),
+        transition_snapshot_flow_count=cfg.get("transition_snapshot_flow_count", 0),
         render=DynamicMotifRenderSettings(
-            heatmaps=bool(_cfg_select(render_cfg, "heatmaps", default=True)),
-            timelines=bool(_cfg_select(render_cfg, "timelines", default=True)),
-            representatives=bool(_cfg_select(render_cfg, "representatives", default=True)),
-            event_gallery=bool(_cfg_select(render_cfg, "event_gallery", default=True)),
-            sankey=bool(_cfg_select(render_cfg, "sankey", default=True)),
+            **{
+                key: render.get(key, True)
+                for key in ("heatmaps", "timelines", "representatives", "event_gallery", "sankey")
+            }
         ),
-        field=DynamicMotifFieldSettings(
-            enabled=bool(_cfg_select(field_cfg, "enabled", default=False)),
-        ),
+        field=DynamicMotifFieldSettings(cfg.get("field", {}).get("enabled", False)),
     )
 
 
-def _resolve_analysis_settings(
-    analysis_cfg: DictConfig,
-    model_cfg: DictConfig,
-) -> AnalysisSettings:
-    clustering_cfg = OmegaConf.select(analysis_cfg, "clustering", default=None)
-    md_cfg = OmegaConf.select(analysis_cfg, "md", default=None)
-    tsne_cfg = OmegaConf.select(analysis_cfg, "tsne", default=None)
-    cache_cfg = OmegaConf.select(analysis_cfg, "cache", default=None)
-    runtime_cfg = OmegaConf.select(analysis_cfg, "runtime", default=None)
-    hdbscan_cfg = OmegaConf.select(analysis_cfg, "clustering.hdbscan", default=None)
-
-    primary_k = _resolve_optional_cluster_k(
-        _cfg_select(clustering_cfg, "primary_k", default=None),
-        field_name="clustering.primary_k",
+def _resolve_analysis_settings(analysis_cfg, model_cfg):
+    c, md, tsne, cache, runtime = (
+        analysis_cfg.get(key, {}) for key in ("clustering", "md", "tsne", "cache", "runtime")
     )
-    if primary_k is None or int(primary_k) < 2:
-        raise ValueError(
-            "clustering.primary_k must be configured as an integer >= 2, "
-            f"got {primary_k!r}."
-        )
-    cluster_k_values_raw = _as_list_of_int(
-        _cfg_select(clustering_cfg, "k_values", default=None),
-        field_name="clustering.k_values",
-    )
-    if cluster_k_values_raw is not None and any(
-        int(k) < 2 for k in cluster_k_values_raw
-    ):
-        raise ValueError(
-            "clustering.k_values entries must all be >= 2, "
-            f"got {cluster_k_values_raw}."
-        )
-    cluster_k_values = (
-        []
-        if cluster_k_values_raw is None
-        else list(dict.fromkeys(int(k) for k in cluster_k_values_raw))
-    )
-
-    if cluster_k_values_raw is None:
-        cluster_k_values = [int(primary_k)]
-    elif not cluster_k_values:
-        raise ValueError(
-            "clustering.k_values was provided, but it does not contain any integers >= 2."
-        )
-    cluster_k_values = [int(primary_k)] + [
-        int(k) for k in cluster_k_values if int(k) != int(primary_k)
-    ]
-
-    data_overlap_fraction = _validate_overlap_fraction(
-        getattr(model_cfg.data, "overlap_fraction", 0.0)
-    )
-    md_overlap_fraction_raw = _cfg_select(md_cfg, "overlap_fraction", default=None)
-    md_overlap_fraction = (
-        min(0.95, data_overlap_fraction + float(_cfg_select(md_cfg, "overlap_boost", default=0.25)))
-        if md_overlap_fraction_raw is None
-        else _validate_overlap_fraction(md_overlap_fraction_raw)
-    )
-    model_cfg.data.overlap_fraction = float(md_overlap_fraction)
-
-    hdbscan_min_samples_candidates = _as_list_of_int(
-        _cfg_select(hdbscan_cfg, "min_samples_candidates", default=None),
-        field_name="clustering.hdbscan.min_samples_candidates",
-    )
-    hdbscan_min_cluster_size_candidates = _as_list_of_int(
-        _cfg_select(hdbscan_cfg, "min_cluster_size_candidates", default=None),
-        field_name="clustering.hdbscan.min_cluster_size_candidates",
-    )
-    hdbscan = HDBSCANSettings(
-        enabled=bool(_cfg_select(hdbscan_cfg, "enabled", default=True)),
-        fit_fraction=float(_cfg_select(hdbscan_cfg, "fit_fraction", default=0.75)),
-        max_fit_samples=int(_cfg_select(hdbscan_cfg, "max_fit_samples", default=50000)),
-        target_k_min=int(_cfg_select(hdbscan_cfg, "target_k_min", default=5)),
-        target_k_max=int(_cfg_select(hdbscan_cfg, "target_k_max", default=6)),
-        min_samples=_positive_int_or_none(
-            _cfg_select(hdbscan_cfg, "min_samples", default=None)
-        ),
-        min_samples_candidates=hdbscan_min_samples_candidates,
-        cluster_selection_epsilon=float(
-            _cfg_select(hdbscan_cfg, "cluster_selection_epsilon", default=0.0)
-        ),
-        cluster_selection_method=str(
-            _cfg_select(hdbscan_cfg, "cluster_selection_method", default="auto")
-        ).lower(),
-        min_cluster_size_candidates=hdbscan_min_cluster_size_candidates,
-        refit_full_data=bool(_cfg_select(hdbscan_cfg, "refit_full_data", default=True)),
-    )
-    dynamic_motif = _resolve_dynamic_motif_settings(analysis_cfg)
-
-    inference_cache_file = str(
-        OmegaConf.select(cache_cfg, "file", default="analysis_inference_cache.npz")
-    ).strip()
-    if inference_cache_file == "":
-        raise ValueError("cache.file must be a non-empty file name.")
-
-    compare_methods_raw = _as_list_of_str(
-        _cfg_select(clustering_cfg, "compare_methods", default=None)
-    ) or []
-    compare_methods: list[str] = []
-    seen_compare_methods: set[str] = set()
-    for method_name in compare_methods_raw:
-        normalized_method = str(method_name).strip().lower()
-        if normalized_method == "":
-            raise ValueError("clustering.compare_methods entries must be non-empty strings.")
-        if normalized_method in seen_compare_methods:
-            continue
-        seen_compare_methods.add(normalized_method)
-        compare_methods.append(normalized_method)
-
+    hdbscan_values = dict(c["hdbscan"])
+    for key in ("min_samples", "min_samples_candidates", "min_cluster_size_candidates"):
+        hdbscan_values[key] = hdbscan_values[key] or None
+    hdbscan = HDBSCANSettings(**hdbscan_values)
+    primary_k = c["primary_k"]
+    ks = list(dict.fromkeys([primary_k, *(c.get("k_values") or [])]))
+    data_overlap = model_cfg.data.get("overlap_fraction", 0.0)
+    overlap = md.get("overlap_fraction")
+    if overlap is None:
+        overlap = min(0.95, data_overlap + md.get("overlap_boost", 0.25))
+    model_cfg.data.overlap_fraction = overlap
     return AnalysisSettings(
-        primary_k=int(primary_k),
-        tsne_max_samples=int(OmegaConf.select(tsne_cfg, "max_samples", default=8000)),
-        tsne_n_iter=int(OmegaConf.select(tsne_cfg, "n_iter", default=1000)),
-        interactive_max_points=_positive_int_or_none(
-            _cfg_select(md_cfg, "interactive_max_points", default=None)
-        ),
-        cluster_method=str(
-            _cfg_select(clustering_cfg, "method", default="spherical_kmeans")
-        ).lower(),
-        cluster_compare_methods=compare_methods,
-        cluster_l2_normalize=bool(_cfg_select(clustering_cfg, "l2_normalize", default=True)),
-        cluster_standardize=bool(_cfg_select(clustering_cfg, "standardize", default=True)),
-        cluster_pca_var=float(_cfg_select(clustering_cfg, "pca_variance", default=0.98)),
-        cluster_pca_max_components=int(
-            _cfg_select(clustering_cfg, "pca_max_components", default=32)
-        ),
-        cluster_k_values=cluster_k_values,
-        data_overlap_fraction=data_overlap_fraction,
-        md_overlap_fraction=float(md_overlap_fraction),
-        md_use_all_points=bool(_cfg_select(md_cfg, "use_all_points", default=True)),
-        progress_every_batches=int(
-            _cfg_select(runtime_cfg, "progress_every_batches", default=25)
-        ),
-        inference_cache_enabled=bool(_cfg_select(cache_cfg, "enabled", default=True)),
-        inference_cache_force_recompute=bool(_cfg_select(cache_cfg, "force_recompute", default=False)),
-        inference_cache_file=inference_cache_file,
-        seed_base=int(_cfg_select(runtime_cfg, "seed_base", default=123)),
+        primary_k=primary_k,
+        tsne_max_samples=tsne.get("max_samples", 8000),
+        tsne_n_iter=tsne.get("n_iter", 1000),
+        interactive_max_points=md.get("interactive_max_points") or None,
+        cluster_method=c.get("method", "spherical_kmeans"),
+        cluster_compare_methods=list(dict.fromkeys(c.get("compare_methods") or [])),
+        cluster_l2_normalize=c.get("l2_normalize", True),
+        cluster_standardize=c.get("standardize", True),
+        cluster_pca_var=c.get("pca_variance", 0.98),
+        cluster_pca_max_components=c.get("pca_max_components", 32),
+        cluster_k_values=ks,
+        data_overlap_fraction=data_overlap,
+        md_overlap_fraction=overlap,
+        md_use_all_points=md.get("use_all_points", True),
+        progress_every_batches=runtime.get("progress_every_batches", 25),
+        inference_cache_enabled=cache.get("enabled", True),
+        inference_cache_force_recompute=cache.get("force_recompute", False),
+        inference_cache_file=cache.get("file", "analysis_inference_cache.npz"),
+        seed_base=runtime.get("seed_base", 123),
         cluster_fit=_resolve_clustering_fit_settings(analysis_cfg),
         hdbscan=hdbscan,
-        dynamic_motif=dynamic_motif,
+        dynamic_motif=_resolve_dynamic_motif_settings(analysis_cfg),
     )
 
 
-def _resolve_figure_set_settings(
-    analysis_cfg: DictConfig,
-    model_cfg: DictConfig,
-    *,
-    out_dir: Path,
-    primary_k: int,
-) -> FigureSetSettings:
-    figure_cfg = OmegaConf.select(analysis_cfg, "figure_set", default=None)
-    figure_md_cfg = OmegaConf.select(analysis_cfg, "figure_set.md", default=None)
-    icl_cfg = OmegaConf.select(analysis_cfg, "figure_set.icl", default=None)
-    rep_cfg = OmegaConf.select(analysis_cfg, "figure_set.representatives", default=None)
-    raytrace_cfg = OmegaConf.select(analysis_cfg, "figure_set.raytrace", default=None)
-    real_md_profile_cfg = OmegaConf.select(analysis_cfg, "real_md.profiles", default=None)
-    figure_representatives_cfg = _cfg_select(figure_cfg, "representatives", default={})
-
-    figure_only = bool(_cfg_select(figure_cfg, "figure_only", default=False))
-    enabled = bool(_cfg_select(figure_cfg, "enabled", default=True)) or figure_only
-    cluster_k = int(primary_k)
-
-    cluster_color_assignment_cfg = _normalize_cluster_color_assignment(
-        _cfg_select(figure_cfg, "color_assignment", default=None),
-        field_name="figure_set.color_assignment",
-    )
-    cluster_color_assignment_file_cfg = _cfg_select(
-        figure_cfg,
-        "color_assignment_file",
-        default=None,
-    )
-    cluster_color_assignment_cfg_file = (
-        _load_cluster_color_assignment_file(str(cluster_color_assignment_file_cfg), base_dir=out_dir)
-        if cluster_color_assignment_file_cfg is not None
-        else None
-    )
-
-    representative_points_default = int(
-        getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 48))
-    )
-    representative_points_cfg = _cfg_select(rep_cfg, "points", default=None)
-    representative_points = (
-        representative_points_default
-        if representative_points_cfg is None
-        else int(representative_points_cfg)
-    )
-    if representative_points < 16:
-        raise ValueError(
-            "figure_set.representatives.points must be >= 16, "
-            f"got {representative_points}."
+def _resolve_figure_set_settings(analysis_cfg, model_cfg, *, out_dir, primary_k):
+    cfg = analysis_cfg.figure_set
+    md, icl, rep, ray = (cfg[key] for key in ("md", "icl", "representatives", "raytrace"))
+    assignment = {}
+    if cfg.get("color_assignment_file"):
+        assignment.update(
+            json.loads(_resolve_input_path(cfg.color_assignment_file).read_text())["assignment"]
         )
-    representative_orientation = str(
-        _cfg_select(rep_cfg, "orientation", default="pca")
-    ).strip().lower()
-    if representative_orientation not in {"pca", "none"}:
-        raise ValueError(
-            "figure_set.representatives.orientation must be one of ['pca', 'none'], "
-            f"got {representative_orientation!r}."
-        )
-
-    representative_cna_max_signatures = int(
-        getattr(figure_representatives_cfg, "cna_max_signatures", 5)
-    )
-    representative_shell_min_neighbors = int(
-        getattr(figure_representatives_cfg, "shell_min_neighbors", 8)
-    )
-    representative_shell_max_neighbors = int(
-        getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
-    )
-    representative_ptm_enabled = bool(
-        _cfg_select(rep_cfg, "ptm_enabled", default=False)
-    )
-    if enabled and not representative_ptm_enabled:
-        raise ValueError(
-            "figure_set.representatives.ptm_enabled must be true when figure_set is "
-            "enabled because crystal-like cluster snapshots are selected from PTM "
-            "FCC/HCP/BCC representative-center assignments."
-        )
-    md_num_views = int(_cfg_select(figure_md_cfg, "num_views", default=2))
-    if md_num_views < 1:
-        raise ValueError("figure_set.md.num_views must be >= 1.")
-    raytrace_high_quality = bool(
-        _cfg_select(raytrace_cfg, "high_quality", default=False)
-    )
-    raytrace_resolution = (
-        1600
-        if raytrace_high_quality
-        else int(_cfg_select(raytrace_cfg, "resolution", default=1200))
-    )
-    raytrace_samples = (
-        64
-        if raytrace_high_quality
-        else int(_cfg_select(raytrace_cfg, "samples", default=32))
-    )
-    if raytrace_resolution <= 0:
-        raise ValueError(
-            "figure_set.raytrace.resolution must be positive, "
-            f"got {raytrace_resolution}."
-        )
-    if raytrace_samples <= 0:
-        raise ValueError(
-            "figure_set.raytrace.samples must be positive, "
-            f"got {raytrace_samples}."
-        )
-
+    assignment.update(cfg.color_assignment)
+    assignment = {int(k): v for k, v in assignment.items()} or None
+    points = rep.points or model_cfg.data.get("model_points", model_cfg.data.get("num_points", 48))
+    quality = ray.high_quality
     return FigureSetSettings(
-        enabled=enabled,
-        figure_only=figure_only,
-        k=cluster_k,
-        md_max_points=_positive_int_or_none(
-            _cfg_select(figure_md_cfg, "max_points", default=None)
+        enabled=cfg.enabled,
+        k=primary_k,
+        md_max_points=md.max_points or None,
+        md_point_size=md.point_size,
+        md_alpha=md.alpha,
+        md_halo_scale=md.halo_scale,
+        md_halo_alpha=md.halo_alpha,
+        md_saturation_boost=md.saturation_boost,
+        md_view_elev=md.view_elev,
+        md_view_azim=md.view_azim,
+        md_num_views=md.num_views,
+        cluster_color_assignment=assignment,
+        profile_point_scale_enabled=cfg.profile_point_scale_enabled,
+        icl_enabled=icl.enabled,
+        icl_k_min=icl.k_min,
+        icl_k_max=icl.k_max,
+        icl_max_samples=icl.max_samples or None,
+        representative_points=points,
+        representative_orientation=rep.orientation,
+        representative_view_elev=rep.view_elev,
+        representative_view_azim=rep.view_azim,
+        representative_projection=rep.projection,
+        representative_ptm_enabled=rep.ptm_enabled,
+        representative_cna_enabled=rep.cna_enabled,
+        representative_cna_max_signatures=rep.cna_max_signatures,
+        representative_center_atom_tolerance=rep.center_atom_tolerance,
+        representative_shell_min_neighbors=rep.shell_min_neighbors,
+        representative_shell_max_neighbors=rep.shell_max_neighbors,
+        real_md_profile_target_points=analysis_cfg.real_md.profiles.target_points,
+        raytrace_enabled=ray.enabled,
+        raytrace_kwargs=dict(
+            raytrace_blender_executable=ray.blender_executable,
+            raytrace_render_resolution=1600 if quality else ray.resolution,
+            raytrace_render_max_points=ray.max_points or None,
+            raytrace_render_samples=64 if quality else ray.samples,
+            raytrace_render_denoise=ray.denoise,
+            raytrace_render_high_quality=quality,
+            raytrace_render_projection=ray.projection,
+            raytrace_render_fov_deg=ray.fov_deg,
+            raytrace_render_camera_distance_factor=ray.camera_distance_factor,
+            raytrace_render_sphere_radius_fraction=ray.sphere_radius_fraction,
+            raytrace_render_timeout_sec=ray.timeout_sec,
+            raytrace_render_use_gpu=ray.use_gpu,
         ),
-        md_point_size=float(_cfg_select(figure_md_cfg, "point_size", default=5.6)),
-        md_alpha=float(_cfg_select(figure_md_cfg, "alpha", default=0.62)),
-        md_halo_scale=float(_cfg_select(figure_md_cfg, "halo_scale", default=1.0)),
-        md_halo_alpha=float(_cfg_select(figure_md_cfg, "halo_alpha", default=0.0)),
-        md_saturation_boost=float(
-            _cfg_select(figure_md_cfg, "saturation_boost", default=1.18)
-        ),
-        md_view_elev=float(_cfg_select(figure_md_cfg, "view_elev", default=24.0)),
-        md_view_azim=float(_cfg_select(figure_md_cfg, "view_azim", default=35.0)),
-        md_num_views=md_num_views,
-        cluster_color_assignment=_merge_cluster_color_assignments(
-            cluster_color_assignment_cfg_file,
-            cluster_color_assignment_cfg,
-        ),
-        profile_point_scale_enabled=bool(
-            _cfg_select(figure_cfg, "profile_point_scale_enabled", default=False)
-        ),
-        icl_enabled=bool(_cfg_select(icl_cfg, "enabled", default=False)),
-        icl_k_min=int(_cfg_select(icl_cfg, "k_min", default=2)),
-        icl_k_max=int(_cfg_select(icl_cfg, "k_max", default=20)),
-        icl_max_samples=_positive_int_or_none(
-            _cfg_select(icl_cfg, "max_samples", default=20000)
-        ),
-        representative_points=representative_points,
-        representative_orientation=representative_orientation,
-        representative_view_elev=float(_cfg_select(rep_cfg, "view_elev", default=22.0)),
-        representative_view_azim=float(_cfg_select(rep_cfg, "view_azim", default=38.0)),
-        representative_projection=str(
-            _cfg_select(rep_cfg, "projection", default="ortho")
-        ).strip().lower(),
-        representative_ptm_enabled=representative_ptm_enabled,
-        representative_cna_enabled=bool(
-            _cfg_select(rep_cfg, "cna_enabled", default=False)
-        ),
-        representative_cna_max_signatures=representative_cna_max_signatures,
-        representative_center_atom_tolerance=float(
-            _cfg_select(rep_cfg, "center_atom_tolerance", default=1e-6)
-        ),
-        representative_shell_min_neighbors=representative_shell_min_neighbors,
-        representative_shell_max_neighbors=representative_shell_max_neighbors,
-        real_md_profile_target_points=int(
-            _cfg_select(
-                real_md_profile_cfg,
-                "target_points",
-                default=max(
-                    32,
-                    int(
-                        getattr(
-                            model_cfg.data,
-                            "model_points",
-                            getattr(model_cfg.data, "num_points", 64),
-                        )
-                    ),
-                ),
-            )
-        ),
-        raytrace_enabled=bool(_cfg_select(raytrace_cfg, "enabled", default=False)),
-        raytrace_kwargs={
-            "raytrace_blender_executable": str(
-                _cfg_select(raytrace_cfg, "blender_executable", default="blender")
-            ).strip(),
-            "raytrace_render_resolution": int(raytrace_resolution),
-            "raytrace_render_max_points": _positive_int_or_none(
-                _cfg_select(raytrace_cfg, "max_points", default=None)
-            ),
-            "raytrace_render_samples": int(raytrace_samples),
-            "raytrace_render_denoise": bool(
-                _cfg_select(raytrace_cfg, "denoise", default=True)
-            ),
-            "raytrace_render_high_quality": bool(raytrace_high_quality),
-            "raytrace_render_projection": str(
-                _cfg_select(raytrace_cfg, "projection", default="perspective")
-            ).strip().lower(),
-            "raytrace_render_fov_deg": float(
-                _cfg_select(raytrace_cfg, "fov_deg", default=34.0)
-            ),
-            "raytrace_render_camera_distance_factor": float(
-                _cfg_select(raytrace_cfg, "camera_distance_factor", default=2.8)
-            ),
-            "raytrace_render_sphere_radius_fraction": float(
-                _cfg_select(raytrace_cfg, "sphere_radius_fraction", default=0.0105)
-            ),
-            "raytrace_render_timeout_sec": int(
-                _cfg_select(raytrace_cfg, "timeout_sec", default=1200)
-            ),
-            "raytrace_render_use_gpu": bool(
-                _cfg_select(raytrace_cfg, "use_gpu", default=False)
-            ),
-        },
     )
 
 
-def _print_resolved_analysis_settings(
-    analysis_settings: AnalysisSettings,
-    figure_settings: FigureSetSettings,
-) -> None:
+def _print_resolved_analysis_settings(analysis_settings, figure_settings):
     print(
-        "Unified selected clustering k: "
-        f"k={analysis_settings.primary_k} "
-        "(configured by clustering.primary_k)"
-    )
-    print(f"t-SNE sample cap: {analysis_settings.tsne_max_samples}")
-    print(f"Available clustering keys: {analysis_settings.cluster_k_values}")
-    print(
-        "Clustering backend settings: "
-        f"method={analysis_settings.cluster_method}, "
-        f"compare_methods={analysis_settings.cluster_compare_methods}, "
-        f"l2_normalize={analysis_settings.cluster_l2_normalize}, "
-        f"standardize={analysis_settings.cluster_standardize}, "
-        f"pca_variance={analysis_settings.cluster_pca_var}, "
-        f"pca_max_components={analysis_settings.cluster_pca_max_components}"
-    )
-    if analysis_settings.cluster_fit is not None:
-        print(
-            "Clustering fit-transfer settings: "
-            f"data_config={analysis_settings.cluster_fit.data_config_path}, "
-            f"static_data_files={analysis_settings.cluster_fit.input_settings.static_data_files}, "
-            f"cache_enabled={analysis_settings.cluster_fit.cache_enabled}, "
-            f"cache_file={analysis_settings.cluster_fit.cache_file}"
-        )
-    print(
-        "MD overlap fraction (analysis): "
-        f"{analysis_settings.data_overlap_fraction:.3f} -> {analysis_settings.md_overlap_fraction:.3f}"
+        "Clustering:", analysis_settings.cluster_method, "k =", analysis_settings.cluster_k_values
     )
     print(
-        "HDBSCAN settings: "
-        f"fit_fraction={analysis_settings.hdbscan.fit_fraction:.3f}, "
-        f"max_fit_samples={analysis_settings.hdbscan.max_fit_samples}, "
-        f"target_k=[{analysis_settings.hdbscan.target_k_min}, "
-        f"{analysis_settings.hdbscan.target_k_max}], "
-        f"selection_method={analysis_settings.hdbscan.cluster_selection_method}, "
-        f"refit_full_data={analysis_settings.hdbscan.refit_full_data}"
+        "Features:",
+        dict(
+            l2_normalize=analysis_settings.cluster_l2_normalize,
+            standardize=analysis_settings.cluster_standardize,
+            pca_variance=analysis_settings.cluster_pca_var,
+            pca_max_components=analysis_settings.cluster_pca_max_components,
+        ),
     )
     print(
-        "Fixed-k figure set: "
-        f"enabled={figure_settings.enabled}, "
-        f"figure_only={figure_settings.figure_only}, "
-        f"k={figure_settings.k}, "
-        "crystal_like_detection=representative_ptm_fcc_hcp_bcc, "
-        f"md_saturation={figure_settings.md_saturation_boost:.2f}, "
-        f"raytrace_enabled={figure_settings.raytrace_enabled}, "
-        f"raytrace_projection={figure_settings.raytrace_kwargs['raytrace_render_projection']}, "
-        f"raytrace_samples={figure_settings.raytrace_kwargs['raytrace_render_samples']}, "
-        f"raytrace_res={figure_settings.raytrace_kwargs['raytrace_render_resolution']}, "
-        f"raytrace_max_points={figure_settings.raytrace_kwargs['raytrace_render_max_points']}, "
-        f"raytrace_gpu={figure_settings.raytrace_kwargs['raytrace_render_use_gpu']}, "
-        f"raytrace_denoise={figure_settings.raytrace_kwargs['raytrace_render_denoise']}, "
-        "raytrace_high_quality="
-        f"{figure_settings.raytrace_kwargs['raytrace_render_high_quality']}, "
-        "raytrace_process_model=one_blender_process_per_snapshot, "
-        f"icl_enabled={figure_settings.icl_enabled}, "
-        f"profile_point_scale_enabled={figure_settings.profile_point_scale_enabled}, "
-        f"rep_orientation={figure_settings.representative_orientation}, "
-        f"rep_view=({figure_settings.representative_view_elev:.1f},"
-        f"{figure_settings.representative_view_azim:.1f}), "
-        f"rep_projection={figure_settings.representative_projection}, "
-        f"rep_ptm={figure_settings.representative_ptm_enabled}, "
-        f"rep_cna={figure_settings.representative_cna_enabled}, "
-        "rep_cna_shell="
-        f"({figure_settings.representative_shell_min_neighbors},"
-        f"{figure_settings.representative_shell_max_neighbors}), "
-        "cluster_color_overrides="
-        f"{sorted((figure_settings.cluster_color_assignment or {}).items())}"
-    )
-    print(
-        "Dynamic motif analysis: "
-        f"enabled={analysis_settings.dynamic_motif.enabled}, "
-        f"use_model_outputs={analysis_settings.dynamic_motif.use_model_outputs}, "
-        f"stable_k={analysis_settings.dynamic_motif.stable_k}, "
-        f"bridge_k={analysis_settings.dynamic_motif.bridge_k}, "
-        f"transition_snapshot_flow_count={analysis_settings.dynamic_motif.transition_snapshot_flow_count}, "
-        "render="
-        f"(heatmaps={analysis_settings.dynamic_motif.render.heatmaps}, "
-        f"timelines={analysis_settings.dynamic_motif.render.timelines}, "
-        f"representatives={analysis_settings.dynamic_motif.render.representatives}, "
-        f"event_gallery={analysis_settings.dynamic_motif.render.event_gallery}, "
-        f"sankey={analysis_settings.dynamic_motif.render.sankey}), "
-        f"field_enabled={analysis_settings.dynamic_motif.field.enabled}"
+        "Figures:",
+        dict(
+            enabled=figure_settings.enabled,
+            points=figure_settings.representative_points,
+            ptm=figure_settings.representative_ptm_enabled,
+            cna=figure_settings.representative_cna_enabled,
+        ),
     )
 
 
-def load_checkpoint_training_config(checkpoint_path: str) -> DictConfig:
-    config_dir, config_name = resolve_config_path(checkpoint_path)
-    config_path = Path(config_dir) / f"{config_name}.yaml"
-    if not config_path.exists():
-        raise FileNotFoundError(
-            "Resolved checkpoint config file does not exist: "
-            f"{config_path} for checkpoint {checkpoint_path}."
-        )
-    checkpoint_cfg = OmegaConf.load(config_path)
-    if not isinstance(checkpoint_cfg, DictConfig):
-        raise TypeError(
-            "Checkpoint config must load to a DictConfig, "
-            f"got {type(checkpoint_cfg)!r} from {config_path}."
-        )
-    return checkpoint_cfg
+def load_checkpoint_training_config(checkpoint_path):
+    directory, name = resolve_config_path(checkpoint_path)
+    return OmegaConf.load(Path(directory) / f"{name}.yaml")
 
 
-def load_checkpoint_analysis_config(config_path: str | None = None) -> DictConfig:
-    resolved_path = (
-        DEFAULT_ANALYSIS_CONFIG_PATH
-        if config_path is None
-        else _resolve_input_path(config_path)
+def load_checkpoint_analysis_config(config_path=None):
+    path = _resolve_input_path(config_path or DEFAULT_ANALYSIS_CONFIG_PATH)
+    cfg = OmegaConf.load(path)
+    parent = cfg.pop("extends", None)
+    return (
+        OmegaConf.merge(load_checkpoint_analysis_config(path.parent / parent), cfg)
+        if parent
+        else cfg
     )
-    if not resolved_path.exists():
-        raise FileNotFoundError(f"Analysis config does not exist: {resolved_path}")
-    analysis_cfg = OmegaConf.load(resolved_path)
-    if not isinstance(analysis_cfg, DictConfig):
-        raise TypeError(
-            "Analysis config must load to a DictConfig, "
-            f"got {type(analysis_cfg)!r} from {resolved_path}."
-        )
-    return analysis_cfg
 
 
-def build_runtime_model_config(
-    checkpoint_path: str,
-    analysis_cfg: DictConfig,
-    *,
-    data_config_path_override: str | None = None,
-) -> DictConfig:
+def build_runtime_model_config(checkpoint_path, analysis_cfg, *, data_config_path_override=None):
     model_cfg = load_checkpoint_training_config(checkpoint_path)
-    data_config_path = (
-        data_config_path_override
-        if data_config_path_override is not None
-        else OmegaConf.select(analysis_cfg, "inputs.data_config", default=None)
-    )
-    if data_config_path is not None:
-        data_cfg = _load_dict_config_from_path(
-            str(data_config_path),
-            field_name=(
-                "inputs.data_config"
-                if data_config_path_override is None
-                else "clustering.fit_inputs.data_config"
-            ),
-        )
-        override_piece = data_cfg if "data" in data_cfg else OmegaConf.create({"data": data_cfg})
-        model_cfg = OmegaConf.merge(model_cfg, override_piece)
-        if not isinstance(model_cfg, DictConfig):
-            raise TypeError(
-                "Merged runtime model config must be a DictConfig, "
-                f"got {type(model_cfg)!r}."
-            )
+    data_path = data_config_path_override or analysis_cfg.inputs.data_config
+    if data_path:
+        data_cfg = OmegaConf.load(_resolve_input_path(data_path))
+        model_cfg = OmegaConf.merge(model_cfg, {"data": data_cfg})
     _apply_analysis_inference_overrides(model_cfg)
     return model_cfg
 
 
 def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
-    if OmegaConf.select(model_cfg, 'encoder.name') in {'PretrainedMACEGeometry', 'PretrainedMACEHistoryGeometry'}:
+    if OmegaConf.select(model_cfg, "encoder.name") in {
+        "PretrainedMACEGeometry",
+        "PretrainedMACEHistoryGeometry",
+    }:
         # Analysis adds new graph sizes and inference contexts after training has
         # already populated Dynamo's shared code cache. fullgraph=True then hits
         # the recompilation limit. Eager radial layers retain the weights/BF16 math.
         with open_dict(model_cfg):
             model_cfg.encoder.kwargs.performance.compile_radial_mlp = False
             model_cfg.encoder.kwargs.activation_checkpointing = False
-        print('[analysis] Using eager MACE radial layers for variable-size inference batches.')
-    if OmegaConf.select(model_cfg, 'data.kind') == 'relaxed_histories':
+        print("[analysis] Using eager MACE radial layers for variable-size inference batches.")
+    if OmegaConf.select(model_cfg, "data.kind") == "relaxed_histories":
         with open_dict(model_cfg):
             model_cfg.data.radius = model_cfg.data.normalization_radius_A
-            model_cfg.data.analysis_identity = 'atom_id_v1'
-    if bool(OmegaConf.select(model_cfg, "vicreg_temporal_view", default=False)) and model_cfg.data.kind != "spatiotemporal_binary":
-        print("[analysis] Disabling training-only temporal view construction for the overridden inference dataset; encoder/projector weights are unchanged.")
+            model_cfg.data.analysis_identity = "atom_id_v1"
+    if (
+        bool(OmegaConf.select(model_cfg, "vicreg_temporal_view", default=False))
+        and model_cfg.data.kind != "spatiotemporal_binary"
+    ):
+        print(
+            "[analysis] Disabling training-only temporal view construction for the overridden inference dataset; encoder/projector weights are unchanged."
+        )
         with open_dict(model_cfg):
             model_cfg.vicreg_temporal_view = False
     if bool(
@@ -1118,9 +488,7 @@ def _apply_analysis_inference_overrides(model_cfg: DictConfig) -> None:
             model_cfg.vicreg_projector_bn_eval_batch_stats = False
 
     compile_enabled = bool(OmegaConf.select(model_cfg, "compile_encoder", default=False))
-    compile_mode = str(
-        OmegaConf.select(model_cfg, "encoder_compile_mode", default="default")
-    )
+    compile_mode = str(OmegaConf.select(model_cfg, "encoder_compile_mode", default="default"))
     if compile_enabled and compile_mode == "reduce-overhead":
         print(
             "[analysis] Replacing encoder_compile_mode='reduce-overhead' with "

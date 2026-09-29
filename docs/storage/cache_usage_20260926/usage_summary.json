@@ -1,0 +1,16 @@
+{
+  "as_of": "2026-09-26T15:19:29.431065+00:00",
+  "recent_7days_since": "2026-09-19T15:19:29.431065+00:00",
+  "recent_3days_since": "2026-09-23T15:19:29.431065+00:00",
+  "reference_7days_GB": 270.86291968,
+  "reference_3days_GB": 217.155882496,
+  "active_or_queued_GB": 36.527033856,
+  "category_GB": {
+    "active_or_queued_dependency": 36.527033856,
+    "inflight_archive_protected": 73.250669568,
+    "not_established_keep_pending_review": 59.511256576,
+    "old_forecast_candidate": 683.508125696,
+    "recent_experiment_reference": 205.308484096
+  },
+  "evidence_limit": "Cache collection sizes from the preceding physical inventory; dates of consumer records establish recent references, not exact file reads. Config dependencies and process mappings establish current protection. Access times are not used."
+}

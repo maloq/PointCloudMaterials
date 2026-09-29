@@ -182,7 +182,6 @@ def _collect_clustering_fit_cache(
     model: Any | None,
     cuda_device: int,
     seed_base: int,
-    figure_only: bool,
     progress_every_batches: int,
 ) -> tuple[dict[str, np.ndarray], DictConfig, list[str] | None, Any, bool]:
     fit_cfg = build_runtime_model_config(
@@ -250,13 +249,6 @@ def _collect_clustering_fit_cache(
         print("[analysis][clustering-fit cache] Forced recompute requested; skipping cache load.")
 
     if fit_cache is None:
-        if figure_only:
-            raise RuntimeError(
-                "figure_set.figure_only requires a valid clustering-fit cache when "
-                "clustering.fit_inputs.enabled=true. "
-                f"Missing cache: {out_dir / fit_settings.cache_file}. "
-                "Run the full analysis once with figure_set.figure_only=false to populate it."
-            )
         if model is None:
             model, _, _ = load_vicreg_model(
                 checkpoint_path,
@@ -301,7 +293,6 @@ def _collect_main_inference_cache(
     model: Any | None,
     device: str,
     analysis_settings: Any,
-    figure_only: bool,
     cache_spec: dict[str, Any],
     max_batches_latent: int | None,
     max_samples_total: int | None,
@@ -318,52 +309,31 @@ def _collect_main_inference_cache(
             "[analysis][cache] "
             + (preloaded_cache_message or "using cache loaded during static-data preflight")
         )
-    if figure_only:
-        if cache is None:
-            step("Loading cached inference batches")
-            cache, cache_msg = _load_inference_cache(
-                out_dir=out_dir,
-                cache_filename=analysis_settings.inference_cache_file,
-                expected_spec=cache_spec,
-            )
-            cache_loaded = cache is not None
-            print(f"[analysis][cache] {cache_msg}")
-        else:
-            cache_msg = preloaded_cache_message or "cache loaded during preflight"
-        if cache is None:
-            raise RuntimeError(
-                "figure_set.figure_only requires a valid inference cache because it does not "
-                "run model inference. "
-                f"Cache load failed: {cache_msg}. "
-                "Run the full analysis once with figure_set.figure_only=false to populate "
-                f"{out_dir / analysis_settings.inference_cache_file}."
-            )
-    else:
-        step("Loading model")
-        model, cfg, device = load_vicreg_model(
-            checkpoint_path,
-            cuda_device=int(cuda_device),
-            cfg=cfg,
+    step("Loading model")
+    model, cfg, device = load_vicreg_model(
+        checkpoint_path,
+        cuda_device=int(cuda_device),
+        cfg=cfg,
+    )
+    step("Collecting inference batches")
+    if cache is None and (
+        analysis_settings.inference_cache_enabled
+        and not analysis_settings.inference_cache_force_recompute
+    ):
+        cache, cache_msg = _load_inference_cache(
+            out_dir=out_dir,
+            cache_filename=analysis_settings.inference_cache_file,
+            expected_spec=cache_spec,
         )
-        step("Collecting inference batches")
-        if cache is None and (
-            analysis_settings.inference_cache_enabled
-            and not analysis_settings.inference_cache_force_recompute
-        ):
-            cache, cache_msg = _load_inference_cache(
-                out_dir=out_dir,
-                cache_filename=analysis_settings.inference_cache_file,
-                expected_spec=cache_spec,
-            )
-            cache_loaded = cache is not None
-            print(f"[analysis][cache] {cache_msg}")
-        elif (
-            analysis_settings.inference_cache_enabled
-            and analysis_settings.inference_cache_force_recompute
-        ):
-            print("[analysis][cache] Forced recompute requested; skipping cache load.")
+        cache_loaded = cache is not None
+        print(f"[analysis][cache] {cache_msg}")
+    elif (
+        analysis_settings.inference_cache_enabled
+        and analysis_settings.inference_cache_force_recompute
+    ):
+        print("[analysis][cache] Forced recompute requested; skipping cache load.")
 
-    if cache is None and not figure_only:
+    if cache is None:
         if not analysis_settings.inference_cache_enabled:
             print("[analysis][cache] Inference cache disabled; running fresh inference.")
         if max_batches_latent is None:
@@ -376,7 +346,7 @@ def _collect_main_inference_cache(
             raise RuntimeError(
                 "Internal error: model must be loaded before gathering inference batches."
             )
-        if str(cfg.model_type).strip().lower() in ('structural_gatr_encoder', 'structural_mace_encoder', 'neighborhood_jepa_encoder'):
+        if str(cfg.model_type).strip().lower() in ('structural_gatr_encoder', 'structural_mace_encoder', 'neighborhood_jepa_encoder', 'native_mace_encoder'):
             from .structural_adapter import collect_structural_inference
             cache = collect_structural_inference(model, dataloader, cfg, out_dir,
                 max_batches=max_batches_latent, max_samples=max_samples_total)
@@ -490,11 +460,6 @@ def load_vicreg_model(
     """Restore the contrastive module together with its Hydra cfg and device string."""
     if cfg is None:
         cfg = load_checkpoint_training_config(checkpoint_path)
-    if not isinstance(cfg, DictConfig):
-        raise TypeError(
-            "load_vicreg_model expects cfg to be a DictConfig when provided, "
-            f"got {type(cfg)!r}."
-        )
     device = f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu"
     if str(cfg.model_type).strip().lower() == 'mace_context_encoder' and device.startswith('cuda:'):
         torch.cuda.set_device(cuda_device)
@@ -510,6 +475,9 @@ def load_vicreg_model(
 
 def _resolve_analysis_module_class(cfg: DictConfig) -> type:
     model_type = str(getattr(cfg, "model_type", "vicreg")).strip().lower()
+    if model_type == 'native_mace_encoder':
+        from .native_mace_adapter import NativeMACEAnalysis
+        return NativeMACEAnalysis
     if model_type == 'structural_gatr_encoder':
         from .structural_adapter import StructuralGATrAnalysis
         return StructuralGATrAnalysis

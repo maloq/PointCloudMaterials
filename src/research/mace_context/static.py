@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import numpy as np
+from src.analysis.config import load_checkpoint_analysis_config
 from omegaconf import OmegaConf, open_dict
 import torch
 
@@ -66,7 +67,7 @@ def verify(config):
         # Local centers exercise overlapping readouts and spatially separated ones.
         locations = (points.min(0)+points.max(0))/2 + np.array([[0,0,0], [4,0,0], [0,4,0], [0,0,4], [40,0,0], [-40,0,0]])
         centers = points[tree.query(locations)[1]]
-        analysis = OmegaConf.load(case['analysis_config'])
+        analysis = load_checkpoint_analysis_config(case['analysis_config'])
         data = OmegaConf.load(analysis.inputs.data_config)
         settings = OmegaConf.to_container(data.context_encoder, resolve=True)
         z, record = encode_frame(model, points, centers, settings)

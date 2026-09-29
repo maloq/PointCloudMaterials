@@ -1,0 +1,15 @@
+{
+  "family": "spatial_vicreg_coordinates",
+  "exported_at": "2026-09-28T23:19:48.568341+00:00",
+  "files": {
+    "docs/metrics/spatial_vicreg_coordinates.md": "9ed4ef2b870d57613cc176dfa3e15b12b055052aa2cb500508d9f8ca2bb0ee56",
+    "src/research/spatial_vicreg_bias/coordinates.py": "613e2fe4fdde773bc809be30698791b219dfe01c38e119638c3bb6ad5224aa6c",
+    "src/research/geoframe_continuity/analysis.py": "dfd9850de1331d1f0cf1ae55694c3ac0d762d03e5392afa80db1a76bcba81d69",
+    "src/research/geoframe_evolution/evaluate.py": "8cfa8d450fc217f612fb1dda49ab2bd5399a0c774dcfd71014799001c11d3b44",
+    "src/research/geoframe_evolution/reference.py": "47284e3675d1e3e447dd83aaeac96e3167b86deb7b9ea56f024411c71d9c0cae",
+    "src/models/encoders/geo_frame_transformer_v2.py": "f2a40e02626aaec21664d11e19d6a56485283a69ba07d40591929b0335764534",
+    "src/models/encoders/ri_mae_encoder.py": "ebbe4118f96c04d5541ede0243f35023e327674d01f6fe430b9cd154265cbf3b",
+    "src/training_methods/shared/vicreg.py": "947b10c82042afc06b51fb651aa0b56ac27350e70bf5b2c120d513b90d66ab63"
+  },
+  "verified": true
+}

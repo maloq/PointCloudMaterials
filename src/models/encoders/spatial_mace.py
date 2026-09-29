@@ -13,19 +13,23 @@ from .mace_backend import mace_backend_config
 
 class SpatialMACE(nn.Module):
     def __init__(self, *, d0, n_ref, radius, channels=128, code_dim=128,
-                 cutoff=5., backend='cueq', layout=None, conv_fusion=None):
+                 cutoff=5., backend='cueq', layout=None, conv_fusion=None, num_interactions=2,
+                 max_ell=2, correlation=2):
         super().__init__()
         self.channels, self.radius, self.cutoff = channels, radius, cutoff
+        if num_interactions<1:raise ValueError('MACE requires a positive interaction depth')
+        self.num_interactions=num_interactions
+        self.max_ell,self.correlation=max_ell,correlation
         self.layout = ('ir_mul' if backend == 'cueq' else 'mul_ir') if layout is None else layout
         self.conv_fusion = backend == 'cueq' if conv_fusion is None else conv_fusion
         config = mace_backend_config(backend, layout=self.layout, conv_fusion=self.conv_fusion)
-        irreps = o3.Irreps(f'{channels}x0e + {channels}x1o + {channels}x2e')
+        irreps = o3.Irreps([(channels,(ell,(-1)**ell)) for ell in range(max_ell+1)])
         backbone = modules.MACE(r_max=cutoff, num_bessel=6, num_polynomial_cutoff=5,
-            max_ell=2, interaction_cls=modules.RealAgnosticResidualInteractionBlock,
-            interaction_cls_first=modules.RealAgnosticInteractionBlock, num_interactions=2,
+            max_ell=max_ell, interaction_cls=modules.RealAgnosticResidualInteractionBlock,
+            interaction_cls_first=modules.RealAgnosticInteractionBlock, num_interactions=num_interactions,
             num_elements=1, hidden_irreps=irreps, MLP_irreps=o3.Irreps(f'{channels}x0e'),
             atomic_energies=np.zeros(1), avg_num_neighbors=12., atomic_numbers=[13],
-            correlation=2, gate=torch.nn.functional.silu, radial_MLP=[32],
+            correlation=correlation, gate=torch.nn.functional.silu, radial_MLP=[32],
             keep_last_layer_irreps=True, cueq_config=config).float()
         for name in ('node_embedding', 'radial_embedding', 'spherical_harmonics', 'interactions', 'products'):
             setattr(self, name, getattr(backbone, name))

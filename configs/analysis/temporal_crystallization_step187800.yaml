@@ -2,7 +2,6 @@ checkpoint:
   path: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
   output_dir: output/crystallization-187800/temporal
   cuda_device: 0
-
 inputs:
   data_config: null
   static_data_files: null
@@ -14,8 +13,6 @@ inputs:
     enabled: true
     dump_file: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj
     cache_dir: output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache
-    # This is a static encoder. A one-frame window includes all 184 snapshots;
-    # sequence_length=3 would silently omit the final two accepted snapshots.
     sequence_length: 1
     frame_stride: 1
     inference_mode: static
@@ -27,9 +24,6 @@ inputs:
         overlap: 0.75
         reference_frame: first_anchor
     center_selection_seed: 0
-    # Fixed temporal normalization avoids density-driven rescaling between
-    # snapshots. This is the accepted trajectory's first-frame 160-neighbor
-    # cutoff from the preceding static analysis.
     radius: 9.152203468820938
     num_points: 160
     normalize: true
@@ -49,31 +43,13 @@ inputs:
         enabled: true
         force_recompute: false
         file: temporal_snapshot_dense_inference_cache.npz
-
 cache:
   enabled: true
   force_recompute: false
   file: analysis_inference_cache.npz
-
-swav:
-  enabled: false
-  assignment_method: sinkhorn
-  sinkhorn_iterations: 20
-  batch_size: 8192
-  export_assignment_csv: true
-  max_assignment_csv_rows: 100000
-  representative_top_k: 12
-  frame_proportions: true
-  transitions: true
-  compare_to_clustering: true
-  md_outputs: true
-  md_max_points: 0
-  plots: true
-
 runtime:
   progress_every_batches: 20
   seed_base: 123
-
 clustering:
   primary_k: 7
   k_values: null
@@ -95,28 +71,44 @@ clustering:
     cluster_selection_epsilon: 0.0
     cluster_selection_method: leaf
     refit_full_data: true
-
-# The state prior comes from the representative PTM/CNA assignments in the
-# preceding static analysis with this exact checkpoint. The temporal CNA stage
-# independently reports whether those phase-group assignments remain valid.
 gateway_phase:
   enabled: true
   states:
-    a: [5, 6]
-    intermediate: [4]
-    b: [0, 1, 2, 3]
+    a:
+    - 5
+    - 6
+    intermediate:
+    - 4
+    b:
+    - 0
+    - 1
+    - 2
+    - 3
   bootstrap_samples: 1000
   random_state: 123
   gateway_fraction_threshold: 0.95
   minimum_reactive_paths: 30
-  lag_strides: [1, 2, 4, 8]
+  lag_strides:
+  - 1
+  - 2
+  - 4
+  - 8
   reactive_path_csv_limit: 100000
   spatial:
     enabled: true
     neighbor_k: 12
     max_frames: 60
-    precursor_lags: [1, 2, 4, 8]
-    precursor_radius_edges: [0.0, 4.0, 8.0, 12.0, 16.0]
+    precursor_lags:
+    - 1
+    - 2
+    - 4
+    - 8
+    precursor_radius_edges:
+    - 0.0
+    - 4.0
+    - 8.0
+    - 12.0
+    - 16.0
     precursor_max_events: 2000
   cna:
     enabled: true
@@ -125,29 +117,23 @@ gateway_phase:
     fit_max_pointclouds: 1200
     shell_min_neighbors: 8
     shell_max_neighbors: 24
-
 md:
   overlap_boost: 0.0
   overlap_fraction: null
   use_all_points: true
   interactive_max_points: 0
-
 tsne:
   enabled: false
   max_samples: 200000
   n_iter: 1000
   paper_enabled: true
-
 pca:
   max_samples: 200000
-
 latent_stats:
   max_samples: 200000
   correlation_max_samples: 50000
-
 figure_set:
   enabled: true
-  figure_only: false
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
@@ -176,7 +162,7 @@ figure_set:
     ptm_enabled: true
     cna_enabled: true
     cna_max_signatures: 5
-    center_atom_tolerance: 1.0e-6
+    center_atom_tolerance: 1.0e-06
     shell_min_neighbors: 8
     shell_max_neighbors: 24
   raytrace:
@@ -193,7 +179,6 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-
 real_md:
   enabled: true
   time_series:
@@ -207,11 +192,21 @@ real_md:
     target_points: 64
     knn_k: 4
     max_cluster_property_samples: 256
-  cluster_group_order: [crystal, interface, liquid]
+  cluster_group_order:
+  - crystal
+  - interface
+  - liquid
   cluster_groups:
-    crystal: [0, 1, 2, 3]
-    interface: [4]
-    liquid: [5, 6]
+    crystal:
+    - 0
+    - 1
+    - 2
+    - 3
+    interface:
+    - 4
+    liquid:
+    - 5
+    - 6
   spatial:
     enabled: true
     max_points: 25000
@@ -252,7 +247,7 @@ real_md:
         file: temporal_md_space_dense_inference_cache.npz
       point_size: 12.0
       alpha: 1.0
-      diagonal_visible_depth_fraction: 0.10
+      diagonal_visible_depth_fraction: 0.1
     umap:
       enabled: true
       animation_frame_count: 60
@@ -267,7 +262,7 @@ real_md:
       trajectory_fade_power: 1.0
       trajectory_directional_subsegments: 6
       trajectory_directional_start_alpha_fraction: 0.32
-      trajectory_directional_start_width_fraction: 0.60
+      trajectory_directional_start_width_fraction: 0.6
       trajectory_directional_end_width_fraction: 1.35
       trajectory_endpoint_point_size: 3.0
       trajectory_endpoint_point_alpha: 0.95
@@ -279,9 +274,11 @@ real_md:
     optional:
       steinhardt:
         enabled: false
-        l_values: [4, 6]
+        l_values:
+        - 4
+        - 6
         append_shell_size: true
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       cna:
@@ -289,7 +286,7 @@ real_md:
         max_signatures: 12
         append_shell_size: true
         fit_max_pointclouds: 4000
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       soap:
@@ -305,7 +302,7 @@ real_md:
         pca_components: 16
         fit_max_pointclouds: 4000
         n_jobs: 1
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
   transitions:
@@ -314,12 +311,24 @@ real_md:
     max_distance: null
     flow_mute_diagonal: true
     flow_min_fraction: 0.001
-
 dynamic_motif:
   enabled: false
   render: {}
   field: {}
-
 equivariance:
   enabled: false
   max_batches: 2
+swav:
+  enabled: false
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true

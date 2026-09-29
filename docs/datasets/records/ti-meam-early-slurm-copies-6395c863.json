@@ -148,6 +148,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -159,11 +164,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },
@@ -648,6 +648,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -659,11 +664,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },
@@ -1148,6 +1148,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -1159,11 +1164,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },
@@ -1648,6 +1648,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -1659,11 +1664,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },
@@ -2148,6 +2148,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -2159,11 +2164,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },
@@ -2648,6 +2648,11 @@
         ]
       },
       "provenance": {
+        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
+        "pair_commands": [
+          "pair_style meam",
+          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
+        ],
         "potential_files": [
           {
             "path": "/home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam",
@@ -2659,11 +2664,6 @@
             "sha256": "6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe",
             "download_url": "https://www.ctcms.nist.gov/potentials/Download/2019--Kavousi-S-Novak-B-R-Baskes-M-I-et-al--Ni-Ti/1/NiTi.meam"
           }
-        ],
-        "potential_citation": "Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c",
-        "pair_commands": [
-          "pair_style meam",
-          "pair_coeff * * /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.library.meam Ni Ti /home/infres/vmorozov/PointCloudMaterials/experiments/ti_ta_crystallization_20260907/potential/Kavousi2019_NiTi.meam Ti"
         ]
       }
     },

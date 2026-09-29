@@ -120,7 +120,7 @@ def patch_features(encoder,patches,device,chunk=256):
     return FeatureExtractor(encoder,device,chunk,compile=False)(arrays)
 
 
-def extract(study,domain,checkpoint,device,deadline):
+def extract(study,domain,checkpoint,device,deadline,root):
     from src.research.supervised_onset.model import Model
     saved=torch.load(checkpoint,map_location=device,weights_only=False)
     if saved['arm']['input']!=domain or saved['config']['objective']!='hazard_nll':
@@ -128,7 +128,7 @@ def extract(study,domain,checkpoint,device,deadline):
     model=Model(saved['encoder_config'],saved['arm']).to(device)
     model.load_state_dict(saved['model'],strict=True);model.eval()
     model.requires_grad_(False)
-    checksum=sha(checkpoint);root=study.cache/domain;root.mkdir(parents=True,exist_ok=True)
+    checksum=sha(checkpoint);root.mkdir(parents=True,exist_ok=True)
     prepared=json.loads((study.technical/'plan.json').read_text())
     if sha(study.technical/'inventory.json')!=prepared['inventory_sha256']:
         raise ValueError('Prepared archive inventory changed')
@@ -138,6 +138,14 @@ def extract(study,domain,checkpoint,device,deadline):
     runtime=study.config['extraction']
     extractor=FeatureExtractor(model.encoder,device,runtime['chunk'],compile=runtime['compile'])
     timing_path=study.technical/f'extraction-{domain}-timings.jsonl'
+    from .geometry_cache import shared_geometry
+    with shared_geometry(study,domain,model.encoder.cutoff,deadline) as geometry:
+        _extract_frames(study,domain,root,checksum,frozen,pop,parent,sources,receipts,runtime,extractor,
+                        timing_path,geometry,device,deadline)
+
+
+def _extract_frames(study,domain,root,checksum,frozen,pop,parent,sources,receipts,runtime,extractor,
+                    timing_path,geometry,device,deadline):
     for sid in np.unique(pop['source']):
         dest=root/f'{sid}.npz';receipt=dest.with_suffix('.json')
         if receipt.exists():
@@ -146,12 +154,11 @@ def extract(study,domain,checkpoint,device,deadline):
                 raise ValueError(f'Changed context feature shard: {dest}')
             receipts[str(sid)]=record;continue
         rows=np.flatnonzero(pop['source']==sid);parts=[];source=sources[int(sid)]
-        raw=ShootingBinaryTrajectory.load(dataset_path(source['dataset'])/source['relative_trajectory_path'])
-        if sha(raw.root/'manifest.json')!=frozen[int(sid)]['manifest_sha256']:
+        raw_root=dataset_path(source['dataset'])/source['relative_trajectory_path']
+        if sha(raw_root/'manifest.json')!=frozen[int(sid)]['manifest_sha256']:
             raise ValueError(f'Observed source changed after preparation: {sid}')
         cells={c['frame']:c for c in frozen[int(sid)]['cells']}
         def prepare(frame):
-            start=time.perf_counter()
             if time.time()>deadline-120:raise TimeoutError('Extraction checkpointed at completed source; resume this stage')
             ids=rows[pop['frame'][rows]==frame]
             cell=cells[int(frame)];saved_archive=Path(cell['archive'])
@@ -159,13 +166,8 @@ def extract(study,domain,checkpoint,device,deadline):
             if (sha(archive/'metadata.json')!=cell['metadata_sha256'] or
                 sha(archive/'relaxed_binary_float16/manifest.json')!=cell['manifest_sha256']):
                 raise ValueError(f'Relaxed source changed after preparation: {sid}/{frame}')
-            views,inverse,atoms=paired_frame(source,int(frame),pop['atom'][ids],parent,raw)
-            read_geometry_done=time.perf_counter()
-            arrays=prepare_graphs(views[domain]['patches'],model.encoder.cutoff,
+            return geometry.frame(source,int(frame),ids,pop['atom'][ids],parent,
                                   pin_memory=torch.device(device).type=='cuda')
-            return dict(frame=int(frame),ids=ids,inverse=inverse,atoms=atoms,actual=views[domain]['actual'],
-                        arrays=arrays,prepare_s=time.perf_counter()-start,
-                        read_membership_s=read_geometry_done-start)
         with prepared_frames(np.unique(pop['frame'][rows]),prepare,
                 workers=runtime['workers'],capacity=runtime['prefetch']) as frames:
             previous=time.perf_counter()
@@ -177,6 +179,7 @@ def extract(study,domain,checkpoint,device,deadline):
                                   **{k:v[frame['inverse']] for k,v in values.items()}))
                 timing=dict(source=int(sid),frame=frame['frame'],domain=domain,
                     prepare_s=frame['prepare_s'],read_membership_s=frame['read_membership_s'],
+                    geometry_cache_hit=frame['geometry_cache_hit'],
                     consumer_wait_s=waited,**extractor.last_timing)
                 with timing_path.open('a') as stream:stream.write(json.dumps(timing)+'\n')
                 previous=time.perf_counter()
@@ -209,11 +212,11 @@ def normalize(features,fit,source):
 
 
 class ContextCorpus:
-    def __init__(self,study,domain,variant,device):
-        self.required_fields=context_fields(variant)
+    def __init__(self,study,domain,variants,device,root):
+        self.required_fields=tuple(dict.fromkeys(k for variant in variants for k in context_fields(variant)))
         self.pop=population(study.config)
         self.split={r:np.flatnonzero(self.pop['role']==r) for r in ('train','selection','calibration','test')}
-        root=study.cache/domain;manifest=json.loads((root/'manifest.json').read_text())
+        manifest=json.loads((root/'manifest.json').read_text())
         if manifest['identity']!=study.identity:raise ValueError(f'Changed cache: {root}')
         from .normalization import Moments,apply
         from src.research.local_predictability.metrics import source_weights
@@ -257,6 +260,15 @@ class ContextCorpus:
         self.nominal=torch.as_tensor(stencil(),device=device)
         self.events=torch.as_tensor(self.pop['event'],device=device)
         self.cache_identity=digest(manifest)
+
+    def view(self,variant):
+        """Zero-copy field subset; scalers and model inputs stay variant-specific."""
+        from copy import copy
+        fields=context_fields(variant)
+        result=copy(self);result.required_fields=fields
+        result.features={k:self.features[k] for k in fields}
+        result.scalers={k:self.scalers[k] for k in fields if k in self.scalers}
+        return result
 
     def batch(self,ids):
         return {k:v[ids] for k,v in self.features.items()}|{'nominal':self.nominal[None].expand(len(ids),-1,-1)}

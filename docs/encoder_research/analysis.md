@@ -90,10 +90,10 @@ four independent encoder observations.
 
 `runtime.profile: fast` in the standard template avoids selected expensive
 rendering/projection checks; inspect its explicit settings rather than assuming
-it is the same figure set. `figure_only` requires compatible retained inference
-arrays and metadata. Some archived regenerable caches were intentionally pruned;
-plots and metrics remain useful, but figure-only reruns can require full inference
-first. See [output registry/cache rules](../output_registry.md).
+it is the same figure set. Publication reuses retained figures and definitions.
+New diagnostics require a new output with compatible inference arrays and metadata;
+some archived regenerable caches were intentionally pruned and require rebuilding.
+See [output registry/cache rules](../output_registry.md).
 
 The new catalogue itself is an offline HTML file: no service, account or external
 JavaScript is needed. Opening local links works with the configured storage

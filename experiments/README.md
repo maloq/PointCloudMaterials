@@ -1,5 +1,63 @@
 # Current research
 
+[Completed spatial VICReg mechanism study](spatial_vicreg_bias_20260929/RESULTS.md):
+nine 24-pass fits separate spatial contraction from global clustering failure.
+Continuous liquid-structure readouts improve while K=7 cluster information
+disappears; all-phase descriptor associations are largely reproducible by
+classical phase-field controls.
+
+[Rich structural descriptor baseline](liquid_predictability_20260928/DESCRIPTORS.md): fixed geometry features and validation-selected distance distributions.
+
+
+[Liquid structure predictability](liquid_predictability_20260928/README.md): proper
+distance scores, physical profiles, frozen/joint MACE, source learning curves and
+a crystal-visible positive control on the fixed Al64 cohort.
+
+[Liquid-only external-crystal localization](crystal_interface_20260928/LIQUID_DISTANCE.md):
+joint encoder/context VCReg training from uncrystallized observations; absent
+crystals evaluated separately, with original-row and constant-distance controls.
+
+[Interface-model feature dominance](crystal_interface_20260928/FEATURE_DOMINANCE.md):
+strong phase-related directions, frozen-predictor ablations and held-out readouts.
+
+[Interface-invisible adaptation](crystal_interface_20260928/UNSEEN.md) retains
+VCReg and expands the existing trajectories; [previous-run overfitting and feature audit](crystal_interface_20260928/OVERFITTING.md).
+
+[Crystal-interface localization](crystal_interface_20260928/README.md): distance
+and direction to the edge from both crystal interior and liquid, with a separate
+uniform held-out interior track and matched VCReg/control treatments.
+
+[Joint spatial crystal localization](crystal_vector_20260928/README.md): shared
+equivariant MACE and vector context, current distance/direction, VCReg, and
+independent random batches on fixed Al64 sources; supersedes fixed distance quotas.
+
+[Six-observation MD histories](distance_encoder_20260926/DENSE_HISTORY.md): nominal 0.75-ps all-data (actual 0.75/0.70) and exact 0.10-ps ancestry-transfer experiments; jointly train encoder and distance predictor.
+
+[MD history for crystal-front distance](distance_encoder_20260926/HISTORY.md): same tracked atom at -6/-3/0 ps; encoder and predictor fine-tuned together; matched repeated-current control.
+
+[Encoder mechanisms: matched execution queue](encoder_mechanisms_20260926/README.md)
+audits completed positive/negative evidence, then isolates geometric-reference
+retention, paired alignment, supervised adaptation and regional birth information.
+Proposal only; no training submitted by this review.
+
+[Joint distance encoder](distance_encoder_20260926/README.md): 12.75M dynamic
+Al/Mg/Ti/Ta neighborhoods, trainable MACE and distance head, early spatial
+likelihood and distributed batch 4096; followed by vector/harmonic readouts.
+
+[Continuous crystal distance](spatial_distance_20260926/README.md): direct distance
+likelihood, uniform spatial-center augmentation and a visibility-only control;
+[fixed-confidence results](spatial_distance_20260926/CONFIDENCE_RESULTS.md).
+
+[Spatial approach to a crystal](spatial_approach_20260926/README.md): five matched
+fixed-snapshot distance predictors and warning-distance scans with visibility
+and far-path controls; observed geometry only, likelihood selection.
+
+[Crystallization origin](crystallization_origin_20260925/README.md): full-cell
+ancestry audit separating operational establishment, existing-crystal arrival,
+new external crystals and unresolved events; fixed Al64 counts at 3/6 ps.
+[Completed results](crystallization_origin_20260925/RESULTS.md): 150 fixed sources
+and 26 external records; 98.5% arrival attribution and sparse birth coverage.
+
 [Encoder training with directional context](encoder_context_epochs_20260925/README.md): scratch, physical pretraining, VICReg and Epi with a variance floor; observed/relaxed supervised fine-tuning and both chosen predictors, with at least twelve complete epochs and full evaluation.
 
 [Spatial context on fixed Al64](equivariant_context_al64_20260925/README.md): matched ten-fit repeat on 64 centers, immutable source/sample roles, predictive-likelihood selection and compact online metrics.
@@ -133,3 +191,5 @@ history while testing preservation of bond order and instantaneous topology.
 
 [3 ps primary onset experiments](onset_ap3_20260924/README.md): saved 3/6/12 ps
 re-evaluation, event coverage, and a staged existing-data experiment proposal.
+
+- [Latest native MACE quality comparison](encoder_quality_20260926/README.md): eight frozen encoders, liquid/interface diagnostics and matched predictive-information controls.

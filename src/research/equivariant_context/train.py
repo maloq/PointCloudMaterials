@@ -11,7 +11,7 @@ from src.research.supervised_onset.tracking import (tracked_run, risk_diagnostic
                                                   population_summary, final_fields)
 from src.research.supervised_onset.evaluate import calibrate_risks, score_predictions
 from src.experiment_runner.metric_docs import write_metric_table
-from .data import ContextCorpus
+from .data import population
 from .model import ContextPredictor, context_fields
 
 
@@ -21,13 +21,15 @@ def predict(model,corpus,ids,chunk):
     return torch.cat([model(corpus.batch(ids[s:s+chunk])) for s in range(0,len(ids),chunk)])
 
 
-def fit(study,domain,variant,device,deadline):
-    c=study.config;corpus=ContextCorpus(study,domain,variant,device)
+def fit(study,domain,variant,device,deadline,corpus):
+    c=study.config
     root=study.root/f'{domain}-{variant}';technical=root/'technical';technical.mkdir(parents=True,exist_ok=True)
-    if (technical/'complete.json').exists():
-        record=json.loads((technical/'complete.json').read_text())
+    if (technical/'gpu-complete.json').exists():
+        record=json.loads((technical/'gpu-complete.json').read_text())
         if record['identity']!=study.identity or record['cache_identity']!=corpus.cache_identity:
             raise ValueError('Completed run identity differs')
+        if record['raw_predictions_sha256']!=sha(technical/'raw-predictions.npz'):
+            raise ValueError('Completed raw predictions changed')
         return record
     torch.manual_seed(c['seed']);rng=np.random.default_rng(c['seed'])
     model=ContextPredictor(variant,**c['predictor']).to(device)
@@ -112,30 +114,58 @@ def fit(study,domain,variant,device,deadline):
             if epoch_stream is not None and update==12*steps_per_epoch:save(update,technical/'epoch-012.pt')
         saved=torch.load(technical/'best.pt',map_location=device,weights_only=False)
         model.load_state_dict(saved['model']);logp=predict(model,corpus,np.arange(len(corpus.events)),batch).cpu().numpy()
-        risk=logp[:,:5].astype(float);risk=np.exp(risk).cumsum(-1).clip(0,1)
-        calibrated,calibration=calibrate_risks(corpus,risk)
-        scores=score_predictions(corpus,risk,c['bootstrap'],c['seed'],calibrated)
-        nll={role:float(-source_weights(corpus.pop['source'][ids])@logp[ids,corpus.pop['event'][ids]])
-             for role,ids in corpus.split.items()}
-        np.savez(technical/'predictions.npz',logp=logp,risks=risk,calibrated=calibrated,**corpus.pop)
-        metrics=dict(event_nll=nll,horizons=scores)
-        write_json(technical/'metrics.json',metrics)
-        write_metric_table(metrics,root,family='equivariant_context')
+        np.savez(technical/'raw-predictions.npz',logp=logp,**corpus.pop)
         record=dict(identity=study.identity,cache_identity=corpus.cache_identity,domain=domain,variant=variant,
-            input_fields=list(context_fields(variant))+['nominal'],
-            updates=c['training']['updates'],selected_update=saved['update'],selection_nll=best,
-            parameters=sum(p.numel() for p in model.parameters()),calibration=calibration,
-            checkpoint_sha256=sha(technical/'best.pt'),predictions_sha256=sha(technical/'predictions.npz'),
-            state='complete')
-        if 'fixed_dataset' in c:
-            from src.data.fixed_cohort.dataset import read_release
-            from src.data.fixed_cohort.protocol import assert_prediction_rows
-            fixed_root,_=read_release(c['fixed_dataset']['root'])
-            with np.load(fixed_root/'benchmark/population.npz') as fixed:
-                assert_prediction_rows(fixed['sample_id'],corpus.pop['sample_id'])
-        write_json(technical/'complete.json',record)
-        tracking.summary.update(final_fields(metrics,record))
+            input_fields=list(context_fields(variant))+['nominal'],updates=c['training']['updates'],
+            selected_update=saved['update'],selection_nll=best,parameters=sum(p.numel() for p in model.parameters()),
+            checkpoint_sha256=sha(technical/'best.pt'),raw_predictions_sha256=sha(technical/'raw-predictions.npz'),
+            state='gpu_complete')
+        write_json(technical/'gpu-complete.json',record)
+        tracking.summary['evaluation/state']='pending CPU calibration and source bootstrap'
         return record
+
+
+def finalize(study,domain,variant):
+    """CPU-only calibration, bootstrap and export; no feature cache or GPU needed."""
+    c=study.config;root=study.root/f'{domain}-{variant}';technical=root/'technical'
+    record=json.loads((technical/'gpu-complete.json').read_text())
+    if record['identity']!=study.identity or record['raw_predictions_sha256']!=sha(technical/'raw-predictions.npz'):
+        raise ValueError(f'Changed GPU prediction export: {technical}')
+    done=technical/'complete.json'
+    if done.exists():
+        complete=json.loads(done.read_text())
+        if complete['identity']!=study.identity or complete['predictions_sha256']!=sha(technical/'predictions.npz'):
+            raise ValueError(f'Completed prediction result changed: {technical}')
+        return complete
+    with np.load(technical/'raw-predictions.npz') as data:
+        pop={k:data[k] for k in data.files if k!='logp'};logp=data['logp']
+    for key,value in population(c).items():np.testing.assert_array_equal(pop[key],value)
+    corpus=SimpleNamespace(pop=pop,split={r:np.flatnonzero(pop['role']==r)
+        for r in ('train','selection','calibration','test')})
+    risk=np.exp(logp[:,:5].astype(float)).cumsum(-1).clip(0,1)
+    calibrated,calibration=calibrate_risks(corpus,risk)
+    scores=score_predictions(corpus,risk,c['bootstrap'],c['seed'],calibrated)
+    nll={role:float(-source_weights(pop['source'][ids])@logp[ids,pop['event'][ids]])
+         for role,ids in corpus.split.items()}
+    np.savez(technical/'predictions.npz',logp=logp,risks=risk,calibrated=calibrated,**pop)
+    metrics=dict(event_nll=nll,horizons=scores)
+    write_json(technical/'metrics.json',metrics)
+    write_metric_table(metrics,root,family='equivariant_context')
+    record.update(calibration=calibration,predictions_sha256=sha(technical/'predictions.npz'),state='complete')
+    if 'fixed_dataset' in c:
+        from src.data.fixed_cohort.dataset import read_release
+        from src.data.fixed_cohort.protocol import assert_prediction_rows
+        fixed_root,_=read_release(c['fixed_dataset']['root'])
+        with np.load(fixed_root/'benchmark/population.npz') as fixed:
+            assert_prediction_rows(fixed['sample_id'],pop['sample_id'])
+    # Update the original online training run; never start an analysis-only run.
+    import wandb
+    receipt=json.loads((technical/'wandb'/f'{domain}-{variant}'/'run.json').read_text())
+    if receipt['identity']!=study.identity:raise ValueError('Tracking identity differs')
+    run=wandb.Api(timeout=60).run(f"{receipt['entity']}/{receipt['project']}/{receipt['id']}")
+    run.summary.update(final_fields(metrics,record)|{'evaluation/state':'complete'})
+    write_json(done,record)
+    return record
 
 
 def collect(study):

@@ -1,0 +1,24 @@
+{
+  "protocol": "rich_descriptor_mean_linear_controls_v1",
+  "parent_config": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928/technical/code/config.json",
+  "parent_config_sha256": "c982f0ae8128aaa155cb8b41fa47c08759b0d1dd6935e5df8146ac4ac39a36bc",
+  "output": "${storage:analysis}/liquid_predictability/descriptors-al64-gpu-20260928/baselines-v1",
+  "seed": 20260928,
+  "threads": 8,
+  "bootstrap_draws": 2000,
+  "ridge_alphas": [
+    0.01,
+    0.1,
+    1,
+    10,
+    100
+  ],
+  "logistic_C": [
+    0.01,
+    0.1,
+    1,
+    10
+  ],
+  "max_iter": 2000,
+  "tolerance": 1e-05
+}

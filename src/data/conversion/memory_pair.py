@@ -47,15 +47,20 @@ def convert(directory, *, delete_source=False):
     metadata = json.loads((root/'metadata.json').read_text())
     if metadata['protocol'] != PROTOCOL or metadata['state'] != 'dynamics_complete':
         raise ValueError(f'Paired conversion requires completed memory-source dynamics: {root}')
+    steps = tuple(range(0, metadata['measurement_steps']+1, metadata['sample_interval_steps']))
+    return convert_completed_pair(root, metadata, steps, delete_source=delete_source)
+
+
+def convert_completed_pair(root, metadata, steps, *, delete_source=False):
+    """Shared precision verification; each producer declares its own exact timeline."""
     source = root/'trajectory.lammpstrj'
     if sha256(source) != metadata['source_sha256']:
         raise ValueError(f'Memory-source dump differs from completed dynamics: {source}')
-    steps = tuple(range(0, metadata['measurement_steps']+1, metadata['sample_interval_steps']))
     scan = TemporalLAMMPSDumpDataset.scan_dump_file(source)
     if scan.num_atoms != metadata['atom_count'] or tuple(scan.timesteps) != steps or tuple(scan.atom_columns) != (
             'id', 'type', 'x', 'y', 'z', 'vx', 'vy', 'vz'):
         raise ValueError(f'Dump atom/timeline/column contract mismatch: {source}')
-    provenance = dict(protocol=PROTOCOL, root_lineage=metadata['root_lineage'], split=metadata['split'],
+    provenance = dict(protocol=metadata['protocol'], root_lineage=metadata['root_lineage'], split=metadata['split'],
                       source_sha256=metadata['source_sha256'], timestep_ps=metadata['timestep_ps'])
     full_path, half_path = root/'trajectory_binary_float32', root/'trajectory_binary_float16'
     if full_path.exists():
@@ -73,7 +78,7 @@ def convert(directory, *, delete_source=False):
             storage_dtype='float16', provenance=provenance)
     half.verify_checksums()
     errors = paired_errors(full, half)
-    report = dict(state='complete', protocol=PROTOCOL, source_sha256=metadata['source_sha256'],
+    report = dict(state='complete', protocol=metadata['protocol'], source_sha256=metadata['source_sha256'],
         source_deleted=False, frame_count=full.frame_count, atom_count=metadata['atom_count'],
         float32_manifest_sha256=sha256(full_path/'manifest.json'),
         float16_manifest_sha256=sha256(half_path/'manifest.json'), quantization=errors,

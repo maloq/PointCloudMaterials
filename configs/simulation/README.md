@@ -1,13 +1,18 @@
 # Simulation recipes
 
+[Full liquid-information relaxation](liquid_full_relaxation_20260928.json): existing fixed-cohort cell coverage and a dependent full paired study.
+
 All maintained simulation recipes belong here, never in the `configs/` root.
 Training and analysis loaders for existing data belong in `../data/loaders/`.
 
 | Recipe | Protocol |
 | --- | --- |
+| `al_main_010ps_20260927.json` | 150 main Al prepared-liquid descendants: 600 ps, exact 0.1 ps samples with velocities, 2 fs integration; [campaign](../../docs/simulations/al_main_010ps_20260927/README.md). |
+| `al_birth_uniform_20260926.json` | 22 independently melted Al sources: 400–500 K in 10 K steps, two per temperature, early birth collection and continuous 0.15 ps observations; [campaign](../../docs/simulations/al_birth_uniform_20260926.md). |
 | `al_crystallization.json` | Al MEAM source generation and position-conditioned branches. |
 | `ti_crystallization.json` | Ti MEAM source generation and position-conditioned branches. |
 | `ta_crystallization.json` | Ta EAM branches from recorded initial configurations. |
+| `ta_shooting_20260926.json` | 24 replicated Ta position shots through the established elemental protocol; [campaign and execution](../../docs/simulations/ta_shooting_20260926.md). |
 | `predictive_memory_precision.json` | Twelve fresh Al melt lineages, fixed 192 ps histories at 0.075 ps cadence, paired float32/float16 observations and preassigned sealed test sources. |
 | `relaxed_tda_al.json` | Full-cell fixed-box FIRE targets for denser existing training windows and all completed Al shooting collections; no new MD. Use `python -m src.data.relaxed_targets prepare|run|status`; [details](../../docs/relaxed_tda_targets.md). |
 

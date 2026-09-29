@@ -1,5 +1,10 @@
 # Research records and result storage
 
+Start at the [research results page](../output/registry/index.html). The
+[implemented result system](research_results_system.md) documents named analysis
+bundles, producer receipts and publication/verification commands. The September
+26 adoption preserves existing artifact paths and authored findings.
+
 Only scientific research belongs in `experiments/`. Storage, portability, cleanup,
 environment validation and dataset inventories belong in `docs/`; simulation campaigns
 belong in [docs/simulations](simulations/README.md). See [storage](data_storage.md).
@@ -18,11 +23,17 @@ experiments/question_YYYYMMDD/
 
 output/question/run-name/
   README.md                 start here
-  index.html                analysis gallery, where applicable
-  plots/                    umap.png, spatial-166ps.png, forecast_scores.png
-  tables/                   metrics.csv, model-comparison.csv
+  run.json                  study, components, execution/evidence/interpretation
+  index.html                result overview, where applicable
+  analyses/analysis-name/   named scientific result with grouped gallery
+    plots/                  latent/, snapshots/<frame>/, representatives/, ...
+    tables/                 scores.csv and frozen METRICS.md
+    data/                   native scientific artifact tree for new standard analyses
+    technical/              calculation and rendering receipts
+  plots/                    optional cross-analysis summary figures
+  tables/                   model-comparison.csv
     METRICS.md              definitions frozen at table export
-  technical/                JSON, arrays, caches, logs and intermediate stage trees
+  technical/                execution details and protected provenance
 ```
 
 Use one question and one readable run name (e.g. `history-seed3`); do not add
@@ -36,8 +47,11 @@ New default Hydra training puts its checkpoints, logs and source/config snapshot
 under `technical/`; post-training analysis publishes at the run root. Explicitly
 configured run directories retain their original training paths.
 
-New standard analyses put their intermediate artifacts under `technical/` and
-publish short plot names and metric tables at the run root. New embedding forecasts
+New standard analyses use `analyses/standard-v1/data/` for the native producer
+tree and expose its scientific hierarchy through a grouped gallery. Retained
+root-level and `technical/` analyses keep their original paths. Rendering saved
+results links their original metric definitions; only numerical completion
+exports new metric tables. New embedding forecasts
 store configs, model states and prediction arrays under `technical/`; their plot and
 CSV are one level below the root. Plan collection writes CSVs under `tables/`, summary
 JSON under `technical/`, and plots directly under `plots/`. Existing analyses and
@@ -59,17 +73,23 @@ stays available under `technical/`. Each export saves the exact source/doc hashe
 
 An export validates only its requested metric family's declared files. An
 unrelated hardware-benchmark edit must not block a training-result export.
-The separate `experiment_registry.py metrics-docs` audit and layout tests still
-validate every family. Changes to an export's own dependencies remain errors.
+The separate `experiment_registry.py metrics-docs` audit validates every family.
+Changes to an export's own dependencies remain errors.
 
 When changing a metric, update its description in `docs/metrics/` in the same change.
 Update the matching SHA-256 entries in `docs/metrics/contracts.json` after reviewing
 both code and documentation (e.g. compute each with `sha256sum PATH`). The
-`experiment_registry.py metrics-docs` command and `test_research_layout.py` reject
-unreviewed drift. Analysis/aggregation include topology definitions; update those
+`experiment_registry.py metrics-docs` command rejects unreviewed drift.
+Analysis/aggregation include topology definitions; update those
 copies when changing topology. Preserve old exported docs; do not rewrite historical
 results to imply they were evaluated under a new formula. Retired workflows retain
 their dated methods descriptions and source snapshots rather than invented glossaries.
+
+Metric descriptions/contracts are scoped by family, with exact table-to-contract
+bindings for `write_metric_table()` exports. A scientific contract change requires
+a new output revision; publication-only rendering never snapshots today's
+definitions onto old numbers. See the [contract paths and generated-catalogue
+exception](research_results_system.md#producers-and-metric-contracts).
 
 ## Publishing compact output to GitHub
 

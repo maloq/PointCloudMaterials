@@ -34,6 +34,22 @@ validation structural scores are diagnostic, never onset-based selectors.
 Normalization of initial pooled features uses 8,192 seeded training-only rows.
 Both domains subsequently receive independent supervised fine-tuning.
 
+The separate `multimaterial256_20260925` recipes use 14,058,484 native-unit
+Al/Mg/Ti/Ta/Zr physical-training patches and 345,600 native Al relaxed pairs;
+selection remains 192,960 / 36,480 patches/pairs. Their geometry-only width-128
+encoder has 634,496 parameters and one constant Al channel for all materials.
+Before graph construction and target calculation, coordinates are multiplied
+by the fixed training-calibrated cutoff ratio `scale_Al / scale_material`.
+No material ID, species input or scale feature enters the encoder or decoder;
+Al coordinates are unchanged. Streaming epochs shuffle blocks of 16 shards
+then rows, covering every row exactly once including the final partial batch.
+For this release, both target and initial-pool normalization use the recorded
+8,192 training-row sample. Epi references are computed on demand by the frozen
+initial encoder, rather than held as a whole-dataset GPU reservoir. The loss
+formulas, fixed epoch-12 export, downstream NLL selection and fixed evaluation
+rows are unchanged. This is a broader-data comparison, not an
+isolated change of pretraining loss. See the [data contract](../datasets/structural_multimaterial_256.md).
+
 Predictive metrics use the existing first-event/survival six-category NLL and
 source-weighted AP, raw/calibrated Brier, binary log loss and fixed calibration
 threshold recall/FPR. See [supervised metrics](supervised_onset.md) and
@@ -74,3 +90,24 @@ uncertainty conditional on one seed and are not multiple-comparison adjusted.
 The different pretraining populations and total compute preclude claiming a
 pure isolated regularizer effect. NLL reductions measure predictive benefit
 within the fitted models, not mutual information.
+
+Execution update (2026-09-25): shared geometry and a six-encoder LRU feature
+cache change storage/scheduling only. Predictors share train-only normalization
+statistics for common fields, with identical per-variant inputs. CPU calibration
+and source bootstrap now read the selected-checkpoint raw probabilities in a
+separate worker; formulas, populations, calibration split and selectors are
+unchanged. GPU fitting completion and final metric completion have separate
+receipts. Full diagnostics follow core fitting.
+
+
+## Mechanism queue extension (2026-09-26)
+
+Streaming pretraining now records configured fixed endpoints and milestone receipts, shared train-only initial states and Epi projection tensors. Historical recipes still request12 epochs.
+
+
+Tracking revision (2026-09-26): diagnostic frozen readouts and per-checkpoint
+evaluations keep their logs and results locally. Associated final scores update
+a recorded scientific training run through the API, without creating or
+restarting runs. Scientific training remains online. This changes logging and
+validates identity/hash before cached readout reuse; objectives, selectors,
+metric calculations and historical exported definitions are unchanged.

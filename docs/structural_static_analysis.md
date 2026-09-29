@@ -1,5 +1,30 @@
 # Static Al analysis of structural MACE/GATr–VICReg
 
+## Native self-supervised MACE, September 26
+
+The latest completed EPI-variance export is fixed epoch 12 (4,056 updates),
+with 128 channels and a 128-D embedding. The native adapter preserves its
+nearest-80 candidate construction, center marker, constant atom channel,
+8-unit radius, 5-unit edges, trained normalization and projected residual
+export. Al uses unit length scaling. No prediction head or explicit
+temperature/time covariates enter this analysis.
+
+```bash
+export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1  # Repository's trusted e3nn constants.
+python -m src.analysis.native_mace_adapter --config configs/analysis/native_mace_epi_latest_static.json --stage export
+python -m src.analysis.native_mace_adapter --config configs/analysis/native_mace_epi_latest_static.json --stage verify
+python -m src.analysis.pipeline configs/analysis/static_native_mace_epi_latest_al.yaml
+```
+
+Use `pointnet-torch214`. Export is once-only and pins the original checkpoint
+and frozen inference producer. Verification checks exact exported weights,
+reconstructed patches against the retained native assay, independently loaded
+compiled encoder output, and reordered single-sample replay. The six full
+static Al snapshots are exploratory; they do not establish held-out prediction
+quality. K=7 and the standard figure stages are retained; optional Blender
+raytracing is disabled. Results are under
+`output/structural_static/mace-epi-epoch12-al-20260926/analyses/standard-v1/`.
+
 Current encoders use the [local v10 support](shared_pretraining_local_structure_20260918.md):
 6–8 normalized units, with old large-support checkpoint revisions rejected.
 The checkpoint paths and numerical results below describe historical runs and
@@ -153,3 +178,33 @@ descriptive representation diagnostics, not held-out accuracy or independent
 source evidence. Cluster IDs are learned groups, not assigned thermodynamic
 phases. See the [structural-state glossary](research_glossary.md#shared-structural-pretraining)
 and [training protocol](../experiments/structural_pretraining_20260917/README.md).
+
+## CD-MACE128 distance-supervised encoder
+
+The completed original CD-MACE128 fit exports epoch 12, update 37,356, from its
+predictive-likelihood-selected `best.pt` (SHA-256
+`7b4dcb17ddcb2952d5f5ea20f0fd8e1d2d0c0164146d8676a39ceca71d1fda7f`).
+This is the original distance-trained model, not the VC or history variants.
+Native nearest-80 geometry, fixed Al length normalization and all encoder weights
+are retained. Only its trained 128-D encoder export is analyzed; the distance head
+is excluded. Inference uses compiled FP32 with highest matmul precision, matching
+the experiment's frozen local evaluation; training used BF16 autocast.
+
+```bash
+export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
+python -m src.analysis.native_mace_adapter --config configs/analysis/cd_mace128_static.json --stage export
+python -m src.analysis.native_mace_adapter --config configs/analysis/cd_mace128_static.json --stage verify
+python -m src.analysis.pipeline configs/analysis/static_cd_mace128_al.yaml
+python -m src.analysis.cluster_order --config configs/analysis/cd_mace128_order.json --stage compute
+python -m src.analysis.cluster_order --config configs/analysis/cd_mace128_order.json --stage render
+python -m src.analysis.cluster_explorer --config configs/analysis/cd_mace128_explorer.json --stage compute
+python -m src.analysis.cluster_explorer --config configs/analysis/cd_mace128_explorer.json --stage render
+```
+
+Results: `output/structural_static/cd-mace128-epoch12-al-20260926/`.
+The six relaxed Al snapshots contain 684,723 saved centers. Training used observed
+unrelaxed geometry, so this is a descriptive transfer analysis, not a held-out
+prediction result. Cluster IDs are specific to the new clustering and are not
+aligned with IDs from the EPI run. Time labels are metadata only; no time,
+temperature, history, motion, species/material embedding or scale feature enters
+the encoder. Identity-tracked temporal analysis and the paper SVG are disabled.

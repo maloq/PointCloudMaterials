@@ -20,9 +20,8 @@ from sklearn.preprocessing import StandardScaler
 from .cluster_profiles import (
     _ALL_PROFILE_PROPERTIES,
     _compute_sample_properties,
-    _load_point_cloud_from_dataset,
 )
-from .cluster_geometry import _sample_indices_stratified
+from .cluster_geometry import _sample_indices_stratified, _load_points_from_dataset
 from .cluster_rendering import (
     _save_cluster_representatives_figure,
 )
@@ -418,7 +417,7 @@ def _load_point_cloud_batch(
 ) -> np.ndarray:
     point_clouds: list[np.ndarray] = []
     for sample_idx in np.asarray(sample_indices, dtype=int):
-        points = _load_point_cloud_from_dataset(
+        points = _load_points_from_dataset(
             dataset,
             int(sample_idx),
             point_scale=float(point_scale),
@@ -540,11 +539,6 @@ def _evaluate_optional_descriptor(
             "Expected one of ['steinhardt', 'cna', 'soap']."
         )
 
-    if features.shape[1] != len(feature_names):
-        raise RuntimeError(
-            "Descriptor feature-name mismatch: "
-            f"descriptor={name}, features_shape={features.shape}, feature_names={feature_names}."
-        )
     df = pd.DataFrame(features, columns=feature_names)
     return df, {"name": str(name), "feature_names": list(feature_names)}
 
@@ -559,8 +553,6 @@ def _prepare_projection_features(
     pca_max_components: int,
 ) -> tuple[np.ndarray, ProjectionFeaturePrep, dict[str, Any]]:
     x = np.asarray(latents, dtype=np.float32)
-    if x.ndim != 2:
-        raise ValueError(f"Projection latents must have shape (N, D), got {x.shape}.")
     if not np.isfinite(x).all():
         first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
         raise ValueError(
@@ -703,10 +695,6 @@ def _transform_projection_features(
     fitted_projection: Any,
 ) -> np.ndarray:
     x = np.asarray(latents, dtype=np.float32)
-    if x.ndim != 2:
-        raise ValueError(
-            f"Projection transform latents must have shape (N, D), got {x.shape}."
-        )
     if not np.isfinite(x).all():
         first_bad = np.argwhere(~np.isfinite(x))[0].tolist()
         raise ValueError(
@@ -726,11 +714,6 @@ def _transform_projection_features(
         raise ValueError(
             "Projection transforms are only available for methods ['umap', 'pca'], "
             f"got {method!r}."
-        )
-    if fitted_projection is None or not hasattr(fitted_projection, "transform"):
-        raise RuntimeError(
-            "Projection model does not provide a transform(...) method. "
-            f"method={method!r}, projection_type={type(fitted_projection)!r}."
         )
     try:
         transformed = fitted_projection.transform(x)
@@ -782,129 +765,21 @@ def _compute_projection(
     }
 
 
-def _resolve_umap_backend(requested_backend: str) -> dict[str, Any]:
-    backend_norm = str(requested_backend).strip().lower() or "auto"
-    if backend_norm not in {"auto", "cpu", "gpu"}:
-        raise ValueError(
-            "real_md.projection.umap_backend must be one of ['auto', 'cpu', 'gpu'], "
-            f"got {requested_backend!r}."
-        )
-
-    gpu_available = False
-    gpu_probe_error: str | None = None
-    try:
-        import torch
-    except ImportError as exc:
-        gpu_probe_error = f"PyTorch import failed while probing CUDA availability: {exc}"
-    else:
-        gpu_available = bool(torch.cuda.is_available())
-
-    if backend_norm == "cpu":
-        return {
-            "backend": "umap-learn",
-            "device": "cpu",
-            "requested_backend": backend_norm,
-            "gpu_available": bool(gpu_available),
-            "reason": "CPU backend forced by real_md.projection.umap_backend='cpu'.",
-        }
-
-    if gpu_available:
-        try:
-            from cuml.manifold import UMAP as CuMLUMAP
-        except ImportError as exc:
-            if backend_norm == "gpu":
-                raise ImportError(
-                    "real_md.projection.umap_backend='gpu' requires RAPIDS cuML "
-                    "(cuml.manifold.UMAP), but it is not installed."
-                ) from exc
-            return {
-                "backend": "umap-learn",
-                "device": "cpu",
-                "requested_backend": backend_norm,
-                "gpu_available": True,
-                "reason": (
-                    "CUDA is available, but RAPIDS cuML is not installed. "
-                    "Falling back to CPU umap-learn."
-                ),
-            }
-        return {
-            "backend": "cuml",
-            "device": "gpu",
-            "requested_backend": backend_norm,
-            "gpu_available": True,
-            "reason": None,
-            "umap_class": CuMLUMAP,
-        }
-
-    if backend_norm == "gpu":
-        raise RuntimeError(
-            "real_md.projection.umap_backend='gpu' requires a CUDA-capable runtime, "
-            f"but torch.cuda.is_available() returned False. Probe details: {gpu_probe_error or 'ok'}."
-        )
-
-    return {
-        "backend": "umap-learn",
-        "device": "cpu",
-        "requested_backend": backend_norm,
-        "gpu_available": False,
-        "reason": (
-            "CUDA is not available for UMAP acceleration."
-            if gpu_probe_error is None
-            else gpu_probe_error
-        ),
-    }
+def _resolve_umap_backend(requested_backend):
+    import torch
+    return dict(backend={'cpu': 'umap-learn', 'gpu': 'cuml'}[requested_backend],
+                device=requested_backend, requested_backend=requested_backend,
+                gpu_available=torch.cuda.is_available(), reason=None)
 
 
-def _build_umap_reducer(
-    backend_info: dict[str, Any],
-    *,
-    random_state: int,
-    umap_neighbors: int,
-    umap_min_dist: float,
-    umap_metric: str,
-) -> Any:
-    reducer_kwargs = {
-        "n_components": 2,
-        "n_neighbors": int(umap_neighbors),
-        "min_dist": float(umap_min_dist),
-        "metric": str(umap_metric),
-    }
-    if str(backend_info["backend"]) == "cuml":
-        import inspect
-
-        reducer_cls = backend_info.get("umap_class")
-        if reducer_cls is None:
-            raise RuntimeError("Missing cuml UMAP class in backend_info.")
-        try:
-            reducer_signature = inspect.signature(reducer_cls.__init__)
-        except (TypeError, ValueError):
-            reducer_signature = None
-        if reducer_signature is not None and "output_type" in reducer_signature.parameters:
-            reducer_kwargs["output_type"] = "numpy"
-        if reducer_signature is not None and "random_state" in reducer_signature.parameters:
-            reducer_kwargs["random_state"] = None
-        return reducer_cls(**reducer_kwargs)
-
-    try:
-        import umap
-    except ImportError as exc:
-        raise ImportError("UMAP projection requested but umap-learn is not installed.") from exc
-    import inspect
-
-    try:
-        reducer_signature = inspect.signature(umap.UMAP.__init__)
-    except (TypeError, ValueError):
-        reducer_signature = None
-    if reducer_signature is not None:
-        if "n_jobs" in reducer_signature.parameters:
-            reducer_kwargs["n_jobs"] = -1
-        if "random_state" in reducer_signature.parameters:
-            reducer_kwargs["random_state"] = None
-        if "transform_seed" in reducer_signature.parameters:
-            reducer_kwargs["transform_seed"] = None
-    return umap.UMAP(**reducer_kwargs)
-
-
+def _build_umap_reducer(backend_info, *, random_state, umap_neighbors, umap_min_dist, umap_metric):
+    kwargs = dict(n_components=2, n_neighbors=umap_neighbors, min_dist=umap_min_dist, metric=umap_metric,
+                  random_state=None)
+    if backend_info['device'] == 'gpu':
+        from cuml.manifold import UMAP
+        return UMAP(**kwargs, output_type='numpy')
+    from umap import UMAP
+    return UMAP(**kwargs, n_jobs=-1, transform_seed=None)
 
 
 def _build_cluster_groups(
@@ -1024,11 +899,6 @@ def _select_temporal_trajectory_sample_indices(
         )
     labels_arr = np.asarray(labels, dtype=int).reshape(-1)
     instance_ids_arr = np.asarray(instance_ids, dtype=np.int64).reshape(-1)
-    if labels_arr.shape[0] != instance_ids_arr.shape[0]:
-        raise ValueError(
-            "labels and instance_ids length mismatch for temporal trajectory sampling: "
-            f"labels={labels_arr.shape[0]}, instance_ids={instance_ids_arr.shape[0]}."
-        )
 
     sorted_ids_by_frame: dict[str, np.ndarray] = {}
     sorted_indices_by_frame: dict[str, np.ndarray] = {}
@@ -1359,21 +1229,6 @@ def _build_sorted_temporal_metric_records(
     coords_arr = np.asarray(coords, dtype=np.float32)
     labels_arr = np.asarray(labels, dtype=int).reshape(-1)
     instance_ids_arr = np.asarray(instance_ids, dtype=np.int64).reshape(-1)
-    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
-        raise ValueError(
-            "Flicker metrics require coords with shape (N, >=3), "
-            f"got shape={tuple(coords_arr.shape)}."
-        )
-    if labels_arr.shape[0] != coords_arr.shape[0]:
-        raise ValueError(
-            "Flicker metrics require matching coords/labels lengths, "
-            f"coords={coords_arr.shape[0]}, labels={labels_arr.shape[0]}."
-        )
-    if instance_ids_arr.shape[0] != labels_arr.shape[0]:
-        raise ValueError(
-            "Flicker metrics require one instance_id per label, "
-            f"instance_ids={instance_ids_arr.shape[0]}, labels={labels_arr.shape[0]}."
-        )
 
     records: list[dict[str, Any]] = []
     for frame in frames:
@@ -1469,11 +1324,6 @@ def _spatial_coherence_metrics_for_pair(
         k=int(k_eff) + 1,
     )
     neighbor_idx = np.asarray(neighbor_idx, dtype=np.int64)
-    if neighbor_idx.ndim != 2 or neighbor_idx.shape[1] != int(k_eff) + 1:
-        raise RuntimeError(
-            "Unexpected nearest-neighbor index shape while computing spatial coherence: "
-            f"shape={tuple(neighbor_idx.shape)}, expected_second_dim={int(k_eff) + 1}."
-        )
     neighbor_idx = neighbor_idx[:, 1:]
     labels_a_arr = np.asarray(labels_a, dtype=int).reshape(-1)
     labels_b_arr = np.asarray(labels_b, dtype=int).reshape(-1)
@@ -1534,11 +1384,6 @@ def _resolve_assignment_margin_arrays(
     }
     for key in required:
         arr = np.asarray(assignment_margins[key])
-        if arr.shape[0] != int(expected_length):
-            raise ValueError(
-                "Assignment margin array length mismatch for flicker metrics: "
-                f"key={key!r}, length={arr.shape[0]}, expected={expected_length}."
-            )
         resolved[key] = arr.reshape(-1)
     return resolved
 
@@ -1759,11 +1604,6 @@ def _write_cluster_transition_popularity(
     out_dir: Path,
 ) -> tuple[Path, dict[str, Any]]:
     counts_arr = np.asarray(aggregate_counts, dtype=np.int64)
-    if counts_arr.shape != (len(cluster_ids), len(cluster_ids)):
-        raise ValueError(
-            "Cluster-transition popularity received an aggregate count matrix with "
-            f"shape={tuple(counts_arr.shape)}, expected={(len(cluster_ids), len(cluster_ids))}."
-        )
     total_valid = int(np.sum(counts_arr))
     total_changed = int(total_valid - np.trace(counts_arr))
     rows: list[dict[str, Any]] = []
@@ -1826,31 +1666,13 @@ def _save_flicker_figure(fig: Any, out_file: Path) -> str:
     return str(out_path)
 
 
-def _flicker_table_x_axis(
-    table: pd.DataFrame,
-    *,
-    time_column: str,
-    fallback_column: str,
-    fallback_label: str,
-) -> tuple[np.ndarray, str]:
-    if time_column in table.columns:
-        x = pd.to_numeric(table[time_column], errors="coerce").to_numpy(dtype=np.float64)
-        if x.size == len(table) and np.all(np.isfinite(x)):
-            unit = ""
-            if "time_unit" in table.columns:
-                units = [
-                    str(value).strip()
-                    for value in table["time_unit"].dropna().unique().tolist()
-                    if str(value).strip()
-                ]
-                if len(set(units)) == 1:
-                    unit = str(units[0])
-            label = "time" if not unit else f"time ({unit})"
-            return x, label
-    if fallback_column in table.columns:
-        x = pd.to_numeric(table[fallback_column], errors="raise").to_numpy(dtype=np.float64)
-        return x, fallback_label
-    return np.arange(len(table), dtype=np.float64), fallback_label
+def _flicker_table_x_axis(table, *, time_column, fallback_column, fallback_label):
+    time = table[time_column].to_numpy(dtype=float)
+    if np.isfinite(time).all():
+        units = table['time_unit'].dropna().unique()
+        unit = units[0] if len(units) == 1 else ''
+        return time, f'time ({unit})' if unit else 'time'
+    return table[fallback_column].to_numpy(dtype=float), fallback_label
 
 
 def _style_flicker_axes(ax: Any) -> None:
@@ -1860,42 +1682,12 @@ def _style_flicker_axes(ax: Any) -> None:
     ax.tick_params(axis="both", labelsize=9)
 
 
-def _cluster_display_labels_for_flicker(
-    cluster_ids: list[int],
-    cluster_display_map: dict[int, str] | None,
-) -> list[str]:
-    labels: list[str] = []
-    for cluster_id in cluster_ids:
-        if cluster_display_map is not None and int(cluster_id) in cluster_display_map:
-            labels.append(str(cluster_display_map[int(cluster_id)]))
-        else:
-            labels.append(f"C{int(cluster_id)}")
-    return labels
+def _cluster_display_labels_for_flicker(cluster_ids, cluster_display_map):
+    return [cluster_display_map[cid] for cid in cluster_ids]
 
 
-def _cluster_colors_for_flicker(
-    cluster_ids: list[int],
-    cluster_color_map: dict[int, str] | None,
-) -> dict[int, str]:
-    fallback_map = _build_cluster_color_map(np.asarray(cluster_ids, dtype=int))
-    resolved: dict[int, str] = {}
-    for cluster_id in cluster_ids:
-        cluster_int = int(cluster_id)
-        if cluster_color_map is None:
-            color = str(fallback_map[cluster_int])
-        elif cluster_int in cluster_color_map:
-            color = str(cluster_color_map[cluster_int])
-        elif str(cluster_int) in cluster_color_map:
-            color = str(cluster_color_map[str(cluster_int)])
-        else:
-            raise ValueError(
-                "Missing cluster color for flicker visualization: "
-                f"cluster_id={cluster_int}, "
-                f"available={sorted(str(key) for key in cluster_color_map.keys())}."
-            )
-        mcolors.to_rgba(color)
-        resolved[cluster_int] = color
-    return resolved
+def _cluster_colors_for_flicker(cluster_ids, cluster_color_map):
+    return {cid: cluster_color_map[cid] for cid in cluster_ids}
 
 
 def _rgba_with_alpha(color: str, alpha: float) -> tuple[float, float, float, float]:
@@ -1909,8 +1701,8 @@ def _weighted_metric_mean(
     value_column: str,
     weight_column: str,
 ) -> float:
-    values = pd.to_numeric(table[value_column], errors="coerce").to_numpy(dtype=np.float64)
-    weights = pd.to_numeric(table[weight_column], errors="coerce").to_numpy(dtype=np.float64)
+    values = table[value_column].to_numpy(dtype=np.float64)
+    weights = table[weight_column].to_numpy(dtype=np.float64)
     mask = np.isfinite(values) & np.isfinite(weights) & (weights > 0.0)
     if not np.any(mask):
         return np.nan
@@ -1944,7 +1736,7 @@ def _save_flicker_churn_timeseries_plot(
     for column, label, color, linewidth in high_rate_specs:
         if column not in pair_table.columns:
             raise KeyError(f"Missing required flicker column for churn plot: {column!r}.")
-        y = pd.to_numeric(pair_table[column], errors="raise").to_numpy(dtype=np.float64)
+        y = pair_table[column].to_numpy(dtype=np.float64)
         high_rate_values.append(y)
         axes[0].plot(x, y, label=label, color=color, linewidth=linewidth)
     stacked_high = np.concatenate([values[np.isfinite(values)] for values in high_rate_values])
@@ -1960,13 +1752,10 @@ def _save_flicker_churn_timeseries_plot(
 
     if "net_population_tv" not in pair_table.columns:
         raise KeyError("Missing required flicker column for churn plot: 'net_population_tv'.")
-    adjacent_tv = pd.to_numeric(pair_table["net_population_tv"], errors="raise").to_numpy(dtype=np.float64)
+    adjacent_tv = pair_table["net_population_tv"].to_numpy(dtype=np.float64)
     axes[1].plot(x, adjacent_tv, label="adjacent population TV", color="#64748b", linewidth=2.1)
     if "population_tv_from_first" in pair_table.columns:
-        cumulative_tv = pd.to_numeric(
-            pair_table["population_tv_from_first"],
-            errors="raise",
-        ).to_numpy(dtype=np.float64)
+        cumulative_tv = pair_table["population_tv_from_first"].to_numpy(dtype=np.float64)
         axes[1].plot(
             x,
             cumulative_tv,
@@ -2030,7 +1819,7 @@ def _save_flicker_spatial_coherence_plot(
     for column, label, color, ax in trend_specs:
         if column not in pair_table.columns:
             raise KeyError(f"Missing required flicker column for spatial plot: {column!r}.")
-        y = pd.to_numeric(pair_table[column], errors="raise").to_numpy(dtype=np.float64)
+        y = pair_table[column].to_numpy(dtype=np.float64)
         finite = np.isfinite(x) & np.isfinite(y)
         ax.scatter(x[finite], y[finite], s=7.0, color=color, alpha=0.16, linewidths=0.0)
         if np.count_nonzero(finite) > 0:
@@ -2147,11 +1936,8 @@ def _save_flicker_transition_popularity_plot(
     table = transition_table.copy()
     table["source_cluster_id"] = table["source_cluster_id"].astype(int)
     table["target_cluster_id"] = table["target_cluster_id"].astype(int)
-    table["transition_count"] = pd.to_numeric(table["transition_count"], errors="raise").astype(np.int64)
-    table["fraction_of_changed_transitions"] = pd.to_numeric(
-        table["fraction_of_changed_transitions"],
-        errors="raise",
-    ).astype(float)
+    table["transition_count"] = table["transition_count"].astype(np.int64)
+    table["fraction_of_changed_transitions"] = table["fraction_of_changed_transitions"].astype(float)
     table = table[
         (table["source_cluster_id"] != table["target_cluster_id"])
         & (table["transition_count"] > 0)
@@ -2195,7 +1981,7 @@ def _save_flicker_transition_popularity_plot(
     ax.set_xlabel("share of all changed adjacent-frame observations (%)")
     ax.set_ylabel("directed cluster change")
     ax.set_title(f"Top {min(int(top_n), len(table))} cluster-cluster transitions over the whole simulation")
-    total_changed = int(np.sum(pd.to_numeric(table["transition_count"], errors="raise").to_numpy(dtype=np.int64)))
+    total_changed = int(np.sum(table["transition_count"].to_numpy(dtype=np.int64)))
     ax.text(
         0.995,
         0.02,
@@ -2239,11 +2025,11 @@ def _directed_transition_counts_by_pair(
     if missing:
         raise KeyError(f"Missing required reciprocal transition columns: {missing}.")
     table = reciprocal_table.copy()
-    table["pair_index"] = pd.to_numeric(table["pair_index"], errors="raise").astype(np.int64)
+    table["pair_index"] = table["pair_index"].astype(np.int64)
     table["cluster_a"] = table["cluster_a"].astype(int)
     table["cluster_b"] = table["cluster_b"].astype(int)
-    table["a_to_b_count"] = pd.to_numeric(table["a_to_b_count"], errors="raise").astype(np.int64)
-    table["b_to_a_count"] = pd.to_numeric(table["b_to_a_count"], errors="raise").astype(np.int64)
+    table["a_to_b_count"] = table["a_to_b_count"].astype(np.int64)
+    table["b_to_a_count"] = table["b_to_a_count"].astype(np.int64)
     pair_index_arr = np.asarray(pair_indices, dtype=np.int64).reshape(-1)
     pair_to_pos = {int(pair_index): pos for pos, pair_index in enumerate(pair_index_arr.tolist())}
     counts = np.zeros(pair_index_arr.shape[0], dtype=np.int64)
@@ -2300,9 +2086,9 @@ def _save_flicker_transition_popularity_timeseries_plot(
         int(cluster_id): str(display_label)
         for cluster_id, display_label in zip(cluster_ids, cluster_display_labels, strict=True)
     }
-    pair_order = np.argsort(pd.to_numeric(pair_table["pair_index"], errors="raise").to_numpy(dtype=np.int64))
+    pair_order = np.argsort(pair_table["pair_index"].to_numpy(dtype=np.int64))
     sorted_pair_table = pair_table.iloc[pair_order].reset_index(drop=True)
-    pair_indices = pd.to_numeric(sorted_pair_table["pair_index"], errors="raise").to_numpy(dtype=np.int64)
+    pair_indices = sorted_pair_table["pair_index"].to_numpy(dtype=np.int64)
     x_raw, x_label = _flicker_table_x_axis(
         sorted_pair_table,
         time_column="time_to",
@@ -2320,7 +2106,7 @@ def _save_flicker_transition_popularity_timeseries_plot(
     selected = transition_table.copy()
     selected["source_cluster_id"] = selected["source_cluster_id"].astype(int)
     selected["target_cluster_id"] = selected["target_cluster_id"].astype(int)
-    selected["transition_count"] = pd.to_numeric(selected["transition_count"], errors="raise").astype(np.int64)
+    selected["transition_count"] = selected["transition_count"].astype(np.int64)
     selected = selected[
         (selected["source_cluster_id"] != selected["target_cluster_id"])
         & (selected["transition_count"] > 0)
@@ -2335,7 +2121,7 @@ def _save_flicker_transition_popularity_timeseries_plot(
     x_window = np.convolve(np.asarray(x_raw, dtype=np.float64), kernel / float(effective_window), mode="valid")
     unit_text = ""
     if "delta_time" in sorted_pair_table.columns:
-        deltas = pd.to_numeric(sorted_pair_table["delta_time"], errors="coerce").to_numpy(dtype=np.float64)
+        deltas = sorted_pair_table["delta_time"].to_numpy(dtype=np.float64)
         finite_deltas = deltas[np.isfinite(deltas) & (deltas > 0.0)]
         if finite_deltas.size > 0:
             units = [
@@ -2493,8 +2279,8 @@ def _save_flicker_dwell_distribution_plot(
     cluster_display_labels: list[str],
     out_file: Path,
 ) -> str:
-    all_lengths = pd.to_numeric(dwell_hist_table["dwell_frames"], errors="raise").to_numpy(dtype=np.float64)
-    all_counts = pd.to_numeric(dwell_hist_table["run_count"], errors="raise").to_numpy(dtype=np.float64)
+    all_lengths = dwell_hist_table["dwell_frames"].to_numpy(dtype=np.float64)
+    all_counts = dwell_hist_table["run_count"].to_numpy(dtype=np.float64)
     positive = np.isfinite(all_lengths) & np.isfinite(all_counts) & (all_counts > 0.0)
     if not np.any(positive):
         raise ValueError("Cannot write dwell distribution plot because all episode counts are zero or invalid.")
@@ -2510,8 +2296,8 @@ def _save_flicker_dwell_distribution_plot(
         if sub.empty:
             continue
         sub = sub.sort_values("dwell_frames")
-        lengths = pd.to_numeric(sub["dwell_frames"], errors="raise").to_numpy(dtype=np.float64)
-        counts = pd.to_numeric(sub["run_count"], errors="raise").to_numpy(dtype=np.float64)
+        lengths = sub["dwell_frames"].to_numpy(dtype=np.float64)
+        counts = sub["run_count"].to_numpy(dtype=np.float64)
         if np.sum(counts) <= 0.0:
             continue
         cumulative = np.cumsum(counts) / float(np.sum(counts))
@@ -2557,7 +2343,7 @@ def _save_flicker_recrossing_by_lag_plot(
 ) -> str:
     if "lag_frames" in recrossing_table.columns:
         order = np.argsort(
-            pd.to_numeric(recrossing_table["lag_frames"], errors="raise").to_numpy(dtype=np.float64)
+            recrossing_table["lag_frames"].to_numpy(dtype=np.float64)
         )
     else:
         x_raw, _x_label = _flicker_table_x_axis(
@@ -2567,16 +2353,16 @@ def _save_flicker_recrossing_by_lag_plot(
             fallback_label="lag (frames)",
         )
         order = np.argsort(x_raw)
-    persistent = pd.to_numeric(recrossing_table["persistent_fraction"], errors="raise").to_numpy(dtype=np.float64)[order]
-    recross = pd.to_numeric(recrossing_table["recross_fraction"], errors="raise").to_numpy(dtype=np.float64)[order]
-    other = pd.to_numeric(recrossing_table["other_fraction"], errors="raise").to_numpy(dtype=np.float64)[order]
+    persistent = recrossing_table["persistent_fraction"].to_numpy(dtype=np.float64)[order]
+    recross = recrossing_table["recross_fraction"].to_numpy(dtype=np.float64)[order]
+    other = recrossing_table["other_fraction"].to_numpy(dtype=np.float64)[order]
     lag_frames = (
-        pd.to_numeric(recrossing_table["lag_frames"], errors="raise").to_numpy(dtype=np.int64)[order]
+        recrossing_table["lag_frames"].to_numpy(dtype=np.int64)[order]
         if "lag_frames" in recrossing_table.columns
         else np.arange(1, len(recrossing_table) + 1, dtype=np.int64)
     )
     lag_time = (
-        pd.to_numeric(recrossing_table["lag_time"], errors="coerce").to_numpy(dtype=np.float64)[order]
+        recrossing_table["lag_time"].to_numpy(dtype=np.float64)[order]
         if "lag_time" in recrossing_table.columns
         else np.full(lag_frames.shape, np.nan, dtype=np.float64)
     )
@@ -2646,7 +2432,7 @@ def _save_flicker_recrossing_by_source_plot(
     table = recrossing_by_source_table.copy()
     table["source_cluster_id"] = table["source_cluster_id"].astype(int)
     if "lag_frames" in table.columns:
-        lag_order = np.sort(pd.to_numeric(table["lag_frames"], errors="raise").unique().astype(int))
+        lag_order = np.sort(table["lag_frames"].unique().astype(int))
     else:
         lag_order = np.arange(1, len(table["lag_time"].unique()) + 1, dtype=int)
     units = [
@@ -2659,7 +2445,7 @@ def _save_flicker_recrossing_by_source_plot(
     for lag in lag_order:
         sub_lag = table[table["lag_frames"].astype(int) == int(lag)] if "lag_frames" in table.columns else table.iloc[0:0]
         lag_time_value = (
-            float(pd.to_numeric(sub_lag["lag_time"], errors="coerce").dropna().iloc[0])
+            float(sub_lag["lag_time"].dropna().iloc[0])
             if (not sub_lag.empty and "lag_time" in sub_lag.columns and sub_lag["lag_time"].notna().any())
             else np.nan
         )
@@ -2757,8 +2543,8 @@ def _save_flicker_cluster_margin_plot(
                 weight_column="stable_margin_before_count",
             )
         )
-        source_count = pd.to_numeric(sub["source_count"], errors="coerce").to_numpy(dtype=np.float64)
-        changed_count = pd.to_numeric(sub["changed_count"], errors="coerce").to_numpy(dtype=np.float64)
+        source_count = sub["source_count"].to_numpy(dtype=np.float64)
+        changed_count = sub["changed_count"].to_numpy(dtype=np.float64)
         finite_counts = np.isfinite(source_count) & np.isfinite(changed_count) & (source_count >= 0.0) & (changed_count >= 0.0)
         changed_fraction.append(
             float(np.sum(changed_count[finite_counts]) / np.sum(source_count[finite_counts]))
@@ -3393,7 +3179,7 @@ def _write_summary_markdown(
                 "## Representatives",
                 f"- Root: `{Path(summary['representatives']['root_dir']).name}`",
                 f"- Shared-style figure: `{Path(summary['representatives']['primary_figure']).name}`",
-                f"- Edge-connected figure: `{Path(summary['representatives']['edge_connected_figure']).name}`",
+                f"- Interactive figure: `{Path(summary['representatives']['interactive_figure']).name}`",
             ]
         )
         structure_analysis = summary["representatives"]["shared_style"].get("structure_analysis")
@@ -3616,7 +3402,6 @@ def run_real_md_qualitative_analysis(
     selected_k: int,
     output_root_dir: Path | None = None,
 ) -> dict[str, Any]:
-    data_kind = str(model_cfg.data.kind).strip().lower()
 
     clustering_cfg = getattr(analysis_cfg, "clustering", None)
     tsne_cfg = getattr(analysis_cfg, "tsne", None)
@@ -3648,11 +3433,6 @@ def run_real_md_qualitative_analysis(
                 "re-collected with non-empty instance_ids."
             )
             instance_ids_arr = None
-        elif instance_ids_arr.shape[0] != len(latents):
-            raise ValueError(
-                "instance_ids and latents length mismatch: "
-                f"instance_ids={instance_ids_arr.shape[0]}, latents={len(latents)}."
-            )
     else:
         instance_ids_arr = None
     out_root = real_md_outputs_root(out_dir) if output_root_dir is None else Path(output_root_dir)
@@ -3745,7 +3525,7 @@ def run_real_md_qualitative_analysis(
             proportions_dir,
             cluster_color_map=labels_color_map,
             cluster_display_labels=cluster_display_labels,
-            save_paper_svg=_cfg_bool(time_series_cfg, "paper_enabled", True),
+            save_paper_svg=_cfg_bool(time_series_cfg, "paper_enabled", False),
             stack_alpha=_cfg_float(time_series_cfg, "alpha", 0.78),
             bar_alpha=_cfg_float(time_series_cfg, "bar_alpha", 0.82),
             paper_alpha=_cfg_float(time_series_cfg, "paper_alpha", 0.72),
@@ -3826,7 +3606,6 @@ def run_real_md_qualitative_analysis(
                     int(getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 64))),
                 ),
             ),
-            knn_k=_cfg_int(profile_cfg, "knn_k", 4),
             orientation_method=str(getattr(figure_representatives_cfg, "orientation", "pca")),
             view_elev=float(getattr(figure_representatives_cfg, "view_elev", 22.0)),
             view_azim=float(getattr(figure_representatives_cfg, "view_azim", 38.0)),
@@ -3857,9 +3636,7 @@ def run_real_md_qualitative_analysis(
             "root_dir": str(representatives_dir),
             "shared_style": shared_style_summary,
             "primary_figure": str(shared_style_summary["out_file"]),
-            "edge_connected_figure": str(
-                shared_style_summary["pca_two_shell_figures"]["knn_edges"]["out_file"]
-            ),
+            "interactive_figure": str(shared_style_summary['interactive_file']),
         }
 
     if _cfg_bool(descriptor_cfg, "enabled", False):
@@ -3902,12 +3679,6 @@ def run_real_md_qualitative_analysis(
                     point_scale=float(point_scale),
                     descriptor_cfg=optional_descriptor_cfg,
                 )
-                if descriptor_df.shape[0] != descriptor_table.shape[0]:
-                    raise RuntimeError(
-                        "Optional descriptor result row count mismatch: "
-                        f"descriptor={descriptor_name}, optional_rows={descriptor_df.shape[0]}, "
-                        f"base_rows={descriptor_table.shape[0]}."
-                    )
                 descriptor_table = pd.concat([descriptor_table.reset_index(drop=True), descriptor_df], axis=1)
                 if str(descriptor_name).strip().lower() == "steinhardt":
                     scalar_columns.extend(descriptor_info["feature_names"])
@@ -4163,12 +3934,6 @@ def run_real_md_qualitative_analysis(
                 if temporal_md_animation_cluster_labels_by_k is not None
                 else np.asarray(labels, dtype=int)
             )
-            if md_animation_coords.shape[0] != md_animation_labels.shape[0]:
-                raise ValueError(
-                    "Temporal MD-space animation coords/labels length mismatch: "
-                    f"coords={md_animation_coords.shape[0]}, "
-                    f"labels={md_animation_labels.shape[0]}."
-                )
             md_animation_max_points_raw = getattr(
                 temporal_md_cfg,
                 "animation_max_points",

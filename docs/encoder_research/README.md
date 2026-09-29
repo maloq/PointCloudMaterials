@@ -1,5 +1,83 @@
 # Encoder research handbook
 
+[Rich-MACE checkpoint interface comparison](../spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer) adds the active multimaterial MACE256 correlation3/angular3 state to the matched and relaxed static Al viewers; descriptor supervision is explicitly recorded.
+
+[GeoFormer versus descriptors: checkpoint explorer](../../output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1/index.html)
+compares the saved 3D PaCMAP layouts and full-snapshot MD clusters. Choose epochs
+4, 12 or 24; pairing variants and training repeats are under advanced controls.
+Optimal cluster colors are accompanied by a membership matrix and per-pair IoU.
+The default is a fixed spatial-neighbor VICReg example, not a selected best model.
+
+[Six relaxed Al snapshots, 166–240 ps](../../output/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1/index.html):
+frozen GeoFormer and rich descriptor clusters, PaCMAP and two dense MD panels
+with consistent palettes. [Protocol and execution](../spatial_vicreg_bias.md)
+distinguish this descriptive static transfer from the held-out MD study.
+
+**Interface-focused correction:** [rich-descriptor cluster correspondence](../../experiments/spatial_vicreg_bias_20260929/INTERFACE_CORRESPONDENCE.md) compares independent TDA/bond-order/CNA partitions with neural clusters around the crystal-side boundary. Earlier scalar family-level prediction summaries are a different diagnostic.
+
+[Completed spatial VICReg mechanism study](../../experiments/spatial_vicreg_bias_20260929/RESULTS.md):
+nine 24-pass GeoFormers. Neighbor alignment contracts spatial pair distances,
+but global liquid-cluster resolution disappears even without it. Continuous
+liquid TDA readout improves while global K=7 membership loses predictive skill.
+Simple crystal-fraction clusters reproduce much of the all-phase association.
+Raw encoder and projector differ substantially; no precursor claim is established.
+[Plots and tables](../../output/spatial_vicreg_bias/matched-al64-20260929/analyses/completed-review-v1/README.md) ·
+[Archived-coordinate reference](../../experiments/spatial_vicreg_bias_20260929/COORDINATE_FINDINGS.md).
+
+[Rich descriptor control](../../experiments/liquid_predictability_20260928/DESCRIPTORS.md) compares fixed topology/order/CNA features with learned encoders using matched liquid-only observations.
+
+
+[Completed encoder mechanisms experiment](../../experiments/encoder_mechanisms_20260926/COMPLETED-RESULTS.md):
+18 completed scientific fits; alignment trades physical retention for prediction,
+frozen Epi beats scratch, and this fine-tuning recipe adds no predictive benefit.
+All three seeds and fixed training trajectories are reported with paired-source
+uncertainty; precursor detection remains unsupported by the current birth cohort.
+
+[Liquid structure predictability](../../experiments/liquid_predictability_20260928/README.md)
+separates descriptor signal, frozen representation information, joint adaptation,
+source diversity and actual observation clearance.
+
+[LCD-MACE128-VC liquid-only localization](../../experiments/crystal_interface_20260928/LIQUID_DISTANCE.md)
+targets distance to an existing external crystal without established crystal in
+the input; it replaces the unstarted interface-only exclusion fit.
+
+[Feature dominance in the interface encoder](../../experiments/crystal_interface_20260928/FEATURE_DOMINANCE.md)
+distinguishes predictive concentration from train-only feature overfitting using
+PCA readouts and interventions on the frozen context predictor.
+
+[Interface visibility/overfitting audit](../../experiments/crystal_interface_20260928/OVERFITTING.md)
+checks all six localization fits; [dense invisible-context adaptation](../../experiments/crystal_interface_20260928/UNSEEN.md)
+retains VCReg and the frozen original benchmark.
+
+[CIV-MACE128 interface study](../../experiments/crystal_interface_20260928/README.md)
+learns distance/direction to an interface atom layer, including crystal interiors;
+it is a separate target family from crystal-set CDV-MACE128.
+[Completed comparison](../../experiments/crystal_interface_20260928/RESULTS.md)
+covers all six fits and their held-out localization/embedding diagnostics.
+
+[CDV-MACE128](../../experiments/crystal_vector_20260928/README.md) jointly trains
+equivariant patch exports and vector-message spatial context for current crystal
+distance/direction, with independent random batches and a matched VCReg treatment.
+
+[CD-MACE128 and CD-MACE128-VC](../../experiments/distance_encoder_20260926/VCREG.md)
+cover joint crystal-distance training, local-only prediction and the supervised
+variance–covariance regularization comparison. These are distinct from paired-view
+VICReg pretraining. Exact input/metric definitions and stable checkpoint identities
+are linked in that protocol.
+
+[Joint distance-encoder experiment](../../experiments/distance_encoder_20260926/README.md)
+trains MACE on 12.75M dynamic multi-material patches, with greater likelihood
+weight on 20–32 Å proximity and subsequent vector/harmonic context evaluation.
+
+[Confidence and visibility results](../../experiments/spatial_distance_20260926/CONFIDENCE_RESULTS.md)
+and [continuous distance training](../../experiments/spatial_distance_20260926/README.md)
+extend the fixed-snapshot approach study.
+
+[Spatial warning-distance study](../../experiments/spatial_approach_20260926/README.md) ·
+[Results and interpretation](../../experiments/spatial_approach_20260926/RESULTS.md)
+compares local and surrounding observations while moving through a fixed
+snapshot toward a crystal, with explicit input-visibility and false-alarm controls.
+
 A working reference for understanding **what each encoder was trained to retain,
 what its exported state contains, and what the measurements actually establish**.
 Scope: GeoFrame through the September23 distance/future factorial and the
@@ -9,6 +87,17 @@ to this repository. This is an evidence snapshot, not a live run monitor.
 
 | I want to… | Start here |
 | --- | --- |
+| Decide the next experiments from what we already tried | [Evidence audit and staged encoder-mechanism experiments](../../experiments/encoder_mechanisms_20260926/README.md) |
+| Find prior work on continuous, physical and predictive representations | [Broad literature review: atomic dynamics, predictive states, feature suppression and competing liquid order](representation_literature_20260926.md) |
+| Assess Ta force-field uncertainty before interpreting encoder results | [Potential comparison and validation priorities](../simulations/ta_potential_review_20260926.md), [24-shot pilot](../simulations/ta_shooting_20260926.md) |
+| Compare our spatial warning experiment with prior work | [Al interface GNNs, structural scores and precursor studies](spatial_warning_literature_20260926.md) |
+| Read the completed latest-MACE comparison | [Eight checkpoints: liquid information, spatial limits and prediction](../../experiments/encoder_quality_20260926/RESULTS.md) |
+| Evaluate the latest efficient MACE on structure and predictive information | [Eight frozen checkpoints and matched controls](../../experiments/encoder_quality_20260926/README.md), [execution](../encoder_quality.md) |
+| Define a good encoder and the evidence needed to establish it | [Quality criteria, controls and falsifiable training hypotheses](quality_criteria.md) |
+| Review MACE/Epi training curves and the parameter queue's actual completion | [26 September evidence review](../../output/encoder_research/mace-vicreg-epi-20260923/RESULTS-20260926.md) |
+| Separate local establishment from crystal arrival | [Cluster-ancestry availability audit](crystallization_origins.md) |
+| Assess nucleus and prestructured-liquid definitions | [Literature, current implementation and unresolved ambiguities](nuclei_and_prestructured_liquid_20260926.md) |
+| Revisit nucleation literature and assess possible novelty | [Primary sources, falsifiable hypotheses and evidence checklist](nucleation_literature_and_open_questions.md) |
 | Compare encoder training with vector/harmonic predictors | [Twelve-epoch minimum protocol](../../experiments/encoder_context_epochs_20260925/README.md), [execution and full evaluation](../encoder_context.md) |
 | Compare models on identical fixed data | [Al64 benchmark and 1.16M structural training neighborhoods](../datasets/fixed_al64.md) |
 | Review orientation-preserving context prediction | [Completed Al16 results](/work/PERSO/vmorozov/analysis/equivariant_context/node59-b512-v2-20260925/RESULTS.md), [four-model protocol](../../experiments/equivariant_context_20260925/README.md), [operations](../equivariant_context.md) |
@@ -101,3 +190,13 @@ remain in `experiments/`; this folder is their cross-study guide.
 The [new parameter search](../encoder_parameter_search.md) trains28 matched fits after the [29-checkpoint review](../../output/encoder_research/parameter-search-20260923/RESULTS.md). Liquid-neighbor measurements favor the late VISReg raw export despite its two-blob visualization; structure and calibrated prediction remain separate selection criteria.
 
 The [paired MACE + Epi study](../../experiments/mace_paired_epi_20260923/README.md) compares direct temporal alignment with VICReg versus geometric Epi regularization (with/without a variance floor), using two scratch seeds and24 complete passes. All six fits and24 checkpoint evaluations are complete; see the [results](results_20260924.md#mace-paired-alignment-epi-versus-vicreg). This is separate from the conditional-JEPA checkpoint screen.
+
+The [matched execution workflow](../encoder_mechanisms.md) implements the alignment, readout and adaptation contrasts and held-out birth-coverage audit.
+The [28 September interim results](../../experiments/encoder_mechanisms_20260926/RESULTS-20260928.md)
+show an early structure/prediction trade-off: all nine encoders trained24 epochs,
+but later milestone evaluation needs recovery. Descriptor add-back survives a
+dimension-matched redundant-feature control; strict held-out birth coverage is
+insufficient for a precursor claim.
+The [later epoch-24 update](../../experiments/encoder_mechanisms_20260926/PROGRESS-20260928.md)
+confirms the alignment trade-off in all three Epi seeds; four quality assays and
+the nine adaptation fits remain outstanding at its cutoff.

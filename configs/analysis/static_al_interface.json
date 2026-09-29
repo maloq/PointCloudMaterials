@@ -1,0 +1,32 @@
+{
+  "protocol": "static_al_interface_v1",
+  "output": "${storage:analysis}/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+  "publication": "${storage:repo}/output/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+  "static_data": "${storage:datasets}/Al/inherent_configurations_off",
+  "grid_reference": "${storage:analysis}/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1",
+  "pacmap_config": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v2/technical/queue/config.json",
+  "frames": [
+    166,
+    170,
+    174,
+    175,
+    177,
+    240
+  ],
+  "models": [
+    {
+      "run": "S1-seed17",
+      "epoch": 24
+    },
+    {
+      "run": "S0-seed17",
+      "epoch": 4
+    }
+  ],
+  "workers": 8,
+  "chunk_atoms": 256,
+  "outer_boundary_guard_A": 8.0,
+  "projection_samples_per_frame": 4000,
+  "sample_seed": 20260929,
+  "gpu_partition": "A40,3090,L40S"
+}

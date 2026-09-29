@@ -1,0 +1,533 @@
+{
+  "schema_version": 1,
+  "id": "9544fff22dc69d6c1737395197291cdc2bdf79bf8b0be4245c36314e84fd8e19",
+  "title": "Original versus dense Al: 20 matched parents",
+  "context": "Identical preparations and seeds, different microscopic paths and some crystallization outcomes; all 20 completed pairs at 520 K.",
+  "checkpoint_sha256": null,
+  "protocol": "same-parent-al-replay-v1",
+  "inputs": {
+    "encoder": "none",
+    "predictor": "none",
+    "diagnostic": "Matched saved positions/velocities, periodic boxes and LAMMPS thermodynamics; time/temperature are audit coordinates only"
+  },
+  "population": {
+    "pairs": 20,
+    "temperature_K": 520,
+    "atoms_per_source": 70304,
+    "roles": {
+      "train": 15,
+      "selection": 2,
+      "calibration": 2,
+      "test": 1
+    }
+  },
+  "selection": "All completed dense descendants at audit time; no fitting, model selection or outcome-based exclusion",
+  "stages": {
+    "paired_physics": {
+      "state": "complete",
+      "evidence": "/home/infres/vmorozov/PointCloudMaterials/output/al_replay/completed20-20260929/technical/summary.json"
+    },
+    "illustrative_sections": {
+      "state": "complete",
+      "evidence": "/home/infres/vmorozov/PointCloudMaterials/output/al_replay/completed20-20260929/technical/example_sections.json"
+    }
+  },
+  "artifacts": [
+    {
+      "id": "e60296dcb7c8ff2e36f4bad2bea18fd6f6a7be0d99f91ede50dc32c6af6fb3c8",
+      "path": "${storage:output}/al_replay/completed20-20260929/README.md",
+      "role": "provenance",
+      "relative": "README.md",
+      "section": "overview",
+      "bytes": 4778,
+      "sha256": "52f0f328173bc5a78bcbb407249c5ded89c80f32af3a1d3ea1b1632d494461d3",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "602833ab5a45992ff5455da2f7fe2d89a38e811fa4ebbd83e37995ae69aa0454",
+      "path": "${storage:output}/al_replay/completed20-20260929/index.html",
+      "role": "figure",
+      "relative": "index.html",
+      "section": "overview",
+      "bytes": 234,
+      "sha256": "c3a52ddadff0f60e5ca86ec1614080144cfdd96f51c8c8b85230f90b7a5ba62c",
+      "verification": "hashed",
+      "retention": "preserve",
+      "published_path": "${storage:output}/al_replay/completed20-20260929/analyses/paired-physical-v1/plots/overview/index.html",
+      "publication_mode": "html_launcher",
+      "published_sha256": "1dbb849f3b655850cabe470ef20a75bc713fa5d0ba8390b532483f6e87172844"
+    },
+    {
+      "id": "d04e2105207a6241e60a25dcec07acf49b5ed9e75c31c7c1e597510141c48301",
+      "path": "${storage:output}/al_replay/completed20-20260929/plots/opposite_outcome_examples.png",
+      "role": "figure",
+      "relative": "plots/opposite_outcome_examples.png",
+      "section": "plots",
+      "bytes": 2114093,
+      "sha256": "84058a2be6712efa693a0403c0f8e14b010427ab9e3d5afc649d45d0341d112f",
+      "verification": "hashed",
+      "retention": "preserve",
+      "published_path": "${storage:output}/al_replay/completed20-20260929/analyses/paired-physical-v1/plots/plots/opposite_outcome_examples.png"
+    },
+    {
+      "id": "69cc2920be2c303de941d48c195f90177c01e366258d838c1a1c79c3fc88410b",
+      "path": "${storage:output}/al_replay/completed20-20260929/plots/overview.png",
+      "role": "figure",
+      "relative": "plots/overview.png",
+      "section": "plots",
+      "bytes": 481003,
+      "sha256": "778bfa972c890d5db30c46e73dfaaa244793c74a5fc255851bcd6ea2ffccbe35",
+      "verification": "hashed",
+      "retention": "preserve",
+      "published_path": "${storage:output}/al_replay/completed20-20260929/analyses/paired-physical-v1/plots/plots/overview.png"
+    },
+    {
+      "id": "7b4a2cb6b30bcd1d542509eb887243b5686b88fbc503d57e505d3a065ca6be91",
+      "path": "${storage:output}/al_replay/completed20-20260929/plots/paired_crystallization.png",
+      "role": "figure",
+      "relative": "plots/paired_crystallization.png",
+      "section": "plots",
+      "bytes": 353424,
+      "sha256": "44c74e3b6c894113f2d3de416ee5900ba1be58de1b4de98acd162d7f1c409888",
+      "verification": "hashed",
+      "retention": "preserve",
+      "published_path": "${storage:output}/al_replay/completed20-20260929/analyses/paired-physical-v1/plots/plots/paired_crystallization.png"
+    },
+    {
+      "id": "715d90757376d3fee94f15216c5232376110c4e8291ed00da4ec2e65da4f4eac",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/METRICS.md",
+      "relative": "tables/METRICS.md",
+      "role": "metric_definition",
+      "section": "tables",
+      "bytes": 5095,
+      "sha256": "cf53bb35d49c7cb0fecbe2f303e21c5e8bc5f9805f6c5822181f91680de1dc68",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "e30f667e1a8640a39fb4dcfe99f691e0b87b5a1dae6db6aa8e29576b33a3d1dd",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/METRIC_INDEX.md",
+      "relative": "tables/METRIC_INDEX.md",
+      "role": "metric_definition",
+      "section": "tables",
+      "bytes": 139,
+      "sha256": "7ed3df2f221e39058607c1875147504ae362f3fc0cd660dee43ae50432c5fa31",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "e719264b65c1efe9b0bef1b4f74a20cf7288d2208316c02e1213115d242f360e",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/matched_times.csv",
+      "relative": "tables/matched_times.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 2171514,
+      "sha256": "9ac188aeaba33dfbbb27b5ec07c3082146039d40790716473b5ea3ff95aa8c4f",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "29a982e381bb4f26afa4ec06377140e76758461ea18f88a0758789ea116ae2be",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/metrics.csv",
+      "relative": "tables/metrics.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 1176,
+      "sha256": "abbaf115c260e0b4594f5186717baf63c243b41bacd467b699d75b4caccb37b5",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "ec4109ad95fb3e180f4e4037666e64bfb0ca90e037ff8bf95f5149120731e70f",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/paired_sources.csv",
+      "relative": "tables/paired_sources.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 4995,
+      "sha256": "c7aeb936c1fc12873cc6b673f8e06a42fdc6bf31e0c95017d57c000295e7551a",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6fd1512f1d7c92b9ab140b8a9f61cd8334c09d7c9dcaa00780bac2fe8874f7a1",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/structure.csv",
+      "relative": "tables/structure.csv",
+      "role": "table",
+      "section": "tables",
+      "bytes": 249507,
+      "sha256": "fef019e2aa5a3ff26d5aa63c71aae21add00eb8d86f3973ecf8b41d93d0f6b79",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "992b618ab1c51d38457e07b5f940b7547bd8e5ce94b87e93060d64db0013c070",
+      "path": "${storage:output}/al_replay/completed20-20260929/tables/metric-definitions/al_replay.md",
+      "relative": "tables/metric-definitions/al_replay.md",
+      "role": "metric_definition",
+      "section": "tables",
+      "bytes": 5095,
+      "sha256": "cf53bb35d49c7cb0fecbe2f303e21c5e8bc5f9805f6c5822181f91680de1dc68",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "98eed8df0f90c28233a54e21478d6afd9999abf2cdc6c1364c80c18dd47ed015",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/environment.json",
+      "role": "provenance",
+      "relative": "technical/environment.json",
+      "section": "technical",
+      "bytes": 818,
+      "sha256": "5486fbadb4ac831e5e0201df8129c0818ad96696d1ee186410f857f599b56c00",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "b369b6b563e629942ede8a4cb7c1236cbb86d29482a7077a4aa249e16b8c1aaa",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/example_sections.json",
+      "role": "provenance",
+      "relative": "technical/example_sections.json",
+      "section": "technical",
+      "bytes": 2544,
+      "sha256": "e177563af27a6c10b17b3c1eefe566f421b740f215715b9163aff8c916e9b335",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7bcebc6ce276d60841d48bbcefea54e8e99d4fb5bb1331b87ce08ac32f253a8f",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/indexing-status.json",
+      "role": "provenance",
+      "relative": "technical/indexing-status.json",
+      "section": "technical",
+      "bytes": 26,
+      "sha256": "903c809eb8740476258b5172942c356c9c56e21fe0487cd18def4ba74f2f7c4f",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "2dd3143f79e60e8c82a98135b3e0dd9a9956cfdd4c1eb1b8d62b2bb6a27fbbd2",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/metric-contract.json",
+      "relative": "technical/metric-contract.json",
+      "role": "metric_contract",
+      "section": "provenance",
+      "bytes": 539,
+      "sha256": "5236b42ebb95e2f509da28d429e6fe07fb208e88f335c327401e92b038214d77",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "b7b436d6e5c8404a85838f31255dc28627efe0f3df626ad4b1e0aabd8a2a7316",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/protocol.json",
+      "role": "provenance",
+      "relative": "technical/protocol.json",
+      "section": "technical",
+      "bytes": 42197,
+      "sha256": "fc71bfc881b34bd928a3a6a07146279fbbf6174140e3bccb14ab599e017e9f89",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6b22ea1afe0bd3d0762876fa8153fc617ea20f37c2096446d57004d0adff3639",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/retained_quantization_receipts.json",
+      "role": "provenance",
+      "relative": "technical/retained_quantization_receipts.json",
+      "section": "technical",
+      "bytes": 8459,
+      "sha256": "56ce03cea71e58210934ee5ccd80b3c3427bc3a5de654a4cc72ec9a0ec17651f",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "33779f28af92e6139025e686636d9a50d5bb9aa977514a381382922024e047e9",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/summary.json",
+      "role": "provenance",
+      "relative": "technical/summary.json",
+      "section": "technical",
+      "bytes": 1163,
+      "sha256": "0cb968df328217c3e2d32b5eb1043755f0722ec7db3551d555bf8d7ee2f3afe1",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "ce9c9daf5780657f289ad6c2fd8491e1b06998f7b3d7389f86d115ba30c35036",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/860.json",
+      "role": "provenance",
+      "relative": "technical/pairs/860.json",
+      "section": "technical",
+      "bytes": 341130,
+      "sha256": "8d2bc88c8113ab0fb9607d71c2c633c0253c726e6b1b33997ecee16c7f8cfde8",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "a6fabed3119e7acd817fe3f50732c782643f9ea98aec5f4de31be345ecdc8a90",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/861.json",
+      "role": "provenance",
+      "relative": "technical/pairs/861.json",
+      "section": "technical",
+      "bytes": 341337,
+      "sha256": "aed45335117287a07fed544d25eb81e4448613588c9616e9ea6d2174054e7a22",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "f55da35396fd9a7500b53e2100e7930d5d4835ba4d659c780c874230c416723d",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/862.json",
+      "role": "provenance",
+      "relative": "technical/pairs/862.json",
+      "section": "technical",
+      "bytes": 340837,
+      "sha256": "954583b094d616c296e6b02bfb9548a22498edfb5e655c413349c0f6907ac657",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "847419c3a4f8a0a3f90c446b13cfb699bfdb59c6dff101363ce7b08ba0e1624a",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/863.json",
+      "role": "provenance",
+      "relative": "technical/pairs/863.json",
+      "section": "technical",
+      "bytes": 340788,
+      "sha256": "13d39c8b7476c79cf83ba2498ab97404bab08fe7b41efcd043a0334b3cef4756",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "b892c31b58a204a082ab6a091a4ed0b1b24fbb510045fa21c385dfa5d97061c9",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/864.json",
+      "role": "provenance",
+      "relative": "technical/pairs/864.json",
+      "section": "technical",
+      "bytes": 341645,
+      "sha256": "97beadfa1291770ad418d6ea65fd4806f212d0001f683e00f51be6e471fb1064",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "2d29056030cf9f2e8f069bbd2db547b149075495107ca62fa3b7f9be58cf5deb",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/865.json",
+      "role": "provenance",
+      "relative": "technical/pairs/865.json",
+      "section": "technical",
+      "bytes": 341528,
+      "sha256": "dce884157a4ec26a870169ae50976a700d504d0740196c225995d07954616ea0",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "df20b50536fb9d18cd2eeaf5153b59f97213e01ce3a285d50e5fd63693cebbfd",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/866.json",
+      "role": "provenance",
+      "relative": "technical/pairs/866.json",
+      "section": "technical",
+      "bytes": 341221,
+      "sha256": "f3d4803703dc4f2cbe6de03d21f588554b1959173eefb65a0e5873c015849628",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "9ebc66203463a9cfc27fe60579b262040b9b6f25dc7f0ac641451c57c4ef5349",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/867.json",
+      "role": "provenance",
+      "relative": "technical/pairs/867.json",
+      "section": "technical",
+      "bytes": 341406,
+      "sha256": "da71e98e1b369efb579bbf8d9dc4431f98ec140c9cd794c74152202911f76f33",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7e43ddb87108d1c6d5e11e0656b58725059fde0157ba4cf328998db9f239fda9",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/868.json",
+      "role": "provenance",
+      "relative": "technical/pairs/868.json",
+      "section": "technical",
+      "bytes": 341293,
+      "sha256": "9349603c8f1825042eece1b8ab879ac625dbe6e30045179a1ff1cceb1421f1f7",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "b245b2e1c2aa79d520570a98cd918491e182f809dc438a75b78970674a189ff5",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/869.json",
+      "role": "provenance",
+      "relative": "technical/pairs/869.json",
+      "section": "technical",
+      "bytes": 341153,
+      "sha256": "efbf1a11a7d352b42328a5f8d984a749fc470b22d603c5f0baf7d361fb42009f",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "bb83479d086b5e38ce936ca3f8a64610424290c0ebf3257ecc08227870263c53",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/870.json",
+      "role": "provenance",
+      "relative": "technical/pairs/870.json",
+      "section": "technical",
+      "bytes": 341389,
+      "sha256": "9114b7aad9fddf60e19f2046b0a0b4dcefe0d3fe2f3ed92ab316a4f39e6de756",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "0883ec5589b96321ec3607fdd8c9a2448220b2cc0ec4c9c1039dbc7af3ff04bc",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/871.json",
+      "role": "provenance",
+      "relative": "technical/pairs/871.json",
+      "section": "technical",
+      "bytes": 341325,
+      "sha256": "a0236f6d17a376f8f23c2374e622069d0742703a5a61fc659296fa9dc2906a16",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "f50b7d452e895098e0cbb200638d8d405793df8f8d03fbcf6a2b0909d62463ae",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/872.json",
+      "role": "provenance",
+      "relative": "technical/pairs/872.json",
+      "section": "technical",
+      "bytes": 341574,
+      "sha256": "5e31d0042e59a61c033475a491007ec4882b3752edcec6ab706248072ab00c19",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6275b97995cfb3097e7688c758459cfc088440751e79cbb38f89eb990051bebc",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/873.json",
+      "role": "provenance",
+      "relative": "technical/pairs/873.json",
+      "section": "technical",
+      "bytes": 341278,
+      "sha256": "3c694768889b0c13b9636d92b6e46bd7180a6783af1225aa70a9e1bedf69a61c",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "e70a76aef8a4650961f3ae95bfb39ddbf1717c3e135c2d518b3fe760f96e9728",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/874.json",
+      "role": "provenance",
+      "relative": "technical/pairs/874.json",
+      "section": "technical",
+      "bytes": 341359,
+      "sha256": "5fcbacf4cc2b2a2f587644c5e912a9a29da51105bf38eedc1620e85df3267835",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "4f804b16bd3164f22b217fb4207d2d617b0797b1816f14582116276803b87679",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/875.json",
+      "role": "provenance",
+      "relative": "technical/pairs/875.json",
+      "section": "technical",
+      "bytes": 343659,
+      "sha256": "b4809c21e88cd629ab2d264be6cbdd5858bf35dba6d460a5a0744e135874e966",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "67c192316bfec160260ee908882c598b68678a88513d992144429bef843cb00f",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/877.json",
+      "role": "provenance",
+      "relative": "technical/pairs/877.json",
+      "section": "technical",
+      "bytes": 343861,
+      "sha256": "c31378744179c642d26094a181378f476eda8b0235f9d5d38f960dfa761cc8c1",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7c0eae24d3b2cd9ef49ba7e93965ba4f53550e8058ee0b28bd0e1247460e585d",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/878.json",
+      "role": "provenance",
+      "relative": "technical/pairs/878.json",
+      "section": "technical",
+      "bytes": 342999,
+      "sha256": "6042e75731a1b2b438fcea086320b2cd7ec7072b4ece5c029bfa07c20c2a468f",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "585ccb3a1dae9c63e1cd4690a1b21bdad5d7d5c91fa76aa472a8925a805ccdfc",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/879.json",
+      "role": "provenance",
+      "relative": "technical/pairs/879.json",
+      "section": "technical",
+      "bytes": 342796,
+      "sha256": "732d0ff6bb0f78164caed13ab09eda25c17134b0233bb1f2b6113fe964d34874",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "6f6f13a40468422926ead8f773c4f7c265e48dc2239d1df4a6914831accda044",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/pairs/883.json",
+      "role": "provenance",
+      "relative": "technical/pairs/883.json",
+      "section": "technical",
+      "bytes": 341057,
+      "sha256": "9d594b262264b3b85b73b0c35f168fb4704b7cf15b2fcaf6a51feff949b74656",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "c0892218e37070bcdcdef0cae1b83ed1030aa7bc7000cccea8e1fb8a6c2701ee",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/metric-contracts/al_replay.json",
+      "relative": "technical/metric-contracts/al_replay.json",
+      "role": "metric_contract",
+      "section": "tables",
+      "bytes": 539,
+      "sha256": "5236b42ebb95e2f509da28d429e6fe07fb208e88f335c327401e92b038214d77",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "7dba36b667be08193ce283b776012ebe4890c3116ada5e1279a65f4b18d89b1c",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/table-contracts/matched_times.json",
+      "relative": "technical/table-contracts/matched_times.json",
+      "role": "metric_contract",
+      "section": "tables",
+      "bytes": 265,
+      "sha256": "2b3cf075d2f85934f91137f0d6125b68519f32d1eb01b7485bcdacb18a49c632",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "d37097bdc2e719b2f6194a685f38742c27acb80eba45cc5fe7b0007889d598a0",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/table-contracts/metrics.json",
+      "relative": "technical/table-contracts/metrics.json",
+      "role": "metric_contract",
+      "section": "tables",
+      "bytes": 259,
+      "sha256": "f8dcc776511b98abb0d549b94f4427bdd6d20c9e370381d321de8513f71dc845",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "e11f0f147ad2fc2650ebcbf820f845e0ba74dfd5814e70fc13747170900e0f40",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/table-contracts/paired_sources.json",
+      "relative": "technical/table-contracts/paired_sources.json",
+      "role": "metric_contract",
+      "section": "tables",
+      "bytes": 266,
+      "sha256": "e2e41daf3f793b44b7e07e39d508adc609bdf2d926b4a7ab4767a78972b499c1",
+      "verification": "hashed",
+      "retention": "preserve"
+    },
+    {
+      "id": "3dbe2f597a6b4c541e409566caa0c22429f92d39ae80d3bf295ebc91341e166e",
+      "path": "${storage:output}/al_replay/completed20-20260929/technical/table-contracts/structure.json",
+      "relative": "technical/table-contracts/structure.json",
+      "role": "metric_contract",
+      "section": "tables",
+      "bytes": 261,
+      "sha256": "b95096965f43c12148c73b06b892ec56549a8b7a38d926de9b232fff8f0c81bf",
+      "verification": "hashed",
+      "retention": "preserve"
+    }
+  ],
+  "page": "${storage:output}/al_replay/completed20-20260929/analyses/paired-physical-v1/index.html",
+  "source": "${storage:output}/al_replay/completed20-20260929",
+  "numerical_evidence": {
+    "path": "${storage:output}/al_replay/completed20-20260929/technical/summary.json",
+    "sha256": "0cb968df328217c3e2d32b5eb1043755f0722ec7db3551d555bf8d7ee2f3afe1"
+  }
+}

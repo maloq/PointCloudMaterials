@@ -44,6 +44,7 @@ def main(argv=None):
     p.add_argument('--refresh', action='store_true', help='Build the evidence-backed dataset browser, cards, JSON and CSV.')
     p.add_argument('--output', type=Path, default=Path('docs/datasets'))
     p = sub.add_parser('simulations'); p.add_argument('--output', required=True, type=Path)
+    p.add_argument('--details', action='store_true', help='Measure trajectory schemas, timelines and owned disk sizes.')
     p = sub.add_parser('resolve'); p.add_argument('config', type=Path)
     p = sub.add_parser('snapshot'); p.add_argument('destination', type=Path)
     p = sub.add_parser('bundle'); p.add_argument('--plan', required=True, type=Path); p.add_argument('--destination', required=True, type=Path); p.add_argument('--apply', action='store_true')
@@ -69,8 +70,12 @@ def main(argv=None):
     elif args.command == 'resolve':
         result = load_json(args.config)
     elif args.command == 'simulations':
-        from .simulation_inventory import export_simulations
-        result = export_simulations(args.output)
+        if args.details:
+            from .simulation_details import export_details
+            result = export_details(args.output)
+        else:
+            from .simulation_inventory import export_simulations
+            result = export_simulations(args.output)
     else:
         from .transfer import archive_failed_simulation, bundle, publish_simulation, snapshot, verify_bundle
         if args.command == 'snapshot':

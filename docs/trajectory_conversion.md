@@ -171,3 +171,12 @@ decode to float32 and wrap into the periodic box. Source files are removed only
 after the target has been written, fsynced and checksum verified. Binary migration
 keeps the original manifest in provenance and old paths as compatibility symlinks.
 The elemental `binary_conversion.json` is updated for campaign resumption.
+
+## Exact 0.1 ps Al reruns
+
+`python scripts/convert_trajectory.py dense-al RUN_DIR --delete-source` requires
+the completed `al_dense_replay_v1` producer. It verifies the exact 6,001-frame
+timeline, float32 reference and every float16 rounding value before removing
+text and the transient float32 intermediate. The canonical float16 trajectory,
+quantization report, checksums and native restarts remain. See the
+[simulation protocol](simulations/al_main_010ps_20260927/README.md).

@@ -1,0 +1,12 @@
+{
+  "checkpoint": "${storage:analysis}/distance_encoder/multimaterial-early-20260926/technical/best.pt",
+  "checkpoint_sha256": "7b4dcb17ddcb2952d5f5ea20f0fd8e1d2d0c0164146d8676a39ceca71d1fda7f",
+  "producer": "${storage:analysis}/distance_encoder/multimaterial-early-20260926/technical/code",
+  "output": "${storage:analysis}/structural_static/cd-mace128-epoch12-al-20260926",
+  "data_config": "${storage:repo}/configs/data/loaders/static_al_native_mace.yaml",
+  "device": "cuda:0",
+  "verification_inputs": "${storage:analysis}/encoder_research/mace-vicreg-epi-20260923/technical/inputs",
+  "verification_reference": "${storage:analysis}/encoder_quality/latest-mace-20260926/technical/reference",
+  "checkpoint_kind": "distance_encoder",
+  "name": "CD-MACE128 epoch 12"
+}

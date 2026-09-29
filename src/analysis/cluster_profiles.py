@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-import torch
 from scipy.spatial import ConvexHull, QhullError, cKDTree
 
 _MATERIAL_PROPERTIES: list[tuple[str, str]] = [
@@ -50,62 +49,6 @@ def resolve_point_scale(cfg: Any) -> float:
     if abs(norm_scale) < 1e-12:
         return radius
     return radius / norm_scale
-
-
-def _safe_xyz(points: np.ndarray) -> np.ndarray:
-    arr = np.asarray(points, dtype=np.float32)
-    if arr.ndim == 3:
-        # Temporal datasets provide (T, N, 3); profiles use the anchor frame.
-        arr = arr[0]
-    if arr.ndim != 2 or arr.shape[1] != 3:
-        raise ValueError(
-            "Point-cloud profiles require shape (N, 3) or (T, N, 3), "
-            f"got {arr.shape}."
-        )
-    if not np.isfinite(arr).all():
-        first_bad = np.argwhere(~np.isfinite(arr))[0].tolist()
-        raise ValueError(
-            "Point-cloud profiles require finite coordinates. "
-            f"first_nonfinite_index={first_bad}, shape={arr.shape}."
-        )
-    return arr.astype(np.float32, copy=False)
-
-
-def _extract_points_from_item(item: Any) -> torch.Tensor:
-    points = item["points"]
-    if not torch.is_tensor(points):
-        raise TypeError(
-            "Analysis datasets must return item['points'] as a torch.Tensor, "
-            f"got {type(points)!r}."
-        )
-    return points
-
-
-def _load_point_cloud_from_dataset(
-    dataset: Any,
-    sample_index: int,
-    *,
-    point_scale: float = 1.0,
-) -> np.ndarray:
-    if dataset is None or not hasattr(dataset, "__getitem__"):
-        raise TypeError(
-            "Point-cloud loading requires an indexable dataset, "
-            f"got {type(dataset)!r}."
-        )
-    index = int(sample_index)
-    try:
-        item = dataset[index]
-    except (IndexError, KeyError) as exc:
-        raise IndexError(
-            "Failed to load a point-cloud dataset sample. "
-            f"sample_index={index}, dataset_type={type(dataset)!r}."
-        ) from exc
-    points = _extract_points_from_item(item)
-    points_np = points.detach().cpu().numpy()
-    points_np = _safe_xyz(points_np)
-    if point_scale != 1.0:
-        points_np = points_np * float(point_scale)
-    return points_np
 
 
 def _estimate_nn_distance(points: np.ndarray, k: int = 6) -> float:
@@ -284,7 +227,7 @@ def _compute_shape_descriptors(points: np.ndarray) -> dict[str, float]:
 
 
 def _compute_sample_properties(points: np.ndarray) -> dict[str, float]:
-    coords = _safe_xyz(points)
+    coords = np.asarray(points, dtype=np.float32)
     if coords.size == 0:
         return {name: float("nan") for name, _ in _ALL_PROFILE_PROPERTIES}
 

@@ -1,0 +1,37 @@
+{
+  "embedding-forecast-full-20260911": {
+    "root": "cache",
+    "path": "embedding-forecast-full-20260911",
+    "kind": "cache",
+    "dependencies": [],
+    "metadata": {
+      "title": "embedding-forecast-full-20260911",
+      "materials": [],
+      "role": "training_cache",
+      "classification": "derived",
+      "description": "Derived inputs or targets. Source lineages and target protocol remain part of the dataset definition.",
+      "evidence": [
+        "${dataset:embedding-forecast-full-20260911}"
+      ]
+    }
+  },
+  "embedding-forecast-spatial-context-20260913": {
+    "root": "cache",
+    "path": "embedding-forecast-spatial-context-20260913",
+    "kind": "training_cache",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "embedding-forecast-spatial-context-20260913",
+      "role": "training_cache",
+      "classification": "derived",
+      "materials": [
+        "Al"
+      ],
+      "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+      "evidence": [
+        "${dataset:embedding-forecast-spatial-context-20260913}"
+      ]
+    }
+  }
+}

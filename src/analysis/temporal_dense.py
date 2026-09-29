@@ -15,7 +15,7 @@ from .analysis_dataloaders import (
     _analysis_dataloader_kwargs,
     _analysis_prefetch_factor,
 )
-from .config import _positive_int_or_none, _validate_overlap_fraction
+from .config import _positive_int_or_none
 from .figure_sets import resolve_snapshot_figure_layout
 from .inference_cache import (
     _build_inference_cache_spec,
@@ -140,11 +140,6 @@ def _select_dense_snapshot_cut_surface_indices(
     visible_depth_fraction: float,
 ) -> np.ndarray:
     coords_arr = np.asarray(coords, dtype=np.float32)
-    if coords_arr.ndim != 2 or coords_arr.shape[1] < 3:
-        raise ValueError(
-            "Cut-surface sample selection expects coords with shape (N, >=3), "
-            f"got {coords_arr.shape}."
-        )
     sample_count = int(coords_arr.shape[0])
     if sample_count <= 0:
         raise ValueError("Cut-surface sample selection received zero coordinates.")
@@ -160,10 +155,6 @@ def _select_dense_snapshot_cut_surface_indices(
             f"got {visible_depth_fraction!r}."
         )
     bounds_arr = np.asarray(bounds, dtype=np.float32)
-    if bounds_arr.shape != (2, 3):
-        raise ValueError(
-            f"Cut-surface bounds must have shape (2, 3), got {bounds_arr.shape}."
-        )
     center = 0.5 * (bounds_arr[0] + bounds_arr[1])
     span = np.maximum(bounds_arr[1] - bounds_arr[0], 1e-6)
     normalized = (coords_arr[:, :3] - center[None, :]) / span[None, :]
@@ -214,7 +205,7 @@ def _resolve_temporal_snapshot_visualization_regular_grid_overlap(
         regular_grid_overlap = float(regular_grid_overlap_raw)
         return float(regular_grid_overlap), float(regular_grid_overlap - 1.0)
 
-    static_overlap_fraction = _validate_overlap_fraction(
+    static_overlap_fraction = float(
         OmegaConf.select(
             snapshot_cfg,
             "static_overlap_fraction",
@@ -837,7 +828,6 @@ def _collect_temporal_dense_snapshot_cache(
     model_loader: Callable[..., tuple[Any, Any, Any]],
     cuda_device: int,
     seed_base: int,
-    figure_only: bool,
     inference_batch_size: int,
     dataloader_num_workers: int,
     progress_every_batches: int,
@@ -879,12 +869,6 @@ def _collect_temporal_dense_snapshot_cache(
         plan
     )
     if snapshot_cache is None:
-        if figure_only:
-            raise RuntimeError(
-                "figure_set.figure_only requires a valid cache for "
-                f"{summary_label.lower()}. Missing cache: {out_dir / cache_file}. "
-                "Run the full analysis once with figure_set.figure_only=false to populate it."
-            )
         if model is None:
             model, _, _ = model_loader(
                 checkpoint_path,
@@ -923,7 +907,6 @@ def _collect_temporal_snapshot_visualization_cache(
     model_loader: Callable[..., tuple[Any, Any, Any]],
     cuda_device: int,
     seed_base: int,
-    figure_only: bool,
     inference_batch_size: int,
     dataloader_num_workers: int,
     progress_every_batches: int,
@@ -959,7 +942,6 @@ def _collect_temporal_snapshot_visualization_cache(
         model_loader=model_loader,
         cuda_device=int(cuda_device),
         seed_base=int(seed_base),
-        figure_only=bool(figure_only),
         inference_batch_size=int(inference_batch_size),
         dataloader_num_workers=int(dataloader_num_workers),
         progress_every_batches=int(progress_every_batches),
@@ -1037,7 +1019,6 @@ def _collect_temporal_md_space_animation_cache(
     model_loader: Callable[..., tuple[Any, Any, Any]],
     cuda_device: int,
     seed_base: int,
-    figure_only: bool,
     inference_batch_size: int,
     dataloader_num_workers: int,
     progress_every_batches: int,
@@ -1101,7 +1082,6 @@ def _collect_temporal_md_space_animation_cache(
         model_loader=model_loader,
         cuda_device=int(cuda_device),
         seed_base=int(seed_base),
-        figure_only=bool(figure_only),
         inference_batch_size=int(inference_batch_size),
         dataloader_num_workers=int(dataloader_num_workers),
         progress_every_batches=int(progress_every_batches),
@@ -1392,7 +1372,6 @@ def _collect_temporal_dense_outputs(
     model_loader: Callable[..., tuple[Any, Any, Any]],
     cuda_device: int,
     seed_base: int,
-    figure_only: bool,
     inference_batch_size: int,
     dataloader_num_workers: int,
     progress_every_batches: int,
@@ -1436,7 +1415,7 @@ def _collect_temporal_dense_outputs(
         outputs.snapshot_enabled
         and outputs.md_space_enabled
         and not outputs.md_space_reuse_main_cache
-        and not figure_only
+
     ):
         step("Loading combined dense temporal snapshot and MD-space data")
         combined_dense_result = _collect_combined_temporal_dense_snapshot_caches(
@@ -1500,8 +1479,7 @@ def _collect_temporal_dense_outputs(
             model_loader=model_loader,
             cuda_device=int(cuda_device),
             seed_base=int(seed_base),
-            figure_only=bool(figure_only),
-            inference_batch_size=int(inference_batch_size),
+                inference_batch_size=int(inference_batch_size),
             dataloader_num_workers=int(dataloader_num_workers),
             progress_every_batches=int(progress_every_batches),
         )
@@ -1531,8 +1509,7 @@ def _collect_temporal_dense_outputs(
             model_loader=model_loader,
             cuda_device=int(cuda_device),
             seed_base=int(seed_base),
-            figure_only=bool(figure_only),
-            inference_batch_size=int(inference_batch_size),
+                inference_batch_size=int(inference_batch_size),
             dataloader_num_workers=int(dataloader_num_workers),
             progress_every_batches=int(progress_every_batches),
         )

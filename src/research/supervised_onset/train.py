@@ -170,6 +170,7 @@ def _fit(study, corpus, banks, name, *, until, max_updates, device, tracking):
     root = study.technical / 'runs' / name
     root.mkdir(parents=True, exist_ok=True)
     model = make_model(study, corpus, arm, device)
+    if c.get('freeze_encoder',False):model.encoder.requires_grad_(False)
     other = [p for n, p in model.named_parameters() if not n.startswith('encoder.')]
     optimizer = torch.optim.AdamW([dict(params=model.encoder.parameters(), lr=c['encoder_lr']),
         dict(params=other, lr=c['head_lr'])], weight_decay=c['weight_decay'])
@@ -196,10 +197,12 @@ def _fit(study, corpus, banks, name, *, until, max_updates, device, tracking):
             from src.project_runtime.paths import resolve_path
             path=resolve_path(initial['checkpoint'])
             saved=torch.load(path,map_location=device,weights_only=False)
-            receipt=json.loads((path.parent/'complete.json').read_text())
+            receipt_path=path.with_suffix('.json') if 'epoch' in initial else path.parent/'complete.json'
+            receipt=json.loads(receipt_path.read_text())
             if receipt['identity']!=saved['identity'] or receipt['sha256']!=sha(path):
                 raise ValueError('Pretraining completion receipt differs from checkpoint')
-            if saved['method']!=initial['method'] or saved['epoch']<12 or saved['release_identity']!=study.config['fixed_dataset']['identity']:
+            epoch_matches=(saved['epoch']==initial['epoch']) if 'epoch' in initial else (saved['epoch']>=12)
+            if saved['method']!=initial['method'] or not epoch_matches or saved['release_identity']!=study.config['fixed_dataset']['identity']:
                 raise ValueError('Pretraining checkpoint method, epoch or dataset identity differs')
             model.encoder.load_state_dict(saved['encoder'],strict=True)
             write_json(root/'initial-encoder.json',dict(path=str(path),sha256=sha(path),
@@ -208,6 +211,7 @@ def _fit(study, corpus, banks, name, *, until, max_updates, device, tracking):
     configure_runtime(study, model, banks, corpus)
     population_summary(tracking,corpus,study.config)
     tracking.summary['model/encoder_parameters']=sum(p.numel() for p in model.encoder.parameters())
+    tracking.summary['model/encoder_frozen']=c.get('freeze_encoder',False)
 
     def save(update, path):
         save_checkpoint(path, dict(identity=study.identity, branch=study.config['branch'],
@@ -236,6 +240,8 @@ def _fit(study, corpus, banks, name, *, until, max_updates, device, tracking):
     if best is None:
         assess(start)
         save(start, checkpoint_path)
+    if start==0 and c.get('record_initial_state',False) and not (root/'epoch-000.pt').exists():
+        save(0,root/'epoch-000.pt')
     started = time.monotonic()
     completed, last_assessed = start, start
     epoch_stream=None
@@ -284,8 +290,8 @@ def _fit(study, corpus, banks, name, *, until, max_updates, device, tracking):
             last_assessed = completed
         if completed % c['save_every'] == 0:
             save(completed, checkpoint_path)
-        if epoch_stream is not None and completed==12*steps_per_epoch:
-            save(completed,root/'epoch-012.pt')
+        if epoch_stream is not None and completed%steps_per_epoch==0 and completed//steps_per_epoch in c.get('checkpoint_epochs',[12]):
+            save(completed,root/f'epoch-{completed//steps_per_epoch:03d}.pt')
     if completed != last_assessed:
         assess(completed)
     save(completed, checkpoint_path)

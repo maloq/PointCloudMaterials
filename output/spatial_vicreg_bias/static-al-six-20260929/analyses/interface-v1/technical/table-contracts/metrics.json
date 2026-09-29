@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "9479343c680174ee531c97cfc56811abbba869542d337278ba91fc0b99ebfcc7",
+  "family": "static_interface",
+  "contract": "technical/metric-contracts/static_interface.json",
+  "definitions": "tables/metric-definitions/static_interface.md"
+}

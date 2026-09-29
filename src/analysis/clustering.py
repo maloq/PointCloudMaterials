@@ -9,18 +9,16 @@ from dataclasses import dataclass
 from typing import Any, Callable, Dict
 
 import numpy as np
+from .cluster_colors import _build_cluster_color_map
 
-from .cluster_figures import (
-    _build_cluster_color_map,
-)
 from src.vis_tools.latent_analysis_vis import (
     FittedClusteringModel,
     _compute_internal_clustering_metrics,
     _l2_normalize_rows_strict,
     _normalize_clustering_method_name,
     _prepare_clustering_features,
-    compute_hdbscan_labels,
     compute_kmeans_labels,
+    compute_hdbscan_labels,
     compute_transfer_kmeans_labels,
     fit_clustering_model,
     predict_clustering_model,
@@ -424,20 +422,7 @@ def compute_clustering_assignment_margins(
     chunk_size: int = 200_000,
 ) -> dict[str, Any]:
     latents_arr = np.asarray(latents, dtype=np.float32)
-    if latents_arr.ndim != 2:
-        raise ValueError(
-            f"Cluster assignment margin latents must have shape (N, D), got {latents_arr.shape}."
-        )
     expected = np.asarray(expected_labels, dtype=int)
-    if expected.ndim != 1:
-        raise ValueError(
-            f"Cluster assignment margin labels must have shape (N,), got {expected.shape}."
-        )
-    if expected.shape[0] != latents_arr.shape[0]:
-        raise ValueError(
-            "Cluster assignment margin labels must match latent rows: "
-            f"labels={expected.shape[0]}, latents={latents_arr.shape[0]}."
-        )
     if int(chunk_size) <= 0:
         raise ValueError(f"chunk_size must be positive, got {chunk_size}.")
 
@@ -484,11 +469,6 @@ def compute_clustering_assignment_margins(
     else:
         raise ValueError(
             f"Unsupported fitted clustering method {fitted_model.method!r} for assignment margins."
-        )
-    if centers.ndim != 2 or centers.shape[0] != n_clusters:
-        raise ValueError(
-            "Fitted clustering centers have an invalid shape for assignment margins: "
-            f"centers={tuple(centers.shape)}, n_clusters={n_clusters}."
         )
 
     assigned_score = np.empty(n_samples, dtype=np.float32)
@@ -559,16 +539,6 @@ def representative_features_from_clustering_model(
     )
     predicted_labels = np.asarray(predicted_labels, dtype=int)
     expected = np.asarray(expected_labels, dtype=int)
-    if predicted_labels.ndim != 1 or expected.ndim != 1:
-        raise ValueError(
-            "Representative feature labels must have shape (N,), "
-            f"got predicted={predicted_labels.shape}, expected={expected.shape}."
-        )
-    if predicted_labels.shape != expected.shape:
-        raise ValueError(
-            "Representative feature validation found a label-shape mismatch: "
-            f"predicted={tuple(predicted_labels.shape)}, expected={tuple(expected.shape)}."
-        )
     if not np.array_equal(predicted_labels, expected):
         mismatch = np.flatnonzero(predicted_labels != expected)
         first = int(mismatch[0])

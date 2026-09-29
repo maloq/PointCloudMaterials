@@ -1,0 +1,944 @@
+{
+  "dataset_id": "distance-encoder-multimaterial-20260926",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/multimaterial-20260926/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "485d83e1b7fd23876a6822939307fe50b299e25e5ea10c1bea89bc6d7a0b3655",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "frames",
+        "identity",
+        "plan_sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/multimaterial-20260926/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "8a2cda01bd0313fb70efdc93da216214a9bb2f1a1698e8df9af95792aa9d6b16",
+      "kind": "metadata",
+      "keys": [
+        "excluded",
+        "external_plan_sha256",
+        "fixed_identity",
+        "identity",
+        "manifest_sha256",
+        "native_config_sha256",
+        "normalization",
+        "output",
+        "producer",
+        "protocol",
+        "sampling",
+        "shards",
+        "sources",
+        "structural_identity",
+        "structural_root",
+        "target",
+        "tasks"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "causal-distance-multimaterial-v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "normalization.protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "sources.native-860.source.material",
+            "occurrences": 21412
+          },
+          {
+            "value": "Mg",
+            "first_json_path": "sources.557f9d4494e4c16b42ca.source.material",
+            "occurrences": 72
+          },
+          {
+            "value": "Ti",
+            "first_json_path": "sources.5cce9fb961a09dba0210.source.material",
+            "occurrences": 742
+          },
+          {
+            "value": "Ta",
+            "first_json_path": "sources.f7ecb979a367ce1b6ebb.source.material",
+            "occurrences": 192
+          },
+          {
+            "value": "Zr",
+            "first_json_path": "excluded[12].material",
+            "occurrences": 6
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "sources.native-860.source.split",
+            "occurrences": 19364
+          },
+          {
+            "value": "selection",
+            "first_json_path": "sources.native-876.source.split",
+            "occurrences": 3015
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources.native-860.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources.native-861.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources.native-862.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources.native-863.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources.native-864.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources.native-865.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources.native-866.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources.native-867.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources.native-868.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources.native-869.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources.native-870.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources.native-871.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources.native-872.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources.native-873.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources.native-874.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources.native-876.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources.native-878.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources.native-879.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources.native-884.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources.native-885.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources.native-886.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources.native-887.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources.native-888.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources.native-889.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources.native-890.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources.native-891.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources.native-892.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources.native-893.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources.native-894.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources.native-895.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources.native-896.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources.native-897.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources.native-898.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources.native-899.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources.native-900.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources.native-901.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources.native-902.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources.native-903.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources.native-906.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources.native-914.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources.native-915.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources.native-916.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources.native-917.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources.native-918.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources.native-919.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources.native-920.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources.native-921.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources.native-922.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources.native-923.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources.native-924.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources.native-925.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources.native-926.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources.native-927.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources.native-928.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources.native-929.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources.native-930.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources.native-931.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources.native-935.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources.native-936.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources.native-937.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources.native-944.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources.native-945.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources.native-946.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources.native-947.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources.native-948.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources.native-949.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources.native-950.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources.native-951.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources.native-952.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources.native-953.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources.native-954.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources.native-955.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources.native-956.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources.native-957.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources.native-958.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources.native-959.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources.native-960.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources.native-961.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources.native-963.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources.native-965.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources.native-967.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources.native-974.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources.native-975.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources.native-976.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources.native-977.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources.native-978.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources.native-979.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources.native-980.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources.native-981.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources.native-982.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources.native-983.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources.native-984.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources.native-985.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources.native-986.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources.native-987.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources.native-988.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources.native-989.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources.native-990.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources.native-991.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources.native-992.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources.native-994.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources.native-997.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources.native-1004.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources.native-1005.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources.native-1006.source.lineage",
+            "occurrences": 202
+          },
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "sources.6c906a946baf3b722a98.source.lineage",
+            "occurrences": 64
+          },
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.6,
+              "local_birth_radius_A": 8.0,
+              "interface_distance_A": 8.0,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0,
+                  "persistence_frames": 7
+                }
+              ]
+            },
+            "first_json_path": "sources.6c906a946baf3b722a98.audit_source.lineage",
+            "occurrences": 8
+          },
+          {
+            "value": "al-1m-independent-melt-911001",
+            "first_json_path": "sources.5a96282209df75111d22.source.lineage",
+            "occurrences": 235
+          },
+          {
+            "value": "Mg-archived-root",
+            "first_json_path": "sources.557f9d4494e4c16b42ca.source.lineage",
+            "occurrences": 60
+          },
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 4.005573149435059,
+              "local_birth_radius_A": 8.901273665411242,
+              "interface_distance_A": 8.901273665411242,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0,
+                  "persistence_frames": 7
+                }
+              ]
+            },
+            "first_json_path": "sources.557f9d4494e4c16b42ca.audit_source.lineage",
+            "occurrences": 6
+          },
+          {
+            "value": "Ti-archived-root",
+            "first_json_path": "sources.5cce9fb961a09dba0210.source.lineage",
+            "occurrences": 735
+          },
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.6743869126389512,
+              "local_birth_radius_A": 8.16530425030878,
+              "interface_distance_A": 8.16530425030878,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0,
+                  "persistence_frames": 7
+                }
+              ]
+            },
+            "first_json_path": "sources.5cce9fb961a09dba0210.audit_source.lineage",
+            "occurrences": 7
+          },
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "sources.f7ecb979a367ce1b6ebb.source.lineage",
+            "occurrences": 180
+          },
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0,
+                  "persistence_frames": 7
+                }
+              ]
+            },
+            "first_json_path": "sources.f7ecb979a367ce1b6ebb.audit_source.lineage",
+            "occurrences": 6
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources.native-860.source.timestep_fs",
+            "occurrences": 210
+          },
+          {
+            "value": 1.0,
+            "first_json_path": "sources.6c906a946baf3b722a98.source.timestep_fs",
+            "occurrences": 44
+          },
+          {
+            "value": 2.0,
+            "first_json_path": "sources.f7ecb979a367ce1b6ebb.source.timestep_fs",
+            "occurrences": 12
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources.native-860.source.frame_count",
+            "occurrences": 210
+          },
+          {
+            "value": 241,
+            "first_json_path": "sources.6c906a946baf3b722a98.source.frame_count",
+            "occurrences": 36
+          },
+          {
+            "value": 49,
+            "first_json_path": "sources.6c906a946baf3b722a98.audit_source.frame_count",
+            "occurrences": 18
+          },
+          {
+            "value": 3001,
+            "first_json_path": "sources.5a96282209df75111d22.source.frame_count",
+            "occurrences": 3
+          },
+          {
+            "value": 4001,
+            "first_json_path": "sources.5a96282209df75111d22.audit_source.parts[1].frame_count",
+            "occurrences": 3
+          },
+          {
+            "value": 1401,
+            "first_json_path": "sources.5a96282209df75111d22.audit_source.frame_count",
+            "occurrences": 2
+          },
+          {
+            "value": 2401,
+            "first_json_path": "sources.5cce9fb961a09dba0210.source.frame_count",
+            "occurrences": 12
+          },
+          {
+            "value": 481,
+            "first_json_path": "sources.5cce9fb961a09dba0210.audit_source.frame_count",
+            "occurrences": 6
+          },
+          {
+            "value": 7241,
+            "first_json_path": "sources.8b2bfefd81620234fd52.source.frame_count",
+            "occurrences": 2
+          },
+          {
+            "value": 1449,
+            "first_json_path": "sources.8b2bfefd81620234fd52.audit_source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources.native-860.source.atom_count",
+            "occurrences": 210
+          },
+          {
+            "value": 1048576,
+            "first_json_path": "sources.6c906a946baf3b722a98.source.atom_count",
+            "occurrences": 24
+          },
+          {
+            "value": 1000000,
+            "first_json_path": "sources.5a96282209df75111d22.source.atom_count",
+            "occurrences": 4
+          },
+          {
+            "value": 100000,
+            "first_json_path": "sources.5cce9fb961a09dba0210.source.atom_count",
+            "occurrences": 14
+          },
+          {
+            "value": 10000422,
+            "first_json_path": "sources.f7ecb979a367ce1b6ebb.source.atom_count",
+            "occurrences": 10
+          },
+          {
+            "value": 1024000,
+            "first_json_path": "sources.76802cc009c7cbd98448.source.atom_count",
+            "occurrences": 2
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources.native-860.audit_source.audit_metadata.temperature_K",
+            "occurrences": 21
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources.native-884.audit_source.audit_metadata.temperature_K",
+            "occurrences": 21
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources.native-914.audit_source.audit_metadata.temperature_K",
+            "occurrences": 21
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources.native-944.audit_source.audit_metadata.temperature_K",
+            "occurrences": 21
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources.native-974.audit_source.audit_metadata.temperature_K",
+            "occurrences": 21
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "sources.6c906a946baf3b722a98.audit_source.cadence_ps",
+            "occurrences": 27
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

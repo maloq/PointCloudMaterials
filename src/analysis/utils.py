@@ -70,13 +70,6 @@ def _extract_pc_and_phase(batch: Any) -> Tuple[torch.Tensor, torch.Tensor | None
     return pc, phase
 
 
-def _extract_optional_flat_tensor(batch: Any, key: str) -> torch.Tensor | None:
-    value = batch.get(key, None)
-    if value is None:
-        return None
-    return value.detach().view(-1).cpu()
-
-
 def _prepare_pointcloud_batch_for_model(
     pc: torch.Tensor,
     *,
@@ -84,18 +77,7 @@ def _prepare_pointcloud_batch_for_model(
     temporal_static_frame_index: int | None = 0,
 ) -> torch.Tensor:
     if pc.ndim == 3:
-        if pc.shape[-1] != 3:
-            raise ValueError(
-                "Static point-cloud batches must have shape (B, N, 3), "
-                f"got {tuple(pc.shape)}."
-            )
         return pc
-    if pc.ndim != 4 or pc.shape[-1] != 3:
-        raise ValueError(
-            "Analysis inference supports point-cloud batches with shape "
-            "(B, N, 3) or temporal batches with shape (B, T, N, 3), "
-            f"got {tuple(pc.shape)}."
-        )
 
     mode = str(temporal_sequence_mode).strip().lower()
     if mode == "static_anchor":
@@ -144,11 +126,6 @@ def _prepare_coords_batch_for_model(
     center_positions = batch.get("center_positions", None)
     if center_positions is None:
         return coords
-    if center_positions.ndim != 3 or center_positions.shape[-1] != 3:
-        raise ValueError(
-            "Temporal analysis expects batch['center_positions'] with shape (B, T, 3), "
-            f"got {tuple(center_positions.shape)}."
-        )
     frame_index = _resolve_temporal_frame_index(
         sequence_length=int(center_positions.shape[1]),
         frame_index=temporal_static_frame_index,
@@ -170,7 +147,7 @@ def _unwrap_subset_indices(dataset: Any) -> Tuple[Any, list[int] | None]:
         if indices is None:
             indices = list(dataset.indices)
         else:
-            indices = [indices[i] for i in dataset.indices]
+            indices = [dataset.indices[i] for i in indices]
         dataset = dataset.dataset
     return dataset, indices
 
@@ -216,8 +193,12 @@ def build_static_coords_dataloader(
         normalize=getattr(data_cfg, "normalize", True),
         sampling_method=getattr(data_cfg, "sampling_method", "drop_farthest"),
         auto_cutoff_config=auto_cutoff_cfg,
-        sample_cache_config=OmegaConf.to_container(data_cfg.sample_cache, resolve=True) if "sample_cache" in data_cfg else None,
-        atomic_context=OmegaConf.to_container(data_cfg.atomic_context, resolve=True) if "atomic_context" in data_cfg else None,
+        sample_cache_config=OmegaConf.to_container(data_cfg.sample_cache, resolve=True)
+        if "sample_cache" in data_cfg
+        else None,
+        atomic_context=OmegaConf.to_container(data_cfg.atomic_context, resolve=True)
+        if "atomic_context" in data_cfg
+        else None,
     )
 
     full_dataset: PointCloudDataset | None = None
@@ -232,10 +213,6 @@ def build_static_coords_dataloader(
         if data_sources:
             if isinstance(data_sources, (DictConfig, ListConfig)):
                 data_sources = OmegaConf.to_container(data_sources, resolve=True)
-            if not isinstance(data_sources, list) or not data_sources:
-                raise ValueError(
-                    "data_sources must be a non-empty list when provided in cfg.data."
-                )
             full_dataset = PointCloudDataset(
                 data_sources=data_sources,
                 **dataset_kwargs,
@@ -282,24 +259,6 @@ def build_static_coords_dataloader(
     )
 
 
-def _torch_dtype_to_numpy_dtype(dtype: torch.dtype) -> np.dtype:
-    dtype_map = {
-        torch.float64: np.dtype(np.float64),
-        torch.float32: np.dtype(np.float32),
-        torch.float16: np.dtype(np.float16),
-        torch.bfloat16: np.dtype(np.float32),
-        torch.int64: np.dtype(np.int64),
-        torch.int32: np.dtype(np.int32),
-        torch.int16: np.dtype(np.int16),
-        torch.int8: np.dtype(np.int8),
-        torch.uint8: np.dtype(np.uint8),
-        torch.bool: np.dtype(np.bool_),
-    }
-    if dtype not in dtype_map:
-        raise TypeError(f"Unsupported tensor dtype for inference cache storage: {dtype!r}.")
-    return dtype_map[dtype]
-
-
 def _tensor_slice_to_numpy_for_storage(tensor: torch.Tensor, take: int) -> np.ndarray:
     # The returned NumPy view is consumed immediately by cache writers.  This
     # must be a blocking CPU copy; otherwise a preallocated NumPy cache can read
@@ -344,40 +303,22 @@ def gather_inference_batches(
     temporal_sequence_mode: str = "static_anchor",
     temporal_static_frame_index: int | None = 0,
 ) -> Dict[str, np.ndarray]:
-    """Collect inputs and latents from batches."""
-    inv_latents, eq_latents, phases, coords_list, instance_ids = [], [], [], [], []
-    anchor_frame_indices = []
-    collected = 0
-    max_samples = None if max_samples_total is None else max(1, int(max_samples_total))
-    every = max(1, int(progress_every_batches))
-    expected_total_samples = _expected_inference_sample_count(
-        dataloader=dataloader,
-        max_batches=max_batches,
-        max_samples=max_samples,
+    """Collect our six cache fields in loader order, using blocking CPU copies."""
+    empty = {
+        key: np.empty(0, dtype=dtype)
+        for key, dtype in (
+            ("inv_latents", np.float32),
+            ("eq_latents", np.float32),
+            ("phases", np.int64),
+            ("instance_ids", np.int64),
+            ("anchor_frame_indices", np.int64),
+        )
+    }
+    empty["coords"] = np.empty((0, 3), dtype=np.float32)
+    capacity = _expected_inference_sample_count(
+        dataloader=dataloader, max_batches=max_batches, max_samples=max_samples_total
     )
-    use_preallocated_arrays = expected_total_samples is not None
-    preallocated: dict[str, np.ndarray] | None = None
-
-    def _copy_tensor_to_numpy(
-        *,
-        key: str,
-        tensor: torch.Tensor,
-        take: int,
-    ) -> None:
-        if preallocated is None:
-            raise RuntimeError(
-                "Internal error: preallocated inference arrays are not initialized."
-            )
-        arr = preallocated[key]
-        end = collected + int(take)
-        if end > int(arr.shape[0]):
-            raise RuntimeError(
-                "Preallocated inference cache is too small. "
-                f"key={key}, requested_end={end}, capacity={int(arr.shape[0])}, "
-                f"expected_total_samples={expected_total_samples}."
-            )
-        arr[collected:end] = _tensor_slice_to_numpy_for_storage(tensor, take)
-
+    arrays, chunks, collected = {}, {}, 0
     rng_state = None if seed_base is None else _seed_inference_rng_once(seed_base, device)
     try:
         with torch.inference_mode():
@@ -385,7 +326,6 @@ def gather_inference_batches(
                 if max_batches is not None and batch_idx >= max_batches:
                     break
                 pc, phase, coords, instance_id = _extract_pc_phase_coords(batch)
-                anchor_frame_index = _extract_optional_flat_tensor(batch, "anchor_frame_index")
                 pc = _prepare_pointcloud_batch_for_model(
                     pc,
                     temporal_sequence_mode=temporal_sequence_mode,
@@ -397,213 +337,50 @@ def gather_inference_batches(
                     temporal_sequence_mode=temporal_sequence_mode,
                     temporal_static_frame_index=temporal_static_frame_index,
                 )
-                pc = pc.to(device, non_blocking=True)
-
-                z_inv_contrastive, _, eq_z = model(pc)
-                if z_inv_contrastive is None:
-                    raise RuntimeError(
-                        "Analysis inference requires the model forward pass to return an "
-                        "invariant latent as its first output, but got None. "
-                        f"batch_idx={batch_idx}, input_shape={tuple(pc.shape)}, "
-                        f"model_type={type(model)!r}."
-                    )
-
-                batch_size = int(z_inv_contrastive.shape[0])
-                take = batch_size
-                if max_samples is not None:
-                    remaining = max_samples - collected
-                    if remaining <= 0:
-                        break
-                    take = min(take, remaining)
-
-                if take <= 0:
-                    break
-
-                if use_preallocated_arrays and preallocated is None:
-                    preallocated = {
-                        "inv_latents": np.empty(
-                            (
-                                int(expected_total_samples),
-                                *tuple(z_inv_contrastive.shape[1:]),
-                            ),
-                            dtype=_torch_dtype_to_numpy_dtype(z_inv_contrastive.dtype),
+                inv, _, equivariant = model(pc.to(device, non_blocking=True))
+                take = (
+                    len(inv)
+                    if max_samples_total is None
+                    else min(len(inv), max_samples_total - collected)
+                )
+                fields = dict(
+                    inv_latents=inv,
+                    eq_latents=equivariant,
+                    coords=coords if collect_coords else None,
+                )
+                fields.update(
+                    {
+                        key: tensor.reshape(-1) if tensor is not None else None
+                        for key, tensor in (
+                            ("phases", phase),
+                            ("instance_ids", instance_id),
+                            ("anchor_frame_indices", batch.get("anchor_frame_index")),
                         )
                     }
-                    if eq_z is not None:
-                        preallocated["eq_latents"] = np.empty(
-                            (int(expected_total_samples), *tuple(eq_z.shape[1:])),
-                            dtype=_torch_dtype_to_numpy_dtype(eq_z.dtype),
-                        )
-
-                if preallocated is None:
-                    inv_latents.append(z_inv_contrastive.detach()[:take].cpu())
-                else:
-                    _copy_tensor_to_numpy(
-                        key="inv_latents",
-                        tensor=z_inv_contrastive,
-                        take=take,
-                    )
-                if collect_coords:
-                    if coords is None:
-                        raise RuntimeError(
-                            "gather_inference_batches(..., collect_coords=True) received a batch "
-                            f"without coordinates at batch_idx={batch_idx}. "
-                            f"Batch type: {type(batch)!r}."
-                        )
-                    coords_t = coords.detach().cpu()
-                    if coords_t.ndim == 1:
-                        coords_t = coords_t.unsqueeze(0)
-                    if coords_t.ndim != 2 or coords_t.shape[1] != 3:
-                        raise ValueError(
-                            "Expected center coordinates with shape [batch, 3] when "
-                            f"collect_coords=True, got shape={tuple(coords_t.shape)} "
-                            f"at batch_idx={batch_idx}."
-                        )
-                    if preallocated is None:
-                        coords_list.append(coords_t[:take])
+                )
+                for key, tensor in fields.items():
+                    if tensor is None:
+                        continue
+                    values = _tensor_slice_to_numpy_for_storage(tensor, take)
+                    if capacity is None:
+                        chunks.setdefault(key, []).append(values)
                     else:
-                        if "coords" not in preallocated:
-                            preallocated["coords"] = np.empty(
-                                (int(expected_total_samples), 3),
-                                dtype=_torch_dtype_to_numpy_dtype(coords_t.dtype),
+                        if key not in arrays:
+                            arrays[key] = np.empty(
+                                (capacity, *values.shape[1:]), dtype=values.dtype
                             )
-                        end = collected + int(take)
-                        preallocated["coords"][collected:end] = (
-                            _tensor_slice_to_numpy_for_storage(coords_t, take)
-                        )
-                if eq_z is not None:
-                    if preallocated is None:
-                        eq_latents.append(eq_z.detach()[:take].cpu())
-                    else:
-                        if "eq_latents" not in preallocated:
-                            preallocated["eq_latents"] = np.empty(
-                                (int(expected_total_samples), *tuple(eq_z.shape[1:])),
-                                dtype=_torch_dtype_to_numpy_dtype(eq_z.dtype),
-                            )
-                        _copy_tensor_to_numpy(
-                            key="eq_latents",
-                            tensor=eq_z,
-                            take=take,
-                        )
-                elif preallocated is not None and "eq_latents" in preallocated:
-                    raise RuntimeError(
-                        "Model returned equivariant latents for an earlier inference batch "
-                        f"but returned None at batch_idx={batch_idx}."
-                    )
-                if phase is not None:
-                    phase_t = phase.detach().view(-1).cpu()
-                    if preallocated is None:
-                        phases.append(phase_t[:take])
-                    else:
-                        if "phases" not in preallocated:
-                            preallocated["phases"] = np.empty(
-                                (int(expected_total_samples),),
-                                dtype=_torch_dtype_to_numpy_dtype(phase_t.dtype),
-                            )
-                        end = collected + int(take)
-                        preallocated["phases"][collected:end] = (
-                            _tensor_slice_to_numpy_for_storage(phase_t, take)
-                        )
-                elif preallocated is not None and "phases" in preallocated:
-                    raise RuntimeError(
-                        "Inference batches provided class_id for an earlier batch "
-                        f"but omitted it at batch_idx={batch_idx}."
-                    )
-                if instance_id is not None:
-                    instance_id_t = instance_id.detach().view(-1).cpu()
-                    if preallocated is None:
-                        instance_ids.append(instance_id_t[:take])
-                    else:
-                        if "instance_ids" not in preallocated:
-                            preallocated["instance_ids"] = np.empty(
-                                (int(expected_total_samples),),
-                                dtype=_torch_dtype_to_numpy_dtype(instance_id_t.dtype),
-                            )
-                        end = collected + int(take)
-                        preallocated["instance_ids"][collected:end] = (
-                            _tensor_slice_to_numpy_for_storage(instance_id_t, take)
-                        )
-                elif preallocated is not None and "instance_ids" in preallocated:
-                    raise RuntimeError(
-                        "Inference batches provided instance_id for an earlier batch "
-                        f"but omitted it at batch_idx={batch_idx}."
-                    )
-                if anchor_frame_index is not None:
-                    if preallocated is None:
-                        anchor_frame_indices.append(anchor_frame_index[:take])
-                    else:
-                        if "anchor_frame_indices" not in preallocated:
-                            preallocated["anchor_frame_indices"] = np.empty(
-                                (int(expected_total_samples),),
-                                dtype=_torch_dtype_to_numpy_dtype(anchor_frame_index.dtype),
-                            )
-                        end = collected + int(take)
-                        preallocated["anchor_frame_indices"][collected:end] = (
-                            _tensor_slice_to_numpy_for_storage(anchor_frame_index, take)
-                        )
-                elif preallocated is not None and "anchor_frame_indices" in preallocated:
-                    raise RuntimeError(
-                        "Inference batches provided anchor_frame_index for an earlier batch "
-                        f"but omitted it at batch_idx={batch_idx}."
-                    )
-
-                collected += int(take)
-                if verbose and ((batch_idx + 1) % every == 0 or take != batch_size):
-                    print(
-                        f"[analysis][collect] batch={batch_idx + 1} "
-                        f"samples={collected}"
-                        + (f"/{max_samples}" if max_samples is not None else "")
-                    )
-
-                if max_samples is not None and collected >= max_samples:
-                    if verbose:
-                        print(f"[analysis][collect] reached sample cap: {collected}")
+                        arrays[key][collected : collected + take] = values
+                collected += take
+                if verbose and ((batch_idx + 1) % progress_every_batches == 0 or take != len(inv)):
+                    print(f"[analysis][collect] batch={batch_idx + 1} samples={collected}")
+                if max_samples_total is not None and collected >= max_samples_total:
                     break
     finally:
         if rng_state is not None:
             _restore_inference_rng(rng_state)
-
-    def _cat(tensors):
-        return torch.cat(tensors, dim=0).numpy() if tensors else np.empty((0,))
-
-    def _cat_coords(tensors):
-        if not tensors:
-            return np.empty((0, 3), dtype=np.float32)
-        return torch.cat(tensors, dim=0).numpy()
-
-    if preallocated is not None:
-        return {
-            "inv_latents": preallocated["inv_latents"][:collected],
-            "eq_latents": preallocated.get(
-                "eq_latents",
-                np.empty((0,), dtype=np.float32),
-            )[:collected if "eq_latents" in preallocated else 0],
-            "phases": preallocated.get(
-                "phases",
-                np.empty((0,), dtype=np.int64),
-            )[:collected if "phases" in preallocated else 0],
-            "coords": preallocated.get(
-                "coords",
-                np.empty((0, 3), dtype=np.float32),
-            )[:collected if "coords" in preallocated else 0],
-            "instance_ids": preallocated.get(
-                "instance_ids",
-                np.empty((0,), dtype=np.int64),
-            )[:collected if "instance_ids" in preallocated else 0],
-            "anchor_frame_indices": preallocated.get(
-                "anchor_frame_indices",
-                np.empty((0,), dtype=np.int64),
-            )[:collected if "anchor_frame_indices" in preallocated else 0],
-        }
-
-    return {
-        "inv_latents": _cat(inv_latents),
-        "eq_latents": _cat(eq_latents),
-        "phases": _cat(phases),
-        "coords": _cat_coords(coords_list),
-        "instance_ids": _cat(instance_ids),
-        "anchor_frame_indices": _cat(anchor_frame_indices),
-    }
+    result = {key: values[:collected] for key, values in arrays.items()}
+    result.update({key: np.concatenate(values) for key, values in chunks.items()})
+    return empty | result
 
 
 def _sample_indices(num_samples: int, max_samples: int | None) -> np.ndarray:
@@ -620,11 +397,7 @@ def _seed_inference_rng_once(
     """Seed RNG once for a whole inference pass, preserving caller RNG state."""
     cpu_state = torch.get_rng_state()
     cuda_device = _resolve_cuda_rng_device(device)
-    cuda_state = (
-        torch.cuda.get_rng_state(device=cuda_device)
-        if cuda_device is not None
-        else None
-    )
+    cuda_state = torch.cuda.get_rng_state(device=cuda_device) if cuda_device is not None else None
     torch.random.default_generator.manual_seed(int(seed))
     if cuda_device is not None:
         with torch.cuda.device(cuda_device):
@@ -657,15 +430,9 @@ def _seeded_forward(model: AnalyzableModel, pc: torch.Tensor, seed: int):
     """Run forward pass with fixed random seed while preserving global RNG state."""
     cpu_state = torch.get_rng_state()
     cuda_device = (
-        _resolve_cuda_rng_device(torch.device(f"cuda:{pc.get_device()}"))
-        if pc.is_cuda
-        else None
+        _resolve_cuda_rng_device(torch.device(f"cuda:{pc.get_device()}")) if pc.is_cuda else None
     )
-    cuda_state = (
-        torch.cuda.get_rng_state(device=cuda_device)
-        if cuda_device is not None
-        else None
-    )
+    cuda_state = torch.cuda.get_rng_state(device=cuda_device) if cuda_device is not None else None
     torch.random.default_generator.manual_seed(int(seed))
     if pc.is_cuda:
         with torch.cuda.device(cuda_device):
@@ -714,8 +481,8 @@ def evaluate_latent_equivariance(
                 ]
             )
             pc_rot = torch.einsum("bij,bnj->bni", rots, pc)
-            identity = torch.eye(3, device=device, dtype=pc.dtype).unsqueeze(0).expand(
-                batch_size, -1, -1
+            identity = (
+                torch.eye(3, device=device, dtype=pc.dtype).unsqueeze(0).expand(batch_size, -1, -1)
             )
 
             seed = 42 + batch_idx
@@ -746,9 +513,9 @@ def evaluate_latent_equivariance(
             _, _, eq_z_rot_uns = model(pc_rot)
             if eq_z_uns is not None and eq_z_rot_uns is not None:
                 expected_eq_uns = torch.einsum("bij,bcj->bci", rots, eq_z_uns)
-                rel_uns = torch.linalg.norm(eq_z_rot_uns - expected_eq_uns, dim=-1) / torch.linalg.norm(
-                    expected_eq_uns, dim=-1
-                ).clamp_min(1e-6)
+                rel_uns = torch.linalg.norm(
+                    eq_z_rot_uns - expected_eq_uns, dim=-1
+                ) / torch.linalg.norm(expected_eq_uns, dim=-1).clamp_min(1e-6)
                 eq_errors_unseeded.extend(rel_uns.mean(dim=1).detach().cpu().numpy().tolist())
 
     eq_seeded = np.asarray(eq_errors_seeded)
@@ -776,15 +543,25 @@ def evaluate_latent_equivariance(
     print("   Includes non-determinism from FPS random init")
     print("=" * 60)
 
-    nondet = float(eq_unseeded.mean() - eq_seeded.mean()) if eq_seeded.size and eq_unseeded.size else float("nan")
+    nondet = (
+        float(eq_unseeded.mean() - eq_seeded.mean())
+        if eq_seeded.size and eq_unseeded.size
+        else float("nan")
+    )
     if eq_seeded.size and eq_unseeded.size:
         print(f"\nNON-DETERMINISM CONTRIBUTION: {nondet:.4f}")
 
     metrics = {
         "eq_latent_rel_error_mean": float(eq_seeded.mean()) if eq_seeded.size else float("nan"),
-        "eq_latent_rel_error_median": float(np.median(eq_seeded)) if eq_seeded.size else float("nan"),
-        "eq_latent_rel_error_unseeded": float(eq_unseeded.mean()) if eq_unseeded.size else float("nan"),
-        "eq_latent_rel_error_unseeded_median": float(np.median(eq_unseeded)) if eq_unseeded.size else float("nan"),
+        "eq_latent_rel_error_median": float(np.median(eq_seeded))
+        if eq_seeded.size
+        else float("nan"),
+        "eq_latent_rel_error_unseeded": float(eq_unseeded.mean())
+        if eq_unseeded.size
+        else float("nan"),
+        "eq_latent_rel_error_unseeded_median": float(np.median(eq_unseeded))
+        if eq_unseeded.size
+        else float("nan"),
         "eq_latent_determinism_mean": float(det_arr.mean()) if det_arr.size else float("nan"),
         "eq_latent_identity_mean": float(id_arr.mean()) if id_arr.size else float("nan"),
         "eq_latent_nondeterminism_contribution": nondet,

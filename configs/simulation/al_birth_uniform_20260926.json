@@ -1,0 +1,34 @@
+{
+  "protocol": "al_spontaneous_birth_sources_v1",
+  "campaign_seed": 2026092601,
+  "temperatures_K": [400, 410, 420, 430, 440, 450, 460, 470, 480, 490, 500],
+  "replicas_per_temperature": 2,
+  "fcc_repeats": [26, 26, 26],
+  "timestep_ps": 0.003,
+  "equilibration_steps": 5000,
+  "measurement_steps": 200000,
+  "sample_interval_steps": 50,
+  "assessment_steps": 500,
+  "stop_crystal_fraction": 0.10,
+  "followup_steps": 4000,
+  "ptm_rmsd_cutoff": 0.10,
+  "minimum_melt_msd_A2": 10.0,
+  "mpi_ranks": 48,
+  "workers": 6,
+  "walltime": "36:00:00",
+  "excluded_manifests": [
+    "${dataset:al_meam_independent_sources_70304_400-500K_30perT_float16_20260902}/manifest.json",
+    "${dataset:al_meam_independent_sources_70304_510-520K_30perT_float16_20260903}/manifest.json",
+    "${dataset:memory-al-precision-20260917-source000-T500}/campaign_manifest.json"
+  ],
+  "potential_files": [
+    {
+      "path": "${dataset:potentials}/Lee2003_Al.library.meam",
+      "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+    },
+    {
+      "path": "${dataset:potentials}/Lee2003_Al.meam",
+      "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+    }
+  ]
+}

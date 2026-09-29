@@ -1,0 +1,805 @@
+{
+  "nodecpu07": {
+    "matches": [],
+    "commands": [
+      {
+        "pid": "1296614",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.simulation.campaigns.position_shooting worker --launch /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926 --index 2 "
+      },
+      {
+        "pid": "1296619",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/code/scripts/run_lammps_campaign.py elemental run --config /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/recipes/parent02.json --run-name ta-shooting-20260926-parent02 --ranks 48 "
+      },
+      {
+        "pid": "1587754",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587755",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587756",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587757",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587758",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587759",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587760",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587761",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587762",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587763",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587764",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587765",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587766",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587767",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587768",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587769",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587770",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587771",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587772",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587773",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587774",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587775",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587776",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587777",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587778",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587779",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587780",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587781",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587782",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587783",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587784",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587785",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587786",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587787",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587788",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587789",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587790",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587791",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587792",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587793",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587794",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587795",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587796",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587797",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587798",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587799",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587800",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587801",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587802",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587803",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587804",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587805",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587806",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587807",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587808",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587809",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587810",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587811",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587812",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587813",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587814",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587815",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587816",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587817",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587818",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587819",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587820",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587821",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587822",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587823",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587824",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587825",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587826",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587827",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587828",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587829",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587830",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587831",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587832",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587833",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587834",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587835",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587836",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587837",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587838",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587839",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587840",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587841",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587842",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587843",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587844",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587845",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587846",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587847",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587848",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "1587849",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      }
+    ]
+  },
+  "nodecpu08": {
+    "matches": [],
+    "commands": [
+      {
+        "pid": "2959774",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.simulation.campaigns.position_shooting worker --launch /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926 --index 3 "
+      },
+      {
+        "pid": "2959779",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/code/scripts/run_lammps_campaign.py elemental run --config /store/PERSO/vmorozov/simulation-launches/ta-shooting-20260926/recipes/parent03.json --run-name ta-shooting-20260926-parent03 --ranks 48 "
+      },
+      {
+        "pid": "3002906",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002907",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002908",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002909",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002910",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002911",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002912",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002913",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002914",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002915",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002916",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002917",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002918",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002919",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002920",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002921",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002922",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002923",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002924",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002925",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002926",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002927",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002928",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002929",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002930",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002931",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002932",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002933",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002934",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002935",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002936",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002937",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002938",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002939",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002940",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002941",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002942",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002943",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002944",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002945",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002946",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002947",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002948",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002949",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002950",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002951",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002952",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002953",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/bin/python /home/infres/vmorozov/miniconda3/envs/pointnet/bin/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002954",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002955",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002956",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002957",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002958",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002959",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002960",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002961",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002962",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002963",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002964",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002965",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002966",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002967",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002968",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002969",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002970",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002971",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002972",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002973",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002974",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002975",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002976",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002977",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002978",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002979",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002980",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002981",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002982",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002983",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002984",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002985",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002986",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002987",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002988",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002989",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002990",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002991",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002992",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002993",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002994",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002995",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002996",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002997",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002998",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3002999",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3003000",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      },
+      {
+        "pid": "3003001",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet/lib/python3.12/site-packages/lammps/lmp -in in.lammps -log log.lammps "
+      }
+    ]
+  },
+  "node61": {
+    "matches": [],
+    "commands": [
+      {
+        "pid": "1504779",
+        "cmd": "/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python /tmp/cache_cleanup_audit.py "
+      }
+    ]
+  }
+}

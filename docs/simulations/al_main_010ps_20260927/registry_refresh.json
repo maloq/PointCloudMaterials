@@ -1,0 +1,15 @@
+{
+  "state": "complete",
+  "observed_at": "2026-09-27T09:18:52.103862+00:00",
+  "dataset_id": "al-main-010ps-20260927",
+  "card": "docs/datasets/cards/al-main-010ps-20260927-f90200b4.html",
+  "corrections": [
+    {
+      "dataset_id": "distance-encoder-ta-material-eval-20260927",
+      "field": "metadata.potential_ids",
+      "old": "potential-ta-zhong2014",
+      "new": "ta-zhong2014-eam",
+      "reason": "Dataset directory ID replaced with its checksum-verified potential-registry ID"
+    }
+  ]
+}

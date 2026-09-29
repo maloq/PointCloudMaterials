@@ -31,7 +31,7 @@ def encode(model, clouds, batch=256):
     return np.concatenate(result)
 
 
-def frame_metrics(z, arrays, record):
+def frame_metrics(z, arrays, record, *, return_clusterer=False):
     n = record['anchor_count']; split = arrays['split'][:n]
     ki = 0 if record['material']=='Al' else 1
     order = arrays['order'][:n, ki]
@@ -66,6 +66,8 @@ def frame_metrics(z, arrays, record):
     result['nonbulk_cluster_ami'] = float(adjusted_mutual_info_score(primary[:n][mask], clusters[mask]))
     result['cluster_context_counts'] = [[int(((clusters==k) & (primary[:n]==j) & test).sum())
                                           for j in range(7)] for k in range(7)]
+    if return_clusterer:
+        return result, clusters, km
     return result, clusters
 
 

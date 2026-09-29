@@ -1,0 +1,496 @@
+{
+  "dataset_id": "al-birth-uniform-20260926",
+  "records": [
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "afb0cf1095288935c73a88ffc219ca4484786a7664099547d91868891a498b42",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "config",
+        "created_at",
+        "excluded_manifest_sha256",
+        "launch_root",
+        "main_history_policy",
+        "protocol",
+        "runs",
+        "scientific_role",
+        "storage_policy"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_spontaneous_birth_sources_v1",
+            "first_json_path": "protocol",
+            "occurrences": 2
+          }
+        ],
+        "temperatures_K": [
+          {
+            "value": [
+              400,
+              410,
+              420,
+              430,
+              440,
+              450,
+              460,
+              470,
+              480,
+              490,
+              500
+            ],
+            "first_json_path": "config.temperatures_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.003,
+            "first_json_path": "config.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400,
+            "first_json_path": "runs[0].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 410,
+            "first_json_path": "runs[1].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 420,
+            "first_json_path": "runs[2].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 430,
+            "first_json_path": "runs[3].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 440,
+            "first_json_path": "runs[4].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 450,
+            "first_json_path": "runs[5].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 460,
+            "first_json_path": "runs[6].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 470,
+            "first_json_path": "runs[7].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 480,
+            "first_json_path": "runs[8].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 490,
+            "first_json_path": "runs[9].temperature_K",
+            "occurrences": 2
+          },
+          {
+            "value": 500,
+            "first_json_path": "runs[10].temperature_K",
+            "occurrences": 2
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "runs[0].split",
+            "occurrences": 22
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_355088647",
+            "first_json_path": "runs[0].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_186372838",
+            "first_json_path": "runs[1].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_530991513",
+            "first_json_path": "runs[2].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_731049459",
+            "first_json_path": "runs[3].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_2877629",
+            "first_json_path": "runs[4].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480113979",
+            "first_json_path": "runs[5].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_180989530",
+            "first_json_path": "runs[6].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_443247778",
+            "first_json_path": "runs[7].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_688285859",
+            "first_json_path": "runs[8].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_756452215",
+            "first_json_path": "runs[9].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_49726191",
+            "first_json_path": "runs[10].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_674717917",
+            "first_json_path": "runs[11].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_886027070",
+            "first_json_path": "runs[12].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_22359867",
+            "first_json_path": "runs[13].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_275557365",
+            "first_json_path": "runs[14].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825124084",
+            "first_json_path": "runs[15].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_203886074",
+            "first_json_path": "runs[16].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_416180197",
+            "first_json_path": "runs[17].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_838343996",
+            "first_json_path": "runs[18].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725459972",
+            "first_json_path": "runs[19].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_723963330",
+            "first_json_path": "runs[20].root_lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_829310257",
+            "first_json_path": "runs[21].root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "parent_trajectory_id": [
+          {
+            "value": null,
+            "first_json_path": "runs[0].parent_trajectory_id",
+            "occurrences": 22
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 355088647,
+            "first_json_path": "runs[0].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 186372838,
+            "first_json_path": "runs[1].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 530991513,
+            "first_json_path": "runs[2].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 731049459,
+            "first_json_path": "runs[3].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 2877629,
+            "first_json_path": "runs[4].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 480113979,
+            "first_json_path": "runs[5].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 180989530,
+            "first_json_path": "runs[6].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 443247778,
+            "first_json_path": "runs[7].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 688285859,
+            "first_json_path": "runs[8].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 756452215,
+            "first_json_path": "runs[9].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 49726191,
+            "first_json_path": "runs[10].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 674717917,
+            "first_json_path": "runs[11].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 886027070,
+            "first_json_path": "runs[12].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 22359867,
+            "first_json_path": "runs[13].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 275557365,
+            "first_json_path": "runs[14].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 825124084,
+            "first_json_path": "runs[15].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 203886074,
+            "first_json_path": "runs[16].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 416180197,
+            "first_json_path": "runs[17].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 838343996,
+            "first_json_path": "runs[18].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 725459972,
+            "first_json_path": "runs[19].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 723963330,
+            "first_json_path": "runs[20].preparation_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 829310257,
+            "first_json_path": "runs[21].preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 219271997,
+            "first_json_path": "runs[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 336433309,
+            "first_json_path": "runs[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 422960361,
+            "first_json_path": "runs[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 253546319,
+            "first_json_path": "runs[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 150988134,
+            "first_json_path": "runs[4].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 248990724,
+            "first_json_path": "runs[5].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 579216079,
+            "first_json_path": "runs[6].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 326780954,
+            "first_json_path": "runs[7].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 286078853,
+            "first_json_path": "runs[8].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 298286875,
+            "first_json_path": "runs[9].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 287063453,
+            "first_json_path": "runs[10].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 5747906,
+            "first_json_path": "runs[11].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 863365991,
+            "first_json_path": "runs[12].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 456858968,
+            "first_json_path": "runs[13].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 690138924,
+            "first_json_path": "runs[14].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 248007662,
+            "first_json_path": "runs[15].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 437705508,
+            "first_json_path": "runs[16].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 897064982,
+            "first_json_path": "runs[17].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 35654120,
+            "first_json_path": "runs[18].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 25203271,
+            "first_json_path": "runs[19].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 513556675,
+            "first_json_path": "runs[20].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 595903177,
+            "first_json_path": "runs[21].velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-birth-uniform-20260926/status.json",
+      "relative_path": "status.json",
+      "sha256": "97390f8ccd7430c4d77dfb327f76be2bae3593d3dc4eddc613281fc8fa23dd60",
+      "kind": "metadata",
+      "keys": [
+        "completed_runs",
+        "runs",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

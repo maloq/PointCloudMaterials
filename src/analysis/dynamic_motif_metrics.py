@@ -401,11 +401,6 @@ def compute_bridge_tables(
             "num_bridge_motifs": 0,
         }
 
-    bridge_conf = (
-        active_bridge["bridge_confidence"].to_numpy(dtype=np.float64)
-        if "bridge_confidence" in active_bridge.columns
-        else None
-    )
     rows: list[dict[str, Any]] = []
     dwell_bridge = dwell_df.loc[dwell_df["motif_family"] == "bridge"].copy()
     incoming = (

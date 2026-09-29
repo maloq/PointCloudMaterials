@@ -1,0 +1,38 @@
+{
+  "expected_sha256": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76",
+  "matching": [
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/source/src/training_methods/embedding_forecast/data.py",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/gpu-resident-restart-20260913/technical/source/src/training_methods/embedding_forecast/data.py",
+    "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/analysis_source/src/training_methods/embedding_forecast/data.py"
+  ],
+  "checked": [
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/src/training_methods/embedding_forecast/data.py",
+      "sha256": "5c80bf8a04df6957423b3a40f2d36affc49ee7a3767a0d18c06484a622d8befd"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/scale-recovery-20260912/technical/source/src/training_methods/embedding_forecast/data.py",
+      "sha256": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/gpu-resident-restart-20260913/technical/source/src/training_methods/embedding_forecast/data.py",
+      "sha256": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast/context-pilot-20260913/technical/analysis_source/src/training_methods/embedding_forecast/data.py",
+      "sha256": "3fa77833b9b0c9f2da2841d9e197e82818eb80a9272bc70803ffd0bb322adc76"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue_32epochs/source/src/training_methods/embedding_forecast/data.py",
+      "sha256": "9fa71000ce25f5fea34f1f02f429546f7cad291d73166bf7104fb9a2452461ed"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/embedding_forecast_20260911/scale/queue/source/src/training_methods/embedding_forecast/data.py",
+      "sha256": "9fa71000ce25f5fea34f1f02f429546f7cad291d73166bf7104fb9a2452461ed"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/src/training_methods/embedding_forecast/data.py",
+      "sha256": "5c80bf8a04df6957423b3a40f2d36affc49ee7a3767a0d18c06484a622d8befd"
+    }
+  ]
+}

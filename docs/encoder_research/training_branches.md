@@ -25,6 +25,12 @@ likelihood objectives. Self-supervised encoders use their own label-free criteri
 AP3/AP6 remain evaluation diagnostics. Do not resume old AP-trained checkpoints
 as if they were likelihood-only training.
 
+**Treatment retired, 25 September 2026:** physical-reconstruction encoder
+pretraining and its dependent prediction fits were discontinued by the user.
+The current comparison retains scratch, VICReg and Epi-variance initialization.
+Existing physical-pretraining checkpoints and results retain their historical
+labels. Physical-information readouts remain part of encoder evaluation.
+
 Compare matched linear/stronger probes, natural-population log loss and Brier
 scores, calibration, input-only controls and incremental predictive benefit.
 Giving a matched predictor the original observation as well as the embedding

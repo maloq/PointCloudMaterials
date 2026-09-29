@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
-import torch
 
 from .cluster_colors import _darken_rgb
 
@@ -24,49 +23,6 @@ def _build_rotation_view_specs(
         )
         for idx in range(int(num_views))
     ]
-
-
-def _estimate_ball_radius_world(
-    points: np.ndarray,
-    *,
-    sample_limit: int = 1024,
-    random_seed: int = 0,
-) -> float:
-    """Estimate a non-overlapping sphere radius from point spacing.
-
-    The returned radius is chosen so spheres touch at the closest sampled
-    nearest-neighbor distance without overlap (uniform global radius).
-    """
-    pts = np.asarray(points, dtype=np.float32)
-    n_pts = pts.shape[0]
-
-    mins = np.min(pts, axis=0).astype(np.float64)
-    maxs = np.max(pts, axis=0).astype(np.float64)
-    extents = np.maximum(maxs - mins, 1e-8)
-    volume = float(extents[0] * extents[1] * extents[2])
-    spacing_density = float(np.cbrt(volume / max(1, n_pts)))
-
-    spacing_nn_min = None
-    if n_pts >= 3:
-        m = min(int(sample_limit), n_pts)
-        if m >= 3:
-            rng = np.random.default_rng(int(random_seed))
-            sample_idx = (
-                np.arange(n_pts, dtype=int)
-                if m == n_pts
-                else rng.choice(n_pts, size=m, replace=False)
-            )
-            sample_pts = pts[sample_idx].astype(np.float32, copy=False)
-            diff = sample_pts[:, None, :] - sample_pts[None, :, :]
-            dist2 = np.sum(diff * diff, axis=2, dtype=np.float32)
-            np.fill_diagonal(dist2, np.inf)
-            nn = np.sqrt(np.min(dist2, axis=1, initial=np.inf))
-            nn_valid = nn[np.isfinite(nn) & (nn > 1e-9)]
-            if nn_valid.size >= 16:
-                spacing_nn_min = float(np.min(nn_valid))
-
-    spacing = spacing_nn_min if spacing_nn_min is not None else spacing_density
-    return float(max(0.499 * spacing, 1e-9))
 
 
 def _set_equal_axes_3d(ax: Any, coords: np.ndarray) -> None:
@@ -131,8 +87,6 @@ def _sample_indices_stratified(
     random_seed: int = 0,
 ) -> np.ndarray:
     labels = np.asarray(labels)
-    if labels.ndim != 1:
-        raise ValueError(f"Stratified sampling labels must have shape (N,), got {labels.shape}.")
     n_samples = int(labels.size)
     if max_points is None or max_points <= 0 or n_samples <= int(max_points):
         return np.arange(n_samples, dtype=int)
@@ -170,54 +124,13 @@ def _sample_indices_stratified(
     return np.sort(selected.astype(int, copy=False))
 
 
-def _extract_points_from_sample(sample: Any) -> np.ndarray:
-    points = sample["points"]
-    if not torch.is_tensor(points):
-        raise TypeError(
-            "Analysis datasets must return sample['points'] as a torch.Tensor, "
-            f"got {type(points)!r}."
-        )
-    pts = points.detach().cpu().numpy()
-    if pts.ndim == 3:
-        # Temporal datasets provide (T, N, 3); representative renders use the anchor frame.
-        pts = pts[0]
-    if pts.ndim != 2 or pts.shape[1] != 3:
-        raise ValueError(
-            "Analysis dataset points must have shape (N, 3) or (T, N, 3), "
-            f"got shape {pts.shape}."
-        )
-    if not np.isfinite(pts).all():
-        first_bad = np.argwhere(~np.isfinite(pts))[0].tolist()
-        raise ValueError(
-            "Analysis dataset points contain non-finite coordinates. "
-            f"first_nonfinite_index={first_bad}, shape={pts.shape}."
-        )
-    return pts.astype(np.float32, copy=False)
+def _extract_points_from_sample(sample):
+    points = sample['points'].detach().cpu().numpy()
+    return (points[0] if points.ndim == 3 else points).astype(np.float32, copy=False)
 
 
-def _load_points_from_dataset(
-    dataset: Any,
-    sample_index: int,
-    *,
-    point_scale: float = 1.0,
-) -> np.ndarray:
-    if dataset is None or not hasattr(dataset, "__getitem__"):
-        raise TypeError(
-            "Dataset does not support indexing; cannot extract representative cluster samples."
-        )
-    idx = int(sample_index)
-    if idx < 0:
-        raise ValueError(f"Sample index must be non-negative, got {idx}.")
-    try:
-        sample = dataset[idx]
-    except Exception as exc:
-        raise IndexError(
-            f"Failed to access dataset sample at index {idx}. Dataset type: {type(dataset)!r}."
-        ) from exc
-    points = _extract_points_from_sample(sample)
-    if point_scale != 1.0:
-        points = points * float(point_scale)
-    return points
+def _load_points_from_dataset(dataset, sample_index, *, point_scale=1.):
+    return _extract_points_from_sample(dataset[sample_index]) * point_scale
 
 
 def _resolve_local_coordination_shell(
@@ -410,8 +323,6 @@ def _compute_pca_orientation_basis(
     order = np.argsort(eigvals_raw)[::-1]
     eigvals = np.asarray(eigvals_raw[order], dtype=np.float64)
     basis = np.asarray(eigvecs_raw[:, order], dtype=np.float64)
-    if basis.shape != (3, 3):
-        raise ValueError(f"Expected PCA basis shape (3, 3), got {basis.shape}.")
 
     # Resolve eigenvector sign ambiguity to keep orientation deterministic.
     for axis_idx in range(3):
@@ -479,20 +390,6 @@ def _compute_cluster_representative_indices(
         dtype=np.float32,
     )
     labels = np.asarray(cluster_labels, dtype=int)
-    if lat.ndim != 2:
-        raise ValueError(
-            "Representative selection features must have shape (N, D), "
-            f"got {lat.shape}."
-        )
-    if labels.ndim != 1:
-        raise ValueError(
-            f"Representative cluster labels must have shape (N,), got {labels.shape}."
-        )
-    if labels.size != lat.shape[0]:
-        raise ValueError(
-            "representative selection features and cluster_labels length mismatch: "
-            f"{lat.shape[0]} vs {labels.size}."
-        )
     representatives: dict[int, int] = {}
     for cluster_id in sorted(int(v) for v in np.unique(labels) if int(v) >= 0):
         idx = np.flatnonzero(labels == cluster_id)
@@ -504,3 +401,46 @@ def _compute_cluster_representative_indices(
     if not representatives:
         raise ValueError("No non-negative clusters found to select representative samples.")
     return representatives
+
+
+def _estimate_ball_radius_world(
+    points: np.ndarray,
+    *,
+    sample_limit: int = 1024,
+    random_seed: int = 0,
+) -> float:
+    """Estimate a non-overlapping sphere radius from point spacing.
+
+    The returned radius is chosen so spheres touch at the closest sampled
+    nearest-neighbor distance without overlap (uniform global radius).
+    """
+    pts = np.asarray(points, dtype=np.float32)
+    n_pts = pts.shape[0]
+
+    mins = np.min(pts, axis=0).astype(np.float64)
+    maxs = np.max(pts, axis=0).astype(np.float64)
+    extents = np.maximum(maxs - mins, 1e-8)
+    volume = float(extents[0] * extents[1] * extents[2])
+    spacing_density = float(np.cbrt(volume / max(1, n_pts)))
+
+    spacing_nn_min = None
+    if n_pts >= 3:
+        m = min(int(sample_limit), n_pts)
+        if m >= 3:
+            rng = np.random.default_rng(int(random_seed))
+            sample_idx = (
+                np.arange(n_pts, dtype=int)
+                if m == n_pts
+                else rng.choice(n_pts, size=m, replace=False)
+            )
+            sample_pts = pts[sample_idx].astype(np.float32, copy=False)
+            diff = sample_pts[:, None, :] - sample_pts[None, :, :]
+            dist2 = np.sum(diff * diff, axis=2, dtype=np.float32)
+            np.fill_diagonal(dist2, np.inf)
+            nn = np.sqrt(np.min(dist2, axis=1, initial=np.inf))
+            nn_valid = nn[np.isfinite(nn) & (nn > 1e-9)]
+            if nn_valid.size >= 16:
+                spacing_nn_min = float(np.min(nn_valid))
+
+    spacing = spacing_nn_min if spacing_nn_min is not None else spacing_density
+    return float(max(0.499 * spacing, 1e-9))

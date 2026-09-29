@@ -1,0 +1,22 @@
+{
+  "state": "complete",
+  "started_at": "2026-09-27T08:54:19.513877+00:00",
+  "finished_at": "2026-09-27T08:54:36.313625+00:00",
+  "deleted_files": 2110,
+  "removed_allocated_bytes": 683461234176,
+  "removed_allocated_bytes_by_root": {
+    "/home/ids/vmorozov/training-cache/embedding-forecast-spatial-context-20260913": 271533403648,
+    "/store/PERSO/vmorozov/training-cache-archive-20260925/embedding-forecast-spatial-context-20260913": 341744820224,
+    "/store/PERSO/vmorozov/training-cache-archive-20260926/embedding-forecast-full-20260911": 70183010304
+  },
+  "retained_nonpayload_files_verified": 1355,
+  "protected_arrays_unchanged": 965,
+  "source_trajectories_retained": 125,
+  "managed_feature_cache_entries_retained": 6,
+  "retired_dataset_ids": [
+    "embedding-forecast-full-20260911",
+    "embedding-forecast-spatial-context-20260913"
+  ],
+  "preview_sha256": "74d4bb3dd49bc4b4fc1bf8c4cc447a49e98fdfb6f9cce330b7345d6e829c68aa",
+  "measurement": "Sum of allocated blocks of deleted single-link files, not a live filesystem quota delta."
+}

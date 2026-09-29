@@ -615,11 +615,6 @@ def run_connected_regime_analysis(
         return {}
     latents_array = np.asarray(latents, dtype=np.float32)
     labels_array = np.asarray(labels, dtype=np.int64).reshape(-1)
-    if latents_array.ndim != 2 or latents_array.shape[0] != labels_array.shape[0]:
-        raise ValueError(
-            "Connected-regime analysis expects latents (N, D) aligned with labels (N,), "
-            f"got latents={latents_array.shape}, labels={labels_array.shape}."
-        )
     if not np.isfinite(latents_array).all():
         raise ValueError("Connected-regime analysis received non-finite latent values.")
     if settings.interactive_3d and dataset is None:

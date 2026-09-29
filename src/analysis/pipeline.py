@@ -1,18 +1,8 @@
 import argparse
 from dataclasses import asdict, replace
-import sys
 import time
 from pathlib import Path
 from typing import Any, Dict
-
-if __package__ is None or __package__ == "":
-    # Allow `python src/analysis/pipeline.py ...` from the repo root by making
-    # the project importable before any relative imports execute.
-    project_root = Path(__file__).resolve().parents[2]
-    project_root_str = str(project_root)
-    if project_root_str not in sys.path:
-        sys.path.insert(0, project_root_str)
-    __package__ = "src.analysis"
 
 import numpy as np
 import torch
@@ -47,9 +37,8 @@ from .gateway_phase import (
 from .dynamic_motif import run_dynamic_motif_analysis
 from .figure_sets import (
     build_shared_cluster_color_map, filter_snapshot_figure_layout, print_figure_set_summary,
-    render_cluster_figure_outputs, resolve_snapshot_figure_layout, write_figure_only_metrics,
+    render_cluster_figure_outputs, resolve_snapshot_figure_layout,
 )
-from .cluster_gallery import _save_horizontal_image_gallery
 from .inference_cache import (
     _build_inference_cache_spec, _inference_cache_spec_hash, _load_inference_cache,
 )
@@ -75,7 +64,6 @@ from .runtime_profile import (
     select_evenly_spaced_names,
     subsample_clustering_reference,
 )
-from .swav_eval import run_swav_prototype_evaluation
 from .temporal_dense import (
     _collect_temporal_dense_outputs,
 )
@@ -85,6 +73,7 @@ from .temporal_real import (
     resolve_temporal_real_snapshot_subset,
     temporal_real_analysis_enabled,
 )
+from .swav_eval import run_swav_prototype_evaluation
 from .utils import _sample_indices
 
 
@@ -107,7 +96,7 @@ def _validate_temporal_cache_anchor_order(
         raise RuntimeError(
             "Temporal inference cache is missing per-sample anchor_frame_indices. "
             "This cache cannot be trusted for time-series evaluation; rerun full "
-            "analysis with figure_set.figure_only=false so the cache is regenerated."
+            "analysis in a new output directory to regenerate the cache."
         )
     if cached.shape[0] != n_samples:
         raise ValueError(
@@ -115,11 +104,6 @@ def _validate_temporal_cache_anchor_order(
             f"anchor_frame_indices={cached.shape[0]}, inv_latents={n_samples}."
         )
     expected_all = np.asarray(dataset.sample_anchor_frame_indices, dtype=np.int64)
-    if expected_all.shape[0] < n_samples:
-        raise ValueError(
-            "Temporal dataset has fewer anchor-frame entries than cached samples: "
-            f"dataset={expected_all.shape[0]}, cache={n_samples}."
-        )
     expected = expected_all[:n_samples]
     mismatch = np.flatnonzero(cached.astype(np.int64, copy=False) != expected)
     if mismatch.size > 0:
@@ -213,21 +197,22 @@ def run_post_training_analysis(
         if analysis_config_path is None and checkpoint_path is not None:
             analysis_config_path = str(default_analysis_config_for_checkpoint(checkpoint_path))
         analysis_cfg = load_checkpoint_analysis_config(analysis_config_path)
-    if not isinstance(analysis_cfg, DictConfig):
-        raise TypeError(
-            "analysis_cfg must be a DictConfig when provided, "
-            f"got {type(analysis_cfg)!r}."
-        )
     run_settings = _resolve_run_settings(
         analysis_cfg,
         checkpoint_path_override=checkpoint_path,
         output_dir_override=output_dir,
         cuda_device_override=cuda_device,
     )
-    from src.experiment_runner.artifacts import analysis_artifacts, result_folders
-    result_root = result_folders(run_settings.output_dir)
+    from src.experiment_runner.artifacts import analysis_artifacts
+    result_root = Path(run_settings.output_dir)
+    result_root.mkdir(parents=True, exist_ok=True)
     out_dir = analysis_artifacts(result_root)
     out_dir.mkdir(parents=True, exist_ok=True)
+    if (out_dir / 'analysis_metrics.json').exists():
+        raise FileExistsError(f'Completed numerical analysis already exists: {out_dir}. '
+                              'Use a new output directory for recomputation, or publish existing evidence.')
+    from src.experiment_runner.metric_docs import check_metric_docs
+    check_metric_docs(family='analysis')
 
     _step("Loading checkpoint training config")
     cfg = build_runtime_model_config(run_settings.checkpoint_path, analysis_cfg)
@@ -249,49 +234,12 @@ def run_post_training_analysis(
         cfg.num_workers = int(input_settings.dataloader_num_workers)
     print(f"Analysis dataloader workers: {input_settings.dataloader_num_workers}")
     analysis_settings = _resolve_analysis_settings(analysis_cfg, cfg)
-    hdbscan_settings = analysis_settings.hdbscan
     if temporal_real_mode and analysis_settings.cluster_fit is not None:
         raise ValueError(
             "Temporal dump analysis does not use clustering.fit_inputs. "
             "Clustering is fit from inputs.temporal_real.dump_file through the "
             "main temporal inference cache. Delete clustering.fit_inputs and control the "
             "temporal fit subset with clustering.temporal_fit_max_samples."
-        )
-    if analysis_settings.cluster_fit is not None and hdbscan_settings.enabled:
-        raise ValueError(
-            "clustering.fit_inputs is not compatible with clustering.hdbscan.enabled yet. "
-            "Disable HDBSCAN or disable clustering.fit_inputs."
-        )
-    if (
-        temporal_real_analysis_enabled(analysis_cfg)
-        and bool(
-            OmegaConf.select(
-                analysis_cfg,
-                "inputs.temporal_real.snapshot_visualization.enabled",
-                default=True,
-            )
-        )
-        and hdbscan_settings.enabled
-    ):
-        raise ValueError(
-            "inputs.temporal_real.snapshot_visualization is not compatible with "
-            "clustering.hdbscan.enabled yet. Disable HDBSCAN or disable dense "
-            "temporal snapshot visualization."
-        )
-    if (
-        temporal_real_analysis_enabled(analysis_cfg)
-        and OmegaConf.select(
-            analysis_cfg,
-            "real_md.temporal.md_space.dense_snapshot_count",
-            default=None,
-        )
-        not in {None, "", 0}
-        and hdbscan_settings.enabled
-    ):
-        raise ValueError(
-            "real_md.temporal.md_space.dense_snapshot_count is not compatible with "
-            "clustering.hdbscan.enabled yet. Disable HDBSCAN or disable dense "
-            "MD-space animation sampling."
         )
     real_md_selected_k = int(analysis_settings.primary_k)
     runtime_profile = resolve_analysis_runtime_profile(analysis_cfg)
@@ -330,11 +278,42 @@ def run_post_training_analysis(
         default_random_state=int(analysis_settings.seed_base),
     )
     gateway_phase_settings = resolve_gateway_phase_settings(analysis_cfg)
-    if connected_regime_settings.enabled and figure_settings.figure_only:
+    hdbscan_settings = analysis_settings.hdbscan
+    if analysis_settings.cluster_fit is not None and hdbscan_settings.enabled:
         raise ValueError(
-            "clustering.connected_regimes.enabled=true is incompatible with "
-            "figure_set.figure_only=true. Run the full analysis so connected-regime "
-            "metrics use the original inference latents and primary clustering labels."
+            "clustering.fit_inputs is not compatible with clustering.hdbscan.enabled yet. "
+            "Disable HDBSCAN or disable clustering.fit_inputs."
+        )
+    if (
+        temporal_real_analysis_enabled(analysis_cfg)
+        and bool(
+            OmegaConf.select(
+                analysis_cfg,
+                "inputs.temporal_real.snapshot_visualization.enabled",
+                default=True,
+            )
+        )
+        and hdbscan_settings.enabled
+    ):
+        raise ValueError(
+            "inputs.temporal_real.snapshot_visualization is not compatible with "
+            "clustering.hdbscan.enabled yet. Disable HDBSCAN or disable dense "
+            "temporal snapshot visualization."
+        )
+    if (
+        temporal_real_analysis_enabled(analysis_cfg)
+        and OmegaConf.select(
+            analysis_cfg,
+            "real_md.temporal.md_space.dense_snapshot_count",
+            default=None,
+        )
+        not in {None, "", 0}
+        and hdbscan_settings.enabled
+    ):
+        raise ValueError(
+            "real_md.temporal.md_space.dense_snapshot_count is not compatible with "
+            "clustering.hdbscan.enabled yet. Disable HDBSCAN or disable dense "
+            "MD-space animation sampling."
         )
     _print_resolved_analysis_settings(
         analysis_settings=analysis_settings,
@@ -385,12 +364,6 @@ def run_post_training_analysis(
             expected_spec=static_cache_spec,
         )
         print(f"[analysis][cache preflight] {preloaded_cache_message}")
-        if figure_settings.figure_only and preloaded_cache is None:
-            raise RuntimeError(
-                "figure_set.figure_only requires a valid static inference cache. "
-                "Cache preflight failed before dataset construction: "
-                f"{preloaded_cache_message}. Run once with figure_set.figure_only=false."
-            )
 
     # ── Data loading ───────────────────────────────────────────────────
     runtime_metrics = asdict(runtime_profile)
@@ -515,7 +488,6 @@ def run_post_training_analysis(
         model=model,
         device=device,
         analysis_settings=analysis_settings,
-        figure_only=bool(figure_settings.figure_only),
         cache_spec=cache_spec,
         max_batches_latent=max_batches_latent,
         max_samples_total=max_samples_total,
@@ -563,8 +535,7 @@ def run_post_training_analysis(
             model=model,
             cuda_device=run_settings.cuda_device,
             seed_base=seed_base,
-            figure_only=bool(figure_settings.figure_only),
-            progress_every_batches=analysis_settings.progress_every_batches,
+                progress_every_batches=analysis_settings.progress_every_batches,
         )
         all_metrics["clustering_fit_inputs"] = {
             "enabled": True,
@@ -751,7 +722,6 @@ def run_post_training_analysis(
         model_loader=load_vicreg_model,
         cuda_device=run_settings.cuda_device,
         seed_base=seed_base,
-        figure_only=bool(figure_settings.figure_only),
         inference_batch_size=int(analysis_inference_batch_size),
         dataloader_num_workers=int(input_settings.dataloader_num_workers),
         progress_every_batches=analysis_settings.progress_every_batches,
@@ -974,91 +944,6 @@ def run_post_training_analysis(
         return features, info
 
     # ── Figure-only early return ───────────────────────────────────────
-    if figure_settings.figure_only:
-        if fit_latents_for_clustering is None:
-            clustering_metrics = dict(clustering_fit_metrics)
-            configured_k_values = list(clustering_fit_configured_k_values)
-            cluster_labels_by_k = dict(clustering_fit_labels_by_k)
-        else:
-            (
-                clustering_metrics,
-                configured_k_values,
-                cluster_labels_by_k,
-                _,
-            ) = predict_clustering_state_from_models(
-                cache["inv_latents"],
-                cache["phases"],
-                fitted_models_by_k=clustering_models_by_k,
-                requested_k_values=list(analysis_settings.cluster_k_values),
-                cluster_method=analysis_settings.cluster_method,
-                random_state=clustering_random_state,
-            )
-        all_metrics["clustering"] = clustering_metrics
-        figure_output_labels_by_k = (
-            cluster_labels_by_k
-            if snapshot_cluster_labels_by_k_for_outputs is None
-            else snapshot_cluster_labels_by_k_for_outputs
-        )
-        cluster_figure_sets_by_k: dict[str, Any] = {}
-        primary_cluster_figure_set = None
-        primary_snapshot_figure_sets = None
-        for k_value in configured_k_values:
-            figure_settings_for_k = replace(
-                figure_settings,
-                k=int(k_value),
-            )
-            representative_selection_features_for_k, representative_selection_info_for_k = (
-                _representative_selection_for(
-                    snapshot_latents_for_outputs,
-                    figure_output_labels_by_k,
-                    int(k_value),
-                    source_name="figure_output_cache",
-                )
-            )
-            cluster_figure_set, snapshot_figure_sets = render_cluster_figure_outputs(
-                out_dir=out_dir,
-                dataloader=dl,
-                figure_settings=figure_settings_for_k,
-                figure_set_run_kwargs=_build_figure_set_run_kwargs(figure_settings_for_k),
-                labels_for_k=figure_output_labels_by_k[int(k_value)],
-                latents=snapshot_latents_for_outputs,
-                coords=snapshot_coords_for_outputs,
-                dataset_obj=snapshot_dataset_obj_for_outputs,
-                snapshot_layout=figure_snapshot_layout_for_outputs,
-                analysis_source_names=figure_analysis_source_names_for_outputs,
-                step=_step,
-                representative_selection_features=representative_selection_features_for_k,
-                representative_selection_info=representative_selection_info_for_k,
-            )
-            cluster_figure_sets_by_k[str(int(k_value))] = {
-                "cluster_figure_set": cluster_figure_set,
-                "cluster_figure_sets_by_snapshot": snapshot_figure_sets,
-            }
-            if int(k_value) == int(analysis_settings.primary_k):
-                primary_cluster_figure_set = cluster_figure_set
-                primary_snapshot_figure_sets = snapshot_figure_sets
-        if primary_cluster_figure_set is not None:
-            all_metrics["cluster_figure_set"] = primary_cluster_figure_set
-        if primary_snapshot_figure_sets is not None:
-            all_metrics["cluster_figure_sets_by_snapshot"] = primary_snapshot_figure_sets
-        if len(configured_k_values) > 1:
-            all_metrics["cluster_figure_sets_by_k"] = cluster_figure_sets_by_k
-
-        _step("Writing metrics")
-        metrics_path = out_dir / "analysis_metrics.json"
-        merged_metrics = write_figure_only_metrics(
-            metrics_path=metrics_path,
-            all_metrics=all_metrics,
-            multi_snapshot_real=multi_snapshot_real,
-        )
-        print_figure_set_summary(
-            all_metrics,
-            n_samples=n_samples,
-            out_dir=out_dir,
-            elapsed=time.perf_counter() - t0,
-        )
-        publish_report(out_dir, result_root, checkpoint_sha256=all_metrics["checkpoint_sha256"], update_index=False)
-        return merged_metrics
 
     # ── PCA + latent statistics ────────────────────────────────────────
     all_metrics.update(
@@ -1245,6 +1130,7 @@ def run_post_training_analysis(
     if connected_regime_metrics:
         all_metrics["connected_regimes"] = connected_regime_metrics
 
+
     swav_prototype_metrics = run_swav_prototype_evaluation(
         model=model,
         cache=cache,
@@ -1420,6 +1306,7 @@ def run_post_training_analysis(
         step=_step,
     )
     all_metrics[md_metrics_key] = build_md_metrics(
+        hdbscan_result=hdbscan_result,
         out_dir=out_dir,
         coords=snapshot_coords_for_outputs,
         cluster_labels=figure_output_cluster_labels,
@@ -1431,7 +1318,6 @@ def run_post_training_analysis(
         multi_snapshot_real=snapshot_layout_for_outputs.multi_snapshot_real,
         snapshot_source_groups=snapshot_layout_for_outputs.source_groups,
         snapshot_output_names=snapshot_layout_for_outputs.output_names,
-        hdbscan_result=hdbscan_result,
     )
 
     cluster_assignment_margin_cache: dict[int, dict[str, Any]] = {}
@@ -1636,8 +1522,8 @@ def run_post_training_analysis(
     write_json(metrics_path, all_metrics)
     if 'topology' in all_metrics:
         write_json(Path(run_settings.checkpoint_path).parent/'final_metrics.json', all_metrics['topology']['flat_metrics'])
-    publish_report(out_dir, result_root, update_index=False)
     report_dir = report_directory(cfg, analysis_cfg)
+    publish_report(out_dir, result_root, update_index=report_dir is None, computed=True, analysis_cfg=analysis_cfg)
     if report_dir is not None:
         publish_report(out_dir, report_dir)
     if not retain_cache:
@@ -1677,13 +1563,10 @@ def main() -> None:
     parser.add_argument('--specification', type=Path, help='Declared variants, seeds and paired comparisons for collection.')
     parser.add_argument('--checkpoint', help='Override checkpoint.path for a single analysis.')
     parser.add_argument('--output-dir', help='Override checkpoint.output_dir for a single analysis.')
-    parser.add_argument('--rerun', action='store_true', help='Re-run completed batch analyses using their inference caches.')
     parser.add_argument('--publish-only', action='store_true', help='Publish existing completed batch results to flat galleries.')
     args = parser.parse_args()
-    if (args.rerun or args.publish_only) and args.batch is None:
-        parser.error('--rerun and --publish-only require --batch')
-    if args.rerun and args.publish_only:
-        parser.error('--rerun and --publish-only are mutually exclusive')
+    if args.publish_only and args.batch is None:
+        parser.error('--publish-only requires --batch')
     if args.batch is not None:
         batch = OmegaConf.load(args.batch)
         for item in batch.runs:
@@ -1698,7 +1581,7 @@ def main() -> None:
                     raise ValueError(f'--publish-only requires report.root in {item.analysis_config}')
                 publish_report(output, report_dir)
                 continue
-            if completed.exists() and not args.rerun:
+            if completed.exists():
                 import json
                 from src.experiment_runner.registry import sha256
                 saved = json.loads(completed.read_text())

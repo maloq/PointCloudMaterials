@@ -36,10 +36,6 @@ def _find_center_atom_index(
     context: str,
 ) -> tuple[int, float]:
     pts = np.asarray(points, dtype=np.float64)
-    if pts.ndim != 2 or pts.shape[1] != 3:
-        raise ValueError(f"{context}: expected points with shape (N, 3), got {pts.shape}.")
-    if pts.shape[0] == 0:
-        raise ValueError(f"{context}: cannot analyze an empty point cloud.")
     norms = np.linalg.norm(pts, axis=1)
     center_idx = int(np.argmin(norms))
     center_dist = float(norms[center_idx])
@@ -123,8 +119,6 @@ def _build_ovito_data_collection(points: np.ndarray) -> Any:
         ) from exc
 
     pts = np.asarray(points, dtype=np.float64)
-    if pts.ndim != 2 or pts.shape[1] != 3:
-        raise ValueError(f"OVITO analysis expects points with shape (N, 3), got {pts.shape}.")
     span = float(np.max(np.ptp(pts, axis=0))) if pts.shape[0] > 0 else 0.0
     box_length = max(10.0, span + 10.0)
 
@@ -525,22 +519,8 @@ def materialize_cluster_representative_analysis_summary(
     *,
     k_token: str,
 ) -> dict[str, Any]:
-    if not isinstance(structure_analysis_summary, dict):
-        raise TypeError(
-            "structure_analysis_summary must be a dict, "
-            f"got {type(structure_analysis_summary)!r}."
-        )
     representatives = structure_analysis_summary.get("representatives")
-    if not isinstance(representatives, list) or not representatives:
-        raise ValueError(
-            "structure_analysis_summary must contain a non-empty 'representatives' list."
-        )
     cna_signature_vocab = structure_analysis_summary["cna_signature_vocab"]
-    if not isinstance(cna_signature_vocab, list):
-        raise ValueError(
-            "structure_analysis_summary['cna_signature_vocab'] must be a list, "
-            f"got {type(cna_signature_vocab)!r}."
-        )
 
     json_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.json"
     csv_path = Path(out_dir) / f"10_cluster_representatives_structure_analysis_k{k_token}.csv"

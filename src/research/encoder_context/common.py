@@ -27,6 +27,15 @@ class Study:
         for package in ('encoder_context','equivariant_context','supervised_onset','trajectory_stability'):
             paths+=list((repo/'src/research'/package).glob('*.py'))
         paths+=list((repo/'src/data/fixed_cohort').glob('*.py'))
+        if 'structural_dataset' in self.config:
+            from src.data.structural_pretraining.native_dataset import NativeStructuralDataset
+            data=NativeStructuralDataset(self.config['structural_dataset']['root'],
+                normalization=self.config['structural_dataset']['normalization'])
+            if data.identity!=self.config['structural_dataset']['identity']:
+                raise ValueError('Structural release identity differs')
+            if data.plan['evidence']['fixed_identity']!=plan['identity']:
+                raise ValueError('Structural ancestry uses another fixed benchmark')
+            paths += [repo/'src/data/structural_pretraining'/p for p in ('native.py','native_dataset.py','prepare.py')]
         paths += [repo/p for p in ('src/research/mace_epi/objective.py',
             'src/training_methods/neighborhood_jepa/regularization/objective.py',
             'src/training_methods/structural_pretraining/objective.py',

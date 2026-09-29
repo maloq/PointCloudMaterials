@@ -48,3 +48,13 @@ documentation where present. Missing historical contracts are left blank, not
 filled with today's definitions. The catalogue's own implementation hashes describe
 the collector only, never the old metric producers. The snapshot is not a live
 scheduler monitor and does not imply reanalysis of any predictions.
+
+Explicit producer receipts additionally populate `result_runs`,
+`result_components`, `result_evaluations` and `result_artifacts` in the same SQLite
+database. Their identities, separate status dimensions and evidence references
+are preserved without producing a new model score. Incremental receipt refreshes
+do not replace the historical raw-record tables or advance their capture time.
+Table-specific exported contract bindings take precedence over nearest-document
+lookup and their CSV hashes are verified. Generated catalogue-definition changes
+archive the prior summary tables and definitions before replacement; scientific
+source definitions remain at their original locations.

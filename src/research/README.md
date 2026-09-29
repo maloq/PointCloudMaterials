@@ -1,5 +1,28 @@
 # Implementations of recorded research protocols
 
+- `liquid_predictability.rich_multimaterial_queue`: immutable raw multimaterial patch descriptors, declared-batch verification, fixed-epoch MACE256 fitting and locked one-to-two-GPU continuation; [workflow](../../docs/rich_multimaterial_encoder.md).
+
+`liquid_predictability.rich_encoder` trains RD-MACE256-L3-Z256 on all raw rich
+descriptors with exact full-data epochs and distributed VCReg;
+[protocol](../../experiments/liquid_predictability_20260928/RICH_CAPACITY.md),
+[execution](../../docs/rich_descriptor_encoder.md).
+
+`distance_encoder` jointly trains geometry-only MACE and a continuous-distance
+head on dynamic multi-material shards, with a proper early-spatial-detection
+likelihood; [protocol](../../experiments/distance_encoder_20260926/README.md).
+
+`spatial_distance` trains censored continuous distance distributions from frozen
+MACE/context features and exports fixed confidence alarms with visibility controls;
+[protocol](../../experiments/spatial_distance_20260926/README.md).
+
+`crystallization_origin.harvest` implements the training-only regional-emergence
+harvest and quality audit, with causal prefix checks and birth/control references;
+[operations](../../docs/nucleus_harvest.md).
+
+`spatial_approach` measures crystal warning distance in fixed snapshots using
+frozen-MACE and geometry readouts, shared context predictors and calibrated
+scan alarms; [protocol](../../experiments/spatial_approach_20260926/README.md).
+
 `trajectory_stability.audit` supplements existing current-screen and dense
 trajectory exports with source-balanced spectral dimensions and physical-lag
 stability. [Guide](../../docs/encoder_research/embedding_dynamics.md),
@@ -151,3 +174,5 @@ and [operations](../../docs/structural_state.md).
 `structural_state_onset_review.py` audits the completed v2 onset predictions and
 bootstraps complete sources for paired AP and probability errors without fitting;
 see [results](../../output/structural_state/repaired-review-20260923/README.md).
+
+`encoder_quality/` evaluates frozen current native MACE on fixed liquid/interface, geometry/noise, temporal and likelihood-readout controls; [protocol](../../experiments/encoder_quality_20260926/README.md).

@@ -1,0 +1,164 @@
+{
+  "protocol": "joint_mace_distance_dense_history_v1",
+  "branch": "crystallization_supervised",
+  "output": "${storage:analysis}/distance_encoder/material-al-20260927-v2",
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "labels": {
+    "root": "${storage:cache}/distance-encoder/multimaterial-20260926",
+    "native_config": "configs/analysis/crystallization_origin_20260925.json",
+    "external_plan": "${storage:analysis}/crystallization_origin/multimaterial-20260926/technical/plan.json",
+    "lanes": 4,
+    "workers_per_lane": 4,
+    "frames_per_task": 8
+  },
+  "encoder": {
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "initial_encoder": "/work/PERSO/vmorozov/analysis/distance_encoder/md-dense6-075nominal-20260926/real/technical/best.pt",
+  "initial_encoder_sha256": "f4bd41bb1a720aa4ce7ac0a82bbfb4ebca6a2fab082732879abbd6894e6db54a",
+  "seed": 20260927,
+  "batch_size": 1024,
+  "microbatch": 256,
+  "world_size": 1,
+  "loss": {
+    "distance_cap": 64,
+    "early_radii": [
+      8,
+      12,
+      20,
+      32
+    ],
+    "early_weights": [
+      0.05,
+      0.15,
+      0.4,
+      0.4
+    ],
+    "early_weight": 2.0,
+    "material_weighting": "equal material mass; uniform rows within material"
+  },
+  "training": {
+    "epochs": 12,
+    "minimum_selection_epoch": 12,
+    "encoder_lr": 1e-05,
+    "head_lr": 5e-05,
+    "weight_decay": 1e-05,
+    "warmup_updates": 128,
+    "save_every": 512,
+    "log_every": 64
+  },
+  "runtime": {
+    "compile": true,
+    "hours": 13,
+    "float32_matmul_precision": "high",
+    "precision": "bf16"
+  },
+  "external_inputs": [],
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "cd-mace128-material-finetune-20260927"
+  },
+  "encoder_name": "CD-MACE128-D6-Al-FT",
+  "regularization": {
+    "variance_weight": 0.0,
+    "covariance_weight": 0.0,
+    "scale": 1.0,
+    "std_floor": 1.0,
+    "epsilon": 0.0001,
+    "warmup_updates": 3113
+  },
+  "local_evaluation": {
+    "population_cache": "${storage:cache}/supervised-onset/al64-b512-20260925",
+    "dense_observed": "${storage:scratch}/training-cache/encoder-context/multimaterial256-epochs-20260925/dense-observed"
+  },
+  "history": {
+    "offsets_ps": [
+      -3.75,
+      -3.0,
+      -2.25,
+      -1.5,
+      -0.75,
+      0.0
+    ],
+    "mode": "real",
+    "ordering": "oldest to current; same atom identity",
+    "time_values_as_inputs": false,
+    "sampling": "six exact saved observations at the declared per-kind cadence",
+    "offsets_scope": "nominal native-Al offsets; actual external offsets are -3.5/-2.8/-2.1/-1.4/-0.7/0 ps",
+    "anchor_policy": "identical to the 3-frame/6-ps comparison",
+    "cadence_ps": 0.75,
+    "observed_cadence_ps_by_kind": {
+      "native": 0.75,
+      "external": 0.7
+    },
+    "approved_approximation": "User explicitly accepted 0.70 ps as nominal 0.75 ps on 2026-09-26; no interpolation"
+  },
+  "history_evaluation": {
+    "parent_run": "${storage:analysis}/spatial_approach/al64-20260926",
+    "geometry_cache": "${storage:cache}/distance-encoder/md-dense6-075ps-evaluation-20260926",
+    "workers": 8,
+    "batch_size": 128,
+    "protocol": "native_spatial_front"
+  },
+  "metric_family": "distance_encoder_material_finetune",
+  "accumulation_steps": 4,
+  "dense_history": {
+    "root": "${storage:cache}/distance-encoder/md-dense6-075nominal-training-20260926",
+    "lanes": 1,
+    "workers": 12,
+    "memory": "64G",
+    "source_kind": "all",
+    "roles_by_lineage": {}
+  },
+  "initialization": "history_distance_checkpoint",
+  "dense_source_subset": {
+    "material": "Al",
+    "kind": "native"
+  },
+  "material_finetune": {
+    "material": "Al",
+    "parent_name": "CD-MACE128-D6-075nominal",
+    "encoder_trainable": true,
+    "temporal_head_trainable": true,
+    "selector": "declared distance NLL + fixed weighted CDF log loss at epoch 12",
+    "batch_deviation": "retain parent global batch 1024 on one GPU: microbatch 256, accumulation 4",
+    "actual_cadence_ps": 0.75,
+    "history_span_ps": 3.75,
+    "input_conditions": [],
+    "initialization": "full parent MACE + temporal fusion + distance head; fresh optimizer",
+    "evaluation_scope": "fixed Al64 all64 source split, unchanged rows",
+    "parent_front": "${storage:analysis}/distance_encoder/md-dense6-075nominal-20260926/real/front"
+  }
+}

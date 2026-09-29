@@ -1,0 +1,3347 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Raw Al/Mg/Ti/Ta local rich descriptors</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Raw Al/Mg/Ti/Ta local rich descriptors</h1><p>Derived 442 local geometry/bond-order/CNA/TDA targets and normalized nearest80 geometry from 13423868 raw dynamic training patches; static/relaxed views excluded. Original Al structural selection plus exact fixed Al64 calibration/test IDs. Scientific training uses a separately sealed compute-budget subset.</p><span class="badge">prepared</span><p><code>rich-descriptors-multimaterial-raw-20260929</code> · Al, Mg, Ta, Ti</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929">/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929</a></p><p>448 owned files · 3.948 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Raw Al/Mg/Ti/Ta local rich descriptors&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;,
+    &quot;Mg&quot;,
+    &quot;Ti&quot;,
+    &quot;Ta&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;,
+    &quot;al-mendelev2008-eam&quot;,
+    &quot;mg-wilson2016-eam&quot;,
+    &quot;ta-zhong2014-eam&quot;,
+    &quot;ti-kavousi2019-meam&quot;
+  ],
+  &quot;role&quot;: &quot;structural_pretraining&quot;,
+  &quot;classification&quot;: &quot;prepared&quot;,
+  &quot;description&quot;: &quot;Derived 442 local geometry/bond-order/CNA/TDA targets and normalized nearest80 geometry from 13423868 raw dynamic training patches; static/relaxed views excluded. Original Al structural selection plus exact fixed Al64 calibration/test IDs. Scientific training uses a separately sealed compute-budget subset.&quot;,
+  &quot;provenance&quot;: &quot;src/research/liquid_predictability/rich_multimaterial_data.py; existing immutable structural and Al64 releases.&quot;,
+  &quot;ancestry&quot;: &quot;Original native Al train ancestors; external branches retain shared lineage metadata and remain train-only. No resplit.&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/liquid_predictability/rich_multimaterial_20260929.json&quot;,
+    &quot;docs/rich_multimaterial_encoder.md&quot;,
+    &quot;${storage:cache}/rich-descriptors/multimaterial-raw-20260929/plan.json&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;All phases, not a liquid-only cohort.&quot;,
+    &quot;External materials have no independent validation/test sources in this release.&quot;,
+    &quot;442 local targets differ from the earlier 3536 context summaries.&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/liquid_predictability/rich_multimaterial_20260929.json">configs/liquid_predictability/rich_multimaterial_20260929.json</a></li><li><a href="../../rich_multimaterial_encoder.md">docs/rich_multimaterial_encoder.md</a></li><li><a href="../../../%24%7Bstorage%3Acache%7D/rich-descriptors/multimaterial-raw-20260929/plan.json">${storage:cache}/rich-descriptors/multimaterial-raw-20260929/plan.json</a> (missing here)</li></ul><p>Dependencies: <a href="structural-native-multimaterial-256-20260925-bc9a9b01.html">structural-native-multimaterial-256-20260925</a>, <a href="fixed-al64-benchmark-v1-20260925-4fb74686.html">fixed-al64-benchmark-v1-20260925</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>protocol</td><td><code>[&quot;fixed_material_cutoff_al_reference_v1&quot;, &quot;rich_multimaterial_patch_descriptors_v1&quot;]</code></td></tr><tr><td>lineage</td><td><code>[&quot;Al-archived-root&quot;, &quot;Mg-archived-root&quot;, &quot;Ta-archived-root&quot;, &quot;Ti-archived-root&quot;, &quot;al-1m-independent-melt-911001&quot;, &quot;independent_melt_114745743&quot;, &quot;independent_melt_129223029&quot;, &quot;independent_melt_134462729&quot;, &quot;independent_melt_135035943&quot;, &quot;independent_melt_13937749&quot;, &quot;independent_melt_139885636&quot;, &quot;independent_melt_142641279&quot;] … (155 values; see JSON)</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;selection&quot;, &quot;train&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 448,
+    &quot;apparent_bytes&quot;: 8824488288,
+    &quot;allocated_bytes&quot;: 4239250944,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 167,
+      &quot;.npy&quot;: 230,
+      &quot;.npz&quot;: 51
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 52,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000030-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000060-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/1ccb83e1325a791d6acc-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000000-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000030-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000060-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000090-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000120-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000150-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000180-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000210-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/2a5950291b0e67495ad3-000240-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000000-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000240-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/364338e8a8f288048934-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000210-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000210-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000210-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/557f9d4494e4c16b42ca-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/56c826cef2fbbcf12577-000180-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/56c826cef2fbbcf12577-000180-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/56c826cef2fbbcf12577-000180-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/56c826cef2fbbcf12577-000210-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/56c826cef2fbbcf12577-000210-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6c906a946baf3b722a98-000150-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6c906a946baf3b722a98-000150-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6c906a946baf3b722a98-000180-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6c906a946baf3b722a98-000180-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6ff0c67b8139acdf1065-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6ff0c67b8139acdf1065-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6ff0c67b8139acdf1065-000150-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/6ff0c67b8139acdf1065-000150-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/73b397e6a1a9ceb35ee5-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/73b397e6a1a9ceb35ee5-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/73b397e6a1a9ceb35ee5-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/73b397e6a1a9ceb35ee5-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000000-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000030-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000060-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000090-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000120-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000150-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000180-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000210-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8aee8bb8abe645c96f1f-000240-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000000-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000030-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000060-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000090-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000120-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000180-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000240-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000240-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/8ee5e077946023ab0f92-000240-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/9dbd8029253ea9cf68ec-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/9dbd8029253ea9cf68ec-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b1810a2378bec540378b-000030-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b1810a2378bec540378b-000030-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000000-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000060-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000090-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000090-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000090-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000150-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000210-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000210-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000210-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000240-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000240-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/b6a10214ca3c5d213848-000240-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/bc7c1b0a874f631b214a-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/bc7c1b0a874f631b214a-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/bc7c1b0a874f631b214a-000240-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/bc7c1b0a874f631b214a-000240-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-065536/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000030-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000060-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000060-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-032768/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000120-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000180-065536/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000180-065536/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000210-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000210-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000210-032768/features.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/f7ecb979a367ce1b6ebb-000210-032768/positions.npy&quot;,
+      &quot;shape&quot;: [
+        32768,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/native-860-000000-000000/features.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        442
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;shards/native-860-000000-000000/moments.npz&quot;,
+      &quot;members&quot;: {
+        &quot;total&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;second&quot;: {
+          &quot;shape&quot;: [
+            442
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;shards/native-860-000000-000000/positions.npy&quot;,
+      &quot;shape&quot;: [
+        256,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (52 records)</summary><p><a href="../records/rich-descriptors-multimaterial-raw-20260929-5cf8ff14.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/plan.json">plan.json</a> · metadata · <code>6cfaf9a43364a9927d88b1ed3f0615766f09a066976ec71e5564cc63342001bd</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/1ccb83e1325a791d6acc-000030-000000/complete.json">shards/1ccb83e1325a791d6acc-000030-000000/complete.json</a> · metadata · <code>39d191fe2c9da657327966179b10aad7c69d9e810dbedbbec3fe8935b5e0b971</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/1ccb83e1325a791d6acc-000060-000000/complete.json">shards/1ccb83e1325a791d6acc-000060-000000/complete.json</a> · metadata · <code>6bc91dffce537258efa70a28306e93d09e980f2e22609e2888210c0631a9c8ad</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-000000/complete.json">shards/2a5950291b0e67495ad3-000000-000000/complete.json</a> · metadata · <code>d28818eff7f6a3e1b65258375170d6ea2bcd724997321b9bc63075615b6b7156</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-032768/complete.json">shards/2a5950291b0e67495ad3-000000-032768/complete.json</a> · metadata · <code>bea93fd57d5affce469052f6682a27d1650f64ed6a745abd500e0ed664dd3609</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-065536/complete.json">shards/2a5950291b0e67495ad3-000000-065536/complete.json</a> · metadata · <code>259da9a66f1c9cee743a1484f057332a5795249a84b9fa10b77c260f7d226e96</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000060-065536/complete.json">shards/2a5950291b0e67495ad3-000060-065536/complete.json</a> · metadata · <code>f85ea7f4c50edb9f1d9714bc1a510b548c13a6b54b88e64b927cad110322cab6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000090-000000/complete.json">shards/2a5950291b0e67495ad3-000090-000000/complete.json</a> · metadata · <code>3d844357e9a24b0a83e8fc6fb11f00ab7352dd05fad93462190fdfe75e1d8a3b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000090-032768/complete.json">shards/2a5950291b0e67495ad3-000090-032768/complete.json</a> · metadata · <code>75d4ac39e77627a6079bfb7c47b53cedf65f00ce744fb07841e3cefc1dad5231</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000150-032768/complete.json">shards/2a5950291b0e67495ad3-000150-032768/complete.json</a> · metadata · <code>314a82c06e3d0eb770acb5e6409e5e3129d0b6ca08f7f218a100eb7254af997e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000150-065536/complete.json">shards/2a5950291b0e67495ad3-000150-065536/complete.json</a> · metadata · <code>fa60f574c53c5bbec6a05172730cb9efe8f9387b3b6d61fe65345a3b94670ffe</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000180-000000/complete.json">shards/2a5950291b0e67495ad3-000180-000000/complete.json</a> · metadata · <code>792b05d4656e3891f8ea5e4810f9913f1ff1def3683ee049db013f50e32613ce</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-000000/complete.json">shards/2a5950291b0e67495ad3-000240-000000/complete.json</a> · metadata · <code>6e1b4e0f9863e6136411b997280ccf71c0f06972de8f28ca5ee986c9c80c19d5</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-032768/complete.json">shards/2a5950291b0e67495ad3-000240-032768/complete.json</a> · metadata · <code>6e615739f4de14b3fa300586f4f1a104a5b20148d9bd84a972325b746a5247f7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-065536/complete.json">shards/2a5950291b0e67495ad3-000240-065536/complete.json</a> · metadata · <code>ddcbee665f5affd41bf0794812cd7362a7cf4ff36f01f78efcb8f6a9e109594b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/364338e8a8f288048934-000000-000000/complete.json">shards/364338e8a8f288048934-000000-000000/complete.json</a> · metadata · <code>2b493420fa413c26e82a61b4f06d0d2a96880c2f8086adfb076873d300965ed1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/364338e8a8f288048934-000240-000000/complete.json">shards/364338e8a8f288048934-000240-000000/complete.json</a> · metadata · <code>a568b911b7e5508c8e1fba2bf7f6aadadbf418d287c902a6fd6f0bb05afcdf24</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/557f9d4494e4c16b42ca-000210-000000/complete.json">shards/557f9d4494e4c16b42ca-000210-000000/complete.json</a> · metadata · <code>cf1103e1838932581d74bd23728182a296504426efe0473f4ec2fef6d5715026</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/56c826cef2fbbcf12577-000180-000000/complete.json">shards/56c826cef2fbbcf12577-000180-000000/complete.json</a> · metadata · <code>99b5394df446a8368939fa5f05e837bcccf92df032731afe067b506da27bc6d9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000030-065536/complete.json">shards/8aee8bb8abe645c96f1f-000030-065536/complete.json</a> · metadata · <code>41a0329624c946ce2d54bb5569c06930ecb839951c1031a271619b6398b47147</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000060-000000/complete.json">shards/8aee8bb8abe645c96f1f-000060-000000/complete.json</a> · metadata · <code>bf6ae287b7aa57e4706d877d435f4be8f72b182717a7cd40d65b34d0e52a198a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000060-032768/complete.json">shards/8aee8bb8abe645c96f1f-000060-032768/complete.json</a> · metadata · <code>df8db24c671adc0d6d59a067c7190706de4eb6d5a92e7dc967819fce2c280ba6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000120-032768/complete.json">shards/8aee8bb8abe645c96f1f-000120-032768/complete.json</a> · metadata · <code>0aaa530f59f77f2174584f9ff2237ef1d4681fbf2288a88ce9c1425dd51230b9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000120-065536/complete.json">shards/8aee8bb8abe645c96f1f-000120-065536/complete.json</a> · metadata · <code>f4cb41d73f73b3d01aa79947a21893e48db10b7a943766a1568113e10d8336b1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000150-000000/complete.json">shards/8aee8bb8abe645c96f1f-000150-000000/complete.json</a> · metadata · <code>cbbd191e84e209d4153932410dc8d49014769705f7d9c4a6deb2834661f3bac4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-000000/complete.json">shards/8aee8bb8abe645c96f1f-000210-000000/complete.json</a> · metadata · <code>883918be32fb74008a4eb3e0ec0060a18af8c40758b45a0baa2a7085a7008898</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-032768/complete.json">shards/8aee8bb8abe645c96f1f-000210-032768/complete.json</a> · metadata · <code>cc15a3745f344e7e52b8ea0f85a7ebfebf88a54be8420390f622bc81a866aa13</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-065536/complete.json">shards/8aee8bb8abe645c96f1f-000210-065536/complete.json</a> · metadata · <code>5203589da0aecfc1d6fca21f5d101973ffa7f2778b73fdbdf59e9f2c5be2946e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000000-065536/complete.json">shards/8ee5e077946023ab0f92-000000-065536/complete.json</a> · metadata · <code>c829346ac0ae6a5283160d6ef271061a7cb3e230a78e04ead7d5bb3e0e9345f6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000030-000000/complete.json">shards/8ee5e077946023ab0f92-000030-000000/complete.json</a> · metadata · <code>6c8d17a727ef8f71bde5145f6551dcc3b2cd8dc068a28309bd6d3ec93cb28c43</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000030-032768/complete.json">shards/8ee5e077946023ab0f92-000030-032768/complete.json</a> · metadata · <code>a18a8da80afe6b4d81c326ba006746a101b5b4bf3783bdf1000354acb8313276</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000090-032768/complete.json">shards/8ee5e077946023ab0f92-000090-032768/complete.json</a> · metadata · <code>d64b1025c10fbefbf021997a912c78fc5d04959351959580fa0134a63e5be439</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000090-065536/complete.json">shards/8ee5e077946023ab0f92-000090-065536/complete.json</a> · metadata · <code>d6997249f53c68425861de55a522b77c12b013f92b834af715cc2eeeba187d13</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000120-000000/complete.json">shards/8ee5e077946023ab0f92-000120-000000/complete.json</a> · metadata · <code>bd98239e44cdef370d34635e3430c9a9bb91be0882d3d3c442426a86dacf18c1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-000000/complete.json">shards/8ee5e077946023ab0f92-000180-000000/complete.json</a> · metadata · <code>663f5b0cbc4bac3167fea0c5c76d59e731c91735f8d376622240c1119b646a5f</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-032768/complete.json">shards/8ee5e077946023ab0f92-000180-032768/complete.json</a> · metadata · <code>8b2d7d081c0603ce65fb035b5d9e7c06399b462ac626acaf4d88e66f28f407e0</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-065536/complete.json">shards/8ee5e077946023ab0f92-000180-065536/complete.json</a> · metadata · <code>6fccdf6a7a8792b21290fda4b29c2b3889363f8d3d7f0c35a51791c7ff68354a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000240-065536/complete.json">shards/8ee5e077946023ab0f92-000240-065536/complete.json</a> · metadata · <code>85dbf6bd9ef4f32ae3bc489bbb66f5de548ac864a141fbcd0e8d09ceb6a57db1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000000-000000/complete.json">shards/b6a10214ca3c5d213848-000000-000000/complete.json</a> · metadata · <code>6bc3c3cdd18931ea79fd4224f79b44dd15b92d835ada562a0d8f487ed6a406ad</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000000-032768/complete.json">shards/b6a10214ca3c5d213848-000000-032768/complete.json</a> · metadata · <code>0df1834642f5672c6ab8d87c6e1718da7bf9b64d761054e3e3250c4491e589b1</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000060-032768/complete.json">shards/b6a10214ca3c5d213848-000060-032768/complete.json</a> · metadata · <code>868225e9f2ee3ee73084ab4bf8ea08665e0636eb469daf6b98e76bc405b0982a</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000060-065536/complete.json">shards/b6a10214ca3c5d213848-000060-065536/complete.json</a> · metadata · <code>e4d2aaa75b6787a1780d4b0b6b7355afa91bbd1d42c7c1ead7c0b91874003410</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000090-000000/complete.json">shards/b6a10214ca3c5d213848-000090-000000/complete.json</a> · metadata · <code>09b625f97e79999857d70abe15d857cc6e0fcd2037496f11d4323d27befeabb3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000150-000000/complete.json">shards/b6a10214ca3c5d213848-000150-000000/complete.json</a> · metadata · <code>da2ad75e31fce9387e5699d7a75d1516ddd7a9568a7a0b6c2e855588bd86d4d3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000150-032768/complete.json">shards/b6a10214ca3c5d213848-000150-032768/complete.json</a> · metadata · <code>3a39cb2312f84518e96f4c9db14d9b65ff59d3b94181f19681cb591368a45a84</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000210-065536/complete.json">shards/b6a10214ca3c5d213848-000210-065536/complete.json</a> · metadata · <code>a0514d9c0fe272c40316905ec297761bd8eda2fb4bedd77459f7b8fb74db5a1e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000240-000000/complete.json">shards/b6a10214ca3c5d213848-000240-000000/complete.json</a> · metadata · <code>c5be0558ddc625d1c7f81188e28ae6477668f4e2117b4474f3ed3cd730bb8e7e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000030-032768/complete.json">shards/f7ecb979a367ce1b6ebb-000030-032768/complete.json</a> · metadata · <code>5573ec8fc5c4f34d2ed57160ea2b21b05168ccc6f891e1ff12e51d3523416534</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000030-065536/complete.json">shards/f7ecb979a367ce1b6ebb-000030-065536/complete.json</a> · metadata · <code>7c86d51313023103ce93ddb2c6fa21e36f3f486200804c551069756b5bcf9a6e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000120-000000/complete.json">shards/f7ecb979a367ce1b6ebb-000120-000000/complete.json</a> · metadata · <code>a68ca62b10aa53eb3cff8355f724898a00c2447552ca1f94db27cf3b96fe0eec</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000120-032768/complete.json">shards/f7ecb979a367ce1b6ebb-000120-032768/complete.json</a> · metadata · <code>8ce00757ed8be2499a33a0cd781a85846db7f785b00aa246ab281038aa030e79</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/native-860-000000-000000/complete.json">shards/native-860-000000-000000/complete.json</a> · metadata · <code>febf01c4f3cde59c12096872472a14e0cda38b765a3740604546ba2e0fb5b765</code></li></ul></details><p class="muted">Observed 2026-09-28T23:47:41.345301+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

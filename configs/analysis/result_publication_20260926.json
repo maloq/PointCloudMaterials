@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "analyses": [
+    {
+      "source": "${storage:repo}/output/structural_static/gatr-vicreg-step3072-al-20260918/technical",
+      "destination": "output/structural_static/gatr-step3072-review-20260926",
+      "name": "static-al-v1",
+      "title": "GATr step 3072 \u2014 full static Al analysis",
+      "context": "Historical descriptive analysis of six Al snapshots. All saved spatial views and representatives are retained. These snapshots overlap training inputs; this is not a held-out structural benchmark. Cluster IDs belong to this fit.",
+      "study": {
+        "id": "structural_pretraining_20260917",
+        "record": "${storage:repo}/experiments/structural_pretraining_20260917/STATIC_AL.md"
+      },
+      "metadata": {
+        "protocol": "historical-standard-static-al-k7",
+        "inputs": {
+          "evidence": "${storage:repo}/output/structural_static/gatr-vicreg-step3072-al-20260918/RESULTS.md",
+          "note": "Original native structural GATr export; preserve its historical input contract."
+        },
+        "population": {
+          "snapshots_ps": [
+            166,
+            170,
+            174,
+            175,
+            177,
+            240
+          ],
+          "scope": "descriptive; training overlap"
+        },
+        "selection": {
+          "evidence": "${storage:repo}/experiments/structural_pretraining_20260917/STATIC_AL.md"
+        }
+      }
+    },
+    {
+      "source": "${storage:repo}/output/factor_vae_archive/geoframe-v2-vicreg-epoch034/technical/archived_analysis",
+      "destination": "output/factor_vae_archive/geoframe-vicreg034-review-20260926",
+      "name": "static-al-v1",
+      "title": "GeoFrame V2 VICReg epoch 034 \u2014 restored analysis",
+      "context": "Navigation over restored historical artifacts, not a new fit or reanalysis. The original cache metadata identifies the VICReg projector export. Inference caches were retired before archival; original reports and metric definitions remain authoritative.",
+      "study": {
+        "id": "geoframe-v2-vicreg-epoch034",
+        "record": "${storage:repo}/output/factor_vae_archive/geoframe-v2-vicreg-epoch034/README.md"
+      },
+      "metadata": {
+        "protocol": "archived-standard-static-al",
+        "inputs": {
+          "representation": "vicreg_projector",
+          "evidence": "${storage:repo}/output/factor_vae_archive/geoframe-v2-vicreg-epoch034/technical/original-cache-metadata.json"
+        },
+        "population": {
+          "scope": "historical descriptive static sample; consult original metadata"
+        },
+        "selection": {
+          "checkpoint": "epoch 034",
+          "rule": "not independently established by restoration"
+        }
+      }
+    },
+    {
+      "source": "${storage:repo}/output/structural_state/future-metric-20260923",
+      "destination": "output/structural_state/future-metric-review-20260926",
+      "name": "distance-future-v1",
+      "activity": "comparison",
+      "numerical_file": "tables/onset.csv",
+      "title": "Distance and future information \u2014 two-seed comparison",
+      "context": "Eight completed historical encoder fits, four treatments and two seeds. Frozen readouts and paired source comparisons remain at their original paths. Source intervals do not measure training-seed uncertainty. Historical physical-reconstruction treatments are retained as evidence, not recommended future queues.",
+      "study": {
+        "id": "structural_state_future_20260923",
+        "record": "${storage:repo}/experiments/structural_state_future_20260923/README.md"
+      },
+      "metadata": {
+        "protocol": "fixed_geometry_future_relation_v3",
+        "inputs": {
+          "evidence": "${storage:repo}/experiments/structural_state_future_20260923/README.md",
+          "note": "Original relaxed-input and readout contracts; not relabeled condition-free."
+        },
+        "population": {
+          "seeds": [
+            20260923,
+            20260924
+          ],
+          "track": "historical; not fixed Al64",
+          "evidence": "${storage:repo}/output/structural_state/future-metric-20260923/tables/METRICS.md"
+        },
+        "selection": {
+          "encoder": "Fixed final update 4096; best tuning checkpoint secondary",
+          "readouts": "Original recorded selectors"
+        }
+      },
+      "components": [
+        {
+          "name": "20260923/B-relaxed",
+          "activity": "encoder",
+          "seed": 20260923,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260923/technical/fits/B-relaxed/complete.json"
+        },
+        {
+          "name": "20260923/D-physical-distance",
+          "activity": "encoder",
+          "seed": 20260923,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260923/technical/fits/D-physical-distance/complete.json"
+        },
+        {
+          "name": "20260923/E-future-residual",
+          "activity": "encoder",
+          "seed": 20260923,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260923/technical/fits/E-future-residual/complete.json"
+        },
+        {
+          "name": "20260923/F-distance-future",
+          "activity": "encoder",
+          "seed": 20260923,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260923/technical/fits/F-distance-future/complete.json"
+        },
+        {
+          "name": "20260924/B-relaxed",
+          "activity": "encoder",
+          "seed": 20260924,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260924/technical/fits/B-relaxed/complete.json"
+        },
+        {
+          "name": "20260924/D-physical-distance",
+          "activity": "encoder",
+          "seed": 20260924,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260924/technical/fits/D-physical-distance/complete.json"
+        },
+        {
+          "name": "20260924/E-future-residual",
+          "activity": "encoder",
+          "seed": 20260924,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260924/technical/fits/E-future-residual/complete.json"
+        },
+        {
+          "name": "20260924/F-distance-future",
+          "activity": "encoder",
+          "seed": 20260924,
+          "receipt": "${storage:repo}/output/structural_state/future-metric-seed20260924/technical/fits/F-distance-future/complete.json"
+        }
+      ]
+    }
+  ]
+}

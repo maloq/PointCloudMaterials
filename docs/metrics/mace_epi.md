@@ -30,3 +30,8 @@ or future structural labels enter this objective.
 Structural/future evaluation retains the separate `encoder_screen` and
 `encoder_parameter_search` metric definitions and hashes. Their source
 bootstrap intervals do not represent variation between encoder training seeds.
+
+
+## Mechanism queue extension (2026-09-26)
+
+The alignment coefficient is now explicit, default25/51. The mechanism study declares0 for R0; historical default objectives retain their equations.

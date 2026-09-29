@@ -1,0 +1,8 @@
+{
+  "files": {
+    "src/research/spatial_vicreg_bias/dense_md.py": "a20941dabfb4c03f5e54050d6d5fa42e9eb4d2f7b53c962e51b01b6416752fc3",
+    "src/research/spatial_vicreg_bias/md_space.py": "70a951354d8fae7217f3d0581fb74b39276125db17ff2a331528928874c77a53",
+    "src/research/spatial_vicreg_bias/pacmap_md_view.html": "e7663daafce5b0272e8f7a5a329b3b51b0a4ef5399f5bf7e4681763e05337a80",
+    "docs/metrics/dense_md.md": "5878ccff54244a63373e2ce921e62b76b33d8b7cf1fb6b8a7579bb59f84722fe"
+  }
+}

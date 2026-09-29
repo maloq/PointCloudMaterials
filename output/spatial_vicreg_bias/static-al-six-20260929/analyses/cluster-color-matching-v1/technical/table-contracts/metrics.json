@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "0c3216773515e743cf87c2db4102f15984210427536982b571ee894e0804e68c",
+  "family": "cluster_color_matching",
+  "contract": "technical/metric-contracts/cluster_color_matching.json",
+  "definitions": "tables/metric-definitions/cluster_color_matching.md"
+}

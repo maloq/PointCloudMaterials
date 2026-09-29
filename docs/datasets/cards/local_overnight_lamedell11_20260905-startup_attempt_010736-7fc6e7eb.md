@@ -2,11 +2,11 @@
 
 [All datasets](../README.md) · [Browsable card](local_overnight_lamedell11_20260905-startup_attempt_010736-7fc6e7eb.html) · [Full metadata](../records/local_overnight_lamedell11_20260905-startup_attempt_010736-7fc6e7eb.json)
 
-Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.
+MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.
 
 - ID: `local_overnight_lamedell11_20260905.startup_attempt_010736`
 - Materials: Unknown
-- Classification: **incomplete_or_rejected**; role: raw_dynamics
+- Classification: **retired**; role: provenance_only
 - Location: `/work/PERSO/vmorozov/simulations/local_overnight_lamedell11_20260905.startup_attempt_010736`
 - Present on this machine: True
 - Potentials: Unknown / not applicable
@@ -21,12 +21,14 @@ Inspect current producer records and array headers; historical directory labels 
 {
   "title": "local overnight lamedell11 20260905.startup attempt 010736",
   "materials": [],
-  "role": "raw_dynamics",
-  "classification": "incomplete_or_rejected",
-  "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+  "role": "provenance_only",
+  "classification": "retired",
+  "description": "MD payloads retired at user request on 2026-09-26. Historical plots, metrics, logs and provenance remain; no usable trajectory is retained here. See docs/simulations/cleanup_20260926/README.md.",
   "evidence": [
-    "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}"
-  ]
+    "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}",
+    "${dataset:local_overnight_lamedell11_20260905.startup_attempt_010736}/retirement.json"
+  ],
+  "retirement_record": "docs/simulations/cleanup_20260926/receipt.json"
 }
 ```
 
@@ -45,6 +47,6 @@ All 3 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

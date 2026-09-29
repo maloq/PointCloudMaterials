@@ -1,0 +1,14 @@
+{
+  "source_run": "${storage:analysis}/structural_static/mace-epi-epoch12-al-20260926",
+  "source_analysis": "standard-v1",
+  "analysis_name": "order-v1",
+  "seed": 20260926,
+  "samples_per_cluster_frame": 64,
+  "ptm_types": [1, 2, 3, 4],
+  "ptm_rmsd_cutoff": 0.1,
+  "ptm_sensitivity_cutoffs": [0.05, 0.1, 0.15],
+  "coordination_radius_A": 3.7,
+  "display_atoms": 64,
+  "context_mutual_neighbors": 2,
+  "cpu_threads": 4
+}

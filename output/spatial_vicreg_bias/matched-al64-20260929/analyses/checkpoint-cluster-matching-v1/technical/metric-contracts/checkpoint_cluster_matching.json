@@ -1,0 +1,12 @@
+{
+  "family": "checkpoint_cluster_matching",
+  "exported_at": "2026-09-29T13:58:52.196617+00:00",
+  "files": {
+    "docs/metrics/checkpoint_cluster_matching.md": "7494d51c8d9b1c84abcefe9783eb22ed00c7f2225fabb77a58c9fe9bdc30f4b5",
+    "src/research/spatial_vicreg_bias/checkpoint_explorer.py": "f551ac0b2e180d465ced851e8a7d1033b38607ae5f4b48c6c5e92c99ac64b70b",
+    "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+    "src/research/spatial_vicreg_bias/cluster_comparison.js": "34ccfe70acd6b2c0c865377d1cec78e72c0051475c0c76e718626882a24ee37c",
+    "src/research/spatial_vicreg_bias/cluster_comparison.html": "2eec182e601de7a96e806a24a786af0582cdef2e5670f6e8cec0c80722fc204f"
+  },
+  "verified": true
+}

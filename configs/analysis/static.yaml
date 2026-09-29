@@ -1,47 +1,18 @@
 checkpoint:
-  # Required for manual runs. The training wrappers override this at runtime.
-  # path: output/2026-06-03/22-32-37/VICREG_SWAV_l512_K7_N160_M80_RI_MAE_Invariant-epoch=94.ckpt
-  # path: output/2026-06-16/18-46-58/VICREG_l512_N160_M80_RI_MAE_Invariant-epoch=789.ckpt
   path: output/2026-07-13/18-40-11/VICREG_GEOFRAME_MULTISCALE_8_12_PAPER_l128_N160_M80_GeoFrameTransformer-epoch=95.ckpt
-
   output_dir: output/static-al/standard
   cuda_device: 0
-
 inputs:
-  # Optional data override YAML, for example configs/data/loaders/static_al_80.yaml
   data_config: configs/data/loaders/static_al_80.yaml
-  # Optional static frame selection. null -> use data.data_files from the checkpoint config.
   static_data_files: null
   dataloader_num_workers: 4
   max_batches_latent: null
-  # 0/null -> unlimited unless the code imposes a static-data fallback cap.
   max_samples_total: 0
-
 cache:
   enabled: true
   force_recompute: false
   file: analysis_inference_cache.npz
-
-swav:
-  enabled: false
-  assignment_method: sinkhorn
-  sinkhorn_iterations: 20
-  batch_size: 8192
-  export_assignment_csv: true
-  # 0/null -> write all rows; positive value caps only the human-readable CSV.
-  # The compressed NPZ always stores all logits/probabilities/labels.
-  max_assignment_csv_rows: 100000
-  representative_top_k: 12
-  frame_proportions: true
-  transitions: true
-  compare_to_clustering: true
-  md_outputs: true
-  md_max_points: 0
-  plots: true
-
 runtime:
-  # fast avoids eager point-cloud materialization, Blender, UMAP, and
-  # equivariance without reducing sample, direction, snapshot, or view counts.
   profile: full
   progress_every_batches: 20
   seed_base: 123
@@ -50,18 +21,13 @@ runtime:
     clustering_fit_max_samples: null
     snapshot_figure_limit: null
     md_num_views: null
-    raytrace_enabled: false
     tsne_max_samples: null
     equivariance_enabled: false
     real_md_projection_method: pca
-
+    raytrace_enabled: false
 clustering:
-  # Unified selected clustering k used by figure_set and real_md outputs.
   primary_k: 7
-  # null -> run clustering-dependent analyses only for primary_k.
-  # Set a list such as [5, 6, 7, 8] to additionally run clustering-dependent analyses for each key.
   k_values: null
-  # Supported: auto, kmeans, spherical_kmeans. Default is spherical_kmeans.
   method: spherical_kmeans
   compare_methods: []
   l2_normalize: true
@@ -70,21 +36,15 @@ clustering:
   pca_max_components: 64
   connected_regimes:
     enabled: true
-    # Zero-based IDs may be forced here; for example C6/C7 is [[5, 6]].
-    # Empty means discover touching pairs from cross-cluster kNN contact.
     pairs: []
     auto_detect: true
     auto_max_pairs: 4
     max_samples_per_cluster: 1500
     neighbor_k: 15
     min_cross_neighbor_fraction: 0.002
-    # PCA is fit in the original invariant latent space. The component with the
-    # largest standardized regime shift becomes the continuous order parameter.
     pca_components: 8
     histogram_bins: 40
     random_state: 123
-    # Real local structures along connected-pair directions and, for clusters outside
-    # every selected pair, along the dominant within-cluster PCA direction.
     interactive_3d: true
     representative_steps: 30
   hdbscan:
@@ -99,13 +59,11 @@ clustering:
     cluster_selection_epsilon: 0.0
     cluster_selection_method: leaf
     refit_full_data: true
-
 md:
   overlap_boost: 0.0
   overlap_fraction: null
   use_all_points: true
   interactive_max_points: 0
-
 tsne:
   max_samples: 8000
   n_iter: 1000
@@ -115,10 +73,8 @@ tsne:
   umap_neighbors: 30
   umap_min_dist: 0.15
   umap_metric: euclidean
-
 figure_set:
   enabled: true
-  figure_only: false
   color_assignment: {}
   color_assignment_file: null
   profile_point_scale_enabled: false
@@ -139,7 +95,6 @@ figure_set:
     max_samples: 20000
     covariance: diag
   representatives:
-    # null -> data.model_points / data.num_points from the checkpoint config
     points: null
     orientation: pca
     view_elev: 22.0
@@ -148,7 +103,7 @@ figure_set:
     ptm_enabled: true
     cna_enabled: true
     cna_max_signatures: 5
-    center_atom_tolerance: 1.0e-6
+    center_atom_tolerance: 1.0e-06
     shell_min_neighbors: 8
     shell_max_neighbors: 24
   raytrace:
@@ -165,11 +120,10 @@ figure_set:
     sphere_radius_fraction: 0.0105
     timeout_sec: 1200
     use_gpu: true
-
 real_md:
   enabled: true
   time_series:
-    paper_enabled: true
+    paper_enabled: false
     alpha: 0.78
     bar_alpha: 0.82
     paper_alpha: 0.72
@@ -212,9 +166,11 @@ real_md:
     optional:
       steinhardt:
         enabled: false
-        l_values: [4, 6]
+        l_values:
+        - 4
+        - 6
         append_shell_size: true
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       cna:
@@ -222,7 +178,7 @@ real_md:
         max_signatures: 12
         append_shell_size: true
         fit_max_pointclouds: 4000
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
       soap:
@@ -238,7 +194,7 @@ real_md:
         pca_components: 16
         fit_max_pointclouds: 4000
         n_jobs: 1
-        center_atom_tolerance: 1.0e-6
+        center_atom_tolerance: 1.0e-06
         shell_min_neighbors: 8
         shell_max_neighbors: 24
   transitions:
@@ -247,7 +203,20 @@ real_md:
     max_distance: null
     flow_mute_diagonal: true
     flow_min_fraction: 0.001
-
 equivariance:
   enabled: false
   max_batches: 2
+swav:
+  enabled: false
+  assignment_method: sinkhorn
+  sinkhorn_iterations: 20
+  batch_size: 8192
+  export_assignment_csv: true
+  max_assignment_csv_rows: 100000
+  representative_top_k: 12
+  frame_proportions: true
+  transitions: true
+  compare_to_clustering: true
+  md_outputs: true
+  md_max_points: 0
+  plots: true

@@ -1,0 +1,752 @@
+[
+  {
+    "source": "source_000_T400_optimization_melt206158192_velocity611147995",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_000_T400_optimization_melt206158192_velocity611147995/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_001_T400_optimization_melt248699045_velocity607871863",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_001_T400_optimization_melt248699045_velocity607871863/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_002_T400_optimization_melt235751553_velocity626188066",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_002_T400_optimization_melt235751553_velocity626188066/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_003_T400_optimization_melt750494487_velocity85653941",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_003_T400_optimization_melt750494487_velocity85653941/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_004_T400_optimization_melt378118914_velocity845282558",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_004_T400_optimization_melt378118914_velocity845282558/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_005_T400_optimization_melt387039544_velocity90935429",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_005_T400_optimization_melt387039544_velocity90935429/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_006_T400_optimization_melt394685168_velocity679140933",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_006_T400_optimization_melt394685168_velocity679140933/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_007_T400_optimization_melt648456630_velocity770990823",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_007_T400_optimization_melt648456630_velocity770990823/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_008_T400_optimization_melt392346167_velocity213169955",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_008_T400_optimization_melt392346167_velocity213169955/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_009_T400_optimization_melt373247889_velocity410965678",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_009_T400_optimization_melt373247889_velocity410965678/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_010_T400_optimization_melt319035304_velocity823462224",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_010_T400_optimization_melt319035304_velocity823462224/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_011_T400_optimization_melt40651136_velocity539410229",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_011_T400_optimization_melt40651136_velocity539410229/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_012_T400_optimization_melt146234076_velocity307931848",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_012_T400_optimization_melt146234076_velocity307931848/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_013_T400_optimization_melt472193600_velocity748830758",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_013_T400_optimization_melt472193600_velocity748830758/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_014_T400_optimization_melt63365650_velocity12639796",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_014_T400_optimization_melt63365650_velocity12639796/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_015_T400_optimization_melt220809849_velocity246598921",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_015_T400_optimization_melt220809849_velocity246598921/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_016_T400_optimization_melt142641279_velocity50354307",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_016_T400_optimization_melt142641279_velocity50354307/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_017_T400_optimization_melt262380798_velocity458438655",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_017_T400_optimization_melt262380798_velocity458438655/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_018_T400_model_selection_melt837421620_velocity429482000",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_018_T400_model_selection_melt837421620_velocity429482000/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_019_T400_model_selection_melt553888770_velocity496143316",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_019_T400_model_selection_melt553888770_velocity496143316/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_020_T400_model_selection_melt550189933_velocity371260937",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_020_T400_model_selection_melt550189933_velocity371260937/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_021_T400_model_selection_melt8461095_velocity199324450",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_021_T400_model_selection_melt8461095_velocity199324450/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_022_T400_model_selection_melt197585375_velocity233216864",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_022_T400_model_selection_melt197585375_velocity233216864/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_023_T400_model_selection_melt135035943_velocity328731876",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_023_T400_model_selection_melt135035943_velocity328731876/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_024_T400_final_validation_melt648618511_velocity749822684",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_024_T400_final_validation_melt648618511_velocity749822684/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_025_T400_final_validation_melt760589119_velocity212176498",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_025_T400_final_validation_melt760589119_velocity212176498/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_026_T400_final_validation_melt383124119_velocity163531985",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_026_T400_final_validation_melt383124119_velocity163531985/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_027_T400_final_validation_melt361693553_velocity360119458",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_027_T400_final_validation_melt361693553_velocity360119458/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_028_T400_final_validation_melt699880964_velocity457723800",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_028_T400_final_validation_melt699880964_velocity457723800/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_029_T400_final_validation_melt827953021_velocity11340456",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_029_T400_final_validation_melt827953021_velocity11340456/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_030_T450_optimization_melt607972874_velocity268518899",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_030_T450_optimization_melt607972874_velocity268518899/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_031_T450_optimization_melt522035807_velocity10275995",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_031_T450_optimization_melt522035807_velocity10275995/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_032_T450_optimization_melt884700972_velocity640059919",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_032_T450_optimization_melt884700972_velocity640059919/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_033_T450_optimization_melt134462729_velocity225335578",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_033_T450_optimization_melt134462729_velocity225335578/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_034_T450_optimization_melt147978527_velocity388842215",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_034_T450_optimization_melt147978527_velocity388842215/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_035_T450_optimization_melt700628451_velocity337737036",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_035_T450_optimization_melt700628451_velocity337737036/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_036_T450_optimization_melt843445030_velocity476021957",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_036_T450_optimization_melt843445030_velocity476021957/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_037_T450_optimization_melt446448988_velocity193573341",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_037_T450_optimization_melt446448988_velocity193573341/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_038_T450_optimization_melt638959948_velocity822677166",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_038_T450_optimization_melt638959948_velocity822677166/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_039_T450_optimization_melt23525568_velocity812611706",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_039_T450_optimization_melt23525568_velocity812611706/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_040_T450_optimization_melt493123960_velocity804501965",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_040_T450_optimization_melt493123960_velocity804501965/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_041_T450_optimization_melt866573682_velocity843018984",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_041_T450_optimization_melt866573682_velocity843018984/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_042_T450_optimization_melt580598490_velocity835634312",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_042_T450_optimization_melt580598490_velocity835634312/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_043_T450_optimization_melt794706897_velocity278036054",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_043_T450_optimization_melt794706897_velocity278036054/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_044_T450_optimization_melt622811055_velocity137810049",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_044_T450_optimization_melt622811055_velocity137810049/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_045_T450_optimization_melt15458297_velocity246688848",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_045_T450_optimization_melt15458297_velocity246688848/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_046_T450_optimization_melt889862759_velocity754724404",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_046_T450_optimization_melt889862759_velocity754724404/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_047_T450_optimization_melt630014638_velocity275547778",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_047_T450_optimization_melt630014638_velocity275547778/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_048_T450_model_selection_melt419716698_velocity479904344",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_048_T450_model_selection_melt419716698_velocity479904344/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_049_T450_model_selection_melt584489287_velocity528741555",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_049_T450_model_selection_melt584489287_velocity528741555/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_050_T450_model_selection_melt726819917_velocity90250693",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_050_T450_model_selection_melt726819917_velocity90250693/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_051_T450_model_selection_melt468207512_velocity4004358",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_051_T450_model_selection_melt468207512_velocity4004358/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_052_T450_model_selection_melt708791158_velocity451670565",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_052_T450_model_selection_melt708791158_velocity451670565/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_053_T450_model_selection_melt856510393_velocity760212685",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_053_T450_model_selection_melt856510393_velocity760212685/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_054_T450_final_validation_melt60861487_velocity16114127",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_054_T450_final_validation_melt60861487_velocity16114127/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_055_T450_final_validation_melt871840956_velocity879602122",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_055_T450_final_validation_melt871840956_velocity879602122/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_056_T450_final_validation_melt301149348_velocity181016004",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_056_T450_final_validation_melt301149348_velocity181016004/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_057_T450_final_validation_melt427983136_velocity866396535",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_057_T450_final_validation_melt427983136_velocity866396535/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_058_T450_final_validation_melt814816357_velocity758662668",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_058_T450_final_validation_melt814816357_velocity758662668/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_059_T450_final_validation_melt825401364_velocity286175108",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_059_T450_final_validation_melt825401364_velocity286175108/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_060_T500_optimization_melt372484460_velocity806298452",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_060_T500_optimization_melt372484460_velocity806298452/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_061_T500_optimization_melt505713304_velocity373487202",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_061_T500_optimization_melt505713304_velocity373487202/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_062_T500_optimization_melt876710010_velocity613916814",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_062_T500_optimization_melt876710010_velocity613916814/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_063_T500_optimization_melt586618377_velocity777344000",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_063_T500_optimization_melt586618377_velocity777344000/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_064_T500_optimization_melt66157331_velocity757849612",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_064_T500_optimization_melt66157331_velocity757849612/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_065_T500_optimization_melt210998254_velocity185157491",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_065_T500_optimization_melt210998254_velocity185157491/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_066_T500_optimization_melt558747183_velocity123787821",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_066_T500_optimization_melt558747183_velocity123787821/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_067_T500_optimization_melt850903391_velocity197944870",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_067_T500_optimization_melt850903391_velocity197944870/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_068_T500_optimization_melt254084297_velocity69386032",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_068_T500_optimization_melt254084297_velocity69386032/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_069_T500_optimization_melt851781959_velocity227781112",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_069_T500_optimization_melt851781959_velocity227781112/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_070_T500_optimization_melt433626529_velocity50512900",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_070_T500_optimization_melt433626529_velocity50512900/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_071_T500_optimization_melt630952489_velocity134706744",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_071_T500_optimization_melt630952489_velocity134706744/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_072_T500_optimization_melt114745743_velocity70777141",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_072_T500_optimization_melt114745743_velocity70777141/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_073_T500_optimization_melt324310850_velocity770318060",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_073_T500_optimization_melt324310850_velocity770318060/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_074_T500_optimization_melt234173051_velocity494374315",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_074_T500_optimization_melt234173051_velocity494374315/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_075_T500_optimization_melt13937749_velocity810907541",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_075_T500_optimization_melt13937749_velocity810907541/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_076_T500_optimization_melt725446415_velocity549021711",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_076_T500_optimization_melt725446415_velocity549021711/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_077_T500_optimization_melt234029248_velocity527101101",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_077_T500_optimization_melt234029248_velocity527101101/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_078_T500_model_selection_melt797323201_velocity390428464",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_078_T500_model_selection_melt797323201_velocity390428464/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_079_T500_model_selection_melt850300441_velocity248312731",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_079_T500_model_selection_melt850300441_velocity248312731/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_080_T500_model_selection_melt83575882_velocity789791883",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_080_T500_model_selection_melt83575882_velocity789791883/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_081_T500_model_selection_melt176364202_velocity151670672",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_081_T500_model_selection_melt176364202_velocity151670672/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_082_T500_model_selection_melt379257661_velocity526927162",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_082_T500_model_selection_melt379257661_velocity526927162/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_083_T500_model_selection_melt845880246_velocity840829589",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_083_T500_model_selection_melt845880246_velocity840829589/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_084_T500_final_validation_melt646059879_velocity374229017",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_084_T500_final_validation_melt646059879_velocity374229017/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_085_T500_final_validation_melt277320264_velocity300360233",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_085_T500_final_validation_melt277320264_velocity300360233/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_086_T500_final_validation_melt528758061_velocity611763385",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_086_T500_final_validation_melt528758061_velocity611763385/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_087_T500_final_validation_melt96154123_velocity149757564",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_087_T500_final_validation_melt96154123_velocity149757564/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_088_T500_final_validation_melt228616647_velocity243460963",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_088_T500_final_validation_melt228616647_velocity243460963/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_089_T500_final_validation_melt628564803_velocity42633718",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902/runs/source_089_T500_final_validation_melt628564803_velocity42633718/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_000_T510_optimization_melt151871197_velocity769248691",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_000_T510_optimization_melt151871197_velocity769248691/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_001_T510_optimization_melt681943887_velocity226218785",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_001_T510_optimization_melt681943887_velocity226218785/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_002_T510_optimization_melt655109113_velocity711963353",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_002_T510_optimization_melt655109113_velocity711963353/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_003_T510_optimization_melt661426236_velocity201750649",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_003_T510_optimization_melt661426236_velocity201750649/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_004_T510_optimization_melt564513410_velocity693065731",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_004_T510_optimization_melt564513410_velocity693065731/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_005_T510_optimization_melt603302271_velocity45594483",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_005_T510_optimization_melt603302271_velocity45594483/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_006_T510_optimization_melt398617878_velocity345519274",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_006_T510_optimization_melt398617878_velocity345519274/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_007_T510_optimization_melt83132283_velocity86630364",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_007_T510_optimization_melt83132283_velocity86630364/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_008_T510_optimization_melt87283751_velocity19173877",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_008_T510_optimization_melt87283751_velocity19173877/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_009_T510_optimization_melt86832792_velocity884581988",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_009_T510_optimization_melt86832792_velocity884581988/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_010_T510_optimization_melt745135969_velocity775893815",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_010_T510_optimization_melt745135969_velocity775893815/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_011_T510_optimization_melt442136159_velocity861328542",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_011_T510_optimization_melt442136159_velocity861328542/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_012_T510_optimization_melt269696945_velocity805734861",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_012_T510_optimization_melt269696945_velocity805734861/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_013_T510_optimization_melt561573362_velocity192647554",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_013_T510_optimization_melt561573362_velocity192647554/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_014_T510_optimization_melt729671835_velocity337609745",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_014_T510_optimization_melt729671835_velocity337609745/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_015_T510_optimization_melt379031575_velocity772545022",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_015_T510_optimization_melt379031575_velocity772545022/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_016_T510_optimization_melt234122652_velocity874085168",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_016_T510_optimization_melt234122652_velocity874085168/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_017_T510_optimization_melt746727007_velocity64212989",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_017_T510_optimization_melt746727007_velocity64212989/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_018_T510_model_selection_melt129223029_velocity82017738",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_018_T510_model_selection_melt129223029_velocity82017738/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_019_T510_model_selection_melt740238344_velocity787544456",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_019_T510_model_selection_melt740238344_velocity787544456/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_020_T510_model_selection_melt444631845_velocity44078540",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_020_T510_model_selection_melt444631845_velocity44078540/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_021_T510_model_selection_melt387474214_velocity634528391",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_021_T510_model_selection_melt387474214_velocity634528391/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_022_T510_model_selection_melt773283105_velocity572623480",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_022_T510_model_selection_melt773283105_velocity572623480/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_023_T510_model_selection_melt827732877_velocity62126331",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_023_T510_model_selection_melt827732877_velocity62126331/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_024_T510_final_validation_melt816360514_velocity93893603",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_024_T510_final_validation_melt816360514_velocity93893603/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_025_T510_final_validation_melt653872695_velocity543827511",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_025_T510_final_validation_melt653872695_velocity543827511/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_026_T510_final_validation_melt457811864_velocity566853511",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_026_T510_final_validation_melt457811864_velocity566853511/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_027_T510_final_validation_melt453777906_velocity178631405",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_027_T510_final_validation_melt453777906_velocity178631405/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_028_T510_final_validation_melt502726670_velocity350404648",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_028_T510_final_validation_melt502726670_velocity350404648/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_029_T510_final_validation_melt870099266_velocity118047358",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_029_T510_final_validation_melt870099266_velocity118047358/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_030_T520_optimization_melt76354933_velocity607680983",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_030_T520_optimization_melt76354933_velocity607680983/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_031_T520_optimization_melt542619615_velocity257766501",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_031_T520_optimization_melt542619615_velocity257766501/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_057_T520_final_validation_melt259940230_velocity95929037",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_057_T520_final_validation_melt259940230_velocity95929037/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_058_T520_final_validation_melt139885636_velocity553075734",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_058_T520_final_validation_melt139885636_velocity553075734/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  },
+  {
+    "source": "source_059_T520_final_validation_melt270739820_velocity484920826",
+    "path": "/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903/runs/source_059_T520_final_validation_melt270739820_velocity484920826/trajectory_binary_float16",
+    "manifest_hash_matches": true,
+    "arrays_present": true
+  }
+]

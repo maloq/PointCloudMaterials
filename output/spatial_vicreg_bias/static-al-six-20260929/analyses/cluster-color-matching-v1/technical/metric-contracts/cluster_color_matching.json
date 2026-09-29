@@ -1,0 +1,11 @@
+{
+  "family": "cluster_color_matching",
+  "exported_at": "2026-09-29T13:38:16.928367+00:00",
+  "files": {
+    "docs/metrics/cluster_color_matching.md": "1d6534cb94d91c5778e40e24767df1806022cc6f670b193489d9b10208adafcd",
+    "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+    "src/research/spatial_vicreg_bias/cluster_comparison.js": "9e81686367425824b8949b21ecbcdce6dceea11820d8b4dbfe7b3dd077a43d9e",
+    "src/research/spatial_vicreg_bias/cluster_comparison.html": "2eec182e601de7a96e806a24a786af0582cdef2e5670f6e8cec0c80722fc204f"
+  },
+  "verified": true
+}

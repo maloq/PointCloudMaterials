@@ -1,0 +1,45 @@
+[
+  {
+    "config": "/work/PERSO/vmorozov/analysis/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code/configs/encoder_mechanisms/alignment_readout_20260926.json",
+    "cache_references": [
+      "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925",
+      "/home/ids/vmorozov/training-cache/supervised-onset/al64-b512-20260925",
+      "/home/infres/vmorozov/PointCloudMaterials/Reuse the existing shared cache namespace and its live lease/eviction policy; preserve its recorded location, rather than creating a second six-entry pool. No new training dataset cache is created.",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/context-features",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/structural-pretraining/multimaterial-256-20260925"
+    ]
+  },
+  {
+    "config": "/work/PERSO/vmorozov/analysis/distance_encoder/md-history6-20260926/technical/code/real.json",
+    "cache_references": [
+      "/home/ids/vmorozov/training-cache/distance-encoder/md-history6-evaluation-20260926",
+      "/home/ids/vmorozov/training-cache/distance-encoder/multimaterial-20260926",
+      "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925",
+      "/home/ids/vmorozov/training-cache/supervised-onset/al64-b512-20260925",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/multimaterial256-epochs-20260925/dense-observed",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/structural-pretraining/multimaterial-256-20260925"
+    ]
+  },
+  {
+    "config": "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/encoder_quality_latest_20260926.json",
+    "cache_references": [
+      "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925",
+      "/home/ids/vmorozov/training-cache/supervised-onset/al64-b512-20260925",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/context-features",
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/encoder-context/multimaterial256-epochs-20260925/dense-observed"
+    ]
+  },
+  {
+    "config": "/home/infres/vmorozov/PointCloudMaterials/configs/encoder_context/multimaterial256_batch1024_epi_recovery_20260925/epi_variance/base_hot.json",
+    "cache_references": [
+      "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925",
+      "/home/ids/vmorozov/training-cache/supervised-onset/al64-b512-20260925"
+    ]
+  },
+  {
+    "config": "/home/infres/vmorozov/PointCloudMaterials/configs/analysis/crystallization_origin_20260925.json",
+    "cache_references": [
+      "/home/ids/vmorozov/training-cache/fixed-cohort/al64-v1-20260925"
+    ]
+  }
+]

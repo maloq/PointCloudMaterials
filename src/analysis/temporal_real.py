@@ -122,7 +122,7 @@ def _validate_temporal_real_checkpoint_compatibility(
     inference_mode: Any,
 ) -> None:
     model_data_kind = str(model_cfg.data.kind).strip().lower()
-    inference_mode_norm = _normalize_temporal_real_inference_mode(inference_mode)
+    _normalize_temporal_real_inference_mode(inference_mode)
     if model_data_kind not in {"static", "temporal_lammps"}:
         raise ValueError(
             "Temporal dump analysis supports static checkpoints "

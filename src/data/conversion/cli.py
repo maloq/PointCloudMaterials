@@ -7,6 +7,8 @@ reader metadata; only --delete-source removes verified source dumps.
 from src.command_line import dispatch
 
 COMMANDS = {
+    "dense-al": "src.data.conversion.dense_al",
+    "birth-pair": "src.data.conversion.birth_pair",
     "memory-pair": "src.data.conversion.memory_pair",
     "relaxation": "src.data.conversion.relaxation",
     "temporal-storage": "src.data.conversion.position_storage",

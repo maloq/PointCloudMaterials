@@ -1,0 +1,27 @@
+{
+  "parent_plan_sha256": "f4f0be922cfca751ed413bce17b58ef0b2caf6c4c695a238589c44a979e404d1",
+  "parent_release_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "sources": 150,
+  "roles": {
+    "train": 90,
+    "calibration": 15,
+    "selection": 15,
+    "test": 30
+  },
+  "prepared_manifest_sha256": "0cf4e59c13c71194788a5d45753602c30134b5342a97c37ce033505b29c54995",
+  "temperatures_K": [
+    400.0,
+    450.0,
+    500.0,
+    510.0,
+    520.0
+  ],
+  "median_old_seconds_per_step": 0.033781525,
+  "estimated_days": [
+    5,
+    8
+  ],
+  "estimate_excludes_queue_delays": true,
+  "workers": 4,
+  "retained_vector_array_bytes": 759409747200
+}

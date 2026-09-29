@@ -1,0 +1,51 @@
+{
+  "protocol": "interface_pacmap_v1",
+  "correspondence_config": "configs/analysis/interface_cluster_correspondence.json",
+  "output": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v2",
+  "publication": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1",
+  "epochs": [
+    4,
+    12,
+    24
+  ],
+  "seeds": [
+    17,
+    29,
+    43
+  ],
+  "alphas": [
+    0.0,
+    0.5,
+    1.0
+  ],
+  "populations": [
+    "all_test",
+    "interface20"
+  ],
+  "pacmap": {
+    "version": "0.9.1",
+    "knn_backend": "faiss",
+    "n_neighbors": 20,
+    "MN_ratio": 0.5,
+    "FP_ratio": 2.0,
+    "num_iters": [
+      100,
+      100,
+      250
+    ],
+    "apply_pca": false,
+    "random_state": 20260929
+  },
+  "workers": 2,
+  "threads_per_worker": 2,
+  "cpu_hours": 12,
+  "inference_device": "cuda",
+  "preview_checkpoint": {
+    "alpha": 0.0,
+    "seed": 17,
+    "epoch": 4
+  },
+  "gpu_partition": "A40,3090,L40S",
+  "gpu_node": null,
+  "inherit_descriptors_from": "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1"
+}

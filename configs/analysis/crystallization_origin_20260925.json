@@ -1,0 +1,24 @@
+{
+  "protocol": "al64-crystallization-origin-audit-v2",
+  "release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "output": "${storage:analysis}/crystallization_origin/al64-20260925",
+  "pilot_sources": [860, 884, 914, 944, 974],
+  "workers": 6,
+  "ptm": {"rmsd_cutoff": 0.1, "crystal_types": [1, 2, 3], "chunk_frames": 32},
+  "lineage": {
+    "neighbor_cutoff_A": 3.6,
+    "minimum_tracked_size": 4,
+    "minimum_shared_atoms": 4,
+    "minimum_overlap_fraction": 0.25,
+    "maximum_missing_frames": 1,
+    "local_birth_radius_A": 8.0,
+    "interface_distance_A": 8.0,
+    "thresholds": [
+      {"name": "primary", "size": 64, "persistence_frames": 3},
+      {"name": "size32", "size": 32, "persistence_frames": 3},
+      {"name": "size128", "size": 128, "persistence_frames": 3},
+      {"name": "persistent5", "size": 64, "persistence_frames": 5}
+    ]
+  },
+  "horizons_ps": [3.0, 6.0]
+}

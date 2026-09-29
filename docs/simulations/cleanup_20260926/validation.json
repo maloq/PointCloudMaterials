@@ -1,0 +1,15 @@
+{
+  "all_deleted_paths_absent": true,
+  "retired_collections_without_trajectory_exports": true,
+  "main_independent_source_counts": [
+    90,
+    36,
+    24
+  ],
+  "main_sampling_ps": 0.75,
+  "main_sampled_velocities": true,
+  "post_cleanup_inventory": "docs/simulations/inventory_20260926_after_cleanup/inventory.json",
+  "validation_method": "Manual inventory/stat checks; no automated tests added.",
+  "full_dataset_registry_refreshed": true,
+  "retirement_entries_verified": 11
+}

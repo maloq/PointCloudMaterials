@@ -1,5 +1,11 @@
 # BCR execution
 
+Historical workflow: physical-reconstruction pretraining was discontinued on
+2026-09-25. The original coarse Al source of `configs/bcr/real_overfit.json` was
+deleted at user request on 2026-09-26; the existing fixture cache and results are
+retained, but `prepare` can no longer rebuild that recipe from its source. See
+[the cleanup record](simulations/cleanup_20260926/README.md).
+
 Use conda `pointnet-torch214`. The maintained entry point is
 `python -m src.training_methods.bcr STAGE --config CONFIG`.
 Stages: `prepare`, `verify`, `train`, `evaluate`, `probes`, `select`.

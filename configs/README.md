@@ -1,9 +1,115 @@
 # Configuration index
 
+The frozen rich-MACE interface recipe is [analysis/mace_rich_interface_20260929.json](analysis/mace_rich_interface_20260929.json); it reuses both existing Al viewer datasets without neural training.
+
+[Six static Al interface views](analysis/static_al_interface.json): frozen neural
+and descriptor clusters, dense MD and PaCMAP on the 166–240 ps relaxed snapshots;
+[workflow](../docs/spatial_vicreg_bias.md). Inference uses any A40/3090/L40S, without a node pin.
+
+[Matched spatial VICReg](spatial_vicreg_bias/al64_20260929.json): three pair-alignment
+strengths × three seeds, fixed 24-pass GeoFormer training and cluster-to-structure
+assays; [workflow](../docs/spatial_vicreg_bias.md).
+
+- [Multimaterial rich-descriptor RH2 repair](liquid_predictability/rich_multimaterial_residual_20260929.json): normalized residual descriptor head and scalar mean anchoring; fixed raw multimaterial subset, correlation/angular order 3, batch8192, LR0.01, 60 epochs, checkpointed 1024-patch chunks. The [prior head](liquid_predictability/rich_multimaterial_c3_l3_20260929.json) saturated and is preserved as a stopped failure.
+
+[GeoFormer coordinate transitions](analysis/spatial_vicreg_coordinates.json):
+frozen epoch-34 encoder/projector across three Al snapshots, physical transects
+and region-separated coordinate selection; [execution](../docs/spatial_vicreg_bias.md).
+
+[RD-MACE256-L3-Z256](liquid_predictability/rich_mace256_20260929.json): 60 exact raw-data epochs, measured large batch and 0.004 warmup/cosine LR; [operations](../docs/rich_descriptor_encoder.md).
+
+[Liquid controls and relaxed factorial](liquid_predictability/controls_relaxed_20260928.json): executable single-seed queue; [operations](../docs/liquid_controls.md).
+
+
+Rich liquid descriptor controls: [recipe](liquid_predictability/descriptors_al64_20260928.json),
+[workflow](../docs/liquid_descriptors.md); fixed source splits, CPU extraction and likelihood-selected fits.
+
+
+[Liquid predictability](liquid_predictability/al64_20260928.json): matched distance
+likelihood, descriptor and frozen controls, VCReg MACE and independent-source
+learning curves; [execution](../docs/liquid_predictability.md).
+
+[Liquid-only external-crystal distance](crystal_vector/liquid_distance_20260928.json)
+supersedes the unstarted interface-only exclusion fit. It excludes established
+crystal from every input patch and selects on distance when a crystal exists
+elsewhere; [execution](../docs/crystal_liquid_distance.md).
+
+[Interface feature-dominance audit](analysis/crystal_feature_dominance_20260928.json):
+train-fitted PCA/readouts and frozen-predictor feature interventions, no scientific
+training; [findings](../experiments/crystal_interface_20260928/FEATURE_DOMINANCE.md).
+
+[Dense interface-invisible VCReg](crystal_vector/interface_unseen_20260928.json):
+one fit on two GPUs with global batch 512, existing-trajectory expansion and
+unchanged fixed source roles; [execution](../docs/crystal_interface_unseen.md).
+
+[CIV-MACE128 interface targets](crystal_vector/interface_al64_20260928.json): a
+separate three-arm distance/direction/VCReg study with positive crystal-interior
+distance to the edge; [execution](../docs/crystal_interface.md).
+
+[CDV-MACE128 random batches](crystal_vector/al64_20260928.json): joint snapshot
+distance/vector localization and matched controls, replacing fixed distance quotas;
+[execution](../docs/crystal_vector.md).
+
+Checkpoint-analysis YAML recipes share `analysis/static.yaml` using an explicit
+`extends: static.yaml` key. The analysis loader merges the base before applying
+the recipe and runtime overrides; use `load_checkpoint_analysis_config` when
+loading these recipes in Python. Temporal/TMF protocols stay separate. See the
+[analysis guide](../docs/analysis_visualization.md).
+
+[CD-MACE128 static export](analysis/cd_mace128_static.json), [six-snapshot pipeline](analysis/static_cd_mace128_al.yaml),
+[local order](analysis/cd_mace128_order.json) and [linked explorer](analysis/cd_mace128_explorer.json)
+use the completed original distance-supervised encoder. The [EPI explorer](analysis/mace_epi_explorer.json)
+applies the same visualization protocol to the self-supervised run.
+
+[Six closest MD frames](distance_encoder/md_dense6_075nominal_20260926.json): nominal 0.75-ps all-data and [exact 0.10-ps](distance_encoder/md_dense6_010ps_20260926.json) history training; actual intervals recorded.
+
+[MD-history crystal distance](distance_encoder/md_history6_20260926.json): matched end-to-end 6-ps history and repeated-current fits; [workflow](../docs/distance_encoder_history.md).
+
+[Joint distance encoder](distance_encoder/multimaterial_early_20260926.json):
+multi-material distance labels, two-GPU MACE training and early spatial detection;
+[workflow](../docs/distance_encoder.md).
+
+[Continuous spatial distance](analysis/spatial_distance_20260926.json): matched
+distance readouts, uniform spatial augmentation and label-visibility control;
+[workflow](../docs/spatial_distance.md).
+
+[Native MACE static gallery](analysis/native_mace_epi_latest_static.json): pinned
+self-supervised EPI-variance epoch-12 export and verification; run the
+[six-snapshot analysis](analysis/static_native_mace_epi_latest_al.yaml) afterward.
+
+[MACE local-order figures](analysis/mace_epi_epoch12_order.json) reuse the saved
+cluster assignments for full-source PTM, multiple-sample order diagnostics and
+three coordinated static/interactive figures; [workflow](../docs/analysis_visualization.md#local-order-figures).
+
+[Result publication](analysis/result_publication_20260926.json): grouped navigation
+over retained GATr, GeoFrame and two-seed comparison evidence, without numerical
+recomputation; [commands](../docs/research_results_system.md).
+
+[Nucleus harvest](analysis/nucleus_harvest_20260926.json): training-only precursor
+eligibility, event-window coverage and bond-order quality; [workflow](../docs/nucleus_harvest.md).
+
+[Spatial approach](analysis/spatial_approach_20260926.json): five matched
+fixed-snapshot warning-distance readouts; [workflow](../docs/spatial_approach.md).
+
+[External crystallization-origin audit](analysis/crystallization_origin_external_20260926.json):
+million-atom Al and other material dynamics, physical-time persistence and
+parallel CPU extraction; [execution](../docs/crystallization_origin_cpu.md).
+
+[Crystallization-origin audit](analysis/crystallization_origin_20260925.json):
+full periodic PTM ancestry, distinct establishments and 3/6 ps label counts on
+the fixed Al64 sources; [guide](../docs/encoder_research/crystallization_origins.md).
+
 [`fixed_cohort/al64_v1.json`](fixed_cohort/al64_v1.json) freezes the 64-center Al
 benchmark and large structural pretraining sets for new model comparisons;
 [split and input contract](../docs/datasets/fixed_al64.md). Existing runs keep
 their recorded data.
+
+[Larger structural corpus](structural_pretraining/multimaterial_256_20260925.json):
+256 native centers, proportional 1% external sampling, native Al/Mg/Ti/Ta/Zr
+coordinates and existing relaxed Al pairs. [Data contract and detached preparation](../docs/datasets/structural_multimaterial_256.md).
+The [prepared follow-up campaign](encoder_context/multimaterial256_20260925/campaign.json)
+uses geometry-only streaming pretraining, the existing fixed material length
+normalization, and the unchanged Al64 evaluation.
 
 [Encoder initialization and directional context](encoder_context/al64_20260925/campaign.json): four initializations, eight supervised encoders, each tested with vector messages and harmonic hierarchy; at least 12 full epochs and complete representation diagnostics. [Operations](../docs/encoder_context.md).
 
@@ -329,7 +435,7 @@ Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.y
 
 - `analysis/relaxed_encoder_accelerated.json`: validated GPU execution overlay for the existing expanded paired-relaxation plan.
 
-- `bcr/real_overfit.json`: full-radius Al BCR correctness/overfit fixture, not a scientific training population. See [execution](../docs/bcr.md).
+- `bcr/real_overfit.json`: historical full-radius Al BCR correctness/overfit fixture. Its original coarse source was retired on 2026-09-26; the existing cache remains. See [execution](../docs/bcr.md).
 
 - `bcr/pilot_20260921/study.json`: fixed-architecture independent-root BCR/unconditional/frozen-random comparison.
 
@@ -397,3 +503,12 @@ It runs analysis only and preserves historical outputs.
 selection, with separate outputs. Historical `screen_20260924.json` recipes
 retain explicit12 ps settings. New recipes have not been submitted; see the
 [experiment priorities](../experiments/onset_ap3_20260924/README.md).
+
+`analysis/encoder_quality_latest_20260926.json` pins eight current native MACE exports for the [frozen quality comparison](../experiments/encoder_quality_20260926/README.md).
+
+- [Encoder mechanisms, 2026-09-26](encoder_mechanisms/alignment_readout_20260926.json): three-seed alignment interventions, matched adaptation, readout controls and sealed birth coverage.
+# Distance encoder material adaptation
+
+`distance_encoder/material_al_20260927.json` and `material_ta_20260927.json`
+fine-tune the full six-frame CD-MACE128 parent separately. See
+[execution and evaluation scopes](../docs/distance_encoder_material_finetune.md).

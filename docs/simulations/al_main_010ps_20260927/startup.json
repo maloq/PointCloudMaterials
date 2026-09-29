@@ -1,0 +1,46 @@
+[
+  {
+    "run_id": "al-main-010ps-20260927-source0860",
+    "status": {
+      "state": "running",
+      "phase": "dynamics",
+      "started_at": "2026-09-27T09:14:56.195827+00:00",
+      "slurm_job_id": "1010645",
+      "host": "nodecpu07",
+      "run_id": "al-main-010ps-20260927-source0860"
+    }
+  },
+  {
+    "run_id": "al-main-010ps-20260927-source0861",
+    "status": {
+      "state": "running",
+      "phase": "dynamics",
+      "started_at": "2026-09-27T09:14:56.201044+00:00",
+      "slurm_job_id": "1010646",
+      "host": "nodecpu06",
+      "run_id": "al-main-010ps-20260927-source0861"
+    }
+  },
+  {
+    "run_id": "al-main-010ps-20260927-source0862",
+    "status": {
+      "state": "running",
+      "phase": "dynamics",
+      "started_at": "2026-09-27T09:14:56.200547+00:00",
+      "slurm_job_id": "1010647",
+      "host": "nodecpu06",
+      "run_id": "al-main-010ps-20260927-source0862"
+    }
+  },
+  {
+    "run_id": "al-main-010ps-20260927-source0863",
+    "status": {
+      "state": "running",
+      "phase": "dynamics",
+      "started_at": "2026-09-27T09:14:55.733368+00:00",
+      "slurm_job_id": "1010643",
+      "host": "nodecpu03",
+      "run_id": "al-main-010ps-20260927-source0863"
+    }
+  }
+]

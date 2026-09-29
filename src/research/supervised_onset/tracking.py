@@ -1,7 +1,10 @@
 """Mandatory online W&B records, with one stable identity per trained encoder."""
 from contextlib import contextmanager
 import hashlib
+import json
 import os
+import time
+from types import SimpleNamespace
 import numpy as np
 
 from .common import write_json
@@ -19,6 +22,8 @@ def require_online(settings):
 
 @contextmanager
 def tracked_run(study, name, *, job_type='encoder'):
+    if study.config.get('tracking_scope') == 'diagnostic':
+        raise ValueError('Diagnostic studies must use local_evaluation; they cannot create W&B runs')
     if job_type not in ('encoder', 'predictor', 'control'):
         raise ValueError(f'W&B is restricted to scientific training runs, not {job_type!r}; keep diagnostics local')
     import wandb
@@ -54,6 +59,57 @@ def tracked_run(study, name, *, job_type='encoder'):
         raise
     else:
         run.finish(exit_code=0)
+
+
+@contextmanager
+def local_evaluation(study, name, kind):
+    """Keep diagnostic probe progress and summaries without opening a W&B run."""
+    folder = study.technical/'evaluation-tracking'/name/kind
+    folder.mkdir(parents=True, exist_ok=True)
+    receipt = dict(identity=study.identity, component=name, kind=kind,
+        mode='local', created_online_runs=0, state='running', started_at=time.time())
+    summary = {}
+    write_json(folder/'run.json', receipt)
+    try:
+        with (folder/'progress.jsonl').open('a') as stream:
+            def log(values):
+                stream.write(json.dumps(values)+'\n')
+                stream.flush()
+            yield SimpleNamespace(log=log, summary=summary)
+    except BaseException as error:
+        receipt.update(state='failed', error=repr(error))
+        raise
+    else:
+        receipt['state'] = 'complete'
+    finally:
+        write_json(folder/'summary.json', summary)
+        write_json(folder/'run.json', dict(receipt, finished_at=time.time()))
+
+
+def update_training_summary(study, name, fields, *, evaluation):
+    """Update a recorded training run through the API; never create/restart one."""
+    settings = study.config['wandb']
+    require_online(settings)
+    folder = study.technical/'wandb'/name
+    receipt = json.loads((folder/'run.json').read_text())
+    expected_id = hashlib.sha256(f'{study.identity}:{name}'.encode()).hexdigest()[:20]
+    expected = dict(id=expected_id, identity=study.identity, component=name,
+        entity=settings['entity'], project=settings['project'], mode='online')
+    for key,value in expected.items():
+        if receipt[key] != value:
+            raise ValueError(f'Associated training receipt mismatch: {folder}/run.json: {key}')
+    target = folder/'evaluations'/f'{evaluation}.json'
+    record = dict(state='pending', run_id=receipt['id'], url=receipt['url'],
+        identity=study.identity, evaluation=evaluation, fields=fields, created_online_runs=0)
+    write_json(target, record)
+    try:
+        import wandb
+        run = wandb.Api(timeout=60).run(f"{receipt['entity']}/{receipt['project']}/{receipt['id']}")
+        run.summary.update(fields)
+    except Exception as error:
+        write_json(target, dict(record, state='failed', error=repr(error)))
+        raise
+    write_json(target, dict(record, state='complete', updated_at=time.time()))
 
 
 def training_record(run, record, optimizer):
@@ -115,14 +171,16 @@ def final_fields(metrics, metadata):
 
 
 def evaluation_record(study, name, kind, scores, metadata):
-    """Final readouts share the encoder run; controls get their own named runs."""
+    """Associated scores update the trained encoder; diagnostic controls stay local."""
     is_encoder = name in {a['name'] for a in study.config['arms']}
-    with tracked_run(study, name, job_type='encoder' if is_encoder else 'control') as run:
-        # Summaries do not rewind the optimizer-step history when evaluating an
-        # earlier selected checkpoint or fitting a fresh frozen readout.
-        run.summary[f'evaluation/{kind}'] = dict(scores=scores, metadata=metadata)
-        for horizon, blocks in scores.items():
-            for role, values in blocks.items():
-                for key in ('average_precision', 'brier', 'raw_brier', 'recall', 'false_positive_rate'):
-                    if key in values:
-                        run.summary[f'{role}/{kind}/{key}_{horizon}ps'] = values[key]
+    fields = {f'evaluation/{kind}': dict(scores=scores, metadata=metadata)}
+    for horizon, blocks in scores.items():
+        for role, values in blocks.items():
+            for key in ('average_precision', 'brier', 'raw_brier', 'recall', 'false_positive_rate'):
+                if key in values:
+                    fields[f'{role}/{kind}/{key}_{horizon}ps'] = values[key]
+    if is_encoder:
+        update_training_summary(study, name, fields, evaluation=kind)
+    else:
+        write_json(study.technical/'evaluation-tracking'/name/kind/'evaluation.json',
+            dict(identity=study.identity, mode='local', created_online_runs=0, fields=fields))

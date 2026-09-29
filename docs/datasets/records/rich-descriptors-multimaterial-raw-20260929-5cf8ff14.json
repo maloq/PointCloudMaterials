@@ -1,0 +1,2739 @@
+{
+  "dataset_id": "rich-descriptors-multimaterial-raw-20260929",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "6cfaf9a43364a9927d88b1ed3f0615766f09a066976ec71e5564cc63342001bd",
+      "kind": "metadata",
+      "keys": [
+        "columns",
+        "counts",
+        "fixed_identity",
+        "fixed_population_sha256",
+        "identity",
+        "implementation",
+        "normalization",
+        "protocol",
+        "sampling",
+        "source_manifest_sha256",
+        "structural_identity",
+        "tasks"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "rich_multimaterial_patch_descriptors_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "fixed_material_cutoff_al_reference_v1",
+            "first_json_path": "normalization.protocol",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "tasks[0].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "tasks[201].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "tasks[402].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "tasks[603].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "tasks[804].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "tasks[1005].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "tasks[1206].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "tasks[1407].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "tasks[1608].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "tasks[1809].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "tasks[2010].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "tasks[2211].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "tasks[2412].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "tasks[2613].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "tasks[2814].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "tasks[3015].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "tasks[3216].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "tasks[3417].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "tasks[3618].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "tasks[3819].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "tasks[4020].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "tasks[4221].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "tasks[4422].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "tasks[4623].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "tasks[4824].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "tasks[5025].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "tasks[5226].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "tasks[5427].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "tasks[5628].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "tasks[5829].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "tasks[6030].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "tasks[6231].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "tasks[6432].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "tasks[6633].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "tasks[6834].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "tasks[7035].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "tasks[7236].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "tasks[7437].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "tasks[7638].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "tasks[7839].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "tasks[8040].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "tasks[8241].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "tasks[8442].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "tasks[8643].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "tasks[8844].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "tasks[9045].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "tasks[9246].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "tasks[9447].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "tasks[9648].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "tasks[9849].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "tasks[10050].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "tasks[10251].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "tasks[10452].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "tasks[10653].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "tasks[10854].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "tasks[11055].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "tasks[11256].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "tasks[11457].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "tasks[11658].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "tasks[11859].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "tasks[12060].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "tasks[12261].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "tasks[12462].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "tasks[12663].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "tasks[12864].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "tasks[13065].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "tasks[13266].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "tasks[13467].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "tasks[13668].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "tasks[13869].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "tasks[14070].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "tasks[14271].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "tasks[14472].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "tasks[14673].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "tasks[14874].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "tasks[15075].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "tasks[15276].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "tasks[15477].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "tasks[15678].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "tasks[15879].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "tasks[16080].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "tasks[16281].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "tasks[16482].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "tasks[16683].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "tasks[16884].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "tasks[17085].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "tasks[17286].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "tasks[17487].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "tasks[17688].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "tasks[17889].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "tasks[18090].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "tasks[18291].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "tasks[18492].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "tasks[18693].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "tasks[18894].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "tasks[19095].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "tasks[19296].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "tasks[19497].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "tasks[19698].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "tasks[19899].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "tasks[20100].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "tasks[20301].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "tasks[20502].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "tasks[20703].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "tasks[20904].lineage",
+            "occurrences": 201
+          },
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "tasks[21105].lineage",
+            "occurrences": 54
+          },
+          {
+            "value": "al-1m-independent-melt-911001",
+            "first_json_path": "tasks[21159].lineage",
+            "occurrences": 234
+          },
+          {
+            "value": "Mg-archived-root",
+            "first_json_path": "tasks[21393].lineage",
+            "occurrences": 54
+          },
+          {
+            "value": "Ti-archived-root",
+            "first_json_path": "tasks[21447].lineage",
+            "occurrences": 728
+          },
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "tasks[22175].lineage",
+            "occurrences": 189
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "tasks[22364].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "tasks[22365].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "tasks[22366].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "tasks[22367].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "tasks[22368].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "tasks[22369].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "tasks[22370].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "tasks[22371].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "tasks[22372].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "tasks[22373].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "tasks[22374].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "tasks[22375].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "tasks[22376].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "tasks[22377].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "tasks[22378].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "tasks[22379].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "tasks[22380].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "tasks[22381].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "tasks[22382].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "tasks[22383].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "tasks[22384].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "tasks[22385].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "tasks[22386].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "tasks[22387].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "tasks[22388].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "tasks[22389].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "tasks[22390].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "tasks[22391].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "tasks[22392].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "tasks[22393].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "tasks[22394].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "tasks[22395].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "tasks[22396].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "tasks[22397].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "tasks[22398].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "tasks[22399].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "tasks[22400].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "tasks[22401].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "tasks[22402].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "tasks[22403].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "tasks[22404].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "tasks[22405].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "tasks[22406].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "tasks[22407].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "tasks[22408].lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "tasks[0].material",
+            "occurrences": 21438
+          },
+          {
+            "value": "Mg",
+            "first_json_path": "tasks[21393].material",
+            "occurrences": 54
+          },
+          {
+            "value": "Ti",
+            "first_json_path": "tasks[21447].material",
+            "occurrences": 728
+          },
+          {
+            "value": "Ta",
+            "first_json_path": "tasks[22175].material",
+            "occurrences": 189
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "tasks[0].original_task.split",
+            "occurrences": 19349
+          },
+          {
+            "value": "selection",
+            "first_json_path": "tasks[3015].original_task.split",
+            "occurrences": 3015
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/1ccb83e1325a791d6acc-000030-000000/complete.json",
+      "relative_path": "shards/1ccb83e1325a791d6acc-000030-000000/complete.json",
+      "sha256": "39d191fe2c9da657327966179b10aad7c69d9e810dbedbbec3fe8935b5e0b971",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/1ccb83e1325a791d6acc-000060-000000/complete.json",
+      "relative_path": "shards/1ccb83e1325a791d6acc-000060-000000/complete.json",
+      "sha256": "6bc91dffce537258efa70a28306e93d09e980f2e22609e2888210c0631a9c8ad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-000000/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000000-000000/complete.json",
+      "sha256": "d28818eff7f6a3e1b65258375170d6ea2bcd724997321b9bc63075615b6b7156",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-032768/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000000-032768/complete.json",
+      "sha256": "bea93fd57d5affce469052f6682a27d1650f64ed6a745abd500e0ed664dd3609",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000000-065536/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000000-065536/complete.json",
+      "sha256": "259da9a66f1c9cee743a1484f057332a5795249a84b9fa10b77c260f7d226e96",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000060-065536/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000060-065536/complete.json",
+      "sha256": "f85ea7f4c50edb9f1d9714bc1a510b548c13a6b54b88e64b927cad110322cab6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000090-000000/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000090-000000/complete.json",
+      "sha256": "3d844357e9a24b0a83e8fc6fb11f00ab7352dd05fad93462190fdfe75e1d8a3b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000090-032768/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000090-032768/complete.json",
+      "sha256": "75d4ac39e77627a6079bfb7c47b53cedf65f00ce744fb07841e3cefc1dad5231",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000150-032768/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000150-032768/complete.json",
+      "sha256": "314a82c06e3d0eb770acb5e6409e5e3129d0b6ca08f7f218a100eb7254af997e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000150-065536/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000150-065536/complete.json",
+      "sha256": "fa60f574c53c5bbec6a05172730cb9efe8f9387b3b6d61fe65345a3b94670ffe",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000180-000000/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000180-000000/complete.json",
+      "sha256": "792b05d4656e3891f8ea5e4810f9913f1ff1def3683ee049db013f50e32613ce",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-000000/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000240-000000/complete.json",
+      "sha256": "6e1b4e0f9863e6136411b997280ccf71c0f06972de8f28ca5ee986c9c80c19d5",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-032768/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000240-032768/complete.json",
+      "sha256": "6e615739f4de14b3fa300586f4f1a104a5b20148d9bd84a972325b746a5247f7",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/2a5950291b0e67495ad3-000240-065536/complete.json",
+      "relative_path": "shards/2a5950291b0e67495ad3-000240-065536/complete.json",
+      "sha256": "ddcbee665f5affd41bf0794812cd7362a7cf4ff36f01f78efcb8f6a9e109594b",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/364338e8a8f288048934-000000-000000/complete.json",
+      "relative_path": "shards/364338e8a8f288048934-000000-000000/complete.json",
+      "sha256": "2b493420fa413c26e82a61b4f06d0d2a96880c2f8086adfb076873d300965ed1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/364338e8a8f288048934-000240-000000/complete.json",
+      "relative_path": "shards/364338e8a8f288048934-000240-000000/complete.json",
+      "sha256": "a568b911b7e5508c8e1fba2bf7f6aadadbf418d287c902a6fd6f0bb05afcdf24",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Al-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/557f9d4494e4c16b42ca-000210-000000/complete.json",
+      "relative_path": "shards/557f9d4494e4c16b42ca-000210-000000/complete.json",
+      "sha256": "cf1103e1838932581d74bd23728182a296504426efe0473f4ec2fef6d5715026",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Mg-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Mg",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/56c826cef2fbbcf12577-000180-000000/complete.json",
+      "relative_path": "shards/56c826cef2fbbcf12577-000180-000000/complete.json",
+      "sha256": "99b5394df446a8368939fa5f05e837bcccf92df032731afe067b506da27bc6d9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Mg-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Mg",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000030-065536/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000030-065536/complete.json",
+      "sha256": "41a0329624c946ce2d54bb5569c06930ecb839951c1031a271619b6398b47147",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000060-000000/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000060-000000/complete.json",
+      "sha256": "bf6ae287b7aa57e4706d877d435f4be8f72b182717a7cd40d65b34d0e52a198a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000060-032768/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000060-032768/complete.json",
+      "sha256": "df8db24c671adc0d6d59a067c7190706de4eb6d5a92e7dc967819fce2c280ba6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000120-032768/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000120-032768/complete.json",
+      "sha256": "0aaa530f59f77f2174584f9ff2237ef1d4681fbf2288a88ce9c1425dd51230b9",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000120-065536/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000120-065536/complete.json",
+      "sha256": "f4cb41d73f73b3d01aa79947a21893e48db10b7a943766a1568113e10d8336b1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000150-000000/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000150-000000/complete.json",
+      "sha256": "cbbd191e84e209d4153932410dc8d49014769705f7d9c4a6deb2834661f3bac4",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-000000/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000210-000000/complete.json",
+      "sha256": "883918be32fb74008a4eb3e0ec0060a18af8c40758b45a0baa2a7085a7008898",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-032768/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000210-032768/complete.json",
+      "sha256": "cc15a3745f344e7e52b8ea0f85a7ebfebf88a54be8420390f622bc81a866aa13",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8aee8bb8abe645c96f1f-000210-065536/complete.json",
+      "relative_path": "shards/8aee8bb8abe645c96f1f-000210-065536/complete.json",
+      "sha256": "5203589da0aecfc1d6fca21f5d101973ffa7f2778b73fdbdf59e9f2c5be2946e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000000-065536/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000000-065536/complete.json",
+      "sha256": "c829346ac0ae6a5283160d6ef271061a7cb3e230a78e04ead7d5bb3e0e9345f6",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000030-000000/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000030-000000/complete.json",
+      "sha256": "6c8d17a727ef8f71bde5145f6551dcc3b2cd8dc068a28309bd6d3ec93cb28c43",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000030-032768/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000030-032768/complete.json",
+      "sha256": "a18a8da80afe6b4d81c326ba006746a101b5b4bf3783bdf1000354acb8313276",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000090-032768/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000090-032768/complete.json",
+      "sha256": "d64b1025c10fbefbf021997a912c78fc5d04959351959580fa0134a63e5be439",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000090-065536/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000090-065536/complete.json",
+      "sha256": "d6997249f53c68425861de55a522b77c12b013f92b834af715cc2eeeba187d13",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000120-000000/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000120-000000/complete.json",
+      "sha256": "bd98239e44cdef370d34635e3430c9a9bb91be0882d3d3c442426a86dacf18c1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-000000/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000180-000000/complete.json",
+      "sha256": "663f5b0cbc4bac3167fea0c5c76d59e731c91735f8d376622240c1119b646a5f",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-032768/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000180-032768/complete.json",
+      "sha256": "8b2d7d081c0603ce65fb035b5d9e7c06399b462ac626acaf4d88e66f28f407e0",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000180-065536/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000180-065536/complete.json",
+      "sha256": "6fccdf6a7a8792b21290fda4b29c2b3889363f8d3d7f0c35a51791c7ff68354a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/8ee5e077946023ab0f92-000240-065536/complete.json",
+      "relative_path": "shards/8ee5e077946023ab0f92-000240-065536/complete.json",
+      "sha256": "85dbf6bd9ef4f32ae3bc489bbb66f5de548ac864a141fbcd0e8d09ceb6a57db1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000000-000000/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000000-000000/complete.json",
+      "sha256": "6bc3c3cdd18931ea79fd4224f79b44dd15b92d835ada562a0d8f487ed6a406ad",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000000-032768/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000000-032768/complete.json",
+      "sha256": "0df1834642f5672c6ab8d87c6e1718da7bf9b64d761054e3e3250c4491e589b1",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000060-032768/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000060-032768/complete.json",
+      "sha256": "868225e9f2ee3ee73084ab4bf8ea08665e0636eb469daf6b98e76bc405b0982a",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000060-065536/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000060-065536/complete.json",
+      "sha256": "e4d2aaa75b6787a1780d4b0b6b7355afa91bbd1d42c7c1ead7c0b91874003410",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000090-000000/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000090-000000/complete.json",
+      "sha256": "09b625f97e79999857d70abe15d857cc6e0fcd2037496f11d4323d27befeabb3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000150-000000/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000150-000000/complete.json",
+      "sha256": "da2ad75e31fce9387e5699d7a75d1516ddd7a9568a7a0b6c2e855588bd86d4d3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000150-032768/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000150-032768/complete.json",
+      "sha256": "3a39cb2312f84518e96f4c9db14d9b65ff59d3b94181f19681cb591368a45a84",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000210-065536/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000210-065536/complete.json",
+      "sha256": "a0514d9c0fe272c40316905ec297761bd8eda2fb4bedd77459f7b8fb74db5a1e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/b6a10214ca3c5d213848-000240-000000/complete.json",
+      "relative_path": "shards/b6a10214ca3c5d213848-000240-000000/complete.json",
+      "sha256": "c5be0558ddc625d1c7f81188e28ae6477668f4e2117b4474f3ed3cd730bb8e7e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000030-032768/complete.json",
+      "relative_path": "shards/f7ecb979a367ce1b6ebb-000030-032768/complete.json",
+      "sha256": "5573ec8fc5c4f34d2ed57160ea2b21b05168ccc6f891e1ff12e51d3523416534",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000030-065536/complete.json",
+      "relative_path": "shards/f7ecb979a367ce1b6ebb-000030-065536/complete.json",
+      "sha256": "7c86d51313023103ce93ddb2c6fa21e36f3f486200804c551069756b5bcf9a6e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000120-000000/complete.json",
+      "relative_path": "shards/f7ecb979a367ce1b6ebb-000120-000000/complete.json",
+      "sha256": "a68ca62b10aa53eb3cff8355f724898a00c2447552ca1f94db27cf3b96fe0eec",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/f7ecb979a367ce1b6ebb-000120-032768/complete.json",
+      "relative_path": "shards/f7ecb979a367ce1b6ebb-000120-032768/complete.json",
+      "sha256": "8ce00757ed8be2499a33a0cd781a85846db7f785b00aa246ab281038aa030e79",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "Ta-archived-root",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/rich-descriptors/multimaterial-raw-20260929/shards/native-860-000000-000000/complete.json",
+      "relative_path": "shards/native-860-000000-000000/complete.json",
+      "sha256": "febf01c4f3cde59c12096872472a14e0cda38b765a3740604546ba2e0fb5b765",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "seconds",
+        "task"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "task.lineage",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "task.material",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "task.original_task.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

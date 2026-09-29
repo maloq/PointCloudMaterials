@@ -1,0 +1,3998 @@
+{
+  "dataset_id": "crystal-interface-al64-20260928",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "4094738b9ff75037c0f4ecbd8b8aa980d6b029032c6a6b372f99db007863ce6c",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "plan_sha256",
+        "sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "b04295317a7a16803517d8d9085c9834629b42eb486af739b366e14a039f08b3",
+      "kind": "metadata",
+      "keys": [
+        "dataset",
+        "fixed_identity",
+        "identity",
+        "implementation",
+        "parent_manifest_sha256",
+        "paths",
+        "protocol",
+        "sources",
+        "target"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "joint_snapshot_interface_vector_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].lineage",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 150
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 150
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].audit_metadata.temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "898e0ee0d784ebd636a6580d233897220d61302952d34453a9617f5b54af7771",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "cc937d0d9d02b206806797ffaa7ade160a3d1292773714b5d41f15832079155d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "6d3b566193aff6b911dc95049bc65eb57fb1cc1b8e2d1ee40a4a2cbd62cb1f92",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "42c0775d934269b7b7d27ba53c45decbdb0be895561b735264b0b0ec64a414b1",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "6f1e67700f7c1b8577ef0d7ef64d085110ac0ffee3ca08ac07e73515c50fce9f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "92cdf05355179b5e81d86fb5d4f5720e1fe6369774b4f04c5857a564312f6bb3",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "ef294ba010485641fab4c7e22716e41ae104d4b43a8fb7a03710dc18e788eeb7",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "8b5d19a4677185abeadab065e5a810fdc32decaf7fdf30378c4496d311866e1d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "b2240fab492b970801f16e48010cae85ebf55150fd983e26d4b12fec123f68f4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "49e1c04a318c8e5d48d45044eda6a5808f6e2998065b21e98aa8251c77419abc",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "e353a74a10f51f0c162b136f39603c1e04e334a83cda68a1ce594341b3991859",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "2519bae7913f328dcac31eee66ea609b2a607d117c388be6d12603ffa9a07044",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "a3077a8523dd8bd39853bb64d89c409b211ae0d0d36f72f92ac2dcc58ab5202f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "d94598c80adfee790f5f14b2d2502730026e37f37144b4f5d2447989c0f42d5e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "bbb5a99ecbab8e5f7b3eb54ba28da4ea286d607f81d4a65762d1389959a25896",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "36001f0739986d1846eb1c87bc20ad40fabaa7eddba51b57f0328dcefa792d42",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "d72981ebdc305a66e42e0a044e3493f971b2c0871d4510c8d9b2ce4508185963",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "f38b082ee53fc5fc42936acde1a7122e60069109f4de0a2854e180d0e4349131",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "80f28d4074243575581e7329718575059ab4f2b3336ac6a272f51be6d70b07c3",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "accf200e1d50e049ec6af034c60f73820c57db18b9b666ede5cdd2d3ea05ac3d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "5bf8723ded6a0cc5a6c4173098a86c6ae0bdc835afed36cda8260dadbbff13e7",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "1b366b962b38dafe3515f4b36fa8f709ee62ebb9021a6d31ed8f084e4a7e181d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "df37734a770b142135e033ee9af7374e7fd7d0b7c0c754db58ab7286953c78b5",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "ee051fb3302bc29359164cd4625b862f4ceda0ca5de5f5e263f06f1063485ea0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "fbbd998912a3a10553f8436396c9422503bc9905dcdfbd69ebd37960b51e5e37",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "b6e170529641049c2fcfb290d5ca87026fc1ded070edc0d85b8b605c9365d040",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "dd9e4535bda022d69bfb8d7a681c3237c59e990f3ab59e84e8bb91b80b45b0c4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "aa8bab2700a08964aa9775d97713012c3af45a7b9f11622782eab84aede2136a",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "da9fb2fb7a316dd7a8994836dd970eb1097809d30c13e239481fcd916642e418",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "052624a0d664c328429b9e43238950c818fa1e31025a22d1ccfd6e4e348f4ad3",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "7fc4ee647fb3b700ddbdd0c736503ae47d303e6bf1bb6627b705e34074d90be1",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "436871747e2fb53b1de26d5768c63ae5cb40e041ea3d008dc93c25433f5440f1",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "85aba12ba53ec9a2aaef2cdb76eeba4e65d3e1299a4a58218d00dc617e08818b",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "bdc18f1fa2d84deb25f58e5f7e49409b314809b0b46ba6ea3896a5f3b64288f9",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "0c79f3117971c3fa03348559233c41149e30779b0ff79a1c8afcd461796f6ef8",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "a54351d5c200fb94627f5505c33902a84ff1f2044d7a0134a127577f56ee73d8",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "91ac6d79158baf1e496a4b22f6259dac931acfaca825b849d53e0d273115fb40",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "c5c0e2cf6ee23e1e775291797f6c6951ccb1aab09abfd78c02ac4464e6e55ab0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "b910a7dfc57647d14f5db395d455d8a56daf4352f1954541a5a8f0cbe11a16e0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "7149d934077dddf50d56238ba366293f6aa582ab26bc90cf58c3dfc00cd673b8",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "bac16f9fdb8f929a92edd871458a9c5174f1ceec97909ccbe700d8ceadad5872",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "4a64471f45ff29794ac0e852dce19aa6543077a57877cc56a9eca729630ece59",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "7914e926b896e6a2b6990fb7e445e59283da5a3d3f32e5a714a44727766f8451",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "1fcb0d04a563623a2f49cc8876526aa5e7756bb1ab5d3adc94695e08435887ae",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "13f60f2b127acbba6fa38352d8fb91938d8c06c8143a87c6a14b6bab164a7b52",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "45e5b83ecf01cbdc5d0d29f509306d1aa5c2ef85a9e4f43bae61814d9f3b4afc",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "e632f2b2934ac4be2175e9c616b564e384991f3691f0feca1c9ce9f220bc1d11",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "eee95d39562b190abe8ea246a7da77527e7f97d08c3438a62bb509f1fb994357",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "c371fc3212f2407a67e16928139f41c859ecf8c2439f50be37202dce6478bfcf",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "c0af721758608f36ad338be0474db311ed997af76cdde017f6bad0b4cd7e8f98",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "fee272da0d18b64fab386046d293a85015f96255a1ce30cc6b979310a578b8d7",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "1280fc915fdb187854ceb6e790f3d8ffa0113befb140e2f8a15f0f09b97329d6",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "fd39be093f1d4682a7d48f236e07c67d6ad36cafb07d8df6f1f905df89726f6f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "fcd984d2b7a67a5e2c24a7630c75328189e99004e13f2aa92d4ef762a562e0f5",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "5528bc3d608288ec0ca7113923282278dc9e43e2718dad596836239363237235",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "5a0324ed243e8e05f7ebb184d7cc97233854891f083bdb7ef336767a1fbdadb2",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "7afb71e05613abd3e8b0ce638a1a523a2fdb5f51977a1a2874569c547a23ceda",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "847bdcc0dd540896ca4bd44c3222932cf9beda1937443558ae71670f69f02a40",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "4db75cd61a5be3c89ae4412de78aedba92cf8b2507bfc540091d30e30586cccb",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "919fc19fe3665adba13d2cabfd9dc3d794aa56c491bdba66c3ab8c8d9505086d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "0b7865288a8164e18f5a642f7735299b986b51437824f1ea178619a56eea61e3",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "6e2547f05db07fbaf5497dd353d5dbaf111aaf05f177a3f81c50780a43f40997",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "9faf45d43f27fbf20d4c1398b1ce3dd13c75f1fc131efe1e00703a2253ba0ef6",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "57960c29a68dc019e7f9b4553861c13053bf496ea19bb3f3605ad9e950b03f25",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "4bf96c4f228ddaa03b76b22921a2cbb4d66ee7a348a0b1b98b1e68ecb323f61d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "eb535b72edc87b79474df28dbbabb284565558034697a0bd5290c696e6e65a85",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "398dbc311e56047ac0e9a4a30c997251a943d5d2728b972a332d69a9d74434f6",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "31f5f715168f28de17df2a8d571383b21ee23878de2bb9529c9dbb60af933f9b",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "8f25fdf186e0899775ed361b9545532fc9cb937b0ac5ef42d13d81dcd6a21caf",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "d9fbf0411dab73589ccb88eedacb70100f5d5b35e2663f75ae24e8d5ebc47292",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "2f6b19f3372126d639cbeabe86fd9be5457c74fce316da65b8151bf698d74b18",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "2554ba6ed8f8136bb6507e5ba0f323345eaab7074a55658e38094ef778a9154c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "0c7a525f7badea92111c8cd54d796c2f9126f2a16b41d7836114cf0939f2ca0e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "9218cc1cf0d9fda7f42d1b6b7f6bd40b044257c3a88a0c05728af06021348ea4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "01f5f230533464a4c22c0c2bd4f2c80a9008eabddf3d4fa24bc7d61405a365f9",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "261ea5dbe51f89b6467501736df91cfe649fa073189de29d3b9dd94d25d72470",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "9e314c55f6d632065a8f94e26a73194018b3f6ebbb05411cc3fca9fa26316d76",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "c7b6e4549e08d8830cc44f449f9eaaf6f3be3651481e4e9ad4687f32a03237ac",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "4dd0826c8cbd85d5f4a1abbfcf06736d0d838fce162a2115fdf6be53359804af",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "7967ed6ba4051636baaae39d3f64170c99509747be823ce3923d1f7f0570f404",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "897085093c46d73f94fdf7132cbbb9fbbc1d5d36f5d36e6ceb81307bab4298c2",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "4ae100c62defaacd25b10295e3bba72e763f86b894820c6af03b7185fc11296a",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "980aacead2f069ca95d557d11f1e204afe8632af418bf3c3f77bf8f752fa8d8e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "46449d73d754bc906d0b6cc1cbb53ada54807755e9af3b118beea474d0bd156f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "77369eeec0ee5ec4ac4f0589e1a44904f3f87ea15e437d7eb1b3a591415f849c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "8df87be8b07b9647b0e3caafcb998fe6222b29ddd14c5b8eb38f0d04b329a54d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "a31c2ec9bc0741e0894d89d86b5c78be1fbebf529b70e879023f057d5484a258",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "077f0e8d1adfa122a6cf549bb3e6a950838d717c7d56472f4c928a13027715cf",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "1153043b07b7f792c3bec012a8d4bfd1a76eaf3a66c5648bac62673d18c4909f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "690f4ecf72f0403c409abe4d4df581b14e93819fd7d864f7d89283ac8d2cc398",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "78721bf1730849832c1b5d3617797119e48f9e0b96a65c803264d3f930d41d4e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "a3573a8075a62f364f4fdc9a16339c485c8f77f961c94a4291bfc4218f213c2c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "8530d7f52da2f6a8fb9522fb5764471fd12375559ec48362502b6b9657c6fb5c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "0407df63c5f4bfeda9bdad388fef42421c9a8ed435363f6b96497e0e81ed4fbb",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "8cd4c4d86d9c93cff3b2229010c441cf27b8029ddba80cebc7209f310cd8f37a",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "2c858e5fdc218b15d175db6f2c784bd900163b72bde3033fff274b33f5158eb7",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "07a943684a1a90eec50c506114904937df3af3def85b4cacb0c939feb943045c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "9012fdeeccd1eba9bd69370c9c367ef0fd27349ffff54755d1069dea7c51c02e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "4f115c34b405cf6ff933152fe76d5269feaec74e5e8724ab7a1033f500a3bfc5",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "da16d7adcdd4bb634140cbbd79d297432ca340749a103912cc8f49405909ff3d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "833bc63d9d3568aff796312ef85a9cd6ace1768f8fcb412147357a78ba94b94b",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "86974942e9b4617dd38f38beacbd30b35eaa9aacdf6e03fa8bd65ffc05205f7e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "0888e602538923b1e110e0983c97fe8f9bf0e5d2bca594707780c2fc256e1b6f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "51e3e1c0a29d7d1b45006f59d97b0a5fc80266dd551c789c9931d26b19194972",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "6ea3629fe95d5852f8d1a43071451d1c5ae288f4ac702bddb91b286b4383c09d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "9197ee5cf1aba73878b4fc66a21a24f6479ca386588d6f30eec9e2eeb9884472",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "159b81695befce4183bf2f62af128596b14034665102ec736ff12489717133e6",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "df41fcbdaec320dbe0994d3a627afc6c8d5d8ed6fc97ef443cc35bbba242fe22",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "55fbf07774f0474f485cd596d6e780c7548897d46ae6e265bd4a0129fcbd04f5",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "fd9635a6de7b6b58714f942523dd15611a11b3aae6c3ccd5b1044a1c130d313b",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "e9c777e76201569a4c9315539f8c3cce7b8f830424d0b23666d118271fa5131a",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "2bfdbc70e63d78c8b5081e33b2a0529986f090efaa018a0ca2ad3df582299d90",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "719e0ff3bc9a63f49da015bed9eff143471cc2a9b960108e7d852c84d1636086",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "734fa970818f06c7d8c1f6b7858c52ef5013ac638e0fd93143d124738973e602",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "e64cfa797f1047e249fdd0b48067a1f160a93fd8d382f169094e45dc087c8745",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "193fac51e4573380f97e8c23939af62dcb25428ad352b8bc812042c9b3630ddd",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "95d63cf9cf2d5c79814cae5093f394c99d3866552c57430c33387435fa80f710",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "d4e848aaea124e31ea98cf13b22ac7dd501153beb21145c39aa50a979f27b3da",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "04b0b7208041c75102a427d50bd1e21a538c9d28bf63fc1cac5335b0928d0481",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "e6f3f3fd18964d8fcd4e8dd34063eed825b8d64ed71247be2f83dc849efb09dc",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "e0cbdf6c25a55acf20fc95e28666874beac68e160766a13d8f15dd7f9bc5cfc0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "d441c66907e022e23f792f69ce11a047fa6fef38dfb15b14342ec06256c31d3f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "8f2fde824d27420061864283d2ed2912c1c14f14471997b0a3f14b0a56a2da25",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "fa6b44cd9e9a503e7a04af56b5996a6c3e49ee6b886f41c63ccd2ce425cc337f",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "ab0992d927883f0a26190eefb0ce9415c1e54398bb81bf08f25667c10c96e4c1",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "3d54974ec1003ba3da7d3fbf64c84c9a948cb8267f10bccafc548d3f7050e500",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "4a442bcf3a53bb41dd9235b943fbb8bbeafc970c3990d1f54d2d012d2a8ca390",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "dad1d15af72aefd8a884a39af2ab84b09bddaf833679293543b7b4ee8900cf57",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "67e288fc8e590665bcb9c5ea3de685b545f97c9df5d8ad9891393273782f9fc4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "e3a5edc9088457af52fb4537c706e8e6de85da40eb33c2599c3552c1cea14c5d",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "5f990400e10472709bc0b83484d402d0b5bd9d134463a339b73322c36f8e6f29",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "0682c214f207e7f8d5d8f38ab3c9d575bb32e9db78c692f700f9282dac92658e",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "4b22fbbdc82f8a9e38ce26a6d06c14d5bf1610cf9f879b3e19fcc97e3f77f0c1",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "5ae8f2984ab9ec4cc2e50877266d62cdad49dd36eaf3e918ca32441712e070e6",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "4e68829351f725417b720ee50b3282fbbcfdb0eea119b7fb71d86a42f509ab97",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "59640698c8182ba0f70692b12947349bf31f48729745d3beb4f18a328e4b75a4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "4f140e22dd1208ca891e19773c996a9f975307ee4b8e5f83273370b77abbe21c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "bc8550b81e68170a176f06d815ddb1edb85ca6c353d8c0e2c8b38a818c3c2694",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "213bc27bb30b3f9824675419ab0f96280d10ed005c5b5cfb1750698a7f66525c",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "a79d192e3588a614338701744f3157dce1a5526b838c9ca6f03dbb23482ea5a2",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "d74828756e76a9234b209f639f940fee10ab8198d434f7dfb075d5cec21b89d2",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "efba6a875f21301ea916b2a24c92de9c69810b1c501ef1366e758420eae0af71",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "9b200e703ffafddc332f799a87ad4417522652aaa1e58c1d074a379a41eccedc",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "aaae5772cafebc01deacac90fffc3ad76bad94991d70413373483ad6b7d8c3a0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "753d3708c1b6a779f5f30b20b5a4a7b08c1dda4b513bf4f15ae1740264fdbfd0",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "67e80c10ca1eee1d15f5e116233baced8905ee117d5b1e7f7a894f2692d4eadd",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "21e769faad188e8bd0e0af574019c9d3ea1aea27a41bd7302c3f72c29eb6f8af",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "3ae65cb0809cab861f8971930e3438f48efd377ec0941a33746839f2ca7b59e4",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "076ab4cc92a484efa26517e1dff16ba70bf5062b86d2cd681b25158274bf9905",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-interface/al64-covering-20260928/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "dca2c39159351524f397011586b3512ac5aa34e4c45e604816d5d53bbb420d48",
+      "kind": "metadata",
+      "keys": [
+        "added_uniform_rows",
+        "counts",
+        "files",
+        "identity",
+        "parent_receipt_sha256",
+        "parent_rows",
+        "patches",
+        "phase_counts",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

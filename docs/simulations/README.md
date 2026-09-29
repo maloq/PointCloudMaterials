@@ -1,5 +1,19 @@
 # Simulations and datasets
 
+[Full liquid-information relaxation](liquid_full_relaxation_20260928.md): 2,130 missing quenches, fixed ancestry and automatic downstream experiment queue.
+
+[Main Al 0.1 ps reruns, 2026-09-27](al_main_010ps_20260927/README.md): all 150
+retained melt ancestors, 600 ps with velocities, exact 0.1 ps output and frozen
+ancestry roles; CPU waves publish verified canonical trajectories to STORE.
+
+[Detailed holdings after cleanup, 2026-09-26](inventory_20260926_after_cleanup/README.md): materials, atom
+counts, observed durations/cadences, sampled velocities, formats and measured
+disk allocation; includes collection and trajectory CSVs, duplicates and active runs.
+Refresh into a new dated directory with `python scripts/project.py simulations --details --output DIRECTORY`.
+The [earlier inventory](inventory_20260926/README.md) is a historical snapshot.
+[Cleanup and Al cadence audit](cleanup_20260926/README.md) records the authorized
+coarse/failed-payload deletion and how the main Al sources can be rerun more densely.
+
 Simulation production and inventories belong here. `experiments/` is reserved for
 scientific comparisons using the data.
 
@@ -45,6 +59,15 @@ Maintained workflows: [scripts](../../scripts/README.md),
 New elemental runs use `scripts/run_lammps_campaign.py elemental run --config
 configs/simulation/ti_crystallization.json --run-name NAME`; choose Al/Ta explicitly.
 
+- [More spontaneous crystal births: proposed campaign, 2026-09-26](nucleus_birth_campaign_proposal_20260926.md):
+  literature, training-only yield audit, independent Al temperature/size sweep,
+  early training collection and fixed-duration evaluation; revised launch below.
+- [Uniform-temperature Al birth screen, 2026-09-26](al_birth_uniform_20260926.md):
+  authorized first stage, 22 fresh sources at 11 temperatures, six detached CPU
+  workers; continuous observations and an early-transformation stopping rule.
+- [Ta position shooting, 2026-09-26](ta_shooting_20260926.md): six archived full-cell
+  parents, four velocity replicas each; [potential literature review](ta_potential_review_20260926.md)
+  and explicit force-field/ancestry limitations.
 - [Predictive-memory precision sources, 2026-09-17](predictive_memory_precision_20260917.md):
   12 fresh Al lineages, 192 ps at 0.075 ps cadence, retained float32/float16 pairs
   and four preassigned sealed test sources; separate CPU production.

@@ -10,9 +10,9 @@ Inspect current producer records and array headers; historical directory labels 
 - Location: `/work/PERSO/vmorozov/simulations/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 21; these are not independent-source counts.
-- Stored frames: 1130; duplicate-group records: 1
-- Allocated storage, excluding registered nested datasets: 2.673 GiB
+- Complete binary records with arrays present: 20; these are not independent-source counts.
+- Stored frames: 1049; duplicate-group records: 1
+- Allocated storage, excluding registered nested datasets: 2.076 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -59,10 +59,10 @@ Inspect current producer records and array headers; historical directory labels 
 
 ## Evidence
 
-All 75 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904-af170dc2.json).
+All 74 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904-af170dc2.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-25T13:22:08.459741+00:00.
+Observed 2026-09-28T23:47:41.345301+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

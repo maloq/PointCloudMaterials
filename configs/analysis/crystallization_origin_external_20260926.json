@@ -1,0 +1,35 @@
+{
+  "protocol": "external-crystallization-origin-v1",
+  "output": "${storage:analysis}/crystallization_origin/multimaterial-20260926",
+  "source_catalog": "${storage:cache}/structural_pretraining/dynamic-1018080-full-tda-20260919/plan.json",
+  "structural_plan": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925/plan.json",
+  "strata": ["al_other", "mg", "ti", "ta"],
+  "cadence_ps": 0.5,
+  "chunk_frames": 4,
+  "ptm_rmsd_cutoff": 0.1,
+  "horizons_ps": [3.0, 6.0],
+  "onset_persistence_ps": 1.5,
+  "negative_history_ps": 1.5,
+  "center_fraction": 0.01,
+  "baseline_centers": 64,
+  "seed": 20260926,
+  "lineage": {
+    "neighbor_cutoff_Al_equivalent_A": 3.6,
+    "local_birth_radius_Al_equivalent_A": 8.0,
+    "interface_distance_Al_equivalent_A": 8.0,
+    "minimum_tracked_size": 4,
+    "minimum_shared_atoms": 4,
+    "minimum_overlap_fraction": 0.25,
+    "maximum_missing_frames": 1,
+    "thresholds": [
+      {"name": "primary", "size": 64, "persistence_ps": 1.5},
+      {"name": "size32", "size": 32, "persistence_ps": 1.5},
+      {"name": "size128", "size": 128, "persistence_ps": 1.5},
+      {"name": "persistent3ps", "size": 64, "persistence_ps": 3.0}
+    ]
+  },
+  "extraction_lanes": 12,
+  "workers_per_lane": 4,
+  "analysis_workers": 4,
+  "deadline_local": "2026-09-26T10:00:00+02:00"
+}

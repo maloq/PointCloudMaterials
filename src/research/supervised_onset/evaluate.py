@@ -94,20 +94,20 @@ def score_predictions(corpus, risks, draws, seed, calibrated=None):
 
 def readout(study, corpus, features, name, kind, device):
     """A fresh likelihood-trained readout; frozen encoder, NLL-only selection."""
-    from .tracking import tracked_run
-    is_encoder = name in {a['name'] for a in study.config['arms']}
-    with tracked_run(study, name, job_type='encoder' if is_encoder else 'control') as tracking:
-        axis = f'readout/{kind}/update'
-        tracking.define_metric(axis, hidden=True)
-        tracking.define_metric(f'readout/{kind}/*', step_metric=axis, summary='last')
+    root = study.technical/'readouts'/name/kind
+    if (root/'complete.json').exists():
+        receipt = json.loads((root/'complete.json').read_text())
+        if receipt['identity'] != study.identity or sha(root/'risks.npy') != receipt['risks_sha256']:
+            raise ValueError(f'Cached readout evidence changed: {root}')
+        return np.load(root/'risks.npy')
+    from .tracking import local_evaluation
+    with local_evaluation(study, name, kind) as tracking:
         return _readout(study, corpus, features, name, kind, device, tracking)
 
 
 def _readout(study, corpus, features, name, kind, device, tracking):
     root = study.technical / 'readouts' / name / kind
     root.mkdir(parents=True, exist_ok=True)
-    if (root / 'complete.json').exists():
-        return np.load(root / 'risks.npy')
     torch.manual_seed(study.config['seed'])
     rng = np.random.default_rng(study.config['seed'])
     fit, selection = corpus.split['train'], corpus.split['selection']
@@ -117,8 +117,10 @@ def _readout(study, corpus, features, name, kind, device, tracking):
     normalized = ((features-mean)/scale).astype(np.float32)
     x = torch.as_tensor(normalized, device=device)
     y = torch.as_tensor(corpus.pop['event'], device=device)
+    if kind not in ('linear','mlp','mlp256'):raise ValueError(f'Undeclared readout capacity: {kind}')
+    width=256 if kind=='mlp256' else 128
     model = nn.Linear(x.shape[1], 5) if kind == 'linear' else nn.Sequential(
-        nn.Linear(x.shape[1], 128), nn.SiLU(), nn.Linear(128, 5))
+        nn.Linear(x.shape[1], width), nn.SiLU(), nn.Linear(width, 5))
     model = model.to(device)
     optimizer = torch.optim.AdamW(model.parameters(), lr=study.config['baselines']['learning_rate'], weight_decay=1e-4)
     q, iw = sampling_distribution(corpus.pop['source'][fit], corpus.pop['event'][fit], .5)
@@ -337,4 +339,6 @@ def collect(study):
             writer.writeheader()
             writer.writerows(sorted(rows, key=lambda r: (r['model'], r['readout'])))
     write_json(study.technical / 'collection.json', dict(identity=study.identity, rows=len(rows)))
+    from src.experiment_runner.protocol_records import supervised_onset_record
+    supervised_onset_record(study)
     return rows

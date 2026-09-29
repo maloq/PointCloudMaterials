@@ -1,0 +1,18 @@
+extends: static.yaml
+checkpoint:
+  path: ${storage:analysis}/structural_static/cd-mace128-epoch12-al-20260926/technical/encoder/encoder.ckpt
+  output_dir: ${storage:analysis}/structural_static/cd-mace128-epoch12-al-20260926
+inputs:
+  data_config: configs/data/loaders/static_al_native_mace.yaml
+  dataloader_num_workers: 2
+  inference_batch_size: 256
+cache:
+  retain_after_analysis: true
+tsne:
+  paper_enabled: false
+figure_set:
+  raytrace:
+    enabled: false
+real_md:
+  transitions:
+    enabled: false

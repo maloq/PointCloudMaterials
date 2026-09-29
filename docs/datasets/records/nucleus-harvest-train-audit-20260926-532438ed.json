@@ -1,0 +1,4993 @@
+{
+  "dataset_id": "nucleus-harvest-train-audit-20260926",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/plan.json",
+      "relative_path": "technical/plan.json",
+      "sha256": "62885f714950b3b0171a8b2a92ef0a21f9010d78ebc8ec0cff6a5a37d5ac4e02",
+      "kind": "metadata",
+      "keys": [
+        "audit_config",
+        "audit_identity",
+        "cadence_ps",
+        "config",
+        "identity",
+        "implementation",
+        "release_identity",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "nucleus-harvest-training-audit-v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "al64-crystallization-origin-audit-v2",
+            "first_json_path": "audit_config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260926,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              3.0,
+              6.0
+            ],
+            "first_json_path": "config.horizons_ps",
+            "occurrences": 2
+          }
+        ],
+        "history_ps": [
+          {
+            "value": [
+              0.0,
+              3.0,
+              6.0,
+              12.0
+            ],
+            "first_json_path": "config.history_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "neighbor_cutoff_A": 3.6,
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "local_birth_radius_A": 8.0,
+              "interface_distance_A": 8.0,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "persistent5",
+                  "size": 64,
+                  "persistence_frames": 5
+                }
+              ]
+            },
+            "first_json_path": "audit_config.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 90
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 90
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 90
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 18
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[15].audit_metadata.temperature_K",
+            "occurrences": 18
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[33].audit_metadata.temperature_K",
+            "occurrences": 18
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[51].audit_metadata.temperature_K",
+            "occurrences": 18
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[69].audit_metadata.temperature_K",
+            "occurrences": 18
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "56672590b45de9f7476e168203bc6c4d6169c3522833f1af4f55e5d57dbe02cc",
+      "kind": "metadata",
+      "keys": [
+        "audit_config",
+        "centers_per_event",
+        "control_centers_per_origin",
+        "control_origins_per_source",
+        "history_ps",
+        "horizons_ps",
+        "input_contract",
+        "lead_frames",
+        "order_controls_per_source",
+        "output",
+        "protocol",
+        "reference_history_ps",
+        "review_offsets_frames",
+        "review_radius_A",
+        "review_sources",
+        "role",
+        "seed"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "nucleus-harvest-training-audit-v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260926,
+            "first_json_path": "seed",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              3.0,
+              6.0
+            ],
+            "first_json_path": "horizons_ps",
+            "occurrences": 1
+          }
+        ],
+        "history_ps": [
+          {
+            "value": [
+              0.0,
+              3.0,
+              6.0,
+              12.0
+            ],
+            "first_json_path": "history_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/1004/complete.json",
+      "relative_path": "technical/sources/1004/complete.json",
+      "sha256": "769558cb4f941b6ac72929d87bd6f20d0987f5af7d738630bfa1f96f8eb0d7c6",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/1005/complete.json",
+      "relative_path": "technical/sources/1005/complete.json",
+      "sha256": "7d440003cb1bd4360145f63b54b80947f091417e02894cf604586d2804dd8648",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/1006/complete.json",
+      "relative_path": "technical/sources/1006/complete.json",
+      "sha256": "bb499375791f5d34295bf6cbeb210ceb7f788d7c02b75f0069f4959340964b7d",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/860/complete.json",
+      "relative_path": "technical/sources/860/complete.json",
+      "sha256": "e3338414b38d32f0ffd9f92df126db7ae98043922f2b88ee08835f3b44861f82",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/861/complete.json",
+      "relative_path": "technical/sources/861/complete.json",
+      "sha256": "b61f66f2cfb984075b1c8b881a5e04bd273d304c7756065a979b7e1345cccb5d",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/862/complete.json",
+      "relative_path": "technical/sources/862/complete.json",
+      "sha256": "4d4757c874f32987d8db2e6494917a751aa3b7cb119826f4dbc9bc54116294da",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/863/complete.json",
+      "relative_path": "technical/sources/863/complete.json",
+      "sha256": "1fdabd43573d4837450b73f086f9ae2fbdeaef88f9cebc32fc9fa62c35b8f9e6",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/864/complete.json",
+      "relative_path": "technical/sources/864/complete.json",
+      "sha256": "90267b354e432a211f2500ae016b20919b24fe44cb9b6200cac79b35c6e60f48",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/865/complete.json",
+      "relative_path": "technical/sources/865/complete.json",
+      "sha256": "c36bcccb3ee0c3f96499aca6faa39c680cb644793f1dd060444415be4e1638f2",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/866/complete.json",
+      "relative_path": "technical/sources/866/complete.json",
+      "sha256": "5971ea880fd1ecf2b3d34ff23b1c8d4252cd1e78eea1350d7a6fda89bb5064f1",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/867/complete.json",
+      "relative_path": "technical/sources/867/complete.json",
+      "sha256": "1d3a25ea0f32f011e25ad45cd2c4fcfa3d574870e6c55b63bf2912d9cde9d1db",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/868/complete.json",
+      "relative_path": "technical/sources/868/complete.json",
+      "sha256": "400bc3a34f3faad064c9e8f299f990cfd8f45c5550761ec12f5fa55d25a9032d",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/869/complete.json",
+      "relative_path": "technical/sources/869/complete.json",
+      "sha256": "68033b2ddf4f804f6cc786a6e93539485c8a727832a2aa2353515f16c69a52fe",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/870/complete.json",
+      "relative_path": "technical/sources/870/complete.json",
+      "sha256": "dc8e76be533f909b1fba877422bd3f171dbb474d2b3e9cbe13669c6ac1c5490f",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/871/complete.json",
+      "relative_path": "technical/sources/871/complete.json",
+      "sha256": "068f667843339f060ab2cc63d7c1354acd707d096393641c4047b7cbed902ec1",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/872/complete.json",
+      "relative_path": "technical/sources/872/complete.json",
+      "sha256": "dd30bf0be02187f601ae1c7ed73675add1f65c46dc0c380fe2964a449ee824f8",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/873/complete.json",
+      "relative_path": "technical/sources/873/complete.json",
+      "sha256": "f40c9fb547a7d9f88b6ac9300ee08a45e32550176f64dfec30289fbc47a6ee5a",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/874/complete.json",
+      "relative_path": "technical/sources/874/complete.json",
+      "sha256": "7f80d6b49c5197a3dc21b491bd65aa3a9794fe0fc13d26fd4517f36dcd3e00e9",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/884/complete.json",
+      "relative_path": "technical/sources/884/complete.json",
+      "sha256": "6408b19ffaeb5f7f94418ad1124d103268104f230a99f6697ac2caafff9e07ea",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/885/complete.json",
+      "relative_path": "technical/sources/885/complete.json",
+      "sha256": "052bbc8e6c6bd34f17d966080e894475f5c7ee7fb1650a7e78b3bf43be564104",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/886/complete.json",
+      "relative_path": "technical/sources/886/complete.json",
+      "sha256": "58e417f35ee307879558aad4747867a90bb66d364b26adc08dc99b3fa5edcf66",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/887/complete.json",
+      "relative_path": "technical/sources/887/complete.json",
+      "sha256": "d332bd38a502110058f16abf383553b8a55144dffc6eeaa83905dcb9280e1ede",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/888/complete.json",
+      "relative_path": "technical/sources/888/complete.json",
+      "sha256": "1bf975c056d11b5db5ef31831ba2d534ee465dacadaadcd2cef02584fccbe545",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/889/complete.json",
+      "relative_path": "technical/sources/889/complete.json",
+      "sha256": "12e5b9ea763928be0fc564f890b835308e45c782e5365be5710fc77deb051c61",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/890/complete.json",
+      "relative_path": "technical/sources/890/complete.json",
+      "sha256": "2cfe940c8cdb09bbfbf5dfd696c18142839ad79d7bb07123f48a9afe65a3a0fa",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/891/complete.json",
+      "relative_path": "technical/sources/891/complete.json",
+      "sha256": "df4d80385c02909f8f639a4ad5d3339cca09158fc9c9d8e44738bff86ae874b7",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/892/complete.json",
+      "relative_path": "technical/sources/892/complete.json",
+      "sha256": "5e5ad5a29ae1f15f9dfde34c295ca67fb54721b90c63c1fe54c47403984d3b0e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/893/complete.json",
+      "relative_path": "technical/sources/893/complete.json",
+      "sha256": "03d7fa9f6897dae2138ac8fe63601d118e18e053ef83449d3a87bd073a6d8f32",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/894/complete.json",
+      "relative_path": "technical/sources/894/complete.json",
+      "sha256": "ed444c924b9591ed83e8ac61b616435ee660dbdb07590d7e4a537776a24e9dbd",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/895/complete.json",
+      "relative_path": "technical/sources/895/complete.json",
+      "sha256": "54aafcaf8127f5ba4caa42410954f63f0c7a00a3b716a5dead4af979a73be87e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/896/complete.json",
+      "relative_path": "technical/sources/896/complete.json",
+      "sha256": "8a3c4c9ccb3b5bf70f3d48d5ba50ad55f00cc0a28af0188edb88bce9879699b4",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/897/complete.json",
+      "relative_path": "technical/sources/897/complete.json",
+      "sha256": "d32f4f04c69d7a4170655cd721b9e821e354f19f68a6c2a533d1a641d84ac4a5",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/898/complete.json",
+      "relative_path": "technical/sources/898/complete.json",
+      "sha256": "9be5fa88bb0be47618b05f671038bddf7764c64959d9675911f7f0b1464dab8c",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/899/complete.json",
+      "relative_path": "technical/sources/899/complete.json",
+      "sha256": "500cd86267cd3034109e6634c1a67df25804bd771ed404c90a862aaf108e2740",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/900/complete.json",
+      "relative_path": "technical/sources/900/complete.json",
+      "sha256": "186d554253b4bbdc0c3cf8e94efcdf75115ec5d831836bb91fc1089084d46cc2",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/901/complete.json",
+      "relative_path": "technical/sources/901/complete.json",
+      "sha256": "fbf88b47f4db980950180f76aec6f36f078544a440fdd7f7e5779f88160ef46c",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/914/complete.json",
+      "relative_path": "technical/sources/914/complete.json",
+      "sha256": "f01ddae7922aa022c4fc775fabb3e0548c9cc346e695b2f77701bbf647310d53",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/915/complete.json",
+      "relative_path": "technical/sources/915/complete.json",
+      "sha256": "01c978a4a5dac1aa888058eeb0fb35a4720391b575f997914791795bbb0e0455",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/916/complete.json",
+      "relative_path": "technical/sources/916/complete.json",
+      "sha256": "7e9f3f93e579acf69c6c3d09380ae7b6dcde1a39b1018538493f2c1d9ce23258",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/917/complete.json",
+      "relative_path": "technical/sources/917/complete.json",
+      "sha256": "451291c22fac7b322c18349e2d9ca8cc50c353533e07c9ee0623516632704607",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/918/complete.json",
+      "relative_path": "technical/sources/918/complete.json",
+      "sha256": "19944b96ce6a4ee30c9e8e88ea04b17f60582aff20c15ffbc2a2fc18f97614ad",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/919/complete.json",
+      "relative_path": "technical/sources/919/complete.json",
+      "sha256": "2ce6aee19505ce90d64008ed1c4253cab8cfbf91af757ec64766579bdfc65381",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/920/complete.json",
+      "relative_path": "technical/sources/920/complete.json",
+      "sha256": "c4fb8f64f50c47089cd87fd0c7c7bf0205bc7a52a2568bb4166db30abbe4158e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/921/complete.json",
+      "relative_path": "technical/sources/921/complete.json",
+      "sha256": "a5802353145fff1771e67c6e81f1696ed66fbb541c8db8e3f47c9961ee47ec5c",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/922/complete.json",
+      "relative_path": "technical/sources/922/complete.json",
+      "sha256": "29ecdb1457f5f19dc2113ca6b4d81c07b47aa78b55399a7813893473db2bd818",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/923/complete.json",
+      "relative_path": "technical/sources/923/complete.json",
+      "sha256": "ac90d5232bd3ece22155120f1be7286f2c31353c6224ec38e00adb92c02aaaf8",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/924/complete.json",
+      "relative_path": "technical/sources/924/complete.json",
+      "sha256": "f353802ad644ebaf1c744846a11d1cee796388ed198cf01dabc5dafed93140f9",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/925/complete.json",
+      "relative_path": "technical/sources/925/complete.json",
+      "sha256": "5b700e1f82956888b726fe76729e76daaef2ea1a6c6c83d9432a5b99189e714b",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/926/complete.json",
+      "relative_path": "technical/sources/926/complete.json",
+      "sha256": "7b15adc727ea3c44d7097de809c5f071a7199ff164ce7057effc2a631d8e8aba",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/927/complete.json",
+      "relative_path": "technical/sources/927/complete.json",
+      "sha256": "327fdf907f4f5188d648dfca85e2416984a177f5c03c0ee82dc0dcac1e1e3b51",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/928/complete.json",
+      "relative_path": "technical/sources/928/complete.json",
+      "sha256": "454639801648c5ce7e9b8eb2b7e31353bda435a3df25ea221f172ba926a90622",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/929/complete.json",
+      "relative_path": "technical/sources/929/complete.json",
+      "sha256": "0bc2ff07b8a23b59ed8ab59ce481d30a61d430753a469caadeb313ddb3eb4dcf",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/930/complete.json",
+      "relative_path": "technical/sources/930/complete.json",
+      "sha256": "28e3280c60007c427d4182c049cb4bb16d341f2834a8bf678f70a84fecd9a37d",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/931/complete.json",
+      "relative_path": "technical/sources/931/complete.json",
+      "sha256": "e17d40e8d4e9b21fd2a8c196f379341ba565ab2865502f3a21c6ae0dea34a14e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/944/complete.json",
+      "relative_path": "technical/sources/944/complete.json",
+      "sha256": "9f3094b225e5f98af67695963c6f2278ae0ecb55c170f6a42e8e0cd1f0034f49",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/945/complete.json",
+      "relative_path": "technical/sources/945/complete.json",
+      "sha256": "90f7677208472011d0b9ee54b93f8abeb3efc6ca46dea0fe75c4bfed25b712ed",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/946/complete.json",
+      "relative_path": "technical/sources/946/complete.json",
+      "sha256": "4f4136388c5c16425248f26c4a9ee733a7da5e7d3a0b486f82d87fadec97400b",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/947/complete.json",
+      "relative_path": "technical/sources/947/complete.json",
+      "sha256": "ade752dba48966736e44a089c08f6ac9fdfe8e7a116e6b7825acfb9a22102954",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/948/complete.json",
+      "relative_path": "technical/sources/948/complete.json",
+      "sha256": "de555c43d23c7dc1d4325348b766e29a309e293f9c54c2ae96c6763a35aaf2a1",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/949/complete.json",
+      "relative_path": "technical/sources/949/complete.json",
+      "sha256": "ab063c0d3b16a6df492327b52686e51d0f50d3aaf0fe39b5785fdbb2616aef85",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/950/complete.json",
+      "relative_path": "technical/sources/950/complete.json",
+      "sha256": "1c5b17eb6d6a6aca67be39af1443c7f5c9e32570842411f6b4931231ae230614",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/951/complete.json",
+      "relative_path": "technical/sources/951/complete.json",
+      "sha256": "dcc7dc9d724c0dee0941c4daca98e577059eecb2d7b33b58d6f4b3eb265ba85d",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/952/complete.json",
+      "relative_path": "technical/sources/952/complete.json",
+      "sha256": "c1d898a12b9ddd8ae1fb8a86faa92d137374335dac0943228d5acf52ef1e3319",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/953/complete.json",
+      "relative_path": "technical/sources/953/complete.json",
+      "sha256": "978217b27c6324d7a8df8fe11c4d49ee618e2a0922cc51d3b60939fb3d4398e3",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/954/complete.json",
+      "relative_path": "technical/sources/954/complete.json",
+      "sha256": "ab5bc694ad4f123d05a1a2670162dab72d0aaf692edeff0e2f34df695b24996c",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/955/complete.json",
+      "relative_path": "technical/sources/955/complete.json",
+      "sha256": "15caad2cdf8da0176c9ef7a9269993ab402a7dc4be68d907130d65455c9b14f7",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/956/complete.json",
+      "relative_path": "technical/sources/956/complete.json",
+      "sha256": "d806aa3d5841910a8f89c8f2464389a1b701ed9f6f57dc159a058742eacd8b2b",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/957/complete.json",
+      "relative_path": "technical/sources/957/complete.json",
+      "sha256": "deb3eb2c866736629b559ba70bc105dcf77a90d48a5dd0085de5f548ed365e6e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/958/complete.json",
+      "relative_path": "technical/sources/958/complete.json",
+      "sha256": "d978de74c6a4dd00bb1acf050b287f242981f998243802002877ecabbfcf9af2",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/959/complete.json",
+      "relative_path": "technical/sources/959/complete.json",
+      "sha256": "4dd22860371c588affc94d49263c8e076f8a9ad0a1951be49edfae1ec2b725bf",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/960/complete.json",
+      "relative_path": "technical/sources/960/complete.json",
+      "sha256": "96d6f0289b886882be17ab56aaa6cfcd4afb885dc4566a9623fa536c9f436e54",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/961/complete.json",
+      "relative_path": "technical/sources/961/complete.json",
+      "sha256": "78ff6ab52e3303af253b88c36c033e6887b9df9427ae36984308b3cf71e79b30",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/974/complete.json",
+      "relative_path": "technical/sources/974/complete.json",
+      "sha256": "c68f28d7d5061687a9b7c733b24f9033d414fe2e3cab94cfbf17696afc608f00",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/975/complete.json",
+      "relative_path": "technical/sources/975/complete.json",
+      "sha256": "d12598c907b66c008c88b875670ab3846846ff662e76081d9e7a526cc60d4a32",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/976/complete.json",
+      "relative_path": "technical/sources/976/complete.json",
+      "sha256": "73711d06595a784e285fa768cd9b498e0a9c075cd1b71db0fdd70291cf3e3a1a",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/977/complete.json",
+      "relative_path": "technical/sources/977/complete.json",
+      "sha256": "c4afd4ef18f495ab0661903012ced8363ec5e7ac65309e5322b8500503240787",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/978/complete.json",
+      "relative_path": "technical/sources/978/complete.json",
+      "sha256": "44e2ef401c23b9ae6a3fd2b429fe0930df77dd986b13b6acb29f0fb9011ed299",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/979/complete.json",
+      "relative_path": "technical/sources/979/complete.json",
+      "sha256": "0b6996fdff26d7610bb863e49e3d2e6d689cf10702d0c4afd5b292808f8b5119",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/980/complete.json",
+      "relative_path": "technical/sources/980/complete.json",
+      "sha256": "82c5d7deb2469de0eed78f185a9a6bd1ea7b735fcaa7cd0910de13287e690d29",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/981/complete.json",
+      "relative_path": "technical/sources/981/complete.json",
+      "sha256": "290edd488f9a6ed08b0dcfb23709a4ddeda33952c19e64a63deb492a191b05e2",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/982/complete.json",
+      "relative_path": "technical/sources/982/complete.json",
+      "sha256": "74ea2da8c7af41217336d60a1d22dbe6f899885d4892b28a39e86c2ed158b632",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/983/complete.json",
+      "relative_path": "technical/sources/983/complete.json",
+      "sha256": "b61536cfac497df76e24523bf997f70e0987e7fc91f241276496b834129ab7ad",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/984/complete.json",
+      "relative_path": "technical/sources/984/complete.json",
+      "sha256": "45518f5b78b311cbc1a2e4d51cae552c60eb20a55e2e83b78c57224fc634c31c",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/985/complete.json",
+      "relative_path": "technical/sources/985/complete.json",
+      "sha256": "e436faa0d52bb1e974495bd666d2bbb6701a7225cc49f6e138fd8377435ba6b5",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/986/complete.json",
+      "relative_path": "technical/sources/986/complete.json",
+      "sha256": "7b4ec09284cabe16b337a8ffe26a4c1e32cc851c87af044345be8a1f3821482e",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/987/complete.json",
+      "relative_path": "technical/sources/987/complete.json",
+      "sha256": "6c6f3bb266e5d3f2c2a1cea29ecfa3abb8dec6e36f60ccb3fdc5d8a3194477c6",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/988/complete.json",
+      "relative_path": "technical/sources/988/complete.json",
+      "sha256": "cf2a4efc8d8f31eaff5411cb218256c10a8d37ada761b2e2e3ada5be50456628",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/989/complete.json",
+      "relative_path": "technical/sources/989/complete.json",
+      "sha256": "e449a238533fba1809704e90f828e3f30966c579582afa279712ce703f373fae",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/990/complete.json",
+      "relative_path": "technical/sources/990/complete.json",
+      "sha256": "52a3fda7c9203e720b2a074e019776d0e25ff2a7e9c8fe5c8b45b9ca85688565",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_harvest/train-audit-20260926/technical/sources/991/complete.json",
+      "relative_path": "technical/sources/991/complete.json",
+      "sha256": "2840004a6ba408a103ecde195d8e970f34384a3df2cda7384f482ff5347ac64a",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "causal_prefix_frames",
+        "controls",
+        "counts",
+        "events",
+        "files",
+        "identity",
+        "primary_candidates",
+        "primary_eligible_controls",
+        "primary_selected_crystalline_centers",
+        "primary_selected_rows",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "history_ps": [
+          {
+            "value": 0.0,
+            "first_json_path": "counts[0].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 3.0,
+            "first_json_path": "counts[30].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 6.0,
+            "first_json_path": "counts[60].history_ps",
+            "occurrences": 120
+          },
+          {
+            "value": 12.0,
+            "first_json_path": "counts[90].history_ps",
+            "occurrences": 120
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

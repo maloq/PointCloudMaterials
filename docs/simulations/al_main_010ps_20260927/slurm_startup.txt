@@ -1,0 +1,6 @@
+             JOBID                     NAME      STATE             NODELIST               NODELIST(REASON)
+           1010644            al-dense-next    PENDING                                        (Dependency)
+         1010643_3           al-dense-010ps    RUNNING            nodecpu03                      nodecpu03
+         1010643_1           al-dense-010ps    RUNNING            nodecpu06                      nodecpu06
+         1010643_2           al-dense-010ps    RUNNING            nodecpu06                      nodecpu06
+         1010643_0           al-dense-010ps    RUNNING            nodecpu07                      nodecpu07

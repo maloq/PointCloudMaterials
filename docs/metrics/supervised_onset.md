@@ -90,8 +90,9 @@ configuration, checkpoint and metric implementation identities. Prior exported
 metric definitions remain unchanged.
 
 Online W&B logs are a secondary view of these recorded calculations. Encoder
-training curves show sampled optimizer updates, not epoch averages; there is no ranking objective in the current protocol. Fresh readouts use independent update axes.
-Final metrics from selected checkpoints/readouts are run summaries, preserving
+training curves show sampled optimizer updates, not epoch averages; there is no ranking objective in the current protocol. Frozen diagnostic readouts record their update axes locally.
+Associated final metrics update the existing training run summary through its
+recorded ID without creating or restarting a run, preserving
 their selector, horizon and split. Local predictions and frozen metric exports
 remain the reproducible evidence; tracking does not change any calculation.
 
@@ -123,3 +124,16 @@ The separate encoder/context epoch campaign uses exact shuffled full passes,
 including partial batches, and NLL selection from epoch 12 onward. See
 [encoder/context metrics](encoder_context.md). Historical update-budget studies
 retain their original replacement sampling and checkpoint eligibility.
+
+
+## Mechanism queue extension (2026-09-26)
+
+Mechanism runs explicitly allow a frozen encoder, exact retained epoch0 initialization, configured milestone exports, and a256-unit frozen MLP capacity control. Defaults retain prior equations and128-unit probes.
+
+
+Tracking revision (2026-09-26): diagnostic frozen readouts and per-checkpoint
+evaluations keep their logs and results locally. Associated final scores update
+a recorded scientific training run through the API, without creating or
+restarting runs. Scientific training remains online. This changes logging and
+validates identity/hash before cached readout reuse; objectives, selectors,
+metric calculations and historical exported definitions are unchanged.

@@ -1,0 +1,137 @@
+{
+  "protocol": "native_mace_quality_v1",
+  "output": "${storage:analysis}/encoder_quality/latest-mace-20260926",
+  "population_cache": "${storage:cache}/supervised-onset/al64-b512-20260925",
+  "reference": "${storage:analysis}/encoder_quality/latest-mace-20260926/technical/reference",
+  "native_inputs": "${storage:analysis}/encoder_research/mace-vicreg-epi-20260923/technical/inputs",
+  "dense_inputs": "${storage:repo}/output/encoder_research/screen-20260923/technical/dense8-inputs",
+  "dense_observed": "${storage:scratch}/training-cache/encoder-context/multimaterial256-epochs-20260925/dense-observed",
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "normalization": {
+    "protocol": "fixed_material_cutoff_al_reference_v1",
+    "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+    "scales_A": {
+      "Mg": 10.148997617371739,
+      "Al": 9.121389139452193,
+      "Ti": 9.309864688636168,
+      "Zr": 10.353008987883314,
+      "Ta": 9.38733713271385
+    },
+    "reference_scale_A": 9.121389139452193,
+    "model_inputs": [
+      "normalized coordinates"
+    ],
+    "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+  },
+  "models": [
+    {
+      "name": "scratch-hot",
+      "kind": "supervised",
+      "domain": "hot",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/base-hot",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/base-hot/technical/runs/O-NLL/best.pt",
+      "checkpoint_sha256": "a38d239292132d3b09400581c6778c91031e78f5b015543cb938968e84f96609",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/technical/code"
+    },
+    {
+      "name": "scratch-cold",
+      "kind": "supervised",
+      "domain": "cold",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/base-cold",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/scratch/base-cold/technical/runs/R-NLL/best.pt",
+      "checkpoint_sha256": "6526a9855a3bf62a9472a2cfff962da4e53402f59cb00c93355fdb8cc055dd6f",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/technical/code"
+    },
+    {
+      "name": "vicreg-hot",
+      "kind": "supervised",
+      "domain": "hot",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/vicreg/base-hot",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/vicreg/base-hot/technical/runs/O-NLL/best.pt",
+      "checkpoint_sha256": "86c9ac799d3c95addf3e13611dcae5bc96966a3012c91e4618b9df029645623d",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/technical/code"
+    },
+    {
+      "name": "vicreg-cold",
+      "kind": "supervised",
+      "domain": "cold",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/vicreg/base-cold",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/vicreg/base-cold/technical/runs/R-NLL/best.pt",
+      "checkpoint_sha256": "4a48c1bedaac327e6e9b6f6cae2bb8b858780fa2c523283ac67e0d7b373017af",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/technical/code"
+    },
+    {
+      "name": "epi_variance-hot",
+      "kind": "supervised",
+      "domain": "hot",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/epi_variance/base-hot",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/epi_variance/base-hot/technical/runs/O-NLL/best.pt",
+      "checkpoint_sha256": "b97ada0ce0468bfb82414dc484c55e4e48242d2945e15d39502707a4bae4d513",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/technical/code"
+    },
+    {
+      "name": "epi_variance-cold",
+      "kind": "supervised",
+      "domain": "cold",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/epi_variance/base-cold",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/epi_variance/base-cold/technical/runs/R-NLL/best.pt",
+      "checkpoint_sha256": "da9d58d53795c48619bd8b8516ff7cbf6a29c6ee541f8fd63c4dd78b3fd0b02d",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/technical/code"
+    },
+    {
+      "name": "vicreg-pretrained",
+      "kind": "pretrained",
+      "domain": "hot",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/pretraining/vicreg",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/pretraining/vicreg/technical/epoch-012.pt",
+      "checkpoint_sha256": "ccfb5e38570dd0c7b2018c250086839079e2ab26853237dd8327b05284c2ae27",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-20260925/technical/code"
+    },
+    {
+      "name": "epi_variance-pretrained",
+      "kind": "pretrained",
+      "domain": "hot",
+      "origin": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/pretraining/epi_variance",
+      "checkpoint": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/pretraining/epi_variance/technical/epoch-012.pt",
+      "checkpoint_sha256": "3e68daa47447751cf8a3f36ce5d28763c92de6f1644bed267fca8fcc250c9d00",
+      "producer": "${storage:analysis}/encoder_context/multimaterial256-b1024-epi-recovery-20260925/technical/code"
+    }
+  ],
+  "seed": 20260926,
+  "batch_size": 256,
+  "parity_atol": 0.0002,
+  "parity_rtol": 0.0002,
+  "external_inputs": [],
+  "bootstrap": 1000,
+  "temporal_frames_per_source": 8,
+  "noise_rms_fractions": [
+    0.001,
+    0.005,
+    0.01,
+    0.03
+  ],
+  "neighbors": [
+    16,
+    64,
+    256
+  ],
+  "neighbor_prior_strength": 8,
+  "probes": {
+    "updates": 4104,
+    "batch_size": 256,
+    "epochs": 24,
+    "minimum_selection_epoch": 12,
+    "learning_rate": 0.001
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online",
+    "group": "encoder-quality-latest-mace-20260926"
+  }
+}

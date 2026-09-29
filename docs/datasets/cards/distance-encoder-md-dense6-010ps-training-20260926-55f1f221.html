@@ -1,0 +1,486 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Six-frame exact 0.10-ps external distance study</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Six-frame exact 0.10-ps external distance study</h1><p>3,374,496 train, 377,496 selection and 3,061,560 test windows, all at .10-ps intervals and .50-ps span; no interpolation.</p><span class="badge">derived</span><p><code>distance-encoder-md-dense6-010ps-training-20260926</code> · Al, Mg, Ta, Ti</p><h2>Location and availability</h2><p><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926">/home/ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926</a></p><p>85 owned files · 26.214 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Six-frame exact 0.10-ps external distance study&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;,
+    &quot;Mg&quot;,
+    &quot;Ti&quot;,
+    &quot;Ta&quot;
+  ],
+  &quot;role&quot;: &quot;training_geometry&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;3,374,496 train, 377,496 selection and 3,061,560 test windows, all at .10-ps intervals and .50-ps span; no interpolation.&quot;,
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;,
+    &quot;al-mendelev2008-eam&quot;,
+    &quot;mg-wilson2016-eam&quot;,
+    &quot;ti-kavousi2019-meam&quot;,
+    &quot;ta-zhong2014-eam&quot;
+  ],
+  &quot;lineage&quot;: &quot;Train Al-million/Mg/Ti families; selection Al archive; test Ta archive. Entire ancestry groups stay together. This is a separate external assay, not a change to Al64 roles.&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/distance_encoder/md_dense6_010ps_20260926.json&quot;,
+    &quot;docs/metrics/distance_encoder_dense_external.md&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Selection/test each have one ancestry family; test is also transfer to unseen Ta.&quot;,
+    &quot;Not directly comparable to fixed-Al spatial-path warning metrics.&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/distance_encoder/md_dense6_010ps_20260926.json">configs/distance_encoder/md_dense6_010ps_20260926.json</a></li><li><a href="../../metrics/distance_encoder_dense_external.md">docs/metrics/distance_encoder_dense_external.md</a></li></ul><p>Dependencies: <a href="distance-encoder-multimaterial-20260926-d7e3e963.html">distance-encoder-multimaterial-20260926</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Mendelev 2008 Al EAM (Al1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs">Al1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-mendelev2008-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev 2008 Al EAM (Al1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al. (2008), DOI 10.1080/14786430802206482&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Al1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;768a9ad9b0cda57f36523b5d247942130101b26b0cbbd9d30c7bd7e1decc7ae3&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Al1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs">Mg1.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;mg-wilson2016-eam&quot;,
+  &quot;name&quot;: &quot;Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)&quot;,
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Mg&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;Mg&quot;,
+  &quot;citation&quot;: &quot;Wilson and Mendelev (2016), DOI 10.1063/1.4946032&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:zr_al_mg_initial_6x24ps}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:zr_al_mg_initial_6x24ps}/potential/Mg1.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;0ceed5387f16d0cb7f4a2088fc4665e27708dc28e3e5b3a6c2e01ac0528faba2&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/zr_al_mg_initial_6x24ps/potential/Mg1.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><details><summary>Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component</summary><ul><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam">Kavousi2019_NiTi.library.meam</a> · hash verified</li><li><a href="../../../configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam">Kavousi2019_NiTi.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ti-kavousi2019-meam&quot;,
+  &quot;name&quot;: &quot;Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;,
+    &quot;Ti&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Ni Ti before the parameter file; final Ti maps the single atom type. No Ni atoms in the Ti simulations.&quot;,
+  &quot;citation&quot;: &quot;Kavousi et al. (2019), DOI 10.1088/1361-651X/ab580c&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/simulation/ti_crystallization.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;sha256&quot;: &quot;9ed750c73c224dc3acd168410e70cad4a79bc201bab308b265b3c5dfab11972d&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ti-kavousi2019}/Kavousi2019_NiTi.meam&quot;,
+      &quot;sha256&quot;: &quot;6f7ff46d837819f4b1b42ace00ab7f53987111d9d5586628f080714178c3d4fe&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ti_kavousi2019/Kavousi2019_NiTi.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>cadence_ps</td><td><code>[0.1]</code></td></tr><tr><td>protocol</td><td><code>[&quot;fixed_material_cutoff_al_reference_v1&quot;, &quot;six_declared_cadence_md_observations_v3&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;, &quot;Mg&quot;, &quot;Ta&quot;, &quot;Ti&quot;]</code></td></tr><tr><td>lineage</td><td><code>[&quot;Al-archived-root&quot;, &quot;Mg-archived-root&quot;, &quot;Ta-archived-root&quot;, &quot;Ti-archived-root&quot;, &quot;al-1m-independent-melt-911001&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;train&quot;]</code></td></tr><tr><td>timestep_fs</td><td><code>[1.0, 2.0]</code></td></tr><tr><td>frame_count</td><td><code>[2401, 241, 3001, 4001, 7241]</code></td></tr><tr><td>atom_count</td><td><code>[100000, 1000000, 10000422, 1024000, 1048576]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 85,
+    &quot;apparent_bytes&quot;: 39258643080,
+    &quot;allocated_bytes&quot;: 28146566144,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 58,
+      &quot;.npy&quot;: 27
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 29,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;sources/1ccb83e1325a791d6acc/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/2a5950291b0e67495ad3/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/2b458cb655817bacdb6e/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/364338e8a8f288048934/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/48689a30826dc7ccbca8/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/557f9d4494e4c16b42ca/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/56c826cef2fbbcf12577/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/5a96282209df75111d22/positions.npy&quot;,
+      &quot;shape&quot;: [
+        588,
+        10000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/5cce9fb961a09dba0210/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/6c906a946baf3b722a98/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/6ff0c67b8139acdf1065/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/73b397e6a1a9ceb35ee5/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/76802cc009c7cbd98448/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10240,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/7aa3910f511bc57fa96d/positions.npy&quot;,
+      &quot;shape&quot;: [
+        786,
+        10000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8aee8bb8abe645c96f1f/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8b2bfefd81620234fd52/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1434,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/8ee5e077946023ab0f92/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/9170aa4e647b6d2e7394/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/9dbd8029253ea9cf68ec/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/b1810a2378bec540378b/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/b6a10214ca3c5d213848/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/bc7c1b0a874f631b214a/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/be004f3d2506ad691cd6/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/db84b69babd29edfc80f/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/dde82c07f1e6160f739b/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        10486,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/ec5ecc1b13dd3976d5df/positions.npy&quot;,
+      &quot;shape&quot;: [
+        468,
+        1000,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;sources/f7ecb979a367ce1b6ebb/positions.npy&quot;,
+      &quot;shape&quot;: [
+        36,
+        100004,
+        80,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (29 records)</summary><p><a href="../records/distance-encoder-md-dense6-010ps-training-20260926-55f1f221.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/manifest.json">manifest.json</a> · complete · <code>8f01a5e6d9221fdbcb8a5915961a973fae05be957edfcd54bef29c1baa5dfc47</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/plan.json">plan.json</a> · metadata · <code>cb2b6e46e50f9f7806d534cf5c4d405bd204e5ff571722e859c124cc8e6a0d77</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/1ccb83e1325a791d6acc/complete.json">sources/1ccb83e1325a791d6acc/complete.json</a> · metadata · <code>1a320d7f994e305d686b5636c1335088db3074b70cfd3af3058c262919f4169e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/2a5950291b0e67495ad3/complete.json">sources/2a5950291b0e67495ad3/complete.json</a> · metadata · <code>fc06ed1ff495ca89393e00c2205c49b4f96cdc00851aa2eae30d375676a0b683</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/2b458cb655817bacdb6e/complete.json">sources/2b458cb655817bacdb6e/complete.json</a> · metadata · <code>7e1ebda9102fdc3e8e6761bd02bb5894e3394575a8da43604a6e3fd374c6df9c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/364338e8a8f288048934/complete.json">sources/364338e8a8f288048934/complete.json</a> · metadata · <code>07b58fedfe23237aac0d2a321dd685dfd221d6be8302ef4a57cbe66d586a3d83</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/48689a30826dc7ccbca8/complete.json">sources/48689a30826dc7ccbca8/complete.json</a> · metadata · <code>970a3300d33aa012427614c6b3df2745c72ff81003e2a12e628d5ffa9bb1f1f7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/557f9d4494e4c16b42ca/complete.json">sources/557f9d4494e4c16b42ca/complete.json</a> · metadata · <code>bf07bf8cd5ccf72c684a07a7652ef457f3a71e98c65f96641721663e59a6ecf3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/56c826cef2fbbcf12577/complete.json">sources/56c826cef2fbbcf12577/complete.json</a> · metadata · <code>35e04515f7e57e03b0ecd22973225dc871ea3b311ec9590ae8d3f4cc2ab4ec66</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/5a96282209df75111d22/complete.json">sources/5a96282209df75111d22/complete.json</a> · metadata · <code>614210d457a04e77b33ecdec9c7ad4ed65a42509aa8370415f53f53046a11517</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/5cce9fb961a09dba0210/complete.json">sources/5cce9fb961a09dba0210/complete.json</a> · metadata · <code>6ad1f092dc37333c7887a961c70e64223c1610f14cf226e54886798800ee87a8</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/6c906a946baf3b722a98/complete.json">sources/6c906a946baf3b722a98/complete.json</a> · metadata · <code>e4230590aa1a5e4e865c9412ffcb4e94bca8f9f9aec90eaf3350ae6ebeb3e769</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/6ff0c67b8139acdf1065/complete.json">sources/6ff0c67b8139acdf1065/complete.json</a> · metadata · <code>c13045a17975ca6c368f47896f9c613e65b72751aec0b5bb285893f3a9593349</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/73b397e6a1a9ceb35ee5/complete.json">sources/73b397e6a1a9ceb35ee5/complete.json</a> · metadata · <code>d0bcb34c6d58df7a0705294c3950b58fda87dcac0f914c8a9fb1675f7fa69f6b</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/76802cc009c7cbd98448/complete.json">sources/76802cc009c7cbd98448/complete.json</a> · metadata · <code>772425997218b96d7d9b927ecbe26d1cfb30aa69d02ab38f525b21c68ff7892e</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/7aa3910f511bc57fa96d/complete.json">sources/7aa3910f511bc57fa96d/complete.json</a> · metadata · <code>e6e7df5c4b18ee1383a3e3fbb4c4fa7bf08007f5bf4c08de40830228bb98acab</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/8aee8bb8abe645c96f1f/complete.json">sources/8aee8bb8abe645c96f1f/complete.json</a> · metadata · <code>c8f77fd5f39836d64db6e0b2bc5c9fe3d7ae3584628742fa07189edeb72d1e47</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/8b2bfefd81620234fd52/complete.json">sources/8b2bfefd81620234fd52/complete.json</a> · metadata · <code>ce19e475ea13c4c4ad1ed96b707c0551366c0d2fda08b6d7b3fd7c13d507cd0d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/8ee5e077946023ab0f92/complete.json">sources/8ee5e077946023ab0f92/complete.json</a> · metadata · <code>9a1f1d171aabd972b287b958ee846f29a0289b07a3f7b78ebe49f58544c8d095</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/9170aa4e647b6d2e7394/complete.json">sources/9170aa4e647b6d2e7394/complete.json</a> · metadata · <code>e8e2b8d1a93fc33d8e15e03d1e736e519bfd8ab8e7133b33e4680bc314389cc7</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/9dbd8029253ea9cf68ec/complete.json">sources/9dbd8029253ea9cf68ec/complete.json</a> · metadata · <code>a33964b4c64eda679ee144de9fa4482829cc18b5d6f3bc340f802843f0d1c7c6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/b1810a2378bec540378b/complete.json">sources/b1810a2378bec540378b/complete.json</a> · metadata · <code>b0f7b00e5155423a46dbbd11823c19e14ff67d086b9fd21a09028ab0c283aef2</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/b6a10214ca3c5d213848/complete.json">sources/b6a10214ca3c5d213848/complete.json</a> · metadata · <code>23a0c6bb8e5301808d7183f786ef43196111e58a4d4fdedc47058cadad2cb4a4</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/bc7c1b0a874f631b214a/complete.json">sources/bc7c1b0a874f631b214a/complete.json</a> · metadata · <code>d5a71791e5db3da152a8f0f15f7c345c635874bedde9e00af4d05d10990bcda9</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/be004f3d2506ad691cd6/complete.json">sources/be004f3d2506ad691cd6/complete.json</a> · metadata · <code>c68816fc4902dc2dc8d936058cff9688cf235768ecf82267eb416d38c832187d</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/db84b69babd29edfc80f/complete.json">sources/db84b69babd29edfc80f/complete.json</a> · metadata · <code>efe8cee3322db9e51fe00c4e3abbc74383a33cfb6ea664d978cfc2c7472396d3</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/dde82c07f1e6160f739b/complete.json">sources/dde82c07f1e6160f739b/complete.json</a> · metadata · <code>6ad8cd5011807e4f38f1556877c6625dcb50db9b1d73e06a9f454e69770cea0c</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/ec5ecc1b13dd3976d5df/complete.json">sources/ec5ecc1b13dd3976d5df/complete.json</a> · metadata · <code>e0421f1192fd8c895acd5f26e7eb4223f6cd01535959ba67e1e80bba6d33b2b6</code></li><li><a href="../../../../../../ids/vmorozov/training-cache/distance-encoder/md-dense6-010ps-training-20260926/sources/f7ecb979a367ce1b6ebb/complete.json">sources/f7ecb979a367ce1b6ebb/complete.json</a> · metadata · <code>5717d6921a92aa8ef8949aadefd9d715f0d7b22dff082000198bfbada6fe9859</code></li></ul></details><p class="muted">Observed 2026-09-28T23:47:41.345301+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

@@ -1,0 +1,81 @@
+{
+  "protocol": "ta_replicated_position_shooting_v1",
+  "campaign_id": "ta-shooting-20260926",
+  "base_config": "configs/simulation/ta_crystallization.json",
+  "campaign_seed": 2026092602,
+  "shots_per_parent": 4,
+  "parents": [
+    {
+      "name": "model_1m",
+      "source": "${dataset:Ta}/initial_configurations/model_1m.pos",
+      "source_sha256": "1038b1c87e081ce501ca2724d3c16d73d93531a14bbb3f9ea55649d822c36856",
+      "source_step": 1480000,
+      "atom_count": 1024000
+    },
+    {
+      "name": "2.7ns",
+      "source": "${dataset:Ta}/initial_configurations/2.7ns.pos",
+      "source_sha256": "e3eeeccd3b982361947fb427b9f311ff0251c2ee317e21976033f08c32f9fc19",
+      "source_step": 1350000,
+      "atom_count": 10000422
+    },
+    {
+      "name": "2.8ns",
+      "source": "${dataset:Ta}/initial_configurations/2.8ns.pos",
+      "source_sha256": "7d20d67091eedf2f24a27978a5bc2e33c1755ed12f3ecd37ccfcfafff6b2376a",
+      "source_step": 1400000,
+      "atom_count": 10000422
+    },
+    {
+      "name": "2.9ns",
+      "source": "${dataset:Ta}/initial_configurations/2.9ns.pos",
+      "source_sha256": "5519012640516f89ddd5a82c7ed00c3c5ca471201610d23576ce47a6fa5bdfc3",
+      "source_step": 1450000,
+      "atom_count": 10000422
+    },
+    {
+      "name": "3.0ns",
+      "source": "${dataset:Ta}/initial_configurations/3.0ns.pos",
+      "source_sha256": "8e962c9d3d7f584105e22acb13edebfa8dbda3c715936cd85f1b4605e0f4f805",
+      "source_step": 1500000,
+      "atom_count": 10000422
+    },
+    {
+      "name": "3.60ns",
+      "source": "${dataset:Ta}/initial_configurations/3.60ns.pos",
+      "source_sha256": "d451ebf7f7169e201f6af75ecc42ac17ce1139dc0739c425a8a005ce3bbf421e",
+      "source_step": 1800000,
+      "atom_count": 10000422
+    }
+  ],
+  "excluded_velocity_seeds": [
+    891051440,
+    891071441,
+    891072441,
+    891073441,
+    891074441,
+    891075441
+  ],
+  "ancestry_group": "archived-Ta-unknown-common-preparation; all parents and descendants conservatively grouped",
+  "dependencies": [
+    "Ta",
+    "potential-ta-zhong2014",
+    "ta_initial_model_1m_24ps_npt_20260905",
+    "ta-eam-five-24ps"
+  ],
+  "partition": "CPU",
+  "mpi_ranks": 48,
+  "concurrent_jobs": 2,
+  "memory": "96G",
+  "walltime": "36:00:00",
+  "selection": "All six available original archived position configurations, no new outcome-dependent parent selection.",
+  "input_contract": {
+    "initialization": "Original unquantized archived full-cell positions and box; velocities resampled with distinct Gaussian seeds; new NPT extended state.",
+    "encoder": "No encoder or predictor is trained or run by this simulation campaign.",
+    "simulation_temperature_K": 1900,
+    "temperature_usage": "Thermostat setting and audit metadata only, not a prediction covariate.",
+    "observation": "Full periodic cell, positions every 0.1 ps; precise integration/checkpoint files retained.",
+    "parent_potential": "Unknown; shooting uses verified Zhong 2014 Ta EAM.",
+    "horizon": "24 ps fixed horizon; no event-based early stopping or declared committor basins."
+  }
+}

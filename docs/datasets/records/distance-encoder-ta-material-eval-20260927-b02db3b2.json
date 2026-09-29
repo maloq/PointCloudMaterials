@@ -1,0 +1,327 @@
+{
+  "dataset_id": "distance-encoder-ta-material-eval-20260927",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "52f9acc8c4832b515568e0c4b13d90e995c7eeb69c398ba7096c5a65d2ad556e",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "plan_sha256",
+        "sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.7,
+            "first_json_path": "sources[0].cadence_ps",
+            "occurrences": 4
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "e5bf68b058d791dd632e10bf05ee80132fcb551507efab5949ea3f22e1be78e9",
+      "kind": "metadata",
+      "keys": [
+        "anchors",
+        "cache_root",
+        "config",
+        "generalization",
+        "history_span_ps",
+        "identity",
+        "interpolation",
+        "observed_cadence_ps",
+        "offset_frames",
+        "parent_training_plan_sha256",
+        "producer_sha256",
+        "source_contract",
+        "sources",
+        "tasks"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "external-crystallization-origin-v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "config.cadence_ps",
+            "occurrences": 5
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              3.0,
+              6.0
+            ],
+            "first_json_path": "config.horizons_ps",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260926,
+            "first_json_path": "config.seed",
+            "occurrences": 1
+          },
+          {
+            "value": 20260927,
+            "first_json_path": "source_contract.seed",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "neighbor_cutoff_Al_equivalent_A": 3.6,
+              "local_birth_radius_Al_equivalent_A": 8.0,
+              "interface_distance_Al_equivalent_A": 8.0,
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0
+                }
+              ]
+            },
+            "first_json_path": "config.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                },
+                {
+                  "name": "persistent3ps",
+                  "size": 64,
+                  "persistence_ps": 3.0,
+                  "persistence_frames": 7
+                }
+              ]
+            },
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 4
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "sources[0].material",
+            "occurrences": 4
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1024000,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 4
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 4
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "model_1m",
+            "first_json_path": "sources[0].parent_id",
+            "occurrences": 4
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 608134340,
+            "first_json_path": "sources[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 186999831,
+            "first_json_path": "sources[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 688081017,
+            "first_json_path": "sources[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 32816276,
+            "first_json_path": "sources[3].velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot00/complete.json",
+      "relative_path": "sources/ta-parent00-shot00/complete.json",
+      "sha256": "c21117f0a5a9467f639fe154a09c29b0f2ae784e55b4373d0bf36c3f23ff20bb",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "offsets_ps",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.7,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot01/complete.json",
+      "relative_path": "sources/ta-parent00-shot01/complete.json",
+      "sha256": "a83cb6e031bc03e32e947d8cace3f02ec6b479339f02eeeeaaa1aaab273eaf70",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "offsets_ps",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.7,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot02/complete.json",
+      "relative_path": "sources/ta-parent00-shot02/complete.json",
+      "sha256": "17afd18ed111f6033c5bc81c61d45e7475e50fdb568932d904fe534d0652b519",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "offsets_ps",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.7,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder/ta-shooting-material-eval-20260927-v2/sources/ta-parent00-shot03/complete.json",
+      "relative_path": "sources/ta-parent00-shot03/complete.json",
+      "sha256": "711d239bb4921ce6ad13569e25d71af042e1a47b33f02f01f5c9c5971a44e2ca",
+      "kind": "metadata",
+      "keys": [
+        "cadence_ps",
+        "files",
+        "identity",
+        "offsets_ps",
+        "role",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.7,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

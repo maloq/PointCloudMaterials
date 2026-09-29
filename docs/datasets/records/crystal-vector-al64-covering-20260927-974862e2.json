@@ -1,0 +1,3398 @@
+{
+  "dataset_id": "crystal-vector-al64-covering-20260927",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "e8633d04fefbedd039c6fc027650d4b53f7ddc7bde297e2f15557b77b6a028e0",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "plan_sha256",
+        "sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "095f560617bb315255adbc9bd806cb2f00c6e82574b72d84225cdcd6423051b9",
+      "kind": "metadata",
+      "keys": [
+        "audit_config_sha256",
+        "dataset",
+        "fixed_identity",
+        "identity",
+        "implementation",
+        "paths",
+        "population_sha256",
+        "protocol",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "crystal_vector_snapshot_al64_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].lineage",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 150
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 150
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].audit_metadata.temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "ff2ff48b02727753771b21a121b9bfdb59034ba263b8fa7fc993aec46aae7ae6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "bb60a764fa244f8b5f131cd440fa7fd60a9892cb0f1236dc14d78096a4f17a06",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "5cd21548235a99e3d84f0dd814151fadff53d0d6dfd3f3a37c453cc947e003a7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "4a5a98b3adf6b6da4fd6635e8923b6c15032d05dd8df88cb615cd2b673e50a3e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "5342efccda9ea266daf9e2d5d8e356d8de5202389003c43819fcd3005a5dabd5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "b3b65953d323b586550fdfe084c3855dc90a403ace23d5a412d1206329ce03a9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "1372c5a8c4334f49f8b93b97a5c4d643a3a04963dba9045da226e98f985035e8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "bd0a316f68812300f7f1d2165fa2f50e6f91a8a53cc3f856bc642d231a03c210",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "f1fb81db840cd030b9f1eada188db730687c39d3a39227f7e6c75048d779d033",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "1a1ed48bb2f866af57c38ef840062f69e51c7e258edab9f2337a3818904f5020",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "4f386d3fa3d6ba92ee8d0d4f3e00f8e24a0fd19f09d128dac37e62c9f006a121",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "b0926cf2192db856a3205327b7a384540de88f3453c2e04bcd3ccddffb9a9ddd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "4cc1926956aff9c354ec5daa2ad439ea1405c393e3629f49cc1a03ba4e357b29",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "b0930cd6e2fde85eec698d5523435e472e65541f23e3bf3c8c7a424bc65b4d6b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "337bc4a00c4ea43737402378d123c0cde2422a03e2b322c9a93d4c2d09f064fb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "7269f128fee14b8e088d5cc66d617ce2a6d38c72e2d5f2914365d984d7793f22",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "77377d75771340270766116389b64dd7c966d2234f85ec88a62690225beabfc0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "31b28d65b928a6c57f3de7e882041d89da435dc517721b5d6c19e66859783681",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "af19cf02800bcabffa77ae5ab9d81de0d62b0747155613410395e1cd76e952f9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "d9abb99241662262cd3b5a063e6a777cf864c10a2aa20f70ffbca04d6465b2cb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "2c7460ffc8fc86e65ea40c0c49c98b391f262cd4a89530d87eb72b398786f962",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "d3f216c7447e91d7b844a0666a4925ad5f7d5f339931b3391241a23763a7c009",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "c53ccee04e48d29c4cd9801d95f095ca6c97864abca05570b031dc6a751bb6db",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "0e7e8ec447bd34036cf24a6a84588db813e0e58b1ad4fd477718929a9878d474",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "e81e52154489c483fe6edbe3c8d65480ed219f9bbba39e9d123fced793ebe854",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "4d0727bd29911d8e98693f325b6c8d16c3bdbc9ef30911e9dbe812fe8f31414f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "7144624ad3af58a8b07fd79b2fb820f3f6c98e42b9e036ea4a618cebdaf2db59",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "88d96185e84a9df87f22c72de22d45a574c47ebe9deb392a8557b6a84971ac5c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "46ae02d805715ad3371606b15e32225e426ecfce273785bed11eea11cb82e1ec",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "881d83592c7dd2ca312a905b31cb77792fc843581ae05e69a59de26967dd9f36",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "288f8d1c51be7d6fb9ef8051e6aa7501df4cdfe675ba6a50b9db62f5663c888f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "b53b4e044ee45e4cbf6bb8279213b7ebba16eac95bf684826faa83ef72fe1004",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "6bf67157b79479f1ebfd216eae7221df8b44bd106f8b37afe59bfaddf8d4d7da",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "3c9e746cf585cf244ba87c5a141e5530e589704d5eec692b2663d21d1254f828",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "a61c2287febd7408c5ba4818b5a9b1e0f6e7835a02083b3a1c3eba9069564dd4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "ac55a8adaa211f7df1bc766db3cc04a0700de954ca109e511e56dc35e144bada",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "b65d859a778b9851c7c547fb186ee7da396a1915a64ec365ed0e28d2d3907e6b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "13e36c01db77437d360dd2139e3ca49f52a215f0f57173577e0348af92705126",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "18fde22619a3bfd4a65bf3c5dd79918875341b14e55978d6208fa0500e9028a0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "cc4a615c7d2355e32cfd04f2f51daccc6a37e8a5067fe78ddb53ab8ece21f227",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "282da8f9ce8a5e948214a2e1255cb36de031753a5f412197f56d0cdb08541fcd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "8438a01e697d0b207fa92e9d8f1e9cce3949fee6433fe54a1913283d052c6ebd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "4e689ddc59cf51e65e786b4d3f30b980e6db48271a45ec8b14bab1551e8b8144",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "5561c9429885422df1f339fa762b22ed6984d96d93d4b1354579869119373bb5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "662233f24cda51a6e67d68f9c78473ef7ad2001a8dd6487ba04d6c18a80fcd6d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "d4c7fe29e160f661d688d73c8634ec226d4f619a76e6ce62c9ca372a63c98d14",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "de10fc0ccd5d71276f7bef03bcb7005662481bc82491e04bccdad3bfc94835e2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "ff2128e764f2e2fe39af0b5ef0b4ebb8412f953587f61a05cb313824a35e192e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "cf58e620fd2d6152dbfdd5f004d17afcc764c91b74c2614de6693197ef4ac36f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "f5e85dd82b722e114c3ba3a9ab64532964c22cc38710f1f66f87a15ed77746da",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "bf78c3f442bf96b014cbe3e1abd3051eefd5819ceb5643412b738fdbd6c6b262",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "296754e1e5c861f55f0de96a503bf58ff24639f65c4dcbd18661e4fe44badc40",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "676a4cc0dfd6d6eb7ba790840a6473d61b6615b49f2c9f5033dd3a1b4a7d8ed7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "79d7b248aa35a3bb4e8b1d126bd31e0d678554fbba77acd7e0c05c0510dea3da",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "3daec1ff53d32aee755132c2f94e82c51eae47429d0bc64c35862b88632d564f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "d11371c701fbb887b20cbdda1dfc7360a590bc56aa7f0d6bd42070ec3a5d04a8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "0a3415488b6588631ab94de6058de8efe62f03391324c388b73cc4b2d6bb3201",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "2c6ab7eac8fad80c67b50a3085aa2d391289ad602617b8296afafb6822f5ba6e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "d137153fecae7102164780a948d1e9fbf776e077b0acdb9ae535ad19228c00bb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "136b7e7d7e0f0aa225e33bc741ffc080bbc3da5a183aaaed78363b65a8a901f9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "d230fbadf88780bcd959a9303637f6ee8d1b9b4bce4e2426b9bfb552ef5df594",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "6f2ac7eb0c3e7dd4b2c0098d567d9eb015b29ec1ec66368bbdd6705660a49eed",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "c8e0e691444031d665592c92afefcba2bb31964c93afc024b48840aa75537944",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "729ed95116f9bb143cf95ab92df77404ed113f848dfbe5df0514032aad21cce2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "ff3f64292b027630123682307b6a105a1178e247dadfb6964bc422eda33b90ab",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "e34f1eaa74ec43b0a71209c102ca25c51060e98950cf5f1ef7606e1e030479b3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "9accc8f7f0ae781ce2f7a8478d7d24793f82aa5a16e479e0de07a3a70bc1a960",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "0b744629a166e96aa4406ce5c3255e0caf5f9f2db843653f7d300a8ae42da8e8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "58f4cd28db1f15cfb15cb13190458bbe762a95e91d68cd59344bde53d37008f9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "c6e242757cb00bc704443508a0460ddd3a6e44b98a0a3146669829214b3288a5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "2892b51d61fc52bbe8c3b22cdb370a22e07917521c37f016074153e4f816e6d6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "9405602000f989c6b13bf1d65bb89ad03f32b4618a5cd825235676506dcc7c48",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "809c38d8940193c034e7f35fa4838595d5d4385c4443bee830049aec3e7f17d6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "dc0020cb499fcf5a3d008db4a1a423dec38fad3ca2fe8aaa3c3d8a5e86f575e3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "ec0233989f7fc4582d8127fa6a8b8ff123a805be18630986602de96a1d2f4404",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "a91676dd82c7756c6b8dcfb646c054ebc6a529e21579948870fed374de162152",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "ef8d02e63bc106f2a1c1a8f56c6178fd8b1e87c9a11084862c39b2680e94e4b8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "b939b76ac8bc41986fec637fbb9f6efe27c30037a44cad09e867858b723aa604",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "cf7d543f686f640f2346170fc8a70b0c31c284de7a699580d2e5cebf1eaf47ee",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "d8a3152eea1a3a4cda77fe27fa90ea28327622dab2d4d992e923392f269350a1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "550c283683e18ab53ec006c8f3cba7475a13d60a227661cee4bfbd0968034cf5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "123b3563d677f827d53e238141b1a288e335d02a6f84acbf3ba1b5f95f00c81c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "de2129539aea40feff63da6cbb6b8dec7c5e50920898283cde1290106a925042",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "19f5dd72be24f18cecffb5bad34fdc0d53d6701ea1f431ca599907f90e035887",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "96c663533abf3ccd1683bcb3341568a6dc9079f902bc64de522f801dafb4708e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "7c2c39b07c0b9a3bf1c3fa6100d0b56afb10df4f141e40e7eb0c3ecc5db7e098",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "0016b03d5d8cba2d21ce8e78541a9dcc1218deeab113f0aa552834a50bf5682e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "6f4f5f4a0b60755a2b51402fe3ddc9f20c05d799f38f1ffe98899c45a1f55b45",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "e61b57f532403c76ccdc751f5dd62aa3b8bd23891967835791c399aaa2b497c2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "81f1b95bd8e2d78c4cbb35da87de2b99aa8800505e86d72dc0c06d0a528e5e72",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "5037cb7ca511dba341a45f2cd931a94c432a214cfa655e2202b0b7b1d880b815",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "e8ed14e0e29f83eac4e0cb6a5a6fab92d9e819a35529304522a0957bf1a79d28",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "65c4ffcf356d9a8581423138090e9f92a6fa8b8d6357e96e25f412d4a4990073",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "34a0c9355081534f2361f0efa466cf66ee1b901a632465f396da71b68bd845b1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "45707a1c98d7c13f4d3238d21fede48209a702801e0da0de5d9d5485779b3628",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "5a54ffa45aa3040f917e81f40f0ab827908bf6eefe53e3c5a2705801ee87d091",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "69442b9cb396b19b35cdbfd26a8c0dce8bd8c3e55bbf929cb0aee7687a45ffcf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "023430ebadafd71ed93bf51450d0b6f59f7f8e587857b3e1a8a7ed087cb54043",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "63d7fa91fb67b23c62be2dcb4d7d2b996990e5a50a52400e1c45342b9306cb16",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "795fcad93d34de99fa0bba0a9c4e9f45c6eb1d6776a1546426af345af4776572",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "317e2bb09dfc73520274e0199ea215e5f04905d936ebb8001d0ee02e34066fb3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "62dd12c95a76bfdf14c2da5c75a46bede8d66d6f3d8d7b5e34716549d5a7caae",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "11deb1362009815e28cd646a5c1de067d40a0469ec9a895d607c847ecbe9160a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "fe36bf56a4a70f665f85453ad3b1d2a64435871e2e2ccc8a505c5f241c81e435",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "5dbeae3690acb1f7607f656e6bb931588a04c6bbc4de3ed5417e2dd57c3f7070",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "923c95b5a660d729ece0a17ca033f4168f4b80a3554073741f04fa129d356187",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "249536f28051658d1e8952c5437b59c701676ab9a003251eacf13218c5257a76",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "fae8e318d2ae3f29571750b436925760d0af8ab063bb840c2fc1a215d8acdba3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "feecdd380d8b2c9b763a8950dd672a2ae18c3befd8292e03914416bc6e638fa1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "e71edc0973695b8387431837f38b7d8c622e0fa0241b38b59a82dc8cb8a23c89",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "6fbabff3cb1e03f19ceda627c900e21b413246191aaf71df10005ba91fbd8922",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "c5e89902bd182f095e5c058ff2361aae66913d0d4494c3ba8c078cae6bf72681",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "e74a934b67289862cab058541969ad009b278b818e28ef63d2c13c8d09fefcf1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "7369c9b6c320e5b5d36390281205f7bc8dc0021934f20dcbb24e6c703cf98250",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "f0c7136e69482958548d489de187642a8ef0dc6daee9ddc87696561bdd6e757f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "f2e93e0839283150ff96f5f1674e1e3d634fdcebca2743aa4e688a612877b5ae",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "5e22698925574bf8c8bfdb442eef28803c55558db4ba987eecf8247ae2c619ee",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "ffc6c0ac9b2446a3c8a7bfbd953f0356d20120cd5d29cf262688e5735abf5932",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "28f3ed7bac32a974214f9498da1f231055fec75f8508810c1f7335a3301af1c4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "9d63efcce75704677a8a84132679b368fa3b7c1f43b3fe4c6b98b26fe57208da",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "bceb164a4d896ff537293dad88bc1c5109f244add09ce87ae421e2eab3054de6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "ed3b6e44d571afcd02a98b443c44e6dbe52fc763efa942ab102c28576423da2d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "72e725c1814b23c339ef38687e54c8db049ae7f89932f1760f83466c6553e57e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "8165dd238a62e938fc20b1415e10deabfed0deab6ce68de179c74b121257848b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "b7f3e568980d9bd87d77eb8713b4232317599b20f186b0a93d27bd1e1fcc7b6c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "c545bcf251e09ec89b1b5b889c938fc3d4ff892456111b3cfddc1fcb9eefa37c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "758dc27babba23ccc03a8b663ecaf4246963e3464f2e7427564543da21678712",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "708dae3bb111d08413be738da5d81615b0935773c9698a5e6d547ad285041060",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "c58e2a07f6b6647a3299b3319eb8acb904899bf822cff561580b207d5be17ec8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "a61265b4d964963a18bfda5834b63ba5cbd303b050967d21dc5693dd3e1d89a2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "e091992949cdf2e494fa00526ce8d224db237115c078a5d7ed96968dc7159305",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "abb38f80d4bb5caa43077dbe71a70ebf28f997c1bc3f51d3d15648144ee7163c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "0c4529468b10f03f8c68973114de575509531de256a4749ed1c103a4c02daeb5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "93ce27a8b27d39083d421a77eafe2c1fe7cf93a0100fab2040b417ce7953c61c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "901781469f8fabbff58dc824ef8752cbe99f7d09489865ead30239e2c18ff0b6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "e229be1d7a94ecf226e02647afb8c2c62194905bc506c2d10519eea91f91239e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "c96c4a800be3565879464074c4879a0b60d6e4202fc91c73dae82d06787351a4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "ebb447fa5bb6392f54b176e047b1b4aec96614d615a650d1eef4019c96b9d361",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "f5fbf906ed0b5e61580a2e5605ae797c0df9ea670e9ffd367b20b747811cedbc",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "ebbc2d0b8c3180465f4ec224899b18c06efcd30a05a0147bfe859670124ba7a6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "121068ac688ffba6b32e58b2828b6a899aec37dbe9d6e7507153eb543fac57a7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "125aee8f46d8316f4b8329cbf72fcb49fcdbe2c33d0b10e9921068620ffde872",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "a84a39ae1542eb6cd32c8b71925a17013704766b4ec7db82db4915e5cecb3d81",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "9b6fd3017d5392f68ab1ebe09718fdefbdadffd6870418f916e57b30d8b9f522",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "b28bf847c63ec1c691d65fcc1725e10828acf6c5f68ec77a0716ec38a72279ed",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "24563d76ad4226d3fee28b54cd1c41b168f16787d4e621e43a8ab382308abcd3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "731f51a43f244c1af8263b2fb6a784847965c78b3f1274d7852e80670f714afb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "a7f1f23c526c9b6f3c84102bde3b80a559f805c25e09b713ebf26d63864aadd8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "ccac5093b945ea668ee94b71ba24d5916ea36186477df0a4b640a55049b3be8f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/crystal-vector/al64-covering-20260927/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "402b6dc28a20eb8253dfbe06785d23410ceaa859812e218755fe0f245e1f0d1e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "rows",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

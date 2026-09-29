@@ -1,0 +1,21 @@
+{
+  "source_run": "${storage:analysis}/structural_static/mace-epi-epoch12-al-20260926",
+  "source_analysis": "standard-v1",
+  "order_analysis": "order-v1",
+  "analysis_name": "exploration-v1",
+  "title": "MACE EPI \u00b7 epoch 12 \u00b7 static Al",
+  "seed": 20260926,
+  "cpu_threads": 4,
+  "spatial_samples_per_frame": 4000,
+  "atlas_per_band": 4,
+  "retrieval_neighbors": 3,
+  "retrieval_exclusion_A": 20,
+  "radial_edges_A": [
+    0,
+    3.5,
+    5,
+    6.5,
+    8
+  ],
+  "svg": false
+}
