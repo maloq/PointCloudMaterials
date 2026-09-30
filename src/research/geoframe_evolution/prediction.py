@@ -20,7 +20,7 @@ from src.research.trajectory_stability.audit import corpus_dynamics
 
 
 def prepare():
-    path = Path('configs/structural_state/future_metric_seed20260923.json')
+    path = Path('configs/analysis/structural_state_future_assay.json')
     config = json.loads(path.read_text())
     corpus = Corpus(SimpleNamespace(cache=resolve_path(config['cache'])))
     with np.load(resolve_path(config['cache'])/'relaxed-graphs.npz') as bank:

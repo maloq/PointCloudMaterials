@@ -279,31 +279,9 @@ replays saved native and joint-head onset probabilities at3/6/12 ps, with3 ps
 primary and explicit event counts. It preserves all historical model selectors
 and performs no training; [definitions](../docs/metrics/onset_horizons.md).
 
-`python -m src.research.spatial_hierarchy.queue preflight|submit|collect --config
-configs/spatial_hierarchy/screen_20260924.json` compares local and surrounding
-context hierarchies with fixed focal targets; [guide](../docs/spatial_hierarchy.md).
-
-`python -m src.research.robust_onset.queue preflight|submit|collect --config
-configs/robust_onset/screen_20260924.json` runs the new one-seed onset/robustness
-screen with AP ranking, relaxed teachers and tensor pooling. See
-[operations](../docs/robust_onset.md); production correctness preflight is separate
-from training.
-
-`python -m src.research.structural_state.queue preflight|launch-local|serial|worker|collect
---config configs/structural_state/repaired_20260923.json` runs the four repaired
-fixed-geometry/relaxed-teacher/physical-distance native MACE experiments. Preflight
-is a separate correctness stage. `launch-local` freezes code and starts detached
-serial queues on the visible GPUs of the current Slurm allocation. The `submit`
-action instead submits independent GPU allocations. Historical v1 runs use their
-original frozen code;
-see [operations](../docs/structural_state.md).
-
-The same queue accepts `configs/structural_state/future_metric_seed20260923.json`
-and `future_metric_seed20260924.json` for the two-seed distance/future factorial.
-`python -m src.research.structural_state.factorial_report --config
-configs/structural_state/future_metric_campaign_20260923.json` collects fully
-completed seeds with paired onset intervals and predeclared physical rules;
-workers call it automatically. See [the protocol](../experiments/structural_state_future_20260923/README.md).
+The structural-reconstruction, AP-tuned robust-onset/spatial-hierarchy, and
+conditioned neighborhood-JEPA trainers were retired on 2026-09-30. Their numerical
+reproduction uses recorded frozen producers; [retirement and retained tools](../docs/architecture_retirement.md).
 
 `python -m src.research.structural_state_onset_review --run RUN --output NEW-OUTPUT`
 audits completed repaired-encoder onset predictions and exports paired whole-source
@@ -326,9 +304,9 @@ configs/analysis/relaxed_encoder_interim.json` evaluates finished encoders on an
 existing fixed assay cohort while the larger evaluation is preparing. It retains
 source splits and matched linear/MLP probes; see [interim readouts](../docs/relaxed_encoder.md).
 
-`python -m src.research.relaxed_encoder.recovery submit --config configs/analysis/relaxed_encoder_pilot.json --name RETRY_NAME --allocation JOB_ID`
-recovers iteration-limited quenches and chains cache construction, matched encoder
-training and frozen assays; see [recovery workflow](../docs/relaxed_encoder.md).
+`python -m src.research.relaxed_encoder.recovery cpu|cuda|build --config CONFIG --name RETRY_NAME`
+repairs cells from an existing archived restart plan and rebuilds data. It does
+not submit encoder training; [retained operations](../docs/architecture_retirement.md).
 
 `python -m src.research.gatr_conditional_information.comparison --config configs/analysis/conditional_information_local_last.json`
 repeats the assay for a pinned pair of final native MACE/GATr checkpoints, using
@@ -769,36 +747,32 @@ detached queue; see [execution](../docs/crystallization_paths_20260919.md) and t
 
 The same path queue accepts `configs/crystallization_transfer/mace_path_refinement_20260919.json` for 30 targeted screens and five promotions. `python -m src.research.crystallization_paths.diagnose` replays completed forecasts on selection sources; see [execution](../docs/crystallization_paths_20260919.md).
 
-`python -m src.training_methods.neighborhood_jepa.prepare --config configs/neighborhood_jepa/data_20260920.json` builds tracked neighbor triplets from existing dynamics. `python -m src.training_methods.neighborhood_jepa.queue submit --config configs/neighborhood_jepa/mace_20260920.json` launches the frozen-code MACE-only two-GPU queue; [execution](../docs/neighborhood_jepa_20260920.md), [scientific protocol](../experiments/neighborhood_jepa_20260920/README.md).
+`python -m src.training_methods.neighborhood_jepa.prepare --config configs/neighborhood_jepa/data_20260920.json`
+builds the tracked paired-graph release reused by retained label-free studies.
+The old conditional JEPA training and profiling entry points are retired;
+[retained encoders and data tools](../docs/architecture_retirement.md).
 
-`python -m src.training_methods.neighborhood_jepa.v2.queue submit --config configs/neighborhood_jepa/v2_native_al_20260920.json` launches the native-Al A–E mechanism comparison and matched frozen crystallization probes. See [v2 execution](../docs/neighborhood_jepa_v2.md).
+Newly trained paired-MACE snapshot checkpoints use
+`python -m src.analysis.neighborhood_adapter --config CONFIG --stage export|verify`,
+followed by the analysis pipeline. The adapter reads `mace_paired_epi_v1` and
+exports `neighborhood_snapshot_encoder`; old JEPA checkpoint schemas are retired.
+See [current encoder APIs](../docs/architecture_retirement.md).
 
-- Neighborhood JEPA regularizer/order comparison: `python -m src.training_methods.neighborhood_jepa.regularization.queue`; [operation and preparation](../docs/neighborhood_jepa_regularization.md).
-  The `regularization.release` module gates unstarted tasks during an immutable
-  performance release; see the same operations document for allocation handoff.
-
-- Multi-horizon JEPA target views: `python -m src.training_methods.neighborhood_jepa.multihorizon.data --config CONFIG`; [protocol](../experiments/neighborhood_jepa_multihorizon_20260920/README.md).
-
-- Neighborhood JEPA memory/throughput profiling: `python -m src.training_methods.neighborhood_jepa.profile_execution --config CONFIG --microbatch SIZE --output JSON`; [packed GPU inputs and activation retention](../docs/neighborhood_jepa_vram.md). This is a separate diagnostic, never part of scientific training.
-
-Order-regularized neighborhood JEPA checkpoints use `python -m src.analysis.neighborhood_adapter --config configs/analysis/epi_direct_static.json --stage export|verify`, followed by `python -m src.analysis.pipeline configs/analysis/static_epi_direct_al.yaml`. Run under the preserved training producer; see [protocol](../experiments/neighborhood_jepa_regularization_20260920/STATIC_AL.md).
 
 `python -m src.research.crystallization_information --config configs/analysis/crystallization_information_short.json`
 measures short-horizon crystallization information missing from frozen exports using
 matched feature add-backs and physical decoders. See [workflow](../docs/crystallization_information.md).
 
-`python -m src.research.relaxed_encoder.queue STAGE --config configs/analysis/relaxed_encoder_pilot.json` runs the [paired relaxation pilot](../docs/relaxed_encoder.md); scientific protocol in [experiments](../experiments/relaxed_encoder_20260920/README.md).
-
-`python -m src.research.context_night.queue submit --config configs/context_night/night_20260921.json` launches the [overnight context/encoder queue](../docs/context_night.md).
-
-`python -m src.research.relaxed_encoder.expanded --config configs/analysis/relaxed_encoder_expanded.json --allocation JOB_ID`
-submits the expanded paired-relaxation dataset and direct-export regularization sweep; see [workflow](../docs/relaxed_encoder.md).
+`python -m src.research.relaxed_encoder.queue cpu|build|evaluate|report|benchmark --config CONFIG`
+retains paired-data preparation and frozen-checkpoint diagnostics. Encoder fitting,
+expanded training submission, and the context-night continuation queue are retired;
+[details](../docs/architecture_retirement.md).
 
 `python -m src.hardware_benchmark.relaxation --config configs/benchmarks/relaxation_cuda.json --backend {cpu,v100,h100} --binary /path/to/lmp`
 benchmarks paired full-cell MEAM relaxation and target fidelity, separately from
 training; see [GPU relaxation](../docs/hardware_benchmark.md#full-cell-meam-relaxation-on-cuda).
 
-`python -m src.research.relaxed_encoder.accelerated --config configs/analysis/relaxed_encoder_accelerated.json --backend {h100,a100,v100} --lane NAME [--handoff]`
+`python -m src.research.relaxed_encoder.accelerated --config configs/analysis/relaxed_encoder_accelerated.json --backend {h100,a100,v100} --lane NAME`
 adds validated CUDA MEAM producers to the shared CPU task queue; see
 [GPU production](../docs/relaxed_encoder.md#gpu-production-alongside-cpu-workers).
 
@@ -849,6 +823,8 @@ and launches the front queue after the optimization queue; no new simulation.
 
 Native snapshot physical screen: `python -m src.research.encoder_screen.queue --config configs/encoder_screen/screen_20260923.json --lane NAME`; [preparation, cached figure pass and continuation](../docs/encoder_screen.md).
 
-`python -m src.research.encoder_parameter_search.preflight` and `queue launch|worker` run the28-fit matched GeoFrame/MACE parameter search; [execution](../docs/encoder_parameter_search.md).
+The mixed GeoFrame/reconstruction-MACE parameter-search launcher is retired.
+The standalone GeoFrame fit and saved-result analysis modules remain;
+[historical campaign reproduction](../docs/architecture_retirement.md).
 
 `python -m src.research.mace_epi.queue submit --config configs/mace_epi/campaign.json` runs the paired MACE VICReg/Epi comparison; see [operations](../docs/mace_epi.md) and [scientific protocol](../experiments/mace_paired_epi_20260923/README.md).

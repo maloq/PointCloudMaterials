@@ -43,9 +43,9 @@ def run(c, config_path):
                 raise ValueError(f'No encoder learning signal for {item["name"]}')
             optimizer.step()
             losses.append(dict(loss=loss, terms=terms, gradient_norm=float(norm), diagnostics=diagnostics))
-        # Same producer/state schema as the existing neighborhood native extractor.
-        from src.training_methods.neighborhood_jepa.regularization.model import Encoder
-        restored = Encoder(c['encoder_channels'], 'raw').cuda()
+        # Round-trip a freshly trained encoder through its current state schema.
+        from src.models.encoders.neighborhood import NeighborhoodEncoder
+        restored = NeighborhoodEncoder(c['encoder_channels'], 'raw').cuda()
         restored.load_state_dict(model.encoder.state_dict(), strict=True)
         with torch.no_grad(), torch.autocast('cuda', dtype=torch.bfloat16, enabled=c['precision']=='bf16'):
             encoded = restored(move(packed[0], 'cuda'))

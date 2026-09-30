@@ -1,5 +1,9 @@
 # Robust onset encoder queue
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 Scientific rationale, literature and arm definitions are in the
 [protocol](../experiments/robust_onset_20260924/README.md).
 Use conda `pointnet-torch214`. No new MD or minimization is performed.

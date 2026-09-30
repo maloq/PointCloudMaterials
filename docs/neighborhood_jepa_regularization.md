@@ -1,5 +1,9 @@
 # Neighborhood JEPA regularization queue
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 Use `pointnet-torch214`. Configuration:
 `configs/neighborhood_jepa/regularization_20260920/study.json`.
 The derived order/reservoir collection is registered in `configs/datasets.json`.

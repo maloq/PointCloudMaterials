@@ -1,5 +1,9 @@
 # Running the encoder parameter search
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 The [scientific protocol](../experiments/encoder_parameters_20260923/README.md)
 declares28fits and fixed budgets. Use conda `pointnet-torch214` on the allocated
 two-GPU node. Source checkpoints and analysis from other running queues are

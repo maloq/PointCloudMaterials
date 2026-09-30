@@ -163,13 +163,11 @@ selection-only promotion to longer runs, through the existing transfer queue.
 The path study's `diagnose`, `refined_model` and `refinement` modules implement selection-only failure diagnosis, revised trajectory models and physical-error-constrained promotion through the existing path queue.
 # Fixed structural-state screen
 
-`structural_state/` implements the distinct four-arm fixed-target study after BCR:
-verified paired-cache reuse, resident graph geometry, native cuEquivariance MACE,
-code-only heads, relaxed-target and relational objectives, source-held-out probes,
-and detached local/independent Slurm queues. Current v2 repairs amplitude collapse
-with fixed distance scales, fitting-only calibration and a direct pooled export;
-it also audits actual training heads. See [protocol](../../experiments/structural_state_20260923/README.md)
-and [operations](../../docs/structural_state.md).
+`structural_state/` retains the shared geometry encoder, data/target producers and
+physical-information diagnostics. Its reconstruction trainer and dependent fit
+recipes were removed on 2026-09-30, together with AP-tuned robust-onset/spatial
+hierarchy and conditioned JEPA prediction. Recorded frozen producers remain
+unchanged; see [retirement](../../docs/architecture_retirement.md).
 
 `structural_state_onset_review.py` audits the completed v2 onset predictions and
 bootstraps complete sources for paired AP and probability errors without fitting;

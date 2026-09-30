@@ -1,5 +1,9 @@
 # Equivariant neighborhood JEPA execution
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 Use conda `pointnet-torch214`. The current campaign runs two independent MACE fits
 on node53's two H100 NVLs in allocation 1000616, with approximately 23 hours
 allocated at launch. It does not request other nodes or run GATr.

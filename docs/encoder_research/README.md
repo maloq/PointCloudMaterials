@@ -125,8 +125,8 @@ to this repository. This is an evidence snapshot, not a live run monitor.
 | Find plots or repeat an analysis | [Analysis and visualization guide](analysis.md) |
 | Improve how we organize and interpret future research | [Workflow recommendations](improvements.md) |
 | Study information useful for crystallization | [Likelihood-based protocol](../../experiments/supervised_information_20260925/README.md), [standing research policy](training_branches.md) |
-| Follow the new predictive/robustness experiments | [Eight-arm literature-led protocol](../../experiments/robust_onset_20260924/README.md), [Slurm operations](../robust_onset.md) |
-| Embed a local region within its surroundings | [Spatial hierarchy protocol](../../experiments/spatial_hierarchy_20260924/README.md), [queue guide](../spatial_hierarchy.md) |
+| Inspect the historical predictive/robustness experiments | [Eight-arm literature-led protocol](../../experiments/robust_onset_20260924/README.md), [Slurm operations](../robust_onset.md) |
+| Inspect the retired spatial hierarchy experiments | [Spatial hierarchy protocol](../../experiments/spatial_hierarchy_20260924/README.md), [queue guide](../spatial_hierarchy.md) |
 | Measure state and temporal-movement dimensions | [Matched 0.75 ps table with noise response](../../output/encoder_research/noise-lag075-20260924/RESULTS.md), [guide](embedding_dynamics.md), [definitions](../metrics/embedding_dynamics.md) |
 | Measure response to input noise | [Combined noise/trajectory table](../../output/encoder_research/noise-lag075-20260924/RESULTS.md), [guide](input_noise.md), [definitions](../metrics/embedding_noise.md) |
 | Find a dated scientific protocol | [Study index](studies.md), [active experiments](../../experiments/README.md) |
@@ -187,7 +187,7 @@ Machine storage roots come from `machine.local.yaml`; the archive must be mounte
 See [coverage and refresh instructions](database.md). Source scientific protocols
 remain in `experiments/`; this folder is their cross-study guide.
 
-The [new parameter search](../encoder_parameter_search.md) trains28 matched fits after the [29-checkpoint review](../../output/encoder_research/parameter-search-20260923/RESULTS.md). Liquid-neighbor measurements favor the late VISReg raw export despite its two-blob visualization; structure and calibrated prediction remain separate selection criteria.
+The [historical parameter search](../encoder_parameter_search.md) recorded28 matched fits after the [29-checkpoint review](../../output/encoder_research/parameter-search-20260923/RESULTS.md). Liquid-neighbor measurements favor the late VISReg raw export despite its two-blob visualization; structure and calibrated prediction remain separate selection criteria.
 
 The [paired MACE + Epi study](../../experiments/mace_paired_epi_20260923/README.md) compares direct temporal alignment with VICReg versus geometric Epi regularization (with/without a variance floor), using two scratch seeds and24 complete passes. All six fits and24 checkpoint evaluations are complete; see the [results](results_20260924.md#mace-paired-alignment-epi-versus-vicreg). This is separate from the conditional-JEPA checkpoint screen.
 

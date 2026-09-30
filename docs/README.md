@@ -71,18 +71,20 @@ Operational changes, simulation campaigns and dataset inventories belong in this
 
 [Structural-path crystallization queue](crystallization_paths_20260919.md): detached local state trajectory forecasts and future-center cache.
 
-- [Neighborhood JEPA execution](neighborhood_jepa_20260920.md): tracked-cache construction, frozen two-H100 MACE queue, exact resumes and model exports.
+- [Historical neighborhood JEPA execution](neighborhood_jepa_20260920.md): retained data and encoder readers; conditional training is retired.
 
-- [Neighborhood JEPA v2 execution](neighborhood_jepa_v2.md)
+- [Historical neighborhood JEPA v2 execution](neighborhood_jepa_v2.md)
 
-- [Neighborhood JEPA regularization queue](neighborhood_jepa_regularization.md): detached multi-allocation fits, order anchors and frozen crystallization probes.
+- [Historical neighborhood JEPA regularization](neighborhood_jepa_regularization.md): encoder export controls remain; conditional training is retired.
 
 - [Liquid geometry diagnostic workflow](liquid_geometry.md): frozen inputs, CPU metric experiments and native GPU checkpoint inference.
 
-- [Structural-state encoder training and distance/future factorial](structural_state.md): verified data reuse, detached queues and automatic matched evaluation.
+- [Historical structural-state studies](structural_state.md): shared geometry and physical diagnostics remain; reconstruction training is retired.
 
 - [Broad encoder snapshot screen](encoder_screen.md): queue, cached analyses, and native input contracts.
 
-[Encoder parameter-search queue](encoder_parameter_search.md): frozen28-fit campaign, convergence assays and8×spatial plots.
+[Historical encoder parameter search](encoder_parameter_search.md): recorded28-fit campaign and retained saved-result analysis. The mixed reconstruction training queue is retired.
 
 - [Paired MACE + Epi](mace_epi.md): submit/resume the matched24-pass encoder comparison and native structural/future analysis.
+
+- [Architecture retirement, 2026-09-30](architecture_retirement.md): removed trainers, retained dependencies, historical source preservation and metric contracts.

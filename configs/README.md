@@ -139,18 +139,10 @@ audits prediction inputs for275 saved AP comparisons without retraining.
 recipe through 35 full passes, with independent Al/Ta/Zr interface/liquid assays;
 [workflow](../docs/geoframe_evolution.md).
 
-[`structural_state/future_metric_campaign_20260923.json`](structural_state/future_metric_campaign_20260923.json)
-coordinates two seeds of the relaxed geometry/current-order × distance × future
-encoder study (eight new fits); [protocol](../experiments/structural_state_future_20260923/README.md).
-
-[`structural_state/repaired_20260923.json`](structural_state/repaired_20260923.json)
-defines the four-arm repair with calibrated heads, preserved pooled features and
-fixed distance scales, detached across two GPUs in the current allocation;
-[protocol](../experiments/structural_state_20260923/README.md).
-
-[`structural_state/screen_20260922.json`](structural_state/screen_20260922.json)
-defines the four matched native MACE fits after BCR, using fixed observed/relaxed
-geometry and relational supervision; [protocol](../experiments/structural_state_20260922/README.md).
+Structural-state reconstruction training recipes were retired on 2026-09-30.
+[`analysis/structural_state_future_assay.json`](analysis/structural_state_future_assay.json)
+retains the historical fixed-data future diagnostic used by GeoFrame analysis,
+without encoder training arms or launch settings; [retirement](../docs/architecture_retirement.md).
 
 [`analysis/conditional_information_local_last.json`](analysis/conditional_information_local_last.json)
 pins final-update-622 MACE/GATr conditional structure, crystallization and jitter
@@ -410,25 +402,17 @@ The crystallization structural-path companion uses `crystallization_transfer/mac
 
 `crystallization_transfer/mace_path_refinement_20260919.json` reuses the completed future cache for 30 targeted screens and five validation-selected longer fits; [diagnosis and protocol](../experiments/crystallization_transfer_20260919/PATH_REFINEMENT.md).
 
-- `neighborhood_jepa/`: tracked six-neighbor cache and MACE-only SIGReg/VICReg, spatial and temporal query comparisons; [protocol](../experiments/neighborhood_jepa_20260920/README.md).
+- `neighborhood_jepa/data_20260920.json` and `neighborhood_jepa/large_20260920/data.json`:
+  paired-graph preparation reused by retained label-free studies. Conditional
+  JEPA training recipes have been retired; [preserved producers](../docs/architecture_retirement.md).
 
-- Neighborhood JEPA v2 native Al: `neighborhood_jepa/v2_native_al_20260920.json`.
-
-- `neighborhood_jepa/large_20260920/`: expanded native-Al preparation and paired-GPU three-hour width64 MACE runs on node53/node59, followed by frozen crystallization probes.
-
-- `neighborhood_jepa/regularization_20260920/study.json`: MACE order-preserving regularizer/projector comparison and frozen crystallization assays.
-
-- `neighborhood_jepa/multihorizon_20260920/study.json`: three matched MACE JEPA multi-horizon embedding fits and frozen crystallization probes.
-
-Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.yaml), [checkpoint export](analysis/epi_direct_static.json), and [protocol](../experiments/neighborhood_jepa_regularization_20260920/STATIC_AL.md).
+Historical Epi-inspired static Al (requires its frozen producer): [analysis recipe](analysis/static_epi_direct_al.yaml), [checkpoint export](analysis/epi_direct_static.json), and [protocol](../experiments/neighborhood_jepa_regularization_20260920/STATIC_AL.md).
 
 - `analysis/crystallization_information_short.json`: source-held-out frozen-embedding information diagnostics at0.75–12ps.
 
-- `analysis/relaxed_encoder_pilot.json`: matched MACE relaxed-input/target pilot and full-cell tolerance benchmark.
+- `analysis/relaxed_encoder_pilot.json`: recorded paired-data plan and frozen-encoder diagnostics; encoder fitting is retired.
 
-- `context_night/night_20260921.json`: one-seed MACE continuations, observed-context trajectory screens, development promotions and frozen-encoder transfers.
-
-- `analysis/relaxed_encoder_expanded.json`: expanded paired Al relaxation dataset and nine-run MACE rank-regularization study.
+- `analysis/relaxed_encoder_expanded.json`: recorded paired Al relaxation plan and completed-run identities for frozen diagnostics; encoder fitting is retired.
 - `analysis/relaxed_encoder_large_test.json`: fixed 12 ps held-out assay grid, 46 frozen readouts and source-bootstrap intervals.
 
 - `benchmarks/relaxation_cuda.json`: matched four-cell V100/H100 and 32-rank CPU MEAM relaxation comparison.
@@ -444,7 +428,7 @@ Direct Epi-inspired static Al: [analysis recipe](analysis/static_epi_direct_al.y
 - `analysis/structured_context_figures.json`: completed symmetric MACE/GATr PNG
   analysis, independent training-fitted UMAPs, and fixed-event lead-time curves.
 
-Development-selected relaxed static Al: [pipeline](analysis/static_relaxed_best_al.yaml), [export](analysis/relaxed_best_static.json), [protocol](../experiments/relaxed_encoder_expanded_20260921/STATIC_AL.md).
+Historical development-selected relaxed static Al (requires its frozen producer): [pipeline](analysis/static_relaxed_best_al.yaml), [export](analysis/relaxed_best_static.json), [protocol](../experiments/relaxed_encoder_expanded_20260921/STATIC_AL.md).
 
 Relaxed symmetric-context forecasting: `crystallization_transfer/symmetric_relaxed_mace_20260921.json`;
 [protocol](../experiments/structured_relaxed_context_20260921/README.md).
@@ -470,18 +454,16 @@ observed/relaxed atom illustrations; see the archived-reuse research record.
 
 - [Encoder snapshot screen](encoder_screen/screen_20260923.json): pinned native producers and fixed physical references; [execution](../docs/encoder_screen.md).
 
-[`encoder_parameter_search/campaign.json`](encoder_parameter_search/campaign.json) defines28 matched parameter-search fits and convergence checkpoints; [protocol](../experiments/encoder_parameters_20260923/README.md).
+The mixed reconstruction-MACE parameter-search campaign is retired. Its recorded
+campaign and MACE recipes remain with the frozen producer; standalone GeoFrame
+recipes and saved-result analysis remain available. See [retirement](../docs/architecture_retirement.md).
 
 - `mace_epi/campaign.json`: matched direct-embedding MACE paired alignment with VICReg or geometric Epi regularization, two seeds and24 full passes. See [operations](../docs/mace_epi.md).
 ## Embedding dynamics supplement
 
-`spatial_hierarchy/screen_20260924.json` compares local-only, late-context and
-early 12/16 Å context-conditioned MACE; [protocol](../experiments/spatial_hierarchy_20260924/README.md)
-and [operations](../docs/spatial_hierarchy.md).
-
-`robust_onset/screen_20260924.json` defines the eight-arm predictive/robustness
-MACE queue; [scientific protocol](../experiments/robust_onset_20260924/README.md)
-and [operations](../docs/robust_onset.md). One seed, two concurrent Slurm GPUs.
+AP-tuned robust-onset and spatial-hierarchy training recipes are retired;
+[historical source and results](../docs/architecture_retirement.md). Their shared
+perturbation metrics remain available to current evaluations.
 
 `analysis/encoder_noise_20260924.json` adds controlled Gaussian input-noise
 response to the matched 0.75 ps table; [workflow](../docs/encoder_research/input_noise.md).
@@ -498,14 +480,10 @@ It runs analysis only and preserves historical outputs.
 ## Historical three-picosecond AP-selected proposals
 
 `analysis/onset_horizons_20260924.json` replays saved predictions at3/6/12 ps.
-`robust_onset/screen_ap3_20260924.json` and
-`spatial_hierarchy/screen_ap3_20260924.json` use3 ps for ranking and checkpoint
-selection, with separate outputs. Historical `screen_20260924.json` recipes
-retain explicit12 ps settings. These unsubmitted proposals are historical and
-must not enter future queues: the current objective requires predictive
-likelihood or label-free selection, with AP used only as a diagnostic. Preserve
-their recorded definitions; see the [historical proposals](../experiments/onset_ap3_20260924/README.md)
-and [current training branches](../docs/encoder_research/training_branches.md).
+The AP-selected robust-onset and spatial-hierarchy proposals and their12 ps
+training recipes were removed from the active catalogue. Historical definitions
+remain in frozen source bundles and the [scientific record](../experiments/onset_ap3_20260924/README.md);
+see [retirement](../docs/architecture_retirement.md). AP remains an evaluation diagnostic.
 
 `analysis/encoder_quality_latest_20260926.json` pins eight current native MACE exports for the [frozen quality comparison](../experiments/encoder_quality_20260926/README.md).
 

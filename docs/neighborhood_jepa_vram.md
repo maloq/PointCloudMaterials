@@ -1,5 +1,9 @@
 # Neighborhood JEPA execution on GPUs with more memory
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 `src/training_methods/neighborhood_jepa/execution.py` implements three independent
 execution controls for the regularization and multi-horizon MACE protocols:
 

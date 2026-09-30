@@ -31,6 +31,24 @@ def check_metric_docs(*, family=None):
         description = f'docs/metrics/{name}.md'
         if description not in contract['files']:
             failures.append(f'{name}: description is not included in the contract: {description}')
+        if contract.get('status') == 'retired':
+            # These hashes identify historical calculations, including removed
+            # source. Validate their immutable retirement record and description;
+            # never bind them to a newly computed table using the live checkout.
+            record_path = REPO / contract['retirement']['record']
+            if not record_path.is_file():
+                failures.append(f'{name}: missing retirement record {record_path}')
+                continue
+            if fingerprint(record_path) != contract['retirement']['sha256']:
+                failures.append(f'{name}: retirement record changed: {record_path}')
+                continue
+            record = json.loads(record_path.read_text())
+            if record['family'] != name or record['contract']['files'] != contract['files']:
+                failures.append(f'{name}: historical source hashes differ from retirement record')
+            path = REPO / description
+            if not path.is_file() or fingerprint(path) != contract['files'][description]:
+                failures.append(f'{name}: historical description changed: {description}')
+            continue
         for filename, expected in contract['files'].items():
             path = REPO / filename
             if not path.is_file():
@@ -48,6 +66,9 @@ def check_metric_docs(*, family=None):
 def snapshot_metric_docs(root, family, *, generated_catalogue=False):
     contracts = check_metric_docs(family=family)
     contract = contracts[family]
+    if contract.get('status') == 'retired':
+        raise ValueError(f'Metric family {family!r} is retired. Use its recorded frozen producer '
+                         'for numerical reproduction, or publication-only rendering for existing results.')
     root = result_folders(root)
     desc_path = DOCUMENTS / f'{family}.md'
     description = desc_path.read_text()

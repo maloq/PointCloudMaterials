@@ -38,8 +38,12 @@ def task_for(c, item, epoch, *, require=True):
     task.pop('encoder_sha256')
     code = Path(__file__).resolve().parents[3]
     path = Path(c['output'])/'technical/fits'/item['name']/f'epoch-{epoch:03d}.pt'
-    files = {str(code/'src'/p.split('/src/', 1)[1]): sha(code/'src'/p.split('/src/', 1)[1])
-             for p in template['producer_files']}
+    producer_files = (
+        'src/models/encoders/neighborhood.py', 'src/models/encoders/structural.py',
+        'src/models/encoders/mace_causal.py', 'src/models/encoders/mace_backend.py',
+        'src/data/structural_pretraining/batches.py', 'src/data/structural_pretraining/support.py',
+    )
+    files = {str(code/name): sha(code/name) for name in producer_files}
     task.update(name=f'{item["name"]}-epoch{epoch:03d}', checkpoint=str(path),
         checkpoint_sha256=sha(path) if require or path.exists() else '',
         producer=str(code), producer_files=files, step=epoch*64, precision=c['precision'])

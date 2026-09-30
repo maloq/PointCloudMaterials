@@ -81,7 +81,7 @@ def run(study,method,device,deadline):
             projection=torch.randn(128,64,device=device,generator=generator)/math.sqrt(128)
             for values in data.values():
                 values['reservoir']=torch.stack([encode(encoder,values[d],chunk)@projection for d in ('hot','cold')],1)
-            from src.training_methods.neighborhood_jepa.regularization.objective import epiplexity
+            from src.training_methods.regularizers import epiplexity
             score=[]
             for ids in np.array_split(initial[:min(4*chunk,len(initial))],4):
                 for view,domain in enumerate(('hot','cold')):

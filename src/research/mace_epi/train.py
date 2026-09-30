@@ -10,7 +10,7 @@ from torch import nn
 from src.data.structural_pretraining.batches import move
 from src.data.structural_pretraining.prepare import digest, file_hash
 from src.research.encoder_screen.common import write
-from src.training_methods.neighborhood_jepa.regularization.model import Encoder
+from src.models.encoders.neighborhood import NeighborhoodEncoder
 from src.training_methods.neighborhood_jepa.execution import loader, training_step, prime_encoder
 from src.training_methods.shared_pretraining.compilation import compile_encoder
 from src.training_methods.shared_pretraining.runtime import learning_rate
@@ -22,20 +22,19 @@ from .objective import Objective
 class Model(nn.Module):
     def __init__(self, channels):
         super().__init__()
-        self.encoder = Encoder(channels, 'raw')
+        self.encoder = NeighborhoodEncoder(channels, 'raw')
 
 
 def build(config, item, data, device='cuda'):
     torch.manual_seed(item['seed'])
     model = Model(config['encoder_channels']).to(device)
-    model.encoder.geometry_scales.copy_(torch.tensor(data.manifest['geometry_scales'], device=device))
     objective = Objective(item['treatment'], config['epi_weight']).to(device)
     return model, objective
 
 
 @torch.no_grad()
 def calibrate(model, objective, data, config, seed):
-    from src.training_methods.neighborhood_jepa.regularization.objective import epiplexity
+    from src.training_methods.regularizers import epiplexity
     batches = PassBatches(data.train, config['batch_size'], seed+41, 0, 4)
     values = []
     model.eval()

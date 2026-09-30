@@ -175,10 +175,13 @@ These checks cover CPU computation and retained weights. Native cuEq GPU
 inference, compiled execution and multi-GPU training were not run. In particular,
 the removed-head models do not claim equal fresh initialization under equal seeds.
 
-### Architecture retirement proposal
+### Architecture retirement — completed 2026-09-30
 
-No complete experiment family is deleted in this pass. The following candidates
-are grounded in the current policy and inspected producers, rather than scores:
+The user approved removal of all four groups below after the initial refactor.
+Their live training paths and dependent launch recipes are now removed. Shared
+encoders, diagnostics and historical artifacts remain; see
+[the completed retirement and preservation audit](architecture_retirement.md).
+The table records the original proposal:
 
 | Candidate | Proposed action | Dependency/preservation requirement |
 | --- | --- | --- |
@@ -187,9 +190,16 @@ are grounded in the current policy and inspected producers, rather than scores:
 | Temperature/time-conditioned JEPA predictors (`NeighborhoodModel`, v2 `Model`, multihorizon `Model`) | Retire their existing conditional training paths from the active interface; future condition-free protocols would need their own declared implementation | The producer passes lag features and temperature into prediction. Encoder/export classes remain used by Epi, analysis adapters and frozen checkpoints, so the package cannot be deleted wholesale |
 | Replacement-only JEPA wrapper constructors (`v2/model.py`, `regularization/model.py`) | Consolidate construction so the final encoder is built once, then remove redundant wrapper implementations | Export normalization/projector treatments are scientific controls. Keep their identities and outputs; preserve historical parameter layouts and initialize future versions explicitly |
 
-Before actual deletion, inventory retained source snapshots and artifact readers,
-update configs/command indices and separate shared utilities from the retired
-trainer. Git history alone is not a substitute for the producer source recorded
-by a frozen run. Current likelihood-trained MACE, matched capacity/initialization
-ablations, raw-versus-relaxed comparisons, descriptor/prior controls and separate
+The deletion inventoried retained source snapshots and artifact readers, updated
+config/command indices, and preserved a separate checksummed source bundle on
+STORE. Retired numerical metric families keep their original definitions and
+source hashes with explicit retirement records; live exporters reject them.
+Current likelihood-trained MACE, matched capacity/initialization ablations,
+raw-versus-relaxed comparisons, descriptor/prior controls and separate
 history-cadence protocols remain supported scientific distinctions.
+
+The user subsequently clarified that live consumers may assume newly trained
+models. The final consolidation removes the old neighborhood model module paths
+and their unused checkpoint state. Current callers use one direct shared encoder
+and the shared Epi helper; no compatibility aliases or checkpoint migration are
+maintained. See the current API and verification in the retirement guide.

@@ -33,7 +33,7 @@ def bind(config,root):
     files=[p for package in packages for p in (repo/'src/research'/package).glob('*.py')]
     files += [repo/p for p in ('src/models/encoders/spatial_mace.py','src/models/encoders/mace_backend.py',
         'src/models/encoders/graph_bank.py','src/data/structural_pretraining/native_dataset.py',
-        'src/training_methods/neighborhood_jepa/regularization/objective.py','src/training_methods/structural_pretraining/objective.py')]
+        'src/training_methods/regularizers.py','src/training_methods/structural_pretraining/objective.py')]
     record=dict(config=config,implementation={str(p.relative_to(repo)):sha(p) for p in files})
     path=root/'technical/identity.json'
     path.parent.mkdir(parents=True,exist_ok=True)

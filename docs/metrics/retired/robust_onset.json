@@ -1,0 +1,26 @@
+{
+  "family": "robust_onset",
+  "retired_on": "2026-09-30",
+  "reason": "Authorized architecture retirement; historical calculations and selectors remain unchanged.",
+  "contract": {
+    "files": {
+      "docs/metrics/robust_onset.md": "8c9792f5b8019a1d77b5140d1b35d570a59cad26798a7af276ed24a28783a4a5",
+      "src/research/robust_onset/metrics.py": "886107ab66e37546841b4981b7e1ea80a9c7f126c04362a508d388b3d77e8447",
+      "src/research/robust_onset/__init__.py": "f9a14871af2be947fd652ef3be62c658a8634e2da377041352400a76affe72a2",
+      "src/research/robust_onset/evaluate.py": "654db5e0f0af93a2a479c9b912835921ede80011ecd6c6232b0bbcfe11d4edb5",
+      "src/research/robust_onset/train.py": "f1785be039a70cf927714e865100340b1fe725d75103c7a8a43c9e481fe4e5a5",
+      "src/research/robust_onset/common.py": "f8119ef282ff3898ee268ea1c7ee991ee04178765fd4df0ade1fd700b86c7bf5",
+      "src/research/robust_onset/queue.py": "48f29a8c3e696b4b32c94e592da1f6f788d36e0dea087a4d5f45b061a654d120",
+      "src/research/robust_onset/model.py": "44944bbb1bcd487fbbec1c55ce9bfe5a038ea63db532011918df6cb797d09aec",
+      "src/research/robust_onset/data.py": "06bf2e17433874730d477227f28e83665666f1ec439763db66868b2b25f2eded",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/trajectory_stability/spectrum.py": "6f0283393e2bbeceec4d54e5ef753b91ec69283ee502e0516bec25c87c17a7f2",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+      "src/models/encoders/graph_bank.py": "6cfc142a12af98b7d6a0553a94ef8a47782a3bd0ef1387e0130fa650a5ae7ef6"
+    }
+  },
+  "pre_retirement_commit": "fd77bdbe",
+  "preserved_source_bundle": "${storage:training_storage}/maintenance/retired-architectures-20260930-fd77bdbe",
+  "run_producers": "Original technical/code paths are authoritative; see docs/architecture_retirement.md."
+}

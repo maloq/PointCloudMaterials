@@ -1,4 +1,4 @@
-"""Native invariant export of order-regularized neighborhood JEPA checkpoints."""
+"""Native invariant export of newly trained paired neighborhood encoders."""
 import argparse
 import json
 from pathlib import Path
@@ -7,14 +7,13 @@ import torch
 from omegaconf import OmegaConf
 from scipy.spatial import cKDTree
 from .structural_adapter import StructuralMACEAnalysis, _training_contraction_order, snapshot_batch
-from src.training_methods.neighborhood_jepa.regularization.model import Encoder
+from src.models.encoders.neighborhood import NeighborhoodEncoder
 from src.data.structural_pretraining.batches import collate
 from src.data.structural_pretraining.support import REFERENCE_RADIUS, SUPPORT, support_weights
 from src.experiment_runner.registry import sha256
 from src.experiment_runner.artifacts import write_json
 
-PROTOCOL = 'neighborhood_jepa_regularization_static_v1'
-RELAXED_PROTOCOL = 'paired_relaxed_snapshot_static_v1'
+PROTOCOL = 'neighborhood_snapshot_static_v1'
 
 
 class NeighborhoodAnalysis(StructuralMACEAnalysis):
@@ -24,13 +23,13 @@ class NeighborhoodAnalysis(StructuralMACEAnalysis):
 
     def __init__(self, cfg):
         torch.nn.Module.__init__(self)
-        if cfg.protocol not in (PROTOCOL, RELAXED_PROTOCOL):
+        if cfg.protocol != PROTOCOL:
             raise ValueError(f'Unsupported neighborhood static protocol: {cfg.protocol}')
         _training_contraction_order()
         self.protocol = cfg.protocol
         self.precision = cfg.structural_precision
         self.scales = dict(cfg.structural_scales)
-        self.encoder = Encoder(cfg.encoder_channels, cfg.export_norm)
+        self.encoder = NeighborhoodEncoder(cfg.encoder_channels, cfg.export_norm)
         self._compiled = False
 
     def encode(self, batch):
@@ -46,15 +45,12 @@ def export(config):
         raise ValueError(f'Checkpoint checksum mismatch: {source}')
     saved = torch.load(source, map_location='cpu', weights_only=False)
     training_protocol = saved['manifest']['protocol']
-    if training_protocol not in ('neighborhood_jepa_regularization_order_v3', 'paired_relaxed_input_target_mace_v1'):
-        raise ValueError('Expected the order-regularized neighborhood JEPA producer')
-    if saved['spec']['name'] != config['variant']:
+    if training_protocol != 'mace_paired_epi_v1':
+        raise ValueError(f'Expected the current paired-MACE producer, got {training_protocol!r}')
+    if saved['manifest']['item']['name'] != config['variant']:
         raise ValueError('Checkpoint treatment differs from requested variant')
     data = OmegaConf.load(config['data_config'])
-    protocol = RELAXED_PROTOCOL if training_protocol == 'paired_relaxed_input_target_mace_v1' else PROTOCOL
-    if protocol == RELAXED_PROTOCOL and data.structural_encoder.candidate_neighbors != 80:
-        raise ValueError('Relaxed snapshot recipe must specify nearest80 candidates')
-    cfg = OmegaConf.create(dict(model_type='neighborhood_jepa_encoder', protocol=protocol,
+    cfg = OmegaConf.create(dict(model_type='neighborhood_snapshot_encoder', protocol=PROTOCOL,
         representation_source='encoder', structural_scales=config['scales'], batch_size=128,
         num_workers=2, max_samples=0, split_seed=123,
         structural_precision=saved['manifest']['config']['precision'],
@@ -79,7 +75,7 @@ def verify(config):
     cfg = OmegaConf.load(output/'encoder/.hydra/config.yaml')
     model = load_model_from_checkpoint(output/'encoder/encoder.ckpt', cfg, device='cuda:0', module=NeighborhoodAnalysis)
     saved = torch.load(config['checkpoint'], map_location='cpu', weights_only=False)
-    native = Encoder(cfg.encoder_channels, cfg.export_norm).cuda().eval()
+    native = NeighborhoodEncoder(cfg.encoder_channels, cfg.export_norm).cuda().eval()
     native.load_state_dict({k.removeprefix('encoder.'): v for k,v in saved['model'].items() if k.startswith('encoder.')}, strict=True)
     for k, v in native.state_dict().items():
         torch.testing.assert_close(v, model.encoder.state_dict()[k], rtol=0, atol=0)

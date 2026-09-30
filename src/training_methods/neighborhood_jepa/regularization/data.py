@@ -14,7 +14,7 @@ from src.data.structural_pretraining.support import REFERENCE_RADIUS
 from src.analysis.liquid_structure import bond_order,ORDER_NAMES
 from ..v2.data import Data as BaseData,pack as base_pack
 from ..v2.contracts import variants
-from ..v2.model import Encoder
+from src.models.encoders.neighborhood import NeighborhoodEncoder
 from src.training_methods.shared_pretraining.compilation import compile_encoder
 
 
@@ -111,7 +111,7 @@ def reservoir(config):
     torch.set_num_threads(1);torch.manual_seed(9173)
     root=resolve_path(config['order_cache']);(root/'reservoir').mkdir(exist_ok=True)
     spec=variants({'seed':1})[0];data=BaseData(resolve_path(config['cache']),spec)
-    encoder=Encoder(channels=16).cuda().eval()
+    encoder=NeighborhoodEncoder(channels=16).cuda().eval()
     projection=torch.linalg.qr(torch.randn(128,64,device='cuda'),mode='reduced').Q
     initialized=False
     for record in data.manifest['shards']:

@@ -1,0 +1,37 @@
+{
+  "family": "structural_state",
+  "retired_on": "2026-09-30",
+  "reason": "Authorized architecture retirement; historical calculations and selectors remain unchanged.",
+  "contract": {
+    "files": {
+      "configs/structural_state/future_metric_seed20260923.json": "10641445dfb9a85c1510c49056af17ce6a34867bbdabdb05f6b32835d8a11f7c",
+      "configs/structural_state/future_metric_seed20260924.json": "ee2057d2668e6c19ab5b556487e3d5fc9456a0511135a20c263712878b3fd78e",
+      "docs/metrics/structural_state.md": "f64cea22fdfa744bc02002b86ba318a11010c2a07a35df8086e7da4538ac896c",
+      "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+      "src/models/encoders/mace_causal.py": "26d71cadb10859366762faf85352e823c83e21519ec8ee1534afa76dfb68df8e",
+      "src/research/bcr_followup/readouts.py": "819367158034662daf7045eab205820010a003a1e12b5056d793e8541d560187",
+      "src/research/forecast_crystallization/local_metrics.py": "df8b85b182a7bd11fd15a2fcda620adab4460357e1e17f37e93e853b0520f490",
+      "src/research/liquid_geometry/metrics.py": "f3c3279429f4ca6adaf174b490b6e2c6e17755f936eb948a2eb2c61d58ce624c",
+      "src/research/local_predictability/metrics.py": "edd8c2561c72cb7cb020005fb91e552344ee961cfcc318a60d2e285355cd7319",
+      "src/research/structural_state/__init__.py": "2b84b21a27dca5f2bf8a7f456cba7c78ef4a026cc96523c958706723e5e39187",
+      "src/research/structural_state/common.py": "28a2defcfd04a559e91beb1b841151652c64dd371b6bde274c8d4ce267da08a2",
+      "src/research/structural_state/data.py": "a853a6ce0ff51a0c5f81da6b0dce146e7a7eafa8fd5aa92fc2bc8793de536bd1",
+      "src/research/structural_state/dynamics.py": "2eb8967bb5baa54240c39a8c6146a8ae24bdf22e55ad003efa3a4f8c98407ee5",
+      "src/research/structural_state/evaluation.py": "3b0330c78def912c07cc653e839647fdd47141b804cd856cc04db3422ea549b9",
+      "src/research/structural_state/factorial_report.py": "65ab1e26b018b6aec00bd8c1d7f6bf411ab216388ecb285515879f14e92f9eb9",
+      "src/research/structural_state/model.py": "78c396098ded25dc3140c3c94b166ee9348e0f26ae9f9ae97966668c03150692",
+      "src/research/structural_state/preflight.py": "4e2e79a4f7b7300f030fdb510942a1cd50ac56c319d839dcadbd1c125d841e4c",
+      "src/research/structural_state/queue.py": "4d052f413a52d1058dba92371d2343b2b9df22b7fb3b08182103886ec3a55cca",
+      "src/research/structural_state/report.py": "55f8c6744f1c4215db67bdb0cad46719242f9c0c58f0ce43b6240e14285cc0dc",
+      "src/research/structural_state/runtime.py": "c46c169cf1d55c3fce3763551362192555e7ee24fe36e0ec79fe0da7b8e69b86",
+      "src/research/structural_state_onset_review.py": "fe09fd48d83fecf8310d072d2533a68ca09baf8d0231f26a534a3efcc55d03d0",
+      "src/training_methods/bcr/data.py": "0e170c24beea74254641f57bbc8aff53151331ae39c5bb4e5072acf09d1a56ab",
+      "src/training_methods/bcr/model.py": "75331391124c627dc081ac6940bc20564ec632365aac39fa8596eac9a28accda",
+      "src/training_methods/bcr/probes.py": "66bf79a60411f956245604c0c703657325db843ca8bee983a743b40a95d2d245",
+      "src/models/encoders/graph_bank.py": "6cfc142a12af98b7d6a0553a94ef8a47782a3bd0ef1387e0130fa650a5ae7ef6"
+    }
+  },
+  "pre_retirement_commit": "fd77bdbe",
+  "preserved_source_bundle": "${storage:training_storage}/maintenance/retired-architectures-20260930-fd77bdbe",
+  "run_producers": "Original technical/code paths are authoritative; see docs/architecture_retirement.md."
+}

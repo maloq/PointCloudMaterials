@@ -2,7 +2,7 @@
 import torch
 from torch import nn
 
-from src.training_methods.neighborhood_jepa.regularization.objective import epiplexity
+from src.training_methods.regularizers import epiplexity
 from src.training_methods.structural_pretraining.objective import vicreg
 
 

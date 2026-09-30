@@ -1,0 +1,24 @@
+{
+  "cache": "${storage:cache}/structural-state/screen-20260922",
+  "seed": 20260923,
+  "future_ps": [
+    3.0,
+    9.0,
+    12.0
+  ],
+  "probes": {
+    "updates": 1024,
+    "batch_size": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "evaluate_every": 128,
+    "width": 128
+  },
+  "probe_seed": 20260922,
+  "bootstrap": 2000,
+  "dynamics": {
+    "lag_ps": 9.0,
+    "baseline_ridge": 1.0
+  },
+  "historical_data_recipe": "fd77bdbe:configs/structural_state/future_metric_seed20260923.json"
+}

@@ -1,5 +1,9 @@
 # Neighborhood JEPA v2 execution and provenance
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 Use conda `pointnet-torch214`; dependencies are unchanged. The new module is
 `src.training_methods.neighborhood_jepa.v2`. The original implementation/checkpoints
 remain v1; shared StructuralMACE atom-feature refactoring preserves its state keys

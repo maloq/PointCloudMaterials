@@ -33,8 +33,8 @@ def main():
         model=GeometryEncoder(**saved['encoder_config'])
         model.load_state_dict({k.removeprefix('encoder.'):v for k,v in saved['model'].items() if k.startswith('encoder.')},strict=True)
     elif kind=='neighborhood':
-        from src.training_methods.neighborhood_jepa.regularization.model import Encoder
-        model=Encoder(saved['manifest']['config']['encoder_channels'],saved['spec']['export_norm'])
+        from src.models.encoders.neighborhood import NeighborhoodEncoder
+        model=NeighborhoodEncoder(saved['manifest']['config']['encoder_channels'],saved['spec']['export_norm'])
         model.load_state_dict({k.removeprefix('encoder.'):v for k,v in saved['model'].items() if k.startswith('encoder.')},strict=True)
     elif kind=='shared':
         from src.models.encoders.structural import StructuralGATr,StructuralMACE

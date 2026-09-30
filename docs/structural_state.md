@@ -1,5 +1,9 @@
 # Running the fixed structural-state screen
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 ## Repaired queue on the current node, 23 September
 
 Use `configs/structural_state/repaired_20260923.json` with the current code;

@@ -85,7 +85,7 @@ def run(study,method,device,deadline):
         reference.load_state_dict(encoder.state_dict())
         reference.eval().requires_grad_(False)
         projection=torch.randn(128,64,device=device,generator=torch.Generator(device=device).manual_seed(c['seed']+37))/math.sqrt(128)
-        from src.training_methods.neighborhood_jepa.regularization.objective import epiplexity
+        from src.training_methods.regularizers import epiplexity
         scores=[]
         with torch.no_grad():
             for ids in np.array_split(initial[:min(4*chunk,len(initial))],4):

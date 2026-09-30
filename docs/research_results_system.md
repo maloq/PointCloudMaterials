@@ -235,3 +235,17 @@ have been scanned.
 
 The next adoption should use the existing artifact/receipt interfaces and
 scientific workflow, rather than add another launcher or result database.
+
+## Retired numerical producers
+
+An authorized architecture retirement marks its metric family `status: retired`
+in `docs/metrics/contracts.json`, with a checksummed JSON record under
+`docs/metrics/retired/` containing the exact previous contract. Original metric
+descriptions and file-hash maps remain historical definitions. The repository
+audit validates the record and description without requiring deleted live source.
+`metric_docs.snapshot_metric_docs` rejects new numerical exports for those
+families. Use the recorded frozen source for numerical reproduction; use the
+publication-only workflow to expose existing tables and their frozen definitions.
+Active diagnostic families retain their actual remaining dependencies and require
+a new numerical revision when their source contract changes. See
+[the September30 retirement](architecture_retirement.md).

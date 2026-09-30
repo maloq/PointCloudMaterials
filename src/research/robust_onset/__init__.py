@@ -1,1 +1,1 @@
-"""Predictive, noise-aware native MACE screening with explicit onset supervision."""
+"""Shared onset horizons and perturbation diagnostics; AP-tuned training is retired."""

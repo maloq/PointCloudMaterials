@@ -74,13 +74,13 @@ def freeze(config):
 
 
 def load_encoder(plan, device):
-    from src.training_methods.neighborhood_jepa.regularization.model import Encoder
+    from src.models.encoders.neighborhood import NeighborhoodEncoder
     record = plan['relaxed_encoder']
     path = resolve_path(record['checkpoint'])
     if file_hash(path) != record['sha256']:
         raise ValueError('Selected relaxed checkpoint changed')
     saved = torch.load(path, map_location='cpu', weights_only=False)
-    model = Encoder(saved['manifest']['config']['encoder_channels'], saved['spec']['export_norm'])
+    model = NeighborhoodEncoder(saved['manifest']['config']['encoder_channels'], saved['spec']['export_norm'])
     model.load_state_dict({k.removeprefix('encoder.'):v for k,v in saved['model'].items() if k.startswith('encoder.')}, strict=True)
     return model.to(device).eval().requires_grad_(False)
 

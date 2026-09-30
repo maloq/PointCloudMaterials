@@ -37,7 +37,7 @@ class Study:
                 raise ValueError('Structural ancestry uses another fixed benchmark')
             paths += [repo/'src/data/structural_pretraining'/p for p in ('native.py','native_dataset.py','prepare.py')]
         paths += [repo/p for p in ('src/research/mace_epi/objective.py',
-            'src/training_methods/neighborhood_jepa/regularization/objective.py',
+            'src/training_methods/regularizers.py',
             'src/training_methods/structural_pretraining/objective.py',
             'src/models/encoders/spatial_mace.py','src/models/encoders/graph_bank.py',
             'src/models/encoders/mace_backend.py','src/research/local_predictability/metrics.py',

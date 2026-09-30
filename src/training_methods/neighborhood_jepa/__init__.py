@@ -1,1 +1,1 @@
-"""Snapshot equivariant encoders trained by causal space-time neighborhood queries."""
+"""Paired neighborhood data and gradient execution; model code lives in encoders."""

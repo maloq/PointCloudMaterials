@@ -7,8 +7,25 @@ from pathlib import Path
 import numpy as np
 from src.experiment_runner.metric_docs import snapshot_metric_docs
 from src.research.encoder_screen.common import write
+from src.research.encoder_screen.common import load_config
 from src.research.encoder_screen.report import summarize
-from .queue import read,evaluation_config
+from src.project_runtime.paths import resolve_path
+
+
+def read(path):
+    """Read a recorded campaign for saved-result analysis, without its fit queue."""
+    config = json.loads(Path(path).read_text())
+    if config['protocol'] != 'matched_encoder_parameters_v1':
+        raise ValueError('Wrong campaign protocol')
+    for key in ('output', 'screen_config'):
+        config[key] = str(resolve_path(config[key]).resolve())
+    return config
+
+
+def evaluation_config(config):
+    screen = load_config(config['screen_config'])
+    screen['output'] = config['output']
+    return screen
 
 
 def mean(values):

@@ -21,26 +21,13 @@ def run(record_path):
         raise ValueError('Checkpoint changed after crystallization assay freeze')
     saved = torch.load(record['checkpoint'],map_location='cpu',weights_only=False)
     kind = record['kind']
-    if kind == 'regularization':
-        from src.training_methods.neighborhood_jepa.regularization.model import Encoder
-        model = Encoder(saved['manifest']['config']['encoder_channels'],saved['spec']['export_norm'])
-    elif kind == 'v2_large':
-        from src.training_methods.neighborhood_jepa.v2.model import Encoder
-        model = Encoder(channels=saved['manifest']['config']['encoder_channels'])
-    elif kind == 'v2':
-        from src.training_methods.neighborhood_jepa.v2.model import Encoder
-        model = Encoder()
-    elif kind == 'v1':
-        from src.training_methods.neighborhood_jepa.model import NeighborhoodEncoder
-        model = NeighborhoodEncoder('mace')
-    elif kind in ('mace','gatr'):
-        from src.models.encoders.structural import StructuralMACE,StructuralGATr
-        model = StructuralMACE() if kind=='mace' else StructuralGATr()
-    else:
-        raise ValueError(kind)
+    from src.models.encoders.neighborhood import NeighborhoodEncoder
+    if kind != 'regularization':
+        raise ValueError(f'Expected a snapshot encoder checkpoint, got {kind!r}')
+    model = NeighborhoodEncoder(saved['manifest']['config']['encoder_channels'], saved['spec']['export_norm'])
     model.load_state_dict({k.removeprefix('encoder.'):v for k,v in saved['model'].items() if k.startswith('encoder.')},strict=True)
     model = model.cuda().eval()
-    architecture = 'gatr' if kind=='gatr' else 'mace'
+    architecture = 'mace'
     plan = json.loads(Path(record['assay_plan']).read_text())
     cache = Path(record['assay_cache'])
     population = np.load(record['population'])

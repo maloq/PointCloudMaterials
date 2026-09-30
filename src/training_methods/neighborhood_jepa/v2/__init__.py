@@ -1,1 +1,1 @@
-"""Causal geometry-anchored neighborhood prediction, version 2."""
+"""Paired graph preparation and diagnostic extraction; JEPA training is retired."""

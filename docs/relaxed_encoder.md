@@ -1,5 +1,10 @@
 # Running the paired relaxation pilot
 
+> Encoder fitting, expanded training submission, and GPU handoff to training were
+> retired on 2026-09-30. Paired-data preparation, relaxation recovery from existing
+> plans, frozen encoder extraction, and physical diagnostics remain. Historical
+> training commands below require frozen producers; [details](architecture_retirement.md).
+
 The larger fixed-grid evaluation uses `python -m
 src.research.relaxed_encoder.evaluation freeze|reuse|build|worker|report --config
 configs/analysis/relaxed_encoder_large_test.json`. `reuse` copies verified centered

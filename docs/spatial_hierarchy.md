@@ -1,5 +1,9 @@
 # Spatial hierarchy queue
 
+> Historical workflow: the associated conditional/reconstruction/AP-tuned training
+> paths were retired on 2026-09-30. Commands below require the recorded frozen
+> producer for reproduction. See [retirement and retained tools](architecture_retirement.md).
+
 [Scientific protocol](../experiments/spatial_hierarchy_20260924/README.md).
 Use conda `pointnet-torch214`. This extends the tested robust-onset trainer using
 explicit model, input and diagnostic interfaces. The preceding queue uses its

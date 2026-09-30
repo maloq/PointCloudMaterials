@@ -1,1 +1,1 @@
-"""Controlled regularizer/projector and physical-order preservation study."""
+"""Paired order/reservoir data preparation; model and objective code is shared."""

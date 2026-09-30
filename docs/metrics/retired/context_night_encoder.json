@@ -1,0 +1,16 @@
+{
+  "family": "context_night_encoder",
+  "retired_on": "2026-09-30",
+  "reason": "Authorized architecture retirement; historical calculations and selectors remain unchanged.",
+  "contract": {
+    "files": {
+      "src/research/context_night/encoder.py": "6ddb610d0e3cd4a89aa8643cb9e5c6ef6f48be1f07e15b61eeae3802a3ca06ac",
+      "src/training_methods/neighborhood_jepa/regularization/runtime.py": "aa592fa2ddb180a12f1e8800383207e00ac1ddcd2182c13fbd701b76d8dd3ab9",
+      "src/training_methods/neighborhood_jepa/regularization/objective.py": "044c92b27dbce50f5476824a7a1db14f22801bec2d6283b1f92a0f1f9fda2c27",
+      "docs/metrics/context_night_encoder.md": "746d01facb1596f8840334d8aca8e4485ecec125788b50740a804048d9f2d8b9"
+    }
+  },
+  "pre_retirement_commit": "fd77bdbe",
+  "preserved_source_bundle": "${storage:training_storage}/maintenance/retired-architectures-20260930-fd77bdbe",
+  "run_producers": "Original technical/code paths are authoritative; see docs/architecture_retirement.md."
+}

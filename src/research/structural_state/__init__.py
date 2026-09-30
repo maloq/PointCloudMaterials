@@ -1,1 +1,1 @@
-"""Fixed-target native MACE study after the BCR conditioning audit."""
+"""Shared geometry, targets and physical diagnostics; reconstruction training is retired."""
