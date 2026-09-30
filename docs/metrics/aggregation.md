@@ -31,6 +31,15 @@ Training supervised-cache metrics have the following definitions:
   cross-class distances. Optional classification accuracy is cross-validated logistic
   regression as configured in `compute_embedding_quality_metrics`.
 
+Supervised-cache and linear-SVM evaluation require equal feature/label row counts
+and finite values. Mismatched arrays and non-finite rows raise with split/stage
+context; evaluation never truncates or drops them. Declared sample caps still
+apply to aligned batches. Hungarian accuracy lookup uses the exact requested K;
+an absent metric cannot be substituted by a score computed at another K.
+Stable logging removes the `_K*` suffix, records `HUNGARIAN_EVAL_K`, and rejects
+name collisions or non-finite values. These naming helpers and Hungarian
+assignment now have one owner in `src/utils/evaluation_metrics.py`.
+
 For topology metric names (`balanced_mse`, `mean_within_frame_r2`, `projector_ridge_mse`)
 use the accompanying topology definitions. Training loss definitions are owned by
 the selected objective/config; the collector does not rename one objective as another.

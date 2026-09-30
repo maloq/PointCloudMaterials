@@ -9,13 +9,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 import argparse
 
 import numpy as np
-import torch
 from omegaconf import OmegaConf
 
 from src.data.shooting import (
     load_shooting_campaign_snapshot,
     load_shooting_campaigns_snapshot,
 )
+from src.utils.model_utils import resolve_device
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.shooting_embeddings import ShootingEmbeddingCache
 from src.temporal_vamp.shooting_context import (
@@ -38,17 +38,6 @@ from src.temporal_vamp.commands.common import (
     resolve_path,
     prepare_run,
 )
-
-
-def _resolve_device(raw: str) -> str:
-    requested = str(raw).strip().lower()
-    if requested == "auto":
-        return "cuda:0" if torch.cuda.is_available() else "cpu"
-    if requested.startswith("cuda") and not torch.cuda.is_available():
-        raise RuntimeError(
-            f"device={raw!r} requests CUDA, but torch.cuda.is_available() is false."
-        )
-    return str(raw)
 
 
 def main(argv=None) -> None:
@@ -95,7 +84,7 @@ def main(argv=None) -> None:
         resolve_path(required(cfg, "base_embedding_cache"))
     )
     context_cache_path = output_dir / "context_tokens"
-    device = _resolve_device(str(required(cfg, "device")))
+    device = resolve_device(str(required(cfg, "device")))
     if args.stage in {"all", "extract"}:
         encoder = load_frozen_encoder(
             resolve_path(required(cfg, "encoder.checkpoint")),

@@ -1,5 +1,5 @@
 """Frozen identities, root splits and reusable checkpoint features."""
-import hashlib
+from functools import partial
 import json
 from pathlib import Path
 import time
@@ -8,21 +8,13 @@ import numpy as np
 import torch
 
 from src.project_runtime.paths import resolve_path
+from src.experiment_runner.artifacts import file_hash, write_json as atomic_json
 from src.research.bcr_pilot.compare import checkpoint, load_model
 from src.training_methods.bcr.data import balanced_subset, pack, corrupt
 from src.training_methods.bcr.runtime import load_data, identity
 
 
-def file_hash(path):
-    return hashlib.sha256(Path(path).read_bytes()).hexdigest()
-
-
-def write_json(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_suffix('.tmp')
-    temp.write_text(json.dumps(value, indent=2) + '\n')
-    temp.replace(path)
+write_json = partial(atomic_json, allow_nan=True)
 
 
 def remaining(deadline):
@@ -59,6 +51,7 @@ class Study:
         if self.config['evaluation_chunk'] != 16:
             raise ValueError('Retain the original comparison chunk=16 for exact replay of its corruption bank')
         source_files = [*Path('src/research/bcr_followup').glob('*.py'), *Path('src/training_methods/bcr').glob('*.py'),
+                        Path('src/experiment_runner/artifacts.py'),
                         Path('src/research/bcr_pilot/compare.py'), Path('src/research/bcr_pilot/data.py'),
                         Path('src/data/trajectories/lammps.py'), Path('src/data/trajectories/shooting.py'),
                         Path('docs/metrics/bcr_followup.md')]

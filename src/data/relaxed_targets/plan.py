@@ -1,7 +1,6 @@
 """Freeze source identities, ancestry and outcome-independent sampling before work."""
 from collections import Counter, defaultdict
-from functools import lru_cache
-import hashlib
+from functools import lru_cache, partial
 import json
 from pathlib import Path
 import re
@@ -10,19 +9,10 @@ import numpy as np
 
 from src.project_runtime.paths import dataset_path, load_json, portable_config, resolve_path
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
-from src.simulation.relaxation import sha256
+from src.experiment_runner.artifacts import file_hash as sha256, json_digest, write_json
 
-
-def digest(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':')).encode()).hexdigest()
-
-
-def save(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + '.tmp')
-    temporary.write_text(json.dumps(value, indent=2) + '\n')
-    temporary.replace(path)
+digest = partial(json_digest, allow_nan=True, separators=(',', ':'))
+save = partial(write_json, allow_nan=True)
 
 
 def spaced_frames(timesteps, timestep_fs, start_ps, stop_ps, spacing_ps):

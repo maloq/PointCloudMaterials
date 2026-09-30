@@ -1,5 +1,6 @@
 const el=id=>document.getElementById(id);
 const config={responsive:true,displaylogo:false,plotGlPixelRatio:2};
+const visibilityUID=t=>t.meta?.clusterUID||t.uid;
 const clusterVisibility=new Map(),plotKeys=new Map(),plotSizes=new Map();
 async function mainPlot(id,makeTraces,layout,key){
  const size=Number(el(id.startsWith('md')?'mdSize':'size').value);
@@ -8,15 +9,24 @@ async function mainPlot(id,makeTraces,layout,key){
   return;
  }
  const traces=makeTraces();
- for(const t of traces)if(t.uid)t.visible=clusterVisibility.get(id+'/'+t.uid)===false?'legendonly':true;
+ for(const t of traces)if(t.uid){
+  const clusterUID=visibilityUID(t);
+  t.meta={...t.meta,clusterUID};
+  // Plotly uses uid in CSS selectors when removing traces (e.g. highlights).
+  t.uid='t'+Array.from(t.uid,c=>c.codePointAt(0).toString(16)).join('_');
+  t.visible=clusterVisibility.get(id+'/'+clusterUID)===false?'legendonly':true;
+ }
  await Plotly.react(id,traces,{...layout,showlegend:false},config);plotKeys.set(id,key);plotSizes.set(id,size);
  const legend=el(id+'Legend');legend.replaceChildren();
- for(const [index,t] of traces.entries())if(t.uid&&t.name&&typeof t.marker?.color==='string'){
-  const key=id+'/'+t.uid,button=document.createElement('button'),dot=document.createElement('i');dot.style.background=t.marker.color;button.append(dot,document.createTextNode(t.name));button.setAttribute('aria-pressed',clusterVisibility.get(key)!==false);
-  button.onclick=()=>{const visible=clusterVisibility.get(key)===false;clusterVisibility.set(key,visible);button.setAttribute('aria-pressed',visible);Plotly.restyle(id,{visible:visible?true:'legendonly'},[index]);};legend.append(button);
+ for(const [index,t] of traces.entries())if(t.uid&&!t.meta?.highlight&&t.name&&typeof t.marker?.color==='string'){
+  const key=id+'/'+visibilityUID(t),button=document.createElement('button'),dot=document.createElement('i');dot.style.background=t.marker.color;button.append(dot,document.createTextNode(t.name));button.setAttribute('aria-pressed',clusterVisibility.get(key)!==false);
+  button.onclick=()=>{const visible=clusterVisibility.get(key)===false;clusterVisibility.set(key,visible);button.setAttribute('aria-pressed',visible);Plotly.restyle(id,{visible:visible?true:'legendonly'},traces.map((v,i)=>visibilityUID(v)===visibilityUID(t)?i:-1).filter(i=>i>=0));};legend.append(button);
  }
 }
 const common={margin:{t:12,b:45,l:45,r:20},paper_bgcolor:'white',plot_bgcolor:'white',legend:{orientation:'h'},uirevision:'fixed'};
+if(D.descriptor_fit){
+ for(const [id,file] of [['metricDefinitions','METRICS.md'],['metricTable','metrics.csv']])if(el(id))el(id).href=D.descriptor_fit.metrics.replace('METRICS.md',file);
+}
 const families={'Joint descriptor clusters':'joint','TDA clusters':'tda','Bond-order clusters':'bond_order','CNA clusters':'cna'};
 const loaded=new Map(),assetInfo=new Map(),assetAccess=new Map(),assetPending=new Set();let assetClock=0;
 function registerAssets(entries,namespace){for(const entry of entries)assetInfo.set(entry.asset,{namespace,key:entry.key});}
@@ -95,9 +105,7 @@ if(D.explorer){
     chooseCheckpoint();
     ['recipe','repeat','checkpoint','representation'].forEach(id=>el(id).addEventListener('change',()=>{chooseCheckpoint();frameRender=requestViewer();}));
   }
-  el('population').value=D.explorer.population;
   [...new Set(D.source)].sort((a,b)=>a-b).forEach(s=>el('source').add(new Option('Source '+s,s)));
-  el('population').addEventListener('change',()=>{location.href='comparison-'+el('population').value+'.html?'+explorerQuery();});
   el('source').addEventListener('change',()=>{frameRender=requestViewer(['projection','correspondence']);});
 }
 function pair(){
@@ -106,33 +114,43 @@ function pair(){
 }
 let rowSelectionKey='',rowSelection=[];
 function selectedRows(){
-  const key=[el('region').value,el('frame').value,D.explorer?el('source').value:'all'].join('/');
+  const key=[el('frame').value,D.explorer?el('source').value:'all'].join('/');
   if(key===rowSelectionKey)return rowSelection;
-  const selected=[],region=el('region').value,frame=el('frame').value;
+  const selected=[],frame=el('frame').value;
   for(let i=0;i<D.frame.length;i++){
     if(D.explorer&&el('source').value!=='all'&&D.source[i]!==Number(el('source').value))continue;
     if(frame!=='all'&&D.frame[i]!==Number(frame))continue;
-    if(region==='near'&&(D.distance[i]===null||D.distance[i]>12)||region==='boundary'&&D.region[i]!==0||
-       region==='crystal'&&!D.solid[i]||region==='liquid'&&D.region[i]!==2||region==='pocket'&&D.region[i]!==3)continue;
     selected.push(i);
   }
   rowSelectionKey=key;rowSelection=selected;return selected;
 }
 function label(id,neural,map){return neural?(el('color').value==='original'?'N'+id:'N'+id+' → D'+map[id]):'D'+id;}
 function clusterColor(id,neural,map){return palette[neural&&el('color').value!=='original'?map[id]:id];}
+function highlightProjection(trace,ids){
+  if(!el('highlightInterface').checked)return [trace];
+  const selected=ids.map(i=>D.distance[i]!==null&&Number.isFinite(D.distance[i])&&D.distance[i]<=12);
+  return [false,true].map(highlight=>{
+    const rows=ids.map((_,j)=>j).filter(j=>selected[j]===highlight);
+    const marker={...trace.marker,opacity:highlight?1:.08};
+    if(Array.isArray(marker.color))marker.color=rows.map(j=>marker.color[j]);
+    if(highlight)marker.showscale=false;
+    return {...trace,uid:trace.uid?(trace.uid+(highlight?'/highlight':'')):undefined,
+      meta:{clusterUID:trace.uid,highlight},x:rows.map(j=>trace.x[j]),y:rows.map(j=>trace.y[j]),z:rows.map(j=>trace.z[j]),marker};
+  });
+}
 function projectionTraces(y,indices,space,neural,map){
   const mode=el('color').value,clusters=mode==='matched'||mode==='original',field=clusters?space.field:mode,values=D.fields[field];
-  const continuous=field.startsWith('Interface distance')||field==='Input crystal fraction';
+  const continuous=field==='Input crystal fraction';
   function make(ids,name,color){return {type:'scatter3d',mode:'markers',name,x:ids.map(i=>y[i][0]),y:ids.map(i=>y[i][1]),z:ids.map(i=>y[i][2]),
     marker:{size:Number(el('size').value),opacity:.85,color,line:{width:0}},hoverinfo:'skip'};}
   if(continuous){
     const good=indices.filter(i=>values[i]!==null),missing=indices.filter(i=>values[i]===null),t=make(good,field,good.map(i=>values[i]));
-    const distance=field.startsWith('Interface distance');Object.assign(t.marker,{colorscale:distance?'RdBu':'Viridis',reversescale:distance,cmin:distance?-20:0,cmax:distance?20:1,showscale:true,colorbar:{thickness:10}});
-    return missing.length?[t,make(missing,'Missing','#999999')]:[t];
+    Object.assign(t.marker,{colorscale:'Viridis',cmin:0,cmax:1,showscale:true,colorbar:{thickness:10}});
+    return [...highlightProjection(t,good),...(missing.length?highlightProjection(make(missing,'Missing','#999999'),missing):[])];
   }
   const groups=new Map(clusters?Array.from({length:7},(_,i)=>[i,[]]):[]);for(const i of indices){const v=values[i];if(!groups.has(v))groups.set(v,[]);groups.get(v).push(i);}
-  return [...groups.keys()].sort((a,b)=>clusters&&neural?map[a]-map[b]:a-b).map(v=>
-    ({...make(groups.get(v),clusters?label(v,neural,map):String(v),clusters?clusterColor(v,neural,map):palette[v]),uid:space.id+'/'+field+'/'+v}));
+  return [...groups.keys()].sort((a,b)=>clusters&&neural?map[a]-map[b]:a-b).flatMap(v=>
+    highlightProjection({...make(groups.get(v),clusters?label(v,neural,map):String(v),clusters?clusterColor(v,neural,map):palette[v]),uid:space.id+'/'+field+'/'+v},groups.get(v)));
 }
 const projectionBounds=new Map();
 function projectionLayout(id,coordinates){
@@ -182,10 +200,9 @@ async function drawProjection(){
     const left=window.PACMAP_LAYOUTS[p.nn.key].y3,right=window.PACMAP_LAYOUTS[p.descriptor.key].y3;
     if(D.explorer)D.fields[p.nn.field]=window.PACMAP_LAYOUTS[p.nn.key].clusters;
     if(left.length!==D.frame.length||right.length!==D.frame.length)throw new Error('Projection identity mismatch');
-    await Promise.all([mainPlot('two',()=>projectionTraces(left,indices,p.nn,true,p.map),projectionLayout(p.nn.id,left),JSON.stringify([p.nn.id,rowSelectionKey,el('color').value,p.map])),
-      mainPlot('three',()=>projectionTraces(right,indices,p.descriptor,false,p.map),projectionLayout(p.descriptor.id,right),JSON.stringify([p.descriptor.id,rowSelectionKey,el('color').value]))]);
+    await Promise.all([mainPlot('two',()=>projectionTraces(left,indices,p.nn,true,p.map),projectionLayout(p.nn.id,left),JSON.stringify([p.nn.id,rowSelectionKey,el('color').value,p.map,el('highlightInterface').checked])),
+      mainPlot('three',()=>projectionTraces(right,indices,p.descriptor,false,p.map),projectionLayout(p.descriptor.id,right),JSON.stringify([p.descriptor.id,rowSelectionKey,el('color').value,el('highlightInterface').checked]))]);
     if(revision!==projectionRevision)return;el('status').textContent=indices.length.toLocaleString()+' / '+D.frame.length.toLocaleString()+' centers · colors fixed across snapshots';
-    if(D.explorer&&!D.frozen_model){el('nnFigure').href='../plots/'+p.nn.key+'.png';el('descriptorFigure').href='../plots/'+p.descriptor.key+'.png';}
   }catch(error){el('status').textContent=error.message;el('status').classList.add('error');throw error;}
 }
 function boxTrace(bounds){
@@ -269,7 +286,8 @@ if(D.samples){
   ['sampleDescriptorCluster','sampleNeuralIndex','sampleDescriptorIndex','sampleStructure','sampleGrid','sampleResidual'].forEach(id=>el(id).addEventListener('change',()=>requestViewer(['samples'])));
 }
 ['nnSpace','descriptorSpace','color'].forEach(id=>el(id).addEventListener('change',()=>{frameRender=requestViewer();}));
-['region','frame'].forEach(id=>el(id).addEventListener('change',()=>{frameRender=requestViewer(['projection','correspondence']);}));
+el('frame').addEventListener('change',()=>{frameRender=requestViewer(['projection','correspondence']);});
+el('highlightInterface').addEventListener('change',()=>{frameRender=requestViewer(['projection']);});
 el('size').addEventListener('input',()=>{frameRender=requestViewer(['projection']);});
 el('matrixScale').addEventListener('change',()=>requestViewer(['correspondence']));
 el('mdSnapshot').addEventListener('change',()=>{frameRender=requestViewer(['md','samples','travel']);});

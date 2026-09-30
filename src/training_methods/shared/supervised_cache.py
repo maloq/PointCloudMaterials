@@ -1,5 +1,4 @@
 import warnings
-import re
 
 import numpy as np
 import torch
@@ -15,6 +14,9 @@ from torch.utils.data import DataLoader
 from src.utils.evaluation_metrics import (
     compute_cluster_metrics,
     compute_embedding_quality_metrics,
+    finite_float,
+    primary_kmeansplusplus_hungarian_key,
+    stabilize_class_metric_keys,
 )
 from src.training_methods.shared.optimizers import cached_sample_count
 
@@ -63,14 +65,6 @@ def _ensure_kmeans_plus_plus_method(methods: list[str]) -> list[str]:
     return out
 
 
-def _to_finite_float(value) -> float | None:
-    try:
-        out = float(value)
-    except (TypeError, ValueError):
-        return None
-    return out if np.isfinite(out) else None
-
-
 def _format_label_histogram(
     labels: np.ndarray, *, max_entries: int = 10
 ) -> str:
@@ -97,15 +91,9 @@ def _validate_cached_supervised_arrays(
     labels: np.ndarray | None,
     encoder_features: np.ndarray | None,
 ) -> tuple[np.ndarray, np.ndarray | None, np.ndarray | None]:
-    lat = np.asarray(latents, dtype=np.float32).reshape(latents.shape[0], -1)
+    lat = _flatten_features(latents)
     y = None if labels is None else np.asarray(labels).reshape(-1)
-    enc = (
-        np.asarray(encoder_features, dtype=np.float32).reshape(
-            encoder_features.shape[0], -1
-        )
-        if encoder_features is not None
-        else None
-    )
+    enc = None if encoder_features is None else _flatten_features(encoder_features)
 
     if y is not None and y.shape[0] != lat.shape[0]:
         raise RuntimeError(
@@ -125,77 +113,12 @@ def _validate_cached_supervised_arrays(
     if enc is not None:
         bad_rows |= ~np.isfinite(enc).all(axis=1)
 
-    if not bad_rows.any():
-        return lat, y, enc
-
-    return (
-        lat[~bad_rows],
-        y[~bad_rows] if y is not None else None,
-        enc[~bad_rows] if enc is not None else None,
-    )
-
-
-def _primary_kmeansplusplus_hungarian_key(
-    cluster_metrics: dict[str, float],
-    eval_k: int | None,
-) -> str | None:
-    preferred_keys: list[str] = ["ACC_KMEANS_PLUSPLUS_HUNGARIAN"]
-    if eval_k is not None:
-        preferred_keys.insert(0, f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{eval_k}")
-    for preferred in preferred_keys:
-        if preferred in cluster_metrics:
-            return preferred
-    for key in sorted(cluster_metrics.keys()):
-        upper = str(key).upper()
-        if not upper.startswith("ACC_"):
-            continue
-        if "KMEANS_PLUSPLUS" not in upper or "HUNGARIAN" not in upper:
-            continue
-        if upper.endswith(("_MEAN", "_STD", "_BEST", "_RUNS", "_MIN", "_MAX")):
-            continue
-        return key
-    return None
-
-
-_ACC_K_SUFFIX_RE = re.compile(
-    r"^(ACC_[A-Z0-9_]+)_K\d+((?:_(?:MEAN|STD|BEST|RUNS|MIN|MAX))?)$"
-)
-
-
-def _stabilize_class_metric_keys(
-    metrics: dict[str, float],
-    *,
-    hungarian_eval_k: int | None,
-) -> dict[str, float]:
-    stable: dict[str, float] = {}
-    for raw_name, raw_value in metrics.items():
-        upper_name = str(raw_name).upper()
-        match = _ACC_K_SUFFIX_RE.match(upper_name)
-        if match is not None:
-            stable_name = f"{match.group(1)}{match.group(2)}"
-        else:
-            stable_name = upper_name
-        if stable_name in stable:
-            raise ValueError(
-                "Metric name collision while removing class-count suffixes: "
-                f"'{raw_name}' and another metric both map to '{stable_name}'."
-            )
-        val = _to_finite_float(raw_value)
-        if val is None:
-            raise ValueError(
-                f"Metric '{raw_name}' has non-finite value {raw_value!r};"
-                " cannot log stable metrics."
-            )
-        stable[stable_name] = val
-
-    if hungarian_eval_k is not None:
-        if "HUNGARIAN_EVAL_K" in stable:
-            raise ValueError(
-                "Metric key collision: computed metrics already include"
-                " 'HUNGARIAN_EVAL_K'."
-            )
-        stable["HUNGARIAN_EVAL_K"] = float(int(hungarian_eval_k))
-    return stable
+    if bad_rows.any():
+        raise ValueError(
+            f"Non-finite cached metric rows: stage={stage!r}, "
+            f"bad_rows={int(bad_rows.sum())}/{lat.shape[0]}."
+        )
+    return lat, y, enc
 
 
 def _random_rotation_matrices(
@@ -237,12 +160,8 @@ def _prepare_features_and_labels(
 ) -> tuple[np.ndarray, np.ndarray]:
     x = _flatten_features(features)
     y = np.asarray(labels).reshape(-1)
-    n = min(x.shape[0], y.shape[0])
-    x, y = x[:n], y[:n]
-    valid = np.isfinite(x).all(axis=1)
-    if np.issubdtype(y.dtype, np.floating):
-        valid &= np.isfinite(y)
-    return x[valid], y[valid]
+    x, y, _ = _validate_cached_supervised_arrays("linear_svm", x, y, None)
+    return x, y
 
 
 def _compute_linear_svm_accuracy(
@@ -727,7 +646,12 @@ def _collect_split_supervised_features(
                     torch.as_tensor(labels).detach().view(-1).to(torch.long)
                 )
 
-                take = min(int(features.shape[0]), int(labels.shape[0]))
+                if features.shape[0] != labels.shape[0]:
+                    raise ValueError(
+                        f"Supervised extractor row mismatch: split={split!r}, "
+                        f"features={tuple(features.shape)}, labels={tuple(labels.shape)}."
+                    )
+                take = int(features.shape[0])
                 if limit is not None:
                     take = min(take, int(limit - collected))
                 if take <= 0:
@@ -873,7 +797,12 @@ def _collect_rotated_split_supervised_features(
                     torch.as_tensor(labels).detach().view(-1).to(torch.long)
                 )
 
-                take = min(int(features.shape[0]), int(labels.shape[0]))
+                if features.shape[0] != labels.shape[0]:
+                    raise ValueError(
+                        f"Rotated supervised extractor row mismatch: split={split!r}, "
+                        f"features={tuple(features.shape)}, labels={tuple(labels.shape)}."
+                    )
+                take = int(features.shape[0])
                 if limit is not None:
                     take = min(take, int(limit - collected))
                 if take <= 0:
@@ -958,7 +887,7 @@ def _compute_rotated_test_accuracy_metrics(
             )
             or {}
         )
-        run_acc_key = _primary_kmeansplusplus_hungarian_key(
+        run_acc_key = primary_kmeansplusplus_hungarian_key(
             run_metrics, int(resolved_k)
         )
         if run_acc_key is None:
@@ -966,19 +895,19 @@ def _compute_rotated_test_accuracy_metrics(
                 "Rotated test metrics are missing kmeans++ Hungarian ACC. "
                 f"Available keys: {sorted(run_metrics.keys())}."
             )
-        run_acc = _to_finite_float(run_metrics.get(run_acc_key))
+        run_acc = finite_float(run_metrics.get(run_acc_key))
         if run_acc is None:
             raise RuntimeError(
                 f"Rotated test metric '{run_acc_key}' is not finite:"
                 f" {run_metrics.get(run_acc_key)!r}."
             )
-        run_nmi = _to_finite_float(run_metrics.get("NMI"))
+        run_nmi = finite_float(run_metrics.get("NMI"))
         if run_nmi is None:
             raise RuntimeError(
                 "Rotated test metrics are missing finite NMI. "
                 f"Available keys: {sorted(run_metrics.keys())}."
             )
-        run_ari = _to_finite_float(run_metrics.get("ARI"))
+        run_ari = finite_float(run_metrics.get("ARI"))
         if run_ari is None:
             raise RuntimeError(
                 "Rotated test metrics are missing finite ARI. "
@@ -1447,7 +1376,11 @@ def cache_supervised_batch(
         if not torch.is_tensor(class_id):
             class_id = torch.as_tensor(class_id)
         class_id = class_id.detach().view(-1)
-        effective_batch = min(effective_batch, class_id.shape[0])
+        if class_id.shape[0] != batch_size:
+            raise ValueError(
+                f"Supervised cache label row mismatch: stage={stage!r}, "
+                f"latents={batch_size}, labels={class_id.shape[0]}."
+            )
     if encoder_features is not None:
         if not torch.is_tensor(encoder_features):
             encoder_features = torch.as_tensor(encoder_features)
@@ -1456,12 +1389,13 @@ def cache_supervised_batch(
             enc = enc.unsqueeze(-1)
         elif enc.dim() > 2:
             enc = enc.reshape(enc.shape[0], -1)
-        effective_batch = min(effective_batch, enc.shape[0])
+        if enc.shape[0] != batch_size:
+            raise ValueError(
+                f"Supervised cache encoder row mismatch: stage={stage!r}, "
+                f"latents={batch_size}, encoder_features={enc.shape[0]}."
+            )
     else:
         enc = None
-    if effective_batch <= 0:
-        return
-
     lat_chunk = z_inv_contrastive[:effective_batch].detach().to(torch.float32)
     if not bool(torch.isfinite(lat_chunk).all()):
         nonfinite = int((~torch.isfinite(lat_chunk)).sum().item())
@@ -1472,7 +1406,6 @@ def cache_supervised_batch(
             f" latent_shape={tuple(lat_chunk.shape)},"
             f" nonfinite_values={nonfinite}/{lat_chunk.numel()}."
         )
-    cache["latents"].append(lat_chunk.cpu())
     if enc is not None:
         enc_chunk = enc[:effective_batch]
         if not bool(torch.isfinite(enc_chunk).all()):
@@ -1484,6 +1417,8 @@ def cache_supervised_batch(
                 f" feature_shape={tuple(enc_chunk.shape)},"
                 f" nonfinite_values={nonfinite}/{enc_chunk.numel()}."
             )
+    cache["latents"].append(lat_chunk.cpu())
+    if enc is not None:
         cache["encoder_features"].append(enc_chunk.cpu())
     if class_id is not None:
         cache["class_id"].append(class_id[:effective_batch].cpu())
@@ -1612,7 +1547,7 @@ def log_supervised_metrics(module, stage: str) -> None:
             or {}
         )
         if stage_l == "test" and hungarian_eval_k is not None:
-            canonical_acc_key = _primary_kmeansplusplus_hungarian_key(
+            canonical_acc_key = primary_kmeansplusplus_hungarian_key(
                 metrics, hungarian_eval_k
             )
             if canonical_acc_key is None:
@@ -1630,15 +1565,15 @@ def log_supervised_metrics(module, stage: str) -> None:
                     f" available_keys={sorted(metrics.keys())}. This usually"
                     " indicates clustering failures in all ACC runs."
                 )
-            canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
+            canonical_acc = finite_float(metrics.get(canonical_acc_key))
             if canonical_acc is None:
                 raise RuntimeError(
                     f"Canonical test metric '{canonical_acc_key}' is not"
                     f" finite: {metrics.get(canonical_acc_key)!r}."
                 )
             metrics["ACC_KMEANS_PLUSPLUS_HUNGARIAN_CANONICAL"] = canonical_acc
-            canonical_nmi = _to_finite_float(metrics.get("NMI"))
-            canonical_ari = _to_finite_float(metrics.get("ARI"))
+            canonical_nmi = finite_float(metrics.get("NMI"))
+            canonical_ari = finite_float(metrics.get("ARI"))
             metrics.update(
                 _compute_rotated_test_accuracy_metrics(
                     module,
@@ -1648,7 +1583,7 @@ def log_supervised_metrics(module, stage: str) -> None:
                     canonical_hungarian_eval_k=int(hungarian_eval_k),
                 )
             )
-        metrics = _stabilize_class_metric_keys(
+        metrics = stabilize_class_metric_keys(
             metrics,
             hungarian_eval_k=(
                 hungarian_eval_k if stage_l in {"val", "test"} else None

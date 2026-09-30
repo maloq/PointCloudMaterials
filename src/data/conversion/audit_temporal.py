@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import sys
 from pathlib import Path
@@ -14,6 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import file_hash  # noqa: E402
 from src.data.trajectories.lammps import (  # noqa: E402
     TemporalLAMMPSBinaryTrajectory,
 )
@@ -32,17 +32,6 @@ def _load_json(path: Path) -> dict[str, Any]:
             f"Expected a JSON object in {path}, got {type(value).__name__}."
         )
     return value
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while True:
-            block = handle.read(16 * 1024 * 1024)
-            if not block:
-                break
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def audit_campaign(
@@ -101,7 +90,7 @@ def audit_campaign(
                 raise RuntimeError(
                     f"Deleted source path still exists: {original_path}"
                 )
-            if _sha256_file(original_path) != source_record["sha256"]:
+            if file_hash(original_path) != source_record["sha256"]:
                 raise RuntimeError(
                     f"Retained source checksum changed: {original_path}"
                 )
@@ -123,7 +112,7 @@ def audit_campaign(
             )
         archive_record = report["coordinate_archive"]
         archive_path = Path(str(archive_record["path"])).resolve()
-        observed_archive_sha256 = _sha256_file(archive_path)
+        observed_archive_sha256 = file_hash(archive_path)
         if observed_archive_sha256 != str(archive_record["sha256"]):
             raise RuntimeError(
                 "Coordinate archive checksum changed after migration:"

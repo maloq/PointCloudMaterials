@@ -6,6 +6,9 @@ to the calling workflow. These methods own only execution and provenance I/O.
 
 from contextlib import contextmanager
 from dataclasses import dataclass
+import json
+import math
+import os
 from pathlib import Path
 import shlex
 import shutil
@@ -15,6 +18,21 @@ import time
 import traceback
 
 from .artifacts import write_json
+
+
+def allocation_deadline(*, reserve_seconds, job=None):
+    """Use Slurm's epoch timestamp, independent of the worker's local timezone."""
+    job = job or os.environ.get('SLURM_JOB_ID')
+    if not job:
+        return math.inf
+    result = subprocess.run(['scontrol', 'show', 'job', str(job), '--json'],
+                            check=True, text=True, capture_output=True)
+    value = json.loads(result.stdout)['jobs'][0]['end_time']
+    end = value['number'] if isinstance(value, dict) else value
+    if (type(end) not in (int, float) or not math.isfinite(end)
+            or end < time.time()):
+        raise ValueError(f'Invalid Slurm end time for job {job}: {value!r}')
+    return end - reserve_seconds
 
 
 @dataclass(frozen=True)
@@ -56,9 +74,12 @@ class SlurmQueue:
     receipt: dict
     job_prefix: str
 
-    def render(self, stage, options, *, partition='CPU'):
-        command = [sys.executable, '-u', '-m', self.module, stage,
-                   '--config', str(self.bundle.config_path)]
+    def command(self, stage, *arguments):
+        return [sys.executable, '-u', '-m', self.module, stage,
+                '--config', str(self.bundle.config_path), *arguments]
+
+    def render(self, stage, options, *, partition='CPU', command_stage=None, arguments=()):
+        command = self.command(command_stage or stage, *arguments)
         lines = [
             '#!/bin/bash',
             f'#SBATCH --job-name={self.job_prefix}-{stage}',
@@ -77,13 +98,15 @@ class SlurmQueue:
         ]
         return '\n'.join(lines)
 
-    def submit(self, stage, options, dependency=None, partition='CPU'):
+    def submit(self, stage, options, dependency=None, partition='CPU', *,
+               command_stage=None, arguments=()):
         script = self.technical / f'{stage}.sbatch'
-        script.write_text(self.render(stage, options, partition=partition))
-        arguments = ['sbatch', '--parsable']
+        script.write_text(self.render(stage, options, partition=partition,
+                                     command_stage=command_stage, arguments=arguments))
+        sbatch_args = ['sbatch', '--parsable']
         if dependency:
-            arguments.append('--dependency=' + dependency)
-        result = subprocess.check_output(arguments + [str(script)], text=True)
+            sbatch_args.append('--dependency=' + dependency)
+        result = subprocess.check_output(sbatch_args + [str(script)], text=True)
         job = result.strip().split(';', 1)[0]
         if not job.isdigit():
             raise ValueError(f'Invalid sbatch job ID for {script}: {result!r}')

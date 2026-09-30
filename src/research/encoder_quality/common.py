@@ -1,10 +1,13 @@
 """Explicit input identities and bounded scientific evaluation caches."""
 import json
+from functools import partial
 from pathlib import Path
 from types import SimpleNamespace
 
 from src.project_runtime.paths import resolve_path
-from src.research.structural_state.common import sha, digest, write_json
+from src.experiment_runner.artifacts import file_hash as sha, json_digest, write_json
+
+digest = partial(json_digest, allow_nan=True)
 
 
 def load(path):
@@ -30,7 +33,7 @@ def bind(config):
     for family in ('supervised_onset', 'encoder_context', 'geoframe_evolution',
                    'encoder_parameter_search', 'trajectory_stability'):
         paths += list((repo/'src/research'/family).glob('*.py'))
-    paths += [repo/p for p in ('src/models/encoders/spatial_mace.py',
+    paths += [repo/p for p in ('src/experiment_runner/artifacts.py', 'src/models/encoders/spatial_mace.py',
         'src/models/encoders/mace_backend.py', 'src/models/encoders/graph_bank.py',
         'src/research/equivariant_context/cache.py', 'src/research/local_predictability/metrics.py')]
     record = dict(config=config, implementation={str(p.relative_to(repo)):sha(p) for p in paths},

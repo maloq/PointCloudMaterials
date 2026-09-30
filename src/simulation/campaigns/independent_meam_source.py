@@ -26,6 +26,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.simulation.runtime import lammps_environment  # noqa: E402
 from src.simulation.campaigns.common import (  # noqa: E402
     PRESSURE_BAR_TO_GPA,
     _read_lammps_dump,
@@ -34,6 +35,7 @@ from src.simulation.campaigns.common import (  # noqa: E402
 from src.simulation.campaigns.unseeded_meam_crystallization import (  # noqa: E402
     _liquid_validation,
 )
+from src.experiment_runner.artifacts import file_hash, read_json_object  # noqa: E402
 from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     convert_shooting_trajectory,
@@ -105,16 +107,6 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
-    return value
-
-
 def _write_json_atomic(path: Path, value: object) -> None:
     temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
     with temporary.open("w", encoding="utf-8") as handle:
@@ -123,14 +115,6 @@ def _write_json_atomic(path: Path, value: object) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     temporary.replace(path)
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(16 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _seed(temperature_K: float, source_index: int, role: str) -> int:
@@ -339,7 +323,7 @@ def prepare_campaign(campaign_root: str | Path) -> dict[str, Any]:
     library = REPOSITORY_ROOT / "datasets/potentials/Lee2003_Al.library.meam"
     parameters = REPOSITORY_ROOT / "datasets/potentials/Lee2003_Al.meam"
     for path, expected in ((library, LIBRARY_SHA256), (parameters, PARAMETER_SHA256)):
-        if _sha256_file(path) != expected:
+        if file_hash(path) != expected:
             raise RuntimeError(f"2NN-MEAM checksum mismatch: path={path}, expected={expected}.")
     specs = source_run_specs()
     root.mkdir(parents=True)
@@ -431,32 +415,6 @@ def prepare_campaign(campaign_root: str | Path) -> dict[str, Any]:
     return manifest
 
 
-def _lammps_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    for key in (
-        "CUDA_VISIBLE_DEVICES",
-        "SLURM_GPUS",
-        "SLURM_GPUS_ON_NODE",
-        "SLURM_GPUS_PER_NODE",
-        "SLURM_GPUS_PER_TASK",
-        "SLURM_JOB_GPUS",
-        "SLURM_STEP_GPUS",
-    ):
-        environment.pop(key, None)
-    environment.update(
-        {
-            "MPIR_CVAR_CH4_NETMOD": "ofi",
-            "FI_PROVIDER": "tcp",
-            "OMP_NUM_THREADS": "1",
-            "OMP_DYNAMIC": "FALSE",
-        }
-    )
-    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}" if environment.get("LD_LIBRARY_PATH") else ""
-    )
-    return environment
-
-
 def _run_lammps(
     run_dir: Path,
     input_name: str,
@@ -518,7 +476,7 @@ def _run_lammps(
         completed = subprocess.run(
             command,
             cwd=run_dir,
-            env=_lammps_environment(),
+            env=lammps_environment(hide_gpus=True),
             stdout=stdout,
             stderr=subprocess.STDOUT,
             check=False,
@@ -606,7 +564,7 @@ def run_source_task(
     launcher: str = "srun_pmi2",
 ) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     runs = manifest.get("runs")
     if not isinstance(runs, list) or task_index < 0 or task_index >= len(runs):
         raise IndexError(f"task_index={task_index} is outside [0, {len(runs) if isinstance(runs, list) else 0}).")
@@ -616,7 +574,7 @@ def run_source_task(
     run_dir = root / str(spec["run_dir"])
     outcome_path = run_dir / "outcome.json"
     if outcome_path.is_file():
-        outcome = _load_json(outcome_path)
+        outcome = read_json_object(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(f"Existing outcome is not complete: {outcome_path}.")
         print(f"Source {spec['run_id']} is already complete; leaving it unchanged.")
@@ -753,7 +711,7 @@ def run_source_task(
         band_max = int(spec["boundary_cluster_max_atoms"])
         band_indices = np.flatnonzero((largest >= band_min) & (largest <= band_max))
         source_size = trajectory_path.stat().st_size
-        source_sha256 = _sha256_file(trajectory_path)
+        source_sha256 = file_hash(trajectory_path)
         trajectory_path.unlink()
         for name in (
             "melt.restart.1.bin",
@@ -793,11 +751,11 @@ def run_source_task(
             },
             "progress_artifact": {
                 "path": str(run_dir / "crystallization_progress.npz"),
-                "sha256": _sha256_file(run_dir / "crystallization_progress.npz"),
+                "sha256": file_hash(run_dir / "crystallization_progress.npz"),
             },
             "thermodynamics_artifact": {
                 "path": str(run_dir / "thermodynamics.npz"),
-                "sha256": _sha256_file(run_dir / "thermodynamics.npz"),
+                "sha256": file_hash(run_dir / "thermodynamics.npz"),
             },
             "nucleation_observed": onset_index is not None,
             "nucleation_onset_step": (
@@ -815,8 +773,8 @@ def run_source_task(
             "boundary_candidate_steps": [int(expected_steps[index]) for index in band_indices],
             "final_restart_size_bytes": (run_dir / "final.restart.bin").stat().st_size,
             "input_sha256": {
-                "melt": _sha256_file(run_dir / "melt.in.lammps"),
-                "source": _sha256_file(run_dir / "source.in.lammps"),
+                "melt": file_hash(run_dir / "melt.in.lammps"),
+                "source": file_hash(run_dir / "source.in.lammps"),
             },
         }
         _write_json_atomic(outcome_path, outcome)
@@ -843,7 +801,7 @@ def _active_submission_conflicts(root: Path) -> list[str]:
     path = root / "slurm" / "active_submission.json"
     if not path.is_file():
         return []
-    active = _load_json(path)
+    active = read_json_object(path)
     ids = [str(active["array_job_id"]), str(active["successor_job_id"])]
     queued = subprocess.run(
         ["squeue", "-h", "-u", os.environ["USER"], "-o", "%A"],
@@ -870,7 +828,7 @@ def _expanded_submitted_job_count() -> int:
 
 def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     runs = manifest.get("runs")
     if not isinstance(runs, list) or start_index < 0 or start_index >= len(runs):
         raise IndexError(f"start_index={start_index} is invalid for source campaign.")
@@ -955,7 +913,7 @@ def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, A
 
 def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     runs = manifest.get("runs")
     if not isinstance(runs, list):
         raise TypeError(f"Source manifest runs must be a list: {root / 'manifest.json'}.")
@@ -967,7 +925,7 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         if not path.is_file():
             missing.append(str(spec["run_id"]))
             continue
-        outcome = _load_json(path)
+        outcome = read_json_object(path)
         if outcome.get("state") != "complete":
             raise RuntimeError(f"Source outcome is not complete: {path}.")
         binary = ShootingBinaryTrajectory.load(outcome["trajectory_artifact"]["path"])
@@ -977,7 +935,7 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         for key in ("progress_artifact", "thermodynamics_artifact"):
             artifact = outcome[key]
             artifact_path = Path(artifact["path"])
-            if _sha256_file(artifact_path) != artifact["sha256"]:
+            if file_hash(artifact_path) != artifact["sha256"]:
                 raise RuntimeError(f"Source artifact checksum mismatch: {artifact_path}.")
         restart = run_dir / "final.restart.bin"
         if not restart.is_file() or restart.stat().st_size == 0:

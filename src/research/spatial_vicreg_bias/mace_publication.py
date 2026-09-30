@@ -1,5 +1,4 @@
 """Publish a frozen rich-MACE state beside the original descriptor references."""
-import base64
 import copy
 import hashlib
 import html
@@ -7,7 +6,6 @@ from importlib.metadata import version
 import json
 import os
 from pathlib import Path
-import re
 import shutil
 
 import numpy as np
@@ -18,10 +16,11 @@ from src.analysis.representative_style import sparse_geometry
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.experiment_runner.metric_docs import write_metric_table
 from .cluster_matching import summarize
-from .dense_md import write_asset
-from .embedding_travel import asset, payload
+from .embedding_travel import payload
 from .mace_checkpoint import read
 from .sample_lattice import fit_batch
+from .comparison_layout import comparison_template, population_controls
+from .viewer_payload import read_payload, write_comparison, write_asset, write_vector_asset
 
 FAMILIES = {'joint': 'Joint descriptor clusters', 'tda': 'TDA clusters',
             'bond_order': 'Bond-order clusters', 'cna': 'CNA clusters'}
@@ -44,18 +43,6 @@ def score(left, right, mapping):
     result = summarize(contingency(left, right), mapping)
     result['adjusted_rand_index'] = float(adjusted_rand_score(left, right)) if len(left) else None
     return result
-
-
-def vector_asset(path, key, z, neighbors, labels):
-    """Same lossless float32 packing as the established interactive travel assets."""
-    encoded = base64.b64encode(np.asarray(z, dtype='<f4').tobytes()).decode('ascii')
-    rows, width = z.shape
-    data = json.dumps(dict(neighbors=neighbors.tolist(), clusters=labels.tolist()), separators=(',', ':'))
-    script = 'window.TRAVEL_EMBEDDINGS=window.TRAVEL_EMBEDDINGS||{};(()=>{'
-    script += f'const text=atob({json.dumps(encoded)}),bytes=Uint8Array.from(text,c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);'
-    script += f'const data={data};data.z=Array.from({{length:{rows}}},(_,i)=>Array.from({{length:{width}}},(_,j)=>view.getFloat32(4*(i*{width}+j),true)));'
-    script += f'window.TRAVEL_EMBEDDINGS[{json.dumps(key)}]=data;}})();\n'
-    path.write_text(script)
 
 
 def samples(folder, dest, key, identity, labels):
@@ -101,7 +88,6 @@ def projection(c, dest, population, z):
 
 
 def template(c, kind):
-    source = Path(__file__).with_name('cluster_comparison.html').read_text()
     options = ''.join(f'<option value="../../{k}/interactive/comparison-{("all_test" if k=="matched" else "all_static")}.html"'
                       + (' selected' if k == kind else '') + f'>{title}</option>'
                       for k, title in [('matched', 'Held-out Al MD'), ('static', 'Al static · 166–240 ps')])
@@ -109,22 +95,16 @@ def template(c, kind):
     dest = Path(c['datasets'][kind]['publication'])
     link = os.path.relpath(reference/'index.html', dest/'interactive')
     nav = f'<nav><label>Data <select onchange="location.href=this.value">{options}</select> <a href="{link}">GeoFormer comparison</a></label></nav>'
-    source = source.replace('__DATASET_NAV__', nav).replace('Neural ↔ descriptor clusters', 'MACE ↔ descriptors')
     note = '<p class="status">Frozen step '+str(c['model']['update'])+' · 256-D embedding · trained on rich local descriptors</p>'
-    source = source.replace('<h1>MACE ↔ descriptors</h1>', '<h1>MACE ↔ descriptors</h1>'+note)
-    if kind == 'matched':
-        source = source.replace('<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>',
-            '<label>Layout <select id="population"><option value="all_test">All sampled environments</option><option value="interface20">Within 20 Å of interface</option></select></label>'
-            '<label>Source <select id="source"><option value="all">All sources</option></select></label>'
-            '<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>')
     methods = '<details><summary>Methods and checkpoint</summary><p>'+html.escape(c['model']['title'])+'. '
     methods += 'The frozen scalar encoder state is clustered into seven groups using the original 74,880 training-source observations. '
     methods += 'PaCMAP, dense MD, examples and travel use the same observations and descriptors as the GeoFormer comparison. '
     methods += ('Color matching maximizes overlap on the 24,960 fixed held-out display observations.' if kind == 'matched' else 'Color matching maximizes overlap on the 684,723 centers in the six static MD snapshots.')
     methods += ' Colors stay fixed across frames. The encoder was trained to predict 442 rich descriptors: descriptor correspondence is not an independent discovery test. '
     methods += 'The six static snapshots are relaxed inputs; this MACE was trained on raw dynamic patches. '
-    methods += '<a href="../tables/METRICS.md">Metric definitions</a>.</p><p>Checkpoint: '+html.escape(c['checkpoint'])+'</p></details>'
-    return re.sub(r'<details><summary>Methods</summary>.*?</details>', methods, source)
+    methods += 'Descriptor clusters use all training environments. <a id="metricDefinitions" href="../tables/METRICS.md">Metric definitions</a>.</p><p>Checkpoint: '+html.escape(c['checkpoint'])+'</p></details>'
+    controls = dict(FRAME_CONTROLS=population_controls('All snapshots')) if kind == 'matched' else {}
+    return comparison_template(nav, HEADLINE='MACE ↔ descriptors', HEADER_NOTE=note, METHODS=methods, **controls)
 
 
 def publish(config):
@@ -172,7 +152,8 @@ def publish(config):
             d['samples'][key]['neural'] = {identity: sample_entry}
             d['lattice'][key]['neural'] = {identity: lattice_entry}
             with np.load(stored/'travel.npz') as z:
-                vector_asset(dest/'travel-data'/f'{name}.js', name, z['z'], z['neighbors'], z['labels'])
+                write_vector_asset(dest/'travel-data'/f'{name}.js', name, z['z'],
+                    dict(neighbors=z['neighbors'].tolist(), clusters=z['labels'].tolist()))
             d['travel'][key]['models'] = {identity: dict(key=name, asset='../travel-data/'+name+'.js')}
             print(f'Prepared viewer assets: {kind}/{key}', flush=True)
         d['md']['models'] = [md_model]
@@ -197,7 +178,7 @@ def publish(config):
             if population == populations[0]: subset = np.arange(len(labels)); view = copy.deepcopy(d)
             else:
                 old_path = reference/'interactive'/('comparison-interface20.html' if kind == 'matched' else 'S1-seed17-epoch24-encoder-interface20.html')
-                previous = json.loads(old_path.read_text().split('const D=', 1)[1].split(';\nconst palette', 1)[0])
+                previous = read_payload(old_path)
                 lookup = {k: i for i, k in enumerate(zip(base['source'], base['frame'], base['atom']))}
                 subset = np.array([lookup[k] for k in zip(previous['source'], previous['frame'], previous['atom'])])
                 view = copy.deepcopy(d)
@@ -212,15 +193,15 @@ def publish(config):
             entry = dict(id=identity, title=c['model']['title'], representation='encoder', field=field,
                          key=name, asset='../projection-data/'+name+'.js')
             view['paired']['neural'] = [entry]; view['paired']['default_neural'] = identity
-            rendered = template(c, kind).replace('__TITLE__', 'MACE and descriptor clusters').replace('__DATA__', json.dumps(view, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c'))
-            for marker, filename in [('__SCRIPT_HASH__', 'cluster_comparison.js'), ('__EXTENSION_HASH__', 'viewer_extensions.js')]:
-                source = Path(__file__).with_name(filename); shutil.copy2(source, dest/'assets'/filename)
-                rendered = rendered.replace(marker, sha(source)[:16])
+            for filename in ('cluster_comparison.js', 'viewer_extensions.js'):
+                shutil.copy2(Path(__file__).with_name(filename), dest/'assets'/filename)
             shutil.copy2(reference/'assets/plotly.min.js', dest/'assets/plotly.min.js')
-            path = dest/'interactive'/f'comparison-{population}.html'; path.write_text(rendered)
-            if population == populations[0]: (dest/'index.html').write_text(rendered.replace('<head>', '<head><base href="./interactive/">', 1))
+            path = dest/'interactive'/f'comparison-{population}.html'
+            write_comparison(path, template(c, kind), view, title='MACE and descriptor clusters')
+            if population == populations[0]:
+                write_comparison(dest/'index.html', template(c, kind), view, title='MACE and descriptor clusters', index=True)
         write_json(dest/'technical/rendering/provenance.json', dict(checkpoint_sha256=c['checkpoint_sha256'],
-            reference=str(reference), reference_index_sha256=sha(reference/'index.html'), model=c['model'],
+            reference=str(reference), reference_payload_sha256=sha(reference/'index.json'), model=c['model'],
             input_record=str(out/'technical/inference.json'), neural_training=False, descriptor_refit=False,
             original_observations_preserved=True, fixed_release_identity=plan['fixed_identity'],
             assay_plan_sha256=sha(Path(c['assay']).parent/'plan.json'), frozen_clusters_sha256=sha(out/'data/clusters.npz')))

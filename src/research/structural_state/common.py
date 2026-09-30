@@ -1,35 +1,17 @@
 """Immutable study identities and atomic research artifacts."""
-import hashlib
+from functools import partial
 import json
 from pathlib import Path
 import time
 
-import torch
-
+from src.experiment_runner.artifacts import file_hash as sha, json_digest, write_json
 from src.project_runtime.paths import resolve_path
 
-
-def sha(path):
-    digest = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(8 << 20), b''):
-            digest.update(block)
-    return digest.hexdigest()
-
-
-def digest(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
-
-
-def write_json(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
-    temporary.replace(path)
+digest = partial(json_digest, allow_nan=True)
 
 
 def save_checkpoint(path, value):
+    import torch
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix('.tmp')
@@ -44,6 +26,7 @@ def remaining(deadline, reserve=120):
 
 def implementation():
     paths = list(Path(__file__).parent.glob('*.py')) + [
+        Path('src/experiment_runner/artifacts.py'),
         Path('src/training_methods/bcr/model.py'), Path('src/training_methods/bcr/data.py'),
         Path('src/training_methods/bcr/probes.py'), Path('src/models/encoders/mace_causal.py'),
         Path('src/models/encoders/mace_backend.py'), Path('src/research/bcr_followup/readouts.py'),

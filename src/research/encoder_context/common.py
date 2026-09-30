@@ -1,9 +1,12 @@
 """Immutable encoder-treatment campaign and source/sample contract."""
 import json
+from functools import partial
 from pathlib import Path
 from src.project_runtime.paths import resolve_path
-from src.research.structural_state.common import sha,digest,write_json
+from src.experiment_runner.artifacts import file_hash as sha, json_digest, write_json
 from src.research.supervised_onset.tracking import require_online
+
+digest = partial(json_digest, allow_nan=True)
 
 
 class Study:
@@ -36,7 +39,7 @@ class Study:
             if data.plan['evidence']['fixed_identity']!=plan['identity']:
                 raise ValueError('Structural ancestry uses another fixed benchmark')
             paths += [repo/'src/data/structural_pretraining'/p for p in ('native.py','native_dataset.py','prepare.py')]
-        paths += [repo/p for p in ('src/research/mace_epi/objective.py',
+        paths += [repo/p for p in ('src/experiment_runner/artifacts.py', 'src/research/mace_epi/objective.py',
             'src/training_methods/regularizers.py',
             'src/training_methods/structural_pretraining/objective.py',
             'src/models/encoders/spatial_mace.py','src/models/encoders/graph_bank.py',

@@ -58,3 +58,10 @@ Examples use the established deterministic five-per-cluster sampler and sparse
 geometry. PTM/lattice fits and full-vector travel retain the existing
 [definitions](interactive_structure_paths.md), with 256 scalar coordinates.
 Vector packing is lossless. Paths never interpolate or modify atomic structures.
+
+Current publication refreshes archive separate interface20 HTML and redirect
+those links to the full comparison. A within-12-Å highlight changes point opacity
+without filtering observations or recomputing correspondence statistics. The
+original separate layouts, exported subsets and scientific definitions remain
+frozen. Explicit JSON sidecars carry viewer payloads through the shared template
+writer; later publication stages do not recover inputs from HTML or generated JS.

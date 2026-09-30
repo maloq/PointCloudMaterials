@@ -4,7 +4,6 @@ Receipts are durable evidence. Registration files are a small rebuildable queue 
 receipt locations, not another manually curated scientific database.
 """
 from datetime import datetime, timezone
-import hashlib
 import html
 import json
 import os
@@ -16,21 +15,9 @@ from html.parser import HTMLParser
 from functools import lru_cache
 
 from src.project_runtime.paths import REPO, machine, resolve_path
-from .artifacts import write_json
+from .artifacts import file_hash, json_digest as identity, write_json
 
 KINDS = {'research', 'operations', 'simulation', 'dataset', 'unclassified'}
-
-
-def identity(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
-
-
-def file_hash(path):
-    digest = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(8 * 1024 * 1024), b''):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 @lru_cache(maxsize=1)

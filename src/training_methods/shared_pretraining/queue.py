@@ -14,15 +14,11 @@ import traceback
 from src.data.structural_pretraining.prepare import save_json,file_hash
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.slurm import submit_sbatch
+from src.experiment_runner.execution import allocation_deadline
 
 
 def deadline_for_job():
-    job=os.environ['SLURM_JOB_ID']
-    result=subprocess.run(['scontrol','show','job',job,'--json'],check=True,text=True,capture_output=True)
-    value=json.loads(result.stdout)['jobs'][0]['end_time']
-    end=value['number'] if isinstance(value,dict) else value
-    if not isinstance(end,(float,int)) or end<time.time():raise ValueError(f'Invalid Slurm end time: {value}')
-    return end-300
+    return allocation_deadline(job=os.environ['SLURM_JOB_ID'], reserve_seconds=300)
 
 
 def execute_stage(config_path,phase,deadline):

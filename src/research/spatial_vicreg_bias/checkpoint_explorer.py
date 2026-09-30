@@ -15,8 +15,9 @@ from sklearn.metrics import adjusted_rand_score
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.experiment_runner.metric_docs import write_metric_table
 from .cluster_matching import summarize
-from .dense_md import read, write_asset
-from .comparison_layout import dataset_navigation
+from .dense_md import read
+from .comparison_layout import comparison_template, dataset_navigation, population_controls
+from .viewer_payload import read_payload, write_asset, write_comparison
 
 
 FIELDS = {'joint': 'Joint descriptor clusters', 'tda': 'TDA clusters',
@@ -29,14 +30,9 @@ DEFAULT = 'S1-seed17-epoch24-encoder'
 
 
 def explorer_template():
-    template = Path(__file__).with_name('cluster_comparison.html').read_text()
-    template = template.replace('__DATASET_NAV__', dataset_navigation('matched'))
-    template = template.replace('Neural ↔ descriptor clusters', 'GeoFormer ↔ descriptors')
-    template = template.replace('<label>Neural <select id="nnSpace"></select></label>',
-        '<span>GeoFormer encoder</span><select id="nnSpace" hidden></select>'
+    neural = ('<span>GeoFormer encoder</span><select id="nnSpace" hidden></select>'
         '<label>Checkpoint <select id="checkpoint"><option value="24">Epoch 24 · final</option>'
         '<option value="12">Epoch 12</option><option value="4">Epoch 4 · early</option></select></label>')
-    marker = '<div class="controls" style="margin-top:8px">'
     advanced = ('<details><summary>Training variants and repeats</summary><div class="controls">'
         '<label>VICReg pairing <select id="recipe"><option value="1">Spatial neighbors</option>'
         '<option value="0.5">50% same center + 50% neighbors</option><option value="0">Same center only</option></select></label>'
@@ -47,29 +43,22 @@ def explorer_template():
         '<p>S0 = same-center views; S0.5 = equal same-center and neighbor alignment; S1 = neighbor alignment. '
         'These are training variants of the same architecture. Seeds are independent training repeats. '
         'Repeat 1 is a fixed example, not a selected winner.</p></details><div id="selection" class="status"></div>')
-    template = template.replace(marker, advanced+marker, 1)
-    template = template.replace('<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>',
-        '<label>Layout <select id="population"><option value="all_test">All sampled environments</option>'
-        '<option value="interface20">Within 20 Å of interface</option></select></label>'
-        '<label>Source <select id="source"><option value="all">All sources</option></select></label>'
-        '<label>Frame <select id="frame"><option value="all">All frames</option></select></label>')
     methods = ('<details><summary>Methods and checkpoint</summary>'
         '<p>The same observations appear in both 3D plots. Colors maximize shared cluster membership by a one-to-one '
         'assignment on the 24,960 original held-out observations. This mapping stays fixed across filters, '
-        'MD and the interface layout. Shared colors identify assigned pairs; overlap and IoU show their actual correspondence.</p>'
+        'MD and PaCMAP. Shared colors identify assigned pairs; overlap and IoU show their actual correspondence.</p>'
         '<p>Frame numbers are saved-frame indices. PaCMAP layouts have independent axes; distances between separate '
         'layouts are not comparable. Correspondence uses displayed PaCMAP centers. The shared frame slider '
         'updates PaCMAP, the full 70,304-atom source-908 MD snapshot and local examples. MD z controls are '
-        'independent of PaCMAP filters. Original clusters and projected coordinates are preserved.</p>'
+        'independent of PaCMAP filters. Neural clusters and neural projected coordinates are preserved. Descriptor fitting uses all training environments.</p>'
         '<p>Encoder embeddings are the default; the optional projector is the training-loss head. '
         'Epoch 24 is the final checkpoint, epoch 12 is an intermediate checkpoint and epoch 4 is an early reference. '
         'This display makes no claim that any is scientifically best.</p>'
         '<p>Checkpoint: <code id="checkpointPath"></code></p>'
-        '<p><a href="../../checkpoint-cluster-matching-v1/tables/METRICS.md">Metric definitions</a> · '
-        '<a href="../../checkpoint-cluster-matching-v1/tables/metrics.csv">Overlap table</a> · '
-        '<a id="nnFigure">Neural 2D figure</a> · <a id="descriptorFigure">Descriptor 2D figure</a></p></details>')
-    template = re.sub(r'<details><summary>Methods</summary>.*?</details>', methods, template)
-    return template
+        '<p><a id="metricDefinitions" href="../../checkpoint-cluster-matching-v1/tables/METRICS.md">Metric definitions</a> · '
+        '<a id="metricTable" href="../../checkpoint-cluster-matching-v1/tables/metrics.csv">Overlap table</a></p></details>')
+    return comparison_template(dataset_navigation('matched'), HEADLINE='GeoFormer ↔ descriptors',
+        NEURAL_CONTROLS=neural, EXTRA_CONTROLS=advanced, FRAME_CONTROLS=population_controls(), METHODS=methods)
 
 
 def publish(config):
@@ -84,7 +73,7 @@ def publish(config):
         r = json.loads(receipt.read_text()); path = root/'data'/f'{name}.npz'
         if sha(path) != r['coordinate_sha256']: raise ValueError(f'Changed saved projection: {name}')
         original = root/'interactive'/f'{name}.html'
-        payload = json.loads(original.read_text().split('const D=', 1)[1].split(';\nconst palette', 1)[0])
+        payload = read_payload(original)
         with np.load(path) as z:
             ids = {k:z[k] for k in ('original_row', 'source', 'frame', 'atom')}; coordinates = z['pacmap3']
         for key in ('source', 'frame', 'atom'):
@@ -119,7 +108,7 @@ def publish(config):
             kind = 'descriptors'; old_links[name] = (population, DEFAULT, entry['id'])
         write_asset(asset, name, data, 'PACMAP_LAYOUTS')
         entry.update(asset='../projection-data/'+asset.name, key=name); group[kind].append(entry)
-        bindings[name] = dict(coordinate_sha256=r['coordinate_sha256'], original_html_sha256=sha(original),
+        bindings[name] = dict(coordinate_sha256=r['coordinate_sha256'], original_payload_sha256=sha(original.with_suffix('.json')),
             inputs=r['inputs'], asset_sha256=sha(asset))
     if set(groups) != {'all_test', 'interface20'}: raise ValueError('Missing fixed population')
     for population, group in groups.items():
@@ -167,13 +156,12 @@ def publish(config):
         payload = dict(**group['metadata'], fields=group['fields'], explorer=dict(population=population), matching=matches,
             paired=dict(neural=group['neural'], descriptors=group['descriptors'], default_neural=DEFAULT, default_descriptor='descriptors-joint'),
             md=dict(models=models, snapshots=snapshots, default_model=DEFAULT))
-        rendered = template.replace('__TITLE__', 'GeoFormer versus descriptors').replace('__SCRIPT_HASH__', sha(script)[:16]).replace('__EXTENSION_HASH__', sha(Path(__file__).with_name('viewer_extensions.js'))[:16]).replace(
-            '__DATA__', json.dumps(payload, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c'))
-        page = dest/'interactive'/f'comparison-{population}.html'; page.write_text(rendered); pages[population] = sha(page)
+        page = dest/'interactive'/f'comparison-{population}.html'
+        write_comparison(page, template, payload, title='GeoFormer versus descriptors'); pages[population] = sha(page)
         if population == 'all_test':
             index = dest/'index.html'
             if not (dest/'technical/rendering/original-gallery.html').exists(): shutil.copy2(index, dest/'technical/rendering/original-gallery.html')
-            index.write_text(rendered.replace('<head>', '<head><base href="./interactive/">', 1))
+            write_comparison(index, template, payload, title='GeoFormer versus descriptors', index=True)
     for name, (population, neural, descriptor) in old_links.items():
         url = f'comparison-{population}.html?'+urlencode(dict(model=neural, descriptor=descriptor))
         (dest/'interactive'/f'{name}.html').write_text('<!doctype html><meta charset="utf-8"><title>GeoFormer comparison</title>'

@@ -1,5 +1,7 @@
 # Implementations of recorded research protocols
 
+`spatial_vicreg_bias.general_descriptors` applies existing all-training descriptor fits to frozen GeoFormer/MACE comparisons, regenerates descriptor views and exports versioned overlap diagnostics; [workflow](../../docs/spatial_vicreg_bias.md#general-descriptor-comparison-2026-09-30).
+
 - `liquid_predictability.rich_multimaterial_queue`: immutable raw multimaterial patch descriptors, declared-batch verification, fixed-epoch MACE256 fitting and locked one-to-two-GPU continuation; [workflow](../../docs/rich_multimaterial_encoder.md).
 
 `liquid_predictability.rich_encoder` trains RD-MACE256-L3-Z256 on all raw rich
@@ -67,7 +69,7 @@ objective and restart behavior. Configs and findings stay in the dated record;
 source package names do not include run dates. Explicit historical config lookups
 use dataset ID `research-records-20260913`; this names the verified STORE records.
 
-Use `python -m src.research.METHOD.MODULE` from the repository root with `pointnet`,
+Use `python -m src.research.METHOD.MODULE` from the repository root with `pointnet-torch214`,
 using the arguments recorded in that experiment's README. Retired records link to
 the STORE archive; use its original checkout for historical commands that rely on
 archived inputs/configuration paths. Maintained current

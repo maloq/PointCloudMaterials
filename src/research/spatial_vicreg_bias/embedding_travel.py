@@ -7,17 +7,10 @@ import numpy as np
 from scipy.spatial import cKDTree
 from sklearn.cluster._kmeans import _labels_inertia_threadpool_limit
 from src.data.fixed_cohort.protocol import sha, write_json
+from .viewer_payload import read_asset as asset, read_payload, write_asset
 
 
-def write_asset(path,key,data,variable):
-    encoded=json.dumps(data,separators=(',',':'),allow_nan=False).replace('<','\\u003c')
-    temporary=path.with_suffix('.building.js')
-    temporary.write_text(f'window.{variable}=window.{variable}||{{}};window.{variable}[{json.dumps(key)}]={encoded};\n')
-    temporary.replace(path)
-
-
-def payload(dest):return json.loads((dest/'index.html').read_text().split('const D=',1)[1].split(';\nconst palette',1)[0])
-def asset(path):return json.loads(path.read_text().split('=',2)[2].rstrip(';\n'))
+def payload(dest):return read_payload(dest/'index.html')
 
 
 def infer(config,source,publication,dataset,lane,lanes):

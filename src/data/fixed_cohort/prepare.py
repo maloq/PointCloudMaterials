@@ -20,6 +20,7 @@ from .protocol import ROLES, audit_sources, centered, digest, onset_rows, sha, w
 def implementation():
     base = Path(__file__).resolve().parents[3]
     files = list(Path(__file__).parent.glob('*.py')) + [base / p for p in (
+        'src/experiment_runner/artifacts.py',
         'src/research/smooth_temporal_encoder/prepare.py',
         'src/research/forecast_crystallization/local_metrics.py',
         'src/data/trajectories/shooting.py', 'src/data/trajectories/lammps.py')]

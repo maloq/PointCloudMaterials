@@ -24,7 +24,7 @@ stable neural cluster identity across training epochs.
 
 Exports record the following on `all_test` and `interface20`, using the same
 reference permutation in both. The browser recomputes these summaries only for
-the currently displayed source/frame/region subset, without reoptimizing colors:
+the currently displayed source/frame subset, without reoptimizing colors:
 
 - Matched fraction: sum_n T[n,p(n)] / sum(T).
 - Matched-pair intersection: T[n,p(n)]. Union: row sum + column sum − intersection.
@@ -62,3 +62,10 @@ Implementation: `checkpoint_explorer.py`, the `summarize` helper in
 `cluster_matching.py`, and `cluster_comparison.js` / `.html`, under
 `src/research/spatial_vicreg_bias/`. Source, assignment, coordinate and renderer
 hashes are saved with the publication and numerical bundle.
+
+Current publication refreshes archive the separate interface20 HTML and redirect
+it to all_test. The interface highlight emphasizes centers within 12 Å without
+changing selected rows, correspondence statistics or cluster colors. Historical
+interface20 numerical exports and saved layouts remain authoritative. Explicit
+schema-tagged JSON sidecars carry viewer data to the shared renderer; HTML and
+generated JS are display outputs rather than inputs to later publication stages.

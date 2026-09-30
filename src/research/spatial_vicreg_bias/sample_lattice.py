@@ -10,7 +10,7 @@ from scipy.spatial import cKDTree
 from scipy.spatial.transform import Rotation
 from src.analysis.representative_structures import _build_ovito_data_collection
 from src.data.fixed_cohort.protocol import sha, write_json
-from .dense_md import write_asset
+from .viewer_payload import read_asset, write_asset
 
 
 def grid(kind, distance, rotation, radius, hcp_branch=1):
@@ -73,7 +73,7 @@ def export_snapshot(publication,key):
     for kind,spaces in manifest.items():
         for identity,entry in spaces.items():
             path=dest/'sample-data'/Path(entry['asset']).name
-            data=json.loads(path.read_text().split('=',2)[2].rstrip(';\n'))
+            data=read_asset(path)
             assets[(kind,identity)]=(entry,data,path);patches.update(data['patches'])
     rows=sorted(patches,key=int);fits={}
     for start in range(0,len(rows),128):
@@ -84,7 +84,7 @@ def export_snapshot(publication,key):
         asset_key=entry['key'];out=folder/(asset_key+'.js')
         write_asset(out,asset_key,{row:fits[row] for row in data['patches']},'LATTICE_SAMPLES')
         result[kind][identity]=dict(key=asset_key,asset='../lattice-data/'+out.name)
-        receipts[out.name]=dict(input_sha256=sha(path),asset_sha256=sha(out))
+        receipts[out.name]=dict(input_payload_sha256=sha(path.with_suffix('.json')),asset_sha256=sha(out))
     write_json(folder/f'manifest-{key}.json',{key:result})
     write_json(dest/f'technical/rendering/lattice-{key}.json',dict(assets=receipts,examples=len(fits),implementation_sha256=sha(__file__),
         fit='central-atom PTM FCC/HCP/BCC; rigid orientation and isotropic spacing; accepted at RMSD <= 0.1',

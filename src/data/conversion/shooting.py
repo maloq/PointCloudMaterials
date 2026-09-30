@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import concurrent.futures
 import fcntl
-import hashlib
 import json
 import multiprocessing
 import os
@@ -21,6 +20,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import file_hash, read_json_object  # noqa: E402
 from src.data.trajectories.shooting import (  # noqa: E402
     FORMAT_NAME,
     SCHEMA_VERSION,
@@ -39,18 +39,6 @@ _REPORT_FILENAME = "binary_migration_float32.json"
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def _load_json_object(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in {path}, got {type(value).__name__}."
-        )
-    return value
 
 
 def _write_json_atomic(path: Path, value: dict[str, Any]) -> None:
@@ -74,17 +62,6 @@ def _fsync_directory(path: Path) -> None:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while True:
-            chunk = handle.read(16 * 1024 * 1024)
-            if not chunk:
-                break
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _expected_timesteps(manifest: dict[str, Any]) -> tuple[int, ...]:
@@ -159,7 +136,7 @@ def _write_branch_outcome(branch_dir: Path, outcome: dict[str, Any]) -> None:
     _write_json_atomic(branch_dir / "outcome.json", outcome)
     status_path = branch_dir / "status.json"
     if status_path.is_file():
-        status = _load_json_object(status_path)
+        status = read_json_object(status_path)
         if (
             status.get("state") != "complete"
             or status.get("branch_id") != outcome["branch_id"]
@@ -232,7 +209,7 @@ def _migrate_branch(
                     "Residual text source size changed after migration"
                     f" metadata was written: {source}."
                 )
-            if _sha256_file(source) != expected_source_sha256:
+            if file_hash(source) != expected_source_sha256:
                 raise RuntimeError(
                     "Residual text source checksum changed after migration"
                     f" metadata was written: {source}."
@@ -266,7 +243,7 @@ def _migrate_branch(
 
     validate_complete_shooting_branch(root, manifest, branch, outcome)
     source_size_bytes = int(outcome["trajectory_size_bytes"])
-    source_sha256 = _sha256_file(source)
+    source_sha256 = file_hash(source)
     print(
         f"[shooting-migration] converting campaign={root.name} "
         f"branch={branch['branch_index']}/{len(manifest['branches']) - 1}",
@@ -348,7 +325,7 @@ def _migrate_branch_worker(
     branch: dict[str, Any],
     delete_source: bool,
 ) -> tuple[str, dict[str, Any]]:
-    outcome = _load_json_object(
+    outcome = read_json_object(
         root / str(branch["branch_dir"]) / "outcome.json"
     )
     return _migrate_branch(
@@ -359,7 +336,7 @@ def _migrate_branch_worker(
 def convert_campaign(
     root: Path, *, workers: int = 1, delete_source: bool = False
 ) -> dict[str, Any]:
-    manifest = _load_json_object(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     if (
         manifest.get("campaign_type")
         != "position_conditioned_langevin_nvt_shooting"
@@ -396,7 +373,7 @@ def convert_campaign(
         prior_entries: dict[int, dict[str, Any]] = {}
         started_at = _utc_now()
         if report_path.is_file():
-            previous = _load_json_object(report_path)
+            previous = read_json_object(report_path)
             started_at = str(previous["started_at"])
             prior_entries = {
                 int(entry["branch_index"]): entry
@@ -418,7 +395,7 @@ def convert_campaign(
             if not outcome_path.is_file():
                 incomplete += 1
                 continue
-            outcome = _load_json_object(outcome_path)
+            outcome = read_json_object(outcome_path)
             if outcome.get("state") != "complete":
                 incomplete += 1
                 continue

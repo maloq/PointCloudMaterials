@@ -2,9 +2,7 @@
 
 import json
 import math
-import os
 from pathlib import Path
-import subprocess
 import time
 from types import SimpleNamespace
 
@@ -12,6 +10,7 @@ import numpy as np
 import torch
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json as store_json
+from src.experiment_runner.execution import allocation_deadline
 from src.project_runtime.paths import resolve_path
 from src.models.encoders.spatial_mace import compile_spatial_encoder
 from src.research.encoder_context.geometry import graph
@@ -66,16 +65,7 @@ def compile_model(model, data, c):
 
 
 def deadline(c):
-    stop = time.time() + c['runtime']['hours'] * 3600
-    job = os.environ.get('SLURM_JOB_ID')
-    if job:
-        raw = subprocess.check_output(['scontrol', 'show', 'job', job, '-o'], text=True)
-        fields = dict(x.split('=', 1) for x in raw.split() if '=' in x)
-        from datetime import datetime
-
-        end = datetime.fromisoformat(fields['EndTime']).timestamp()
-        stop = min(stop, end - 240)
-    return stop
+    return min(time.time() + c['runtime']['hours'] * 3600, allocation_deadline(reserve_seconds=240))
 
 
 @torch.no_grad()
@@ -132,6 +122,8 @@ def identity(c, variant, data):
     files = list(Path(__file__).parent.glob('*.py')) + [
         repo / p
         for p in (
+            'src/experiment_runner/execution.py',
+            'src/experiment_runner/artifacts.py',
             'src/models/encoders/spatial_mace.py',
             'src/models/encoders/mace_backend.py',
             'src/research/equivariant_context/model.py',

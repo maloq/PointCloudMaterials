@@ -1,33 +1,10 @@
 """The sample contract is independent of models, losses and random training seeds."""
-import hashlib
-import json
-from pathlib import Path
-
 import numpy as np
 
+from src.experiment_runner.artifacts import file_hash as sha, json_digest as digest, write_json
 from src.research.forecast_crystallization.local_metrics import first_sustained_onset, risk_windows
 
 ROLES = ('train', 'selection', 'calibration', 'test')
-
-
-def sha(path):
-    value = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(8 << 20), b''):
-            value.update(block)
-    return value.hexdigest()
-
-
-def digest(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, allow_nan=False).encode()).hexdigest()
-
-
-def write_json(path, value):
-    path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
-    temporary.replace(path)
 
 
 def audit_sources(sources, counts, centers):

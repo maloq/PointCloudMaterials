@@ -125,42 +125,6 @@ def _plot_retrieval(retrieval: dict[str, Any], path: Path) -> None:
     plt.close(figure)
 
 
-def _checkpoint_payload(
-    fitted: FittedPredictiveAtlas,
-    *,
-    history_spec: dict[str, Any],
-) -> dict[str, Any]:
-    model = fitted.model
-    return {
-        "state_dict": model.state_dict(),
-        "model": {
-            "embedding_dim": model.embedding_dim,
-            "descriptor_dim": model.descriptor_dim,
-            "conditioning_dim": model.conditioning_dim,
-            "hidden_dim": model.hidden_dim,
-            "heads": model.heads,
-            "blocks": model.block_count,
-            "rbf_dim": model.rbf_dim,
-            "maximum_radius": model.maximum_radius,
-            "latent_dim": model.latent_dim,
-            "decoder_hidden_dim": model.decoder_hidden_dim,
-            "target_dim": model.target_dim,
-            "dropout": model.dropout,
-            "history_lag_count": model.history_lag_count,
-        },
-        "seed": fitted.seed,
-        "embedding_mean": fitted.embedding_mean,
-        "embedding_scale": fitted.embedding_scale,
-        "descriptor_mean": fitted.descriptor_mean,
-        "descriptor_scale": fitted.descriptor_scale,
-        "conditioning_mean": fitted.conditioning_mean,
-        "conditioning_scale": fitted.conditioning_scale,
-        "history_delta_mean": fitted.history_delta_mean,
-        "history_delta_scale": fitted.history_delta_scale,
-        "history_spec": history_spec,
-    }
-
-
 def run(config_path: str | Path, *, stage: str) -> dict[str, Any]:
     cfg: DictConfig = OmegaConf.load(resolve_path(config_path))
     OmegaConf.resolve(cfg)
@@ -288,7 +252,7 @@ def run(config_path: str | Path, *, stage: str) -> dict[str, Any]:
         initial_model_state=initial_atlas.model.state_dict(),
     )
     torch.save(
-        _checkpoint_payload(frozen_fitted, history_spec=history_cache.manifest["spec"]),
+        frozen_fitted.checkpoint_payload(history_spec=history_cache.manifest["spec"]),
         output_dir / "model_expanded_frozen_encoder.pt",
     )
 
@@ -316,9 +280,7 @@ def run(config_path: str | Path, *, stage: str) -> dict[str, Any]:
         seeds=[int(value) for value in required(cfg, "fine_tuning.seeds")],
     )
     fine_fitted = fine_tuned.atlas
-    fine_payload = _checkpoint_payload(
-        fine_fitted, history_spec=history_cache.manifest["spec"]
-    )
+    fine_payload = fine_fitted.checkpoint_payload(history_spec=history_cache.manifest["spec"])
     fine_payload["fine_tuned_encoder_state"] = fine_tuned.encoder_state
     fine_payload["fine_tuned_encoder_parameter_names"] = (
         fine_tuned.trainable_encoder_parameter_names

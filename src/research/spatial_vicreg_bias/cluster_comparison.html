@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head>__BASE__<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>__TITLE__</title><script src="../assets/plotly.min.js"></script>
 <style>
 body{font:13px system-ui;margin:12px;color:#172233}nav{font-size:12px}h1{font-size:20px;margin:8px 0}h2{font-size:16px;margin:6px 0 2px}a{color:#145bc0}
@@ -14,14 +14,15 @@ details{margin:6px 0;color:#536174;font-size:12px;max-width:950px}details p{line
 .clusterLegend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:8px 12px 12px}.clusterLegend button{display:flex;align-items:center;gap:7px;border:0;background:none;color:#253548;cursor:pointer;padding:4px;font:inherit}.clusterLegend i{display:block;width:15px;height:15px;flex-shrink:0;border-radius:50%}.clusterLegend button[aria-pressed="false"]{opacity:.3}.pathplot{height:440px;width:100%}.travel-plots{margin:12px 0 16px}.travel-plots section{min-width:0}.travel-plots h3,.travel-coordinates h3{font-size:15px;margin:10px 12px}.travel-coordinates{margin-top:20px}.pathLegend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:0 12px 12px;min-height:20px}.pathLegend span{display:flex;align-items:center;gap:8px}.pathLegend i{width:24px;border-top:3px solid;display:inline-block}
 </style></head><body>
 __DATASET_NAV__
-<h1>Neural ↔ descriptor clusters</h1>
+<h1>__HEADLINE__</h1>__HEADER_NOTE__
 <div class="controls">
-<label>Neural <select id="nnSpace"></select></label><label>Descriptors <select id="descriptorSpace"></select></label>
-<label>Colors <select id="color"><option value="matched">Optimal match</option><option value="original">Original IDs</option><option>PTM type</option><option>Physical region</option><option>Input crystal fraction</option><option>Interface distance (Å, clipped ±20)</option></select></label>
+__NEURAL_CONTROLS__<label>Descriptors <select id="descriptorSpace"></select></label>
+<label>Colors <select id="color"><option value="matched">Optimal match</option><option value="original">Original IDs</option><option>PTM type</option><option>Input crystal fraction</option></select></label>
 </div>
+__EXTRA_CONTROLS__
 <div class="controls" style="margin-top:8px">
-<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>
-<label>Region <select id="region"><option value="all">All displayed centers</option><option value="near">Within 12 Å of interface</option><option value="boundary">Boundary</option><option value="crystal">Crystalline centers</option><option value="liquid">Nearby connected disorder</option><option value="pocket">Nearby disordered pockets</option></select></label>
+__FRAME_CONTROLS__
+<label title="Emphasize atoms within 12 Å of the physical interface; all points remain in the plot"><input id="highlightInterface" type="checkbox">Highlight interface layers</label>
 <label>Points <input id="size" type="range" min="1" max="7" step="0.5" value="2"></label>
 </div>
 <div class="controls" style="margin-top:8px"><label>MD points <input id="mdSize" type="range" min="0.5" max="5" step="0.5" value="2"></label><label>z from <input id="zLow" type="range" min="0" max="100" value="0">%</label><label>to <input id="zHigh" type="range" min="0" max="100" value="100">%</label></div>
@@ -44,7 +45,7 @@ __DATASET_NAV__
 <section id="correspondenceSection"><h2>Cluster correspondence</h2>
 <div class="stats"><span>Displayed centers<b id="count">—</b></span><span>Matched overlap<b id="overlap">—</b></span><span>Adjusted Rand index<b id="ari">—</b></span></div>
 <div class="plots"><section><label>Membership <select id="matrixScale"><option value="fraction">% within neural cluster</option><option value="count">Counts</option></select></label><div id="matrix" class="metricplot"></div></section><section><h2>Matched-pair intersection / union</h2><div id="pairOverlap" class="metricplot"></div></section></div>
-</section><details><summary>Methods</summary><p>Neural colors maximize shared membership with descriptor clusters using a one-to-one assignment on all 684,723 grid centers. The mapping stays fixed across snapshots and filters for each model/descriptor pair. Labels N and D retain the original neural and descriptor IDs. Shared colors indicate an assigned pair; the matrix and intersection/union bars show its actual overlap.</p><p>Correspondence statistics use the currently displayed PaCMAP centers. Static frame sliders synchronize PaCMAP and MD; region and z filters remain independent. All frames restores pooled PaCMAP. Axes are independent projections. Coordinates, clusters and models are unchanged. MD outlines show nonperiodic coordinate bounds. Local examples are uniform samples from the full selected snapshot, not fitted centroids; each has 80 atoms and an original center ID. <a href="../../cluster-color-matching-v1/tables/METRICS.md">Metric definitions</a>.</p></details>
+</section>__METHODS__
 <section id="embeddingTravel" hidden><h2>Travel between environments</h2>
 <div class="controls"><label>Path <select id="pathKind"><option value="spatial">Spatial neighbors</option><option value="embedding">Embedding neighbors</option></select></label><label>From cluster <select id="pathFrom"></select></label><label>To cluster <select id="pathTo"></select></label><label>Endpoint example <input id="pathExample" type="range" min="0" max="9" value="0"></label><button id="pathBuild">Trace path</button></div>
 <p id="pathStatus" class="status"></p>

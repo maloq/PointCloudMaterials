@@ -18,6 +18,7 @@ from typing import Any, Callable, Sequence
 import numpy as np
 from scipy.spatial import cKDTree
 
+from src.experiment_runner.artifacts import read_json_object  # noqa: E402
 from src.data.trajectories.shooting import (
     ShootingBinaryTrajectory,
     binary_directory_sizes,
@@ -30,18 +31,6 @@ from src.data.conversion.shooting_text import (
 _EXPECTED_COLUMNS = ("id", "type", "x", "y", "z", "vx", "vy", "vz")
 
 
-def _load_json_object(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in {path}, got {type(value).__name__}."
-        )
-    return value
-
-
 def _validated_complete_branches(
     campaign_root: Path,
     *,
@@ -52,7 +41,7 @@ def _validated_complete_branches(
     list[tuple[dict[str, Any], dict[str, Any], Path]],
 ]:
     manifest_path = campaign_root / "manifest.json"
-    manifest = _load_json_object(manifest_path)
+    manifest = read_json_object(manifest_path)
     if (
         manifest.get("campaign_type")
         != "position_conditioned_langevin_nvt_shooting"
@@ -108,7 +97,7 @@ def _validated_complete_branches(
         branch = by_index[branch_index]
         branch_dir = campaign_root / str(branch["branch_dir"])
         outcome_path = branch_dir / "outcome.json"
-        outcome = _load_json_object(outcome_path)
+        outcome = read_json_object(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(
                 "Refusing to convert an incomplete branch:"

@@ -4,10 +4,9 @@ import argparse
 import json
 from pathlib import Path
 
+from src.experiment_runner.artifacts import file_hash, read_json_object
 from src.data.conversion.shooting import (
     _expected_timesteps,
-    _load_json_object,
-    _sha256_file,
     _validate_binary_for_migration,
 )
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
@@ -17,7 +16,7 @@ from src.data.shooting import validate_complete_shooting_branch
 def audit_campaign(
     root: Path, *, require_source_deleted: bool = False
 ) -> dict:
-    manifest = _load_json_object(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     complete = 0
     incomplete = 0
     retained = 0
@@ -27,7 +26,7 @@ def audit_campaign(
         if not outcome_path.is_file():
             incomplete += 1
             continue
-        outcome = _load_json_object(outcome_path)
+        outcome = read_json_object(outcome_path)
         if outcome["state"] != "complete":
             incomplete += 1
             continue
@@ -52,7 +51,7 @@ def audit_campaign(
                 raise RuntimeError(
                     f"Source dump should have been deleted: {source}"
                 )
-            if _sha256_file(source) != source_record["sha256"]:
+            if file_hash(source) != source_record["sha256"]:
                 raise RuntimeError(
                     f"Retained source checksum changed: {source}"
                 )

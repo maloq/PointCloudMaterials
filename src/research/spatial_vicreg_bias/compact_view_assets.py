@@ -1,14 +1,10 @@
 """Lossless display packing of existing sample and embedding assets."""
 import argparse
-import base64
 import json
 from pathlib import Path
 import numpy as np
 from src.data.fixed_cohort.protocol import sha,write_json
-from .dense_md import write_asset
-
-
-def read_asset(path):return json.loads(path.read_text().split('=',2)[2].rstrip(';\n'))
+from .viewer_payload import read_asset, write_asset, write_vector_asset
 
 
 def pack(publication):
@@ -29,16 +25,10 @@ def pack(publication):
                 else:
                     z=np.asarray(data.pop('z'),dtype=np.float64);packed=np.asarray(z,dtype='<f4')
                     if not np.array_equal(packed.astype(np.float64),z):raise ValueError(f'Non-float32 embedding values in {source}')
-                    encoded=base64.b64encode(packed.tobytes()).decode('ascii');rows,width=packed.shape
                     # Restore ordinary JS number arrays, preserving the previous
                     # float64 arithmetic for differences, norms and graph weights.
-                    script='window.TRAVEL_EMBEDDINGS=window.TRAVEL_EMBEDDINGS||{};(()=>{'
-                    script+=f'const text=atob({json.dumps(encoded)}),bytes=Uint8Array.from(text,c=>c.charCodeAt(0)),view=new DataView(bytes.buffer);'
-                    script+=f'const data={json.dumps(data,separators=(",",":"),allow_nan=False)};'
-                    script+=f'data.z=Array.from({{length:{rows}}},(_,i)=>Array.from({{length:{width}}},(_,j)=>view.getFloat32(4*(i*{width}+j),true)));'
-                    script+=f'window.TRAVEL_EMBEDDINGS[{json.dumps(info["key"])}]=data;}})();\n'
-                    target.write_text(script)
-                records[str(target.relative_to(dest))]=dict(source=str(source),source_sha256=sha(source),output_sha256=sha(target),before_bytes=source.stat().st_size,after_bytes=target.stat().st_size)
+                    write_vector_asset(target,info['key'],packed,data)
+                records[str(target.relative_to(dest))]=dict(source=str(source),source_sha256=sha(source),source_payload_sha256=sha(source.with_suffix('.json')),output_sha256=sha(target),before_bytes=source.stat().st_size,after_bytes=target.stat().st_size)
                 info['asset']='../'+folder.name+'/'+target.name
         write_json(folder/'manifest.json',manifest)
     write_json(dest/'technical/rendering/compact-assets.json',dict(implementation_sha256=sha(__file__),lossless=True,original_assets_preserved=True,assets=records,

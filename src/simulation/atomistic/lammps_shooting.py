@@ -31,6 +31,7 @@ from ase.data import atomic_masses, atomic_numbers
 from ase.io import write
 
 from src.data.temporal import TemporalLAMMPSDumpDataset
+from src.simulation.runtime import lammps_environment
 from src.temporal_vamp.simulation_catalog import (
     CatalogEntry,
     discover_simulation_catalog,
@@ -1005,34 +1006,6 @@ python {REPOSITORY_ROOT}/src/simulation/campaigns/meam_shooting.py submit-next-w
     controller_path.chmod(0o750)
 
 
-def _lammps_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    for key in (
-        "CUDA_VISIBLE_DEVICES",
-        "SLURM_GPUS",
-        "SLURM_GPUS_ON_NODE",
-        "SLURM_GPUS_PER_NODE",
-        "SLURM_GPUS_PER_TASK",
-        "SLURM_JOB_GPUS",
-        "SLURM_STEP_GPUS",
-    ):
-        environment.pop(key, None)
-    environment.update(
-        {
-            "MPIR_CVAR_CH4_NETMOD": "ofi",
-            "FI_PROVIDER": "tcp",
-            "OMP_NUM_THREADS": "1",
-            "OMP_DYNAMIC": "FALSE",
-        }
-    )
-    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}"
-        if environment.get("LD_LIBRARY_PATH")
-        else ""
-    )
-    return environment
-
-
 def _lammps_command(*, mpi_ranks: int, launcher: str) -> list[str]:
     lmp = Path(sys.prefix) / "bin" / "lmp"
     if not lmp.is_file():
@@ -1223,7 +1196,7 @@ def run_branch(
         completed = subprocess.run(
             command,
             cwd=branch_dir,
-            env=_lammps_environment(),
+            env=lammps_environment(hide_gpus=True),
             stdout=stdout,
             stderr=subprocess.STDOUT,
             check=False,

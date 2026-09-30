@@ -2,7 +2,7 @@
 import argparse
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor, as_completed
-import hashlib
+from functools import partial
 import json
 import os
 from pathlib import Path
@@ -13,29 +13,14 @@ from scipy.spatial import cKDTree
 from scipy.special import eval_legendre
 
 from src.data.predictive_memory.targets import taper, rbf
+from src.experiment_runner.artifacts import file_hash, json_digest, write_json as save_json
 from src.project_runtime.paths import dataset_path, resolve_path
 from .support import REFERENCE_RADIUS, OUTER_RADIUS, SUPPORT
 
 ELEMENTS = {'Mg': 12, 'Al': 13, 'Ti': 22, 'Zr': 40, 'Ta': 73}
 
 
-def digest(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True).encode()).hexdigest()
-
-
-def file_hash(path):
-    h = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(2**20), b''):
-            h.update(block)
-    return h.hexdigest()
-
-
-def save_json(path, value):
-    path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix+'.tmp')
-    temporary.write_text(json.dumps(value, indent=2, allow_nan=False)+'\n')
-    temporary.replace(path)
+digest = partial(json_digest, allow_nan=True)
 
 
 def geometry_packet(x):
@@ -244,6 +229,7 @@ def build_plan(config):
         source_evidence=dict(registry=file_hash(config['registry']), cohort=file_hash(config['cohort']),
                              ancestry=file_hash(config['ancestry_plan'])),
         producer_hashes={p:file_hash(p) for p in ('src/data/structural_pretraining/prepare.py','src/data/structural_pretraining/support.py',
+            'src/experiment_runner/artifacts.py',
             'src/data/predictive_memory/targets.py','src/analysis/liquid_structure.py')})
     plan['identity'] = digest(plan)
     save_json(destination, plan)

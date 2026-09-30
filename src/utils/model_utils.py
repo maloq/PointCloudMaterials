@@ -8,6 +8,17 @@ import torch
 ModelT = TypeVar("ModelT", bound=torch.nn.Module)
 
 
+def resolve_device(raw: str, *, field: str = "device") -> str:
+    requested = str(raw).strip().lower()
+    if requested == "auto":
+        return "cuda:0" if torch.cuda.is_available() else "cpu"
+    if requested.startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError(
+            f"{field}={raw!r} requests CUDA, but torch.cuda.is_available() is false."
+        )
+    return str(raw)
+
+
 def resolve_config_path(checkpoint_path: str) -> tuple[str, str]:
     """Return the Hydra config stored beside a repository training checkpoint."""
     checkpoint = Path(checkpoint_path).expanduser().resolve()

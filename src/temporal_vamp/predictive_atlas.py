@@ -75,6 +75,27 @@ class FittedPredictiveAtlas:
     history_delta_mean: np.ndarray | None = None
     history_delta_scale: np.ndarray | None = None
 
+    def checkpoint_payload(self, *, history_spec: dict[str, Any]) -> dict[str, Any]:
+        model_fields = (
+            "embedding_dim", "descriptor_dim", "conditioning_dim", "hidden_dim",
+            "heads", "rbf_dim", "maximum_radius", "latent_dim", "decoder_hidden_dim",
+            "target_dim", "dropout", "history_lag_count",
+        )
+        normalization_fields = (
+            "embedding_mean", "embedding_scale", "descriptor_mean", "descriptor_scale",
+            "conditioning_mean", "conditioning_scale", "history_delta_mean", "history_delta_scale",
+        )
+        return {
+            "state_dict": self.model.state_dict(),
+            "model": {
+                **{name: getattr(self.model, name) for name in model_fields},
+                "blocks": self.model.block_count,
+            },
+            "seed": self.seed,
+            **{name: getattr(self, name) for name in normalization_fields},
+            "history_spec": history_spec,
+        }
+
 
 def _seed_everything(seed: int) -> None:
     random.seed(int(seed))

@@ -1,13 +1,11 @@
 """MACE256 patch reconstruction with full epochs and global distributed VCReg."""
 
 import gc
-from datetime import datetime
 import json
 import math
 import os
 from pathlib import Path
 import signal
-import subprocess
 import time
 from types import SimpleNamespace
 
@@ -16,6 +14,7 @@ import torch
 import torch.distributed as dist
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
+from src.experiment_runner.execution import allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.models.encoders.spatial_mace import compile_spatial_encoder
 from src.project_runtime.paths import resolve_path
@@ -29,16 +28,6 @@ from .data import config
 from .rich_encoder import learning_rate
 from .models import RichPatchMACE
 from .rich_multimaterial_data import CachedPatches
-
-
-def allocation_deadline():
-    """Checkpoint before Slurm takes the GPU away; epochs control completion."""
-    job = os.environ.get('SLURM_JOB_ID')
-    if not job:
-        return math.inf
-    raw = subprocess.check_output(['scontrol', 'show', 'job', job, '-o'], text=True)
-    fields = dict(x.split('=', 1) for x in raw.split() if '=' in x)
-    return datetime.fromisoformat(fields['EndTime']).timestamp() - 240
 
 
 def upload(values, device):
@@ -613,7 +602,7 @@ def train(c):
         )
         tmp.replace(path)
 
-    stop = allocation_deadline()
+    stop = allocation_deadline(reserve_seconds=240)
     requested = [False]
     signal.signal(signal.SIGUSR1, lambda *_: requested.__setitem__(0, True))
     collapsed_checks = 0

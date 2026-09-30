@@ -24,6 +24,8 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.simulation.runtime import lammps_environment  # noqa: E402
+from src.experiment_runner.artifacts import file_hash, read_json_object  # noqa: E402
 from src.data.trajectories.shooting import (  # noqa: E402
     ShootingBinaryTrajectory,
     binary_directory_sizes,
@@ -61,16 +63,6 @@ def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
-    return value
-
-
 def _write_json_atomic(path: Path, value: object) -> None:
     temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
     with temporary.open("w", encoding="utf-8") as handle:
@@ -79,14 +71,6 @@ def _write_json_atomic(path: Path, value: object) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     temporary.replace(path)
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(16 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _continuation_seed(branch_index: int) -> int:
@@ -220,8 +204,8 @@ def prepare_campaign(
     root = Path(campaign_root).expanduser().resolve()
     if root.exists():
         raise FileExistsError(f"Compatibility campaign already exists: {root}")
-    source_manifest = _load_json(source_root / "manifest.json")
-    source_summary = _load_json(source_root / "summary.json")
+    source_manifest = read_json_object(source_root / "manifest.json")
+    source_summary = read_json_object(source_root / "summary.json")
     if source_manifest.get("campaign_type") != EXPECTED_SOURCE_CAMPAIGN_TYPE:
         raise ValueError(
             f"Unsupported nested source type={source_manifest.get('campaign_type')!r}: "
@@ -239,7 +223,7 @@ def prepare_campaign(
     )
     for filename, expected_sha256 in potential_files:
         path = source_root / "potential" / filename
-        observed_sha256 = _sha256_file(path)
+        observed_sha256 = file_hash(path)
         if observed_sha256 != expected_sha256:
             raise RuntimeError(
                 f"Nested source potential checksum changed: path={path}, "
@@ -260,7 +244,7 @@ def prepare_campaign(
         branch_index = int(source_branch["branch_index"])
         source_branch_dir = source_root / str(source_branch["branch_dir"])
         source_outcome_path = source_branch_dir / "outcome.json"
-        source_outcome = _load_json(source_outcome_path)
+        source_outcome = read_json_object(source_outcome_path)
         if source_outcome.get("state") != "complete":
             raise RuntimeError(f"Nested source branch is not complete: {source_outcome_path}.")
         source_binary = ShootingBinaryTrajectory.load(
@@ -290,7 +274,7 @@ def prepare_campaign(
             "branch_dir": str(branch_dir.relative_to(root)),
             "source_branch_dir": str(source_branch_dir),
             "source_outcome_path": str(source_outcome_path),
-            "source_outcome_sha256": _sha256_file(source_outcome_path),
+            "source_outcome_sha256": file_hash(source_outcome_path),
             "source_binary_path": str(source_binary.root),
             "source_last_timestep": last_step,
             "continuation_required": continuation_required,
@@ -327,8 +311,8 @@ def prepare_campaign(
         "created_at": _utc_now(),
         "campaign_type": CAMPAIGN_TYPE,
         "source_campaign_root": str(source_root),
-        "source_campaign_manifest_sha256": _sha256_file(source_root / "manifest.json"),
-        "source_campaign_summary_sha256": _sha256_file(source_root / "summary.json"),
+        "source_campaign_manifest_sha256": file_hash(source_root / "manifest.json"),
+        "source_campaign_summary_sha256": file_hash(source_root / "summary.json"),
         "scientific_contract": {
             "no_fabricated_frames": (
                 "Every frame is either from the original nested LAMMPS path or a LAMMPS "
@@ -388,22 +372,6 @@ def prepare_campaign(
     return manifest
 
 
-def _lammps_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    environment.update(
-        {
-            "MPIR_CVAR_CH4_NETMOD": "ofi",
-            "FI_PROVIDER": "tcp",
-            "OMP_NUM_THREADS": "1",
-            "OMP_DYNAMIC": "FALSE",
-        }
-    )
-    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}" if environment.get("LD_LIBRARY_PATH") else ""
-    )
-    return environment
-
-
 def _run_lammps(branch_dir: Path) -> float:
     lmp = Path(sys.prefix) / "bin" / "lmp"
     srun = shutil.which("srun")
@@ -430,7 +398,7 @@ def _run_lammps(branch_dir: Path) -> float:
         completed = subprocess.run(
             command,
             cwd=branch_dir,
-            env=_lammps_environment(),
+            env=lammps_environment(),
             stdout=stdout,
             stderr=subprocess.STDOUT,
             check=False,
@@ -446,7 +414,7 @@ def _run_lammps(branch_dir: Path) -> float:
 
 def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     branches = manifest.get("branches")
     index = int(task_index)
     if not isinstance(branches, list) or index < 0 or index >= len(branches):
@@ -455,7 +423,7 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
     branch_dir = root / str(branch["branch_dir"])
     outcome_path = branch_dir / "outcome.json"
     if outcome_path.is_file():
-        outcome = _load_json(outcome_path)
+        outcome = read_json_object(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(f"Existing compatibility outcome is not complete: {outcome_path}.")
         print(f"Compatibility branch {branch['branch_id']} is already complete.", flush=True)
@@ -492,9 +460,9 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
     )
     try:
         source_outcome_path = Path(str(branch["source_outcome_path"]))
-        if _sha256_file(source_outcome_path) != branch["source_outcome_sha256"]:
+        if file_hash(source_outcome_path) != branch["source_outcome_sha256"]:
             raise RuntimeError(f"Nested source outcome changed: {source_outcome_path}.")
-        source_outcome = _load_json(source_outcome_path)
+        source_outcome = read_json_object(source_outcome_path)
         original = ShootingBinaryTrajectory.load(Path(str(branch["source_binary_path"])))
         original.verify_checksums()
         segments = [original]
@@ -528,7 +496,7 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
                     f"columns={scan.atom_columns}, timesteps={scan.timesteps.tolist()}."
                 )
             continuation_source_size = text_path.stat().st_size
-            continuation_source_sha256 = _sha256_file(text_path)
+            continuation_source_sha256 = file_hash(text_path)
             continuation = convert_shooting_trajectory(
                 text_path,
                 branch_dir / "continuation_binary_float16",
@@ -658,7 +626,7 @@ def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
     """
 
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     if manifest.get("campaign_type") != CAMPAIGN_TYPE:
         raise ValueError(
             f"Unsupported compatibility campaign_type={manifest.get('campaign_type')!r}: "
@@ -671,7 +639,7 @@ def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
         branch_dir = root / str(branch["branch_dir"])
         outcome_path = branch_dir / "outcome.json"
         if outcome_path.is_file():
-            outcome = _load_json(outcome_path)
+            outcome = read_json_object(outcome_path)
             if outcome.get("state") != "complete":
                 raise RuntimeError(
                     f"Existing recovery outcome is not complete: {outcome_path}."
@@ -684,7 +652,7 @@ def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
                 f"cannot be handled by cleanup recovery: {branch['branch_id']}."
             )
         status_path = branch_dir / "status.json"
-        status = _load_json(status_path)
+        status = read_json_object(status_path)
         error = str(status.get("error", ""))
         if (
             status.get("state") != "failed"
@@ -699,9 +667,9 @@ def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
             )
 
         source_outcome_path = Path(str(branch["source_outcome_path"]))
-        if _sha256_file(source_outcome_path) != branch["source_outcome_sha256"]:
+        if file_hash(source_outcome_path) != branch["source_outcome_sha256"]:
             raise RuntimeError(f"Nested source outcome changed: {source_outcome_path}.")
-        source_outcome = _load_json(source_outcome_path)
+        source_outcome = read_json_object(source_outcome_path)
         target = branch_dir / "trajectory_binary_float16"
         composed = ShootingBinaryTrajectory.load(target)
         composed.verify_checksums()
@@ -797,7 +765,7 @@ def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
 
 def run_batch(campaign_root: str | Path, start_index: int, stop_index: int) -> None:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     branch_count = len(manifest["branches"])
     start = int(start_index)
     stop = int(stop_index)
@@ -874,7 +842,7 @@ def _active_submission_conflicts(root: Path) -> list[str]:
     path = root / "slurm" / "active_submission.json"
     if not path.is_file():
         return []
-    active = _load_json(path)
+    active = read_json_object(path)
     job_ids = [str(active["worker_job_id"]), str(active["successor_job_id"])]
     queued = subprocess.run(
         ["squeue", "-h", "-j", ",".join(job_ids), "-o", "%A"],
@@ -894,7 +862,7 @@ def _active_submission_conflicts(root: Path) -> list[str]:
 
 def submit_next_batch(campaign_root: str | Path, start_index: int) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     branch_count = len(manifest["branches"])
     start = int(start_index)
     if start < 0 or start >= branch_count:
@@ -973,7 +941,7 @@ def submit_next_batch(campaign_root: str | Path, start_index: int) -> dict[str, 
 
 def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
-    manifest = _load_json(root / "manifest.json")
+    manifest = read_json_object(root / "manifest.json")
     outcomes: list[dict[str, Any]] = []
     missing: list[str] = []
     for branch in manifest["branches"]:
@@ -981,10 +949,10 @@ def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
         if not outcome_path.is_file():
             missing.append(str(branch["branch_id"]))
             continue
-        outcome = _load_json(outcome_path)
+        outcome = read_json_object(outcome_path)
         if outcome.get("state") != "complete":
             raise RuntimeError(f"Compatibility outcome is not complete: {outcome_path}.")
-        if _sha256_file(Path(str(branch["source_outcome_path"]))) != branch[
+        if file_hash(Path(str(branch["source_outcome_path"]))) != branch[
             "source_outcome_sha256"
         ]:
             raise RuntimeError(

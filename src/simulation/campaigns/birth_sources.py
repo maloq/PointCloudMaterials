@@ -281,13 +281,13 @@ def prepare(config, name):
 
 
 def execute(directory, filename, stdout_name, ranks):
-    from .independent_meam_source import _lammps_environment
+    from src.simulation.runtime import lammps_environment
     command = ['srun', '--mpi=pmi2', '--nodes=1', f'--ntasks={ranks}',
                '--cpus-per-task=1', '--cpu-bind=cores', '--kill-on-bad-exit=1',
                str(Path(sys.prefix)/'bin/lmp'), '-in', filename]
     started = time.monotonic()
     with (directory/stdout_name).open('xb') as output:
-        process = subprocess.Popen(command, cwd=directory, env=_lammps_environment(),
+        process = subprocess.Popen(command, cwd=directory, env=lammps_environment(hide_gpus=True),
                                    stdin=subprocess.DEVNULL, stdout=output,
                                    stderr=subprocess.STDOUT, start_new_session=True)
         try:

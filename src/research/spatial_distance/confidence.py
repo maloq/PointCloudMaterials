@@ -5,7 +5,7 @@ from pathlib import Path
 
 import numpy as np
 
-from src.data.fixed_cohort.protocol import sha, write_json
+from src.experiment_runner.artifacts import file_hash as sha, write_json
 from src.experiment_runner.metric_docs import snapshot_metric_docs
 from src.research.local_predictability.metrics import source_weights
 from src.research.spatial_approach.evaluate import csv_rows

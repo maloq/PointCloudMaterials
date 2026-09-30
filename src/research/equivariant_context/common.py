@@ -1,10 +1,13 @@
 """Frozen configuration, data ancestry and implementation identity."""
 import json
+from functools import partial
 from pathlib import Path
 from src.project_runtime.paths import resolve_path
-from src.research.structural_state.common import sha, digest, write_json
+from src.experiment_runner.artifacts import file_hash as sha, json_digest, write_json
 from src.research.supervised_onset.tracking import require_online
 from .model import VARIANTS
+
+digest = partial(json_digest, allow_nan=True)
 
 
 class Study:
@@ -34,7 +37,7 @@ class Study:
             paths.extend((base/'src/research'/package).glob('*.py'))
         paths.extend((base/'src/data/fixed_cohort').glob('*.py'))
         paths.extend((base/'src/research/encoder_context').glob('*.py'))
-        paths.extend(base/p for p in ('src/models/encoders/spatial_mace.py','src/models/encoders/graph_bank.py',
+        paths.extend(base/p for p in ('src/experiment_runner/artifacts.py', 'src/models/encoders/spatial_mace.py','src/models/encoders/graph_bank.py',
             'src/models/encoders/mace_backend.py','src/research/structured_context/geometry.py',
             'src/research/local_predictability/metrics.py','src/research/structural_state/data.py',
             'src/training_methods/bcr/data.py','src/research/structural_state/common.py',

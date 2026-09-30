@@ -8,16 +8,16 @@ import shutil
 import numpy as np
 
 from src.data.fixed_cohort.protocol import sha, write_json
-from .dense_md import write_asset
 from .cluster_matching import build as build_matching
-from .comparison_layout import dataset_navigation
+from .comparison_layout import comparison_template, dataset_navigation
+from .viewer_payload import read_payload, write_asset, write_comparison
 
 
 def publish(source, publication):
     source = Path(source).resolve(); dest = Path(publication).resolve()
     template_path = Path(__file__).with_name('cluster_comparison.html')
     script_path = Path(__file__).with_name('cluster_comparison.js')
-    template = template_path.read_text().replace('__DATASET_NAV__', dataset_navigation('static'))
+    template = comparison_template(dataset_navigation('static'))
     matching, matching_root = build_matching(source)
     shutil.copytree(matching_root, dest.parent/matching_root.name, dirs_exist_ok=True)
     shutil.copy2(script_path, dest/'assets/cluster_comparison.js')
@@ -35,7 +35,7 @@ def publish(source, publication):
         if sha(data_path) != record['coordinate_sha256']:
             raise ValueError(f'Changed saved projection: {name}')
         page_path = source/'interactive'/f'{name}.html'
-        payload = json.loads(page_path.read_text().split('const D=', 1)[1].split(';\nconst palette', 1)[0])
+        payload = read_payload(page_path)
         with np.load(data_path) as data:
             ids = {k: data[k] for k in ('sample_row', 'frame', 'atom', 'grid_row')}
             y3 = data['pacmap3']
@@ -67,7 +67,7 @@ def publish(source, publication):
             asset='../projection-data/'+asset.name, key=name))
         pages[name] = (payload, population, kind, identity)
         bindings[name] = dict(coordinate_sha256=record['coordinate_sha256'],
-            original_html_sha256=sha(page_path), asset_sha256=sha(asset))
+            original_payload_sha256=sha(page_path.with_suffix('.json')), asset_sha256=sha(asset))
     for name, (payload, population, kind, identity) in pages.items():
         group = populations[population]
         if len(group['neural']) != 4 or len(group['descriptors']) != 4:
@@ -79,11 +79,8 @@ def publish(source, publication):
         payload['matching'] = matching
         payload.pop('y2'); payload.pop('y3')
         payload['title'] = 'Neural and non-neural 3D PaCMAP · '+population
-        encoded = json.dumps(payload, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c')
-        path = dest/'interactive'/f'{name}.html'; temporary = path.with_suffix('.html.building')
-        temporary.write_text(template.replace('__TITLE__', html.escape(payload['title'])).replace('__DATA__', encoded)
-                             .replace('__SCRIPT_HASH__', sha(script_path)[:16]).replace('__EXTENSION_HASH__', sha(Path(__file__).with_name('viewer_extensions.js'))[:16]))
-        temporary.replace(path); bindings[name]['published_html_sha256'] = sha(path)
+        path = dest/'interactive'/f'{name}.html'; write_comparison(path, template, payload)
+        bindings[name]['published_html_sha256'] = sha(path)
     path = dest/'index.html'
     rows = []
     for name, (payload, population, kind, identity) in pages.items():

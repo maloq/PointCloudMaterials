@@ -18,6 +18,7 @@ from omegaconf import DictConfig, OmegaConf
 matplotlib.use("Agg")
 
 from src.data.shooting import load_predictive_shooting_snapshot
+from src.utils.model_utils import resolve_device
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.predictive_atlas import (
     build_atlas_baseline_spaces,
@@ -51,17 +52,6 @@ from src.temporal_vamp.commands.common import (
     required,
     resolve_path,
 )
-
-
-def _resolve_device(raw: str) -> str:
-    requested = str(raw).strip().lower()
-    if requested == "auto":
-        return "cuda:0" if torch.cuda.is_available() else "cpu"
-    if requested.startswith("cuda") and not torch.cuda.is_available():
-        raise RuntimeError(
-            f"device={raw!r} requests CUDA, but torch.cuda.is_available() is false."
-        )
-    return str(raw)
 
 
 def _load_pretrained_backbones(path: Path) -> dict[int, dict[str, torch.Tensor]]:
@@ -221,7 +211,7 @@ def run(config_path: str | Path, *, stage: str) -> dict[str, Any]:
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "plots").mkdir(exist_ok=True)
     OmegaConf.save(cfg, output_dir / "resolved_config.yaml")
-    device = _resolve_device(str(required(cfg, "device")))
+    device = resolve_device(str(required(cfg, "device")))
     snapshot = load_predictive_shooting_snapshot(
         [resolve_path(value) for value in required(cfg, "data.campaign_roots")],
         temperatures_K=[

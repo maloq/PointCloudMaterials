@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import math
-import re
 import warnings
 from abc import ABC, abstractmethod
 from collections import Counter
@@ -12,11 +11,17 @@ from typing import Any, Sequence
 
 import numpy as np
 import torch
-from scipy.optimize import linear_sum_assignment
 from scipy.spatial import cKDTree
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
+
+from src.utils.evaluation_metrics import (
+    _hungarian_cluster_accuracy,
+    finite_float,
+    primary_kmeansplusplus_hungarian_key,
+    stabilize_class_metric_keys,
+)
 
 try:
     from scipy.special import sph_harm as _scipy_sph_harm
@@ -128,71 +133,6 @@ def _ensure_kmeans_plus_plus_method(methods: list[str]) -> list[str]:
     return out
 
 
-def _to_finite_float(value) -> float | None:
-    try:
-        out = float(value)
-    except (TypeError, ValueError):
-        return None
-    return out if np.isfinite(out) else None
-
-
-def _primary_kmeansplusplus_hungarian_key(
-    cluster_metrics: dict[str, float],
-    eval_k: int | None,
-) -> str | None:
-    preferred_keys: list[str] = ["ACC_KMEANS_PLUSPLUS_HUNGARIAN"]
-    if eval_k is not None:
-        preferred_keys.insert(0, f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{eval_k}")
-    for preferred in preferred_keys:
-        if preferred in cluster_metrics:
-            return preferred
-    for key in sorted(cluster_metrics.keys()):
-        upper = str(key).upper()
-        if not upper.startswith("ACC_"):
-            continue
-        if "KMEANS_PLUSPLUS" not in upper or "HUNGARIAN" not in upper:
-            continue
-        if upper.endswith(("_MEAN", "_STD", "_BEST", "_RUNS", "_MIN", "_MAX")):
-            continue
-        return key
-    return None
-
-
-_ACC_K_SUFFIX_RE = re.compile(r"^(ACC_[A-Z0-9_]+)_K\d+((?:_(?:MEAN|STD|BEST|RUNS|MIN|MAX))?)$")
-
-
-def _stabilize_class_metric_keys(
-    metrics: dict[str, float],
-    *,
-    hungarian_eval_k: int | None,
-) -> dict[str, float]:
-    stable: dict[str, float] = {}
-    for raw_name, raw_value in metrics.items():
-        upper_name = str(raw_name).upper()
-        match = _ACC_K_SUFFIX_RE.match(upper_name)
-        if match is not None:
-            stable_name = f"{match.group(1)}{match.group(2)}"
-        else:
-            stable_name = upper_name
-        if stable_name in stable:
-            raise ValueError(
-                "Metric name collision while removing class-count suffixes: "
-                f"{raw_name!r} collides with another metric at {stable_name!r}."
-            )
-        val = _to_finite_float(raw_value)
-        if val is None:
-            raise ValueError(
-                f"Metric {raw_name!r} has non-finite value {raw_value!r}; cannot log stable metrics."
-            )
-        stable[stable_name] = val
-
-    if hungarian_eval_k is not None:
-        if "HUNGARIAN_EVAL_K" in stable:
-            raise ValueError("Metric key collision: 'HUNGARIAN_EVAL_K' is already present.")
-        stable["HUNGARIAN_EVAL_K"] = float(int(hungarian_eval_k))
-    return stable
-
-
 def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
     if acc_eval_methods is None:
         raw_methods = ["kmeans++"]
@@ -253,21 +193,6 @@ def _acc_metric_prefix(method: str, k_eval: int) -> str:
     if method == "kmeans++":
         return f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{k_eval}"
     raise ValueError(f"Unsupported ACC evaluator method: {method}")
-
-
-def _hungarian_cluster_accuracy(labels: np.ndarray, assignments: np.ndarray) -> float:
-    labels = np.asarray(labels)
-    assignments = np.asarray(assignments)
-    if labels.shape != assignments.shape or labels.size == 0:
-        raise ValueError("labels and assignments must have identical non-empty shape")
-
-    label_vals, label_inv = np.unique(labels, return_inverse=True)
-    cluster_vals, cluster_inv = np.unique(assignments, return_inverse=True)
-    contingency = np.zeros((label_vals.size, cluster_vals.size), dtype=np.int64)
-    np.add.at(contingency, (label_inv, cluster_inv), 1)
-    row_ind, col_ind = linear_sum_assignment(contingency.max() - contingency)
-    correct = contingency[row_ind, col_ind].sum()
-    return float(correct / labels.size)
 
 
 def compute_cluster_metrics(
@@ -607,20 +532,20 @@ def compute_supervised_stage_metrics_from_features(
     ) or {}
 
     if stage_l == "test" and hungarian_eval_k is not None:
-        canonical_acc_key = _primary_kmeansplusplus_hungarian_key(metrics, int(hungarian_eval_k))
+        canonical_acc_key = primary_kmeansplusplus_hungarian_key(metrics, int(hungarian_eval_k))
         if canonical_acc_key is None:
             raise RuntimeError(
                 "Canonical test metrics are missing kmeans++ Hungarian ACC. "
                 f"Available keys: {sorted(metrics.keys())}."
             )
-        canonical_acc = _to_finite_float(metrics.get(canonical_acc_key))
+        canonical_acc = finite_float(metrics.get(canonical_acc_key))
         if canonical_acc is None:
             raise RuntimeError(
                 f"Canonical test metric {canonical_acc_key!r} is non-finite: {metrics.get(canonical_acc_key)!r}."
             )
         metrics["ACC_KMEANS_PLUSPLUS_HUNGARIAN_CANONICAL"] = canonical_acc
-        canonical_nmi = _to_finite_float(metrics.get("NMI"))
-        canonical_ari = _to_finite_float(metrics.get("ARI"))
+        canonical_nmi = finite_float(metrics.get("NMI"))
+        canonical_ari = finite_float(metrics.get("ARI"))
 
         if settings.enable_test_so3_metrics:
             if rotated_feature_fn is None:
@@ -650,15 +575,15 @@ def compute_supervised_stage_metrics_from_features(
                     acc_eval_runs_by_method={},
                     acc_random_seed=int(settings.test_so3_rotation_seed) + run_idx,
                 ) or {}
-                run_acc_key = _primary_kmeansplusplus_hungarian_key(run_metrics, int(hungarian_eval_k))
+                run_acc_key = primary_kmeansplusplus_hungarian_key(run_metrics, int(hungarian_eval_k))
                 if run_acc_key is None:
                     raise RuntimeError(
                         "Rotated test metrics are missing kmeans++ Hungarian ACC. "
                         f"run={run_idx}, available_keys={sorted(run_metrics.keys())}."
                     )
-                run_acc = _to_finite_float(run_metrics.get(run_acc_key))
-                run_nmi = _to_finite_float(run_metrics.get("NMI"))
-                run_ari = _to_finite_float(run_metrics.get("ARI"))
+                run_acc = finite_float(run_metrics.get(run_acc_key))
+                run_nmi = finite_float(run_metrics.get("NMI"))
+                run_ari = finite_float(run_metrics.get("ARI"))
                 if run_acc is None or run_nmi is None or run_ari is None:
                     raise RuntimeError(
                         "Rotated test metrics must contain finite ACC/NMI/ARI values. "
@@ -703,7 +628,7 @@ def compute_supervised_stage_metrics_from_features(
             if abs(float(canonical_acc)) > 1e-12:
                 metrics["SO3_VS_CANONICAL_ACC_RATIO"] = rotated_mean / float(canonical_acc)
 
-    return _stabilize_class_metric_keys(
+    return stabilize_class_metric_keys(
         metrics,
         hungarian_eval_k=hungarian_eval_k if stage_l in {"val", "test"} else None,
     )

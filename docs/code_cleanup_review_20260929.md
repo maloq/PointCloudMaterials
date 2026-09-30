@@ -312,3 +312,35 @@ outside this source review. Validate each source-changing slice with existing
 workflows and local disposable diagnostics, without adding automated tests or
 creating W&B diagnostic runs. Frozen source snapshots and existing research
 identities remain the authority for historical reproduction/resume.
+
+## Follow-up scan — 2026-09-30
+
+The scan after the analysis refactor covered 1,005 Python files and found 15
+groups of identical function bodies (at least eight lines and three statements,
+excluding docstrings). The subsequent cleanup reduces this to eight groups.
+Implemented changes and verification are recorded in
+[the implementation record](code_cleanup_implementation.md#repository-follow-up--2026-09-30).
+Earlier line references above describe the original review, not current locations.
+
+Remaining useful work is narrower than a blanket file split:
+
+- `src/simulation/atomistic/potential_benchmark.py`: `_melting_evidence` spans
+  1,384 lines, including a 587-line artifact verifier. Extract artifact evidence,
+  qualification decisions and reporting with explicit inputs/results; preserve
+  all thresholds, physical definitions and accepted-source rules.
+- `src/simulation/atomistic/config.py`: the 801-line `load_config` mixes parsing
+  and protocol-specific validation. Separate coherent configuration sections
+  without replacing strict failures with defaults.
+- `src/analysis/dynamic_motif.py` and the remaining temporal renderer in
+  `real_md_qualitative.py`: separate numerical tables from figure/view assembly.
+  Keep regular-time duration assumptions and declared populations unchanged.
+- `src/data/relaxed_targets/plan.py`: plan reuse checks configuration identity
+  without binding producer hashes. A future producer-identity revision should
+  make changed preprocessing invalidate reuse while preserving frozen releases.
+- Remaining duplicate bodies include durable sorted JSON writers, configuration
+  serializers, queue database connections and model forwards. They need a caller
+  audit: migration writers have intentional fsync/refusal policies, and identical
+  model method bodies do not establish interchangeable scientific treatments.
+
+Further cleanup should target these responsibilities rather than add wrapper
+layers or remove scientific controls merely to reduce line counts.

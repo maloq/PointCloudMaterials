@@ -13,7 +13,8 @@ import numpy as np
 REPOSITORY = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPOSITORY))
 from src.simulation.campaigns.predictive_dynamics_15ps import _render_uninterrupted_24ps_input
-from src.simulation.atomistic.lammps_shooting import _lammps_command, _lammps_environment
+from src.simulation.atomistic.lammps_shooting import _lammps_command
+from src.simulation.runtime import lammps_environment
 
 
 def read_probe(path):
@@ -121,7 +122,7 @@ thermo_modify format float %.16g flush yes
             (directory / 'in.lammps').write_text(script)
             with (directory / 'stdout.log').open('wb') as log:
                 subprocess.run(_lammps_command(mpi_ranks=24, launcher='srun_pmi2'),
-                               cwd=directory, env=_lammps_environment(), stdout=log,
+                               cwd=directory, env=lammps_environment(hide_gpus=True), stdout=log,
                                stderr=subprocess.STDOUT, check=True)
         reference = read_probe(root / 'uninterrupted/boundary.lammpstrj')
         comparisons = {name: compare(reference, read_probe(root / name / 'boundary.lammpstrj'))

@@ -1,5 +1,7 @@
 """Metrics used by the current supervised representation cache."""
 
+import re
+
 import numpy as np
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import cdist, pdist
@@ -10,12 +12,62 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from sklearn.model_selection import cross_val_score
 
 
+def finite_float(value) -> float | None:
+    try:
+        result = float(value)
+    except (TypeError, ValueError):
+        return None
+    return result if np.isfinite(result) else None
+
+
+def primary_kmeansplusplus_hungarian_key(
+    metrics: dict[str, float], eval_k: int | None
+) -> str | None:
+    key = "ACC_KMEANS_PLUSPLUS_HUNGARIAN"
+    if eval_k is not None:
+        key += f"_K{eval_k}"
+    return key if key in metrics else None
+
+
+_ACC_K_SUFFIX_RE = re.compile(r"^(ACC_[A-Z0-9_]+)_K\d+((?:_(?:MEAN|STD|BEST|RUNS|MIN|MAX))?)$")
+
+
+def stabilize_class_metric_keys(
+    metrics: dict[str, float], *, hungarian_eval_k: int | None
+) -> dict[str, float]:
+    stable: dict[str, float] = {}
+    for raw_name, raw_value in metrics.items():
+        name = str(raw_name).upper()
+        match = _ACC_K_SUFFIX_RE.match(name)
+        if match is not None:
+            name = f"{match.group(1)}{match.group(2)}"
+        if name in stable:
+            raise ValueError(
+                "Metric name collision while removing class-count suffixes: "
+                f"{raw_name!r} maps to {name!r}."
+            )
+        value = finite_float(raw_value)
+        if value is None:
+            raise ValueError(
+                f"Metric {raw_name!r} has non-finite value {raw_value!r}; "
+                "cannot log stable metrics."
+            )
+        stable[name] = value
+    if hungarian_eval_k is not None:
+        if "HUNGARIAN_EVAL_K" in stable:
+            raise ValueError("Metric key collision: 'HUNGARIAN_EVAL_K' is already present.")
+        stable["HUNGARIAN_EVAL_K"] = float(int(hungarian_eval_k))
+    return stable
+
+
 def random_rotation_matrix() -> np.ndarray:
     """Generate one random 3D rotation matrix."""
     return Rotation.random().as_matrix()
 
 
 def _hungarian_cluster_accuracy(labels: np.ndarray, assignments: np.ndarray) -> float:
+    labels = np.asarray(labels)
+    assignments = np.asarray(assignments)
     if labels.shape != assignments.shape or labels.size == 0:
         raise ValueError(
             "labels and assignments must have identical non-empty shape, "

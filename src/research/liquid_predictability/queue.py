@@ -5,8 +5,6 @@ import json
 import math
 import os
 from pathlib import Path
-import shlex
-import shutil
 import subprocess
 import sys
 import time
@@ -14,6 +12,7 @@ import traceback
 from src.data.fixed_cohort.protocol import sha,write_json
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.metric_docs import check_metric_docs
+from src.experiment_runner.execution import ExecutionBundle, SlurmQueue
 from .data import config,prepare_source,seal
 
 def environment(repo):
@@ -26,34 +25,29 @@ def launch(path):
     checked=config(tech/'preflight.json')
     if checked['config_sha256']!=sha(Path(path)) or not checked['finite_full_batch']:raise ValueError('Missing exact full-batch preflight')
     check_metric_docs(family='liquid_predictability')
-    repo=Path(__file__).resolve().parents[3];code=tech/'code'
-    shutil.copytree(repo/'src',code/'src',ignore=shutil.ignore_patterns('__pycache__','*.pyc'))
-    shutil.copytree(repo/'docs/metrics',code/'docs/metrics');write_json(code/'config.json',c)
-    env=environment(repo);allocation=os.environ['SLURM_JOB_ID'];receipt=dict(allocation=allocation,code=str(code),submitted_at=time.time(),jobs={},lanes={})
-    prefix=[sys.executable,'-u','-m','src.research.liquid_predictability.queue'];cfg=['--config',str(code/'config.json')]
-    def submit(name,stage,options,dependency=None):
-        script=tech/f'{name}.sbatch';cmd=prefix+[stage]+cfg
-        script.write_text('\n'.join(['#!/bin/bash',f'#SBATCH --job-name=LP-{name}','#SBATCH --nodes=1','#SBATCH --ntasks=1',
-            f'#SBATCH --output={tech}/{name}-%A_%a.log',*['#SBATCH '+o for o in options],'set -euo pipefail','ulimit -n 4096',
-            'cd '+shlex.quote(str(code)),'exec env '+shlex.join([f'{k}={v}' for k,v in env.items()])+' '+shlex.join(cmd),'']))
-        args=['sbatch','--parsable']+(['--dependency='+dependency] if dependency else [])+[str(script)]
-        job=subprocess.check_output(args,text=True).strip().split(';')[0];receipt['jobs'][name]=job;write_json(tech/'launch.json',receipt);return job
-    count=math.ceil(150/c['queue']['prepare_sources_per_task'])
-    prep=submit('prepare','prepare',['--partition=CPU','--cpus-per-task=2','--mem=12G','--time=04:00:00',f'--array=0-{count-1}%8'])
-    sealed=submit('seal','seal',['--partition=CPU','--cpus-per-task=2','--mem=16G','--time=00:30:00'],'afterok:'+prep)
-    cpu=submit('controls','cpu',['--partition=CPU','--cpus-per-task=4','--mem=24G','--time=08:00:00'],'afterok:'+sealed)
-    backup=submit('resume','worker',['--partition='+c['queue']['partition'],'--gpus=1','--cpus-per-task=6','--mem=48G',
-        '--time='+c['queue']['training_walltime'],'--array=0-1%2'],'afterany:'+allocation)
-    for lane in (0,1):
-        cmd=prefix+['worker']+cfg+['--lane',str(lane)]
-        receipt['lanes'][str(lane)]=dict(command=cmd,gpu=lane,continuation_job=f'{backup}_{lane}')
-    write_json(tech/'launch.json',receipt)
-    for lane in (0,1):
-        with (tech/f'lane-{lane}.log').open('ab') as stream:
-            p=subprocess.Popen(receipt['lanes'][str(lane)]['command'],cwd=code,env=dict(os.environ,**env,CUDA_VISIBLE_DEVICES=str(lane)),
-                stdin=subprocess.DEVNULL,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
-        receipt['lanes'][str(lane)]['pid']=p.pid
-    write_json(tech/'launch.json',receipt)
+    repo=Path(__file__).resolve().parents[3]
+    bundle=ExecutionBundle.freeze(repo,tech/'code',c,directories=('src','docs/metrics'))
+    env=environment(repo);allocation=os.environ['SLURM_JOB_ID']
+    receipt=dict(allocation=allocation,code=str(bundle.root),submitted_at=time.time(),jobs={},lanes={})
+    queue=SlurmQueue(tech,bundle,'src.research.liquid_predictability.queue',env,tech/'launch.json',receipt,'LP')
+    count=math.ceil(len(config(resolve_path(c['dataset']['root'])/'plan.json')['sources'])/c['queue']['prepare_sources_per_task'])
+    with queue.submission():
+        prep=queue.submit('prepare',['--cpus-per-task=2','--mem=12G','--time=04:00:00',f'--array=0-{count-1}%8'])
+        sealed=queue.submit('seal',['--cpus-per-task=2','--mem=16G','--time=00:30:00'],'afterok:'+prep)
+        queue.submit('controls',['--cpus-per-task=4','--mem=24G','--time=08:00:00'],'afterok:'+sealed,command_stage='cpu')
+        backup=queue.submit('resume',['--gpus=1','--cpus-per-task=6','--mem=48G',
+            '--time='+c['queue']['training_walltime'],'--array=0-1%2'],'afterany:'+allocation,
+            partition=c['queue']['partition'],command_stage='worker')
+        for lane in (0,1):
+            receipt['lanes'][str(lane)]=dict(command=queue.command('worker','--lane',str(lane)),
+                gpu=lane,continuation_job=f'{backup}_{lane}')
+        write_json(tech/'launch.json',receipt)
+        for lane in (0,1):
+            with (tech/f'lane-{lane}.log').open('ab') as stream:
+                p=subprocess.Popen(receipt['lanes'][str(lane)]['command'],cwd=bundle.root,env=dict(os.environ,**env,CUDA_VISIBLE_DEVICES=str(lane)),
+                    stdin=subprocess.DEVNULL,stdout=stream,stderr=subprocess.STDOUT,start_new_session=True)
+            receipt['lanes'][str(lane)]['pid']=p.pid
+            write_json(tech/'launch.json',receipt)
     return receipt
 
 def worker(path,lane):

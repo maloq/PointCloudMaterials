@@ -1,7 +1,7 @@
 """Expose existing scientific results in their original online runs; never create runs."""
 import json
 from src.project_runtime.paths import resolve_path
-from src.research.structural_state.common import write_json, sha
+from src.experiment_runner.artifacts import write_json, file_hash as sha
 from src.research.supervised_onset.tracking import final_fields, validation_fields, require_online
 
 

@@ -5,13 +5,13 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-import torch
 from omegaconf import DictConfig, OmegaConf
 
 from src.data.shooting import (
     load_shooting_campaign_snapshot,
     load_shooting_campaigns_snapshot,
 )
+from src.utils.model_utils import resolve_device
 from src.temporal_vamp.embeddings import load_frozen_encoder
 from src.temporal_vamp.shooting_embeddings import (
     ShootingEmbeddingCache,
@@ -37,17 +37,6 @@ def _required(cfg: Any, path: str) -> Any:
 def _resolve_path(value: str | Path) -> Path:
     path = Path(str(value)).expanduser()
     return (Path.cwd() / path).resolve() if not path.is_absolute() else path.resolve()
-
-
-def _resolve_device(raw: str) -> str:
-    requested = str(raw).strip().lower()
-    if requested == "auto":
-        return "cuda:0" if torch.cuda.is_available() else "cpu"
-    if requested.startswith("cuda") and not torch.cuda.is_available():
-        raise RuntimeError(
-            f"embedding.device={raw!r} requests CUDA, but torch.cuda.is_available() is false."
-        )
-    return str(raw)
 
 
 def run_shooting_predictor(
@@ -114,7 +103,7 @@ def run_shooting_predictor(
         )
     write_shooting_json(output_dir / "dataset_snapshot.json", snapshot.to_dict())
     OmegaConf.save(cfg, output_dir / "resolved_config.yaml")
-    device = _resolve_device(str(_required(cfg, "embedding.device")))
+    device = resolve_device(str(_required(cfg, "embedding.device")), field="embedding.device")
     embedding_path = output_dir / "embeddings"
     if resolved_stage in {"all", "extract"}:
         encoder = load_frozen_encoder(

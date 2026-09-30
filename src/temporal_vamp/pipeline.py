@@ -6,10 +6,10 @@ from pathlib import Path
 from typing import Any, Sequence
 
 import numpy as np
-import torch
 from omegaconf import DictConfig, OmegaConf
 
 from src.data.temporal import TemporalLAMMPSDumpDataset
+from src.utils.model_utils import resolve_device
 from src.temporal_vamp.data import (
     TemporalPairDataset,
     TrajectorySpec,
@@ -72,17 +72,6 @@ def _required(cfg: Any, path: str) -> Any:
 def _resolve_path(value: str | Path) -> Path:
     path = Path(str(value)).expanduser()
     return (Path.cwd() / path).resolve() if not path.is_absolute() else path.resolve()
-
-
-def _resolve_device(raw: str) -> str:
-    requested = str(raw).strip().lower()
-    if requested == "auto":
-        return "cuda:0" if torch.cuda.is_available() else "cpu"
-    if requested.startswith("cuda") and not torch.cuda.is_available():
-        raise RuntimeError(
-            f"embedding.device={raw!r} requests CUDA, but torch.cuda.is_available() is false."
-        )
-    return str(raw)
 
 
 def _resolve_trajectories(cfg: DictConfig) -> tuple[TrajectorySpec, ...]:
@@ -945,7 +934,7 @@ def run_temporal_vamp(config_path: str | Path, *, stage: str = "all") -> dict[st
     trajectories = _resolve_trajectories(cfg)
     lags = _resolve_lags(cfg, trajectories)
     checkpoint = _resolve_path(_required(cfg, "encoder.checkpoint"))
-    device = _resolve_device(str(_required(cfg, "embedding.device")))
+    device = resolve_device(str(_required(cfg, "embedding.device")), field="embedding.device")
     needs_encoder = resolved_stage in {"all", "extract"} or (
         resolved_stage == "evaluate" and bool(cfg.evaluation.sanity.enabled)
     )

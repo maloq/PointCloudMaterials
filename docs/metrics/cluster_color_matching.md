@@ -38,12 +38,19 @@ For any displayed contingency table T using the same ID orientation:
 
 The exported CSV records pooled and per-snapshot dense-grid overlap diagnostics.
 The browser's heatmap, IoU bars, matched fraction and ARI use only the currently
-displayed PaCMAP rows after frame/region filters (24,000 all-static or 8,834
-interface20 before filtering). These dynamic values are distinct from the
+displayed PaCMAP rows after frame filters (24,000 all-static). Earlier
+interface20 pages contained 8,834 observations; their numerical exports remain
+frozen. These dynamic values are distinct from the
 dense reference used to choose colors. The current shared frame slider changes
 both the PaCMAP subset and MD snapshot; the independent MD z slab does not change
 the projection subset. Neither control refits the mapping. Earlier published
 pages had independent frame controls; their numerical exports remain unchanged.
+
+Current publication refreshes archive the interface20 HTML and redirect its link
+to the full comparison. The interface highlight emphasizes centers within 12 Å
+without excluding other centers or changing correspondence statistics. Frame
+and source controls retain their row-selection behavior. Explicit JSON sidecars
+hold viewer data; rendering does not extract numerical inputs from HTML or JS.
 
 A large matched fraction may be dominated by large crystal/liquid clusters;
 the matrix and per-pair IoU expose splits and merges. Shared colors do not

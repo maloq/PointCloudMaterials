@@ -33,6 +33,7 @@ from src.data.trajectories.shooting import (
     convert_shooting_trajectory,
 )
 from src.data.temporal import TemporalLAMMPSDumpDataset
+from src.simulation.runtime import lammps_environment
 from src.simulation.atomistic.transition_analysis import (
     CRYSTALLINE_STRUCTURE_TYPES,
 )
@@ -1698,24 +1699,6 @@ def evaluate_monitor_frame(branch_dir: str | Path) -> dict[str, Any]:
     return state
 
 
-def _lammps_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    environment.update(
-        {
-            "MPIR_CVAR_CH4_NETMOD": "ofi",
-            "FI_PROVIDER": "tcp",
-            "OMP_NUM_THREADS": "1",
-            "OMP_DYNAMIC": "FALSE",
-        }
-    )
-    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}"
-        if environment.get("LD_LIBRARY_PATH")
-        else ""
-    )
-    return environment
-
-
 def _lammps_command(mpi_ranks: int) -> list[str]:
     if "SLURM_JOB_ID" not in os.environ:
         raise RuntimeError(
@@ -2009,7 +1992,7 @@ def run_nested_branch(
             completed = subprocess.run(
                 command,
                 cwd=branch_dir,
-                env=_lammps_environment(),
+                env=lammps_environment(),
                 stdout=stdout,
                 stderr=subprocess.STDOUT,
                 check=False,

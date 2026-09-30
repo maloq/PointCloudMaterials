@@ -1,7 +1,6 @@
 """Frozen encoder metric interventions on the completed expanded Al cohort."""
 import argparse
 import csv
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,6 +13,7 @@ from sklearn.linear_model import Ridge
 from sklearn.metrics import average_precision_score
 
 from src.project_runtime.paths import resolve_path
+from src.experiment_runner.artifacts import file_hash as sha, write_json
 from src.experiment_runner.metric_docs import snapshot_metric_docs
 from src.research.crystallization_information.data import event_bins
 from src.research.forecast_crystallization.local_metrics import first_sustained_onset
@@ -22,18 +22,6 @@ from .metrics import participation, fit_transform, fit_physical_metric, neighbor
 ORDER_NAMES = ['q4', 'q6', 'w4', 'w6', 'qbar6', 'coherence', 'density_r12', 'coordination']
 DETAIL = [0, 2, 3, 4, 5]
 MODES = ['raw', 'standardized', 'whitened', 'physical_metric']
-
-
-def sha(path):
-    h = hashlib.sha256()
-    with Path(path).open('rb') as f:
-        for block in iter(lambda: f.read(1024*1024), b''): h.update(block)
-    return h.hexdigest()
-
-
-def write_json(path, value):
-    path = Path(path); path.parent.mkdir(parents=True, exist_ok=True)
-    temp = path.with_suffix('.tmp'); temp.write_text(json.dumps(value, indent=2, allow_nan=False)+'\n'); temp.replace(path)
 
 
 def table(path, rows):

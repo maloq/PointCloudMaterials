@@ -37,10 +37,8 @@ from src.data.trajectories.shooting import (  # noqa: E402
     convert_shooting_trajectory,
 )
 from src.data.shooting import validate_complete_shooting_branch  # noqa: E402
-from src.simulation.atomistic.lammps_shooting import (  # noqa: E402
-    _lammps_command,
-    _lammps_environment,
-)
+from src.simulation.atomistic.lammps_shooting import _lammps_command  # noqa: E402
+from src.simulation.runtime import lammps_environment  # noqa: E402
 from src.data.temporal import TemporalLAMMPSDumpDataset  # noqa: E402
 
 
@@ -665,7 +663,7 @@ def _run_extension(
             completed = subprocess.run(
                 command,
                 cwd=extension_dir,
-                env=_lammps_environment(),
+                env=lammps_environment(hide_gpus=True),
                 stdout=stdout,
                 stderr=subprocess.STDOUT,
                 check=False,
@@ -849,7 +847,7 @@ def continuation_smoke(root: Path, branch_index: int) -> dict[str, Any]:
             completed = subprocess.run(
                 command,
                 cwd=comparison_dir,
-                env=_lammps_environment(),
+                env=lammps_environment(hide_gpus=True),
                 stdout=stdout,
                 stderr=subprocess.STDOUT,
                 check=False,

@@ -17,6 +17,7 @@ from src.data.fixed_cohort.protocol import centered, sha, write_json
 from src.research.crystallization_origin.extract import raw_source, frame_geometry
 from src.research.crystal_vector.interface import interface_mask
 from src.research.spatial_vicreg_bias.data import descriptors
+from .viewer_payload import write_asset
 
 
 def read(config):
@@ -30,13 +31,6 @@ def read(config):
         if not Path(value).is_absolute():
             raise ValueError('Use the resolved dense MD submission config')
     return c, pc, corr, parent
-
-
-def write_asset(path, key, data, variable='MD_SNAPSHOTS'):
-    encoded = json.dumps(data, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c')
-    temporary = path.with_suffix('.building.js')
-    temporary.write_text(f'window.{variable}=window.{variable}||{{}};window.{variable}[{json.dumps(key)}]={encoded};\n')
-    temporary.replace(path)
 
 
 def block(folder, start, stop):

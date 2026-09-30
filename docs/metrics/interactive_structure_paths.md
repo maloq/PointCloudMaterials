@@ -99,3 +99,9 @@ and guide positions. Lossless compact display assets restore the original
 float32 values as ordinary JavaScript numbers; no quantization or rescaling is
 introduced. Off-screen rendering and bounded browser caches affect when assets
 are drawn, not the sample selection or scientific calculations.
+
+Publication stages now read schema-tagged JSON sidecars for pages and lazy assets.
+The browser JS and compact binary encodings remain display outputs; later Python
+stages do not parse them to recover scientific inputs. The shared payload/template
+writer preserves sample IDs, vectors and graph data. Comparison highlighting
+does not change the path graph, endpoint population or correspondence counts.

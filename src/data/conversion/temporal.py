@@ -18,6 +18,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import file_hash, read_json_object  # noqa: E402
 from src.data.trajectories.lammps import (  # noqa: E402
     FORMAT_NAME,
     TemporalLAMMPSBinaryTrajectory,
@@ -36,18 +37,6 @@ _REPORT_FILENAME = "binary_migration_float32.json"
 
 def _utc_now() -> str:
     return datetime.now(timezone.utc).isoformat()
-
-
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in {path}, got {type(value).__name__}."
-        )
-    return value
 
 
 def _write_json_atomic(path: Path, value: dict[str, Any]) -> None:
@@ -70,17 +59,6 @@ def _fsync_directory(path: Path) -> None:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        while True:
-            block = handle.read(16 * 1024 * 1024)
-            if not block:
-                break
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -165,7 +143,7 @@ def _load_unarchived_prefix_positions(
 
 
 def _completed_replicas(campaign_root: Path) -> tuple[Path, ...]:
-    status = _load_json(campaign_root / "status.json")
+    status = read_json_object(campaign_root / "status.json")
     if status.get("state") != "complete":
         raise RuntimeError(
             "Refusing to migrate a non-complete campaign:"
@@ -193,7 +171,7 @@ def _load_verified_coordinate_archive(
     replica_dir: Path,
 ) -> tuple[Path, str, np.ndarray, np.ndarray, np.ndarray]:
     analysis_path = replica_dir / "analysis.json"
-    analysis = _load_json(analysis_path)
+    analysis = read_json_object(analysis_path)
     artifact_hashes = analysis.get("artifacts_sha256")
     if not isinstance(artifact_hashes, dict):
         raise TypeError(
@@ -210,7 +188,7 @@ def _load_verified_coordinate_archive(
             f" {analysis_path}"
         )
     archive_path = replica_dir / "trajectory.npz"
-    observed_archive_sha256 = _sha256_file(archive_path)
+    observed_archive_sha256 = file_hash(archive_path)
     if observed_archive_sha256 != expected_archive_sha256:
         raise RuntimeError(
             f"Coordinate archive checksum mismatch: path={archive_path},"
@@ -365,7 +343,7 @@ def _record_analysis_artifact(
     replica_dir: Path, report: dict[str, Any]
 ) -> None:
     analysis_path = replica_dir / "analysis.json"
-    analysis = _load_json(analysis_path)
+    analysis = read_json_object(analysis_path)
     analysis["trajectory_binary_artifact"] = report
     _write_json_atomic(analysis_path, analysis)
 
@@ -391,7 +369,7 @@ def convert_replica(
                     "Residual text source size changed after migration:"
                     f" {source}"
                 )
-            if _sha256_file(source) != str(source_record["sha256"]):
+            if file_hash(source) != str(source_record["sha256"]):
                 raise RuntimeError(
                     "Residual text source checksum changed after migration:"
                     f" {source}"
@@ -434,7 +412,7 @@ def convert_replica(
         )
     )
     source_stat = source.stat()
-    source_sha256 = _sha256_file(source)
+    source_sha256 = file_hash(source)
     source_record = {
         "path": str(source),
         "size_bytes": int(source_stat.st_size),

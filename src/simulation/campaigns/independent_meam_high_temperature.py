@@ -17,6 +17,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import file_hash
 from src.simulation.campaigns import independent_meam_source as source
 
 
@@ -49,7 +50,7 @@ def prepare(root: Path) -> dict[str, object]:
     manifest["production_parent_selection_from_future_outcomes"] = False
     source._write_json_atomic(root / "manifest.json", manifest)
     (root / "manifest.sha256").write_text(
-        source._sha256_file(root / "manifest.json") + "  manifest.json\n", encoding="ascii"
+        file_hash(root / "manifest.json") + "  manifest.json\n", encoding="ascii"
     )
     original_runner = Path(source.__file__).resolve()
     this_runner = Path(__file__).resolve()
@@ -74,7 +75,7 @@ def _verify_manifest(root: Path) -> None:
     if not checksum_path.is_file():
         raise FileNotFoundError(f"Immutable source-manifest checksum is missing: {checksum_path}.")
     expected = checksum_path.read_text(encoding="ascii").split()[0]
-    observed = source._sha256_file(root / "manifest.json")
+    observed = file_hash(root / "manifest.json")
     if observed != expected:
         raise RuntimeError(
             f"Immutable high-temperature source manifest changed: expected={expected}, "

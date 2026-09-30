@@ -24,6 +24,7 @@ from src.project_runtime.paths import resolve_path
 from src.research.equivariant_context.cache import RetainedCache
 from src.research.structural_state.common import sha, digest, write_json
 from .correspondence import configuration, observations, references
+from .viewer_payload import write_page
 
 
 def settings(config):
@@ -96,8 +97,7 @@ def interactive(y2,y3,a,ref,fields,title,path):
                  distance=list_values(ref['distance']),solid=list_values(ref['solid']),
                  region=list_values(fields['Physical region']),fields={k:list_values(v) for k,v in fields.items()})
     template=Path(__file__).with_name('pacmap_view.html').read_text()
-    encoded=json.dumps(payload,separators=(',',':'),allow_nan=False).replace('<','\\u003c')
-    path.write_text(template.replace('__TITLE__',html.escape(title)).replace('__DATA__',encoded))
+    write_page(path, template, payload)
 
 
 def gallery(c):
@@ -160,7 +160,7 @@ def projection(c,a,ref,labels,x,own,own_title,title,name,bindings):
         label=title+' / '+population
         static_plot(coords[2],fields,label,out/'plots'/f'{stem}.png')
         interactive(coords[2],coords[3],aa,rr,fields,label,out/'interactive'/f'{stem}.html')
-        for part,suffix in (('plots','png'),('interactive','html')):
+        for part,suffix in (('plots','png'),('interactive','html'),('interactive','json')):
             shutil.copy2(out/part/f'{stem}.{suffix}',dest/part/f'{stem}.{suffix}')
         r=dict(name=stem,title=label,rows=len(ids),dimensions=[2,3],features=x.shape[1],
                pacmap_params=params,packages={p:version(p) for p in ('pacmap','faiss-cpu','numpy','numba','plotly','torch')},
@@ -324,7 +324,7 @@ def submit(config):
         for receipt in sorted((previous/'technical/views').glob('descriptors-*.json')):
             r=json.loads(receipt.read_text());name=r['name']
             if sha(previous/'data'/f'{name}.npz')!=r['coordinate_sha256']:raise ValueError('Changed inherited descriptor projection')
-            for relative in (f'technical/views/{name}.json',f'data/{name}.npz',f'plots/{name}.png',f'interactive/{name}.html'):
+            for relative in (f'technical/views/{name}.json',f'data/{name}.npz',f'plots/{name}.png',f'interactive/{name}.html',f'interactive/{name}.json'):
                 dest=Path(c['output'])/relative;dest.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(previous/relative,dest)
                 inheritance[relative]=dict(source=str(previous/relative),sha256=sha(dest))
         write_json(tech/'inherited-projections.json',inheritance)

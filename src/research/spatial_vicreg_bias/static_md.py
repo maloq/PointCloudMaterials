@@ -20,7 +20,8 @@ from sklearn.cluster._kmeans import _labels_inertia_threadpool_limit
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.project_runtime.paths import resolve_path
 from src.research.crystal_vector.interface import interface_mask
-from .dense_md import block, write_asset
+from .dense_md import block
+from .viewer_payload import md_template, write_asset, write_page
 
 FAMILIES = {'tda': 'TDA clusters', 'bond_order': 'Bond-order clusters',
             'cna': 'CNA clusters', 'joint': 'Joint descriptor clusters'}
@@ -300,9 +301,7 @@ def publish(config):
     signed[~np.isfinite(sample['distance'])] = np.nan
     fields.update({'PTM type': sample['ptm'], 'Physical region': sample['region'],
                    'Input crystal fraction': sample['support_fraction'], 'Interface distance (Å, clipped ±20)': signed})
-    rows = []; template = Path(__file__).with_name('pacmap_md_view.html').read_text()
-    template = template.replace('same full snapshot', 'same dense static grid').replace('Dense MD comparison · full snapshot', 'Dense MD comparison · static grid')
-    template = template.replace('MD uses actual periodic-cell coordinates', 'MD uses actual nonperiodic source coordinates; the outline shows coordinate bounds, not a periodic cell. Each grid center uses the full-source neighbor context')
+    rows = []; template = md_template(static=True)
     for receipt in sorted((out/'technical/views').glob('*.json')):
         r = json.loads(receipt.read_text()); name = r['name']; path = out/'data'/f'{name}.npz'
         if sha(path) != r['coordinate_sha256']: raise ValueError('Changed projection data')
@@ -318,8 +317,7 @@ def publish(config):
         payload = dict(title=title, y2=np.round(y2, 6).tolist(), y3=np.round(y3, 6).tolist(),
             **{k: list_values(sample[k][ids]) for k in ('source', 'frame', 'atom', 'distance', 'solid', 'region')},
             fields={k: list_values(v) for k, v in selected.items()}, md=md)
-        encoded = json.dumps(payload, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c')
-        (out/'interactive'/f'{name}.html').write_text(template.replace('__TITLE__', html.escape(title)).replace('__DATA__', encoded))
+        write_page(out/'interactive'/f'{name}.html', template, payload)
         rows.append(f'<tr><td>{html.escape(title)}</td><td>{len(ids):,}</td><td><a href="plots/{name}.png">2D panels</a></td><td><a href="interactive/{name}.html">2D / 3D PaCMAP + two MD views</a></td></tr>')
     write_json(out/'technical/metrics.json', metrics)
     write_metric_table(metrics, out, family='static_interface')
@@ -354,6 +352,8 @@ def submit(config):
     shutil.copytree(original, code, ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
     repo = Path(__file__).resolve().parents[3]
     for relative in ('src/research/spatial_vicreg_bias/static_md.py', 'src/research/spatial_vicreg_bias/dense_md.py',
+                     'src/research/spatial_vicreg_bias/viewer_payload.py',
+                     'src/data/fixed_cohort/protocol.py', 'src/experiment_runner/artifacts.py',
                      'src/research/spatial_vicreg_bias/pacmap_md_view.html', 'src/experiment_runner/metric_docs.py'):
         shutil.copy2(repo/relative, code/relative)
     shutil.copytree(repo/'docs/metrics', code/'docs/metrics', dirs_exist_ok=True)

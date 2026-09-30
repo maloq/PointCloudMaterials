@@ -10,13 +10,12 @@ import matplotlib.colors as mcolors
 
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.analysis.representative_style import radial_colors, sparse_geometry
-from .dense_md import write_asset
+from .viewer_payload import read_payload, write_asset
 
 
 def export(source, publication, dataset, snapshot_key=None):
     source = Path(source).resolve(); dest = Path(publication).resolve()
-    page = dest/'index.html'
-    payload = json.loads(page.read_text().split('const D=', 1)[1].split(';\nconst palette', 1)[0])
+    payload = read_payload(dest/'index.html')
     if dataset == 'matched':
         payload['md']['snapshots'] = json.loads((source/'technical/manifest.json').read_text())['snapshots']
     if snapshot_key is not None:

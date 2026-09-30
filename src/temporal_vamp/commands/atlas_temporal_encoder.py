@@ -91,42 +91,6 @@ def _assert_aligned(
             )
 
 
-def _checkpoint_payload(
-    fitted: FittedPredictiveAtlas,
-    *,
-    history_spec: dict[str, Any],
-) -> dict[str, Any]:
-    model = fitted.model
-    return {
-        "state_dict": model.state_dict(),
-        "model": {
-            "embedding_dim": model.embedding_dim,
-            "descriptor_dim": model.descriptor_dim,
-            "conditioning_dim": model.conditioning_dim,
-            "hidden_dim": model.hidden_dim,
-            "heads": model.heads,
-            "blocks": model.block_count,
-            "rbf_dim": model.rbf_dim,
-            "maximum_radius": model.maximum_radius,
-            "latent_dim": model.latent_dim,
-            "decoder_hidden_dim": model.decoder_hidden_dim,
-            "target_dim": model.target_dim,
-            "dropout": model.dropout,
-            "history_lag_count": model.history_lag_count,
-        },
-        "seed": fitted.seed,
-        "embedding_mean": fitted.embedding_mean,
-        "embedding_scale": fitted.embedding_scale,
-        "descriptor_mean": fitted.descriptor_mean,
-        "descriptor_scale": fitted.descriptor_scale,
-        "conditioning_mean": fitted.conditioning_mean,
-        "conditioning_scale": fitted.conditioning_scale,
-        "history_delta_mean": fitted.history_delta_mean,
-        "history_delta_scale": fitted.history_delta_scale,
-        "history_spec": history_spec,
-    }
-
-
 def _plot_training(fitted: FittedPredictiveAtlas, path: Path) -> None:
     figure, axes = plt.subplots(1, 2, figsize=(10, 4))
     for seed, history in sorted(fitted.histories.items()):
@@ -243,7 +207,7 @@ def run(config_path: str | Path) -> dict[str, Any]:
         initial_model_state=initial_payload["state_dict"],
     )
     torch.save(
-        _checkpoint_payload(fitted, history_spec=history.manifest["spec"]),
+        fitted.checkpoint_payload(history_spec=history.manifest["spec"]),
         output_dir / "model.pt",
     )
 

@@ -1,20 +1,13 @@
 """Publish independent dense MD panels beside unchanged saved PaCMAP layouts."""
 import argparse
-import hashlib
 import html
 import json
 from pathlib import Path
 import re
 import shutil
 import numpy as np
-
-
-def sha(path):
-    value = hashlib.sha256()
-    with Path(path).open('rb') as stream:
-        for block in iter(lambda: stream.read(1024*1024), b''):
-            value.update(block)
-    return value.hexdigest()
+from src.data.fixed_cohort.protocol import sha
+from .viewer_payload import md_template, read_payload, write_page
 
 
 def publish(config, dense_config):
@@ -39,7 +32,7 @@ def publish(config, dense_config):
             models.append(dict(id=identity,title=title,representation=rep,snapshots=records))
             assignment=Path(parent['output'])/run/'analyses'/f'epoch-{epoch:02d}'/'data'/f'{rep}-k7-assignments.npz'
             with np.load(assignment) as z:neural_fields[identity]=(title,z['cluster'])
-    template_path=Path(__file__).with_name('pacmap_md_view.html'); template=template_path.read_text()
+    template_path=Path(__file__).with_name('pacmap_md_view.html'); template=md_template()
     # Keep previously published completed views while the GPU sweep grows.
     roots=[Path(c['inherit_descriptors_from']),out] if 'inherit_descriptors_from' in c else [out]
     views={}
@@ -56,7 +49,7 @@ def publish(config, dense_config):
         r=json.loads(receipt.read_text()); data_path=root/'data'/f'{name}.npz'
         if sha(data_path)!=r['coordinate_sha256']:raise ValueError(f'Changed projection data: {name}')
         page_path=root/'interactive'/f'{name}.html'
-        payload=json.loads(page_path.read_text().split('const D=',1)[1].split(';\nconst palette',1)[0])
+        payload=read_payload(page_path)
         with np.load(data_path) as z:
             ids=z['original_row']
             for key in ('source','frame','atom'):
@@ -69,13 +62,10 @@ def publish(config, dense_config):
         for title, labels in neural_fields.values():
             payload['fields'][title]=labels[ids].tolist()
         payload['md']=dict(snapshots=snapshots,models=models,default_model=own)
-        encoded=json.dumps(payload,separators=(',',':'),allow_nan=False).replace('<','\\u003c')
-        rendered=template.replace('__TITLE__',html.escape(payload['title'])).replace('__DATA__',encoded)
-        target=dest/'interactive'/f'{name}.html'; temporary=target.with_suffix('.html.building')
-        temporary.write_text(rendered);temporary.replace(target)
+        target=dest/'interactive'/f'{name}.html'; write_page(target, template, payload)
         shutil.copy2(root/'plots'/f'{name}.png',dest/'plots'/f'{name}.png')
         shutil.copy2(receipt,dest/'technical/views'/receipt.name)
-        records[name]=dict(source_html_sha256=sha(page_path),published_html_sha256=sha(target),projection_sha256=r['coordinate_sha256'],rows=len(ids),dense_snapshots=len(snapshots),default_neural_model=own)
+        records[name]=dict(source_payload_sha256=sha(page_path.with_suffix('.json')),published_html_sha256=sha(target),projection_sha256=r['coordinate_sha256'],rows=len(ids),dense_snapshots=len(snapshots),default_neural_model=own)
         rows.append(f'<tr><td>{html.escape(r["title"])}</td><td>{len(ids):,}</td><td><a href="plots/{name}.png">2D panels</a></td><td><a href="interactive/{name}.html">PaCMAP + two dense MD views</a></td></tr>')
     page=('<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
           '<title>PaCMAP and dense MD gallery</title><style>body{font:16px system-ui;margin:32px;max-width:1400px}table{border-collapse:collapse;width:100%}td,th{text-align:left;padding:9px;border-bottom:1px solid #ddd}a{color:#145bc0}</style>'
@@ -87,7 +77,7 @@ def publish(config, dense_config):
         f'{len(rows)} completed views, {len(snapshots)} full dense snapshots. Two independent MD panels compare neural and classical descriptor clusters with matching PaCMAP palettes. No cross-panel atom selection. Dense assignments use frozen models; existing projections are unchanged.\n')
     rendering=dict(kind='dense MD display',atom_linkage=False,cluster_colors_preserved=True,source=str(out),dense_source=str(dense),implementation_sha256=sha(__file__),template_sha256=sha(template_path),views=records)
     (dest/'technical/rendering/md-space.json').write_text(json.dumps(rendering,indent=2)+'\n')
-    publication=dict(mode='real copies plus recorded dense MD rendering',source=str(out),complete=(out/'technical/complete.json').exists(),rendering='rendering/md-space.json',files={str(p.relative_to(dest)):sha(p) for p in [dest/'index.html',dest/'README.md',*(dest/'interactive'/f'{n}.html' for n in records)]})
+    publication=dict(mode='real copies plus recorded dense MD rendering',source=str(out),complete=(out/'technical/complete.json').exists(),rendering='rendering/md-space.json',files={str(p.relative_to(dest)):sha(p) for p in [dest/'index.html',dest/'README.md',*(dest/'interactive'/f'{n}.{suffix}' for n in records for suffix in ('html','json'))]})
     (dest/'technical/publication.json').write_text(json.dumps(publication,indent=2)+'\n')
     print(f'Published {len(records)} pages with independent dense MD views: {dest}',flush=True)
 

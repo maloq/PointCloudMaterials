@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from sklearn.metrics import average_precision_score
 from src.research.local_predictability.metrics import source_weights
-from src.research.structural_state.common import write_json,sha
+from src.experiment_runner.artifacts import write_json, file_hash as sha
 from src.experiment_runner.metric_docs import write_metric_table
 
 

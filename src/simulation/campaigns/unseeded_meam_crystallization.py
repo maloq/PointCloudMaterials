@@ -34,6 +34,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.simulation.runtime import lammps_environment  # noqa: E402
 from src.analysis.plots.plot_homogeneous_checkpoint import _plot_dashboard  # noqa: E402
 from src.simulation.campaigns.common import (  # noqa: E402
     EXPECTED_ATOM_COUNT,
@@ -214,24 +215,6 @@ def _write_status(settings: Settings, state: str, **details: object) -> None:
     )
 
 
-def _lammps_environment() -> dict[str, str]:
-    environment = os.environ.copy()
-    environment.update(
-        {
-            "MPIR_CVAR_CH4_NETMOD": "ofi",
-            "FI_PROVIDER": "tcp",
-            "OMP_NUM_THREADS": "1",
-            "OMP_DYNAMIC": "FALSE",
-        }
-    )
-    environment["LD_LIBRARY_PATH"] = str(Path(sys.prefix) / "lib") + (
-        f":{environment['LD_LIBRARY_PATH']}"
-        if environment.get("LD_LIBRARY_PATH")
-        else ""
-    )
-    return environment
-
-
 def _lammps_command(settings: Settings, input_name: str) -> list[str]:
     lmp = Path(sys.prefix) / "bin" / "lmp"
     if not lmp.is_file():
@@ -280,7 +263,7 @@ def _run_lammps(settings: Settings, directory: Path, input_name: str) -> float:
         completed = subprocess.run(
             _lammps_command(settings, input_name),
             cwd=directory,
-            env=_lammps_environment(),
+            env=lammps_environment(),
             stdout=stdout,
             stderr=subprocess.STDOUT,
             check=False,

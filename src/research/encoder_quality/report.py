@@ -5,7 +5,7 @@ import html
 import json
 from pathlib import Path
 import numpy as np
-from src.research.structural_state.common import write_json
+from src.experiment_runner.artifacts import write_json
 from src.experiment_runner.metric_docs import snapshot_metric_docs
 from .common import load
 

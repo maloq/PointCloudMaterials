@@ -6,6 +6,7 @@ from pathlib import Path
 import shutil
 
 from src.data.fixed_cohort.protocol import sha, write_json
+from .viewer_payload import fill_template, read_payload, write_comparison
 
 
 def dataset_navigation(selected):
@@ -30,24 +31,58 @@ def dataset_navigation(selected):
     return '<nav class="controls"><label>Data <select id="dataset" onchange="location.href=this.value">'+options+'</select></label>'+model+'</nav>'
 
 
+def comparison_template(navigation, **controls):
+    slots = dict(DATASET_NAV=navigation, HEADLINE='Neural ↔ descriptor clusters', EXTRA_CONTROLS='', HEADER_NOTE='',
+        NEURAL_CONTROLS='<label>Neural <select id="nnSpace"></select></label>',
+        FRAME_CONTROLS='<label>Frame <select id="frame"><option value="all">All snapshots</option></select></label>',
+        METHODS=Path(__file__).with_name('cluster_comparison_methods.html').read_text().rstrip())
+    return fill_template(Path(__file__).with_name('cluster_comparison.html').read_text(), **(slots | controls))
+
+
+def population_controls(frame_label='All frames'):
+    return ('<label>Source <select id="source"><option value="all">All sources</option></select></label>'
+        '<label>Frame <select id="frame"><option value="all">'+frame_label+'</option></select></label>')
+
+
 def refresh(publication, dataset, dense_source=None):
     dest = Path(publication).resolve()
-    if dataset == 'matched':
+    primary = dest/'interactive'/('comparison-all_test.html' if dataset == 'matched' else 'comparison-all_static.html')
+    if dataset == 'static' and not primary.exists():
+        primary = dest/'interactive/S1-seed17-epoch24-encoder-all_static.html'
+    frozen = read_payload(primary).get('frozen_model')
+    if frozen:
+        from .mace_checkpoint import read
+        from .mace_publication import template as mace_template
+        c, _ = read(Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_interface_20260929.json')
+        if c['model']['id'] != frozen['id']:
+            raise ValueError('Viewer checkpoint differs from its frozen recipe')
+        template = mace_template(c, dataset)
+        pages = sorted((dest/'interactive').glob('comparison-*.html'))
+        default = 'comparison-all_test.html' if dataset == 'matched' else 'comparison-all_static.html'
+    elif dataset == 'matched':
         from .checkpoint_explorer import explorer_template
         template = explorer_template()
         pages = sorted((dest/'interactive').glob('comparison-*.html'))
         default = 'comparison-all_test.html'
     else:
-        template = Path(__file__).with_name('cluster_comparison.html').read_text().replace('__DATASET_NAV__', dataset_navigation('static'))
+        template = comparison_template(dataset_navigation('static'))
         pages = sorted((dest/'interactive').glob('*.html'))
         default = 'S1-seed17-epoch24-encoder-all_static.html'
     if not pages: raise ValueError(f'No saved comparison pages: {dest}')
     script = Path(__file__).with_name('cluster_comparison.js')
     records = {}
     for page in pages:
-        original = page.read_text()
-        payload_text = original.split('const D=', 1)[1].split(';\nconst palette', 1)[0]
-        payload = json.loads(payload_text)
+        if 'interface20' in page.stem:
+            archive = dest/'technical/rendering/history'/('retired-'+sha(page)+'.html')
+            archive.parent.mkdir(parents=True, exist_ok=True)
+            if not archive.exists(): shutil.copy2(page, archive)
+            full = page.name.replace('interface20', 'all_test' if dataset == 'matched' else 'all_static')
+            page.write_text('<!doctype html><meta charset="utf-8"><title>Cluster comparison</title>'
+                '<script>location.replace('+json.dumps(full)+'+location.search)</script>'
+                '<a href="'+html.escape(full)+'">Open the full comparison</a>')
+            records[page.name] = dict(retired_interface_view=True, full_view=full)
+            continue
+        payload = read_payload(page)
         if 'paired' not in payload or 'matching' not in payload: raise ValueError(f'Not a paired comparison: {page}')
         if dense_source is not None:
             if dataset != 'matched': raise ValueError('Dense timeline override applies to held-out MD')
@@ -73,17 +108,20 @@ def refresh(publication, dataset, dense_source=None):
         for kind,field in [('sample','samples'),('travel','travel')]:
             compact=dest/(kind+'-compact')/'manifest.json'
             if compact.exists():payload[field]=json.loads(compact.read_text())
-        payload_text = json.dumps(payload, separators=(',', ':'), allow_nan=False).replace('<', '\\u003c')
-        rendered = template.replace('__TITLE__', html.escape(payload.get('title', 'GeoFormer versus descriptors'))).replace(
-            '__DATA__', payload_text).replace('__SCRIPT_HASH__', sha(script)[:16]).replace('__EXTENSION_HASH__', sha(Path(__file__).with_name('viewer_extensions.js'))[:16])
+        general = dest/'technical/general-descriptors.json'
+        if general.exists():
+            from .general_descriptors import apply_overlay
+            apply_overlay(payload, json.loads(general.read_text()))
+        title = payload.get('title', 'GeoFormer versus descriptors')
         if page == dest/'interactive'/default:
             index = dest/'index.html'; archive = dest/'technical/rendering/history'/('index-'+sha(index)+'.html')
             archive.parent.mkdir(parents=True, exist_ok=True)
             if not archive.exists(): shutil.copy2(index, archive)
-            index.write_text(rendered.replace('<head>', '<head><base href="./interactive/">', 1))
-        records[page.name] = dict(previous_html_sha256=sha(page), scientific_payload_unchanged=True,
+            write_comparison(index, template, payload, title=title, index=True)
+        records[page.name] = dict(previous_html_sha256=sha(page), scientific_payload_unchanged=not general.exists(),
+                                 all_training_descriptor_overlay=general.exists(),
                                  sample_assets_added=samples.exists(), dense_timeline_added=dense_source is not None)
-        temporary = page.with_suffix('.html.building'); temporary.write_text(rendered); temporary.replace(page)
+        write_comparison(page, template, payload, title=title)
         records[page.name]['html_sha256'] = sha(page)
     shutil.copy2(script, dest/'assets'/script.name)
     shutil.copy2(Path(__file__).with_name('viewer_extensions.js'), dest/'assets/viewer_extensions.js')

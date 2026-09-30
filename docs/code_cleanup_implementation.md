@@ -203,3 +203,79 @@ models. The final consolidation removes the old neighborhood model module paths
 and their unused checkpoint state. Current callers use one direct shared encoder
 and the shared Epi helper; no compatibility aliases or checkpoint migration are
 maintained. See the current API and verification in the retirement guide.
+
+## Repository follow-up — 2026-09-30
+
+Starting from `ff085f93`, the fresh scan identified remaining repeated mechanics
+and concrete failures. The cleanup removes **399 Python lines net**, including
+new shared modules and the approved concurrent viewer controls. The separate
+descriptor-comparison workflow being added concurrently is outside this count.
+
+| Shared owner | Consolidated responsibility |
+| --- | --- |
+| `experiment_runner.artifacts` | Required JSON-object reads, streaming hashes, declared JSON digest/NaN policies and atomic JSON writes |
+| `experiment_runner.execution` | Two more Slurm launchers, explicit worker arguments and allocation deadlines from epoch timestamps |
+| `simulation.runtime` | Five identical LAMMPS environment builders, with GPU visibility still declared by each caller |
+| `utils.evaluation_metrics` | Hungarian accuracy, exact-K lookup, finite scalars and stable metric names |
+| `FittedPredictiveAtlas.checkpoint_payload` | Atlas checkpoint fields formerly duplicated in two commands |
+| `utils.model_utils.resolve_device` | Five identical CUDA/CPU device resolvers |
+| `spatial_vicreg_bias.viewer_payload` | Schema-tagged page/asset sidecars, template slots, rendering and lossless vector packing |
+
+Generic evidence consumers now import neutral helpers. Four helper/report modules
+load without Torch; structural-state checkpoint saving imports Torch locally.
+Serialization bytes, sorting, compact separators and each producer's NaN policy
+are preserved. Durable migration writers retain their existing fsync, temporary
+file refusal and ordering policies. No conversion, deletion or simulation ran.
+
+The concrete correctness changes are:
+
+- Evaluation rejects mismatched feature/label/encoder row counts and non-finite
+  rows instead of truncating or dropping observations. Aligned batches retain
+  their declared sample caps. Failed cache batches append nothing. Accuracy
+  lookup requires the requested K rather than guessing another metric.
+- Preparation task count follows the actual source plan. Accepted Slurm job IDs
+  and spawned worker PIDs remain recorded if a later submission/start fails.
+  Allocation deadlines use Slurm's epoch timestamp with explicit 240/300-second
+  reserves, removing local-timezone interpretation.
+- Viewer publication stages read explicit JSON rather than extract data from
+  HTML/JS. Named slots replace template fragment/regex patches. First refresh of
+  a fresh static gallery reads its actual interactive page rather than assuming
+  its gallery index has a payload.
+- Approved viewer changes replace region filtering with interface highlighting
+  that retains all selected observations. Refresh archives separate interface20
+  HTML before redirecting its link to the full comparison. Original numerical
+  subsets, layouts, assignments and frozen definitions remain unchanged.
+
+New payload sidecars are required for these publication stages; there is no
+historical HTML-parser fallback. Existing published artifacts were not rewritten.
+Selective static-renderer source copies include the shared evidence/payload
+dependencies while retaining the original encoder implementation. Crystal-vector
+run identities now bind their deadline/evidence helpers. Fifty-one active metric
+contracts were refreshed with shared dependencies; all ten retired contracts keep
+their original hashes. New numerical exports require new revisions.
+
+Verification used `pointnet-torch214` and ignored local receipts under
+`output/maintenance/repo-cleanup/technical/` and
+`output/maintenance/repo-shortening/technical/`:
+
+- Artifact serialization/import/concurrent-writer checks; 65 exact JSON read/error
+  comparisons and ten empty/multi-block file-hash comparisons.
+- Queue resource/dependency/worker comparisons, partial-failure injections,
+  deadline checks and rendered shell syntax; no jobs submitted.
+- Twenty exact LAMMPS environment comparisons and unchanged scientific ASTs
+  across nine consumers.
+- Actual KMeans/Hungarian metrics, valid cache/collector outputs and caps, strict
+  invalid-array failures, empty/one-row SVM behavior and training-mode restoration.
+- Both old atlas payload helpers match all new fields/tensors/arrays. Two small
+  CPU atlases with/without history strictly reload and reproduce their forwards.
+  Device output/error behavior matches all five removed helpers.
+- Fourteen viewer payload/rendering checks, nine V8 syntax/highlight checks and
+  four fresh static/matched, frozen/non-frozen gallery refresh workflows.
+- All 1,008 Python files in the working checkout parse, and all 123 tracked metric
+  families validate. The workspace's additional concurrent family also validates.
+
+No tests directory, automated tests, test dependencies, scientific training,
+W&B run or historical-result rewrite was introduced. GPU numerical equivalence
+and a fresh scientific training trajectory were not exercised. The remaining
+large simulation/configuration functions and the relaxed-target producer-binding
+gap are explicit follow-up work in the updated review.
