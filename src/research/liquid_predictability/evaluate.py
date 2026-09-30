@@ -1,6 +1,5 @@
 """Proper scores, paired source uncertainty, and within-snapshot physical profiles."""
 import json
-from pathlib import Path
 import numpy as np
 import torch
 from src.data.fixed_cohort.protocol import sha,write_json
@@ -9,6 +8,7 @@ from src.experiment_runner.metric_docs import write_metric_rows
 from src.research.distance_encoder.model import loss_terms
 from src.research.spatial_distance.model import cdf,capped_mean
 from .data import population,masks,features,ROLES
+from .comparisons import paired_scores,prediction_rows
 
 def tables(root,name,rows):
     return write_metric_rows(rows, root, family='liquid_predictability', name=name)
@@ -114,28 +114,23 @@ def compare(c):
     for arm in c['arms']:
         if arm['model']=='prior':continue
         value=load(arm['name']);reference=load('visible_prior' if arm['population']=='visible_control' else 'prior')
-        refmap=np.full(len(meta['atom']),-1,int);refmap[reference['ids']]=np.arange(len(reference['ids']))
         split,weights,_=masks(meta,base,arm,c)
         for role in ('selection','calibration','test'):
-            ids=split[role];lookup=np.full(len(meta['atom']),-1,int);lookup[value['ids']]=np.arange(len(value['ids']))
-            ix=lookup[ids];ri=refmap[ids]
-            if (ix<0).any() or (ri<0).any():raise ValueError('Unmatched evaluation rows')
+            ids=split[role]
+            ix=prediction_rows(value['ids'],ids)
+            ri=prediction_rows(reference['ids'],ids)
             for subset,take in subsets(meta,ids,clearance,c):
                 if not take.any():continue
-                selected=ids[take];w=weights[role][take];w=w/w.sum();sources,inv=np.unique(meta['source'][selected],return_inverse=True)
-                if len(sources)<2:continue
+                selected=ids[take];w=weights[role][take];w=w/w.sum()
+                if len(np.unique(meta['source'][selected]))<2:continue
                 truth=np.minimum(meta['crystal_distance'][selected],64)
                 gain=reference['nll'][ri[take]]-value['nll'][ix[take]]
                 mse=(value['mean_A'][ix[take]]-truth)**2;refmse=(reference['mean_A'][ri[take]]-truth)**2
-                sums=np.stack([np.bincount(inv,weights=w*z) for z in (np.ones(len(w)),gain,mse,refmse)],1)
-                rng=np.random.default_rng(seed);boot=rng.integers(0,len(sources),(draws,len(sources)));s=sums[boot].sum(1)
-                bg=s[:,1]/s[:,0];br=1-np.sqrt(s[:,2]/s[:,3]);upper=float(np.quantile(br,1-.05/count))
+                scores=paired_scores(meta['source'][selected],w,mse,refmse,gain=gain,seed=seed,draws=draws,
+                    rmse_comparisons=count,nll_comparisons=count)
                 rows.append(dict(model=arm['name'],population=arm['population'],source_fraction=arm['source_fraction'],role=role,subset=subset,
-                    rows=len(selected),sources=len(sources),nll_gain=float(w@gain),nll_gain_ci95_low=float(np.quantile(bg,.025)),nll_gain_ci95_high=float(np.quantile(bg,.975)),
-                    nll_gain_familywise_low=float(np.quantile(bg,.025/count)),nll_gain_familywise_high=float(np.quantile(bg,1-.025/count)),
-                    rmse_reduction_fraction=float(1-np.sqrt((w@mse)/(w@refmse))),rmse_reduction_ci95_low=float(np.quantile(br,.025)),
-                    rmse_reduction_ci95_high=float(np.quantile(br,.975)),rmse_reduction_familywise_upper=upper,
-                    excludes_2percent_benefit=upper<c['evaluation']['meaningful_rmse_reduction_fraction']))
+                    rows=len(selected),**scores,
+                    excludes_2percent_benefit=scores['rmse_reduction_familywise_upper']<c['evaluation']['meaningful_rmse_reduction_fraction']))
     tables(root,'paired-comparisons',rows)
     write_json(root/'technical/complete.json',dict(bootstrap='paired independent source resampling, preserve conditional masses',
         draws=draws,training_seeds=1,training_seed_uncertainty_measured=False,

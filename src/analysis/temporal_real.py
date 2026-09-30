@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from hashlib import sha256
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +37,10 @@ class TemporalRealAnalysisSelection:
     radius_estimation: dict[str, Any] | None
     center_selection: dict[str, Any]
     cache_dir: Path | None
+    normalize: bool
+    center_neighborhoods: bool
+    selection_method: str
+    precompute_neighbor_indices: bool
 
     def to_cache_spec(self) -> dict[str, Any]:
         return {
@@ -56,6 +61,10 @@ class TemporalRealAnalysisSelection:
             ),
             "center_selection": dict(self.center_selection),
             "cache_dir": None if self.cache_dir is None else str(self.cache_dir),
+            "normalize": self.normalize,
+            "center_neighborhoods": self.center_neighborhoods,
+            "selection_method": self.selection_method,
+            "precompute_neighbor_indices": self.precompute_neighbor_indices,
         }
 
 
@@ -81,6 +90,12 @@ class TemporalRealInferenceSpec:
                 None if self.static_frame_index is None else int(self.static_frame_index)
             ),
         }
+
+
+def _resolved_center_selection(spec, dataset):
+    indices = np.asarray(dataset._center_atom_indices, dtype="<i8")
+    return dict(spec, selected_center_count=int(indices.size),
+                selected_center_indices_sha256=sha256(indices.tobytes()).hexdigest())
 
 
 def _temporal_real_dataloader_kwargs(
@@ -496,8 +511,12 @@ def build_temporal_real_analysis_bundle(
         num_points=int(num_points),
         radius_source=str(radius_source),
         radius_estimation=None if radius_estimation is None else dict(radius_estimation),
-        center_selection=dict(center_selection_spec),
-        cache_dir=cache_dir,
+        center_selection=_resolved_center_selection(center_selection_spec, inference_dataset),
+        cache_dir=inference_dataset.cache_dir,
+        normalize=inference_dataset.normalize,
+        center_neighborhoods=inference_dataset.center_neighborhoods,
+        selection_method=inference_dataset.selection_method,
+        precompute_neighbor_indices=inference_dataset.precompute_neighbor_indices,
     )
     return TemporalRealAnalysisBundle(
         dataset=dataset,
@@ -630,13 +649,17 @@ def build_temporal_real_single_snapshot_bundle(
         radius_estimation=(
             None if selection.radius_estimation is None else dict(selection.radius_estimation)
         ),
-        center_selection={
+        center_selection=_resolved_center_selection({
             "mode": "regular_grid",
             "overlap": float(overlap),
             "semantics": "sphere_overlap_depth_in_radius_units",
             "reference_frame": int(frame_index),
-        },
-        cache_dir=selection.cache_dir,
+        }, inference_dataset),
+        cache_dir=inference_dataset.cache_dir,
+        normalize=inference_dataset.normalize,
+        center_neighborhoods=inference_dataset.center_neighborhoods,
+        selection_method=inference_dataset.selection_method,
+        precompute_neighbor_indices=inference_dataset.precompute_neighbor_indices,
     )
     return TemporalRealAnalysisBundle(
         dataset=dataset,

@@ -1,24 +1,21 @@
 """Known-oracle recovery, source uncertainty, paired labels and feature fidelity."""
 import csv
-from pathlib import Path
 import numpy as np
 from src.project_runtime.paths import resolve_path
 from src.data.fixed_cohort.protocol import write_json,sha
 from .data import config
 from .descriptor_data import load
-from .descriptor_fit import quantities,metrics
+from .descriptor_fit import metrics
 from .control_train import table
+from .comparisons import source_resamples,prediction_rows
 
 
 def intervals(rows,chosen,reference,predicted,seed,draws):
-    _,inv=np.unique(rows['source'][chosen],return_inverse=True);n=int(inv.max())+1
     w=rows['weights'][chosen];truth=np.minimum(rows['target'][chosen],64)
-    r=np.bincount(inv,weights=w*(reference['mean_A'][chosen]-truth)**2,minlength=n)
-    p=np.bincount(inv,weights=w*(predicted['mean_A'][chosen]-truth)**2,minlength=n)
-    gain=np.bincount(inv,weights=w*(reference['nll'][chosen]-predicted['nll'][chosen]),minlength=n)
-    mass=np.bincount(inv,weights=w,minlength=n)
-    b=np.random.default_rng(seed).integers(n,size=(draws,n))
-    rg=1-np.sqrt(p[b].sum(1)/r[b].sum(1));ng=gain[b].sum(1)/mass[b].sum(1)
+    totals,bootstrap=source_resamples(rows['source'][chosen],w,(reference['mean_A'][chosen]-truth)**2,
+        (predicted['mean_A'][chosen]-truth)**2,reference['nll'][chosen]-predicted['nll'][chosen],seed=seed,draws=draws)
+    mass,r,p,gain=totals.T
+    rg=1-np.sqrt(p[bootstrap].sum(1)/r[bootstrap].sum(1));ng=gain[bootstrap].sum(1)/mass[bootstrap].sum(1)
     return dict(rmse_gain=float(1-np.sqrt(p.sum()/r.sum())),rmse_gain_low=float(np.quantile(rg,.025)),rmse_gain_high=float(np.quantile(rg,.975)),
                 nll_gain=float(gain.sum()/mass.sum()),nll_gain_low=float(np.quantile(ng,.025)),nll_gain_high=float(np.quantile(ng,.975)))
 
@@ -28,13 +25,14 @@ def report(c):
     for arm in c['signals']:
         name=arm['name'];dc=config(root/'technical/recipes'/f'{name}.json');_,rows,_,manifest=load(dc)
         with np.load(root/'descriptors'/name/'prior/analyses/predictability-v1/technical/predictions.npz') as a:ref={k:a[k] for k in a.files}
+        if not np.array_equal(prediction_rows(ref['ids'],rows['ids']),np.arange(len(rows['ids']))):raise ValueError('Control reference row alignment failed')
         oracle=np.load(resolve_path(c['cache'])/name/'oracle.npy');edge=np.asarray(dc['distance_edges_A']);width=np.r_[np.diff(edge),1.]
         mid=np.r_[(edge[:-1]+edge[1:])/2,edge[-1]];second=np.r_[(edge[:-1]**2+edge[:-1]*edge[1:]+edge[1:]**2)/3,edge[-1]**2]
         variants=[('catboost',root/'descriptors'/name/'all_catboost_shallow/analyses/predictability-v1/technical/predictions.npz'),
                   ('mace',root/'mace'/name/'analyses/prediction-v1/technical/distance-predictions.npz')]
         for method,path in variants:
             with np.load(path) as a:pred={k:a[k] for k in a.files}
-            if not np.array_equal(pred['ids'],rows['ids']):raise ValueError('Control report row alignment failed')
+            if not np.array_equal(prediction_rows(pred['ids'],rows['ids']),np.arange(len(rows['ids']))):raise ValueError('Control report row alignment failed')
             for role in ('selection','calibration','test'):
                 ix=np.flatnonzero(rows['role']==role);w=rows['weights'][ix];w/=w.sum()
                 pp=np.maximum(pred['probability'][ix].astype(float),1e-12);pp/=pp.sum(1,keepdims=True)
@@ -73,7 +71,8 @@ def report(c):
         for name in (a,b):
             path=root/'descriptors'/name/'all_catboost_shallow/analyses/predictability-v1/technical/predictions.npz'
             with np.load(path) as f:predictions.append({k:f[k] for k in f.files})
-        if not np.array_equal(predictions[0]['ids'],predictions[1]['ids']):raise ValueError('Raw/relaxed prediction IDs differ')
+        for prediction in predictions:
+            if not np.array_equal(prediction_rows(prediction['ids'],rows['ids']),np.arange(len(rows['ids']))):raise ValueError('Raw/relaxed prediction IDs differ')
         chosen=np.flatnonzero(rows['role']=='test')
         comparisons.append(dict(labels='relaxed' if suffix else 'original',reference=a,model=b,
                            **intervals(rows,chosen,*predictions,c['seed'],c['bootstrap_draws'])))

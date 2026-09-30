@@ -1,214 +1,252 @@
+"""Content-bound inference caches with the collectors' sample-aligned array contract."""
+
 import hashlib
 import json
 from pathlib import Path
 import threading
-from typing import Any
 import zipfile
 
 import numpy as np
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import OmegaConf
 
+from src.data.trajectories.lammps import resolve_temporal_lammps_artifact
+from src.experiment_runner.artifacts import file_hash, implementation_hashes
+from src.project_runtime.paths import resolve_path
 from .output_layout import write_json
 
 
-def discard_inference_cache(out_dir: Path, cache_filename: str) -> None:
-    """Retain the exact reconstruction specification before removing completed inference arrays."""
-    data, metadata = _inference_cache_paths(out_dir, cache_filename)
-    if metadata.is_file():
-        specification = metadata.read_bytes()
-        checksum = hashlib.sha256(specification).hexdigest()
-        retained = Path(out_dir) / 'retention'
-        retained.mkdir(exist_ok=True)
-        archive = retained / f'{metadata.name}.{checksum}.json'
-        archive.write_bytes(specification)
-        if hashlib.sha256(archive.read_bytes()).hexdigest() != checksum:
-            raise RuntimeError(f'Could not verify retained inference specification: {archive}')
-        (retained / 'README.md').write_text(
-            '# Removed inference caches\n\n'
-            'The adjacent metadata preserves exact checkpoint, input, sampling and seed specifications. '
-            'Rebuild with the original full analysis in a new output directory. '
-            'Keep the selected checkpoint and original datasets. Prediction arrays are not removed.\n')
-    for path in (data, metadata):
-        if path.exists() or path.is_symlink():
-            path.unlink()
-
-
-def _build_inference_cache_spec(
-    *,
-    checkpoint_path: str,
-    cfg: DictConfig,
-    inference_batch_size: int,
-    max_batches_latent: int | None,
-    max_samples_total: int | None,
-    seed_base: int,
-    temporal_real_selection: dict[str, Any] | None = None,
-    temporal_sequence_inference: dict[str, Any] | None = None,
-    collector_mode: str = "generic",
-) -> dict[str, Any]:
-    checkpoint = Path(checkpoint_path).resolve()
-    checkpoint_stat = checkpoint.stat()
-    data_config = OmegaConf.to_container(cfg.data, resolve=True)
-    if not isinstance(data_config, dict):
-        raise TypeError(
-            "Inference cache construction requires cfg.data to resolve to a mapping, "
-            f"got {type(data_config)!r}."
+def _static_cache_files(data):
+    settings = data.get('sample_cache')
+    if not settings or not settings['enabled']:
+        return []
+    root = resolve_path(settings['cache_dir'])
+    metadata = root / 'metadata.json'
+    if not metadata.exists():
+        return []  # The datamodule prepares this cache before the final inference spec.
+    record = json.loads(metadata.read_text())
+    caches = [(root, record)]
+    local = settings.get('local_cache_dir')
+    if local is not None and str(local).strip():
+        from src.data.static import PointCloudDataset
+        staged = resolve_path(local)
+        matches, _ = PointCloudDataset._cache_copy_matches(
+            source_cache_dir=root, staged_cache_dir=staged, metadata=record,
         )
-    return {
-        "version": 8,
-        "collector_contract": {
-            "latent_array": "model_forward_output_0_z_inv_contrastive",
-            "sample_order": "dataloader_order_preallocated_v3",
-            "encoder_group_sampling": "deterministic_fps_for_analysis_v1",
-            "temporal_input": "static_anchor_or_full_sequence_v1",
-            "coords": "center_positions_for_static_anchor_v1",
-            "temporal_anchor_metadata": "anchor_frame_indices_per_sample_v1",
-            "cpu_transfer": "blocking_cpu_copy_for_numpy_cache_v2",
-        },
-        "checkpoint": {
-            "path": str(checkpoint),
-            "size_bytes": int(checkpoint_stat.st_size),
-            "mtime_ns": int(checkpoint_stat.st_mtime_ns),
-        },
-        "model_type": str(cfg.model_type),
-        "representation": {
-            "source": str(
-                OmegaConf.select(cfg, "representation_source", default="encoder")
-            ).strip().lower(),
-            "vicreg_projector_mode": str(
-                OmegaConf.select(cfg, "vicreg_projector_mode", default="mlp")
-            ).strip().lower(),
-            "vicreg_projector_bn_eval_batch_stats": bool(
-                OmegaConf.select(
-                    cfg,
-                    "vicreg_projector_bn_eval_batch_stats",
-                    default=False,
-                )
-            ),
-        },
-        "data_config": data_config,
-        "checkpoint_batch_size": int(cfg.batch_size),
-        "inference_batch_size": int(inference_batch_size),
-        "max_batches_latent": None if max_batches_latent is None else int(max_batches_latent),
-        "max_samples_total": None if max_samples_total is None else int(max_samples_total),
-        "seed_base": int(seed_base),
-        "rng_strategy": "seed_once_per_collection_v1",
-        "collect_coords": True,
-        "collector_mode": str(collector_mode),
-        "temporal_real_selection": temporal_real_selection,
-        "temporal_sequence_inference": temporal_sequence_inference,
-    }
+        if matches:
+            caches.append((staged, json.loads((staged / 'metadata.json').read_text())))
+    paths = []
+    for directory, cache_record in caches:
+        paths.append(directory / 'metadata.json')
+        for shard in cache_record['shards']:
+            paths.append(directory / shard['samples_path'])
+            if shard['coords_path'] is not None:
+                paths.append(directory / shard['coords_path'])
+    if data.get('atomic_context') is not None:
+        for shard in record['shards']:
+            directory = resolve_path(data['atomic_context']['cache_dir'])
+            receipt = directory / (shard['file'] + '.json')
+            if receipt.exists():
+                paths.extend((receipt, directory / (shard['file'] + '.context.npy')))
+    return paths
 
 
-def _inference_cache_spec_hash(spec: dict[str, Any]) -> str:
-    payload = json.dumps(spec, sort_keys=True, separators=(",", ":"))
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+def _input_hashes(data):
+    """Fingerprint the concrete files consumed by each maintained data producer."""
+    kind = data['kind'].strip().lower()
+    if kind == 'synthetic':
+        root = resolve_path(data['synthetic']['root_dir'])
+        paths = [directory / name for directory in sorted(root.iterdir()) if directory.is_dir()
+                 for name in ('atoms.npy', 'atoms_full.npy', 'metadata.json', 'phase_mapping.json')]
+    elif kind == 'static':
+        sources = data.get('data_sources') or [data]
+        paths = []
+        for source in sources:
+            names = source['data_files']
+            names = [names] if isinstance(names, str) else names
+            for name in names:
+                path = resolve_path(source['data_path']) / name
+                # The OFF reader consumes an existing NPY conversion when present.
+                converted = path.with_suffix('.npy')
+                paths.append(converted if path.suffix.lower() == '.off' and converted.exists() else path)
+        paths.extend(_static_cache_files(data))
+    elif kind == 'temporal_lammps':
+        source = resolve_temporal_lammps_artifact(data['dump_file'])
+        cache = (resolve_path(data['cache_dir']) if data.get('cache_dir') is not None
+                 else Path(data['dump_file']).expanduser().resolve().with_suffix('.temporal_cache'))
+        paths = [source]
+        if source.is_dir():
+            manifest = source / 'manifest.json'
+            arrays = json.loads(manifest.read_text())['arrays']
+            paths = [manifest, *(source / record['file'] for record in arrays.values())]
+        elif (cache / 'manifest.json').exists():
+            paths.extend(cache / name for name in (
+                'manifest.json', 'positions.npy', 'atom_ids.npy', 'atom_types.npy',
+                'timesteps.npy', 'box_low.npy', 'box_high.npy',
+            ))
+        if data.get('precompute_neighbor_indices', False):
+            for receipt in cache.glob('neighbor_indices_*.json'):
+                paths.extend((receipt, receipt.with_suffix('.npy')))
+    elif kind in ('relaxed_histories', 'spatiotemporal_binary'):
+        root = resolve_path(data['cache_dir'])
+        manifest = root / 'manifest.json'
+        paths = [manifest, *(root / name for name in json.loads(manifest.read_text())['checksums'])]
+    else:
+        raise ValueError(f'Inference cache has no input contract for data.kind={kind!r}')
+    return {str(path.resolve()): file_hash(path) for path in sorted(set(paths))}
 
 
-def _inference_cache_paths(out_dir: Path, cache_filename: str) -> tuple[Path, Path]:
-    npz_path = Path(out_dir) / cache_filename
-    meta_path = npz_path.with_suffix(npz_path.suffix + ".meta.json")
-    return npz_path, meta_path
+def _collector_hashes():
+    repository = Path(__file__).resolve().parents[2]
+    # Bind model construction and data preprocessing as well as array collection.
+    paths = [path for folder in ('src/models', 'src/data', 'src/data_utils', 'src/utils', 'src/training_methods')
+             for path in (repository / folder).rglob('*.py')]
+    paths += [repository / f'src/analysis/{name}.py' for name in (
+        'inference_cache', 'utils', 'pipeline_runtime', 'temporal_real', 'temporal_dense',
+        'dynamic_motif_cache')]
+    paths += list((repository / 'src/analysis').glob('*adapter.py'))
+    paths += [repository / name for name in ('src/research/supervised_onset/model.py',
+                                            'src/research/encoder_context/geometry.py')]
+    return implementation_hashes(*(str(path.relative_to(repository)) for path in sorted(paths)))
+
+
+def _build_inference_cache_spec(*, checkpoint_path, cfg, inference_batch_size,
+                              max_batches_latent, max_samples_total, seed_base,
+                              temporal_real_selection=None, temporal_sequence_inference=None,
+                              collector_mode='generic'):
+    checkpoint = Path(checkpoint_path).resolve()
+    stat = checkpoint.stat()
+    config = OmegaConf.to_container(cfg, resolve=True)
+    inputs = (dict(kind='temporal_lammps', dump_file=temporal_real_selection['dump_file'],
+                   cache_dir=temporal_real_selection['cache_dir'],
+                   precompute_neighbor_indices=temporal_real_selection['precompute_neighbor_indices'])
+              if temporal_real_selection is not None else config['data'])
+    return dict(
+        version=9,
+        checkpoint=dict(path=str(checkpoint), size_bytes=stat.st_size,
+                        mtime_ns=stat.st_mtime_ns, sha256=file_hash(checkpoint)),
+        model_type=str(cfg.model_type), model_config=config, data_config=config['data'],
+        input_sha256=_input_hashes(inputs), implementation_sha256=_collector_hashes(),
+        checkpoint_batch_size=int(cfg.batch_size), inference_batch_size=int(inference_batch_size),
+        max_batches_latent=max_batches_latent, max_samples_total=max_samples_total,
+        seed_base=int(seed_base), rng_strategy='seed_once_per_collection_v1', collect_coords=True,
+        collector_mode=str(collector_mode), temporal_real_selection=temporal_real_selection,
+        temporal_sequence_inference=temporal_sequence_inference,
+    )
+
+
+def _inference_cache_spec_hash(spec):
+    payload = json.dumps(spec, sort_keys=True, separators=(',', ':'), allow_nan=False)
+    return hashlib.sha256(payload.encode()).hexdigest()
+
+
+def _inference_cache_paths(out_dir, cache_filename):
+    data = Path(out_dir) / cache_filename
+    return data, data.with_suffix(data.suffix + '.meta.json')
 
 
 def _validate_inference_cache_arrays(cache):
-    """Check numerical encoder output; cache schema is owned by our collectors."""
-    _validate_invariant_latent_values(cache['inv_latents'])
+    missing = {'inv_latents', 'eq_latents', 'phases', 'coords', 'instance_ids'} - cache.keys()
+    if missing:
+        raise ValueError(f'Inference cache is missing collector fields: {sorted(missing)}')
+    latents = cache['inv_latents']
+    if latents.ndim != 2 or min(latents.shape) == 0:
+        raise ValueError(f'Expected nonempty (samples, channels) invariant latents, got {latents.shape}')
+    rows = len(latents)
+    for name, values in cache.items():
+        if values.ndim == 0 or len(values) not in (0, rows):
+            raise ValueError(f'Cache {name}: expected {rows} aligned rows or absent optional values, '
+                             f'got {values.shape}')
+    if cache['coords'].ndim != 2 or cache['coords'].shape[1] != 3:
+        raise ValueError(f'Cache coords must have shape (samples, 3), got {cache["coords"].shape}')
+    for name in ('phases', 'instance_ids', 'anchor_frame_indices', 'sample_index'):
+        if name in cache and (cache[name].ndim != 1 or
+                              (len(cache[name]) and cache[name].dtype.kind not in 'iu')):
+            raise ValueError(f'Cache {name} must be a one-dimensional integer array')
+    _validate_invariant_latent_values(latents)
 
 
 def _validate_invariant_latent_values(inv_latents):
     for start in range(0, len(inv_latents), 65536):
-        chunk = inv_latents[start:start+65536].astype(np.float32, copy=False)
+        chunk = inv_latents[start:start + 65536].astype(np.float32, copy=False)
         invalid = ~np.isfinite(chunk).all(axis=1) | (np.linalg.norm(chunk, axis=1) <= 1e-8)
         if invalid.any():
             raise ValueError(f'Invalid encoder output at row {start + np.flatnonzero(invalid)[0]}: '
                              'nonfinite or zero-norm embedding; recompute inference.')
 
 
-def _load_inference_cache(
-    *,
-    out_dir: Path,
-    cache_filename: str,
-    expected_spec: dict[str, Any],
-) -> tuple[dict[str, np.ndarray] | None, str]:
-    npz_path, meta_path = _inference_cache_paths(out_dir, cache_filename)
-    if not npz_path.exists():
-        if meta_path.exists():
-            raise RuntimeError(
-                f"Inference cache metadata exists without its data file: {meta_path}."
-            )
-        return None, f"cache file does not exist: {npz_path}"
-    if not meta_path.exists():
-        raise RuntimeError(
-            f"Inference cache data exists without required metadata: {npz_path}."
-        )
+def _array_schema(cache):
+    return {name: dict(shape=list(values.shape), dtype=values.dtype.str)
+            for name, values in cache.items()}
 
-    with meta_path.open("r") as handle:
-        meta = json.load(handle)
-    if not isinstance(meta, dict):
-        raise ValueError(
-            f"Cache metadata at {meta_path} must be a JSON object, got {type(meta)!r}."
-        )
 
-    expected_hash = _inference_cache_spec_hash(expected_spec)
-    cached_hash = str(meta.get("spec_sha256", ""))
-    if cached_hash != expected_hash:
-        return None, (
-            "cache spec mismatch: "
-            f"expected sha256={expected_hash}, found sha256={cached_hash}"
-        )
-
+def _load_inference_cache(*, out_dir, cache_filename, expected_spec):
+    data, metadata = _inference_cache_paths(out_dir, cache_filename)
+    if not data.exists() and not metadata.exists():
+        return None, f'cache file does not exist: {data}'
+    if not data.exists() or not metadata.exists():
+        raise RuntimeError(f'Incomplete inference cache: require both {data} and {metadata}')
+    meta = json.loads(metadata.read_text())
+    expected = _inference_cache_spec_hash(expected_spec)
+    if meta['spec_sha256'] != expected:
+        return None, f'cache spec mismatch: expected sha256={expected}, found {meta["spec_sha256"]}'
+    if file_hash(data) != meta['data_sha256']:
+        raise ValueError(f'Inference cache contents changed: {data}')
     try:
-        with np.load(npz_path) as data:
-            cache = {key: np.asarray(data[key]) for key in data.files}
-    except (EOFError, OSError, ValueError, zipfile.BadZipFile) as exc:
-        raise RuntimeError(f"Inference cache is unreadable: {npz_path}.") from exc
-    try:
+        with np.load(data, allow_pickle=False) as arrays:
+            cache = {name: arrays[name] for name in arrays.files}
         _validate_inference_cache_arrays(cache)
-    except ValueError as exc:
-        raise ValueError(f"Inference cache validation failed for {npz_path}: {exc}") from exc
-    return cache, f"loaded cache from {npz_path}"
+    except (EOFError, OSError, ValueError, zipfile.BadZipFile) as exc:
+        raise ValueError(f'Inference cache validation failed for {data}: {exc}') from exc
+    if _array_schema(cache) != meta['arrays'] or len(cache['inv_latents']) != meta['num_samples']:
+        raise ValueError(f'Inference cache array schema differs from its receipt: {data}')
+    return cache, f'loaded cache from {data}'
 
 
-def _save_inference_cache(
-    *,
-    out_dir: Path,
-    cache_filename: str,
-    cache: dict[str, np.ndarray],
-    spec: dict[str, Any],
-) -> None:
+def _save_inference_cache(*, out_dir, cache_filename, cache, spec):
     _validate_inference_cache_arrays(cache)
-    npz_path, meta_path = _inference_cache_paths(out_dir, cache_filename)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    tmp_npz_path = npz_path.with_suffix(npz_path.suffix + ".tmp.npz")
-    tmp_meta_path = meta_path.with_suffix(meta_path.suffix + ".tmp")
-    # First-run analysis is dominated by inference and large cache writes; compression
-    # saves disk but costs substantial CPU time for latents/coords that are read locally.
-    _save_npz_with_progress(
-        tmp_npz_path,
-        {key: np.asarray(value) for key, value in cache.items()},
-    )
-    meta = {
-        "spec": spec,
-        "spec_sha256": _inference_cache_spec_hash(spec),
-        "num_samples": int(cache["inv_latents"].shape[0]),
-        "storage": "npz_uncompressed",
-    }
-    write_json(tmp_meta_path, meta)
-    tmp_npz_path.replace(npz_path)
-    tmp_meta_path.replace(meta_path)
+    data, metadata = _inference_cache_paths(out_dir, cache_filename)
+    Path(out_dir).mkdir(parents=True, exist_ok=True)
+    temporary = data.with_suffix(data.suffix + '.tmp.npz')
+    temporary_metadata = metadata.with_suffix(metadata.suffix + '.tmp')
+    _save_npz_with_progress(temporary, cache)
+    write_json(temporary_metadata, dict(
+        spec=spec, spec_sha256=_inference_cache_spec_hash(spec), data_sha256=file_hash(temporary),
+        num_samples=len(cache['inv_latents']), arrays=_array_schema(cache), storage='npz_uncompressed',
+    ))
+    temporary.replace(data)
+    temporary_metadata.replace(metadata)
 
 
-def _save_npz_with_progress(path: Path, arrays: dict[str, np.ndarray]) -> None:
-    stop_event = threading.Event()
+def _save_npz_with_progress(path, arrays):
+    stop = threading.Event()
 
-    def _heartbeat() -> None:
-        while not stop_event.wait(30.0):
-            print(f"[analysis][cache] Still writing {path.name}...", flush=True)
+    def heartbeat():
+        while not stop.wait(30):
+            print(f'[analysis][cache] Still writing {path.name}...', flush=True)
 
-    heartbeat = threading.Thread(target=_heartbeat, daemon=True)
-    heartbeat.start()
+    thread = threading.Thread(target=heartbeat, daemon=True)
+    thread.start()
     try:
         np.savez(path, **arrays)
     finally:
-        stop_event.set()
-        heartbeat.join(timeout=1.0)
+        stop.set()
+        thread.join(timeout=1)
+
+
+def discard_inference_cache(out_dir, cache_filename):
+    """Retain reconstruction provenance before removing completed inference arrays."""
+    data, metadata = _inference_cache_paths(out_dir, cache_filename)
+    if metadata.is_file():
+        retained = Path(out_dir) / 'retention'
+        retained.mkdir(exist_ok=True)
+        archive = retained / f'{metadata.name}.{file_hash(metadata)}.json'
+        archive.write_bytes(metadata.read_bytes())
+        if file_hash(archive) != file_hash(metadata):
+            raise RuntimeError(f'Could not verify retained inference specification: {archive}')
+        (retained / 'README.md').write_text(
+            '# Removed inference caches\n\n'
+            'The adjacent metadata preserves checkpoint, input, implementation, sampling and seed identities. '
+            'Rebuild with the original full analysis in a new output directory. '
+            'Keep the selected checkpoint and original datasets. Prediction arrays are not removed.\n')
+    for path in (data, metadata):
+        path.unlink(missing_ok=True)

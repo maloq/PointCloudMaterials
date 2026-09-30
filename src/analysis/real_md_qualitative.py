@@ -98,6 +98,29 @@ class ProjectionFeaturePrep:
     pca_keep_components: int
 
 
+@dataclass
+class ProjectionState:
+    method: str
+    prep: ProjectionFeaturePrep
+    model: Any
+    info: dict[str, Any]
+    fit_indices: np.ndarray | None
+
+    def transform(self, latents):
+        return _transform_projection_features(
+            self.prep, latents, method=self.method, fitted_projection=self.model)
+
+
+@dataclass
+class ComputedTable:
+    path: Path
+    table: pd.DataFrame
+
+    def export(self):
+        self.table.to_csv(self.path, index=False)
+        return self
+
+
 def _to_plain(value: Any) -> Any:
     if OmegaConf.is_config(value):
         return OmegaConf.to_container(value, resolve=True)
@@ -409,25 +432,6 @@ def _resolve_descriptor_sampling_indices(
     return np.asarray(sampled_all, dtype=int)
 
 
-def _load_point_cloud_batch(
-    dataset: Any,
-    sample_indices: np.ndarray,
-    *,
-    point_scale: float,
-) -> np.ndarray:
-    point_clouds: list[np.ndarray] = []
-    for sample_idx in np.asarray(sample_indices, dtype=int):
-        points = _load_points_from_dataset(
-            dataset,
-            int(sample_idx),
-            point_scale=float(point_scale),
-        )
-        point_clouds.append(np.asarray(points, dtype=np.float32))
-    if not point_clouds:
-        raise ValueError("No point clouds were loaded for real-MD qualitative analysis.")
-    return np.stack(point_clouds, axis=0)
-
-
 def _build_frame_lookup_for_samples(frames: list[FrameSlice], *, num_samples: int) -> tuple[np.ndarray, list[str], np.ndarray]:
     frame_index = np.full((int(num_samples),), -1, dtype=int)
     frame_names = [""] * int(num_samples)
@@ -443,7 +447,7 @@ def _build_frame_lookup_for_samples(frames: list[FrameSlice], *, num_samples: in
 
 def _build_builtin_descriptor_table(
     *,
-    point_clouds: np.ndarray,
+    properties: list[dict[str, float]],
     sample_indices: np.ndarray,
     labels: np.ndarray,
     coords: np.ndarray,
@@ -453,7 +457,7 @@ def _build_builtin_descriptor_table(
 ) -> pd.DataFrame:
     records: list[dict[str, Any]] = []
     for row_idx, sample_idx in enumerate(np.asarray(sample_indices, dtype=int)):
-        props = _compute_sample_properties(point_clouds[row_idx])
+        props = properties[row_idx]
         record: dict[str, Any] = {
             "sample_index": int(sample_idx),
             "cluster_id": int(labels[int(sample_idx)]),
@@ -724,45 +728,6 @@ def _transform_projection_features(
             f"input_shape={x.shape}, input_dtype={x.dtype}."
         ) from exc
     return np.asarray(transformed, dtype=np.float32)
-
-
-def _compute_projection(
-    latents: np.ndarray,
-    *,
-    method: str,
-    random_state: int,
-    l2_normalize: bool,
-    standardize: bool,
-    pca_variance: float | None,
-    pca_max_components: int,
-    umap_neighbors: int,
-    umap_min_dist: float,
-    umap_metric: str,
-    umap_backend: str,
-    tsne_n_iter: int,
-) -> tuple[np.ndarray, dict[str, Any]]:
-    features, _, prep_info = _prepare_projection_features(
-        latents,
-        random_state=int(random_state),
-        l2_normalize=bool(l2_normalize),
-        standardize=bool(standardize),
-        pca_variance=pca_variance,
-        pca_max_components=int(pca_max_components),
-    )
-    embedding, projection_info, _ = _fit_projection_embedding(
-        features,
-        method=method,
-        random_state=int(random_state),
-        umap_neighbors=int(umap_neighbors),
-        umap_min_dist=float(umap_min_dist),
-        umap_metric=str(umap_metric),
-        umap_backend=str(umap_backend),
-        tsne_n_iter=int(tsne_n_iter),
-    )
-    return embedding, {
-        **prep_info,
-        **projection_info,
-    }
 
 
 def _resolve_umap_backend(requested_backend):
@@ -1424,7 +1389,7 @@ def _write_dwell_metrics(
     out_dir: Path,
     frame_spacing: float | None,
     time_unit: str | None,
-) -> tuple[Path, Path, dict[str, Any]]:
+) -> tuple[ComputedTable, ComputedTable, dict[str, Any]]:
     dwell_lengths_by_cluster: dict[int, list[int]] = {int(cluster_id): [] for cluster_id in cluster_ids}
     labels_by_track = np.asarray(label_matrix, dtype=np.int32).T
     for sequence in labels_by_track:
@@ -1486,10 +1451,10 @@ def _write_dwell_metrics(
 
     hist_csv = out_dir / "dwell_time_histogram.csv"
     summary_csv = out_dir / "dwell_time_summary.csv"
-    pd.DataFrame.from_records(hist_rows).to_csv(hist_csv, index=False)
-    pd.DataFrame.from_records(summary_rows).to_csv(summary_csv, index=False)
+    histogram = ComputedTable(hist_csv, pd.DataFrame.from_records(hist_rows)).export()
+    summary_table = ComputedTable(summary_csv, pd.DataFrame.from_records(summary_rows)).export()
     all_lengths_arr = np.asarray(all_lengths, dtype=np.float64)
-    return hist_csv, summary_csv, {
+    return histogram, summary_table, {
         "run_count": int(all_lengths_arr.size),
         "dwell_frames": _finite_metric_summary(all_lengths_arr),
         "fraction_runs_le_1_frame": _safe_fraction(
@@ -1513,7 +1478,7 @@ def _write_recrossing_metrics(
     lags: list[int],
     frame_spacing: float | None,
     time_unit: str | None,
-) -> tuple[Path, Path, dict[str, Any]]:
+) -> tuple[ComputedTable, ComputedTable, dict[str, Any]]:
     labels_arr = np.asarray(label_matrix, dtype=np.int32)
     frame_count, track_count = labels_arr.shape
     aggregate_rows: list[dict[str, Any]] = []
@@ -1592,9 +1557,9 @@ def _write_recrossing_metrics(
     }
     aggregate_csv = out_dir / "recrossing_metrics.csv"
     source_csv = out_dir / "recrossing_by_source_cluster.csv"
-    pd.DataFrame.from_records(aggregate_rows).to_csv(aggregate_csv, index=False)
-    pd.DataFrame.from_records(source_rows).to_csv(source_csv, index=False)
-    return aggregate_csv, source_csv, summary
+    aggregate = ComputedTable(aggregate_csv, pd.DataFrame.from_records(aggregate_rows)).export()
+    by_source = ComputedTable(source_csv, pd.DataFrame.from_records(source_rows)).export()
+    return aggregate, by_source, summary
 
 
 def _write_cluster_transition_popularity(
@@ -1602,7 +1567,7 @@ def _write_cluster_transition_popularity(
     aggregate_counts: np.ndarray,
     cluster_ids: list[int],
     out_dir: Path,
-) -> tuple[Path, dict[str, Any]]:
+) -> tuple[ComputedTable, dict[str, Any]]:
     counts_arr = np.asarray(aggregate_counts, dtype=np.int64)
     total_valid = int(np.sum(counts_arr))
     total_changed = int(total_valid - np.trace(counts_arr))
@@ -1635,9 +1600,9 @@ def _write_cluster_transition_popularity(
         row["cumulative_fraction_of_changed_transitions"] = _safe_fraction(cumulative, total_changed)
 
     csv_path = Path(out_dir) / "cluster_transition_popularity.csv"
-    pd.DataFrame.from_records(rows).to_csv(csv_path, index=False)
+    table = ComputedTable(csv_path, pd.DataFrame.from_records(rows)).export()
     top_row = rows[0] if rows else None
-    return csv_path, {
+    return table, {
         "transition_count": int(total_changed),
         "matched_observation_count": int(total_valid),
         "top_transition": (
@@ -3052,11 +3017,6 @@ def _compute_and_write_temporal_flicker_metrics(
         time_unit=time_unit,
     )
 
-    dwell_hist_table = pd.read_csv(dwell_hist_csv)
-    dwell_summary_table = pd.read_csv(dwell_summary_csv)
-    recrossing_table = pd.read_csv(recrossing_csv)
-    recrossing_by_source_table = pd.read_csv(recrossing_by_source_csv)
-    transition_popularity_table = pd.read_csv(transition_popularity_csv)
     plot_artifacts = _write_temporal_flicker_metric_plots(
         flicker_dir=flicker_dir,
         cluster_ids=cluster_ids,
@@ -3064,11 +3024,11 @@ def _compute_and_write_temporal_flicker_metrics(
         cluster_display_map=cluster_display_map,
         pair_table=pair_table,
         reciprocal_table=reciprocal_table,
-        transition_table=transition_popularity_table,
-        dwell_hist_table=dwell_hist_table,
-        dwell_summary_table=dwell_summary_table,
-        recrossing_table=recrossing_table,
-        recrossing_by_source_table=recrossing_by_source_table,
+        transition_table=transition_popularity_csv.table,
+        dwell_hist_table=dwell_hist_csv.table,
+        dwell_summary_table=dwell_summary_csv.table,
+        recrossing_table=recrossing_csv.table,
+        recrossing_by_source_table=recrossing_by_source_csv.table,
         margin_table=margin_table,
         transition_popularity_window_frames=int(transition_popularity_window_frames),
     )
@@ -3088,12 +3048,12 @@ def _compute_and_write_temporal_flicker_metrics(
         "artifacts": {
             "frame_pair_metrics_csv": str(frame_pair_csv),
             "reciprocal_pair_flicker_csv": str(reciprocal_csv),
-            "cluster_transition_popularity_csv": str(transition_popularity_csv),
+            "cluster_transition_popularity_csv": str(transition_popularity_csv.path),
             "spatial_coherence_csv": str(spatial_csv),
-            "dwell_time_histogram_csv": str(dwell_hist_csv),
-            "dwell_time_summary_csv": str(dwell_summary_csv),
-            "recrossing_metrics_csv": str(recrossing_csv),
-            "recrossing_by_source_cluster_csv": str(recrossing_by_source_csv),
+            "dwell_time_histogram_csv": str(dwell_hist_csv.path),
+            "dwell_time_summary_csv": str(dwell_summary_csv.path),
+            "recrossing_metrics_csv": str(recrossing_csv.path),
+            "recrossing_by_source_cluster_csv": str(recrossing_by_source_csv.path),
             **plot_artifacts,
         },
         "label_churn_rate": _finite_metric_summary(pair_table["label_churn_rate"].to_numpy(float)),
@@ -3367,303 +3327,380 @@ def append_dynamic_motif_summary(
     summary_markdown_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
-def run_real_md_qualitative_analysis(
-    *,
-    out_dir: Path,
-    model_cfg: Any,
-    analysis_cfg: Any,
-    dataset: Any,
-    latents: np.ndarray,
-    coords: np.ndarray,
-    instance_ids: np.ndarray | None,
-    cluster_labels_by_k: dict[int, np.ndarray],
-    cluster_methods_by_k: dict[int, str],
-    cluster_color_map: dict[int, str] | None,
-    frame_groups: list[tuple[str, np.ndarray]],
-    frame_output_names: dict[str, str],
-    requested_frame_order: list[str] | None,
-    temporal_all_frame_groups: list[tuple[str, np.ndarray]] | None = None,
-    temporal_all_frame_output_names: dict[str, str] | None = None,
-    temporal_all_frame_order: list[str] | None = None,
-    temporal_md_animation_frame_groups: list[tuple[str, np.ndarray]] | None = None,
-    temporal_md_animation_frame_output_names: dict[str, str] | None = None,
-    temporal_md_animation_order: list[str] | None = None,
-    temporal_md_animation_coords: np.ndarray | None = None,
-    temporal_md_animation_cluster_labels_by_k: dict[int, np.ndarray] | None = None,
-    temporal_md_animation_frame_source: str | None = None,
-    temporal_md_animation_spatial_bounds: np.ndarray | None = None,
-    temporal_projection_fit_indices: np.ndarray | None = None,
-    point_scale: float,
-    random_state: int,
-    representative_render_cache: dict[str, Any] | None = None,
-    representative_selection_features: np.ndarray | None = None,
-    representative_selection_info: dict[str, Any] | None = None,
-    cluster_assignment_margins_by_k: dict[int, dict[str, Any]] | None = None,
-    selected_k: int,
-    output_root_dir: Path | None = None,
-) -> dict[str, Any]:
+@dataclass(kw_only=True)
+class RealMDAnalysis:
+    """Shared sample data and label-independent work across clustering resolutions."""
 
-    clustering_cfg = getattr(analysis_cfg, "clustering", None)
-    tsne_cfg = getattr(analysis_cfg, "tsne", None)
-    figure_set_cfg = getattr(analysis_cfg, "figure_set", None)
-    figure_representatives_cfg = getattr(figure_set_cfg, "representatives", None)
-    figure_md_cfg = getattr(figure_set_cfg, "md", None)
-    real_md_cfg = getattr(analysis_cfg, "real_md", None)
-    time_series_cfg = getattr(real_md_cfg, "time_series", None)
-    profile_cfg = getattr(real_md_cfg, "profiles", None)
-    descriptor_cfg = getattr(real_md_cfg, "descriptors", None)
-    projection_cfg = getattr(real_md_cfg, "projection", None)
-    temporal_cfg = getattr(real_md_cfg, "temporal", None)
-    transition_cfg = getattr(real_md_cfg, "transitions", None)
+    out_dir: Path
+    model_cfg: Any
+    analysis_cfg: Any
+    dataset: Any
+    latents: np.ndarray
+    coords: np.ndarray
+    instance_ids: np.ndarray | None
+    cluster_labels_by_k: dict[int, np.ndarray]
+    cluster_methods_by_k: dict[int, str]
+    frame_groups: list[tuple[str, np.ndarray]]
+    frame_output_names: dict[str, str]
+    requested_frame_order: list[str] | None
+    temporal_all_frame_groups: list[tuple[str, np.ndarray]] | None = None
+    temporal_all_frame_output_names: dict[str, str] | None = None
+    temporal_all_frame_order: list[str] | None = None
+    temporal_md_animation_frame_groups: list[tuple[str, np.ndarray]] | None = None
+    temporal_md_animation_frame_output_names: dict[str, str] | None = None
+    temporal_md_animation_order: list[str] | None = None
+    temporal_md_animation_coords: np.ndarray | None = None
+    temporal_md_animation_cluster_labels_by_k: dict[int, np.ndarray] | None = None
+    temporal_md_animation_frame_source: str | None = None
+    temporal_md_animation_spatial_bounds: np.ndarray | None = None
+    temporal_projection_fit_indices: np.ndarray | None = None
+    point_scale: float
+    random_state: int
 
-    selected_k = int(selected_k)
-    if int(selected_k) not in cluster_labels_by_k:
-        raise KeyError(
-            "Requested clustering k is not available for real-MD analysis. "
-            f"Requested k={selected_k}, available={sorted(cluster_labels_by_k.keys())}."
-        )
-    labels = np.asarray(cluster_labels_by_k[int(selected_k)], dtype=int)
-    if instance_ids is not None:
-        instance_ids_arr = np.asarray(instance_ids).reshape(-1)
-        if instance_ids_arr.size == 0:
-            print(
-                "[analysis][real_md] instance_ids are unavailable in the inference cache; "
-                "falling back to coordinate-based matching where supported. "
-                "Identity-tracked temporal outputs remain unavailable until inference is "
-                "re-collected with non-empty instance_ids."
-            )
-            instance_ids_arr = None
-    else:
-        instance_ids_arr = None
-    out_root = real_md_outputs_root(out_dir) if output_root_dir is None else Path(output_root_dir)
-    out_root.mkdir(parents=True, exist_ok=True)
-    frames = _build_frame_slices(
-        frame_groups,
-        frame_output_names,
-        requested_order=requested_frame_order,
-    )
-    temporal_frames = (
-        _build_frame_slices(
-            temporal_all_frame_groups,
-            temporal_all_frame_output_names,
-            requested_order=temporal_all_frame_order,
-        )
-        if temporal_all_frame_groups is not None and temporal_all_frame_output_names is not None
-        else None
-    )
-    temporal_md_animation_frames = (
-        _build_frame_slices(
-            temporal_md_animation_frame_groups,
-            temporal_md_animation_frame_output_names,
-            requested_order=temporal_md_animation_order,
-        )
-        if temporal_md_animation_frame_groups is not None
-        and temporal_md_animation_frame_output_names is not None
-        else None
-    )
-    labels_color_map = cluster_color_map or _build_cluster_color_map(labels)
-    frame_index_lookup, frame_name_lookup, frame_time_lookup = _build_frame_lookup_for_samples(
-        frames,
-        num_samples=len(latents),
-    )
-    missing_count = int(np.sum(frame_index_lookup < 0))
-    if missing_count > 0 and temporal_frames is None:
-        raise RuntimeError(
-            "Frame grouping did not cover all collected samples for real-MD qualitative analysis. "
-            f"Missing assignments={missing_count}, total_samples={len(latents)}."
-        )
-    cluster_groups = _build_cluster_groups(real_md_cfg, frames=frames, labels=labels)
-
-    summary: dict[str, Any] = {
-        "root_dir": str(out_root),
-        "selected_k": int(selected_k),
-        "cluster_method": str(cluster_methods_by_k.get(int(selected_k), "unknown")),
-        "frames": [
-            {
-                "frame_index": int(frame.order_index),
-                "source_name": str(frame.source_name),
-                "output_name": str(frame.output_name),
-                "label": str(frame.label),
-                "num_samples": int(frame.indices.size),
-                "time_value": None if frame.time_value is None else float(frame.time_value),
-                "time_unit": None if frame.time_unit is None else str(frame.time_unit),
-            }
-            for frame in frames
-        ],
-        "analysis_frame_selection": {
-            "assigned_sample_count": int(len(latents) - missing_count),
-            "unassigned_sample_count": int(missing_count),
-            "uses_subset_of_collected_samples": bool(missing_count > 0),
-        },
-        "cluster_groups": cluster_groups,
-    }
-
-    proportions_dir = out_root / "time_series"
-    proportion_frames = temporal_frames if temporal_frames is not None else frames
-    proportions_table, cluster_ids, counts_matrix = _cluster_counts_by_frame(
-        proportion_frames,
-        labels,
-    )
-    cluster_display_map = {
-        int(cluster_id): f"C{pos + 1}"
-        for pos, cluster_id in enumerate(cluster_ids)
-    }
-    cluster_display_labels = [cluster_display_map[int(cluster_id)] for cluster_id in cluster_ids]
-    proportions_csv = proportions_dir / "frame_cluster_proportions.csv"
-    proportions_dir.mkdir(parents=True, exist_ok=True)
-    proportions_table.to_csv(proportions_csv, index=False)
-    summary["cluster_proportions"] = {
-        "frame_source": (
-            "temporal_inference_frames" if temporal_frames is not None else "analysis_frames"
-        ),
-        "num_frames": int(len(proportion_frames)),
-        "table_csv": str(proportions_csv),
-        "plots": save_cluster_proportion_plots(
-            [frame.label for frame in proportion_frames],
-            counts_matrix,
-            cluster_ids,
-            proportions_dir,
-            cluster_color_map=labels_color_map,
-            cluster_display_labels=cluster_display_labels,
-            save_paper_svg=_cfg_bool(time_series_cfg, "paper_enabled", False),
-            stack_alpha=_cfg_float(time_series_cfg, "alpha", 0.78),
-            bar_alpha=_cfg_float(time_series_cfg, "bar_alpha", 0.82),
-            paper_alpha=_cfg_float(time_series_cfg, "paper_alpha", 0.72),
-        ),
-    }
-
-    flicker_cfg = getattr(temporal_cfg, "flicker", None)
-    flicker_enabled_default = bool(len(proportion_frames) >= 2)
-    if _cfg_bool(flicker_cfg, "enabled", flicker_enabled_default):
-        recrossing_lags_raw = _to_plain(
-            getattr(flicker_cfg, "recrossing_lags", [1, 2, 5, 10, 20, 50])
-        )
-        if isinstance(recrossing_lags_raw, str):
-            recrossing_lags = [
-                int(token.strip())
-                for token in recrossing_lags_raw.split(",")
-                if token.strip()
-            ]
-        elif isinstance(recrossing_lags_raw, (int, float)):
-            recrossing_lags = [int(recrossing_lags_raw)]
+    def __post_init__(self):
+        self.clustering_cfg = getattr(self.analysis_cfg, "clustering", None)
+        self.tsne_cfg = getattr(self.analysis_cfg, "tsne", None)
+        self.figure_set_cfg = getattr(self.analysis_cfg, "figure_set", None)
+        self.figure_representatives_cfg = getattr(self.figure_set_cfg, "representatives", None)
+        self.figure_md_cfg = getattr(self.figure_set_cfg, "md", None)
+        self.real_md_cfg = getattr(self.analysis_cfg, "real_md", None)
+        self.time_series_cfg = getattr(self.real_md_cfg, "time_series", None)
+        self.profile_cfg = getattr(self.real_md_cfg, "profiles", None)
+        self.descriptor_cfg = getattr(self.real_md_cfg, "descriptors", None)
+        self.projection_cfg = getattr(self.real_md_cfg, "projection", None)
+        self.temporal_cfg = getattr(self.real_md_cfg, "temporal", None)
+        self.transition_cfg = getattr(self.real_md_cfg, "transitions", None)
+        if self.instance_ids is not None:
+            self.instance_ids_arr = np.asarray(self.instance_ids).reshape(-1)
+            if self.instance_ids_arr.size == 0:
+                print(
+                    "[analysis][real_md] instance_ids are unavailable in the inference cache; "
+                    "falling back to coordinate-based matching where supported. "
+                    "Identity-tracked temporal outputs remain unavailable until inference is "
+                    "re-collected with non-empty instance_ids."
+                )
+                self.instance_ids_arr = None
         else:
-            recrossing_lags = [int(v) for v in list(recrossing_lags_raw)]
-        if not recrossing_lags:
-            raise ValueError("real_md.temporal.flicker.recrossing_lags must not be empty.")
-        selected_assignment_margins = None
-        if cluster_assignment_margins_by_k is not None:
-            selected_assignment_margins = cluster_assignment_margins_by_k.get(int(selected_k))
-            if selected_assignment_margins is None:
-                selected_assignment_margins = cluster_assignment_margins_by_k.get(str(int(selected_k)))
-        summary["flicker_metrics"] = _compute_and_write_temporal_flicker_metrics(
-            frames=proportion_frames,
-            frame_source=(
-                "temporal_inference_frames" if temporal_frames is not None else "analysis_frames"
-            ),
-            coords=np.asarray(coords, dtype=np.float32),
-            labels=labels,
-            instance_ids=instance_ids_arr,
-            cluster_ids=cluster_ids,
-            assignment_margins=selected_assignment_margins,
-            out_dir=out_root,
-            cluster_color_map=labels_color_map,
-            cluster_display_map=cluster_display_map,
-            neighbor_k=_cfg_int(flicker_cfg, "neighbor_k", 12),
-            isolated_neighbor_change_fraction=_cfg_float(
-                flicker_cfg,
-                "isolated_neighbor_change_fraction",
-                0.25,
-            ),
-            coherent_same_transition_fraction=_cfg_float(
-                flicker_cfg,
-                "coherent_same_transition_fraction",
-                0.50,
-            ),
-            recrossing_lags=recrossing_lags,
-            transition_popularity_window_frames=_cfg_int(
-                flicker_cfg,
-                "transition_popularity_window_frames",
-                25,
-            ),
+            self.instance_ids_arr = None
+        self.frames = _build_frame_slices(
+            self.frame_groups,
+            self.frame_output_names,
+            requested_order=self.requested_frame_order,
         )
+        self.temporal_frames = (
+            _build_frame_slices(
+                self.temporal_all_frame_groups,
+                self.temporal_all_frame_output_names,
+                requested_order=self.temporal_all_frame_order,
+            )
+            if self.temporal_all_frame_groups is not None and self.temporal_all_frame_output_names is not None
+            else None
+        )
+        self.temporal_md_animation_frames = (
+            _build_frame_slices(
+                self.temporal_md_animation_frame_groups,
+                self.temporal_md_animation_frame_output_names,
+                requested_order=self.temporal_md_animation_order,
+            )
+            if self.temporal_md_animation_frame_groups is not None
+            and self.temporal_md_animation_frame_output_names is not None
+            else None
+        )
+        self.frame_index_lookup, self.frame_name_lookup, self.frame_time_lookup = _build_frame_lookup_for_samples(
+            self.frames,
+            num_samples=len(self.latents),
+        )
+        self.missing_count = int(np.sum(self.frame_index_lookup < 0))
+        if self.missing_count > 0 and self.temporal_frames is None:
+            raise RuntimeError(
+                "Frame grouping did not cover all collected samples for real-MD qualitative analysis. "
+                f"Missing assignments={self.missing_count}, total_samples={len(self.latents)}."
+            )
+        self._descriptor_samples = {}
+        self._temporal_projection = None
+        self.projection_method = str(getattr(self.projection_cfg, "method", "umap")).strip().lower()
+        self.projection_prep_options = {
+            "random_state": int(self.random_state),
+            "l2_normalize": bool(getattr(self.clustering_cfg, "l2_normalize", True)),
+            "standardize": bool(getattr(self.clustering_cfg, "standardize", True)),
+            "pca_variance": float(getattr(self.clustering_cfg, "pca_variance", 0.98)),
+            "pca_max_components": int(getattr(self.clustering_cfg, "pca_max_components", 32)),
+        }
+        self.projection_fit_options = {
+            "method": self.projection_method,
+            "random_state": int(self.random_state),
+            "umap_neighbors": _cfg_int(self.projection_cfg, "umap_neighbors", 30),
+            "umap_min_dist": _cfg_float(self.projection_cfg, "umap_min_dist", 0.15),
+            "umap_metric": str(getattr(self.projection_cfg, "umap_metric", "euclidean")),
+            "umap_backend": str(getattr(self.projection_cfg, "umap_backend", "auto")),
+            "tsne_n_iter": _cfg_int(self.tsne_cfg, "n_iter", 1000),
+        }
 
-    if _cfg_bool(profile_cfg, "enabled", True):
-        representatives_dir = out_root / "representatives"
+    def descriptor_inputs(self, sample_indices):
+        for sample_idx in sample_indices:
+            idx = int(sample_idx)
+            if idx not in self._descriptor_samples:
+                points = np.asarray(_load_points_from_dataset(
+                    self.dataset, idx, point_scale=float(self.point_scale)), dtype=np.float32)
+                self._descriptor_samples[idx] = (points, _compute_sample_properties(points))
+        samples = [self._descriptor_samples[int(idx)] for idx in sample_indices]
+        return np.stack([points for points, _ in samples]), [props for _, props in samples]
+
+    def project(self, sample_indices):
+        temporal_fit = (self.temporal_projection_fit_indices is not None
+                        and self.projection_method in {"umap", "pca"})
+        if temporal_fit and self._temporal_projection is not None:
+            state = self._temporal_projection
+            return state.transform(self.latents[sample_indices]), state
+        fit_indices = (np.unique(np.asarray(self.temporal_projection_fit_indices, dtype=int).reshape(-1))
+                       if temporal_fit else sample_indices)
+        features, prep, prep_info = _prepare_projection_features(
+            np.asarray(self.latents, dtype=np.float32)[fit_indices], **self.projection_prep_options)
+        embedding, info, model = _fit_projection_embedding(features, **self.projection_fit_options)
+        state = ProjectionState(self.projection_method, prep, model, {**prep_info, **info},
+                                fit_indices if temporal_fit else None)
+        if temporal_fit:
+            state.info.update(fit_sample_count=int(fit_indices.size),
+                              fit_sample_source="temporal_inference_fraction")
+            self._temporal_projection = state
+            embedding = state.transform(self.latents[sample_indices])
+        return embedding, state
+
+    def run(self, *, selected_k, cluster_color_map, representative_render_cache=None,
+            representative_selection_features=None, representative_selection_info=None,
+            assignment_margins=None, output_root_dir=None):
+        return _RealMDRun(self, int(selected_k), cluster_color_map, representative_render_cache,
+                          representative_selection_features, representative_selection_info,
+                          assignment_margins, output_root_dir).run()
+
+
+@dataclass
+class _RealMDRun:
+    analysis: RealMDAnalysis
+    selected_k: int
+    cluster_color_map: dict[int, str] | None
+    representative_render_cache: dict[str, Any] | None
+    representative_selection_features: np.ndarray | None
+    representative_selection_info: dict[str, Any] | None
+    assignment_margins: dict[str, Any] | None
+    output_root_dir: Path | None
+
+    def __post_init__(self):
+        data = self.analysis
+        self.selected_k = int(self.selected_k)
+        if int(self.selected_k) not in data.cluster_labels_by_k:
+            raise KeyError(
+                "Requested clustering k is not available for real-MD analysis. "
+                f"Requested k={self.selected_k}, available={sorted(data.cluster_labels_by_k.keys())}."
+            )
+        self.labels = np.asarray(data.cluster_labels_by_k[int(self.selected_k)], dtype=int)
+        self.out_root = real_md_outputs_root(data.out_dir) if self.output_root_dir is None else Path(self.output_root_dir)
+        self.out_root.mkdir(parents=True, exist_ok=True)
+        self.labels_color_map = self.cluster_color_map or _build_cluster_color_map(self.labels)
+        self.cluster_groups = _build_cluster_groups(data.real_md_cfg, frames=data.frames, labels=self.labels)
+
+        self.summary: dict[str, Any] = {
+            "root_dir": str(self.out_root),
+            "selected_k": int(self.selected_k),
+            "cluster_method": str(data.cluster_methods_by_k.get(int(self.selected_k), "unknown")),
+            "frames": [
+                {
+                    "frame_index": int(frame.order_index),
+                    "source_name": str(frame.source_name),
+                    "output_name": str(frame.output_name),
+                    "label": str(frame.label),
+                    "num_samples": int(frame.indices.size),
+                    "time_value": None if frame.time_value is None else float(frame.time_value),
+                    "time_unit": None if frame.time_unit is None else str(frame.time_unit),
+                }
+                for frame in data.frames
+            ],
+            "analysis_frame_selection": {
+                "assigned_sample_count": int(len(data.latents) - data.missing_count),
+                "unassigned_sample_count": int(data.missing_count),
+                "uses_subset_of_collected_samples": bool(data.missing_count > 0),
+            },
+            "cluster_groups": self.cluster_groups,
+        }
+
+    def run(self):
+        data = self.analysis
+        self.write_population_diagnostics()
+        if _cfg_bool(data.profile_cfg, "enabled", True):
+            self.render_representatives()
+        if _cfg_bool(data.descriptor_cfg, "enabled", False):
+            self.write_descriptors()
+        self.write_projection()
+        self.transition_tol = (_resolve_transition_tolerance(
+            model_cfg=data.model_cfg, dataset=data.dataset, transition_cfg=data.transition_cfg)
+            if _cfg_bool(data.transition_cfg, "enabled", True) else None)
+        if _cfg_bool(data.temporal_cfg, "enabled", False):
+            self.render_temporal()
+        if _cfg_bool(data.transition_cfg, "enabled", True) and len(data.frames) >= 2:
+            self.render_transitions()
+        return self.publish()
+
+    def write_population_diagnostics(self):
+        data = self.analysis
+        proportions_dir = self.out_root / "time_series"
+        self.proportion_frames = data.temporal_frames if data.temporal_frames is not None else data.frames
+        proportions_table, self.cluster_ids, counts_matrix = _cluster_counts_by_frame(
+            self.proportion_frames,
+            self.labels,
+        )
+        self.cluster_display_map = {
+            int(cluster_id): f"C{pos + 1}"
+            for pos, cluster_id in enumerate(self.cluster_ids)
+        }
+        self.cluster_display_labels = [self.cluster_display_map[int(cluster_id)] for cluster_id in self.cluster_ids]
+        proportions_csv = proportions_dir / "frame_cluster_proportions.csv"
+        proportions_dir.mkdir(parents=True, exist_ok=True)
+        proportions_table.to_csv(proportions_csv, index=False)
+        self.summary["cluster_proportions"] = {
+            "frame_source": (
+                "temporal_inference_frames" if data.temporal_frames is not None else "analysis_frames"
+            ),
+            "num_frames": int(len(self.proportion_frames)),
+            "table_csv": str(proportions_csv),
+            "plots": save_cluster_proportion_plots(
+                [frame.label for frame in self.proportion_frames],
+                counts_matrix,
+                self.cluster_ids,
+                proportions_dir,
+                cluster_color_map=self.labels_color_map,
+                cluster_display_labels=self.cluster_display_labels,
+                save_paper_svg=_cfg_bool(data.time_series_cfg, "paper_enabled", False),
+                stack_alpha=_cfg_float(data.time_series_cfg, "alpha", 0.78),
+                bar_alpha=_cfg_float(data.time_series_cfg, "bar_alpha", 0.82),
+                paper_alpha=_cfg_float(data.time_series_cfg, "paper_alpha", 0.72),
+            ),
+        }
+
+        flicker_cfg = getattr(data.temporal_cfg, "flicker", None)
+        flicker_enabled_default = bool(len(self.proportion_frames) >= 2)
+        if _cfg_bool(flicker_cfg, "enabled", flicker_enabled_default):
+            recrossing_lags_raw = _to_plain(
+                getattr(flicker_cfg, "recrossing_lags", [1, 2, 5, 10, 20, 50])
+            )
+            if isinstance(recrossing_lags_raw, str):
+                recrossing_lags = [
+                    int(token.strip())
+                    for token in recrossing_lags_raw.split(",")
+                    if token.strip()
+                ]
+            elif isinstance(recrossing_lags_raw, (int, float)):
+                recrossing_lags = [int(recrossing_lags_raw)]
+            else:
+                recrossing_lags = [int(v) for v in list(recrossing_lags_raw)]
+            if not recrossing_lags:
+                raise ValueError("real_md.temporal.flicker.recrossing_lags must not be empty.")
+            self.summary["flicker_metrics"] = _compute_and_write_temporal_flicker_metrics(
+                frames=self.proportion_frames,
+                frame_source=(
+                    "temporal_inference_frames" if data.temporal_frames is not None else "analysis_frames"
+                ),
+                coords=np.asarray(data.coords, dtype=np.float32),
+                labels=self.labels,
+                instance_ids=data.instance_ids_arr,
+                cluster_ids=self.cluster_ids,
+                assignment_margins=self.assignment_margins,
+                out_dir=self.out_root,
+                cluster_color_map=self.labels_color_map,
+                cluster_display_map=self.cluster_display_map,
+                neighbor_k=_cfg_int(flicker_cfg, "neighbor_k", 12),
+                isolated_neighbor_change_fraction=_cfg_float(
+                    flicker_cfg,
+                    "isolated_neighbor_change_fraction",
+                    0.25,
+                ),
+                coherent_same_transition_fraction=_cfg_float(
+                    flicker_cfg,
+                    "coherent_same_transition_fraction",
+                    0.50,
+                ),
+                recrossing_lags=recrossing_lags,
+                transition_popularity_window_frames=_cfg_int(
+                    flicker_cfg,
+                    "transition_popularity_window_frames",
+                    25,
+                ),
+            )
+
+    def render_representatives(self):
+        data = self.analysis
+        representatives_dir = self.out_root / "representatives"
         representatives_dir.mkdir(parents=True, exist_ok=True)
-        representative_base_path = representatives_dir / f"04_cluster_representatives_k{int(selected_k)}.png"
+        representative_base_path = representatives_dir / f"04_cluster_representatives_k{int(self.selected_k)}.png"
         shared_style_summary = _save_cluster_representatives_figure(
-            dataset,
-            np.asarray(latents, dtype=np.float32),
-            labels,
-            labels_color_map,
+            data.dataset,
+            np.asarray(data.latents, dtype=np.float32),
+            self.labels,
+            self.labels_color_map,
             representative_base_path,
-            point_scale=float(point_scale),
+            point_scale=float(data.point_scale),
             target_points=_cfg_int(
-                profile_cfg,
+                data.profile_cfg,
                 "target_points",
                 max(
                     32,
-                    int(getattr(model_cfg.data, "model_points", getattr(model_cfg.data, "num_points", 64))),
+                    int(getattr(data.model_cfg.data, "model_points", getattr(data.model_cfg.data, "num_points", 64))),
                 ),
             ),
-            orientation_method=str(getattr(figure_representatives_cfg, "orientation", "pca")),
-            view_elev=float(getattr(figure_representatives_cfg, "view_elev", 22.0)),
-            view_azim=float(getattr(figure_representatives_cfg, "view_azim", 38.0)),
-            projection=str(getattr(figure_representatives_cfg, "projection", "ortho")),
+            orientation_method=str(getattr(data.figure_representatives_cfg, "orientation", "pca")),
+            view_elev=float(getattr(data.figure_representatives_cfg, "view_elev", 22.0)),
+            view_azim=float(getattr(data.figure_representatives_cfg, "view_azim", 38.0)),
+            projection=str(getattr(data.figure_representatives_cfg, "projection", "ortho")),
             representative_ptm_enabled=bool(
-                getattr(figure_representatives_cfg, "ptm_enabled", False)
+                getattr(data.figure_representatives_cfg, "ptm_enabled", False)
             ),
             representative_cna_enabled=bool(
-                getattr(figure_representatives_cfg, "cna_enabled", False)
+                getattr(data.figure_representatives_cfg, "cna_enabled", False)
             ),
             representative_cna_max_signatures=int(
-                getattr(figure_representatives_cfg, "cna_max_signatures", 5)
+                getattr(data.figure_representatives_cfg, "cna_max_signatures", 5)
             ),
             representative_center_atom_tolerance=float(
-                getattr(figure_representatives_cfg, "center_atom_tolerance", 1e-6)
+                getattr(data.figure_representatives_cfg, "center_atom_tolerance", 1e-6)
             ),
             representative_shell_min_neighbors=int(
-                getattr(figure_representatives_cfg, "shell_min_neighbors", 8)
+                getattr(data.figure_representatives_cfg, "shell_min_neighbors", 8)
             ),
             representative_shell_max_neighbors=int(
-                getattr(figure_representatives_cfg, "shell_max_neighbors", 24)
+                getattr(data.figure_representatives_cfg, "shell_max_neighbors", 24)
             ),
-            representative_render_cache=representative_render_cache,
-            selection_features=representative_selection_features,
-            selection_info=representative_selection_info,
+            representative_render_cache=self.representative_render_cache,
+            selection_features=self.representative_selection_features,
+            selection_info=self.representative_selection_info,
         )
-        summary["representatives"] = {
+        self.summary["representatives"] = {
             "root_dir": str(representatives_dir),
             "shared_style": shared_style_summary,
             "primary_figure": str(shared_style_summary["out_file"]),
             "interactive_figure": str(shared_style_summary['interactive_file']),
         }
 
-    if _cfg_bool(descriptor_cfg, "enabled", False):
-        descriptor_dir = out_root / "descriptors"
-        descriptor_max_samples = getattr(descriptor_cfg, "max_samples", 6000)
+    def write_descriptors(self):
+        data = self.analysis
+        descriptor_dir = self.out_root / "descriptors"
+        descriptor_max_samples = getattr(data.descriptor_cfg, "max_samples", 6000)
         descriptor_indices = _resolve_descriptor_sampling_indices(
-            frames,
-            labels,
+            data.frames,
+            self.labels,
             max_samples=None if descriptor_max_samples is None else int(descriptor_max_samples),
-            random_state=int(random_state),
+            random_state=int(data.random_state),
         )
-        descriptor_points = _load_point_cloud_batch(
-            dataset,
-            descriptor_indices,
-            point_scale=float(point_scale),
-        )
+        descriptor_points, descriptor_properties = data.descriptor_inputs(descriptor_indices)
         descriptor_table = _build_builtin_descriptor_table(
-            point_clouds=descriptor_points,
+            properties=descriptor_properties,
             sample_indices=descriptor_indices,
-            labels=labels,
-            coords=np.asarray(coords, dtype=np.float32),
-            frame_index_lookup=frame_index_lookup,
-            frame_name_lookup=frame_name_lookup,
-            frame_time_lookup=frame_time_lookup,
+            labels=self.labels,
+            coords=np.asarray(data.coords, dtype=np.float32),
+            frame_index_lookup=data.frame_index_lookup,
+            frame_name_lookup=data.frame_name_lookup,
+            frame_time_lookup=data.frame_time_lookup,
         )
 
-        optional_descriptors_cfg = _to_plain(getattr(descriptor_cfg, "optional", None))
+        optional_descriptors_cfg = _to_plain(getattr(data.descriptor_cfg, "optional", None))
         optional_descriptor_summaries: list[dict[str, Any]] = []
         scalar_columns = list(_BUILTIN_SCALAR_COLUMNS)
         if isinstance(optional_descriptors_cfg, dict):
@@ -3676,7 +3713,7 @@ def run_real_md_qualitative_analysis(
                 descriptor_df, descriptor_info = _evaluate_optional_descriptor(
                     str(descriptor_name),
                     point_clouds=descriptor_points,
-                    point_scale=float(point_scale),
+                    point_scale=float(data.point_scale),
                     descriptor_cfg=optional_descriptor_cfg,
                 )
                 descriptor_table = pd.concat([descriptor_table.reset_index(drop=True), descriptor_df], axis=1)
@@ -3684,7 +3721,7 @@ def run_real_md_qualitative_analysis(
                     scalar_columns.extend(descriptor_info["feature_names"])
                 optional_descriptor_summaries.append(descriptor_info)
 
-        requested_scalar_columns_raw = _to_plain(getattr(descriptor_cfg, "scalar_columns", None))
+        requested_scalar_columns_raw = _to_plain(getattr(data.descriptor_cfg, "scalar_columns", None))
         if requested_scalar_columns_raw:
             scalar_columns = [str(v) for v in list(requested_scalar_columns_raw)]
         scalar_columns = [column for column in scalar_columns if column in descriptor_table.columns]
@@ -3699,7 +3736,7 @@ def run_real_md_qualitative_analysis(
         descriptor_table.to_csv(sample_table_csv, index=False)
 
         scalar_violin_path = descriptor_dir / "descriptor_violin_grid.png"
-        summary["descriptor_analysis"] = {
+        self.summary["descriptor_analysis"] = {
             "sample_table_csv": str(sample_table_csv),
             "scalar_violin_plot": str(scalar_violin_path),
             "scalar_columns": scalar_columns,
@@ -3711,8 +3748,8 @@ def run_real_md_qualitative_analysis(
             cluster_column="cluster_id",
             scalar_columns=scalar_columns,
             out_file=scalar_violin_path,
-            cluster_color_map=labels_color_map,
-            cluster_label_map=cluster_display_map,
+            cluster_color_map=self.labels_color_map,
+            cluster_label_map=self.cluster_display_map,
         )
 
         cna_descriptor_enabled = any(
@@ -3722,8 +3759,8 @@ def run_real_md_qualitative_analysis(
         if cna_descriptor_enabled:
             cna_cluster_summary, cna_frame_summary, cna_signature_columns = _build_cna_signature_summary_tables(
                 descriptor_table,
-                cluster_ids=cluster_ids,
-                frames=frames,
+                cluster_ids=self.cluster_ids,
+                frames=data.frames,
             )
             cna_cluster_csv = descriptor_dir / "cna_signature_by_cluster.csv"
             cna_frame_csv = descriptor_dir / "cna_signature_by_frame.csv"
@@ -3732,7 +3769,7 @@ def run_real_md_qualitative_analysis(
 
             cna_time_plot = descriptor_dir / "cna_signature_time_stacked_area.png"
             time_plot_summary = save_cna_signature_time_series(
-                [str(frame.label) for frame in frames],
+                [str(frame.label) for frame in data.frames],
                 cna_frame_summary[cna_signature_columns].to_numpy(dtype=np.float64),
                 signature_labels=[
                     "other" if column == "cna_other" else column.replace("cna_", "")
@@ -3741,156 +3778,89 @@ def run_real_md_qualitative_analysis(
                 out_file=cna_time_plot,
                 save_svg=True,
             )
-            summary["descriptor_analysis"]["cna_visualization"] = {
+            self.summary["descriptor_analysis"]["cna_visualization"] = {
                 "cluster_csv": str(cna_cluster_csv),
                 "frame_csv": str(cna_frame_csv),
                 "time_series_plot": str(time_plot_summary["out_file"]),
                 "time_series_plot_svg": time_plot_summary.get("svg"),
                 "signature_columns": list(cna_signature_columns),
             }
-    else:
-        descriptor_table = pd.DataFrame()
 
-    projection_dir = out_root / "latent"
-    projection_method = str(getattr(projection_cfg, "method", "umap")).strip().lower()
-    projection_max_samples = getattr(projection_cfg, "max_samples", 15000)
-    projection_indices = _resolve_descriptor_sampling_indices(
-        frames,
-        labels,
-        max_samples=None if projection_max_samples is None else int(projection_max_samples),
-        random_state=int(random_state) + 11,
-    )
-    projection_l2_normalize = bool(getattr(clustering_cfg, "l2_normalize", True))
-    projection_standardize = bool(getattr(clustering_cfg, "standardize", True))
-    projection_pca_variance = float(getattr(clustering_cfg, "pca_variance", 0.98))
-    projection_pca_max_components = int(getattr(clustering_cfg, "pca_max_components", 32))
-    projection_umap_neighbors = _cfg_int(projection_cfg, "umap_neighbors", 30)
-    projection_umap_min_dist = _cfg_float(projection_cfg, "umap_min_dist", 0.15)
-    projection_umap_metric = str(getattr(projection_cfg, "umap_metric", "euclidean"))
-    projection_umap_backend = str(getattr(projection_cfg, "umap_backend", "auto"))
-    projection_tsne_n_iter = _cfg_int(tsne_cfg, "n_iter", 1000)
-
-    fitted_projection = None
-    projection_feature_prep: ProjectionFeaturePrep | None = None
-    temporal_fit_indices = None
-    if temporal_projection_fit_indices is not None and projection_method in {"umap", "pca"}:
-        temporal_fit_indices = np.asarray(temporal_projection_fit_indices, dtype=int).reshape(-1)
-        temporal_fit_indices = np.unique(temporal_fit_indices.astype(int, copy=False))
-        fit_features, projection_feature_prep, projection_prep_info = _prepare_projection_features(
-            np.asarray(latents, dtype=np.float32)[temporal_fit_indices],
-            random_state=int(random_state),
-            l2_normalize=projection_l2_normalize,
-            standardize=projection_standardize,
-            pca_variance=projection_pca_variance,
-            pca_max_components=projection_pca_max_components,
+    def write_projection(self):
+        data = self.analysis
+        projection_dir = self.out_root / "latent"
+        projection_max_samples = getattr(data.projection_cfg, "max_samples", 15000)
+        projection_indices = _resolve_descriptor_sampling_indices(
+            data.frames,
+            self.labels,
+            max_samples=None if projection_max_samples is None else int(projection_max_samples),
+            random_state=int(data.random_state) + 11,
         )
-        _, projection_model_info, fitted_projection = _fit_projection_embedding(
-            fit_features,
-            method=projection_method,
-            random_state=int(random_state),
-            umap_neighbors=projection_umap_neighbors,
-            umap_min_dist=projection_umap_min_dist,
-            umap_metric=projection_umap_metric,
-            umap_backend=projection_umap_backend,
-            tsne_n_iter=projection_tsne_n_iter,
+        projection_embedding, self.projection = data.project(projection_indices)
+        projection_info = self.projection.info
+        projection_dir.mkdir(parents=True, exist_ok=True)
+        projection_table = pd.DataFrame(
+            {
+                "sample_index": projection_indices.astype(int),
+                "x": projection_embedding[:, 0].astype(float),
+                "y": projection_embedding[:, 1].astype(float),
+                "cluster_id": self.labels[projection_indices].astype(int),
+                "frame_index": data.frame_index_lookup[projection_indices].astype(int),
+                "frame_name": [data.frame_name_lookup[int(idx)] for idx in projection_indices],
+                "time_value": [
+                    float(data.frame_time_lookup[int(idx)]) if np.isfinite(data.frame_time_lookup[int(idx)]) else np.nan
+                    for idx in projection_indices
+                ],
+            }
         )
-        projection_embedding = _transform_projection_features(
-            projection_feature_prep,
-            np.asarray(latents, dtype=np.float32)[projection_indices],
-            method=projection_method,
-            fitted_projection=fitted_projection,
-        )
-        projection_info = {
-            **projection_prep_info,
-            **projection_model_info,
-            "fit_sample_count": int(temporal_fit_indices.size),
-            "fit_sample_source": "temporal_inference_fraction",
+        projection_csv = projection_dir / "latent_projection.csv"
+        projection_table.to_csv(projection_csv, index=False)
+        cluster_plot = projection_dir / f"latent_projection_{data.projection_method}_clusters.png"
+        self.summary["latent_projection"] = {
+            "projection_csv": str(projection_csv),
+            "projection_info": projection_info,
+            "plots": {
+                "cluster": str(cluster_plot),
+            },
+            "num_samples": int(projection_table.shape[0]),
         }
-    else:
-        projection_embedding, projection_info = _compute_projection(
-            np.asarray(latents, dtype=np.float32)[projection_indices],
-            method=projection_method,
-            random_state=int(random_state),
-            l2_normalize=projection_l2_normalize,
-            standardize=projection_standardize,
-            pca_variance=projection_pca_variance,
-            pca_max_components=projection_pca_max_components,
-            umap_neighbors=projection_umap_neighbors,
-            umap_min_dist=projection_umap_min_dist,
-            umap_metric=projection_umap_metric,
-            umap_backend=projection_umap_backend,
-            tsne_n_iter=projection_tsne_n_iter,
-        )
-    projection_dir.mkdir(parents=True, exist_ok=True)
-    projection_table = pd.DataFrame(
-        {
-            "sample_index": projection_indices.astype(int),
-            "x": projection_embedding[:, 0].astype(float),
-            "y": projection_embedding[:, 1].astype(float),
-            "cluster_id": labels[projection_indices].astype(int),
-            "frame_index": frame_index_lookup[projection_indices].astype(int),
-            "frame_name": [frame_name_lookup[int(idx)] for idx in projection_indices],
-            "time_value": [
-                float(frame_time_lookup[int(idx)]) if np.isfinite(frame_time_lookup[int(idx)]) else np.nan
-                for idx in projection_indices
-            ],
-        }
-    )
-    projection_csv = projection_dir / "latent_projection.csv"
-    projection_table.to_csv(projection_csv, index=False)
-    cluster_plot = projection_dir / f"latent_projection_{projection_method}_clusters.png"
-    summary["latent_projection"] = {
-        "projection_csv": str(projection_csv),
-        "projection_info": projection_info,
-        "plots": {
-            "cluster": str(cluster_plot),
-        },
-        "num_samples": int(projection_table.shape[0]),
-    }
-    save_embedding_discrete_plot(
-        projection_embedding,
-        labels[projection_indices],
-        cluster_plot,
-        title=f"Latent projection ({projection_info['method']}) colored by cluster",
-        cluster_color_map=labels_color_map,
-        display_label_map=cluster_display_map,
-    )
-
-    transition_tol = None
-    if _cfg_bool(transition_cfg, "enabled", True):
-        transition_tol = _resolve_transition_tolerance(
-            model_cfg=model_cfg,
-            dataset=dataset,
-            transition_cfg=transition_cfg,
+        save_embedding_discrete_plot(
+            projection_embedding,
+            self.labels[projection_indices],
+            cluster_plot,
+            title=f"Latent projection ({projection_info['method']}) colored by cluster",
+            cluster_color_map=self.labels_color_map,
+            display_label_map=self.cluster_display_map,
         )
 
-    if _cfg_bool(temporal_cfg, "enabled", False):
-        if temporal_frames is None or not temporal_frames:
+    def render_temporal(self):
+        data = self.analysis
+        if data.temporal_frames is None or not data.temporal_frames:
             raise ValueError(
                 "real_md.temporal.enabled=true requires temporal_all_frame_groups to be provided."
             )
-        temporal_dir = out_root / "temporal"
+        temporal_dir = self.out_root / "temporal"
         temporal_dir.mkdir(parents=True, exist_ok=True)
-        frame_duration_ms = _cfg_int(temporal_cfg, "frame_duration_ms", 450)
-        total_duration_seconds_raw = getattr(temporal_cfg, "total_duration_seconds", None)
+        frame_duration_ms = _cfg_int(data.temporal_cfg, "frame_duration_ms", 450)
+        total_duration_seconds_raw = getattr(data.temporal_cfg, "total_duration_seconds", None)
         total_duration_seconds = (
             None if total_duration_seconds_raw is None else float(total_duration_seconds_raw)
         )
-        animation_max_points_raw = getattr(temporal_cfg, "animation_max_points", None)
+        animation_max_points_raw = getattr(data.temporal_cfg, "animation_max_points", None)
         animation_max_points = (
             None
             if animation_max_points_raw is None or int(animation_max_points_raw) <= 0
             else int(animation_max_points_raw)
         )
         temporal_animation_indices = _select_temporal_animation_sample_indices(
-            temporal_frames,
-            labels,
+            data.temporal_frames,
+            self.labels,
             max_points_per_frame=animation_max_points,
-            random_state=int(random_state),
+            random_state=int(data.random_state),
         )
         temporal_summary: dict[str, Any] = {
             "root_dir": str(temporal_dir),
-            "frame_count": int(len(temporal_frames)),
+            "frame_count": int(len(data.temporal_frames)),
             "render_max_points_per_frame": (
                 None if animation_max_points is None else int(animation_max_points)
             ),
@@ -3901,38 +3871,38 @@ def run_real_md_qualitative_analysis(
                     "sample_count": int(frame.indices.size),
                     "render_count": int(temporal_animation_indices[str(frame.source_name)].size),
                 }
-                for frame in temporal_frames
+                for frame in data.temporal_frames
             ],
         }
         temporal_frame_label_by_name = {
             str(frame.source_name): str(frame.label)
-            for frame in temporal_frames
+            for frame in data.temporal_frames
         }
         temporal_animation_jobs: list[tuple[str, str, dict[str, Any]]] = []
 
-        temporal_md_cfg = getattr(temporal_cfg, "md_space", None)
+        temporal_md_cfg = getattr(data.temporal_cfg, "md_space", None)
         if _cfg_bool(temporal_md_cfg, "enabled", True):
             md_animation_frames = (
-                temporal_md_animation_frames
-                if temporal_md_animation_frames is not None
-                else temporal_frames
+                data.temporal_md_animation_frames
+                if data.temporal_md_animation_frames is not None
+                else data.temporal_frames
             )
             if md_animation_frames is None or not md_animation_frames:
                 raise ValueError(
                     "MD-space temporal animation requires temporal frames, but none were provided."
                 )
             md_animation_coords = (
-                np.asarray(temporal_md_animation_coords, dtype=np.float32)
-                if temporal_md_animation_coords is not None
-                else np.asarray(coords, dtype=np.float32)
+                np.asarray(data.temporal_md_animation_coords, dtype=np.float32)
+                if data.temporal_md_animation_coords is not None
+                else np.asarray(data.coords, dtype=np.float32)
             )
             md_animation_labels = (
                 np.asarray(
-                    temporal_md_animation_cluster_labels_by_k[int(selected_k)],
+                    data.temporal_md_animation_cluster_labels_by_k[int(self.selected_k)],
                     dtype=int,
                 )
-                if temporal_md_animation_cluster_labels_by_k is not None
-                else np.asarray(labels, dtype=int)
+                if data.temporal_md_animation_cluster_labels_by_k is not None
+                else np.asarray(self.labels, dtype=int)
             )
             md_animation_max_points_raw = getattr(
                 temporal_md_cfg,
@@ -3948,7 +3918,7 @@ def run_real_md_qualitative_analysis(
                 md_animation_frames,
                 md_animation_labels,
                 max_points_per_frame=md_animation_max_points,
-                random_state=int(random_state),
+                random_state=int(data.random_state),
             )
             temporal_md_records = [
                 {
@@ -3969,12 +3939,12 @@ def run_real_md_qualitative_analysis(
                 }
                 for frame in md_animation_frames
             ]
-            md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{int(selected_k)}.gif"
+            md_animation_path = temporal_dir / f"md_space_clusters_diagonal_cut_k{int(self.selected_k)}.gif"
             temporal_summary["md_space_frame_source"] = (
-                str(temporal_md_animation_frame_source)
-                if temporal_md_animation_frame_source is not None
+                str(data.temporal_md_animation_frame_source)
+                if data.temporal_md_animation_frame_source is not None
                 else "dense_selected_frames"
-                if temporal_md_animation_frames is not None
+                if data.temporal_md_animation_frames is not None
                 else "temporal_inference_frames"
             )
             temporal_summary["md_space_frame_count"] = int(len(md_animation_frames))
@@ -4001,58 +3971,58 @@ def run_real_md_qualitative_analysis(
                     {
                         "frame_records": temporal_md_records,
                         "out_file": md_animation_path,
-                        "cluster_color_map": labels_color_map,
-                        "cluster_display_map": cluster_display_map,
+                        "cluster_color_map": self.labels_color_map,
+                        "cluster_display_map": self.cluster_display_map,
                         "point_size": _cfg_float(
                             temporal_md_cfg,
                             "point_size",
-                            _cfg_float(figure_md_cfg, "point_size", 5.6),
+                            _cfg_float(data.figure_md_cfg, "point_size", 5.6),
                         ),
                         "alpha": _cfg_float(
                             temporal_md_cfg,
                             "alpha",
-                            _cfg_float(figure_md_cfg, "alpha", 0.62),
+                            _cfg_float(data.figure_md_cfg, "alpha", 0.62),
                         ),
                         "saturation_boost": _cfg_float(
                             temporal_md_cfg,
                             "saturation_boost",
-                            _cfg_float(figure_md_cfg, "saturation_boost", 1.18),
+                            _cfg_float(data.figure_md_cfg, "saturation_boost", 1.18),
                         ),
                         "view_elev": _cfg_float(
                             temporal_md_cfg,
                             "view_elev",
-                            _cfg_float(figure_md_cfg, "view_elev", 24.0),
+                            _cfg_float(data.figure_md_cfg, "view_elev", 24.0),
                         ),
                         "view_azim": _cfg_float(
                             temporal_md_cfg,
                             "view_azim",
-                            _cfg_float(figure_md_cfg, "view_azim", 35.0),
+                            _cfg_float(data.figure_md_cfg, "view_azim", 35.0),
                         ),
                         "diagonal_visible_depth_fraction": _cfg_float(
                             temporal_md_cfg,
                             "diagonal_visible_depth_fraction",
                             0.10,
                         ),
-                        "spatial_bounds": temporal_md_animation_spatial_bounds,
+                        "spatial_bounds": data.temporal_md_animation_spatial_bounds,
                         "frame_duration_ms": int(frame_duration_ms),
                         "total_duration_seconds": total_duration_seconds,
                     },
                 )
             )
 
-        if _cfg_bool(transition_cfg, "enabled", True):
-            if transition_tol is None:
+        if _cfg_bool(data.transition_cfg, "enabled", True):
+            if self.transition_tol is None:
                 raise RuntimeError("transition_tol was not resolved for temporal transition animation.")
             temporal_transition_dir = temporal_dir / "transition_pairs"
             _remove_existing_transition_pair_flow_artifacts(temporal_transition_dir)
             temporal_transition_data = _compute_transitions(
-                temporal_frames,
-                coords=np.asarray(coords, dtype=np.float32),
-                labels=labels,
-                instance_ids=instance_ids_arr,
-                cluster_ids=cluster_ids,
-                max_distance=float(transition_tol),
-                require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
+                data.temporal_frames,
+                coords=np.asarray(data.coords, dtype=np.float32),
+                labels=self.labels,
+                instance_ids=data.instance_ids_arr,
+                cluster_ids=self.cluster_ids,
+                max_distance=float(self.transition_tol),
+                require_mutual=_cfg_bool(data.transition_cfg, "require_mutual", True),
             )
             temporal_pair_records: list[dict[str, Any]] = []
             temporal_pair_plots: list[dict[str, Any]] = []
@@ -4089,11 +4059,11 @@ def run_real_md_qualitative_analysis(
                         {
                             "pair_records": temporal_pair_records,
                             "out_file": transition_animation_path,
-                            "row_labels": cluster_display_labels,
-                            "cluster_color_map": labels_color_map,
-                            "cluster_ids_for_palette": cluster_ids,
-                            "mute_diagonal": _cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                            "min_draw_fraction": _cfg_float(transition_cfg, "flow_min_fraction", 0.001),
+                            "row_labels": self.cluster_display_labels,
+                            "cluster_color_map": self.labels_color_map,
+                            "cluster_ids_for_palette": self.cluster_ids,
+                            "mute_diagonal": _cfg_bool(data.transition_cfg, "flow_mute_diagonal", True),
+                            "min_draw_fraction": _cfg_float(data.transition_cfg, "flow_min_fraction", 0.001),
                             "frame_duration_ms": int(frame_duration_ms),
                             "total_duration_seconds": total_duration_seconds,
                         },
@@ -4107,14 +4077,14 @@ def run_real_md_qualitative_analysis(
                 "pairs": temporal_pair_plots,
             }
 
-        temporal_umap_cfg = getattr(temporal_cfg, "umap", None)
+        temporal_umap_cfg = getattr(data.temporal_cfg, "umap", None)
         if _cfg_bool(temporal_umap_cfg, "enabled", True):
-            if projection_method != "umap":
+            if data.projection_method != "umap":
                 raise ValueError(
                     "real_md.temporal.umap.enabled=true requires real_md.projection.method='umap'. "
-                    f"Got projection.method={projection_method!r}."
+                    f"Got projection.method={data.projection_method!r}."
                 )
-            if projection_feature_prep is None or fitted_projection is None:
+            if self.projection.fit_indices is None or self.projection.model is None:
                 raise RuntimeError(
                     "Temporal UMAP animation requires a fitted transformable projection, "
                     "but no fitted projection state was available."
@@ -4123,20 +4093,20 @@ def run_real_md_qualitative_analysis(
                 temporal_umap_cfg
             )
             umap_animation_frames = _select_evenly_spaced_frames(
-                temporal_frames,
+                data.temporal_frames,
                 max_frame_count=umap_animation_frame_limit,
                 field_name="real_md.temporal.umap.animation_frame_count",
             )
-            if len(umap_animation_frames) < len(temporal_frames):
+            if len(umap_animation_frames) < len(data.temporal_frames):
                 print(
                     "[analysis][real_md] Temporal UMAP animation frame cap: "
-                    f"{len(umap_animation_frames)}/{len(temporal_frames)} frames."
+                    f"{len(umap_animation_frames)}/{len(data.temporal_frames)} frames."
                 )
             temporal_summary["umap_animation_frame_count"] = int(
                 len(umap_animation_frames)
             )
             temporal_summary["umap_animation_full_frame_count"] = int(
-                len(temporal_frames)
+                len(data.temporal_frames)
             )
             temporal_summary["umap_animation_frame_limit"] = (
                 None
@@ -4165,10 +4135,10 @@ def run_real_md_qualitative_analysis(
                     "Temporal UMAP animation resolved to zero sampled points across all frames."
                 )
             all_animation_embedding = _transform_projection_features(
-                projection_feature_prep,
-                np.asarray(latents, dtype=np.float32)[all_animation_indices],
-                method=projection_method,
-                fitted_projection=fitted_projection,
+                self.projection.prep,
+                np.asarray(data.latents, dtype=np.float32)[all_animation_indices],
+                method=data.projection_method,
+                fitted_projection=self.projection.model,
             )
             temporal_embedding_records: list[dict[str, Any]] = []
             cursor = 0
@@ -4183,11 +4153,11 @@ def run_real_md_qualitative_analysis(
                             all_animation_embedding[cursor:next_cursor],
                             dtype=np.float32,
                         ),
-                        "labels": np.asarray(labels[frame_indices], dtype=int),
+                        "labels": np.asarray(self.labels[frame_indices], dtype=int),
                     }
                 )
                 cursor = next_cursor
-            umap_animation_path = temporal_dir / f"latent_projection_{projection_method}_clusters.gif"
+            umap_animation_path = temporal_dir / f"latent_projection_{data.projection_method}_clusters.gif"
             temporal_animation_jobs.append(
                 (
                     "umap_animation",
@@ -4195,13 +4165,13 @@ def run_real_md_qualitative_analysis(
                     {
                         "frame_records": temporal_embedding_records,
                         "out_file": umap_animation_path,
-                        "cluster_color_map": labels_color_map,
-                        "cluster_display_map": cluster_display_map,
+                        "cluster_color_map": self.labels_color_map,
+                        "cluster_display_map": self.cluster_display_map,
                         "point_size": _cfg_float(temporal_umap_cfg, "point_size", 8.0),
                         "alpha": _cfg_float(temporal_umap_cfg, "alpha", 0.74),
                         "frame_duration_ms": int(frame_duration_ms),
                         "total_duration_seconds": total_duration_seconds,
-                        "title": f"{projection_method.upper()} cluster evolution",
+                        "title": f"{data.projection_method.upper()} cluster evolution",
                     },
                 )
             )
@@ -4214,10 +4184,10 @@ def run_real_md_qualitative_analysis(
                 )
                 trajectory_indices_by_frame, trajectory_instance_ids = _select_temporal_trajectory_sample_indices(
                     umap_animation_frames,
-                    labels,
-                    instance_ids_arr,
+                    self.labels,
+                    data.instance_ids_arr,
                     max_points=trajectory_max_points,
-                    random_state=int(random_state) + 31,
+                    random_state=int(data.random_state) + 31,
                 )
                 trajectory_concat = np.concatenate(
                     [
@@ -4226,10 +4196,10 @@ def run_real_md_qualitative_analysis(
                     ]
                 ).astype(int, copy=False)
                 trajectory_embedding = _transform_projection_features(
-                    projection_feature_prep,
-                    np.asarray(latents, dtype=np.float32)[trajectory_concat],
-                    method=projection_method,
-                    fitted_projection=fitted_projection,
+                    self.projection.prep,
+                    np.asarray(data.latents, dtype=np.float32)[trajectory_concat],
+                    method=data.projection_method,
+                    fitted_projection=self.projection.model,
                 )
                 temporal_trajectory_records: list[dict[str, Any]] = []
                 cursor = 0
@@ -4244,13 +4214,13 @@ def run_real_md_qualitative_analysis(
                                 trajectory_embedding[cursor:next_cursor],
                                 dtype=np.float32,
                             ),
-                            "labels": np.asarray(labels[frame_indices], dtype=int),
-                            "instance_ids": np.asarray(instance_ids_arr[frame_indices], dtype=np.int64),
+                            "labels": np.asarray(self.labels[frame_indices], dtype=int),
+                            "instance_ids": np.asarray(data.instance_ids_arr[frame_indices], dtype=np.int64),
                         }
                     )
                     cursor = next_cursor
                 trajectory_animation_path = (
-                    temporal_dir / f"latent_projection_{projection_method}_trajectories.gif"
+                    temporal_dir / f"latent_projection_{data.projection_method}_trajectories.gif"
                 )
                 temporal_animation_jobs.append(
                     (
@@ -4259,8 +4229,8 @@ def run_real_md_qualitative_analysis(
                         {
                             "frame_records": temporal_trajectory_records,
                             "out_file": trajectory_animation_path,
-                            "cluster_color_map": labels_color_map,
-                            "cluster_display_map": cluster_display_map,
+                            "cluster_color_map": self.labels_color_map,
+                            "cluster_display_map": self.cluster_display_map,
                             "line_width": _cfg_float(temporal_umap_cfg, "trajectory_line_width", 0.8),
                             "line_alpha": _cfg_float(temporal_umap_cfg, "trajectory_line_alpha", 0.22),
                             "history_steps": _cfg_int(
@@ -4310,13 +4280,13 @@ def run_real_md_qualitative_analysis(
                             ),
                             "frame_duration_ms": int(frame_duration_ms),
                             "total_duration_seconds": total_duration_seconds,
-                            "title": f"{projection_method.upper()} cluster trajectories",
+                            "title": f"{data.projection_method.upper()} cluster trajectories",
                         },
                     )
                 )
                 temporal_summary["trajectory_sample_count"] = int(trajectory_instance_ids.size)
         temporal_parallel_workers = _resolve_temporal_animation_parallel_workers(
-            temporal_cfg,
+            data.temporal_cfg,
             task_count=len(temporal_animation_jobs),
         )
         temporal_summary["animation_parallel_workers"] = int(temporal_parallel_workers)
@@ -4327,35 +4297,50 @@ def run_real_md_qualitative_analysis(
             )
         temporal_animation_results = _execute_temporal_animation_jobs(
             temporal_animation_jobs,
-            temporal_cfg=temporal_cfg,
+            temporal_cfg=data.temporal_cfg,
         )
         for summary_key, _task_kind, _task_kwargs in temporal_animation_jobs:
             temporal_summary[str(summary_key)] = temporal_animation_results[str(summary_key)]
         temporal_summary["projection_fit_sample_count"] = (
-            None if temporal_fit_indices is None else int(temporal_fit_indices.size)
+            None if self.projection.fit_indices is None else int(self.projection.fit_indices.size)
         )
-        summary["temporal"] = temporal_summary
+        self.summary["temporal"] = temporal_summary
 
-    if _cfg_bool(transition_cfg, "enabled", True) and len(frames) >= 2:
-        transition_dir = out_root / "transitions"
+    def render_transitions(self):
+        data = self.analysis
+        transition_dir = self.out_root / "transitions"
         transition_dir.mkdir(parents=True, exist_ok=True)
         _remove_existing_transition_pair_flow_artifacts(transition_dir)
         _remove_existing_transition_aggregate_flow_artifacts(transition_dir)
-        if transition_tol is None:
+        if self.transition_tol is None:
             raise RuntimeError("transition_tol was not resolved for transition analysis.")
         transition_data = _compute_transitions(
-            frames,
-            coords=np.asarray(coords, dtype=np.float32),
-            labels=labels,
-            instance_ids=instance_ids_arr,
-            cluster_ids=cluster_ids,
-            max_distance=float(transition_tol),
-            require_mutual=_cfg_bool(transition_cfg, "require_mutual", True),
+            data.frames,
+            coords=np.asarray(data.coords, dtype=np.float32),
+            labels=self.labels,
+            instance_ids=data.instance_ids_arr,
+            cluster_ids=self.cluster_ids,
+            max_distance=float(self.transition_tol),
+            require_mutual=_cfg_bool(data.transition_cfg, "require_mutual", True),
         )
-        save_transition_svg = _cfg_bool(transition_cfg, "save_svg", False)
+        flow_style = {
+            "title": None,
+            "row_labels": self.cluster_display_labels,
+            "cluster_color_map": self.labels_color_map,
+            "cluster_ids_for_palette": self.cluster_ids,
+            "mute_diagonal": _cfg_bool(data.transition_cfg, "flow_mute_diagonal", True),
+            "min_draw_fraction": _cfg_float(data.transition_cfg, "flow_min_fraction", 0.001),
+        }
+        def save_flow(counts, stem):
+            paths = {}
+            for extension in (["png", "svg"] if _cfg_bool(data.transition_cfg, "save_svg", False) else ["png"]):
+                path = transition_dir / f"{stem}.{extension}"
+                save_transition_flow_plot(counts, path, **flow_style)
+                paths[extension] = str(path)
+            return paths
         pair_plot_indices = set(
             _resolve_transition_pair_plot_indices(
-                transition_cfg,
+                data.transition_cfg,
                 pair_count=len(transition_data["pairs"]),
             )
         )
@@ -4370,85 +4355,41 @@ def run_real_md_qualitative_analysis(
                 "coverage_fraction": float(pair_summary["coverage_fraction"]),
             }
             if pair_list_index in pair_plot_indices:
-                flow_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.png"
-                save_transition_flow_plot(
-                    counts,
-                    flow_path,
-                    title=None,
-                    row_labels=cluster_display_labels,
-                    cluster_color_map=labels_color_map,
-                    cluster_ids_for_palette=cluster_ids,
-                    mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                    min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-                )
-                pair_record["flow_plot"] = str(flow_path)
-                if save_transition_svg:
-                    flow_svg_path = transition_dir / f"transition_pair_{pair_idx:02d}_flow.svg"
-                    save_transition_flow_plot(
-                        counts,
-                        flow_svg_path,
-                        title=None,
-                        row_labels=cluster_display_labels,
-                        cluster_color_map=labels_color_map,
-                        cluster_ids_for_palette=cluster_ids,
-                        mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                        min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-                    )
-                    pair_record["flow_svg"] = str(flow_svg_path)
+                paths = save_flow(counts, f"transition_pair_{pair_idx:02d}_flow")
+                pair_record["flow_plot"] = paths["png"]
+                if "svg" in paths:
+                    pair_record["flow_svg"] = paths["svg"]
             pair_records.append(pair_record)
 
-        aggregate_flow_path = transition_dir / "transition_aggregate_flow.png"
-        save_transition_flow_plot(
-            transition_data["aggregate_counts"],
-            aggregate_flow_path,
-            title=None,
-            row_labels=cluster_display_labels,
-            cluster_color_map=labels_color_map,
-            cluster_ids_for_palette=cluster_ids,
-            mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-            min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-        )
-        aggregate_flow_svg_path = None
-        if save_transition_svg:
-            aggregate_flow_svg_path = transition_dir / "transition_aggregate_flow.svg"
-            save_transition_flow_plot(
-                transition_data["aggregate_counts"],
-                aggregate_flow_svg_path,
-                title=None,
-                row_labels=cluster_display_labels,
-                cluster_color_map=labels_color_map,
-                cluster_ids_for_palette=cluster_ids,
-                mute_diagonal=_cfg_bool(transition_cfg, "flow_mute_diagonal", True),
-                min_draw_fraction=_cfg_float(transition_cfg, "flow_min_fraction", 0.001),
-            )
-        summary["transitions"] = {
-            "cluster_ids": [int(v) for v in cluster_ids],
-            "cluster_display_labels": cluster_display_labels,
+        aggregate_paths = save_flow(transition_data["aggregate_counts"], "transition_aggregate_flow")
+        self.summary["transitions"] = {
+            "cluster_ids": [int(v) for v in self.cluster_ids],
+            "cluster_display_labels": self.cluster_display_labels,
             "match_tolerance": float(transition_data["max_distance"]),
             "require_mutual": bool(transition_data["require_mutual"]),
             "match_mode": str(transition_data["match_mode"]),
             "pairs": pair_records,
-            "aggregate_flow": str(aggregate_flow_path),
-            "aggregate_flow_svg": (
-                None if aggregate_flow_svg_path is None else str(aggregate_flow_svg_path)
-            ),
+            "aggregate_flow": aggregate_paths["png"],
+            "aggregate_flow_svg": aggregate_paths.get("svg"),
         }
 
-    summary_json = out_root / "summary.json"
-    write_json(summary_json, summary)
-    summary["summary_json"] = str(summary_json)
+    def publish(self):
+        data = self.analysis
+        summary_json = self.out_root / "summary.json"
+        self.summary["summary_json"] = str(summary_json)
 
-    summary_markdown = out_root / "README.md"
-    _write_summary_markdown(
-        summary_markdown,
-        selected_k=int(selected_k),
-        frames=frames,
-        cluster_groups=cluster_groups,
-        summary=summary,
-    )
-    summary["summary_markdown"] = str(summary_markdown)
-    write_json(summary_json, summary)
-    return summary
+        summary_markdown = self.out_root / "README.md"
+        _write_summary_markdown(
+            summary_markdown,
+            selected_k=int(self.selected_k),
+            frames=data.frames,
+            cluster_groups=self.cluster_groups,
+            summary=self.summary,
+        )
+        self.summary["summary_markdown"] = str(summary_markdown)
+        write_json(summary_json, self.summary)
+        return self.summary
 
 
-__all__ = ["append_dynamic_motif_summary", "run_real_md_qualitative_analysis"]
+
+__all__ = ["append_dynamic_motif_summary", "RealMDAnalysis"]

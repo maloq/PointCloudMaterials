@@ -35,7 +35,7 @@
   },
   "analysis": {
     "files": {
-      "docs/metrics/analysis.md": "255157ea0059f7cee8a55e849c494d53d9da5aada1d70a64778a485509a5e38d",
+      "docs/metrics/analysis.md": "7e299c72c27a35ab8195c32ca70f5f1b4bb9ea962cf5c27beee2ecf7790b510b",
       "src/analysis/topology_metrics.py": "d1fd205fa0573eff26bc8ceb963e67eea588af080f222e24a1d7c19f2de13e8a",
       "src/analysis/topology.py": "58c5ff648ffe39879fc4cdac6f15ef4dccfcfacfe9ed413af71b209b94a18f22",
       "src/data_utils/topology_targets.py": "989eff9c5f9daad5d80af504695a9daae094d0297f03b7427b481fe31562e0e1",
@@ -66,9 +66,14 @@
       "src/analysis/analysis_dataloaders.py": "8c6c85875671d55e9b71cd0f7819c0e17319838653047e8bdd54efc563592946",
       "src/analysis/cluster_profiles.py": "2953a37950cde6c91009ea1ade0feca40ce3484f89497d6d843888624eb6e21c",
       "src/analysis/cluster_geometry.py": "1864cecb6317a3f9812b0df708dec32e11e2a0b18cbd130473910e887c969499",
-      "src/analysis/real_md_qualitative.py": "d5420fa9e4ff9bf74481f4ec3b6af97422103f2513308ebc33006f176655a27e",
+      "src/analysis/real_md_qualitative.py": "aaeadcbeafe054e95ab769c22a52c60ee19dfd91ab86add1909a1125403c7373",
       "src/analysis/dynamic_motif.py": "08ffb99c7cffda1e39e33d440e5a0e416556ddd4c8eabef056bae79ceb96e50d",
-      "src/analysis/dynamic_motif_metrics.py": "73af074021e3f88f712687124481d370570f0a35d1b0d1a7a4dde73e59cd4e2b"
+      "src/analysis/dynamic_motif_metrics.py": "73af074021e3f88f712687124481d370570f0a35d1b0d1a7a4dde73e59cd4e2b",
+      "src/analysis/pipeline.py": "41f8af0b66f9df31354952b8cecf09a2e4f021a8c046c7d9443e7ab9ecc801ba",
+      "src/analysis/blender_scene.py": "4958f4aa2e9ef75ece4e2a31b962f149cde84abbbc99b097edbe5d03aa25f414",
+      "src/analysis/inference_cache.py": "123e21dfd06a126fcfbc437c6838c8af9db04f36c7c86c4e75d564852c358417",
+      "src/analysis/cluster_blender.py": "96ec4a65c902182b0a5397eff7993e669034c2abe781825bec7343e3279c27a7",
+      "src/analysis/temporal_real.py": "46da39b97252133cb9b77c034f19e76b5807be273380b15966c79e7f14c30165"
     }
   },
   "forecast_context": {
@@ -1962,9 +1967,9 @@
       "src/research/liquid_predictability/queue.py": "f2bf7ece4fc15d059a556e9ef2577610a18ad711665df2ab398c8022d9ac3d45",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/research/liquid_predictability/__init__.py": "277a6896c3e821f03ee9e9831b3b04e1dae72b4700087b4df557097fa3c1c1d5",
-      "src/research/liquid_predictability/evaluate.py": "f1802217d6d6a3ea1e635a846880bff0e3b5ad9c859119403dd9decaf71439aa",
+      "src/research/liquid_predictability/evaluate.py": "9cea0d1604ba3203e889d6c3f51997a690308bc1dcef633749f9e99b0457d8d7",
       "src/research/liquid_predictability/train.py": "bf5d2ccdf41d1c08d924344210dc22fcee85530b30272d12938db7ab1ddab423",
-      "docs/metrics/liquid_predictability.md": "046d98fd241bd54c5ee0292d6fe5273c4577015c2752251e38e4870ac2e96aaf",
+      "docs/metrics/liquid_predictability.md": "3d6af65f80e8901f2ed6f549acf0aee98ea425e64badea63f34e13094c75aa18",
       "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/crystal_vector/parallel.py": "8eaba2974b4d269920ff5c2283f511bf4304d2ac949b3986d884abe20d424c36",
       "src/research/equivariant_context/model.py": "9a4c4d6124ecee2df41985f16ccbbe60728931ecbcf21fffb39d8ac67061094e",
@@ -1978,50 +1983,53 @@
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
       "src/experiment_runner/array_exports.py": "c7af2f4418c3759c4c53b0f14dfde906de333fa1a0f1d4b017666c07e61a7eb7",
       "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
-      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96"
+      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96",
+      "src/research/liquid_predictability/comparisons.py": "ee1665877fc3db2694ba338c9364c97e64680c1dff31dc1469c68fbc4349c391"
     }
   },
   "liquid_descriptors": {
     "files": {
-      "docs/metrics/liquid_descriptors.md": "e422ac1910acf6577c33702d83f70f432a669bc2a39a336c7f3e06fc3cb381d9",
+      "docs/metrics/liquid_descriptors.md": "dc23064bf13ccac51a922feb1c07c28d527201350d704ad05e90e478891346cd",
       "configs/liquid_predictability/descriptors_al64_20260928.json": "c982f0ae8128aaa155cb8b41fa47c08759b0d1dd6935e5df8146ac4ac39a36bc",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
-      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
+      "src/research/liquid_predictability/descriptor_fit.py": "094d42daca7f2e73bfe9363c7d16ddb0012387efd918ecc87fae551eff393ebd",
       "src/research/liquid_predictability/descriptor_queue.py": "3b3b3cd6dc5d23083e0cd562288ee76a7f0e95945ee81e5ab12eb08cbd943428",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/data/fixed_cohort/protocol.py": "1784f6ba0ccd69478f0cc7165dbf625ce8e1ec7c26bc7ddf8b52fa43161b3275",
       "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
       "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
-      "src/experiment_runner/execution.py": "11a13604bba7002afe67341035a9173297de73d06f6ed29fb048fed459653b8c"
+      "src/experiment_runner/execution.py": "11a13604bba7002afe67341035a9173297de73d06f6ed29fb048fed459653b8c",
+      "src/research/liquid_predictability/comparisons.py": "ee1665877fc3db2694ba338c9364c97e64680c1dff31dc1469c68fbc4349c391"
     }
   },
   "liquid_descriptor_baselines": {
     "files": {
-      "docs/metrics/liquid_descriptor_baselines.md": "4f8540acf00c9e52f634abf5314ccd5bcf0632fb5249ffa052e6e26809ae2db7",
+      "docs/metrics/liquid_descriptor_baselines.md": "75d7b99f9f81d75d75ec63712b40980a682bb6ec3085fa86221d1a13795b23a1",
       "configs/liquid_predictability/descriptor_baselines_20260928.json": "a34c0cce16eff3cfe29929453dd0dc55ca34cd19b979576ab659b35060f914ca",
-      "src/research/liquid_predictability/descriptor_baselines.py": "abd630bc5ac0512352e25f7e43bffa8d8037c98475e968b205d87782a7574193",
+      "src/research/liquid_predictability/descriptor_baselines.py": "2bfd0ddc2b1bbcd97501ab393edf4cb77cf98dcded27689cbeba25f611328801",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
-      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
+      "src/research/liquid_predictability/descriptor_fit.py": "094d42daca7f2e73bfe9363c7d16ddb0012387efd918ecc87fae551eff393ebd",
       "src/research/liquid_predictability/data.py": "43b279313223e6d712c51e192eeeef999b4ad9d9f71ae2d714cc098c71e2739a",
       "src/data/fixed_cohort/protocol.py": "1784f6ba0ccd69478f0cc7165dbf625ce8e1ec7c26bc7ddf8b52fa43161b3275",
       "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
       "src/experiment_runner/artifacts.py": "32c1b6d70064199540968ea3017c9e645b086fa1ced7a641bc01ab6f4dcea192",
-      "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32"
+      "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
+      "src/research/liquid_predictability/comparisons.py": "ee1665877fc3db2694ba338c9364c97e64680c1dff31dc1469c68fbc4349c391"
     }
   },
   "liquid_controls": {
     "files": {
-      "docs/metrics/liquid_controls.md": "e07458f453d956090c5b2524c0a44b89dcb421181dec1c31b974e07235062972",
+      "docs/metrics/liquid_controls.md": "aa11a8ae04488f07e2d10591d85562b7eb833fcbaeea1a461f3b1057c8d80bb1",
       "configs/liquid_predictability/controls_relaxed_20260928.json": "cf41cb43e7c3eb7ca247ffab55e894a3a292e949b471fe95756af0b0d258381f",
       "src/research/liquid_predictability/control_train.py": "c6db8e11d661aa16033c4f633a4d9db94f8ece3b268e5ff34ae16c2025419ce0",
-      "src/research/liquid_predictability/control_report.py": "55c6ea4e921f1807242d81ed742decc88e24a497966224146ac61a71d13e2428",
+      "src/research/liquid_predictability/control_report.py": "99bd17f516e166719f5dd06c1b7943dc1bb5ee0d9657a9f78c68bbc781732fce",
       "src/research/liquid_predictability/control_data.py": "6a24e16b4bbd1aba95c68c97a2c022ba5e59789051e4faf08ec81813ee7bb059",
       "src/research/liquid_predictability/control_queue.py": "f0d18f999bf5c73f51b5ba865a924b6511dc23a2836908dd18e825e156def85e",
-      "src/research/liquid_predictability/descriptor_fit.py": "c870ac52af0d111e9341cc9db3c372d3e6508915392c72de5d0ce101f67031c2",
+      "src/research/liquid_predictability/descriptor_fit.py": "094d42daca7f2e73bfe9363c7d16ddb0012387efd918ecc87fae551eff393ebd",
       "src/research/liquid_predictability/descriptor_data.py": "987fb53a1a470e9afa678dc579f1709366b923a8abf9ca8fa0ba55bd59e16c9d",
-      "src/research/liquid_predictability/descriptor_baselines.py": "abd630bc5ac0512352e25f7e43bffa8d8037c98475e968b205d87782a7574193",
+      "src/research/liquid_predictability/descriptor_baselines.py": "2bfd0ddc2b1bbcd97501ab393edf4cb77cf98dcded27689cbeba25f611328801",
       "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
       "src/research/crystal_vector/model.py": "f45e37f91ac6140df4ef2d806319f6a782a6ed1c623b15482be04d9ce70b21e6",
       "src/research/equivariant_context/model.py": "9a4c4d6124ecee2df41985f16ccbbe60728931ecbcf21fffb39d8ac67061094e",
@@ -2041,7 +2049,8 @@
       "src/experiment_runner/checkpoints.py": "58b0ae2cacb90d300c40398ddc0bfbd52400ac45e4727eff6f8754e15f10a572",
       "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
       "src/research/liquid_predictability/models.py": "507f29d2e32be4ef8f7912ecf4c051d3c9a0e7de54738c137b5cb99ec02825b8",
-      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96"
+      "src/research/liquid_predictability/rich_descriptor_head.py": "065202a55096d441b548ae0ad6a7e25a79085905bc01690039d7035a31d28a96",
+      "src/research/liquid_predictability/comparisons.py": "ee1665877fc3db2694ba338c9364c97e64680c1dff31dc1469c68fbc4349c391"
     }
   },
   "rich_descriptor_encoder": {

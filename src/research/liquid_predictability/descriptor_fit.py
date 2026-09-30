@@ -9,6 +9,7 @@ from src.project_runtime.paths import resolve_path
 from src.experiment_runner.metric_docs import write_metric_rows
 from .data import config
 from .descriptor_data import load, parent
+from .comparisons import paired_scores,prediction_rows
 
 
 def targets(distance, c):
@@ -204,53 +205,34 @@ def fit(c, name):
             chosen = ids[mask]
             if not len(chosen):
                 continue
-            scores.append(
-                dict(
-                    role=role,
-                    subset=group,
-                    rows=len(chosen),
-                    sources=len(np.unique(rows['source'][chosen])),
-                    **metrics(
-                        {k: v[chosen] for k, v in predictions.items()},
-                        rows['target'][chosen],
-                        w[chosen],
-                    ),
-                )
+            values = metrics(
+                {k: v[chosen] for k, v in predictions.items()}, rows['target'][chosen], w[chosen]
             )
+            scores.append(dict(
+                role=role, subset=group, rows=len(chosen),
+                sources=len(np.unique(rows['source'][chosen])), **values,
+            ))
         for j, radius in enumerate((20, 32, 48)):
             p = predictions['cdf'][ids, j]
             for lo in np.arange(10) / 10:
                 take = (p >= lo) & (p < lo + 0.1 if lo < 0.9 else p <= 1)
                 chosen = ids[take]
                 mass = float(w[chosen].sum())
-                reliability.append(
-                    dict(
-                        role=role,
-                        radius_A=radius,
-                        bin_low=lo,
-                        rows=len(chosen),
-                        mass=mass,
-                        mean_probability=float(w[chosen] @ p[take] / mass) if mass else None,
-                        frequency=(
-                            float(w[chosen] @ (rows['target'][chosen] <= radius) / mass)
-                            if mass
-                            else None
-                        ),
-                    )
-                )
+                reliability.append(dict(
+                    role=role, radius_A=radius, bin_low=lo, rows=len(chosen), mass=mass,
+                    mean_probability=float(w[chosen] @ p[take] / mass) if mass else None,
+                    frequency=float(w[chosen] @ (rows['target'][chosen] <= radius) / mass) if mass else None,
+                ))
     table(analysis, 'scores', scores)
     table(analysis, 'reliability', reliability)
     receipt = dict(
-        identity=identity,
-        selected_iteration=selection_iteration,
+        identity=identity, selected_iteration=selection_iteration,
         seconds=time.time() - started,
         predictions_sha256=sha(analysis / 'technical/predictions.npz'),
         validation_nll=next(
             r['distance_nll'] for r in scores if r['role'] == 'selection' and r['subset'] == 'all'
         ),
-        test_used_for_selection=False,
-        feature_count=len(selected),
-        training_rows=len(train),
+        test_used_for_selection=False, feature_count=len(selected), training_rows=len(train),
         training_sources=len(np.unique(rows['source'][train])),
     )
     write_json(tech / 'complete.json', receipt)
@@ -404,7 +386,7 @@ def compare(c):
             raise ValueError('Changed exported predictions')
         with np.load(p) as a:
             value = {k: a[k] for k in ('ids', 'nll', 'mean_A', 'cdf')}
-        if not np.array_equal(value['ids'], rows['ids']):
+        if not np.array_equal(prediction_rows(value['ids'], rows['ids']), np.arange(len(rows['ids']))):
             raise ValueError('Unmatched rows')
         if name == 'prior':
             ref = value
@@ -418,35 +400,13 @@ def compare(c):
             )
             if name == 'prior':
                 continue
-            src, inv = np.unique(rows['source'][ids], return_inverse=True)
             gain = ref['nll'][ids] - value['nll'][ids]
             mse = (value['mean_A'][ids] - np.minimum(truth, 64)) ** 2
             refmse = (ref['mean_A'][ids] - np.minimum(truth, 64)) ** 2
-            sums = np.stack(
-                [np.bincount(inv, weights=w * z) for z in (np.ones(len(ids)), gain, mse, refmse)], 1
-            )
-            boot = np.random.default_rng(c['seed']).integers(
-                0, len(src), (c['bootstrap_draws'], len(src))
-            )
-            s = sums[boot].sum(1)
-            ng = s[:, 1] / s[:, 0]
-            rg = 1 - np.sqrt(s[:, 2] / s[:, 3])
             tables.append(
-                dict(
-                    model=name,
-                    role=role,
-                    rows=len(ids),
-                    sources=len(src),
-                    nll_gain=float(w @ gain),
-                    nll_gain_ci95_low=float(np.quantile(ng, 0.025)),
-                    nll_gain_ci95_high=float(np.quantile(ng, 0.975)),
-                    nll_gain_familywise_low=float(np.quantile(ng, 0.025 / ncomp)),
-                    nll_gain_familywise_high=float(np.quantile(ng, 1 - 0.025 / ncomp)),
-                    rmse_reduction_fraction=float(1 - np.sqrt((w @ mse) / (w @ refmse))),
-                    rmse_reduction_ci95_low=float(np.quantile(rg, 0.025)),
-                    rmse_reduction_ci95_high=float(np.quantile(rg, 0.975)),
-                    rmse_reduction_familywise_upper=float(np.quantile(rg, 1 - 0.05 / ncomp)),
-                )
+                dict(model=name, role=role, rows=len(ids), **paired_scores(
+                    rows['source'][ids], w, mse, refmse, gain=gain, seed=c['seed'],
+                    draws=c['bootstrap_draws'], rmse_comparisons=ncomp, nll_comparisons=ncomp))
             )
     table(analysis, 'scores', records)
     table(analysis, 'paired-comparisons', tables)

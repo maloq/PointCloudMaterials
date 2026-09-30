@@ -20,6 +20,7 @@ from src.experiment_runner.metric_docs import write_metric_rows,check_metric_doc
 from .data import config
 from .descriptor_data import load
 from .descriptor_fit import quantities,targets,metrics
+from .comparisons import paired_scores,prediction_rows
 
 
 NAMES=('training_mean','linear_ridge','linear_distribution')
@@ -151,7 +152,7 @@ def compare(c):
         p=base/name/'analyses/predictability-v1/technical/predictions.npz';receipt=config(base/name/'technical/complete.json')
         if sha(p)!=receipt['predictions_sha256']:raise ValueError(f'Changed predictions {name}')
         with np.load(p) as a:pred[name]={k:a[k] for k in a.files if k!='probability'}
-        if not np.array_equal(pred[name]['ids'],rows['ids']):raise ValueError(f'Unmatched rows {name}')
+        if not np.array_equal(prediction_rows(pred[name]['ids'],rows['ids']),np.arange(len(rows['ids']))):raise ValueError(f'Unmatched rows {name}')
         receipts[name]=dict(receipt=str(base/name/'technical/complete.json'),prediction_sha256=receipt['predictions_sha256'])
     scores=[];paired=[];weight=rows['weights'];truth=np.minimum(rows['target'],64)
     npoint=len(pred)-1;nprob=sum('nll' in v for v in pred.values())-1
@@ -163,19 +164,12 @@ def compare(c):
             if 'nll' in value:row.update(metrics({k:v[ids] for k,v in value.items() if k!='ids'},truth[ids],w))
             scores.append(row)
             if name=='training_mean':continue
-            src,inv=np.unique(rows['source'][ids],return_inverse=True)
             mse=(value['mean_A'][ids]-truth[ids])**2;refmse=(pred['training_mean']['mean_A'][ids]-truth[ids])**2
-            sums=np.stack([np.bincount(inv,weights=w*z) for z in (np.ones(len(ids)),mse,refmse)],1)
-            boot=np.random.default_rng(c['seed']).integers(0,len(src),(c['bootstrap_draws'],len(src)));s=sums[boot].sum(1)
-            reduction=1-np.sqrt(s[:,1]/s[:,2])
-            result=dict(model=name,role=role,rows=len(ids),sources=len(src),rmse_reference='training_mean',
-                rmse_reduction_fraction=float(1-np.sqrt((w@mse)/(w@refmse))),rmse_reduction_ci95_low=float(np.quantile(reduction,.025)),
-                rmse_reduction_ci95_high=float(np.quantile(reduction,.975)),rmse_reduction_familywise_upper=float(np.quantile(reduction,1-.05/npoint)),
+            gain=pred['prior']['nll'][ids]-value['nll'][ids] if 'nll' in value and name!='prior' else None
+            result=dict(model=name,role=role,rows=len(ids),rmse_reference='training_mean',
                 nll_reference='prior',nll_gain=None,nll_gain_ci95_low=None,nll_gain_ci95_high=None,nll_gain_familywise_low=None,nll_gain_familywise_high=None)
-            if 'nll' in value and name!='prior':
-                gain=pred['prior']['nll'][ids]-value['nll'][ids];g=np.bincount(inv,weights=w*gain)[boot].sum(1)/s[:,0]
-                result.update(nll_gain=float(w@gain),nll_gain_ci95_low=float(np.quantile(g,.025)),nll_gain_ci95_high=float(np.quantile(g,.975)),
-                    nll_gain_familywise_low=float(np.quantile(g,.025/nprob)),nll_gain_familywise_high=float(np.quantile(g,1-.025/nprob)))
+            result.update(paired_scores(rows['source'][ids],w,mse,refmse,gain=gain,seed=c['seed'],
+                draws=c['bootstrap_draws'],rmse_comparisons=npoint,nll_comparisons=nprob))
             paired.append(result)
     selection=[s for s in scores if s['role']=='selection' and s['distance_nll'] is not None]
     best=min(selection,key=lambda s:s['distance_nll'])['model']

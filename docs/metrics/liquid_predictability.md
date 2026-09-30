@@ -106,3 +106,5 @@ when unused head construction is removed and receives a versioned architecture
 identity. Historical continuations use their frozen sources. W&B wall-time stays
 local and fixed baselines stay in summary; metric calculations are unchanged.
 See [implementation and compatibility evidence](../code_cleanup_implementation.md#training-and-model-follow-up).
+
+Paired comparison mechanics are implemented in `src/research/liquid_predictability/comparisons.py`: exact prediction-row alignment, weighted whole-source totals, seeded source resampling and confidence intervals. Population selection, target censoring, weights, point-estimate reductions and multiple-comparison rules retain the definitions above. Duplicate or missing prediction IDs are errors.
