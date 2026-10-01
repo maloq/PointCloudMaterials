@@ -1,0 +1,3766 @@
+{
+  "dataset_id": "al-birth-preappearance-v1-20260930",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "8319ff26cc53a2a37ccd484ec5305e365f6bc8bfabe18c885aae7aaaf429a2c1",
+      "kind": "metadata",
+      "keys": [
+        "cohort",
+        "files",
+        "identity",
+        "sources",
+        "summary",
+        "supported"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "5c29e0f905189cc2b5e4b5c63e08ff0132c5e9fbb37e11afcce5f97c1819bc28",
+      "kind": "metadata",
+      "keys": [
+        "audit",
+        "binding",
+        "identity",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "preappearance_birth_classification_v1",
+            "first_json_path": "binding.config.protocol",
+            "occurrences": 1
+          },
+          {
+            "value": "al64-crystallization-origin-audit-v2",
+            "first_json_path": "audit.protocol",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20260930,
+            "first_json_path": "binding.config.seed",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "binding.config.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 8.0,
+            "first_json_path": "binding.config.radius_A",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "neighbor_cutoff_A": 3.6,
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "local_birth_radius_A": 8.0,
+              "interface_distance_A": 8.0,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "size32",
+                  "size": 32,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "size128",
+                  "size": 128,
+                  "persistence_frames": 3
+                },
+                {
+                  "name": "persistent5",
+                  "size": 64,
+                  "persistence_frames": 5
+                }
+              ]
+            },
+            "first_json_path": "audit.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_511618678",
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_455949696",
+            "first_json_path": "sources[1].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_691988874",
+            "first_json_path": "sources[2].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_804308644",
+            "first_json_path": "sources[3].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_808961974",
+            "first_json_path": "sources[4].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_434160560",
+            "first_json_path": "sources[5].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_200290231",
+            "first_json_path": "sources[6].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_144370470",
+            "first_json_path": "sources[7].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76681035",
+            "first_json_path": "sources[8].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_77880009",
+            "first_json_path": "sources[9].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746071054",
+            "first_json_path": "sources[10].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_294342775",
+            "first_json_path": "sources[11].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_184384186",
+            "first_json_path": "sources[12].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_160380922",
+            "first_json_path": "sources[13].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_330985692",
+            "first_json_path": "sources[14].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_556912370",
+            "first_json_path": "sources[15].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_780540798",
+            "first_json_path": "sources[16].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_480262437",
+            "first_json_path": "sources[17].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_24993146",
+            "first_json_path": "sources[18].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_340453041",
+            "first_json_path": "sources[19].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871735562",
+            "first_json_path": "sources[20].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_410549883",
+            "first_json_path": "sources[21].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_617047783",
+            "first_json_path": "sources[22].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_82221119",
+            "first_json_path": "sources[23].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_206158192",
+            "first_json_path": "sources[24].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_248699045",
+            "first_json_path": "sources[25].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_235751553",
+            "first_json_path": "sources[26].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_750494487",
+            "first_json_path": "sources[27].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_378118914",
+            "first_json_path": "sources[28].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387039544",
+            "first_json_path": "sources[29].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_394685168",
+            "first_json_path": "sources[30].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648456630",
+            "first_json_path": "sources[31].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_392346167",
+            "first_json_path": "sources[32].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_373247889",
+            "first_json_path": "sources[33].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_319035304",
+            "first_json_path": "sources[34].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_40651136",
+            "first_json_path": "sources[35].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_146234076",
+            "first_json_path": "sources[36].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_472193600",
+            "first_json_path": "sources[37].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_63365650",
+            "first_json_path": "sources[38].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_220809849",
+            "first_json_path": "sources[39].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_142641279",
+            "first_json_path": "sources[40].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_262380798",
+            "first_json_path": "sources[41].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_837421620",
+            "first_json_path": "sources[42].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_553888770",
+            "first_json_path": "sources[43].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_550189933",
+            "first_json_path": "sources[44].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_8461095",
+            "first_json_path": "sources[45].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_197585375",
+            "first_json_path": "sources[46].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_135035943",
+            "first_json_path": "sources[47].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_648618511",
+            "first_json_path": "sources[48].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_760589119",
+            "first_json_path": "sources[49].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_383124119",
+            "first_json_path": "sources[50].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_361693553",
+            "first_json_path": "sources[51].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_699880964",
+            "first_json_path": "sources[52].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827953021",
+            "first_json_path": "sources[53].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_607972874",
+            "first_json_path": "sources[54].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_522035807",
+            "first_json_path": "sources[55].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_884700972",
+            "first_json_path": "sources[56].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_134462729",
+            "first_json_path": "sources[57].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_147978527",
+            "first_json_path": "sources[58].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_700628451",
+            "first_json_path": "sources[59].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_843445030",
+            "first_json_path": "sources[60].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_446448988",
+            "first_json_path": "sources[61].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_638959948",
+            "first_json_path": "sources[62].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_23525568",
+            "first_json_path": "sources[63].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_493123960",
+            "first_json_path": "sources[64].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_866573682",
+            "first_json_path": "sources[65].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_580598490",
+            "first_json_path": "sources[66].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_794706897",
+            "first_json_path": "sources[67].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_622811055",
+            "first_json_path": "sources[68].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_15458297",
+            "first_json_path": "sources[69].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_889862759",
+            "first_json_path": "sources[70].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630014638",
+            "first_json_path": "sources[71].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_419716698",
+            "first_json_path": "sources[72].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_584489287",
+            "first_json_path": "sources[73].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_726819917",
+            "first_json_path": "sources[74].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_468207512",
+            "first_json_path": "sources[75].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_708791158",
+            "first_json_path": "sources[76].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_856510393",
+            "first_json_path": "sources[77].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_60861487",
+            "first_json_path": "sources[78].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_871840956",
+            "first_json_path": "sources[79].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_301149348",
+            "first_json_path": "sources[80].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_427983136",
+            "first_json_path": "sources[81].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_814816357",
+            "first_json_path": "sources[82].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_825401364",
+            "first_json_path": "sources[83].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_372484460",
+            "first_json_path": "sources[84].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_505713304",
+            "first_json_path": "sources[85].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_876710010",
+            "first_json_path": "sources[86].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_586618377",
+            "first_json_path": "sources[87].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_66157331",
+            "first_json_path": "sources[88].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_210998254",
+            "first_json_path": "sources[89].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_558747183",
+            "first_json_path": "sources[90].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850903391",
+            "first_json_path": "sources[91].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_254084297",
+            "first_json_path": "sources[92].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_851781959",
+            "first_json_path": "sources[93].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_433626529",
+            "first_json_path": "sources[94].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_630952489",
+            "first_json_path": "sources[95].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_114745743",
+            "first_json_path": "sources[96].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_324310850",
+            "first_json_path": "sources[97].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234173051",
+            "first_json_path": "sources[98].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_13937749",
+            "first_json_path": "sources[99].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_725446415",
+            "first_json_path": "sources[100].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234029248",
+            "first_json_path": "sources[101].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_797323201",
+            "first_json_path": "sources[102].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_850300441",
+            "first_json_path": "sources[103].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83575882",
+            "first_json_path": "sources[104].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_176364202",
+            "first_json_path": "sources[105].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379257661",
+            "first_json_path": "sources[106].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_845880246",
+            "first_json_path": "sources[107].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_646059879",
+            "first_json_path": "sources[108].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_277320264",
+            "first_json_path": "sources[109].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_528758061",
+            "first_json_path": "sources[110].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_96154123",
+            "first_json_path": "sources[111].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_228616647",
+            "first_json_path": "sources[112].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_628564803",
+            "first_json_path": "sources[113].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_151871197",
+            "first_json_path": "sources[114].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_681943887",
+            "first_json_path": "sources[115].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_655109113",
+            "first_json_path": "sources[116].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_661426236",
+            "first_json_path": "sources[117].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_564513410",
+            "first_json_path": "sources[118].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_603302271",
+            "first_json_path": "sources[119].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_398617878",
+            "first_json_path": "sources[120].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_83132283",
+            "first_json_path": "sources[121].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "sources[122].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_86832792",
+            "first_json_path": "sources[123].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_745135969",
+            "first_json_path": "sources[124].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_442136159",
+            "first_json_path": "sources[125].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_269696945",
+            "first_json_path": "sources[126].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_561573362",
+            "first_json_path": "sources[127].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_729671835",
+            "first_json_path": "sources[128].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_379031575",
+            "first_json_path": "sources[129].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_234122652",
+            "first_json_path": "sources[130].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_746727007",
+            "first_json_path": "sources[131].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_129223029",
+            "first_json_path": "sources[132].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_740238344",
+            "first_json_path": "sources[133].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_444631845",
+            "first_json_path": "sources[134].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_387474214",
+            "first_json_path": "sources[135].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_773283105",
+            "first_json_path": "sources[136].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_827732877",
+            "first_json_path": "sources[137].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_816360514",
+            "first_json_path": "sources[138].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_653872695",
+            "first_json_path": "sources[139].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_457811864",
+            "first_json_path": "sources[140].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_453777906",
+            "first_json_path": "sources[141].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_502726670",
+            "first_json_path": "sources[142].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_870099266",
+            "first_json_path": "sources[143].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_76354933",
+            "first_json_path": "sources[144].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_542619615",
+            "first_json_path": "sources[145].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_298754492",
+            "first_json_path": "sources[146].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_259940230",
+            "first_json_path": "sources[147].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_139885636",
+            "first_json_path": "sources[148].lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "independent_melt_270739820",
+            "first_json_path": "sources[149].lineage",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              3.0,
+              6.0
+            ],
+            "first_json_path": "audit.horizons_ps",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 801,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 150
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 150
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 3.0,
+            "first_json_path": "sources[0].timestep_fs",
+            "occurrences": 150
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 520.0,
+            "first_json_path": "sources[0].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 400.0,
+            "first_json_path": "sources[24].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "sources[54].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "sources[84].audit_metadata.temperature_K",
+            "occurrences": 30
+          },
+          {
+            "value": 510.0,
+            "first_json_path": "sources[114].audit_metadata.temperature_K",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "725f8d9f622f2e2ad11c5b5828329170d8667e618084f5931db7fee16d5a2e6a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "40ea35426205d842586ac65989e53d543e33687d8d8177e301a79b3be2c666f0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "30fc972c12034b6f728029a77135f67614f06e973b6ac90fe428726fd4ada688",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "14bc2f13c24b287c9c54c74bef8c783a5b79a79a170d20fe8b07e27a799cd624",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "1b41afb85e50fec3877a30ec574e4e7c8c0f19a5cdf5c52a771c562d1056b07f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "482da0f0f377a120e006a9eee4c648d491a1cf7564dd54378aadc67ee8b0a7d7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "36adfd3cd7add54722d0cbb4b4a7e82f6cefd8a0c5ad93f73c8507b56a88927f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "2bf50a5e3825fc0a1496b752389a48aa0d206c708596a5b496eca9d0532e7b0a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "0499c40fc431f9104b60d5450b99a66e94d93312a26388f3e9145b33db5c4a80",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "116614bc0fbcf8f375306434d4960a75876ec26345c70610df9b70ec8fd9b08e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/860/complete.json",
+      "relative_path": "sources/860/complete.json",
+      "sha256": "0ea92cb4a0657363eca2fadbe04dd017808698b6cb9f3d3f61618e2d2fefe7af",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/861/complete.json",
+      "relative_path": "sources/861/complete.json",
+      "sha256": "5d14c616cd35c70305a772cea3fc948d2fc1dc87f278b72ddf863523758ef25b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/862/complete.json",
+      "relative_path": "sources/862/complete.json",
+      "sha256": "67408824b99dcd96934dd866c7c117d76c6671028aa00d31ccc1bbf6e97f25c8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/863/complete.json",
+      "relative_path": "sources/863/complete.json",
+      "sha256": "8f52f79141d7a7a5d5d565a84e786121bddbb38c77df17434306948965a04ff8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/864/complete.json",
+      "relative_path": "sources/864/complete.json",
+      "sha256": "1acbae4b0b123e920f5ccbeba66126367b9725ee0bdbe28a6daee390946d84be",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/865/complete.json",
+      "relative_path": "sources/865/complete.json",
+      "sha256": "3d1ce16320e23e58593210f34fd56bb548fcb05bd33c254e956a6bd666ca6ec3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/866/complete.json",
+      "relative_path": "sources/866/complete.json",
+      "sha256": "6c0582da2f0dd03e471b79740281a52e7694329d8e3d26e645d10e9d4890198c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/867/complete.json",
+      "relative_path": "sources/867/complete.json",
+      "sha256": "dce798c01c6562abf13c8260e39ab972dbcaa1565a1a4e4957adc93711106384",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/868/complete.json",
+      "relative_path": "sources/868/complete.json",
+      "sha256": "ae0997fcb38590a364065b46915c27c9b78e37e8e3a35c9dd9c1d609f0d9797d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/869/complete.json",
+      "relative_path": "sources/869/complete.json",
+      "sha256": "2517d8deac8f24475e7cfd23c2581b9d9b98fd2e8f114f20d512b490ca4487db",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/870/complete.json",
+      "relative_path": "sources/870/complete.json",
+      "sha256": "257b7fe41211dd0a7cbc285d7ebd7ee14a6fad714954fd4cb79f713d1df72ddd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/871/complete.json",
+      "relative_path": "sources/871/complete.json",
+      "sha256": "2ca72e9d853685fce200b6b8488299b47925abb42b09ca1343f1f82b1df3536f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/872/complete.json",
+      "relative_path": "sources/872/complete.json",
+      "sha256": "67e40e1959a9394b81b8240ff650f3f91076197f9cfeb009c5c6edd0368a578c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/873/complete.json",
+      "relative_path": "sources/873/complete.json",
+      "sha256": "7c759adf3e63cb46df75c26169b8ae68174d4d98a5cb9a16a08f1fd131bf9aca",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/874/complete.json",
+      "relative_path": "sources/874/complete.json",
+      "sha256": "083ae31c78d1f43642853db0b7feccd72516fb95595f410a242ddabef631ab75",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/875/complete.json",
+      "relative_path": "sources/875/complete.json",
+      "sha256": "d722a5dde20fe86f4c837567831e45e6087f1c0364dc169676587151efa8a793",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/876/complete.json",
+      "relative_path": "sources/876/complete.json",
+      "sha256": "b6e14b56fda788f190e19f768735b53d6cae229c09fef835144a80b8fa724009",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/877/complete.json",
+      "relative_path": "sources/877/complete.json",
+      "sha256": "776a43991cdcc157995f6771505581817c091a1e3281e171f2b5840fa2e78776",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/878/complete.json",
+      "relative_path": "sources/878/complete.json",
+      "sha256": "c6ee4440d5f659a41d6ed07d8ab39003e23c71d37391471958863c223c21ba58",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/879/complete.json",
+      "relative_path": "sources/879/complete.json",
+      "sha256": "c766398de0568f7da33e999d1ba93636295f01e1bd1243d4cedd30b44d8b7c03",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/880/complete.json",
+      "relative_path": "sources/880/complete.json",
+      "sha256": "b7640dc59eb446d2b35e11ce20cc5369908fc7106a02b74f4fc0c12ed3c3ea24",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/881/complete.json",
+      "relative_path": "sources/881/complete.json",
+      "sha256": "8f53b02469a909ebfd987b8ab3c4f44f6b2f46bc97c1106354ad174da14b0f03",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/882/complete.json",
+      "relative_path": "sources/882/complete.json",
+      "sha256": "c0cf8c6a1c66a44c19a92d1a61c488515d83415ea3176db3ec1b20aaecde1fbb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/883/complete.json",
+      "relative_path": "sources/883/complete.json",
+      "sha256": "c326d76bf85f750e7b949d28b745669b91e950ee034fa34bf572ee32f70ad916",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/884/complete.json",
+      "relative_path": "sources/884/complete.json",
+      "sha256": "1dc50223e616edff51b488ac8cbe5a2c583b4fa12b6109ad09395f86332cf825",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/885/complete.json",
+      "relative_path": "sources/885/complete.json",
+      "sha256": "28d2b2a8e93230afd1c3ba762dfc668e14a315175d786e0c1e3789f74a0db528",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/886/complete.json",
+      "relative_path": "sources/886/complete.json",
+      "sha256": "e1ee56a280b57d4cefbb57d2bc77223d4f63fa3e90d6c6d40584d4ff7e3c7609",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/887/complete.json",
+      "relative_path": "sources/887/complete.json",
+      "sha256": "7ee89f965791e2179b66f56e12b40dfbfc8073b156f00caa836e0c149b56eed2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/888/complete.json",
+      "relative_path": "sources/888/complete.json",
+      "sha256": "6c57fc9d81d601e8e4b9e3de55eb5252f930dc2d9fc286e783501adcbf05a69d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/889/complete.json",
+      "relative_path": "sources/889/complete.json",
+      "sha256": "935e5c3584d8a9e5cf34557484368288ea7ed1acfcf8210aa0bda5b5602a350c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/890/complete.json",
+      "relative_path": "sources/890/complete.json",
+      "sha256": "05ad2b69a317fbb5320a0220f67a054a702bbf7ff2986b78e90fba701b01e29b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/891/complete.json",
+      "relative_path": "sources/891/complete.json",
+      "sha256": "1e098f2f430c4b3626eef9102b9520a51e009314484c25d69c0e9e6a87706d64",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/892/complete.json",
+      "relative_path": "sources/892/complete.json",
+      "sha256": "f9584571b4f107967888f6f99efccbb9d121c368c32dfb94d5f481db8b8b1aad",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/893/complete.json",
+      "relative_path": "sources/893/complete.json",
+      "sha256": "1452aa1b42a1df8a9a26baeb21b9c4d671006cbcf708a2e65d63aa3d95fac149",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/894/complete.json",
+      "relative_path": "sources/894/complete.json",
+      "sha256": "a7dc4f6b6eea48776377326ba6e413f3161db4c0ebf01d0eebe49fb651308060",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/895/complete.json",
+      "relative_path": "sources/895/complete.json",
+      "sha256": "4c8bd094f2cc0dda747db3086784ebc66a901f1b34076276c53ec4ab9bf07819",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/896/complete.json",
+      "relative_path": "sources/896/complete.json",
+      "sha256": "94d78d03d7813e903ccec8174ff83f757203342434296b20993bd321ab322968",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/897/complete.json",
+      "relative_path": "sources/897/complete.json",
+      "sha256": "262b7a25d78a76ef948b4f7ac4d3b204dbe3479309ea3cd27b99d4cc0eee24bb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/898/complete.json",
+      "relative_path": "sources/898/complete.json",
+      "sha256": "848c2b312bc75ccb28489d141b668282415992e226eb8942259fecf80cfc1f17",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/899/complete.json",
+      "relative_path": "sources/899/complete.json",
+      "sha256": "6597c2f00707e773b282b04e41676c46583b4adb6b43079adbe86f0a16515cf3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/900/complete.json",
+      "relative_path": "sources/900/complete.json",
+      "sha256": "163af2820435e6bae15d9cb54737cfdacaeef7f346799aacad8a0bf2836450be",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/901/complete.json",
+      "relative_path": "sources/901/complete.json",
+      "sha256": "8199e102c2f073e3a5eed6f16c99791b598d92d08d0b3897596e166c3c4d8963",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/902/complete.json",
+      "relative_path": "sources/902/complete.json",
+      "sha256": "cdf5c7003b5a95f7c460fe996845fa45dafdd2b566f1375f14afe634406c05cf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/903/complete.json",
+      "relative_path": "sources/903/complete.json",
+      "sha256": "a6c54b23523d44cbca01c62c45caebfe151121f86e92d437c0ec7897571f04cd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/904/complete.json",
+      "relative_path": "sources/904/complete.json",
+      "sha256": "a1509c085341507baf7d04995bd73d9a931008dfeaf37d4c69ee6cf2967d794a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/905/complete.json",
+      "relative_path": "sources/905/complete.json",
+      "sha256": "6ddb564fe7a2a6defce96bd648ee0a1602bcc5ba74b305a1d5fe4d6021f2bc0d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/906/complete.json",
+      "relative_path": "sources/906/complete.json",
+      "sha256": "ba91f88ea97b56cb24015425c109912385d35ffb699d4345b7f47682edef79b4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/907/complete.json",
+      "relative_path": "sources/907/complete.json",
+      "sha256": "ac7c0c8214ad6716db4bce4e58edf09c55d735c4df08b30b2860bf3cb6ef6649",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "43d1a6e486cc550dc06b9b291d5bcdb945c33a3a4fa57442a48aecae35221457",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "ddd9fcf489a4cb290f8dcc7552c6f0b93dfa83d3329a8638af765f979916b480",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "733faf699d9b0b737a1a3d7cf6c0e44acd7198b1c64a58e2f92e6ec915c89efe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "e0e1a2ea122d82c0e15828302dbb58ad91cfdfacf6099e8e0a765df9bee574e8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "e3f1bfe5eab1c34bd9fac91c1733967512aa89963730d836fb6a5d032ce16cf0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "647afdc895ba27c0434b9ed2d6e80f0c7507d508837c4bde79567e373aab6e3d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "2a08a35e4be3efb2341489c9364d68d2242369fbb4139bf893c5f44bbcd3be33",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "7014dedc0ccef9be19af615022fac0da92acedf28d46bb4adf2e647ace838e90",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "9b8fee6f9db857ffa4350e29db05fb2d2012d362a163d56d2dc3e95e7e51e71a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "110929351dd6dc76b13d2c67cd462a138829a0d34ac891a5f7a216e1d27bbb2f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "71506604840d6b1c674db357b716635427aae80baaeb21adc46a74bd2d778868",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "012fa9793330a2bfa598916e2881fce9db886e373a94defafaa5174a11c2833a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "5bcd8c2de78bfaf5ceb9d6425d50d84786e203b5b47c71cf094f9e0154d675ad",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "16bb69ab9ee41da7ed9ffa3e819afa807ee4d7588c566b3c517ae4d59d7eeb7f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "b9be3fff191ec7a3019da547d829d4858fe506d7fceba637a89c3082ad467340",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "ee638d7f6db8132a9de94f03f3f927900bcae5b67ec60964fb4ed93582772c94",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "f4a940a4f03a359698c2f5864da0759e49ccda2d75cec51b7942758837a0d43a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "51342198bc8c1405d445a0abefdeed703e611db4114b049d6510d6877862d5d3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "ee49b7b2cce6ef38189a87959f8cef32ea7adece9a1735069a5e54e2f9d8b3ec",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "40ce428174c13459e80bc77d6f4358bc8a4fa20962e75841ebc1a29a9ad9e8b4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "4b4c0b4d3fa533c20c5b1235ff282f21c56724c3473022ef0165f110c1979cbe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "46584d278aab450cdc96f953158b3ede04534018fc9287b53316ab593e1032fa",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "3c2716ada116f1719fb9e013e9eeda69e0a9190739288cf5d9cb2e39ad5f6887",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "8567979a1011301cd7f8746c6eef786772bb26351f87d7415ccdbf785de94452",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "7986a25e1b3911a4e14f179f4f6d612449808be313c71ba8b7dda1ad196eea2a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "7c782a329f87cf0dd64fcef5ab80ebac66eaf85ca335ddf240cfc5b564f5c540",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "e38258aac961d108c791cf0a606611e0ef7f7684c92bd624cd5b4e1137ea45d1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "063e759ee538c98380f2abb26c51779d74f629da1f49e666fe449ac4471218c9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "e6b868d87ae3a6526230e206524e43feef0a6b3cecee4a5e36c5cde54c986bf8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "d39d17c8f8dfd42b91bccc1a57fa1a481234ed1bbeaa972452e198bb4a9c4723",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "dd003ab20c40524347408fa8adb1201d137e7ea618785e1e3f6ac06ae07cfbfe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "9ccac67288fee0409bfb330937678823c2bf2dc87bbc5209dd4b3e099295052f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "b1205fdd044736aa90200a1f6766e9a09a2469c43a9b1cd58c2a1648af93584a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "1e44c91cab95092bc838bec97c9977ab98aced6d8a0238f988c104906c9758c2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "438d37e89138df45448cc30fed8c8b21aede575711196e3ae076cfb7579c307a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "a1cc0d184acc855e6f056c528c360a9fbf5f865d704c2411118a08a42c4c6eb6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "612a44002e7c0af5fbe1b09f3b3471549f8de83e61374af8ce653612515bcfd7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "c2b3d0dccf514375cce3635f44903b6519a7898833a2a1531fa3d86f8334c2c5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "81b6e944c7ab7a21f9b218e4b8478bf86161bcf5fbccfb319d64165c820c7937",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "65fcd16f82e5096bc9869b0044c9b1710c2ade424ebc60ac36c9d5b0a32d34a5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "a34a3eb962fcd24ff71677d000afd16115285ebc129f30f903cc079575bad9d6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "e1305a917e627fa4e7b13006632ba9f34808e1035abdb69b7ad37208047fd8e1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "d1e4a50b8c237de34e63d720288bd87ce842954e5d956e296c7d217e42120fe5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "9b5ae96474200f913b8e17b2985dec1622e7b9019e1ee7984bec3dd7f6d15934",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "6ac38f36a413a78261e8478c84d6393fdfb82706c2fe606b95e1154a73da0b69",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "b6d61783e1244dd09a3e5d14150686f8b0884f4aa39d21b90f7997d140db48b8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "802437e3aed8b0930fba3f47552ff1b26bec300799f3f7bf3a4e95a6e5ac852a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "d11b8e0b0105e7139ff7a0d8e84650aad5b96a1a3f4f38840b7ebcf6ea2c0cc1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "337a49415e6d65abd3913349287ad9fdca96410a2491cf709441195b03354005",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "e2dbf0715fd177acb78b7bf6493f96a9115651acaff99198fffde414dc449a0f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "4480f1658d4715d40a9e268147728784a6add18e793dd3e25000820e50b4f43a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "5f05a145446d6ee443ee265b6803ce6b5a0a7eeb5fb86806b19285c71adb25c2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "b8f5f67519b50890ec7e3a015ce3755fb0c1ce9e6737abb363a8fd5a8e1ef125",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "4fc220cdfe0e41ffc34e099b1f3056a8bacd22cf120b93ce30d835482f6af3e7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "98d3b5a2d51d7e1c3de39c389cc0b937744938f9314e7a59115031d723987a82",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "e190479212da5b2cd45fb1281733844d2af95d142e22f6e174b9b3d891095726",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "558944406e6d8b1a0eae8397928e82d407c5dbf44569fb9933a807544fd3a732",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "b763ec69d690c3fc8df2b9beba1acf531e0244e66bcf7ef59128a7394a795aea",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "7496becdabe8f9b7f0e36856278186ad9c7460a84179977a6adec5424da4c175",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "43b738b070fb7b42146cf2ed18999b15b8353bfcec9b0950ed7e23d75fab4993",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "cda0833b654bb1e530bee414fa06975ffad5b85d4015e5069eccfaf13e346ec4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "1154f8620aafae33766723038c2909105eef10d32e4744977b3156b0785a0749",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "7bd486dda14c3a7c697cf24c4392e08037f8b9cef9eb61ff584c8a7cf50ebe67",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "f4540cf4e114da24b30eed7129cdd76cfa978f0882af7a70865b78c4147b663d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "b5a8844b093837614172c1a3992e8e14b43f4f6953eea82f0b60586ebd4548a5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "b8fed7f8b2f9b96ad2ef3dda5ad6eb1583836f958f0621dbc2df842c8d9e8061",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "f9f89743a8a9afe67fb1ae714b33f0061cfe3ed344054961abca3a19f4943b9e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "8e376b5562dd90bf83e1e69d08139e174b2b5f396c94eba1d8fe6f96ca89b49d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "ca0f52589b2c5be9a69e7c8d8dddee91809986173bbf0b251a4345ba418f3fbf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "dabb51f59082fcfa3479cdcd8d374f3f35bc792a19beeb5a8e6ed4aa9aca1cce",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "c5a644d8b2838d97f1ea0b2cb0c968a886546fdca36f989faac9c70a348239b4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "f722c409d15c4c34859662fd3e83b45e1802c89bad99c0928d19bdfd136ffc7b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "6cc650b0372ab69a2f4ffdbc2e9042bfd4450d253eb769b062fcf2a89247008f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "c9c3ad52228a375259f8dfc47231d0fdc6e5abcf4ed41645503e0da53ab019d0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "8bb6499859c52afe973075f31af3004ba3a12c8bc3d65d24768cec191b04dcf3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "31d23428fc1255a9aedcec3780e9d2a10ce16cc32d4e3bb415e2ac8e09c8a7bb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "61191cf4b729f2812f9fb1e0a1e9dfd4372acd4c3e1f12a17416fcbba891fcae",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "1a03b39d8953a6c49e5ad5b577132195a83f890eef3fb09a48bdb86a6b6a8aa7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "acc21111354c02fc84c290830d90db9f995ce43e812ca4bef1cab6bd8ce9afc0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "6609ea459637410ef6666bd08570c676dff4a08b5e81cff7d6ee3e64aa18b5d4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "5df2460596b4403b75180e7a158bcf15d9446791fab3f1fa44122e8b6ab8746f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "14ef5db74144ad18ef179d3f58181691d3ca75b6f505d3068c22317cb088f64c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "650545fe7510032c66799ca73433f20947d3713fdc3df5fb14c40b071146d4c3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "d275c1fe1ee06eeddacea0e5d06dc504b17cc92614137f40ed5f50237148954d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "934590a3a72a44a8f52cae85e6f251d0206685083c5be52025ada4e1066d8f9c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "fbb16e927454e19aae9e8fb53feeb14e247584791437cb3eee4b4377c1433f88",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "73be2c6c594cc23c98a944bfe1f4a3b461f59c04cbb76073718018b999130da6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "76e3d788ac866b3afe7808f572f41cd4c10c7549d8c0f388b810f3cd7735c78c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "c1e3e0c964ead386d7bd6650f7f5adcec97c955309c213149dacce78a233edeb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "dcaf2726071dde8644d7c58fac600ffa7c01f4ff97f5d7f170e39f3fa4ebddff",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "f3d1f6cbd99ba75d0f29b60e423b8e71cf122757837a00fe4d1110c5d6dd39a1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/birth-prediction/preappearance-20260930/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "5af19f25263d3e1b19f2660b05704e4e6cfbb1cdae3aaeb93815461c89f4bf7b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "files",
+        "identity",
+        "patches",
+        "role",
+        "rows",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

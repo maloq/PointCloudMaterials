@@ -1,0 +1,12 @@
+{
+  "launch": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-continue-20261001",
+  "original_launch": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927",
+  "manifest_sha256": "4ac53304a8c85f1b0be6cb3e60a1191b83aa1e1c78b07c75634866495d10c80c",
+  "original_manifest_sha256": "0cf4e59c13c71194788a5d45753602c30134b5342a97c37ce033505b29c54995",
+  "code_inventory_sha256": "37143806a3943798cf816302d6c53db455dbe214d6892202778045a63a8feb15",
+  "receipt_sha256": {
+    "preparation.json": "7afd6b3f40b4998f5c5c4acaf674daa166202a7c0da71d9422007c49e6eab9aa",
+    "startup.json": "3f2907c9eff4a399ce05eb5e006da1ffb796ce20a3a1f97f5df0d42199114dbc",
+    "submission.json": "6cd2dae40d1a1712911e146359d3c94a3cf7a8b24b1061c6bb902928904a6270"
+  }
+}

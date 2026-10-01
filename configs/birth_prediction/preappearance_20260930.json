@@ -1,0 +1,178 @@
+{
+  "protocol": "preappearance_birth_classification_v1",
+  "name": "Al births versus continuously liquid regions",
+  "audit_config": "configs/analysis/crystallization_origin_20260925.json",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "derived_event_centered_preappearance_v1"
+  },
+  "output": "${storage:training_storage}/birth_prediction/preappearance-20260930",
+  "cache": "${storage:cache}/birth-prediction/preappearance-20260930",
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "seed": 20260930,
+  "cadence_ps": 0.75,
+  "radius_A": 8.0,
+  "history_frames": 8,
+  "remove_frames": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "appearance_search_frames": 32,
+  "centers_per_event": 4,
+  "maximum_centers_scanned_per_event": 64,
+  "negatives_per_positive": 4,
+  "negative_candidates": 1024,
+  "minimum_followup_frames": 8,
+  "prepare_tasks": 8,
+  "inference_batch_size": 256,
+  "fit_threads": 8,
+  "gpu_partition": "L40S",
+  "minimum_events": {
+    "train": 10,
+    "selection": 3,
+    "calibration": 3,
+    "test": 5
+  },
+  "encoders": [
+    {
+      "name": "mace_rich",
+      "kind": "rich",
+      "checkpoint": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/technical/checkpoint.pt",
+      "producer": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/technical/inference-code",
+      "checkpoint_sha256": "a9b520a7d5c7da393d3dbdfa565be2f2a5f40a6f5bb3495d660430e29315d0ff",
+      "selector": "minimum Al selection family-balanced descriptor NLL; epoch14/update1806",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    },
+    {
+      "name": "mace_vicreg",
+      "kind": "vicreg",
+      "checkpoint": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/runs/20260926/R2/pretraining/vicreg/technical/epoch-024.pt",
+      "producer": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code",
+      "checkpoint_sha256": "c0adfd73d88d7c7a421c39bd3d32cd96e10edb9f391cace991276074f16b5487",
+      "selector": "latest completed label-free R2 reference; predeclared epoch24 and seed20260926; no AP-based choice",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "9e4a88f6c9fb0c8c1ce6e26a28931e884f19bbeb113634b625e4719bfe4dfa83",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "9f70b0ca8c82be918dea3c17e465579e33b993752c1b329cd00f15bed42b7c32",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    }
+  ],
+  "linear_C": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0
+  ],
+  "patience": 100,
+  "bootstrap_draws": 2000,
+  "catboost": {
+    "iterations": 1000,
+    "depth": 4,
+    "learning_rate": 0.04,
+    "l2_leaf_reg": 10,
+    "border_count": 64,
+    "task_type": "GPU",
+    "devices": "0",
+    "gpu_ram_part": 0.8,
+    "boosting_type": "Plain",
+    "bootstrap_type": "Bayesian",
+    "bagging_temperature": 1
+  },
+  "arms": [
+    {
+      "name": "prior",
+      "model": "prior",
+      "bank": "none",
+      "families": []
+    },
+    {
+      "name": "rich_gbdt",
+      "model": "catboost",
+      "bank": "descriptors",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna",
+        "tda"
+      ]
+    },
+    {
+      "name": "tda_gbdt",
+      "model": "catboost",
+      "bank": "descriptors",
+      "families": [
+        "tda"
+      ]
+    },
+    {
+      "name": "bond_order_gbdt",
+      "model": "catboost",
+      "bank": "descriptors",
+      "families": [
+        "bond_order"
+      ]
+    },
+    {
+      "name": "geometry_cna_gbdt",
+      "model": "catboost",
+      "bank": "descriptors",
+      "families": [
+        "geometry",
+        "cna"
+      ]
+    },
+    {
+      "name": "rich_linear",
+      "model": "linear",
+      "bank": "descriptors",
+      "families": [
+        "geometry",
+        "bond_order",
+        "cna",
+        "tda"
+      ]
+    },
+    {
+      "name": "geometry_linear",
+      "model": "linear",
+      "bank": "descriptors",
+      "families": [
+        "geometry"
+      ]
+    },
+    {
+      "name": "mace_rich_gbdt",
+      "model": "catboost",
+      "bank": "mace_rich",
+      "families": []
+    },
+    {
+      "name": "mace_rich_linear",
+      "model": "linear",
+      "bank": "mace_rich",
+      "families": []
+    },
+    {
+      "name": "mace_vicreg_gbdt",
+      "model": "catboost",
+      "bank": "mace_vicreg",
+      "families": []
+    },
+    {
+      "name": "mace_vicreg_linear",
+      "model": "linear",
+      "bank": "mace_vicreg",
+      "families": []
+    }
+  ]
+}

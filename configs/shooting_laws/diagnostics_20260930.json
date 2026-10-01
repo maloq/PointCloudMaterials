@@ -1,0 +1,45 @@
+{
+  "protocol": "shooting_future_law_diagnostics_v1",
+  "main_config": "configs/shooting_laws/al480_20260930.json",
+  "main_config_sha256": "5f6ba197e1d8f2ac878233314aadeda39a42d3b4b1b05d14a14bb7be5dbd34eb",
+  "output": "${storage:training_storage}/shooting_laws/diagnostics-20260930",
+  "cache": "${storage:cache}/shooting-laws/diagnostics-20260930",
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "encoders": [
+    {
+      "name": "mace_vicreg",
+      "kind": "vicreg",
+      "checkpoint": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/runs/20260926/R2/pretraining/vicreg/technical/epoch-024.pt",
+      "producer": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code",
+      "checkpoint_sha256": "c0adfd73d88d7c7a421c39bd3d32cd96e10edb9f391cace991276074f16b5487",
+      "selector": "latest completed label-free R2 reference; predeclared epoch24 and seed20260926; no AP-based choice",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "9e4a88f6c9fb0c8c1ce6e26a28931e884f19bbeb113634b625e4719bfe4dfa83",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "9f70b0ca8c82be918dea3c17e465579e33b993752c1b329cd00f15bed42b7c32",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    },
+    {
+      "name": "mace_epi",
+      "kind": "vicreg",
+      "checkpoint": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/runs/20260926/R1/pretraining/epi_variance/technical/epoch-024.pt",
+      "producer": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code",
+      "checkpoint_sha256": "141bf79371e71559fcdb68c455317addf0dda8634cc13ff6043997e201f556fa",
+      "selector": "predeclared label-free aligned Epi epoch24, seed20260926",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "9e4a88f6c9fb0c8c1ce6e26a28931e884f19bbeb113634b625e4719bfe4dfa83",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "9f70b0ca8c82be918dea3c17e465579e33b993752c1b329cd00f15bed42b7c32",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    }
+  ],
+  "al_campaigns": {
+    "csld": "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+    "nested": "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible"
+  },
+  "centers_per_parent": 192,
+  "ta_coordinate_factor": 0.971669495885595,
+  "nested_max_export_error_A": 0.0625
+}

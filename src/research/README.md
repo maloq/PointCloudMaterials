@@ -1,5 +1,36 @@
 # Implementations of recorded research protocols
 
+`birth_prediction.relaxed` queues full-cell minimization, aligned local input
+export and the retained likelihood-selected readouts; `relaxed_report` compares
+train/test errors and paired source-held-out scores against unrelaxed inputs.
+
+- `response_atlas/`: conditional-future precision, supplied response reference, analytic mechanisms and full-cell MACE feasibility.
+
+
+`birth_prediction.temporal` fits fixed-endpoint and shifted fixed-length history
+controls; `temporal_analysis` measures same-site structural changes and replays
+locked predictors; [protocol](../../experiments/birth_prediction_20260930/TEMPORAL_SITE.md).
+
+`shooting_laws` derives common physical future paths and sustained event labels,
+fits condition-free frozen readouts, and compares source-held-out distributions;
+[protocol](../../experiments/shooting_laws_20260930/README.md).
+
+`birth_prediction.leakage` reconstructs raw causal observations and measures
+structural information used by retained readouts; [findings](../../docs/encoder_research/birth_leakage_features.md).
+
+`birth_prediction.extension` retains one through eight observed frames and
+cross-validates frozen readouts within original training-source/ancestry groups;
+[protocol](../../experiments/birth_prediction_20260930/TRUNCATION_CV.md).
+
+`birth_prediction` builds matched crystal-free birth/liquid histories and compares
+rich-descriptor boosting, frozen rich/VICReg MACE and linear readouts at four
+truncated endpoints; [protocol](../../experiments/birth_prediction_20260930/README.md)
+and [workflow](../../docs/birth_prediction.md).
+
+New: [packed-data TDA/VCReg pilots](../../docs/rich_tda_objectives.md), with validation-selected full-data fitting.
+
+`spatial_vicreg_bias.mace_checkpoint` evaluates the current validation-selected RH2 MACE state using its frozen training producer, then publishes both Al viewers; [workflow](../../docs/spatial_vicreg_bias.md#current-mace-replacement-rh2-best-checkpoint-2026-09-30).
+
 `spatial_vicreg_bias.general_descriptors` applies existing all-training descriptor fits to frozen GeoFormer/MACE comparisons, regenerates descriptor views and exports versioned overlap diagnostics; [workflow](../../docs/spatial_vicreg_bias.md#general-descriptor-comparison-2026-09-30).
 
 - `liquid_predictability.rich_multimaterial_queue`: immutable raw multimaterial patch descriptors, declared-batch verification, fixed-epoch MACE256 fitting and locked one-to-two-GPU continuation; [workflow](../../docs/rich_multimaterial_encoder.md).
@@ -176,3 +207,5 @@ bootstraps complete sources for paired AP and probability errors without fitting
 see [results](../../output/structural_state/repaired-review-20260923/README.md).
 
 `encoder_quality/` evaluates frozen current native MACE on fixed liquid/interface, geometry/noise, temporal and likelihood-readout controls; [protocol](../../experiments/encoder_quality_20260926/README.md).
+
+Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.

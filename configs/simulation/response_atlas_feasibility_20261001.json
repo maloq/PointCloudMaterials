@@ -1,0 +1,56 @@
+{
+  "protocol": "response_atlas_feasibility_20261001_v1",
+  "seed": 20261001,
+  "output": "${storage:training_storage}/response_atlas/feasibility-20261001",
+  "simulation_scratch": "${storage:simulation_runs}/response-atlas-20261001",
+  "simulation_archive": "${storage:archive}/simulations/response-atlas-20261001",
+  "potential": "${dataset:potentials}/mace-mpa-0-medium.model",
+  "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+  "shooting_config": "${storage:repo}/configs/shooting_laws/al480_20260930.json",
+  "shooting_config_sha256": "5f6ba197e1d8f2ac878233314aadeda39a42d3b4b1b05d14a14bb7be5dbd34eb",
+  "fit_seeds": [
+    20261001,
+    20261002,
+    20261003
+  ],
+  "toy_epochs": 250,
+  "mechanism_repeats": 64,
+  "shot_partitions": 32,
+  "retrieval_partitions": 8,
+  "retrieval_queries_per_source": 32,
+  "lattice_A": 4.05,
+  "parent_displacement_sd_A": [
+    0.03,
+    0.08,
+    0.12,
+    0.16
+  ],
+  "minimum_separation_A": 1.8,
+  "pilot_parents": 16,
+  "directions": 2,
+  "discovery_branches": 4,
+  "verification_parents": 2,
+  "verification_branches": 4,
+  "verification_epsilon_A": [
+    0.003
+  ],
+  "gate_epsilon_A": [
+    0.001,
+    0.01
+  ],
+  "hvp_relative_tolerance": 0.001,
+  "path_relative_tolerance": 0.01,
+  "horizons_steps": [
+    20,
+    100,
+    500
+  ],
+  "timestep_fs": 1.0,
+  "temperature_K": 450.0,
+  "friction_time_fs": 100.0,
+  "feature_cutoff_A": 5.5,
+  "rff_features": 128,
+  "path_coordinate_scale": 0.1,
+  "gpu_partition": "L40S",
+  "long_horizon_parents": 2
+}

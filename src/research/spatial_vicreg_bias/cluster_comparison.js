@@ -1,11 +1,15 @@
 const el=id=>document.getElementById(id);
 const config={responsive:true,displaylogo:false,plotGlPixelRatio:2};
+const highlightPointScale=1.4;
 const visibilityUID=t=>t.meta?.clusterUID||t.uid;
 const clusterVisibility=new Map(),plotKeys=new Map(),plotSizes=new Map();
 async function mainPlot(id,makeTraces,layout,key){
  const size=Number(el(id.startsWith('md')?'mdSize':'size').value);
  if(plotKeys.get(id)===key){
-  if(plotSizes.get(id)!==size){await Plotly.restyle(id,{'marker.size':size},el(id).data.map((t,i)=>t.mode==='markers'?i:-1).filter(i=>i>=0));plotSizes.set(id,size);}
+  if(plotSizes.get(id)!==size){
+   const indices=el(id).data.map((t,i)=>t.mode==='markers'?i:-1).filter(i=>i>=0);
+   await Plotly.restyle(id,{'marker.size':indices.map(i=>size*(el(id).data[i].meta?.highlight?highlightPointScale:1))},indices);plotSizes.set(id,size);
+  }
   return;
  }
  const traces=makeTraces();
@@ -131,7 +135,8 @@ function highlightProjection(trace,ids){
   const selected=ids.map(i=>D.distance[i]!==null&&Number.isFinite(D.distance[i])&&D.distance[i]<=12);
   return [false,true].map(highlight=>{
     const rows=ids.map((_,j)=>j).filter(j=>selected[j]===highlight);
-    const marker={...trace.marker,opacity:highlight?1:.08};
+    const marker={...trace.marker};
+    if(highlight)Object.assign(marker,{opacity:1,size:trace.marker.size*highlightPointScale,line:{color:'#000000',width:.6}});
     if(Array.isArray(marker.color))marker.color=rows.map(j=>marker.color[j]);
     if(highlight)marker.showscale=false;
     return {...trace,uid:trace.uid?(trace.uid+(highlight?'/highlight':'')):undefined,

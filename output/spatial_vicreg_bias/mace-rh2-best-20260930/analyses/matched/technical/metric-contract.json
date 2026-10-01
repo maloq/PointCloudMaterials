@@ -1,0 +1,16 @@
+{
+  "family": "rich_mace_comparison",
+  "exported_at": "2026-09-30T11:24:06.266182+00:00",
+  "files": {
+    "docs/metrics/rich_mace_comparison.md": "8b9554abf2345c246663b6eb1c1857e5a9ed6060e67caa4fd08b24ace357a849",
+    "src/research/spatial_vicreg_bias/mace_checkpoint.py": "fc1f0379793fe2f853606e1238ad3f57d0449fbf76c8df2aaeec854d624edb22",
+    "src/research/spatial_vicreg_bias/mace_publication.py": "2a3256ba67d8a038393e0c1e8d7015938745efc0bfaa7ade18434affb3ebac08",
+    "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+    "src/research/spatial_vicreg_bias/sample_lattice.py": "2881691ff28b134e1c5581be23d2e61982d5bc8df3f26ba6cae6870157cb1cdd",
+    "src/research/spatial_vicreg_bias/viewer_payload.py": "a54311b03dbef8c704d5abf15b82411278b6eca555c7010305404a77f6e4c4ba",
+    "src/research/spatial_vicreg_bias/cluster_comparison.js": "286d3eb47d86ba2df2848c5bfdbff905328bed0802adee3dc59dc0c8ab57346b",
+    "src/research/spatial_vicreg_bias/cluster_comparison.html": "8eaa0601dd11333c18d831d6438f3ba21e0dee7eec63ee859a77c4ba9ee9b13f",
+    "configs/analysis/mace_rich_current.json": "61945ba23d3dcb5ed01296022f51d9f6ad2f08b8ebf94ffb4c2830b0d7dc9a28"
+  },
+  "verified": true
+}

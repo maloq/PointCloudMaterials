@@ -35,6 +35,18 @@ def load_lammps_shooting_frames_for_conversion(
     atom_count: int,
 ) -> dict[int, ShootingFrame]:
     """Parse selected frames from a source dump before one-time binary migration."""
+    return {frame.timestep: frame for frame in iter_lammps_shooting_frames_for_conversion(
+        trajectory_path, timesteps=timesteps, atom_count=atom_count)}
+
+
+def iter_lammps_shooting_frames_for_conversion(
+    trajectory_path: str | Path,
+    *,
+    timesteps: Sequence[int],
+    atom_count: int,
+    exact_timeline: bool = False,
+):
+    """Yield the same float32 consumer frames with bounded memory."""
 
     path = Path(trajectory_path).expanduser().resolve()
     requested = tuple(sorted({int(value) for value in timesteps}))
@@ -47,7 +59,6 @@ def load_lammps_shooting_frames_for_conversion(
         raise FileNotFoundError(
             f"LAMMPS shooting trajectory is missing: {path}"
         )
-    frames: dict[int, ShootingFrame] = {}
     with path.open("rb") as handle:
         with mmap.mmap(
             handle.fileno(), length=0, access=mmap.ACCESS_READ
@@ -61,6 +72,8 @@ def load_lammps_shooting_frames_for_conversion(
                         f"Requested timestep {timestep} is absent from"
                         f" completed shooting dump {path}."
                     )
+                if exact_timeline and offset != search_start:
+                    raise ValueError(f'Unexpected frame or bytes before timestep {timestep} in {path}')
                 mapped.seek(offset)
                 if _readline_ascii(mapped, path=path) != "ITEM: TIMESTEP":
                     raise RuntimeError(
@@ -164,7 +177,7 @@ def load_lammps_shooting_frames_for_conversion(
                         None, :
                     ],
                 )
-                frames[timestep] = ShootingFrame(
+                yield ShootingFrame(
                     timestep=timestep,
                     atom_ids=ids,
                     atom_types=atom_types,
@@ -173,8 +186,9 @@ def load_lammps_shooting_frames_for_conversion(
                     box_high=box_high,
                     velocities=velocities,
                 )
-                search_start = offset + len(marker)
-    return frames
+                search_start = block_end if exact_timeline else offset + len(marker)
+            if exact_timeline and search_start != len(mapped):
+                raise ValueError(f'Unexpected frames after requested timeline in {path}')
 
 
-__all__ = ["load_lammps_shooting_frames_for_conversion"]
+__all__ = ["load_lammps_shooting_frames_for_conversion", "iter_lammps_shooting_frames_for_conversion"]

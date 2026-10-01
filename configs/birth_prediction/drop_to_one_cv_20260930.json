@@ -1,0 +1,14 @@
+{
+  "protocol": "preappearance_truncation_frozen_readout_cv_v1",
+  "parent_run": "${storage:training_storage}/birth_prediction/preappearance-20260930",
+  "parent_config_sha256": "c82ac05c0a95dc66a60f12f68807eff732e40e9aa5d84cb6bc3eb3b1919a0553",
+  "dataset_identity": "7b3046cdebf539d81a9f50b4abb5629f1ddb1b27edd886e0888b7658f9f96dd9",
+  "output": "${storage:training_storage}/birth_prediction/drop-to-one-cv-20260930",
+  "remove_frames": [0, 1, 2, 3, 4, 5, 6, 7],
+  "folds": 5,
+  "fold_seed": 20260930,
+  "bootstrap_draws": 2000,
+  "cpu_fold_concurrency": 2,
+  "gpu_fold_concurrency": 1,
+  "gpu_partition": "L40S"
+}

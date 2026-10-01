@@ -1,0 +1,19 @@
+{
+  "state": "waiting_for_active_wave",
+  "wave": 0,
+  "worker_job": "1017389",
+  "controller_job": "1017489",
+  "replaced_controller_job": "1017390",
+  "main_source_count": 150,
+  "supplemental_source_count": 2,
+  "total": 152,
+  "source_ids": [
+    886,
+    1004
+  ],
+  "launch": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001",
+  "collection": "al-main-001ps-20261001",
+  "submitted_at": "2026-10-01T20:49:03.680768+00:00",
+  "canonical_vector_bytes": 101239447296,
+  "new_source_schedule": "Prioritize the two additional sources in the next wave; one source per lane for that wave"
+}

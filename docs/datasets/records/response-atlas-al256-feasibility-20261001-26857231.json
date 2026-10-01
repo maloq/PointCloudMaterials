@@ -1,0 +1,261 @@
+{
+  "dataset_id": "response-atlas-al256-feasibility-20261001",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-000/complete.json",
+      "relative_path": "parent-000/complete.json",
+      "sha256": "c3d1a2b5db413e1a81e5c04be72f9ef2487f26f9de7387f56b379bd5f82984dc",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-001/complete.json",
+      "relative_path": "parent-001/complete.json",
+      "sha256": "75599f4d6992522aca11c6289b3c997f3de66a05c64e2272ba8c4ffe597f37e1",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-002/complete.json",
+      "relative_path": "parent-002/complete.json",
+      "sha256": "2f77a416c03e9bbc0f54f4fc0b1b0f62801eb1bdecfe38731e3435b4649efaf3",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-003/complete.json",
+      "relative_path": "parent-003/complete.json",
+      "sha256": "bec3be6f5c650649df00dc99cf44223e9a899f866338f8ebf016c237bcd8b4bd",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-004/complete.json",
+      "relative_path": "parent-004/complete.json",
+      "sha256": "649c7e54c8c1ade5a53ca1d38a4a0f78d693a4244abc542e4f9ed2af4f0d5497",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-005/complete.json",
+      "relative_path": "parent-005/complete.json",
+      "sha256": "5e8f68641d2968ceddb9967000fe800477c80f5e2fb9f3bf94da01152b41034a",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-006/complete.json",
+      "relative_path": "parent-006/complete.json",
+      "sha256": "a8a3a66f4cb1667f6fcd2f721c9b90e1013a31a3e6ab90efc9f092e37c525eea",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-007/complete.json",
+      "relative_path": "parent-007/complete.json",
+      "sha256": "369eff6ef1dd724d9b981ffc012c085be459bbe9a1c53a65ecde01e973921d31",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-008/complete.json",
+      "relative_path": "parent-008/complete.json",
+      "sha256": "6a69d7e4f2f40edff078af5d71482e68a8c0f9f51469ba0b24bedfd03557ff28",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-009/complete.json",
+      "relative_path": "parent-009/complete.json",
+      "sha256": "0eb564da099cda5ee5ab47a429f00778ffff7c3b789eadb6e73755ff31b59e11",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-010/complete.json",
+      "relative_path": "parent-010/complete.json",
+      "sha256": "9eba520e58e4516388b23e8262ecfb10cddb994cca17967fd4c42979252c67b7",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-011/complete.json",
+      "relative_path": "parent-011/complete.json",
+      "sha256": "0765f5c4f5f42f76f67a8b48afe4cd41b1e845e88675506abb2e8c70d5b13222",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-012/complete.json",
+      "relative_path": "parent-012/complete.json",
+      "sha256": "7d7f023dfdca05f07e38a07ea7a97a4b18f52072ac72e700eeb8fb9eed8aa9f5",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-013/complete.json",
+      "relative_path": "parent-013/complete.json",
+      "sha256": "bfe48ce2af8a6eb3da9734bac66c615740750f6c33c410ab4bb8fe3bfa398407",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-014/complete.json",
+      "relative_path": "parent-014/complete.json",
+      "sha256": "6750642f996b6825416aca4e54586eacb78a66854c022edba788642354e08bee",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-20261001/parent-015/complete.json",
+      "relative_path": "parent-015/complete.json",
+      "sha256": "e744f4a28d0bc2a6361192b89d22c6e4e45c759242d0e4c8574428dfd5f04a17",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

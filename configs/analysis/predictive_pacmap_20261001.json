@@ -1,0 +1,22 @@
+{
+  "protocol": "predictive_followup_pacmap_v1",
+  "followup_config": "configs/predictive_baseline/followup_20261001.json",
+  "analysis": "pacmap-v1",
+  "feature_scaling": "source_weighted_train_standardization",
+  "normalization_floor": 1e-5,
+  "primary_joint": "joint-full-free-seed-20261001",
+  "pacmap_version": "0.9.1",
+  "pacmap": {
+    "n_components": 2,
+    "n_neighbors": 10,
+    "MN_ratio": 0.5,
+    "FP_ratio": 2.0,
+    "distance": "euclidean",
+    "lr": 1.0,
+    "num_iters": [100, 100, 250],
+    "apply_pca": true,
+    "random_state": 20261001,
+    "save_tree": false,
+    "knn_backend": "faiss"
+  }
+}

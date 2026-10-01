@@ -288,6 +288,11 @@ input/implementation hashes. No inference, training or PaCMAP refit is involved.
 
 The visible **Data** selector switches between held-out Al MD and the six static
 Al snapshots (166, 170, 174, 175, 177 and 240 ps). Both open the comparison directly.
+Open the top-level experiment pages: [GeoFormer held-out Al MD](../output/spatial_vicreg_bias/matched-al64-20260929/heldout-al.html)
+and [GeoFormer static Al](../output/spatial_vicreg_bias/static-al-six-20260929/al-static.html).
+`comparison_layout`, MACE publication and the checkpoint explorer maintain full
+HTML copies at the experiment root, with asset paths pointing to the retained
+analysis bundles. Publishing these entry pages does not recalculate results.
 PaCMAP and MD occupy a two-column grid with square canvases filling each
 column. The later request for larger square panels supersedes the previous
 one-viewport height limit. Each panel can be expanded independently. Cluster examples and then correspondence follow below.
@@ -438,18 +443,104 @@ Embedding-neighbor paths can visit distant sites within a single snapshot.
 
 ## Current rich-MACE checkpoint in the interface viewer
 
-`python -m src.research.spatial_vicreg_bias.mace_checkpoint infer|publish --config configs/analysis/mace_rich_interface_20260929.json`
-adds an immutable checkpoint from the active multimaterial correlation3/angular3
-MACE256 run. Inference is authorized on node58's GPU for this analysis; publication
-runs on Slurm CPU. No training is launched. Native input scaling and the recorded
-training producer are verified; the 256-D scalar state is exported separately
-from its 442 descriptor predictions. The first snapshot is optimizer step1088
-(eight completed epochs plus56 of129 updates). The active training continues.
+The active command is:
 
-The matched and six-static viewers live under
-`output/spatial_vicreg_bias/mace-rich-c3-l3-20260929/analyses/`.
-They preserve descriptor fits/projections, display identities and full MD frames;
-new K7 centroids use the original training-source rows only. Samples, crystal
-reference overlays, both path types and matched-color correspondence are included.
-See [the metric and input contract](metrics/rich_mace_interface.md). Descriptor
-agreement is interpreted in light of the model's rich-descriptor training task.
+```bash
+python -m src.research.spatial_vicreg_bias.mace_checkpoint infer --config configs/analysis/mace_rich_current.json
+python -m src.research.spatial_vicreg_bias.mace_checkpoint publish --config configs/analysis/mace_rich_current.json
+```
+
+The current selected state is the RH2 normalized residual-head checkpoint,
+**epoch 14/update 1806**, using the recorded Al selection descriptor Gaussian NLL.
+See [replacement and execution](#current-mace-replacement-rh2-best-checkpoint-2026-09-30).
+The original publication used the older SiLU-head step-1088 checkpoint; that
+analysis copy and its generated data are removed after the replacement review.
+Its historical metric definition is retained in `docs/metrics/rich_mace_interface.md`.
+The original scientific training run is preserved independently.
+
+## General descriptor comparison (2026-09-30)
+
+The active GeoFormer and rich-MACE viewers now use the all-training descriptor
+fits, replacing the earlier interface-adjacent fits. This is a versioned analysis
+change, not neural retraining. The recipe is
+`configs/analysis/general_descriptors_20260930.json`; implementation is
+`src.research.spatial_vicreg_bias.general_descriptors`.
+
+The all-phase fitting population contains 74,880 uniform observations from 90
+training sources. It excludes held-out and static observations. The existing
+primary-seed-17 K7 models and train-fitted scaling are reused for TDA, bond order,
+CNA and the joint vector. Assignments, descriptor PaCMAP, dense MD coloring,
+examples, ideal-lattice overlays and color correspondence are regenerated.
+Frozen neural embeddings, neural clusters and neural PaCMAP remain unchanged.
+
+Active controls no longer select interface-only populations or physical regions.
+The sole interface-specific control is **Highlight interface layers**, which
+emphasizes finite distances <=12 Å in both PaCMAP panels with fully opaque,
+40% larger markers and a thin black outline (0.6 px). Other markers keep their
+normal size and opacity (85%). All points and correspondence statistics remain.
+The point-size slider preserves this size ratio. The toggle does not redraw MD. Cluster
+visibility remains attached to original IDs when this toggle or the frame changes.
+Old interface-only interactive links redirect to the full comparison.
+
+New assets, metrics and provenance are in
+`output/spatial_vicreg_bias/general-descriptors-20260930/analyses/{matched,static}`.
+Each active publication records `technical/general-descriptors.json`; layout
+refresh reapplies it after loading saved sample manifests. This prevents a layout
+refresh from restoring interface-trained descriptor labels. Historical fit
+models, projections and frozen metric exports retain their original definitions.
+Travel keeps its existing real sampled centers and neural vectors; its stored
+descriptor labels are updated. Historical cluster-based supplemental sampling
+is retained and explicitly recorded.
+
+The dated general-descriptor recipe records the initial publication, including the now-removed step-1088 MACE component. Current MACE updates use `mace_rich_current.json` and reuse these shared descriptor assets. The following stages describe reproduction of that original revision.
+
+Run the following stages on Slurm CPU using `pointnet-torch214`, with
+`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1` and two BLAS/OpenMP/Numba threads. For each
+`DATASET` (`matched` and `static`):
+
+```bash
+python -m src.research.spatial_vicreg_bias.general_descriptors --config configs/analysis/general_descriptors_20260930.json --dataset DATASET --stage build
+python -m src.research.spatial_vicreg_bias.general_descriptors --config configs/analysis/general_descriptors_20260930.json --dataset DATASET --stage publish
+```
+
+The publisher requires explicit JSON asset sidecars. Legacy assets were migrated
+once, without changing their JS or numerical data; the operational receipt is
+`output/spatial_vicreg_bias/viewer-cleanup-20260930/technical/migrated-assets.json`.
+[Metric definitions](metrics/general_descriptor_comparison.md) specify the two
+color-matching reference populations and the browser's displayed-row diagnostics.
+
+
+## Current MACE replacement: RH2 best checkpoint (2026-09-30)
+
+Interactive pages are directly in the experiment folder:
+[Held-out Al MD](../output/spatial_vicreg_bias/mace-rh2-best-20260930/heldout-al.html) ·
+[Six static Al snapshots](../output/spatial_vicreg_bias/mace-rh2-best-20260930/al-static.html).
+
+The active MACE comparison now uses the normalized residual-head RH2 run's
+**best validation checkpoint**, epoch 14/update 1806, selection descriptor Gaussian
+NLL **1.0348901381502593**. The latest saved training cursor was epoch 42/update
+5486 at the time of selection; it is not the selected checkpoint. Selection
+uses the existing Al validation descriptor likelihood, never AP or viewer
+correspondence. The immutable copy and selector record are in
+`output/spatial_vicreg_bias/mace-rh2-best-20260930/technical/`.
+
+The current recipe is `configs/analysis/mace_rich_current.json`; frozen inference
+runs within the exact source tree recorded by the checkpoint, with the current
+analysis entry point overlaid. This matters because the live repository has
+refactored its typed trunk since that checkpoint was written. No training or
+new descriptor calculation is launched. Current GPU inference uses this node's
+Slurm allocation; publication and browser review use Slurm CPU.
+
+Both analysis datasets are under
+`output/spatial_vicreg_bias/mace-rh2-best-20260930/analyses/{matched,static}`.
+They retain all-training descriptor assignments/projections, exact observed atom
+identities, all 13 held-out MD frames and all six relaxed static frames. New neural
+K7 centroids fit the original 74,880 uniform training observations only. Neural
+PaCMAP, dense labels, color correspondence, samples, PTM overlays and travel
+vectors are produced for this checkpoint. The only interface control remains
+the opacity highlight. [Metric contract](metrics/rich_mace_comparison.md).
+
+The former step-1088 MACE analysis directory and its copied checkpoint are removed
+after the replacement browser review succeeds, as explicitly requested. Its
+training-run source artifacts are outside this analysis replacement. Deletion
+provenance is recorded in the new analysis's `technical/previous-analysis-removal.json`.

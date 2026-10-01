@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "a5d985772a039716b2f1d4d456cd808390122f81bb98fba1220a0c9f7da7508c",
+  "family": "general_descriptor_comparison",
+  "contract": "technical/metric-contracts/general_descriptor_comparison.json",
+  "definitions": "tables/metric-definitions/general_descriptor_comparison.md"
+}

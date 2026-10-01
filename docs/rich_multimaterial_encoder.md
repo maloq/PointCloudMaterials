@@ -1,5 +1,48 @@
 # Multimaterial MACE256 descriptor run: correlation 3, angular order 3
 
+The next study is the [packed-data VCReg/TDA pilot comparison](rich_tda_objectives.md):
+seven matched 10% pilots followed by a validation-selected full-data fit.
+The stopped RH2 artifacts and their frozen producer remain unchanged.
+
+## Detached evaluation after stopping
+
+On 30 September the user stopped RH2 at update 5,486: 42 complete epochs plus
+68/129 batches of epoch 43. No 60-epoch completion is claimed. The selected
+checkpoint remains epoch 14, update 1,806. Both selected and terminal checkpoints
+are archived under `technical/stopped-20260930/`; `training-stop.json` records
+their hashes and the exact cursor. The two-GPU training job 1014597 exited after
+an optimizer-boundary checkpoint.
+
+The detached evaluation runs on the L40S in node39 allocation 1015176, with
+tmux socket `pcm-rich-evaluation`, session `mmrd-best`. Use:
+
+```bash
+python -m src.research.liquid_predictability.rich_multimaterial_evaluate \
+  --run /store/PERSO/vmorozov/experiments/liquid_predictability/mm-rd-mace256-c3-l3-residual-head-20260929 \
+  --batch-size 1024 --patch-chunk 256
+```
+
+The entry point stages only itself into the run's frozen code directory and
+executes there. It verifies the original scientific binding (including its
+logging-only amendment), fitting IDs, target transform and NLL-selected checkpoint.
+It holds the training lock, restores model weights without constructing an
+optimizer, and changes only inference batch/chunk sizes. The actual frozen
+`export` implementation supplies all metric calculations. Full selection,
+calibration and test arrays, per-feature/family scores, and 8,192-row training
+audits per fitted material go to `analyses/descriptor-v1/`. Calibration/test IDs
+retain the fixed Al64 release. External-material audits remain training data.
+
+`technical/detached-evaluation.json`, `detached-evaluation.log` and
+`evaluation-launch.json` track execution. A completed export is reused only for
+the identical scientific identity and checkpoint hash. Evaluation updates the
+existing W&B run through the API; it does not create or restart an online run.
+The research interpretation and next experiments are in
+[the RH2 review](../experiments/liquid_predictability_20260928/MULTIMATERIAL_RICH.md#rh2-review-and-literature-30-september).
+Evaluation finished in 7.09 minutes and updated the recorded W&B summary. The
+selected checkpoint's fixed Al test error is 0.406666 times the training-mean
+baseline. `analyses/descriptor-v1/tables/scores.csv` and `features.csv` contain
+the frozen-definition results; the training run remains stopped at update 5,486.
+
 ## RH2 repair: normalized residual descriptor head
 
 The prior SiLU head saturated; that run was checkpointed at update 1,196 and its
@@ -43,6 +86,10 @@ Resume uses tmux socket `pcm-training`, session `mmrd-rh2` on node58, supervisin
 a Slurm step on node53. Replacement two-GPU continuation: **1014597**.
 Scientific tracking:
 [RH2 W&B run](https://wandb.ai/teshbek/PointCloudMaterials/runs/139e0665675ff7eb87c8).
+From 30 September, custom wall-time and fixed validation baseline MSEs no longer
+receive W&B history points. Baselines remain in the run summary and full local
+validation records. The logging-only amendment resumes the same checkpoint,
+optimizer/LR cursor and online run; historical points are preserved.
 Total parameters: 8,819,124 (6,230,592 encoder; 2,572,148 descriptor head;
 16,384 vector projection). Three full-batch numerical passes retained finite
 gradients and fit with a measured 69.66-GiB PyTorch allocation peak. The separate

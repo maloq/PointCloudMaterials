@@ -1,0 +1,148 @@
+{
+  "protocol": "shooting_physical_future_laws_v1",
+  "output": "${storage:training_storage}/shooting_laws/al480-20260930",
+  "cache": "${storage:cache}/shooting-laws/al480-20260930",
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "historical-shooting; Al64 identity is encoder ancestry only"
+  },
+  "campaigns": [
+    "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830",
+    "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+    "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+    "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901"
+  ],
+  "selection_source_seed": 35863,
+  "seed": 20260930,
+  "centers_per_stratum": 64,
+  "horizons_ps": [
+    3.0,
+    6.0,
+    12.0
+  ],
+  "followup_ps": 15.0,
+  "label_cadence_ps": 0.3,
+  "persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "ptm_rmsd_cutoff": 0.1,
+  "lineage": {
+    "neighbor_cutoff_A": 3.6,
+    "minimum_tracked_size": 4,
+    "minimum_shared_atoms": 4,
+    "minimum_overlap_fraction": 0.25,
+    "maximum_missing_frames": 1
+  },
+  "path_descriptors": [
+    "bond_order/l4_qbar",
+    "bond_order/l6_qbar",
+    "bond_order/l6_coherence_mean",
+    "bond_order/l6_neighbor_q_std",
+    "tda/n80_h1_loglife_sum",
+    "tda/n80_h2_loglife_sum",
+    "tda/n80_h2_image12",
+    "tda/n80_h2_image13"
+  ],
+  "encoders": [
+    {
+      "name": "mace_vicreg",
+      "kind": "vicreg",
+      "checkpoint": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/runs/20260926/R2/pretraining/vicreg/technical/epoch-024.pt",
+      "producer": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code",
+      "checkpoint_sha256": "c0adfd73d88d7c7a421c39bd3d32cd96e10edb9f391cace991276074f16b5487",
+      "selector": "latest completed label-free R2 reference; predeclared epoch24 and seed20260926; no AP-based choice",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "9e4a88f6c9fb0c8c1ce6e26a28931e884f19bbeb113634b625e4719bfe4dfa83",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "9f70b0ca8c82be918dea3c17e465579e33b993752c1b329cd00f15bed42b7c32",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    },
+    {
+      "name": "mace_epi",
+      "kind": "vicreg",
+      "checkpoint": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/runs/20260926/R1/pretraining/epi_variance/technical/epoch-024.pt",
+      "producer": "${storage:analysis}/encoder_mechanisms/alignment-readout-20260926/technical/training-revision-v2/code",
+      "checkpoint_sha256": "141bf79371e71559fcdb68c455317addf0dda8634cc13ff6043997e201f556fa",
+      "selector": "predeclared label-free aligned Epi epoch24, seed20260926",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "9e4a88f6c9fb0c8c1ce6e26a28931e884f19bbeb113634b625e4719bfe4dfa83",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "9f70b0ca8c82be918dea3c17e465579e33b993752c1b329cd00f15bed42b7c32",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5"
+      }
+    }
+  ],
+  "fit_seeds": [
+    20260930,
+    20261001,
+    20261002
+  ],
+  "mixtures": 4,
+  "hidden": 64,
+  "learning_rate": 0.001,
+  "weight_decay": 0.001,
+  "epochs": 200,
+  "patience": 25,
+  "fit_threads": 4,
+  "bootstrap_draws": 2000,
+  "score_samples": 64,
+  "gpu_partition": "L40S",
+  "prepare_concurrency": 12,
+  "external_inputs": [],
+  "arms": [
+    {
+      "name": "prior",
+      "bank": "prior"
+    },
+    {
+      "name": "density",
+      "bank": "density",
+      "prefixes": [
+        "geometry/rdf_",
+        "geometry/count"
+      ]
+    },
+    {
+      "name": "bond_order",
+      "bank": "descriptors",
+      "prefixes": [
+        "bond_order/"
+      ]
+    },
+    {
+      "name": "topology",
+      "bank": "descriptors",
+      "prefixes": [
+        "tda/"
+      ]
+    },
+    {
+      "name": "order_topology",
+      "bank": "descriptors",
+      "prefixes": [
+        "bond_order/",
+        "tda/"
+      ]
+    },
+    {
+      "name": "mace_vicreg",
+      "bank": "mace_vicreg"
+    },
+    {
+      "name": "mace_epi",
+      "bank": "mace_epi"
+    },
+    {
+      "name": "mace_vicreg_plus",
+      "bank": "mace_vicreg",
+      "add_descriptors": true
+    },
+    {
+      "name": "mace_epi_plus",
+      "bank": "mace_epi",
+      "add_descriptors": true
+    }
+  ]
+}

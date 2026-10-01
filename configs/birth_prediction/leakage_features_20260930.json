@@ -1,0 +1,13 @@
+{
+  "protocol": "birth_preappearance_leakage_feature_audit_v1",
+  "extension_config": "configs/birth_prediction/drop_to_one_cv_20260930.json",
+  "output": "${storage:training_storage}/birth_prediction/drop-to-one-cv-20260930/analyses/leakage-feature-audit-v1",
+  "arms": ["rich_gbdt", "rich_linear"],
+  "fixed_remove_frames": [0, 1, 2, 3, 4, 5, 6, 7],
+  "cv_remove_frames": [0, 7],
+  "permutation_repeats": 32,
+  "bootstrap_draws": 2000,
+  "seed": 20260930,
+  "threads": 4,
+  "descriptor_recomputations_per_role": 4
+}

@@ -19,8 +19,8 @@ from .cluster_matching import summarize
 from .embedding_travel import payload
 from .mace_checkpoint import read
 from .sample_lattice import fit_batch
-from .comparison_layout import comparison_template, population_controls
-from .viewer_payload import read_payload, write_comparison, write_asset, write_vector_asset
+from .comparison_layout import comparison_template, population_controls, publish_run_entrypoint
+from .viewer_payload import read_payload, read_asset, write_comparison, write_asset, write_vector_asset
 
 FAMILIES = {'joint': 'Joint descriptor clusters', 'tda': 'TDA clusters',
             'bond_order': 'Bond-order clusters', 'cna': 'CNA clusters'}
@@ -95,13 +95,14 @@ def template(c, kind):
     dest = Path(c['datasets'][kind]['publication'])
     link = os.path.relpath(reference/'index.html', dest/'interactive')
     nav = f'<nav><label>Data <select onchange="location.href=this.value">{options}</select> <a href="{link}">GeoFormer comparison</a></label></nav>'
-    note = '<p class="status">Frozen step '+str(c['model']['update'])+' · 256-D embedding · trained on rich local descriptors</p>'
+    note = '<p class="status">'+html.escape(c['model']['title'])+' · 256-D embedding</p>'
     methods = '<details><summary>Methods and checkpoint</summary><p>'+html.escape(c['model']['title'])+'. '
     methods += 'The frozen scalar encoder state is clustered into seven groups using the original 74,880 training-source observations. '
     methods += 'PaCMAP, dense MD, examples and travel use the same observations and descriptors as the GeoFormer comparison. '
     methods += ('Color matching maximizes overlap on the 24,960 fixed held-out display observations.' if kind == 'matched' else 'Color matching maximizes overlap on the 684,723 centers in the six static MD snapshots.')
     methods += ' Colors stay fixed across frames. The encoder was trained to predict 442 rich descriptors: descriptor correspondence is not an independent discovery test. '
     methods += 'The six static snapshots are relaxed inputs; this MACE was trained on raw dynamic patches. '
+    methods += 'Checkpoint selection: '+html.escape(c['model']['selector'])+'. '
     methods += 'Descriptor clusters use all training environments. <a id="metricDefinitions" href="../tables/METRICS.md">Metric definitions</a>.</p><p>Checkpoint: '+html.escape(c['checkpoint'])+'</p></details>'
     controls = dict(FRAME_CONTROLS=population_controls('All snapshots')) if kind == 'matched' else {}
     return comparison_template(nav, HEADLINE='MACE ↔ descriptors', HEADER_NOTE=note, METHODS=methods, **controls)
@@ -125,12 +126,15 @@ def publish(config):
         for folder in ('interactive', 'data', 'assets', 'projection-data', 'md-data', 'sample-data', 'lattice-data', 'travel-data', 'technical/rendering'):
             (dest/folder).mkdir(parents=True, exist_ok=True)
         base = payload(reference)
+        if base['descriptor_fit']['population'] != 'all training environments':
+            raise ValueError('MACE comparison requires the all-training descriptor reference')
         with np.load(out/'data'/('heldout.npz' if kind == 'matched' else 'static.npz')) as z:
             vectors, labels = z['z'], z['labels']
             if not np.array_equal(z['frame'], base['frame']) or not np.array_equal(z['atom'], base['atom']):
                 raise ValueError('Projection observation order differs from reference')
         d = rebase_assets(copy.deepcopy(base), reference, dest)
         d['frozen_model'] = c['model']
+        d['descriptor_fit']['metrics'] = '../tables/METRICS.md'
         # Never carry a historical neural field into the new checkpoint view.
         neural_fields = {entry['field'] for entry in d['paired']['neural']}
         d['fields'] = {k: v for k, v in d['fields'].items() if k not in neural_fields}
@@ -141,9 +145,10 @@ def publish(config):
         for snap in d['md']['snapshots']:
             key = snap['key']; stored = out/'data'/kind/key; folder = dense/'data'/key
             with np.load(stored/'labels.npz') as z: assigned = z['encoder']
-            with np.load(folder/'descriptor-labels.npz') as z: descriptors = dict(z)
-            with np.load(folder/'physical.npz') as z: physical = dict(z)
-            snapshot_data[key] = (assigned, descriptors, physical['distance'])
+            original = next(s for s in base['md']['snapshots'] if s['key'] == key)
+            physical = read_asset(reference/'interactive'/original['asset'])
+            descriptors = {family:np.asarray(physical['fields'][field],np.uint8) for family,field in FAMILIES.items()}
+            snapshot_data[key] = (assigned, descriptors)
             for family in FAMILIES: dense_tables[family] += contingency(assigned, descriptors[family])
             name = key+'-'+identity
             write_asset(dest/'md-data'/f'{name}.js', name, dict(encoder=assigned.tolist()), 'MD_NEURAL')
@@ -164,27 +169,19 @@ def publish(config):
             rows, mapping = linear_sum_assignment(table, maximize=True)
             if not np.array_equal(rows, np.arange(7)): raise ValueError('Incomplete color assignment')
             matching[family] = dict(neural_to_descriptor=mapping.tolist(), contingency=table.tolist(), reference=summarize(table, mapping))
-            near = np.array([v is not None and v <= 12 for v in d['distance']])
-            metrics[family] = dict(display=score(labels, right, mapping), interface12=score(labels[near], right[near], mapping), snapshots={})
-            for key, (left, descriptors, distance) in snapshot_data.items():
-                near = distance <= 12
-                metrics[family]['snapshots'][key] = dict(all=score(left, descriptors[family], mapping),
-                    interface12=score(left[near], descriptors[family][near], mapping))
+            metrics[family] = dict(reference=score(labels,right,mapping) if kind=='matched' else
+                dict(summarize(table,mapping), adjusted_rand_index=float(adjusted_rand_score(
+                    np.concatenate([v[0] for v in snapshot_data.values()]),
+                    np.concatenate([v[1][family] for v in snapshot_data.values()])))),
+                display=score(labels, right, mapping), snapshots={})
+            for key, (left, descriptors) in snapshot_data.items():
+                metrics[family]['snapshots'][key] = score(left, descriptors[family], mapping)
         d['matching'] = {identity: matching}
         write_json(dest/'technical/matches.json', matching)
-        write_metric_table(metrics, dest, family='rich_mace_interface')
-        populations = ('all_test', 'interface20') if kind == 'matched' else ('all_static', 'interface20')
+        write_metric_table(metrics, dest, family='rich_mace_comparison')
+        populations = ('all_test',) if kind == 'matched' else ('all_static',)
         for population in populations:
-            if population == populations[0]: subset = np.arange(len(labels)); view = copy.deepcopy(d)
-            else:
-                old_path = reference/'interactive'/('comparison-interface20.html' if kind == 'matched' else 'S1-seed17-epoch24-encoder-interface20.html')
-                previous = read_payload(old_path)
-                lookup = {k: i for i, k in enumerate(zip(base['source'], base['frame'], base['atom']))}
-                subset = np.array([lookup[k] for k in zip(previous['source'], previous['frame'], previous['atom'])])
-                view = copy.deepcopy(d)
-                for key in ('source', 'frame', 'atom', 'distance', 'solid', 'region'): view[key] = previous[key]
-                view['fields'] = {k: np.asarray(v, dtype=object)[subset].tolist() for k, v in d['fields'].items()}
-                view['paired']['descriptors'] = rebase_assets(previous['paired']['descriptors'], reference, dest)
+            subset = np.arange(len(labels)); view = copy.deepcopy(d)
             if kind == 'matched': view['explorer']['population'] = population
             projected = projection(c, dest, population, vectors[subset])
             name = identity+'-'+population
@@ -200,6 +197,7 @@ def publish(config):
             write_comparison(path, template(c, kind), view, title='MACE and descriptor clusters')
             if population == populations[0]:
                 write_comparison(dest/'index.html', template(c, kind), view, title='MACE and descriptor clusters', index=True)
+        publish_run_entrypoint(dest, kind)
         write_json(dest/'technical/rendering/provenance.json', dict(checkpoint_sha256=c['checkpoint_sha256'],
             reference=str(reference), reference_payload_sha256=sha(reference/'index.json'), model=c['model'],
             input_record=str(out/'technical/inference.json'), neural_training=False, descriptor_refit=False,

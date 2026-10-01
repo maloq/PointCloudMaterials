@@ -68,11 +68,11 @@
         ]
       },
       "provenance": {
-        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
         "scientific_scope": {
           "supported_claim": "Comparison of learned local environments across physically simulated bulk solid, metastable/supercooled liquid, and solid-liquid interfacial contexts.",
           "unsupported_claim": "Quantitative real-Al thermodynamics or kinetics, equilibrium phase identification from cluster identity alone, or application-specific MLIP accuracy without a qualification report for this exact model SHA and head."
-        }
+        },
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
       }
     },
     {

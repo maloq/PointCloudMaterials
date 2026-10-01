@@ -1,0 +1,131 @@
+{
+  "dataset_id": "response-atlas-al256-training-20261001",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "7a4a70a1edb6bb215984034935918dbbde2d50431c2b31b9857f5ae9bf39d74d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "config",
+        "coordinate_precision",
+        "identity",
+        "parent_state_sha256",
+        "parents",
+        "potential_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al256_atomistic_response_training_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-000/complete.json",
+      "relative_path": "parent-000/complete.json",
+      "sha256": "c95de6beaf496648ee877444828eb780b5bd60477cb75a40a37342c6116adcb1",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-001/complete.json",
+      "relative_path": "parent-001/complete.json",
+      "sha256": "7764b08a98d4095c20594ccd298aee56b745bf7669ad45285ddf2ef151e97640",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-002/complete.json",
+      "relative_path": "parent-002/complete.json",
+      "sha256": "20f34dacfe3decc68cab41921e9a5694c8d3b24fb0c899704debed1087c733f8",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-003/complete.json",
+      "relative_path": "parent-003/complete.json",
+      "sha256": "ad81cb8b7aa398eae007f02c7215b6ef351d24c86835ee33a4828037409abbc0",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-004/complete.json",
+      "relative_path": "parent-004/complete.json",
+      "sha256": "7d0a5aa508c11a2d19ba31b58fdd685152ce9d3334f59b3cd324c2387a889159",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-054/complete.json",
+      "relative_path": "parent-054/complete.json",
+      "sha256": "86749602b7656142b7d0e23f9a12aff7993cfbbb9beb6bb78628906acc79c5a3",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-20261001/parent-055/complete.json",
+      "relative_path": "parent-055/complete.json",
+      "sha256": "03d9087e777928c7854cdb246890c0a56ed70a1f8a7fac5af38f43f594e40b3b",
+      "kind": "metadata",
+      "keys": [
+        "cost",
+        "identity",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

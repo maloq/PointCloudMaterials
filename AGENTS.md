@@ -63,6 +63,7 @@
   for each evaluation or cached readout. Associated final evaluation metrics
   update the recorded training run through its existing ID, without restarting
   that run. Scientific encoder/predictor training remains online.
+  Do not log duplicate wall-time fields or fixed values as W&B metric history
 - Research correctness comes first: fail loudly with useful context. Trace values
   to their repository producer; use its actual types, shapes and fields. Avoid
   silent fallbacks, generic compatibility code and unnecessary defensive checks.

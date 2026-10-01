@@ -17,7 +17,7 @@ def dataset_navigation(selected):
     options = ''.join(f'<option value="../../../../{path}"'+(' selected' if kind == selected else '')+f'>{label}</option>'
                       for kind, label, path in choices)
     model = ''
-    latest = Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_interface_20260929.json'
+    latest = Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_current.json'
     if latest.exists():
         from src.project_runtime.paths import resolve_config
         frozen = resolve_config(json.loads(latest.read_text()))
@@ -26,7 +26,7 @@ def dataset_navigation(selected):
             import os
             origin = Path(frozen['datasets'][selected]['reference'])/'interactive'
             url = html.escape(os.path.relpath(target, origin))
-            title = html.escape('MACE · step '+str(frozen['model']['update']))
+            title = html.escape(frozen['model']['title'])
             model = '<label>Model <select onchange="if(this.value)location.href=this.value"><option value="">GeoFormer</option><option value="'+url+'">'+title+'</option></select></label>'
     return '<nav class="controls"><label>Data <select id="dataset" onchange="location.href=this.value">'+options+'</select></label>'+model+'</nav>'
 
@@ -44,6 +44,33 @@ def population_controls(frame_label='All frames'):
         '<label>Frame <select id="frame"><option value="all">'+frame_label+'</option></select></label>')
 
 
+def publish_run_entrypoint(publication, dataset):
+    """Expose the complete saved viewer directly in its experiment output folder."""
+    dest = Path(publication).resolve()
+    if dest.parent.name != 'analyses':
+        raise ValueError(f'Comparison bundle must be under RUN/analyses/: {dest}')
+    run = dest.parent.parent
+    target = run / {'matched': 'heldout-al.html', 'static': 'al-static.html'}[dataset]
+    source = dest/'index.html'
+    page = source.read_text()
+    original_base = '<base href="./interactive/">'
+    if page.count(original_base) != 1:
+        raise ValueError(f'Expected one interactive asset base in {source}')
+    asset_base = (dest.relative_to(run)/'interactive').as_posix()+'/'
+    temporary = target.with_suffix('.html.building')
+    temporary.write_text(page.replace(original_base, '<base href="'+html.escape(asset_base)+'">'))
+    temporary.replace(target)
+    shutil.copy2(source.with_suffix('.json'), target.with_suffix('.json'))
+    write_json(dest/'technical/rendering/run-entrypoint.json', dict(
+        operation='publish existing interactive viewer at experiment root', dataset=dataset,
+        source=str(source), target=str(target), asset_base=asset_base,
+        source_html_sha256=sha(source), html_sha256=sha(target),
+        payload_sha256=sha(target.with_suffix('.json')), implementation_sha256=sha(__file__),
+        neural_training=False, metric_recomputation=False, scientific_payload_unchanged=True))
+    print(f'Interactive experiment page: {target}', flush=True)
+    return target
+
+
 def refresh(publication, dataset, dense_source=None):
     dest = Path(publication).resolve()
     primary = dest/'interactive'/('comparison-all_test.html' if dataset == 'matched' else 'comparison-all_static.html')
@@ -53,7 +80,7 @@ def refresh(publication, dataset, dense_source=None):
     if frozen:
         from .mace_checkpoint import read
         from .mace_publication import template as mace_template
-        c, _ = read(Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_interface_20260929.json')
+        c, _ = read(Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_current.json')
         if c['model']['id'] != frozen['id']:
             raise ValueError('Viewer checkpoint differs from its frozen recipe')
         template = mace_template(c, dataset)
@@ -129,6 +156,7 @@ def refresh(publication, dataset, dense_source=None):
         template_sha256=sha(Path(__file__).with_name('cluster_comparison.html')), script_sha256=sha(script),
         implementation_sha256=sha(__file__), neural_training=False, metric_recomputation=False,
         index_sha256=sha(dest/'index.html'), pages=records))
+    publish_run_entrypoint(dest, dataset)
     print(f'Updated {len(pages)} pages and index: {dest}', flush=True)
 
 

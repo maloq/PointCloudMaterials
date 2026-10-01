@@ -1,0 +1,15 @@
+{
+  "state": "complete",
+  "scope": "108-atom infrastructure fixture, not a scientific source",
+  "atom_count": 108,
+  "frame_count": 60001,
+  "sampling_ps": 0.01,
+  "measurement_ps": 600,
+  "full_float32_consumer_equivalence": true,
+  "exact_identity_timeline_boxes": true,
+  "every_rounded_value_verified": true,
+  "streaming_seconds": 12.35621330095455,
+  "frozen_parser_sha256": "fedca257d722471f9ce5c378833c2f54cca2c4944dd4de610bd476789c06f502",
+  "streaming_manifest_sha256": "776d049d495eb55758d3d7ffa51c956e0546348c51618fd80ef210652f432d5b",
+  "reference_manifest_sha256": "63299d610020f09ad321bfc6ec5b9ae6cefa3b52884dbd893a245dc9bb9270ef"
+}

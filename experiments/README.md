@@ -1,5 +1,19 @@
 # Current research
 
+- [Predictive baseline follow-up with MM-TDA-BLOCK-DIRECT-FULL](predictive_baseline_20261001/FOLLOWUP.md): matched nonlinear heads, moment/Fourier supervision and positive variance.
+
+- [Value-only predictive representations from repeated Al shooting](predictive_baseline_20261001/README.md): three trainable MACE128 seeds, 274 fixed future features, frozen controls and source-paired uncertainty.
+
+[Relaxed versus MD birth histories](birth_prediction_20260930/RELAXED.md):
+matched full-cell quenches, frozen encoders and explicit train/test predictive errors.
+
+- [Response-atlas feasibility: shooting precision, known-law mechanisms and full-cell MACE responses](response_atlas_20261001/README.md).
+
+
+[Physical distributions of shooting futures](shooting_laws_20260930/README.md):
+matched frozen readouts on 480 Al futures, proper likelihood and split-shot
+reliability; separate thermostat, nested-Al and Ta diagnostics.
+
 [Completed spatial VICReg mechanism study](spatial_vicreg_bias_20260929/RESULTS.md):
 nine 24-pass fits separate spatial contraction from global clustering failure.
 Continuous liquid-structure readouts improve while K=7 cluster information
@@ -51,6 +65,10 @@ likelihood, uniform spatial-center augmentation and a visibility-only control;
 [Spatial approach to a crystal](spatial_approach_20260926/README.md): five matched
 fixed-snapshot distance predictors and warning-distance scans with visibility
 and far-path controls; observed geometry only, likelihood selection.
+
+[Pre-appearance birth prediction](birth_prediction_20260930/README.md): rich TDA,
+bond-order and geometry boosting, frozen rich/VICReg MACE and linear controls,
+with matched liquid histories ending zero/one/two/three frames earlier.
 
 [Crystallization origin](crystallization_origin_20260925/README.md): full-cell
 ancestry audit separating operational establishment, existing-crystal arrival,
@@ -193,3 +211,8 @@ history while testing preservation of bond order and instantaneous topology.
 re-evaluation, event coverage, and a staged existing-data experiment proposal.
 
 - [Latest native MACE quality comparison](encoder_quality_20260926/README.md): eight frozen encoders, liquid/interface diagnostics and matched predictive-information controls.
+- [Birth-history truncation and readout CV](birth_prediction_20260930/TRUNCATION_CV.md):
+  retain one through eight crystal-free frames, grouped cross-validation and
+  uncertainty for descriptor/frozen-MACE readouts.
+
+Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.

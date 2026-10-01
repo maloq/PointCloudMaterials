@@ -1,0 +1,239 @@
+{
+  "protocol": "paired_full_cell_relaxed_birth_temporal_v1",
+  "parent_run": "${storage:training_storage}/birth_prediction/preappearance-20260930",
+  "parent_config_sha256": "c82ac05c0a95dc66a60f12f68807eff732e40e9aa5d84cb6bc3eb3b1919a0553",
+  "dataset_identity": "7b3046cdebf539d81a9f50b4abb5629f1ddb1b27edd886e0888b7658f9f96dd9",
+  "output": "${storage:training_storage}/birth_prediction/relaxed-temporal-20261001",
+  "folds": 5,
+  "bootstrap_draws": 2000,
+  "gpu_partition": "RTX6000PRO,L40S,A40,A100",
+  "fold_design": "${storage:training_storage}/birth_prediction/drop-to-one-cv-20260930/technical/folds.json",
+  "fold_identity": "0ea465a8a0396363cbd2caafe73b5d0ecc55db873d0d188ef7d6eb3231c203be",
+  "arms": [
+    "rich_gbdt",
+    "rich_linear",
+    "mace_rich_gbdt",
+    "mace_rich_linear",
+    "mace_vicreg_gbdt",
+    "mace_vicreg_linear"
+  ],
+  "seed": 20260930,
+  "observations": [
+    {
+      "name": "current",
+      "kind": "snapshot",
+      "frames": [
+        7
+      ]
+    },
+    {
+      "name": "repeated_current",
+      "kind": "repeat",
+      "frames": [
+        7
+      ],
+      "slots": 8
+    },
+    {
+      "name": "history8",
+      "kind": "history",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "shuffled_past",
+      "kind": "shuffle_past",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "history2",
+      "kind": "history",
+      "frames": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "history4",
+      "kind": "history",
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "early4",
+      "kind": "history",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "middle4",
+      "kind": "history",
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "early",
+      "kind": "snapshot",
+      "frames": [
+        0
+      ]
+    },
+    {
+      "name": "mean8",
+      "kind": "mean",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "changes8",
+      "kind": "changes",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "early_plus_change",
+      "kind": "early_plus_change",
+      "frames": [
+        0,
+        7
+      ]
+    },
+    {
+      "name": "early_capacity_control",
+      "kind": "early_repeated",
+      "frames": [
+        0
+      ]
+    }
+  ],
+  "contrasts": [
+    [
+      "history8",
+      "current"
+    ],
+    [
+      "history8",
+      "repeated_current"
+    ],
+    [
+      "history8",
+      "shuffled_past"
+    ],
+    [
+      "history8",
+      "history4"
+    ],
+    [
+      "history4",
+      "history2"
+    ],
+    [
+      "history2",
+      "current"
+    ],
+    [
+      "history4",
+      "early4"
+    ],
+    [
+      "middle4",
+      "early4"
+    ],
+    [
+      "current",
+      "early"
+    ],
+    [
+      "history8",
+      "mean8"
+    ],
+    [
+      "changes8",
+      "mean8"
+    ],
+    [
+      "early_plus_change",
+      "early_capacity_control"
+    ]
+  ],
+  "cpu_workers": 2,
+  "gpu_workers": 1,
+  "cache": "${storage:cache}/birth-prediction/relaxed-temporal-20261001",
+  "scratch": "${storage:scratch}/birth-prediction/relaxed-temporal-20261001",
+  "archive": "${storage:archive}/birth_prediction/relaxed-temporal-20261001",
+  "unrelaxed_comparison": "${storage:training_storage}/birth_prediction/temporal-site-20261001",
+  "relaxation_workers": 16,
+  "ranks": 16,
+  "workers_per_group": 2,
+  "descriptor_workers": 8,
+  "lammps_binary": "${storage:cache}/../software/lammps-2Sep2026/cpu/lmp",
+  "mpi_environment": {
+    "HYDRA_BOOTSTRAP": "fork",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MPIR_CVAR_CH4_NETMOD": "ofi",
+    "FI_PROVIDER": "tcp"
+  },
+  "potential_files": [
+    "${storage:datasets}/potentials/Lee2003_Al.library.meam",
+    "${storage:datasets}/potentials/Lee2003_Al.meam"
+  ],
+  "potential_sha256": [
+    "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+    "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+  ],
+  "relaxation": {
+    "mass": 26.9815385,
+    "minimizer": "fire",
+    "timestep_ps": 0.001,
+    "force_tolerance": 0.01,
+    "max_iterations": 50000,
+    "max_evaluations": 250000,
+    "frame_timeout_seconds": 7200
+  }
+}

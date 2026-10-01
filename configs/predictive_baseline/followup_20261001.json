@@ -1,0 +1,136 @@
+{
+  "protocol": "predictive_future_head_target_factorial_v1",
+  "output": "${storage:training_storage}/predictive_baseline/heads-targets-mmtda-20261001",
+  "cache": "${storage:cache}/predictive-baseline/al480-274-20261001",
+  "shooting_config": "configs/shooting_laws/al480_20260930.json",
+  "shooting_identity": "4e67917ebe573d53f10c267a9cd95a70b340b53bc6781da042046882053abcbf",
+  "shooting_plan_identity": "6555d415e70bbf0781141bc503964eeba4c72dfb37a87ed83cc44a62a2fd9620",
+  "track": "historical-shooting-local; original source roles, not the Al64 window benchmark",
+  "target": {
+    "horizons_ps": [
+      3,
+      6,
+      12
+    ],
+    "observables": [
+      "crystalline_fraction",
+      "bond_order/l4_qbar",
+      "bond_order/l6_qbar"
+    ],
+    "rff_features": 256,
+    "seed": 20261001,
+    "bandwidth_samples": 1024,
+    "normalization_floor": 1e-05,
+    "block_weights": [
+      0.3333333333333333,
+      0.3333333333333333,
+      0.3333333333333333
+    ]
+  },
+  "encoder": {
+    "d0": 2.8,
+    "n_ref": 80.0,
+    "radius": 8.0,
+    "cutoff": 5.0,
+    "channels": 128,
+    "code_dim": 128,
+    "num_interactions": 2,
+    "max_ell": 2,
+    "correlation": 2,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "head_width": 128,
+  "fit_seeds": [
+    20261001,
+    20261002,
+    20261003
+  ],
+  "training": {
+    "batch_size": 256,
+    "microbatch": 256,
+    "epochs": 200,
+    "patience": 25,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05,
+    "gradient_clip": 10.0,
+    "pool_normalization_samples": 1024,
+    "activation_checkpointing": true,
+    "precision": "float32",
+    "feature_arithmetic": "float64",
+    "time_limit": "00:30:00"
+  },
+  "ridge_alphas": [
+    0.001,
+    0.01,
+    0.1,
+    1.0,
+    10.0
+  ],
+  "frozen_controls": [
+    "mace_vicreg",
+    "mace_epi"
+  ],
+  "bootstrap_draws": 2000,
+  "noise_levels_A": [
+    0.001,
+    0.01,
+    0.05
+  ],
+  "gpu_partition": "L40S,RTX6000PRO",
+  "fit_concurrency": 3,
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "baseline_output": "${storage:training_storage}/predictive_baseline/al480-274-20261001",
+  "baseline_config": "configs/predictive_baseline/al480_20261001.json",
+  "baseline_target_identity": "f4762867dcfe7734159435abca9f993eb924dc42ccf9340b0569d73d15313abc",
+  "feature_cache": "${storage:scratch}/training-cache/context-features",
+  "metric_family": "predictive_followup",
+  "sources": [
+    "joint",
+    "mace_vicreg",
+    "mace_epi",
+    "mm_tda_block_direct_full"
+  ],
+  "target_arms": [
+    "full",
+    "moments"
+  ],
+  "variance_arms": [
+    "free",
+    "nonnegative"
+  ],
+  "selector": "common_18_moment_feature_nll",
+  "variance_floor": 1e-08,
+  "exclude_nodes": [
+    "node52"
+  ],
+  "probe_concurrency": 4,
+  "encoders": [
+    {
+      "name": "mm_tda_block_direct_full",
+      "label": "MM-TDA-BLOCK-DIRECT-FULL",
+      "kind": "rich",
+      "checkpoint": "${storage:training_storage}/liquid_predictability/mm-tda-block-direct-full-20260930/technical/best.pt",
+      "producer": "${storage:training_storage}/liquid_predictability/mm-tda-block-direct-full-20260930/technical/code",
+      "checkpoint_sha256": "f91d2a3cca9b4e57a3fda2c7e190ba8c624780ca5f874a9a9cabf31af6ca4373",
+      "selector": "minimum label-free validation descriptor NLL; epoch20/update2580; frozen before this follow-up",
+      "inference_dependencies": {
+        "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+        "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+        "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+        "src/research/encoder_context/geometry.py": "d31497d08bd9dec2f7234be36b8ee93f4e6967921f1c285d04be51c9e3a5dad5",
+        "src/research/liquid_predictability/models.py": "b432a188aa28b33685536ad708adead11b79bcf8d8e0b0a41e57250091cd7d17",
+        "src/research/liquid_predictability/rich_multimaterial_train.py": "9bcbe7b46987aab710474ec3128713da1fb1a2bda8404cce82b950cfe13158dd",
+        "src/research/crystal_vector/trunk.py": "126709970d6a57979cf8955e215342b0caae8757ca6461eb573108aae2a8e073",
+        "src/research/equivariant_context/features.py": "d6568fdcacc7ef679101576bc31b55ccf20413f03c5b7eadeb1840164c233ac6"
+      },
+      "pretraining_recipe": "configs/liquid_predictability/rich_tda_block_direct_full_20260930.json"
+    }
+  ]
+}

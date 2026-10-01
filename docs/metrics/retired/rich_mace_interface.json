@@ -1,0 +1,14 @@
+{
+  "family": "rich_mace_interface",
+  "reason": "Previous MACE analysis explicitly removed after verified RH2 replacement, 2026-09-30",
+  "contract": {
+    "files": {
+      "docs/metrics/rich_mace_interface.md": "309ba8de1f178904a32c81a3bfa9cabe3cab9e3f8fe69cbe9c1c3c563fe2c7aa",
+      "src/research/spatial_vicreg_bias/mace_checkpoint.py": "3ab882ab7ce39919ccbb26abd319e2cfea3a57d3bfe1dc08e5f9a1e89c7598f3",
+      "src/research/spatial_vicreg_bias/mace_publication.py": "79ad33b299e90793d479398ec6b502c925e2f62743af2190b4a5f9ae99f6c588",
+      "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+      "src/research/spatial_vicreg_bias/sample_lattice.py": "31007b3b350a39e198074d6efaf80c670a544e98bc3eafa9b6024884aa50122e",
+      "configs/analysis/mace_rich_interface_20260929.json": "c138611da2cbf30d99172bb9f075379a7389b707ba4b2cb1ca956acd0aba94af"
+    }
+  }
+}

@@ -1,19 +1,37 @@
 # Encoder research handbook
 
-[Rich-MACE checkpoint interface comparison](../spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer) adds the active multimaterial MACE256 correlation3/angular3 state to the matched and relaxed static Al viewers; descriptor supervision is explicitly recorded.
+[Fixed-endpoint history and persistent-site controls](../../experiments/birth_prediction_20260930/TEMPORAL_SITE.md)
+separate available history, prediction lead and within-site structural evolution
+using retained descriptors and frozen MACE representations.
 
-[GeoFormer versus descriptors: checkpoint explorer](../../output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1/index.html)
+[Birth prediction leakage and feature importance](birth_leakage_features.md)
+separates clean past-coordinate inputs from retrospective event sampling and
+identifies useful topology/bond-order groups in matched held-out comparisons.
+
+[Birth-history truncation and readout CV](../../experiments/birth_prediction_20260930/TRUNCATION_CV.md)
+compares retained MACE/descriptor information with one through eight crystal-free
+observations, likelihood selection and source-uncertainty panels.
+
+New: [packed-data TDA/VCReg pilots](../rich_tda_objectives.md), with validation-selected full-data fitting.
+
+[Rich-MACE checkpoint comparison](../spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer) uses the latest RH2 MACE256 run’s best validation checkpoint (epoch 14/update 1806) in both Al viewers; descriptor supervision and the validation-likelihood selector are recorded.
+[Open MACE: held-out Al MD](../../output/spatial_vicreg_bias/mace-rh2-best-20260930/heldout-al.html) ·
+[Six static Al snapshots](../../output/spatial_vicreg_bias/mace-rh2-best-20260930/al-static.html).
+
+[GeoFormer versus descriptors: checkpoint explorer](../../output/spatial_vicreg_bias/matched-al64-20260929/heldout-al.html)
 compares the saved 3D PaCMAP layouts and full-snapshot MD clusters. Choose epochs
 4, 12 or 24; pairing variants and training repeats are under advanced controls.
 Optimal cluster colors are accompanied by a membership matrix and per-pair IoU.
 The default is a fixed spatial-neighbor VICReg example, not a selected best model.
 
-[Six relaxed Al snapshots, 166–240 ps](../../output/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1/index.html):
+[Six relaxed Al snapshots, 166–240 ps](../../output/spatial_vicreg_bias/static-al-six-20260929/al-static.html):
 frozen GeoFormer and rich descriptor clusters, PaCMAP and two dense MD panels
 with consistent palettes. [Protocol and execution](../spatial_vicreg_bias.md)
 distinguish this descriptive static transfer from the held-out MD study.
 
-**Interface-focused correction:** [rich-descriptor cluster correspondence](../../experiments/spatial_vicreg_bias_20260929/INTERFACE_CORRESPONDENCE.md) compares independent TDA/bond-order/CNA partitions with neural clusters around the crystal-side boundary. Earlier scalar family-level prediction summaries are a different diagnostic.
+**Current comparison:** descriptor clusters use all training phases; [workflow and metric revision](../spatial_vicreg_bias.md#general-descriptor-comparison-2026-09-30). Only an optional PaCMAP highlight remains interface-specific.
+
+**Historical interface study:** [rich-descriptor cluster correspondence](../../experiments/spatial_vicreg_bias_20260929/INTERFACE_CORRESPONDENCE.md) compares independent TDA/bond-order/CNA partitions with neural clusters around the crystal-side boundary. Earlier scalar family-level prediction summaries are a different diagnostic.
 
 [Completed spatial VICReg mechanism study](../../experiments/spatial_vicreg_bias_20260929/RESULTS.md):
 nine 24-pass GeoFormers. Neighbor alignment contracts spatial pair distances,
@@ -98,6 +116,7 @@ to this repository. This is an evidence snapshot, not a live run monitor.
 | Separate local establishment from crystal arrival | [Cluster-ancestry availability audit](crystallization_origins.md) |
 | Assess nucleus and prestructured-liquid definitions | [Literature, current implementation and unresolved ambiguities](nuclei_and_prestructured_liquid_20260926.md) |
 | Revisit nucleation literature and assess possible novelty | [Primary sources, falsifiable hypotheses and evidence checklist](nucleation_literature_and_open_questions.md) |
+| Compare prediction before crystal appearance | [Matched birth/liquid histories and four earlier endpoints](../../experiments/birth_prediction_20260930/README.md), [execution](../birth_prediction.md) |
 | Compare encoder training with vector/harmonic predictors | [Twelve-epoch minimum protocol](../../experiments/encoder_context_epochs_20260925/README.md), [execution and full evaluation](../encoder_context.md) |
 | Compare models on identical fixed data | [Al64 benchmark and 1.16M structural training neighborhoods](../datasets/fixed_al64.md) |
 | Review orientation-preserving context prediction | [Completed Al16 results](/work/PERSO/vmorozov/analysis/equivariant_context/node59-b512-v2-20260925/RESULTS.md), [four-model protocol](../../experiments/equivariant_context_20260925/README.md), [operations](../equivariant_context.md) |

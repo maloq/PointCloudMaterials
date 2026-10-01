@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shooting encoders · PaCMAP</title>
+<style>
+body{margin:0;background:#f5f7fa;color:#192b3d;font:15px system-ui,sans-serif}main{max-width:1500px;margin:auto;padding:24px}
+h1{margin:0 0 8px;font-size:28px}p{line-height:1.5}.controls{display:flex;gap:18px;flex-wrap:wrap;background:white;padding:16px;border:1px solid #dbe2e9;border-radius:9px}
+label{display:flex;flex-direction:column;gap:6px;font-weight:600}select{max-width:100%;font:inherit;padding:8px;border:1px solid #b8c5d2;border-radius:5px;background:white}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:18px 0}.panel{background:white;border:1px solid #dbe2e9;border-radius:9px;overflow:hidden}
+.plot{height:440px}.panel h2{font-size:17px;margin:14px 18px 0}#picked{background:#eaf0f7;padding:12px;border-radius:5px;min-height:24px;overflow-wrap:anywhere}
+summary{cursor:pointer;font-weight:600}details{margin-top:18px;line-height:1.5}a{color:#1e64a4}#status{font-size:14px;color:#4c6379}
+@media(max-width:850px){.grid{grid-template-columns:1fr}.plot{height:390px}main{padding:14px}}
+</style><script>__PLOTLY_JS__</script></head><body><main>
+<h1>Shooting encoders in PaCMAP</h1>
+<p>The same held-out atomic environments in four independently projected embedding spaces. Color by present structure, observed future behavior, or source. Click a point to find that observation in every panel.</p>
+<div class="controls">
+<label>New MACE128 variant<select id="encoder"></select></label>
+<label>Color<select id="color"></select></label>
+<label>Show observations<select id="population"><option value="all">All environments</option><option value="0">Clear liquid</option><option value="1">Visible interface</option><option value="2">Crystalline center</option></select></label>
+</div><p id="status"></p><div class="grid">
+<section class="panel"><h2 id="title0"></h2><div class="plot" id="plot0"></div></section>
+<section class="panel"><h2 id="title1"></h2><div class="plot" id="plot1"></div></section>
+<section class="panel"><h2 id="title2"></h2><div class="plot" id="plot2"></div></section>
+<section class="panel"><h2 id="title3"></h2><div class="plot" id="plot3"></div></section>
+</div><div id="picked">Click a point to inspect its observation ID and measured shooting outcomes.</div>
+<details><summary>How to read these maps</summary><ul>
+<li>Each encoder retains its recorded weights. Its exported coordinates are standardized using source-weighted training means and standard deviations. PaCMAP uses 4,224 training observations; 2,285 held-out observations are added through its out-of-sample transform. Validation and test observations do not fit the scaler, PCA or training layout.</li>
+<li>PaCMAP 0.9.1: 10 neighbors, mid-near ratio 0.5, far-pair ratio 2, Euclidean distance, PCA initialization and the library's training-fitted PCA preprocessing to 100 dimensions when the input has more than 100 dimensions, 450 iterations, seed 20261001. Each map is independent: axes, rotation and separation are not directly comparable across panels.</li>
+<li>Future colors are measured from 12 shooting branches, never encoder inputs or projection-fitting labels. Crystalline fraction measures the local future neighborhood within 8 Å among its nearest 80 atoms; it is not a crystallization-event probability. Clear liquid means a noncrystalline center more than 8 Å from any present crystalline atom.</li>
+<li>Every point has equal visual size. Sampling is stratified by present structure, so point density does not represent population prevalence. The same color range is used across panels for the selected population; filtering keeps the full map's axis extent.</li>
+<li>Default new encoder: full targets, unconstrained variance, first declared training seed 20261001, selected by validation moment likelihood. All four treatments and all three seeds are available; no seed was chosen for appearance. Frozen encoders do not change with that selector.</li>
+<li>MM-TDA has a larger 256-dimensional embedding and broader historical pretraining than the 128-dimensional references. These visualizations do not establish predictive sufficiency or rank encoder quality. Six held-out sources are historical shooting sources, not the Al64 window benchmark.</li>
+</ul><p><a href="plots/present-structure.pdf">Structure PDF</a> · <a href="plots/future-crystallinity-6ps.pdf">Future PDF</a> · <a href="plots/clear-liquid-future-6ps.pdf">Clear-liquid PDF</a> · <a href="plots/source-audit.pdf">Source audit PDF</a> · <a href="tables/METRICS.md">Definitions</a></p></details>
+<script>
+const D=__PAYLOAD__, O=D.observations, models=Object.fromEntries(D.models.map(m=>[m.key,m]));
+const encoder=document.getElementById('encoder'),color=document.getElementById('color'),population=document.getElementById('population');
+for(const m of D.models.filter(m=>m.key.startsWith('joint-'))){const o=new Option(m.label,m.key);encoder.add(o)}encoder.value=D.primary;
+for(const [key,f] of Object.entries(O.fields))color.add(new Option(f.label,key));color.value='structure';
+let picked=null, activeKeys=[], visible=[], ready=false;
+const palette=['#2878b5','#e7a132','#bd4762'], sourcePalette=['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b'];
+function bounds(values){const lo=Math.min(...values),hi=Math.max(...values),pad=(hi-lo)*.05;return [lo-pad,hi+pad]}
+function discreteScale(colors){return colors.flatMap((c,i)=>[[i/colors.length,c],[(i+1)/colors.length,c]])}
+async function draw(){
+ activeKeys=[encoder.value,...D.frozen];visible=O.row.map((_,i)=>i).filter(i=>population.value==='all'||O.strata[i]===Number(population.value));
+ const f=O.fields[color.value],v=visible.map(i=>f.values[i]),cat=f.categories;
+ const lo=cat?-.5:Math.min(0,...v),hi=cat?cat.length-.5:Math.max(...v,1e-9);
+ const colorscale=cat?discreteScale(color.value==='structure'?palette:sourcePalette):'Viridis';
+ document.getElementById('status').textContent=`${visible.length.toLocaleString()} identical observations per panel · six held-out sources · fit on 4,224 training observations · ${f.label}`;
+ for(let j=0;j<4;j++){
+  const m=models[activeKeys[j]],xy=m.xy;document.getElementById('title'+j).textContent=m.label;
+  const cb={thickness:12,len:.84,tickfont:{size:10}};if(cat){cb.tickvals=cat.map((_,i)=>i);cb.ticktext=cat}
+  const text=visible.map(i=>`Row ${O.row[i]} · S${O.source_index[i]+1}<br>Parent ${O.parent[i]} · atom ${O.atom_id[i]}<br>${cat?cat[f.values[i]]:f.values[i].toPrecision(4)+' '+f.unit}`);
+  const traces=[{type:'scattergl',mode:'markers',x:visible.map(i=>xy[i][0]),y:visible.map(i=>xy[i][1]),customdata:visible,text,
+   hovertemplate:'%{text}<extra></extra>',marker:{color:v,colorscale,cmin:lo,cmax:hi,size:5,opacity:.85,colorbar:cb,showscale:true}},
+   {type:'scattergl',mode:'markers',x:[],y:[],hoverinfo:'skip',marker:{size:17,color:'#ed1556',symbol:'circle-open',line:{width:3}}}];
+  await Plotly.react('plot'+j,traces,{margin:{l:15,r:25,t:12,b:15},showlegend:false,paper_bgcolor:'white',plot_bgcolor:'white',
+   xaxis:{range:bounds(xy.map(p=>p[0])),showgrid:false,zeroline:false,showticklabels:false},
+   yaxis:{range:bounds(xy.map(p=>p[1])),scaleanchor:'x',scaleratio:1,showgrid:false,zeroline:false,showticklabels:false}},
+   {responsive:true,displaylogo:false,scrollZoom:true,toImageButtonOptions:{format:'png',filename:activeKeys[j]+'-'+color.value,scale:2}});
+  if(!ready)document.getElementById('plot'+j).on('plotly_click',e=>{if(e.points[0].curveNumber===0){picked=e.points[0].customdata;highlight()}});
+ }
+ ready=true;if(picked!==null)highlight();
+}
+function highlight(){
+ const i=picked,shown=visible.includes(i);
+ for(let j=0;j<4;j++){const xy=models[activeKeys[j]].xy[i];Plotly.restyle('plot'+j,{x:[shown?[xy[0]]:[]],y:[shown?[xy[1]]:[]]},[1])}
+ document.getElementById('picked').textContent=`Row ${O.row[i]} · source S${O.source_index[i]+1} · parent ${O.parent[i]} · atom ${O.atom_id[i]} · ${O.fields.structure.categories[O.strata[i]]}. Mean future crystalline fraction: 3 ps ${O.fields.crystal_3.values[i].toFixed(3)}%; 6 ps ${O.fields.crystal_6.values[i].toFixed(3)}%; 12 ps ${O.fields.crystal_12.values[i].toFixed(3)}%. Across-shot SD at 6 ps: ${O.fields.spread_6.values[i].toFixed(3)} percentage points. Source: ${O.sources[i]}${shown?'':' (hidden by current filter)'}`;
+}
+for(const element of [encoder,color,population])element.addEventListener('change',draw);draw();
+</script></main></body></html>

@@ -1,0 +1,18 @@
+{
+  "corrected_at": "2026-10-01T21:01:45.551085+00:00",
+  "scope": "Additional collection metadata only; queued scientific input manifest and prepared source inputs are unchanged",
+  "original_view": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001/additional_sources.json",
+  "original_sha256": "ab963cd2694e443ab44f28ef86cb8af25f368174c402099737cd4527a5451fba",
+  "corrected_view": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001/additional_sources.v2.json",
+  "corrected_sha256": "8ea1054d85291dfd39bc9cfe2ee0166f86bc43b6d62706fdde0af65786094eee",
+  "changed_field": "trajectory_roles",
+  "previous_value": {
+    "train": 92,
+    "calibration": 15,
+    "selection": 15,
+    "test": 30
+  },
+  "corrected_value": {
+    "train": 2
+  }
+}

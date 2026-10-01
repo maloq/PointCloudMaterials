@@ -19,7 +19,6 @@ from src.experiment_runner.metric_docs import check_metric_docs
 from src.models.encoders.spatial_mace import compile_spatial_encoder
 from src.project_runtime.paths import resolve_path
 from src.research.crystal_vector import parallel
-from src.research.crystal_vector.model import vcreg
 from src.research.encoder_context.geometry import graph
 from src.research.equivariant_context.features import prepared_frames
 from src.research.supervised_onset.tracking import tracked_run, update_training_summary
@@ -28,6 +27,8 @@ from .data import config
 from .rich_encoder import learning_rate
 from .models import RichPatchMACE
 from .rich_multimaterial_data import CachedPatches
+from .rich_packed import PackedPatches
+from .rich_objectives import objective_weights, topology_distance_loss
 
 
 def upload(values, device):
@@ -73,7 +74,25 @@ def task_loss(out, target, weight):
 
 
 def representation_loss(out, settings):
-    value, stats = vcreg(out, settings)
+    # Same global moments for every placement; dimension normalization is explicit.
+    value = out['state'].new_zeros(())
+    stats = {}
+    for name in ('scalar', 'vector'):
+        x = out['regularization_z' if name == 'scalar' else 'regularization_v'].flatten(0, 1)
+        if name == 'scalar':
+            x = x[..., None]
+        covariance = parallel.global_covariance(x)
+        std = (covariance.diagonal() + settings['epsilon']).sqrt()
+        variance = torch.relu(settings['std_floor'] - std).mean()
+        off = covariance - torch.diag_embed(covariance.diagonal())
+        dimensions = len(off)
+        denominator = {'mean_pair': dimensions * (dimensions - 1), 'per_channel': dimensions}[
+            settings['covariance_normalization']]
+        redundancy = off.square().sum() / denominator
+        value = value + settings['variance_weight'] * variance + settings['covariance_weight'] * redundancy
+        stats[f'{name}_variance_penalty'] = variance.detach()
+        stats[f'{name}_covariance_penalty'] = redundancy.detach()
+        stats[f'{name}_minimum_std'] = std.min().detach()
     z = out['state']
     count = z.new_tensor(float(len(z)))
     if parallel.world_size() > 1:
@@ -113,7 +132,7 @@ def is_allocation_failure(error):
 
 def probe(c):
     """Separate local numerical job: all families, real mixtures, consecutive updates."""
-    data = CachedPatches(c, 'train')
+    data = PackedPatches(c)
     device = torch.device('cuda:0')
     model, _ = initialize(c, data, device)
     compile_model(model, data, c, device)
@@ -374,6 +393,10 @@ def descriptor_mse_metrics(data, error, baseline):
     for f in FAMILIES:
         mask = (families == f) & data.active
         result[f] = mse_metrics(float(error[mask].mean()), float(baseline[mask].mean()))
+    names = np.array([v['name'] for v in data.columns])
+    for dimension in range(3):
+        mask = np.array([f'_h{dimension}_' in name for name in names]) & data.active
+        result[f'tda_h{dimension}'] = mse_metrics(float(error[mask].mean()), float(baseline[mask].mean()))
     return result
 
 
@@ -414,6 +437,8 @@ def training_diagnostics(out, target, embedding_gradient, data):
 def validation(model, data, batch, rank, world, device):
     model.eval()
     totals = np.zeros((2, len(data.columns)))
+    moments = {key: [np.zeros(256), np.zeros((256, 256))]
+               for key in ('embedding', 'regularized')}
     ids = np.arange(rank, len(data), world)
     for begin in range(0, len(ids), batch):
         b = upload(data.batch(ids[begin : begin + batch]), device)
@@ -423,6 +448,9 @@ def validation(model, data, batch, rank, world, device):
         # Standardized zero is the frozen training mean; held-out means are never fitted.
         totals[0] += error.sum(0, dtype=torch.float64).cpu().numpy()
         totals[1] += b['target'].square().sum(0, dtype=torch.float64).cpu().numpy()
+        for key, z in (('embedding', out['state']), ('regularized', out['regularization_z'][:, 0])):
+            moments[key][0] += z.sum(0, dtype=torch.float64).cpu().numpy()
+            moments[key][1] += (z.double().T @ z.double()).cpu().numpy()
     error, baseline = parallel.sum_values(totals) / len(data)
     metrics = descriptor_mse_metrics(data, error, baseline)
     scores = {
@@ -431,6 +459,17 @@ def validation(model, data, batch, rank, world, device):
     for family, values in metrics.items():
         prefix = '' if family == 'all' else family + '_'
         scores.update({prefix + k: v for k, v in values.items() if k != 'skill_over_training_mean'})
+    for key, (first, second) in moments.items():
+        mean = parallel.sum_values(first) / len(data)
+        covariance = parallel.sum_values(second) / len(data) - np.outer(mean, mean)
+        eigenvalues = np.linalg.eigvalsh(covariance).clip(0)[::-1]
+        total = eigenvalues.sum()
+        if total <= 0:
+            raise FloatingPointError(f'Constant validation {key}')
+        fractions = eigenvalues / total
+        scores[f'{key}_participation_rank'] = float(1 / (fractions @ fractions))
+        scores[f'{key}_d95'] = int(np.searchsorted(np.cumsum(fractions), .95) + 1)
+        scores[f'{key}_minimum_std'] = float(np.sqrt(np.diag(covariance).clip(0)).min())
     return scores
 
 
@@ -453,8 +492,11 @@ def train(c):
         raise ValueError('Execution GPU count cannot partition the frozen global batch')
     if torch.cuda.get_device_properties(device).total_memory < plan['minimum_device_memory_bytes']:
         raise ValueError('Resume GPU has less VRAM than the measured batch')
-    data = CachedPatches(c, 'train')
+    data = PackedPatches(c)
     selection = CachedPatches(c, 'selection')
+    if (data.packed_identity != plan['packed_identity'] or
+            sha(data.root / 'manifest.json') != plan['packed_manifest_sha256']):
+        raise ValueError('Packed fitting release changed after launch')
     if data.identity != plan['dataset_identity']:
         raise ValueError('Training population changed')
     if sha(tech / 'training-pool-row-ids.npy') != plan['subset_sha256']:
@@ -509,7 +551,9 @@ def train(c):
     local_batch = batch // world
     steps = plan['updates_per_epoch']
     n = len(data)
-    weight = torch.as_tensor(data.loss_weight, device=device)
+    task_weights, topology_weights = objective_weights(data, c['objective'])
+    weight = torch.as_tensor(task_weights, device=device)
+    topology_weight = torch.as_tensor(topology_weights, device=device)
     if rank == 0:
         write_json(tech / 'identity.json', binding)
         np.save(tech / 'normalization-rows.npy', normalization_ids)
@@ -544,7 +588,10 @@ def train(c):
                 initialization='scratch',
                 training_only_teacher='fixed geometry/bond-order/CNA/TDA descriptors of the same patch',
                 coordinate_normalization=c['structural_dataset']['normalization'],
-                sampling='fixed uniform subset of raw dynamic pool; every selected row once per epoch; no phase filter',
+                sampling='fixed nested subset; global row permutation per epoch; every row once; no phase filter',
+                packed_identity=data.packed_identity,
+                regularization=c['regularization'],
+                task_objective=c['objective'],
                 training_rows=len(data),
                 pool_rows=plan['pool_rows'],
                 material_rows=plan['material_rows'],
@@ -660,7 +707,6 @@ def train(c):
                 epoch,
                 c['seed'],
                 start_batch=step,
-                shards_per_block=c['loader']['shards_per_block'],
             )
 
             def prepare(item):
@@ -711,7 +757,13 @@ def train(c):
                     reg = reg * min(
                         (update + 1) / (steps * c['regularization']['warmup_epochs']), 1.0
                     )
-                    loss = nll + reg
+                    topology = out['state'].new_zeros(())
+                    if c['objective']['topology_distance']['weight']:
+                        topology = topology_distance_loss(out['state'], b['target'], topology_weight,
+                                                          c['objective']['topology_distance'])
+                    topology_penalty = topology * c['objective']['topology_distance']['weight'] * min(
+                        (update + 1) / (steps * c['regularization']['warmup_epochs']), 1.0)
+                    loss = nll + reg + topology_penalty
                     if parallel.stop_requested(not bool(torch.isfinite(loss))):
                         raise FloatingPointError(f'Nonfinite objective at update {update}')
                     logging = update == 0 or (update + 1) % 8 == 0 or step + 1 == steps
@@ -724,6 +776,16 @@ def train(c):
                         diagnostics = training_diagnostics(
                             out, b['target'], embedding_gradient, data
                         )
+                        regularization_gradient = torch.autograd.grad(
+                            reg, out['state'], retain_graph=True)[0].detach() * (count / world)
+                        regularization_square = parallel.sum_values(
+                            [float(regularization_gradient.double().square().sum())])[0]
+                        diagnostics['vcreg_embedding_gradient_rms'] = math.sqrt(
+                            regularization_square / (count * out['state'].shape[1]))
+                        diagnostics['vcreg_to_descriptor_gradient_ratio'] = (
+                            diagnostics['vcreg_embedding_gradient_rms'] /
+                            max(diagnostics['descriptor_embedding_gradient_rms'], 1e-20))
+                        del regularization_gradient
                         del embedding_gradient
                     loss.backward()
                     parallel.average_gradients(model)
@@ -760,10 +822,19 @@ def train(c):
                                 },
                             )
                             record.update({'train/' + k: v for k, v in diagnostics.items()})
+                            record.update({
+                                'train/vcreg_scalar_variance': float(stats['scalar_variance_penalty']),
+                                'train/vcreg_scalar_covariance': float(stats['scalar_covariance_penalty']),
+                                'train/vcreg_vector_variance': float(stats['vector_variance_penalty']),
+                                'train/vcreg_vector_covariance': float(stats['vector_covariance_penalty']),
+                            })
+                            if c['objective']['topology_distance']['weight']:
+                                record['train/topology_distance_loss'] = float(topology.detach())
+                                record['train/topology_distance_penalty'] = float(topology_penalty.detach())
                             record.update(
                                 {
                                     'train/embedding_mean_rms': float(stats['scalar_mean_rms']),
-                                    'train/embedding_minimum_std': float(
+                                    'train/regularized_minimum_std': float(
                                         stats['scalar_minimum_std']
                                     ),
                                 }
@@ -855,7 +926,7 @@ def train(c):
             log.summary['epochs_completed'] = epoch
     if world > 1:
         dist.destroy_process_group()
-    if finished and rank == 0:
+    if finished and rank == 0 and c['evaluation']['export_test']:
         if time.time() > stop - 3600:
             write_json(
                 tech / 'state.json',

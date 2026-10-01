@@ -1,0 +1,37 @@
+{
+  "protocol": "general_descriptor_comparison_v1",
+  "output": "${storage:repo}/output/spatial_vicreg_bias/general-descriptors-20260930",
+  "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+  "fits": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "pacmap": {
+    "version": "0.9.1",
+    "knn_backend": "faiss",
+    "n_neighbors": 20,
+    "MN_ratio": 0.5,
+    "FP_ratio": 2.0,
+    "num_iters": [
+      100,
+      100,
+      250
+    ],
+    "apply_pca": false,
+    "random_state": 20260929
+  },
+  "datasets": {
+    "matched": {
+      "source": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/dense-md-timeline-v1",
+      "publications": [
+        "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1",
+        "${storage:repo}/output/spatial_vicreg_bias/mace-rich-c3-l3-20260929/analyses/matched"
+      ]
+    },
+    "static": {
+      "source": "${storage:analysis}/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+      "publications": [
+        "${storage:repo}/output/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+        "${storage:repo}/output/spatial_vicreg_bias/mace-rich-c3-l3-20260929/analyses/static"
+      ]
+    }
+  }
+}

@@ -1,6 +1,71 @@
 # Maintained commands
 
-`python -m src.research.spatial_vicreg_bias.mace_checkpoint infer|publish --config configs/analysis/mace_rich_interface_20260929.json` evaluates a frozen rich-MACE checkpoint in both interface viewers; [workflow](../docs/spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer).
+`python -m src.research.response_training.queue preflight|submit --config configs/response_atlas/atomistic_training_20261001.json`
+collects fixed-simulator responses and runs nine matched full-cell value/response
+encoder fits; [workflow](../docs/response_atlas.md#atomistic-response-training).
+For an already frozen run, `src/research/response_execution.py --bundle FROZEN_CODE --lane NAME`
+shares parent collection across allocated GPUs; [parallel execution](../docs/response_atlas.md#parallel-collection-on-allocated-gpus).
+`src/research/response_gpu_request.py --execution EXECUTION_DIR --deadline UNIX_TIME`
+requests two additional L40S helpers, with bounded retries for Slurm's submitted-job limit.
+
+`python -m src.research.predictive_followup.pacmap_views run --config configs/analysis/predictive_pacmap_20261001.json`
+plots the saved shooting encoders with training-fitted PaCMAP, matched held-out
+observations and a linked interactive comparison; [workflow](../docs/predictive_baseline.md#pacmap-views-of-the-completed-follow-up).
+
+`python -m src.research.predictive_followup.queue prepare|encode|preflight|submit --config configs/predictive_baseline/followup_20261001.json`
+compares matched frozen heads, Fourier supervision and nonnegative variance, including
+MM-TDA-BLOCK-DIRECT-FULL; [workflow](../docs/predictive_baseline.md#matched-head-target-and-mm-tda-follow-up).
+Use `python -m src.research.predictive_followup.lanes submit --config configs/predictive_baseline/followup_20261001.json`
+for submission-count-limited clusters; five workers run the same48 fits sequentially.
+
+`python -m src.research.birth_prediction.relaxed freeze|submit --config configs/birth_prediction/relaxed_temporal_20261001.json`
+quenches all existing birth inputs and repeats paired frozen readouts, with train/test errors;
+[workflow](../docs/birth_prediction.md#full-cell-relaxed-input-comparison).
+
+`python -m src.research.predictive_baseline.queue prepare|preflight|submit --config configs/predictive_baseline/al480_20261001.json`
+trains geometry-only MACE128 on fixed future-feature means from repeated Al shooting;
+[workflow](../docs/predictive_baseline.md).
+
+`python -m src.research.response_atlas.queue submit --config configs/response_atlas/feasibility_20261001.json` queues the [response-atlas feasibility study](../docs/response_atlas.md).
+
+
+`python -m src.research.birth_prediction.temporal prepare|submit --config configs/birth_prediction/temporal_site_20260930.json`
+compares fixed-endpoint history controls and persistent-site versus evolving
+structural information; [workflow](../docs/birth_prediction.md#fixed-endpoint-and-site-persistence-comparison).
+
+`python -m src.research.shooting_laws.queue bind|preflight|submit --config configs/shooting_laws/al480_20260930.json`
+derives and compares physical future distributions from the 480-shot Al release.
+`python -m src.research.shooting_laws.diagnostics bind|submit --config configs/shooting_laws/diagnostics_20260930.json`
+scores the separate thermostat, nested-Al and Ta ensembles; [workflow](../docs/shooting_laws.md).
+
+`python -m src.research.liquid_predictability.rich_objective_study submit-run --config configs/liquid_predictability/rich_tda_block_direct_full_20260930.json`
+submits the full-data block-scaled descriptor encoder with direct VCReg;
+[comparison and workflow](../docs/rich_tda_objectives.md#full-data-direct-vcreg-combination).
+
+`python -m src.research.birth_prediction.leakage audit|explain|supplement|plot --config configs/birth_prediction/leakage_features_20260930.json`
+audits retained birth inputs and explains frozen rich-descriptor predictors with
+matched-group permutations and source uncertainty; [workflow](../docs/birth_prediction.md#leakage-and-feature-audit).
+
+`python -m src.research.birth_prediction.extension prepare|submit --config configs/birth_prediction/drop_to_one_cv_20260930.json`
+extends the existing birth histories down to one frame, runs five-fold grouped
+readout CV and plots proper scores, AP, calibration and source uncertainty;
+[workflow](../docs/birth_prediction.md#truncation-to-one-frame-and-readout-cross-validation).
+
+`python -m src.research.birth_prediction.queue bind|submit --config configs/birth_prediction/preappearance_20260930.json`
+compares rich-descriptor boosting, frozen rich/VICReg MACE and linear controls
+on crystal-free histories before isolated establishment, with four matched
+history endpoints; [workflow](../docs/birth_prediction.md).
+
+`python -m src.research.liquid_predictability.rich_objective_study prepare|submit --config configs/liquid_predictability/rich_tda_pilots_20260930.json`
+packs the existing fitting rows, runs seven matched 10% VCReg/TDA pilots and
+queues a validation-selected full-data fit; [workflow](../docs/rich_tda_objectives.md).
+
+`python -m src.research.liquid_predictability.rich_multimaterial_evaluate --run RUN_ROOT --batch-size 1024 --patch-chunk 256`
+evaluates a stopped rich-descriptor encoder with its frozen producer and selected
+checkpoint, updating the existing training W&B summary without opening a run;
+[workflow](../docs/rich_multimaterial_encoder.md#detached-evaluation-after-stopping).
+
+`python -m src.research.spatial_vicreg_bias.mace_checkpoint infer|publish --config configs/analysis/mace_rich_current.json` evaluates the current selected rich-MACE checkpoint in both comparison viewers; [workflow](../docs/spatial_vicreg_bias.md#current-rich-mace-checkpoint-in-the-interface-viewer).
 
 `python -m src.research.spatial_vicreg_bias.compact_view_assets --publication REPO_BUNDLE`
 creates lossless compact display assets from existing sample/embedding exports on
@@ -19,6 +84,9 @@ on Slurm; follow with `comparison_layout` to show the rotatable examples. No fit
 `python -m src.research.spatial_vicreg_bias.comparison_layout --publication REPO_BUNDLE --dataset matched|static`
 refreshes the compact PaCMAP/MD layout and dataset selector using saved page
 payloads, without recomputing projections, clusters or correspondence metrics.
+It also publishes the complete viewer as `heldout-al.html` or `al-static.html`
+directly in the experiment output folder; MACE and checkpoint-explorer publication
+keep those entry pages current too.
 
 `python -m src.research.spatial_vicreg_bias.checkpoint_explorer --dense-config RESOLVED_CHECKPOINT_DENSE_CONFIG`
 publishes the matched GeoFormer / descriptor explorer with epoch selection,
@@ -102,10 +170,14 @@ treatments, including crystal-interior evaluation; [workflow](../docs/crystal_in
 runs the joint snapshot crystal-distance/vector experiment with random batches;
 [workflow](../docs/crystal_vector.md).
 
-`python -m src.simulation.campaigns.dense_al prepare|submit|worker|collect`
+`python -m src.simulation.campaigns.dense_al prepare|prepare-continuation|add-dense-sources|submit|worker|collect`
 reruns the main Al preparations at exact 0.1 ps, preserving ancestor roles;
 `convert_trajectory.py dense-al RUN_DIR` verifies their canonical exports.
 [Campaign and execution](../docs/simulations/al_main_010ps_20260927/README.md).
+`add-dense-sources --config configs/simulation/al_main_001ps_20261001.json`
+adds two 0.01-ps sources to the next wave;
+`convert_trajectory.py dense-al-001ps RUN_DIR` verifies their float16 exports in
+bounded chunks. [Protocol and execution](../docs/simulations/al_main_001ps_20261001/README.md).
 
 `python -m src.research.distance_encoder.material_queue submit|worker --config CONFIG --allocation JOB --gpu INDEX`
 fine-tunes CD-MACE128-D6 separately for Al and Ta, followed by paired parent

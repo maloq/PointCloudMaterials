@@ -1,6 +1,45 @@
 # Configuration index
 
-The frozen rich-MACE interface recipe is [analysis/mace_rich_interface_20260929.json](analysis/mace_rich_interface_20260929.json); it reuses both existing Al viewer datasets without neural training.
+[Atomistic simulator-response training](response_atlas/atomistic_training_20261001.json)
+compares full-cell MACE128 value and response supervision at20/100fs;
+[protocol](../experiments/response_atlas_20261001/ATOMISTIC_TRAINING.md).
+
+[Shooting encoder PaCMAP](analysis/predictive_pacmap_20261001.json) visualizes
+the completed predictive follow-up, including MM-TDA and all joint variants,
+with training-fitted maps and identical held-out observations;
+[workflow](../docs/predictive_baseline.md#pacmap-views-of-the-completed-follow-up).
+
+[Full-cell relaxed birth inputs](birth_prediction/relaxed_temporal_20261001.json)
+repeat the retained temporal/site comparisons with fixed labels and atom IDs;
+[protocol](../experiments/birth_prediction_20260930/RELAXED.md).
+
+- `response_atlas/feasibility_20261001.json`: gated response-atlas reliability, mechanisms and small-cell numerical pilot.
+
+
+[Fixed-endpoint history and site persistence](birth_prediction/temporal_site_20260930.json)
+reuses frozen birth histories, source roles and readout-CV folds;
+[protocol](../experiments/birth_prediction_20260930/TEMPORAL_SITE.md).
+
+[Shooting future laws](shooting_laws/al480_20260930.json) and
+[separate campaign diagnostics](shooting_laws/diagnostics_20260930.json) preserve
+historical shooting roles and compare common physical probability targets;
+[protocol](../experiments/shooting_laws_20260930/README.md).
+
+[Birth leakage and feature audit](birth_prediction/leakage_features_20260930.json)
+replays retained inputs/models and measures matched structural feature reliance;
+[findings](../docs/encoder_research/birth_leakage_features.md).
+
+[Birth-history truncation and readout CV](birth_prediction/drop_to_one_cv_20260930.json)
+extends the same observations down to one frame with five training-source folds
+and source-uncertainty figures; [protocol](../experiments/birth_prediction_20260930/TRUNCATION_CV.md).
+
+[Pre-appearance birth classification](birth_prediction/preappearance_20260930.json)
+compares 44 frozen readouts on matched crystal-free histories, preserving the
+original source roles; [protocol](../experiments/birth_prediction_20260930/README.md).
+
+New: [packed-data TDA/VCReg pilots](../docs/rich_tda_objectives.md), with validation-selected full-data fitting.
+
+The current selected RH2 MACE recipe is [analysis/mace_rich_current.json](analysis/mace_rich_current.json): best validation descriptor-likelihood checkpoint, both existing Al viewer datasets, and the all-training descriptor reference.
 
 [Six static Al interface views](analysis/static_al_interface.json): frozen neural
 and descriptor clusters, dense MD and PaCMAP on the 166–240 ps relaxed snapshots;

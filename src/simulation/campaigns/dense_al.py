@@ -5,6 +5,7 @@ import fcntl
 import json
 import os
 from pathlib import Path
+import re
 import shlex
 import shutil
 import signal
@@ -161,7 +162,7 @@ def verify_code(launch):
 
 
 def publish_record(directory, record, failed=False):
-    identifier = record['run_id'] + ('-failed' if failed else '')
+    identifier = record.get('failure_id', record['run_id']+'-failed') if failed else record['run_id']
     if failed:
         result = archive_failed_simulation(directory, identifier=identifier)
     else:
@@ -173,10 +174,12 @@ def publish_record(directory, record, failed=False):
         value = json.loads(catalog.read_text())
         entry = value['datasets'][identifier]
         entry['dependencies'] = sorted(set(entry['dependencies']+[record['parent_dataset']]))
+        metadata = json.loads((Path(result['destination'])/'input_metadata.json').read_text())
         entry['metadata'] = dict(materials=['Al'], potential_ids=['al-lee2003-meam'],
             role='raw_dynamics', classification='incomplete_or_rejected' if failed else 'research',
             ancestry=record['root_lineage'], split=record['split'], source_id=record['source_id'],
-            description='Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.',
+            sampling_ps=metadata['sampling_ps'], protocol=metadata['protocol'],
+            description=f'Exact {metadata["sampling_ps"]:g} ps sampled descendant of retained Al prepared liquid; 2 fs integration.',
             evidence=[str(Path(result['destination'])/'input_metadata.json')])
         write_json(catalog, value)
 
@@ -192,24 +195,38 @@ def run_source(manifest, record):
         slurm_job_id=os.environ['SLURM_JOB_ID'], host=socket.gethostname(), run_id=record['run_id'])
     write_json(directory/'status.json', status)
     try:
-        elapsed = execute(directory, 'source.in.lammps', 'source.stdout.log', manifest['config']['mpi_ranks'])
+        if 'recovery' in record:
+            from .dense_al_continuation import recover_dynamics
+            elapsed = recover_dynamics(directory, manifest, record)
+        else:
+            elapsed = execute(directory, 'source.in.lammps', 'source.stdout.log', manifest['config']['mpi_ranks'])
         if f'DENSE_AL_COMPLETE {record["run_id"]}' not in (directory/'source.stdout.log').read_text().splitlines():
             raise ValueError(f'Missing final dynamics marker: {directory}')
         if not (directory/'final.restart.bin').stat().st_size:
             raise ValueError('Missing native final restart')
         metadata = json.loads((directory/'input_metadata.json').read_text())
+        contracts = {PROTOCOL: (50, 'dense-al'), 'al_dense_replay_001ps_v1': (5, 'dense-al-001ps')}
+        interval, conversion = contracts[metadata['protocol']]
+        if metadata['sample_interval_steps'] != interval or metadata['timestep_ps'] != .002:
+            raise ValueError(f'Input cadence differs from declared protocol: {directory}')
+        expected_frames = metadata['measurement_steps']//interval+1
         metadata.update(state='dynamics_complete', source_sha256=sha256(directory/'trajectory.lammpstrj'))
+        if 'recovery' in record:
+            metadata['restart_recovery'] = record['recovery']
         write_json(directory/'metadata.json', metadata)
         status.update(phase='conversion', dynamics_seconds=elapsed)
         write_json(directory/'status.json', status)
         command = [sys.executable, str(Path(__file__).resolve().parents[3]/'scripts/convert_trajectory.py'),
-                   'dense-al', str(directory), '--delete-source']
+                   conversion, str(directory), '--delete-source']
         with (directory/'conversion.log').open('x') as output:
             subprocess.run(command, check=True, stdout=output, stderr=subprocess.STDOUT)
         report = json.loads((directory/'paired_conversion.json').read_text())
-        if report['frame_count'] != 6001:
+        if report['frame_count'] != expected_frames:
             raise ValueError('Wrong dense source frame count')
-        status.update(state='complete', phase='converted', completed_at=now(), frame_count=6001,
+        if 'recovery' in record:
+            from .dense_al_continuation import finish_recovery
+            finish_recovery(directory)
+        status.update(state='complete', phase='converted', completed_at=now(), frame_count=expected_frames,
             native_restart_sha256={n:sha256(directory/n) for n in ('melt_final.restart.bin','final.restart.bin')})
         write_json(directory/'outcome.json', status)
         write_json(directory/'status.json', status)
@@ -244,6 +261,21 @@ def sbatch(script, path):
     return result.stdout.strip().split(';')[0]
 
 
+def submission_slots(config):
+    """Use Slurm's quota counter, which differs from expanded pending-array rows."""
+    qos = config.get('qos', 'normal')
+    state = subprocess.check_output(['scontrol', 'show', 'assoc_mgr', 'flags=qos'], text=True)
+    blocks = re.split(r'^QOS=', state, flags=re.MULTILINE)
+    block, = [b for b in blocks if b.startswith(qos+'(')]
+    pattern = (r'^\s+'+re.escape(os.environ['USER'])+r'\('+str(os.getuid())+
+               r'\)\s*\n\s+[^\n]*MaxSubmitJobsPU=(\d+)\((\d+)\)')
+    match = re.search(pattern, block, re.MULTILINE)
+    if match is None:
+        raise RuntimeError(f'Cannot read declared {qos} submission quota for {os.environ["USER"]}')
+    maximum, used = map(int, match.groups())
+    return dict(qos=qos, maximum=min(maximum, config['max_submitted_jobs']), used=used)
+
+
 def submit(launch, wave=0):
     manifest = manifest_at(launch); config = manifest['config']; root = Path(manifest['root'])
     if wave == 0:
@@ -263,13 +295,16 @@ def submit(launch, wave=0):
         else:
             raise RuntimeError(f'Unfinished/failed source requires inspection before next wave: {directory}')
     if not pending:
-        write_json(launch/'status.json', dict(state='complete', completed=completed, total=150, finished_at=now()))
+        write_json(launch/'status.json', dict(state='complete', completed=completed, total=len(manifest['runs']), finished_at=now()))
         return dict(state='complete', completed=completed)
-    live = subprocess.check_output(['squeue','-h','-r','-u',os.environ['USER'],'-o','%i'], text=True).splitlines()
-    workers = min(config['workers'], config['max_submitted_jobs']-len(live)-1, len(pending))
+    quota = submission_slots(config)
+    workers = min(config['workers'], quota['maximum']-quota['used']-1, len(pending))
     if workers < 1:
-        raise RuntimeError(f'No Slurm slots for workers plus preservation/successor controller; active={live}')
-    selected = pending[:workers*config['sources_per_worker_wave']]
+        raise RuntimeError(f'No Slurm slots for workers plus preservation/successor controller: {quota}')
+    # A 0.01 ps source has ten times as much output; reserve a whole lane for it.
+    pending.sort(key=lambda i: manifest['runs'][i].get('queue_priority',1))
+    capacity = 1 if any(manifest['runs'][i].get('sample_interval_steps') == 5 for i in pending[:workers]) else config['sources_per_worker_wave']
+    selected = pending[:workers*capacity]
     assignments = [selected[j::workers] for j in range(workers)]
     wave_root = launch/f'wave-{wave:03d}'; wave_root.mkdir()
     write_json(wave_root/'assignments.json', assignments)
@@ -277,10 +312,11 @@ def submit(launch, wave=0):
     env = ['PCM_PROJECT_ROOT='+str(REPO), 'PYTHONPATH='+str(code), 'OMP_NUM_THREADS=1',
            'OPENBLAS_NUM_THREADS=1','MKL_NUM_THREADS=1','QT_QPA_PLATFORM=offscreen']
     command = [sys.executable,'-u','-m','src.simulation.campaigns.dense_al']
-    base = ['#!/bin/bash','#SBATCH --partition=CPU','#SBATCH --nodes=1',
+    base = ['#!/bin/bash','#SBATCH --partition=CPU',f'#SBATCH --qos={quota["qos"]}', '#SBATCH --nodes=1',
             f'#SBATCH --chdir={code}','set -euo pipefail']
     # SBATCH directives must precede executable shell lines.
-    worker_lines = base[:-1]+['#SBATCH --job-name=al-dense-010ps',f'#SBATCH --ntasks={config["mpi_ranks"]}',
+    worker_name = 'al-dense-001ps' if capacity == 1 and any(manifest['runs'][i].get('sample_interval_steps') == 5 for i in selected) else 'al-dense-010ps'
+    worker_lines = base[:-1]+[f'#SBATCH --job-name={worker_name}',f'#SBATCH --ntasks={config["mpi_ranks"]}',
         '#SBATCH --cpus-per-task=1','#SBATCH --mem=64G',f'#SBATCH --time={config["walltime"]}',
         f'#SBATCH --array=0-{workers-1}%{workers}', '#SBATCH --signal=B:USR1@600',
         f'#SBATCH --output={wave_root}/worker-%A_%a.log',base[-1],
@@ -293,7 +329,8 @@ def submit(launch, wave=0):
         'exec env '+shlex.join(env+command+['collect','--launch',str(launch),'--wave',str(wave)]),'']
     controller = sbatch('\n'.join(controller_lines), wave_root/'controller.sbatch')
     result = dict(state='submitted', wave=wave, worker_job=job, controller_job=controller,
-                  workers=workers, selected=len(selected), completed=completed, total=150, submitted_at=now())
+                  workers=workers, selected=len(selected), completed=completed, total=len(manifest['runs']),
+                  submission_quota=quota, submitted_at=now())
     write_json(wave_root/'submission.json', result); write_json(launch/'status.json', result)
     return result
 
@@ -314,7 +351,7 @@ def collect(launch, wave):
         else:
             failures.append(record['run_id'])
             from src.project_runtime.paths import catalog
-            if record['run_id']+'-failed' not in catalog():
+            if record.get('failure_id', record['run_id']+'-failed') not in catalog():
                 write_json(path, dict(state='failed', previous_status=status, finished_at=now(),
                     reason='Slurm allocation ended before successful conversion/publication'))
                 publish_record(directory, record, failed=True)
@@ -328,12 +365,20 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest='action', required=True)
     p = sub.add_parser('prepare'); p.add_argument('--config', required=True)
+    p = sub.add_parser('prepare-continuation'); p.add_argument('--config', required=True)
+    p = sub.add_parser('add-dense-sources'); p.add_argument('--config', required=True)
     for name in ('submit','worker','collect'):
         p = sub.add_parser(name); p.add_argument('--launch', type=Path, required=True)
         if name != 'submit': p.add_argument('--wave', type=int, required=True)
         if name == 'worker': p.add_argument('--index', type=int, required=True)
     args = parser.parse_args(argv)
     if args.action == 'prepare': print(prepare(load_json(args.config)))
+    elif args.action == 'prepare-continuation':
+        from .dense_al_continuation import prepare_continuation
+        print(prepare_continuation(load_json(args.config)))
+    elif args.action == 'add-dense-sources':
+        from .dense_al_additions import add_dense_sources
+        print(json.dumps(add_dense_sources(load_json(args.config)), indent=2))
     elif args.action == 'submit': print(json.dumps(submit(args.launch), indent=2))
     elif args.action == 'collect': print(json.dumps(collect(args.launch,args.wave), indent=2))
     else: worker(args.launch,args.wave,args.index)

@@ -1,0 +1,34 @@
+{
+  "protocol": "rich_mace_interface_v1",
+  "output": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930",
+  "checkpoint": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/technical/checkpoint.pt",
+  "checkpoint_sha256": "a9b520a7d5c7da393d3dbdfa565be2f2a5f40a6f5bb3495d660430e29315d0ff",
+  "training_source": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/technical/inference-code",
+  "batch_size": 256,
+  "model": {
+    "id": "MACE-RH2-best-epoch14-step1806-encoder",
+    "title": "MACE RH2 \u00b7 best epoch 14 \u00b7 step 1806",
+    "epoch": 14,
+    "step": 0,
+    "update": 1806,
+    "training_run": "${storage:training_storage}/liquid_predictability/mm-rd-mace256-c3-l3-residual-head-20260929",
+    "objective": "442 rich local descriptors + variance/covariance + scalar-mean regularization",
+    "selector": "minimum Al selection family-balanced descriptor Gaussian NLL",
+    "selection_nll": 1.0348901381502593,
+    "head": "normalized residual v1"
+  },
+  "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+  "pacmap_config": "${storage:analysis}/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v2/technical/queue/config.json",
+  "datasets": {
+    "matched": {
+      "reference": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-pacmap-v1",
+      "source": "${storage:repo}/output/spatial_vicreg_bias/matched-al64-20260929/analyses/dense-md-timeline-v1",
+      "publication": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/analyses/matched"
+    },
+    "static": {
+      "reference": "${storage:repo}/output/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+      "source": "${storage:analysis}/spatial_vicreg_bias/static-al-six-20260929/analyses/interface-v1",
+      "publication": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/analyses/static"
+    }
+  }
+}

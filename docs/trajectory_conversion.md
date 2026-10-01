@@ -1,5 +1,12 @@
 # Trajectory format conversion
 
+The separate [two-source 0.01-ps Al campaign](simulations/al_main_001ps_20261001/README.md)
+uses `python scripts/convert_trajectory.py dense-al-001ps RUN_DIR --delete-source`.
+It verifies all float16 position/velocity rounding values against the established
+float32 consumer in bounded chunks; semantic source hashes and quantization errors
+are retained without a complete float32 reference tree. Historical paired-reference
+protocols retain their original conversion rules and files.
+
 Use one maintained command from the repository root:
 
 ```bash

@@ -90,21 +90,42 @@ class ControlMACE(SpatialContextTrunk):
 
 
 class RichPatchMACE(TypedPatchTrunk):
-    architecture = 'rich_patch_mace_v1'
+    architecture = 'rich_patch_mace_objectives_v2'
 
     def __init__(self, c, outputs):
         super().__init__(c['encoder_config'], c, vector_channels=c['vector_channels'])
         self.register_buffer('output_mask', torch.ones(outputs))
-        self.readout = NormalizedResidualHead(self.latent_dim, outputs, c['descriptor_head'])
+        from .rich_objectives import StructuredDescriptorHead
+        head = (StructuredDescriptorHead if c['descriptor_head']['kind'] == 'structured_residual_v1'
+                else NormalizedResidualHead)
+        self.readout = head(self.latent_dim, outputs, c['descriptor_head'])
+        # Always construct these after the encoder/head, so all VCReg arms have
+        # identical shared initialization and capacity; only placement changes.
+        with torch.random.fork_rng(devices=[]):
+            torch.random.default_generator.manual_seed(c['seed'] + 53)
+            self.regularization_projector = nn.Sequential(
+                nn.Linear(self.latent_dim, 512), nn.LayerNorm(512), nn.SiLU(),
+                nn.Linear(512, self.latent_dim))
+            self.vector_regularization_projector = nn.Linear(c['vector_channels'], c['vector_channels'], bias=False)
 
     def forward(self, positions):
         z, v = self.encode(positions)
-        return dict(
+        result = dict(
             prediction=self.readout(z).float() * self.output_mask,
             state=z.float(),
             z=z[:, None].float(),
             v=v[:, None].float(),
         )
+        with torch.autocast(device_type=z.device.type, enabled=False):
+            if self.config['regularization']['placement'] == 'projector':
+                result['regularization_z'] = self.regularization_projector(z.float())[:, None]
+                result['regularization_v'] = self.vector_regularization_projector(
+                    v.float().transpose(-1, -2)).transpose(-1, -2)[:, None]
+            elif self.config['regularization']['placement'] == 'embedding':
+                result['regularization_z'], result['regularization_v'] = result['z'], result['v']
+            else:
+                raise ValueError(self.config['regularization']['placement'])
+        return result
 
 
 def initialize_descriptor(model, features, distance, weights):

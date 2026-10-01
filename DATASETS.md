@@ -1,5 +1,25 @@
 # Datasets: start here
 
+**Atomistic response-training collection:** [workflow](docs/response_atlas.md#atomistic-response-training)
+collects fresh fixed-MACE values/responses for56 full-cell Al256 synthetic
+configurations, with32/8/16 train/selection/test roles and shared FCC ancestry.
+
+**Value-only predictive baseline:** [workflow](docs/predictive_baseline.md) derives a fixed
+274-coordinate target from the sealed Al480 local assay; all historical rows and
+source roles are retained. No new MD or Al64 resplit.
+
+**Response-atlas numerical pilot:** [workflow](docs/response_atlas.md) reuses Al480 outcomes and adds a separately registered fixed-MACE Al256 perturbed-FCC response collection.
+
+
+**Shooting future-law assay:** [workflow](docs/shooting_laws.md) reuses the four
+compatible 48 ps Al campaigns (40 parents, 480 futures), with separate CSLD,
+nested-Al and Ta diagnostic collections. No new simulations or Al64 resplit.
+
+**Pre-appearance birth classification:** [workflow](docs/birth_prediction.md)
+derives matched crystal-free histories and continuously liquid controls from
+the completed original Al64 birth catalogue, preserving all source roles.
+This event-enriched track is distinct from the historical all64 window benchmark.
+
 **Spatial VICReg mechanism cache:** [workflow](docs/spatial_vicreg_bias.md) derives
 128-atom parents, exact 80-atom views and physical/TDA references at fixed Al64
 anchors. No resplit, future labels or crystal-based encoder-training filter.
@@ -38,6 +58,12 @@ existing trajectories and PTM lineages, with no new simulation or source split.
 **New Al 0.1 ps production:** [150 prepared-liquid reruns with velocities](docs/simulations/al_main_010ps_20260927/README.md)
 retain the original melt ancestry and frozen roles; 2 fs integration, 600 ps measurement.
 These are new descendants, not a replacement of the frozen 0.75 ps benchmark.
+The [October 1 continuation](docs/simulations/al_main_010ps_20260927/README.md#october-1-continuation)
+keeps the 20 completed descendants, recovers three native restarts and queues the
+127 unstarted sources with the same ancestor roles.
+**Additional 0.01-ps Al observations:** [two full 600-ps descendants](docs/simulations/al_main_001ps_20261001/README.md)
+reuse source 886 (400 K) and 1004 (520 K), both train ancestors, with velocities.
+They do not add independent melt lineages or alter the 0.1-ps source contract.
 
 **Material-specific distance adaptation:** the [Al/Ta fine-tuning protocol](docs/distance_encoder_material_finetune.md)
 retains fixed Al64 roles and uses newly simulated Ta velocity branches from a known
@@ -88,3 +114,5 @@ directories are listed for review.
 **Register new data in [configs/datasets.json](configs/datasets.json)**, including
 storage role, material, generating potential, provenance and ancestry when known.
 Keep unknown values explicit. See [the registry guide](docs/datasets/GUIDE.md).
+
+Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.

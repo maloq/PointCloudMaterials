@@ -1,0 +1,9 @@
+{
+  "source_launch": "${storage:archive}/simulation-launches/al-main-010ps-continue-20261001",
+  "launch_id": "al-main-010ps-plus001ps-20261001",
+  "collection_id": "al-main-001ps-20261001",
+  "source_ids": [886, 1004],
+  "sample_interval_steps": 5,
+  "selection_rule": "First unassigned training ancestor at 400 K and 520 K in source-ID order; no outcome-based selection.",
+  "required_free_bytes": 1500000000000
+}

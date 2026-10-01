@@ -1,0 +1,69 @@
+{
+  "dataset_id": "response-atlas-al256-followup-20261001",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-followup-20261001/parent-000/complete.json",
+      "relative_path": "parent-000/complete.json",
+      "sha256": "68deab75edb2307324c2de1d6a3a1e4fff3f572dcf63c7c2788cf7e6d1f08f71",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-followup-20261001/parent-001/complete.json",
+      "relative_path": "parent-001/complete.json",
+      "sha256": "113f725fa3b5193ff165379382f616c6f2aa6f2538cb4c6524d3fb7b7fe35bc7",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-followup-20261001/parent-008/complete.json",
+      "relative_path": "parent-008/complete.json",
+      "sha256": "17214e3072438e2772375be5cd12fe7f52d43683f57c13ccb75c7c9ece567dcb",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-followup-20261001/parent-012/complete.json",
+      "relative_path": "parent-012/complete.json",
+      "sha256": "35774c8456a09d1020491cd6cd78c022466132ed805aa3a2edf8176d7390fbb8",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "fd_rows",
+        "query_sha256",
+        "rows",
+        "seconds"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

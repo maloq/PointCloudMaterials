@@ -1,0 +1,24 @@
+{
+  "dataset_id": "al-main-010ps-20260927-source0882-failed",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0882-failed/status.json",
+      "relative_path": "status.json",
+      "sha256": "63c82e0251602d57260b23a0ea4b230902c1f1362f42bee82b10ebdd2d9c8a5a",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

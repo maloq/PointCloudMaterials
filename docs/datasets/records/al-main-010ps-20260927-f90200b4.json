@@ -2,9 +2,66 @@
   "dataset_id": "al-main-010ps-20260927",
   "records": [
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0876/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0876/status.json",
-      "sha256": "c9a014074ba79cd14068871fc267f3d828b673b9c5c2c3998ce694f308ed06b7",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0876/status.json",
+      "relative_path": "attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0876/status.json",
+      "sha256": "3953fb9b924ff7c40fba8df3f47c26d31e455fe6a93e2f656244bbc2b803b8ab",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0881/status.json",
+      "relative_path": "attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0881/status.json",
+      "sha256": "e1639d8559dac589718ee2451cde7d1aab8cd47aa54dee439959fb914e999a69",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0882/status.json",
+      "relative_path": "attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0882/status.json",
+      "sha256": "63c82e0251602d57260b23a0ea4b230902c1f1362f42bee82b10ebdd2d9c8a5a",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0880/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0880/status.json",
+      "sha256": "13e8e4240b7660158d339ce9854925e94999e7e38c23e3c82671b2398b65db54",
       "kind": "metadata",
       "keys": [
         "host",
@@ -19,9 +76,9 @@
       "provenance": {}
     },
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0877/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0877/status.json",
-      "sha256": "9bb5a293e0ff11c919afd2947c6d124753c92ddacb790e7944a02d459d0615a9",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0881/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0881/status.json",
+      "sha256": "11429663bb1dbb8981e4a1246c005854c8c0d03c904f1cbd06e27731ccd56524",
       "kind": "metadata",
       "keys": [
         "host",
@@ -36,9 +93,9 @@
       "provenance": {}
     },
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0878/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0878/status.json",
-      "sha256": "0a76b65cf2b6fda1862ccf4acc9ee1aade51167b9f5efc6f05d7bb38afbdd7bd",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0882/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0882/status.json",
+      "sha256": "83ad7d26f91d82b982b6c9ad8858c0f059830d9eebc6d9875e191a5ac247acc3",
       "kind": "metadata",
       "keys": [
         "host",
@@ -51,6 +108,375 @@
       "recorded_state": "running",
       "facts": {},
       "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/dense001-conversion-check/metadata.json",
+      "relative_path": "technical/dense001-conversion-check/metadata.json",
+      "sha256": "2f21a852a3b6072821b1366025303a365800a0eaa0308454bacdacdb0c16ab7c",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "measurement_steps",
+        "protocol",
+        "root_lineage",
+        "sample_interval_steps",
+        "scope",
+        "source_sha256",
+        "split",
+        "state",
+        "timestep_ps"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_dense_replay_001ps_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 108,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "infrastructure_fixture",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "excluded",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/dense001-conversion-check/trajectory_binary_float16/manifest.json",
+      "relative_path": "technical/dense001-conversion-check/trajectory_binary_float16/manifest.json",
+      "sha256": "776d049d495eb55758d3d7ffa51c956e0546348c51618fd80ef210652f432d5b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 108,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 60001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al_dense_replay_001ps_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "infrastructure_fixture",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "excluded",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 108,
+        "frame_count": 60001,
+        "arrays": {
+          "positions": {
+            "shape": [
+              60001,
+              108,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "f939b0d8480d2576cb220c1e6ddcb47fca0a4f3cea56b0426fd621e35930d800",
+            "file": "positions.npy"
+          },
+          "velocities": {
+            "shape": [
+              60001,
+              108,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "2f943ceae7ff0be4b543212aaeebb1e6547e63d177ff0597978dea244d618c6f",
+            "file": "velocities.npy"
+          },
+          "timesteps": {
+            "shape": [
+              60001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c0e620fa6ebc75cce9979bf1ddcabe18e721a994495febc3904675fde51b1ac4",
+            "file": "timesteps.npy"
+          },
+          "box_low": {
+            "shape": [
+              60001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "5f4ebc90e1380f4206a6519bac73f359881db115dd940a26a6119886ca42f481",
+            "file": "box_low.npy"
+          },
+          "box_high": {
+            "shape": [
+              60001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cf49609c1d9becfbdf7eb42a5f6460a2e0f3bae22ed5d836af345ad99a2f641f",
+            "file": "box_high.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              108
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a7979083a236516fb7697d7512d30543dfa1468c24ddd63ab3f3e1ef84554d0",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              108
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "3769396a3cf3b5b24b1854529ff0c62607d28a417c8f85cbab1f665cada13fc3",
+            "file": "atom_types.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 300000,
+          "step_intervals": [
+            5
+          ]
+        },
+        "content_signature_from_manifest": "8ebcba502bb9209fa873a12742a37bd813949135df7d88752273cf13cefcadbf",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/dense001-conversion-check/validation_reference_float32/manifest.json",
+      "relative_path": "technical/dense001-conversion-check/validation_reference_float32/manifest.json",
+      "sha256": "63299d610020f09ad321bfc6ec5b9ae6cefa3b52884dbd893a245dc9bb9270ef",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 108,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 60001,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 108,
+        "frame_count": 60001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              108
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a7979083a236516fb7697d7512d30543dfa1468c24ddd63ab3f3e1ef84554d0",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              108
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "3769396a3cf3b5b24b1854529ff0c62607d28a417c8f85cbab1f665cada13fc3",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              60001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cf49609c1d9becfbdf7eb42a5f6460a2e0f3bae22ed5d836af345ad99a2f641f",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              60001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "5f4ebc90e1380f4206a6519bac73f359881db115dd940a26a6119886ca42f481",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              60001,
+              108,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "8e7d7f0fea0dde06e8c4037e4e0164eecd8b062fa6abc09490865308d4953623",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              60001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c0e620fa6ebc75cce9979bf1ddcabe18e721a994495febc3904675fde51b1ac4",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              60001,
+              108,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "770f5879c8fe22d49f933c5bf5ec902a441c381402cfd7271d529ce2d86444be",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 300000,
+          "step_intervals": [
+            5
+          ]
+        },
+        "content_signature_from_manifest": "155e9a72f1a0156e71f9f50baa191ce7539a507433b659516efba9b5ad5d36c3",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
     },
     {
       "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/smoke/metadata.json",

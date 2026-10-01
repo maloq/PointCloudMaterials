@@ -1,0 +1,21 @@
+{
+  "name": "rich-tda-vcreg-pilots-20260930",
+  "base_config": "configs/liquid_predictability/rich_multimaterial_residual_20260929.json",
+  "fitting_reference": "${storage:training_storage}/liquid_predictability/mm-rd-mace256-c3-l3-residual-head-20260929",
+  "output": "${storage:training_storage}/liquid_predictability/rich-tda-vcreg-pilots-20260930",
+  "packed_full": "${storage:cache}/rich-descriptors/packed-rh2-20260930/full",
+  "packed_pilot": "${storage:cache}/rich-descriptors/packed-rh2-20260930/pilot10",
+  "pilot_fraction": 0.1,
+  "pilot_epochs": 20,
+  "full_epochs": 20,
+  "partition": "H100,RTX6000PRO",
+  "arms": [
+    {"name": "embedding-pair", "regularization": {"placement": "embedding", "covariance_normalization": "mean_pair"}},
+    {"name": "projector-pair", "regularization": {"placement": "projector", "covariance_normalization": "mean_pair"}},
+    {"name": "embedding-channel", "regularization": {"placement": "embedding", "covariance_normalization": "per_channel"}},
+    {"name": "projector-channel", "regularization": {"placement": "projector", "covariance_normalization": "per_channel"}},
+    {"name": "tda-heads", "regularization": {"placement": "projector", "covariance_normalization": "per_channel"}, "structured_head": true},
+    {"name": "tda-blocks", "regularization": {"placement": "projector", "covariance_normalization": "per_channel"}, "structured_head": true, "normalization": "block"},
+    {"name": "tda-distance", "regularization": {"placement": "projector", "covariance_normalization": "per_channel"}, "structured_head": true, "normalization": "block", "topology_weight": 0.01}
+  ]
+}

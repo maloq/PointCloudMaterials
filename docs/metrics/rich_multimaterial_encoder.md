@@ -1,5 +1,12 @@
 # Multimaterial local rich-descriptor learning
 
+The September30 packed-data VCReg/TDA comparison has its own
+[`rich_tda_objectives`](rich_tda_objectives.md) contract. Current shared code adds
+explicit regularization placement/scaling, global packed-row loading, structured
+heads and effective-rank diagnostics. Historical RH2 reproduction and evaluation
+use its frozen source. The per-coordinate/family metric formulas below are retained;
+the new objective variants do not redefine historical numerical exports.
+
 MM-RD-MACE256-D3-C3-L3-Z256-RH2 predicts 442 **local patch** descriptors through one
 256-dimensional exported embedding. It does not predict the earlier 3,536
 25-patch context summaries. Comparisons must preserve this distinction.

@@ -12,7 +12,7 @@ Frozen 128-atom parents at fixed Al64 anchors, eight nearby 80-atom views, compl
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.968 GiB
+- Allocated storage, excluding registered nested datasets: 5.571 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -60,10 +60,10 @@ Frozen 128-atom parents at fixed Al64 anchors, eight nearby 80-atom views, compl
 
 ## Evidence
 
-All 49 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/spatial-vicreg-bias-al64-20260929-9afb2080.json).
+All 152 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/spatial-vicreg-bias-al64-20260929-9afb2080.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-09-28T23:47:41.345301+00:00.
+Observed 2026-10-01T19:03:53.141383+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

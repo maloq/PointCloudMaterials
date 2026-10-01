@@ -1,0 +1,17 @@
+{
+  "family": "general_descriptor_comparison",
+  "exported_at": "2026-09-30T01:30:45.539594+00:00",
+  "files": {
+    "docs/metrics/general_descriptor_comparison.md": "5bcac6a0e766f2c89162d1d1ca4a0627f86476b68cb985ad6d2d36c37fdf3f28",
+    "src/research/spatial_vicreg_bias/general_descriptors.py": "d7fc182c2ec0f775bb2e9b21314012dbeffb0e17a829064eac283d7c3a928be8",
+    "src/research/spatial_vicreg_bias/correspondence.py": "c319e749dc83024372a9d9b9b3765f0ec7a9252318ef5e1613714f6faba9e4cb",
+    "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+    "src/research/spatial_vicreg_bias/sample_lattice.py": "2881691ff28b134e1c5581be23d2e61982d5bc8df3f26ba6cae6870157cb1cdd",
+    "src/research/spatial_vicreg_bias/cluster_comparison.js": "286d3eb47d86ba2df2848c5bfdbff905328bed0802adee3dc59dc0c8ab57346b",
+    "src/research/spatial_vicreg_bias/cluster_comparison.html": "8eaa0601dd11333c18d831d6438f3ba21e0dee7eec63ee859a77c4ba9ee9b13f",
+    "src/research/spatial_vicreg_bias/viewer_payload.py": "a54311b03dbef8c704d5abf15b82411278b6eca555c7010305404a77f6e4c4ba",
+    "src/analysis/representative_style.py": "774ddd833e526d92767132c013bc87595699a2ea551d35ba162ddf6441b8554a",
+    "configs/analysis/general_descriptors_20260930.json": "466a12bf037c6a4314a3b5cd24b328bc92fe40c5dff792867be96ff517bca02e"
+  },
+  "verified": true
+}

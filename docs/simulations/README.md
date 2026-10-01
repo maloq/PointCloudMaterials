@@ -1,10 +1,17 @@
 # Simulations and datasets
 
+**Response-atlas Al256 pilot:** [execution](../response_atlas.md), fixed MACE-MPA-0, controlled FCC perturbations; development-only query bundles, not independent liquid trajectories.
+
+
 [Full liquid-information relaxation](liquid_full_relaxation_20260928.md): 2,130 missing quenches, fixed ancestry and automatic downstream experiment queue.
 
 [Main Al 0.1 ps reruns, 2026-09-27](al_main_010ps_20260927/README.md): all 150
 retained melt ancestors, 600 ps with velocities, exact 0.1 ps output and frozen
 ancestry roles; CPU waves publish verified canonical trajectories to STORE.
+The [October 1 continuation](al_main_010ps_20260927/README.md#october-1-continuation)
+recovers three interrupted native restarts and uses two sources per worker wave.
+[Two additional Al sources at 0.01 ps](al_main_001ps_20261001/README.md) retain
+the 400/520 K train ancestors and save velocities for the full 600 ps.
 
 [Detailed holdings after cleanup, 2026-09-26](inventory_20260926_after_cleanup/README.md): materials, atom
 counts, observed durations/cadences, sampled velocities, formats and measured
@@ -94,3 +101,5 @@ commands and current recipes; old exact launcher paths remain in the STORE repo 
 
 - [Remaining 520 K sources, 2026-09-13](independent_al_sources/RECOVERY_20260913.md):
   six of thirty initially complete; remaining 24 submitted as Slurm array 991371.
+
+Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.

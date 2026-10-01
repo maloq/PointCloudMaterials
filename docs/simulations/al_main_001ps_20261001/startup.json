@@ -1,0 +1,14 @@
+{
+  "state": "queued_after_active_wave",
+  "observed_at": "2026-10-01T20:54:49.835701+00:00",
+  "current_worker_array": "1017389",
+  "next_wave_controller": "1017489",
+  "slurm_snapshot": "1017489 al-dense-next PD 0:00 (Dependency)\n1017389_1 al-dense-010ps R 1:12:35 nodecpu06\n1017389_2 al-dense-010ps R 1:12:35 nodecpu06\n1017389_0 al-dense-010ps R 1:12:36 nodecpu07\n",
+  "first_150_records_identical_to_previous_manifest": true,
+  "added_source_inputs_checksum_verified": true,
+  "new_source_ids": [
+    886,
+    1004
+  ],
+  "new_source_frames": 60001
+}

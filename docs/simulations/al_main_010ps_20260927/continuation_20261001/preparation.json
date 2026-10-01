@@ -1,0 +1,76 @@
+{
+  "state": "prepared",
+  "continuation_launch": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-continue-20261001",
+  "original_launch": "/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927",
+  "original_manifest_sha256": "0cf4e59c13c71194788a5d45753602c30134b5342a97c37ce033505b29c54995",
+  "completed": 20,
+  "recovered": 3,
+  "never_started": 127,
+  "total": 150,
+  "prepared_at": "2026-10-01T19:39:52.713599+00:00",
+  "recoveries": [
+    {
+      "run_id": "al-main-010ps-20260927-source0876",
+      "restart_step": 285000,
+      "restart_time_ps": 570.0,
+      "original_restart": "source.restart.2.bin",
+      "previous_attempt": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0876",
+      "failure_archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876-failed",
+      "failure_publication_receipt": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876-failed.publication.json",
+      "partial_dump_sha256": "b873bd39a900174f6c5a8e99fb5e893865f9de29e78a4785e470ac85ab67baa9",
+      "partial_dump_bytes": 50193865201,
+      "retained_prefix_bytes": 49465095333,
+      "retained_frame_count": 5701,
+      "checkpoint_frame_sha256": "ee6cfe1d569e13947044b64011d990da2dd23723fd3be92a5331dbb3e747ce1e",
+      "checkpoint_check": {
+        "step": 285000,
+        "atom_count": 70304,
+        "box_max_abs_A": 0.0,
+        "position_max_abs_minimum_image_A": 0.0,
+        "velocity_max_abs_A_per_ps": 0.0
+      }
+    },
+    {
+      "run_id": "al-main-010ps-20260927-source0881",
+      "restart_step": 97500,
+      "restart_time_ps": 195.0,
+      "original_restart": "source.restart.1.bin",
+      "previous_attempt": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0881",
+      "failure_archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881-failed",
+      "failure_publication_receipt": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881-failed.publication.json",
+      "partial_dump_sha256": "dabf8e99c9310944c3ba8ac7376fce088e498f8b51a85cb667e7c8341f59694d",
+      "partial_dump_bytes": 17321047992,
+      "retained_prefix_bytes": 16930579294,
+      "retained_frame_count": 1951,
+      "checkpoint_frame_sha256": "8d07f811c01014ff5f345e625ef69ba9556c853c94934010189cc2e586d6ff17",
+      "checkpoint_check": {
+        "step": 97500,
+        "atom_count": 70304,
+        "box_max_abs_A": 0.0,
+        "position_max_abs_minimum_image_A": 0.0,
+        "velocity_max_abs_A_per_ps": 0.0
+      }
+    },
+    {
+      "run_id": "al-main-010ps-20260927-source0882",
+      "restart_step": 217500,
+      "restart_time_ps": 435.0,
+      "original_restart": "source.restart.1.bin",
+      "previous_attempt": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/attempts/al-main-010ps-continue-20261001/al-main-010ps-20260927-source0882",
+      "failure_archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0882-failed",
+      "failure_publication_receipt": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0882-failed.publication.json",
+      "partial_dump_sha256": "75395d24462fc4f81e131350e596cefc66a41239d9d3b836fb542bf36fd680f1",
+      "partial_dump_bytes": 38196019665,
+      "retained_prefix_bytes": 37753535979,
+      "retained_frame_count": 4351,
+      "checkpoint_frame_sha256": "4f2ed2ced19a61e9795d310bc58db113179ee4623ed70d239714838aa2e23196",
+      "checkpoint_check": {
+        "step": 217500,
+        "atom_count": 70304,
+        "box_max_abs_A": 0.0,
+        "position_max_abs_minimum_image_A": 0.0,
+        "velocity_max_abs_A_per_ps": 0.0
+      }
+    }
+  ]
+}

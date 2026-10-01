@@ -1,0 +1,404 @@
+{
+  "dataset_id": "predictive-baseline-al480-274-20261001",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/predictive-baseline/al480-274-20261001/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "f4159824569ee322f49af81159a54e1074c45fdbc4d48b51dc2eb240cca0a0d6",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "columns",
+        "extra_future_columns",
+        "files",
+        "identity",
+        "observations",
+        "parent_count",
+        "parents",
+        "shots_per_parent",
+        "splits",
+        "strata",
+        "target_columns"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "local_shooting_predictive_representation_v1",
+            "first_json_path": "binding.protocol",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              3,
+              6,
+              12
+            ],
+            "first_json_path": "binding.target.horizons_ps",
+            "occurrences": 1
+          }
+        ],
+        "seed": [
+          {
+            "value": 20261001,
+            "first_json_path": "binding.target.seed",
+            "occurrences": 1
+          }
+        ],
+        "target_columns": [
+          {
+            "value": [
+              "crystalline_fraction@3ps",
+              "bond_order/l4_qbar@3ps",
+              "bond_order/l6_qbar@3ps",
+              "crystalline_fraction@6ps",
+              "bond_order/l4_qbar@6ps",
+              "bond_order/l6_qbar@6ps",
+              "crystalline_fraction@12ps",
+              "bond_order/l4_qbar@12ps",
+              "bond_order/l6_qbar@12ps"
+            ],
+            "first_json_path": "target_columns",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "parent_000_T400_v35831_pre_nucleation_12ps",
+            "first_json_path": "parents[0].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_001_T400_v35831_pre_nucleation_3ps",
+            "first_json_path": "parents[1].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_002_T400_v35839_pre_nucleation_12ps",
+            "first_json_path": "parents[2].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_003_T400_v35839_pre_nucleation_3ps",
+            "first_json_path": "parents[3].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_004_T400_v35851_pre_nucleation_12ps",
+            "first_json_path": "parents[4].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_005_T400_v35851_pre_nucleation_3ps",
+            "first_json_path": "parents[5].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_006_T400_v35863_pre_nucleation_12ps",
+            "first_json_path": "parents[6].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_007_T400_v35863_pre_nucleation_3ps",
+            "first_json_path": "parents[7].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_008_T400_v35869_pre_nucleation_12ps",
+            "first_json_path": "parents[8].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_009_T400_v35869_pre_nucleation_3ps",
+            "first_json_path": "parents[9].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_010_T400_v35879_pre_nucleation_12ps",
+            "first_json_path": "parents[10].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_011_T400_v35879_pre_nucleation_3ps",
+            "first_json_path": "parents[11].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_012_T450_v35831_pre_nucleation_12ps",
+            "first_json_path": "parents[12].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_013_T450_v35831_pre_nucleation_3ps",
+            "first_json_path": "parents[13].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_014_T450_v35839_pre_nucleation_12ps",
+            "first_json_path": "parents[14].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_015_T450_v35839_pre_nucleation_3ps",
+            "first_json_path": "parents[15].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_016_T450_v35851_pre_nucleation_12ps",
+            "first_json_path": "parents[16].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_017_T450_v35851_pre_nucleation_3ps",
+            "first_json_path": "parents[17].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_018_T450_v35863_pre_nucleation_12ps",
+            "first_json_path": "parents[18].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_019_T450_v35863_pre_nucleation_3ps",
+            "first_json_path": "parents[19].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_020_T450_v35869_pre_nucleation_12ps",
+            "first_json_path": "parents[20].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_021_T450_v35869_pre_nucleation_3ps",
+            "first_json_path": "parents[21].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_022_T450_v35879_pre_nucleation_12ps",
+            "first_json_path": "parents[22].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_023_T450_v35879_pre_nucleation_3ps",
+            "first_json_path": "parents[23].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_024_T500_v35831_pre_nucleation_12ps",
+            "first_json_path": "parents[24].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_025_T500_v35831_pre_nucleation_3ps",
+            "first_json_path": "parents[25].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_026_T500_v35839_pre_nucleation_12ps",
+            "first_json_path": "parents[26].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_027_T500_v35839_pre_nucleation_3ps",
+            "first_json_path": "parents[27].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_028_T500_v35851_pre_nucleation_12ps",
+            "first_json_path": "parents[28].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_029_T500_v35851_pre_nucleation_3ps",
+            "first_json_path": "parents[29].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_030_T500_v35863_pre_nucleation_12ps",
+            "first_json_path": "parents[30].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_031_T500_v35863_pre_nucleation_3ps",
+            "first_json_path": "parents[31].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_032_T500_v35869_pre_nucleation_12ps",
+            "first_json_path": "parents[32].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_033_T500_v35869_pre_nucleation_3ps",
+            "first_json_path": "parents[33].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_034_T500_v35879_pre_nucleation_12ps",
+            "first_json_path": "parents[34].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_035_T500_v35879_pre_nucleation_3ps",
+            "first_json_path": "parents[35].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_036_T500_v35897_pre_nucleation_12ps",
+            "first_json_path": "parents[36].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_037_T500_v35897_pre_nucleation_3ps",
+            "first_json_path": "parents[37].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_038_T500_v35803_pre_nucleation_12ps",
+            "first_json_path": "parents[38].parent_id",
+            "occurrences": 1
+          },
+          {
+            "value": "parent_039_T500_v35803_pre_nucleation_3ps",
+            "first_json_path": "parents[39].parent_id",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_000_velocity_35831",
+            "first_json_path": "parents[0].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_001_velocity_35839",
+            "first_json_path": "parents[2].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_002_velocity_35851",
+            "first_json_path": "parents[4].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_003_velocity_35863",
+            "first_json_path": "parents[6].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_004_velocity_35869",
+            "first_json_path": "parents[8].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_400K/replicas/replica_005_velocity_35879",
+            "first_json_path": "parents[10].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_000_velocity_35831",
+            "first_json_path": "parents[12].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_001_velocity_35839",
+            "first_json_path": "parents[14].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_002_velocity_35851",
+            "first_json_path": "parents[16].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_003_velocity_35863",
+            "first_json_path": "parents[18].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_004_velocity_35869",
+            "first_json_path": "parents[20].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_4temps_400-600K_600ps_6seeds_20260828/temperature_450K/replicas/replica_005_velocity_35879",
+            "first_json_path": "parents[22].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_000_velocity_35831",
+            "first_json_path": "parents[24].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_001_velocity_35839",
+            "first_json_path": "parents[26].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_002_velocity_35851",
+            "first_json_path": "parents[28].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_003_velocity_35863",
+            "first_json_path": "parents[30].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_004_velocity_35869",
+            "first_json_path": "parents[32].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_005_velocity_35879",
+            "first_json_path": "parents[34].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_600ps_7velocityseeds_20260827/replicas/replica_006_velocity_35897",
+            "first_json_path": "parents[36].source_run_id",
+            "occurrences": 2
+          },
+          {
+            "value": "al_homogeneous_unseeded_2nn_meam_70304_500K_999ps_velocity35803_20260827/replicas/replica_000_velocity_35803",
+            "first_json_path": "parents[38].source_run_id",
+            "occurrences": 2
+          }
+        ],
+        "source_split": [
+          {
+            "value": "train",
+            "first_json_path": "parents[0].source_split",
+            "occurrences": 28
+          },
+          {
+            "value": "validation",
+            "first_json_path": "parents[8].source_split",
+            "occurrences": 12
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 400.0,
+            "first_json_path": "parents[0].temperature_K",
+            "occurrences": 12
+          },
+          {
+            "value": 450.0,
+            "first_json_path": "parents[12].temperature_K",
+            "occurrences": 12
+          },
+          {
+            "value": 500.0,
+            "first_json_path": "parents[24].temperature_K",
+            "occurrences": 16
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

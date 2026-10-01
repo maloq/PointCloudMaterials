@@ -16,7 +16,7 @@ from src.data.fixed_cohort.protocol import sha, write_json
 from src.experiment_runner.metric_docs import write_metric_table
 from .cluster_matching import summarize
 from .dense_md import read
-from .comparison_layout import comparison_template, dataset_navigation, population_controls
+from .comparison_layout import comparison_template, dataset_navigation, population_controls, publish_run_entrypoint
 from .viewer_payload import read_payload, write_asset, write_comparison
 
 
@@ -175,6 +175,7 @@ def publish(config):
         'The default is spatial-neighbor VICReg, raw encoder, repeat 1 (seed 17). Other pairing recipes, repeats and '
         'the loss projector are under advanced controls. All 27 frozen checkpoints have matching full-snapshot MD coloring. '
         'The 116 original PaCMAP coordinate files and 2D figures are preserved.\n')
+    publish_run_entrypoint(dest, 'matched')
     print(f'Published checkpoint explorer: {dest / "index.html"}', flush=True)
 
 

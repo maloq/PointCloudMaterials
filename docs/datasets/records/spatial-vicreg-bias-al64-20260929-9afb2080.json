@@ -2,6 +2,25 @@
   "dataset_id": "spatial-vicreg-bias-al64-20260929",
   "records": [
     {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "b1ec354c8f84eb950af2996ff56dfdb216911355ef5ef3378b18aa3aa014cb01",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "fixed_identity",
+        "identity",
+        "sources",
+        "state",
+        "training_rows"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
       "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/plan.json",
       "relative_path": "plan.json",
       "sha256": "9904773f1c21b2ca8c1aca58d4571caafb8995379fd207ca372bba0deb1159c2",
@@ -849,6 +868,206 @@
           "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
         ]
       }
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1000/complete.json",
+      "relative_path": "sources/1000/complete.json",
+      "sha256": "440822db57cd4f7ed75b8127518b8834f094608b300a8015e21a8bc554cce309",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1001/complete.json",
+      "relative_path": "sources/1001/complete.json",
+      "sha256": "65a6e3fda9518941b1fbfded6d5ff7081bb34354ee7c207e4b009e70a93d3b36",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1002/complete.json",
+      "relative_path": "sources/1002/complete.json",
+      "sha256": "8dae8eb9f622130f0e71e11ca01446252e99ffe450cf72de465275dd2166a18f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1003/complete.json",
+      "relative_path": "sources/1003/complete.json",
+      "sha256": "81b3e12f6c20653ea0cce6f0b0a217e23ecd9513f6800d2b61d40129a7b8aeac",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1004/complete.json",
+      "relative_path": "sources/1004/complete.json",
+      "sha256": "55542aced1b3f8050254c11e25323b4f7edebfab6de13b87bccc5517c161c438",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1005/complete.json",
+      "relative_path": "sources/1005/complete.json",
+      "sha256": "3b7f882d600576d9307d834c5357509ac9a86a07ebb797504a0fde9fb2923778",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1006/complete.json",
+      "relative_path": "sources/1006/complete.json",
+      "sha256": "38e5c821ec49c570dcda25d040b27d5d7469dd384a61fdb9dc3d5d9c8be3b9bd",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1007/complete.json",
+      "relative_path": "sources/1007/complete.json",
+      "sha256": "c5404099f627e1d2d66fed0fd06a48faa6d336583eca4c5bec6c5d9667a54d39",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1008/complete.json",
+      "relative_path": "sources/1008/complete.json",
+      "sha256": "35ae24def12f557419fc265f8c24d1b982574d762e62cc5b64de5dde0dcd2a51",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/1009/complete.json",
+      "relative_path": "sources/1009/complete.json",
+      "sha256": "0d0b3f1cf66e075296a8253b0d5a38aa57206d6fd567e980e44cbb9709c26985",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
     },
     {
       "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/860/complete.json",
@@ -1794,6 +2013,1846 @@
       "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/907/complete.json",
       "relative_path": "sources/907/complete.json",
       "sha256": "347545517c059597844da56ef112c7b0cf63928ca5a1b7607e210b453ce8ae95",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/908/complete.json",
+      "relative_path": "sources/908/complete.json",
+      "sha256": "dd2513812e75b908023c36bda8dbe3ef8da8ad2c2e1cfda65a151c2632fa2c07",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/909/complete.json",
+      "relative_path": "sources/909/complete.json",
+      "sha256": "40a9a471178f1d672f8a4ea469a4afdc41b4812a0be823b7a4e06dbbaf88de47",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/910/complete.json",
+      "relative_path": "sources/910/complete.json",
+      "sha256": "253247214553c0dc19e793b309161817bb58ca051db071c693ec9b9118bb0e9a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/911/complete.json",
+      "relative_path": "sources/911/complete.json",
+      "sha256": "f8bb00a779b4e439e58ca64e9216acf077c2ea9c824c79851410cc15fa78d8c1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/912/complete.json",
+      "relative_path": "sources/912/complete.json",
+      "sha256": "8cb6106ad7e120a4cd8a25d3e2b0af47fcd73d0f38164b4194b2dec4e49bc93a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/913/complete.json",
+      "relative_path": "sources/913/complete.json",
+      "sha256": "d299e57aab81fe72b9772e06e1adb65d6a2fc571991b36f8700e28083a964797",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/914/complete.json",
+      "relative_path": "sources/914/complete.json",
+      "sha256": "6940cef45034a9f6e41cd71aea149a0af6da788d015ea2eec39797192dab44d7",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/915/complete.json",
+      "relative_path": "sources/915/complete.json",
+      "sha256": "88b9305db2910e556822919c290d059feeb816d1feec605355459edaf8e6d668",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/916/complete.json",
+      "relative_path": "sources/916/complete.json",
+      "sha256": "9054da6c5a4dd8adef833dd0e0dd4826ef3abcb2dc7d0e90fcecb2b488342fc2",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/917/complete.json",
+      "relative_path": "sources/917/complete.json",
+      "sha256": "b2782418ffc41ceee1d655e2476d043f8a268addc14054a7d418001654410424",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/918/complete.json",
+      "relative_path": "sources/918/complete.json",
+      "sha256": "2e91b46d919de016eb3e7e84fdaf90400c76321e749b94314253d4f4766f6429",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/919/complete.json",
+      "relative_path": "sources/919/complete.json",
+      "sha256": "854264a947d593706c0d4057d64be73baf8ba2752671e5c4852e3b18cdbc785c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/920/complete.json",
+      "relative_path": "sources/920/complete.json",
+      "sha256": "17836ac8a84df2c7ccc49bc522212580ec591a0e5f182f3e211d5bfd779bde1c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/921/complete.json",
+      "relative_path": "sources/921/complete.json",
+      "sha256": "f42b5536b7f1e2286125370c5453ce74413e36a5b07419811f14927893e00aee",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/922/complete.json",
+      "relative_path": "sources/922/complete.json",
+      "sha256": "f931301c5a8db095dcc0cb6699bc2025f09ae3d7ea21d7c1790b4512537aac6a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/923/complete.json",
+      "relative_path": "sources/923/complete.json",
+      "sha256": "ee2617c752b0c73ebadf9d73af48cc9974bb2e624a1ebc843c33647d677d8b95",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/924/complete.json",
+      "relative_path": "sources/924/complete.json",
+      "sha256": "d43f810e655425bcbfb43605d137d0e43d65bfe6a1c6cdae89c868aa421f410a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/925/complete.json",
+      "relative_path": "sources/925/complete.json",
+      "sha256": "f17004b1613c9c234609958362ebfe4e7559692c82c243572764ac7854d27f2b",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/926/complete.json",
+      "relative_path": "sources/926/complete.json",
+      "sha256": "1371624ad69613b4df2085623d7a4aee6ebcea0bc1e58aaf32b64ba2d59b1be8",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/927/complete.json",
+      "relative_path": "sources/927/complete.json",
+      "sha256": "0ada9dd10fa18e1550aac0c5633335a2424910c4955cc338b4b6a41629d2021c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/928/complete.json",
+      "relative_path": "sources/928/complete.json",
+      "sha256": "470ac08cec5b40d1e047d3b8574f2011b2a635819fceb6fef2d08b277a1e5244",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/929/complete.json",
+      "relative_path": "sources/929/complete.json",
+      "sha256": "4cc218f48d1a14c72e6898236ba1d5eeb30d8b9814f4f047411e2eda780ec35e",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/930/complete.json",
+      "relative_path": "sources/930/complete.json",
+      "sha256": "b8ee6328744162ca22c381d69709aad4dafd36116298f513eb8cc98df69f2298",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/931/complete.json",
+      "relative_path": "sources/931/complete.json",
+      "sha256": "4868e662b7ba2ad286778b9602380a98991cfc4c21ea709b1f765afc58d66061",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/932/complete.json",
+      "relative_path": "sources/932/complete.json",
+      "sha256": "bec5bb969f8f58e4584241a25fd90fcf4824be25a37390f83aa3f8e5b8662d0f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/933/complete.json",
+      "relative_path": "sources/933/complete.json",
+      "sha256": "a237a187755302cd030c8113ee8e0c620cef5b70967a751344e7f1c595499a24",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/934/complete.json",
+      "relative_path": "sources/934/complete.json",
+      "sha256": "7a2082a5f0013b779314b3f13d1cdde272e47eccfd1134cedb489592af45beba",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/935/complete.json",
+      "relative_path": "sources/935/complete.json",
+      "sha256": "8abd4ba774b4c49f022819fe9528b08d12174112eaecaa40e153a413484a90bc",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/936/complete.json",
+      "relative_path": "sources/936/complete.json",
+      "sha256": "6d5028bdab3e050815d9437902f66a238c81a32c7c154b76ac6336ecd02bc5e0",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/937/complete.json",
+      "relative_path": "sources/937/complete.json",
+      "sha256": "cb07f63d8301c1bcf873671b751a316c4045334aef2c0cb19aa8961b018cbf81",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/938/complete.json",
+      "relative_path": "sources/938/complete.json",
+      "sha256": "8ea6035421ad7e569042b96f7ec0db7c2e2650aa851f1221a5a05398a3a99f4f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/939/complete.json",
+      "relative_path": "sources/939/complete.json",
+      "sha256": "51ae5758b870914f04de7ca08be3809e40198f07f5656d4db63e31240c889512",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/940/complete.json",
+      "relative_path": "sources/940/complete.json",
+      "sha256": "f06d4f9cebf46dff142f046bf7a9564706a63c20e023f1f0b9c8aee54a8598fa",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/941/complete.json",
+      "relative_path": "sources/941/complete.json",
+      "sha256": "c1a0a900d81412752e318997d0798efab4d94239992bf13818bfee7f7a869b0d",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/942/complete.json",
+      "relative_path": "sources/942/complete.json",
+      "sha256": "aa2e0a9ab9222363b83925661b9a1718f3b2c76768f0b2b0e5568a0aeb8d1ac9",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/943/complete.json",
+      "relative_path": "sources/943/complete.json",
+      "sha256": "1401710e664d4fc17e366578ff4cdec37fed0b91bfb5ad867bda31684ee6611e",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/944/complete.json",
+      "relative_path": "sources/944/complete.json",
+      "sha256": "5543b8963c5f3769df17bf35064002f63675230bbbe62038ab6b3679e76dc7f6",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/945/complete.json",
+      "relative_path": "sources/945/complete.json",
+      "sha256": "c4bd2c49e2586c2ca350533faf042f1cf5fb6b3cad0572c25f03bfae83c6d340",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/946/complete.json",
+      "relative_path": "sources/946/complete.json",
+      "sha256": "ced68e29ff54063d61112a5853326f14c041736991608266fa30cef0dec40ee5",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/947/complete.json",
+      "relative_path": "sources/947/complete.json",
+      "sha256": "d97fc193eafa11430084ff29c5746b97635c1ca5211b05086960d66cc9d184fb",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/948/complete.json",
+      "relative_path": "sources/948/complete.json",
+      "sha256": "02d018de25bd8584d73f21e011137c15148d8b98390b2fcbe3070a1531089d5c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/949/complete.json",
+      "relative_path": "sources/949/complete.json",
+      "sha256": "0e36194c2c1b998ac4edfffd205e87e16a64e69b2d6e69e0d5d2880035f3d33c",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/950/complete.json",
+      "relative_path": "sources/950/complete.json",
+      "sha256": "56ea2c68d3c63fa4c5215bd097817621f46419be04705906d10b5fbcf7f9d791",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/951/complete.json",
+      "relative_path": "sources/951/complete.json",
+      "sha256": "ed35847c2a5f5d16539eb1901010e550c74e798481157e751ab117625ca925a7",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/952/complete.json",
+      "relative_path": "sources/952/complete.json",
+      "sha256": "3e416b33d2064f0ec6a2322d421bfdb30832e3f0fe8710597d96654584062d01",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/953/complete.json",
+      "relative_path": "sources/953/complete.json",
+      "sha256": "2ba783592fd810b444a75c05d819e53460513a943f93f2b2330fc04e305eafec",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/954/complete.json",
+      "relative_path": "sources/954/complete.json",
+      "sha256": "02dcd240fd0e971f003b2b413d40cef25fb70f73ac2bd3c2268f5faa57b7c2ee",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/955/complete.json",
+      "relative_path": "sources/955/complete.json",
+      "sha256": "961e56b83dac6f2e07e153125c8dde0db165a4ece5c7fc3f84627c7756fdc270",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/956/complete.json",
+      "relative_path": "sources/956/complete.json",
+      "sha256": "4adb67578d27be56a8ab02ceb0314ade3275f95ee611761812557ccb536e4008",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/957/complete.json",
+      "relative_path": "sources/957/complete.json",
+      "sha256": "65bff5bf822ed7449b5a2742b412bf9976de085d5b1e0d1f9948adffd8bec0a3",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/958/complete.json",
+      "relative_path": "sources/958/complete.json",
+      "sha256": "9cfbbfacbb2758250cebe89499cff47eff980f529d04c031c45b851e5f3ca578",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/959/complete.json",
+      "relative_path": "sources/959/complete.json",
+      "sha256": "2567a1452029cb411f5b02e4fb77d9f2e318764acb69147c8a7ba0a239f1fc76",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/960/complete.json",
+      "relative_path": "sources/960/complete.json",
+      "sha256": "90f6d9c16db1b8d63ab17af725f388ba8caca89f3587a65bcbdc7909d6194156",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/961/complete.json",
+      "relative_path": "sources/961/complete.json",
+      "sha256": "27ad05d9c6f4a0a3c397c903aa14ce0c54ae471f394c376a7056e9d55616ec5b",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/962/complete.json",
+      "relative_path": "sources/962/complete.json",
+      "sha256": "f1c934b828d0b1e306d30b93e17779bd1e712ff21623f8da3298a44d37205c9b",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/963/complete.json",
+      "relative_path": "sources/963/complete.json",
+      "sha256": "6b33730336e0159d4d403c6792374385936bab36788a26ed7c70213a66eddac1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/964/complete.json",
+      "relative_path": "sources/964/complete.json",
+      "sha256": "e7b0856e2f64871eb9026a3336a96c4b849c9e3bee551e9e46e49f725a8d6ab9",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/965/complete.json",
+      "relative_path": "sources/965/complete.json",
+      "sha256": "7a3872547c7a75087fa65eeb1be03788c43633cd5ea8df7a72d8e9a54843ea2e",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/966/complete.json",
+      "relative_path": "sources/966/complete.json",
+      "sha256": "0361f5e52323819ba84d03a252a0255ef159e9fdb97c0622075442f9891cc442",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/967/complete.json",
+      "relative_path": "sources/967/complete.json",
+      "sha256": "6eef39e0cf4ac67f82dd9f818277e9522259b14ea20194c39c855a7118542a6f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/968/complete.json",
+      "relative_path": "sources/968/complete.json",
+      "sha256": "08dda6b99b7e604a1197aa9088313f11cb92ff76f7e1f37a8de29c7c337f42cc",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/969/complete.json",
+      "relative_path": "sources/969/complete.json",
+      "sha256": "1886938ec55d44fd5d1a77be57a943967b55655d1f77d5f71cb129f1491aaa3a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/970/complete.json",
+      "relative_path": "sources/970/complete.json",
+      "sha256": "66ba830a254b694cf536c4cb94d0cfda7e134730b70832b363d181c0aa4863dd",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/971/complete.json",
+      "relative_path": "sources/971/complete.json",
+      "sha256": "7cc89cbd1813bc5a7ecb37e3d1efe316703e796ee67feef55c624df53c145b71",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/972/complete.json",
+      "relative_path": "sources/972/complete.json",
+      "sha256": "ccc03b7647cecf35d4b90742beab3d7511293e313aaaa394ae5d4ee0fcacf9b8",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/973/complete.json",
+      "relative_path": "sources/973/complete.json",
+      "sha256": "43932c31719982f3ab33946378b0ba62603977e87742b89f7d57ed34a680fe2d",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/974/complete.json",
+      "relative_path": "sources/974/complete.json",
+      "sha256": "14860baea568949cff144c2babbee0d958023339ccc0b9315427e1c637935d07",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/975/complete.json",
+      "relative_path": "sources/975/complete.json",
+      "sha256": "54084e355ee8fd3eec745e308a06cd6dcc5fb2c1ababa4d6d19bfad6af55d1c9",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/976/complete.json",
+      "relative_path": "sources/976/complete.json",
+      "sha256": "999431a12555b8205965c244cc9f7a62144bd1cf84395d9e1e68d4c72f006f03",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/977/complete.json",
+      "relative_path": "sources/977/complete.json",
+      "sha256": "7dc4c2210e69abf66ce5f68e4791bf763184ba2d62cf8284f9d3f31cdd1d378f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/978/complete.json",
+      "relative_path": "sources/978/complete.json",
+      "sha256": "5a9251e9962ec58086fafb2d669caedacc10e5aa3671938a8126b749b5165dd8",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/979/complete.json",
+      "relative_path": "sources/979/complete.json",
+      "sha256": "90fec1d2bd8847f29848897e5e7dc76c6374e939ba354892513fb1fc7ecf2309",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/980/complete.json",
+      "relative_path": "sources/980/complete.json",
+      "sha256": "0a96225f9c7bceb5af7845cacca8659376a668a8650e88d4bf6749d6395d8222",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/981/complete.json",
+      "relative_path": "sources/981/complete.json",
+      "sha256": "92992dc7740ee64abae9489a6eb264c0f141280b8a64ef799c551292dd515bd1",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/982/complete.json",
+      "relative_path": "sources/982/complete.json",
+      "sha256": "5ebe1bb5a597a511dad0ae51c9f71f6acb50f38bcf4186b328ebc4d314a165d9",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/983/complete.json",
+      "relative_path": "sources/983/complete.json",
+      "sha256": "b469d403f48484f3f913a4fbe6b112f0f294c3c4b320934e4a21fe32b0f2d12b",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/984/complete.json",
+      "relative_path": "sources/984/complete.json",
+      "sha256": "ba43be524b8868b285b64d94b1cc64592d3d852c88f54eb99f14c145f0ae0cd2",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/985/complete.json",
+      "relative_path": "sources/985/complete.json",
+      "sha256": "84168d6c52aa12442a7d50fab11962ec01896fad0bc408a5e536e6ce3efd335f",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/986/complete.json",
+      "relative_path": "sources/986/complete.json",
+      "sha256": "33027a8e06a72677dcb3166f2618df9491b76a3c14bf751c1cc32a9a04843794",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/987/complete.json",
+      "relative_path": "sources/987/complete.json",
+      "sha256": "be5dbf2778df9bbe031359407df2819708c83c0f46579e077896fd34e36feb31",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/988/complete.json",
+      "relative_path": "sources/988/complete.json",
+      "sha256": "754708b483100f54fc250361fc4078d7294a141eaceaf431d92b699c86767626",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/989/complete.json",
+      "relative_path": "sources/989/complete.json",
+      "sha256": "e2f5ec74cd013b5e317951bb2addac1c6ff97724d2717ab1b861193b695b4ce2",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/990/complete.json",
+      "relative_path": "sources/990/complete.json",
+      "sha256": "8c8cf99369dfd3aa0c59d4fac554fc9d12839939b0d9f80973f17ed84334fba5",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/991/complete.json",
+      "relative_path": "sources/991/complete.json",
+      "sha256": "dd370ab55bfe6bed30136cae42380ee9823e4416deaadca8783dfc40ce9d0472",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/992/complete.json",
+      "relative_path": "sources/992/complete.json",
+      "sha256": "40c77a8a77220db1da5800e5d6165c2988f8af6699a14136529a915ed5b13363",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/993/complete.json",
+      "relative_path": "sources/993/complete.json",
+      "sha256": "e6d7e6444345d326c9540ceb5bbe2f53f2c265e7a1fb38ca3b58bc63a8ec0a53",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/994/complete.json",
+      "relative_path": "sources/994/complete.json",
+      "sha256": "4db99334e257f2e89cd5eee77e9ded4f5fad5cadcabc8cccd847bf0f3b284291",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/995/complete.json",
+      "relative_path": "sources/995/complete.json",
+      "sha256": "c7222fd258c9b71cbcd646e80a70e017f3fe415a7b36c35b1cd1dea7280a6eed",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/996/complete.json",
+      "relative_path": "sources/996/complete.json",
+      "sha256": "f8696082b35e7b354f0c528517ae75e9eaa4ed401fee8a4b062d0ea31c7d0570",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/997/complete.json",
+      "relative_path": "sources/997/complete.json",
+      "sha256": "cc6ae4e1b25394863a9cead31db03d0b6a2d416d0de603a756de9d806834c25a",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/998/complete.json",
+      "relative_path": "sources/998/complete.json",
+      "sha256": "7eacecac21fd24c0f98fa4e1031bafb16b52cc95fb893988ddb91f6a85759a12",
+      "kind": "metadata",
+      "keys": [
+        "assay_rows",
+        "benchmark_rows",
+        "files",
+        "identity",
+        "ptm_chunks",
+        "role",
+        "seconds",
+        "source",
+        "training_rows"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/spatial-vicreg-bias/al64-v1-20260929/sources/999/complete.json",
+      "relative_path": "sources/999/complete.json",
+      "sha256": "d3efc8ea58b38bacbbc282735e24feb50689b9ae44565f88d7e8a78e57e52a29",
       "kind": "metadata",
       "keys": [
         "assay_rows",

@@ -1,0 +1,16 @@
+{
+  "state": "submitted",
+  "wave": 0,
+  "worker_job": "1017389",
+  "controller_job": "1017390",
+  "workers": 3,
+  "selected": 6,
+  "completed": 20,
+  "total": 150,
+  "submission_quota": {
+    "qos": "normal",
+    "maximum": 30,
+    "used": 26
+  },
+  "submitted_at": "2026-10-01T19:42:13.761517+00:00"
+}

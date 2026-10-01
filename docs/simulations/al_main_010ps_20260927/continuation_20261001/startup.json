@@ -1,0 +1,73 @@
+{
+  "state": "running",
+  "observed_at": "2026-10-01T19:47:35.907265+00:00",
+  "worker_job": "1017389",
+  "controller_job": "1017390",
+  "first_source_observations": [
+    {
+      "source_id": 876,
+      "run_id": "al-main-010ps-20260927-source0876",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-01T19:42:16.438973+00:00",
+        "slurm_job_id": "1017391",
+        "host": "nodecpu07",
+        "run_id": "al-main-010ps-20260927-source0876"
+      },
+      "production_48_rank_checkpoint_check": {
+        "step": 285000,
+        "atom_count": 70304,
+        "box_max_abs_A": 0.0,
+        "position_max_abs_minimum_image_A": 0.0,
+        "velocity_max_abs_A_per_ps": 0.0
+      }
+    },
+    {
+      "source_id": 880,
+      "run_id": "al-main-010ps-20260927-source0880",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-01T19:42:16.450598+00:00",
+        "slurm_job_id": "1017392",
+        "host": "nodecpu06",
+        "run_id": "al-main-010ps-20260927-source0880"
+      }
+    },
+    {
+      "source_id": 881,
+      "run_id": "al-main-010ps-20260927-source0881",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-01T19:42:16.446982+00:00",
+        "slurm_job_id": "1017389",
+        "host": "nodecpu06",
+        "run_id": "al-main-010ps-20260927-source0881"
+      },
+      "production_48_rank_checkpoint_check": {
+        "step": 97500,
+        "atom_count": 70304,
+        "box_max_abs_A": 0.0,
+        "position_max_abs_minimum_image_A": 0.0,
+        "velocity_max_abs_A_per_ps": 0.0
+      }
+    }
+  ],
+  "slurm_snapshot": "1017390 al-dense-next PD 0:00 (Dependency)\n1017389_1 al-dense-010ps R 5:21 nodecpu06\n1017389_2 al-dense-010ps R 5:21 nodecpu06\n1017389_0 al-dense-010ps R 5:22 nodecpu07\n",
+  "pending_source_ids": [
+    [
+      876,
+      882
+    ],
+    [
+      880,
+      884
+    ],
+    [
+      881,
+      885
+    ]
+  ]
+}

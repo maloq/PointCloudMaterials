@@ -47,7 +47,8 @@ def load_model(c):
     spec.loader.exec_module(module)
     config = copy.deepcopy(saved['config'])
     config['patch_chunk'] = c['batch_size']
-    model = module.RichPatchMACE(config, saved['model']['readout.2.weight'].shape[0]).cuda().eval()
+    # Both recorded heads declare their actual output width in this buffer.
+    model = module.RichPatchMACE(config, len(saved['model']['output_mask'])).cuda().eval()
     model.load_state_dict(saved['model'], strict=True)
     model.requires_grad_(False)
     norm = saved['coordinate_normalization']
@@ -117,7 +118,7 @@ def infer(config):
                 continue
             patches = np.load(folder/'patches.npy', mmap_mode='r')
             with np.load(folder/'physical.npz') as z: physical = dict(z)
-            geometry = asset(reference/'travel-data'/f'{key}-geometry.js')
+            geometry = asset(reference/'interactive'/page['travel'][key]['geometry']['asset'])
             travel_rows = np.asarray(geometry['rows'])
             sampled = np.asarray(physical['sample']) if kind == 'static' else np.empty(0, int)
             retained = np.unique(np.r_[travel_rows, sampled])

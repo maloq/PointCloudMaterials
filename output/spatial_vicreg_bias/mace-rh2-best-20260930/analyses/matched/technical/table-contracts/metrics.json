@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "c17bc9d415440e0de9c05b4e4452012fce94023b89a159843cb8fa907a9e44c4",
+  "family": "rich_mace_comparison",
+  "contract": "technical/metric-contracts/rich_mace_comparison.json",
+  "definitions": "tables/metric-definitions/rich_mace_comparison.md"
+}

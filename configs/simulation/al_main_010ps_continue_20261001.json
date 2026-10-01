@@ -1,0 +1,8 @@
+{
+  "source_launch": "${storage:archive}/simulation-launches/al-main-010ps-20260927",
+  "continuation_id": "al-main-010ps-continue-20261001",
+  "workers": 4,
+  "sources_per_worker_wave": 2,
+  "walltime": "2-00:00:00",
+  "qos": "normal"
+}

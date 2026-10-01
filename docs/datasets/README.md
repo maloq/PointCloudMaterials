@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-09-28T23:47:41.345301+00:00
+Observed: 2026-10-01T19:03:53.141383+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -17,6 +17,8 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Mg static structures](cards/Mg-180d88b4.md) | Mg | research | yes | 0 | Unknown / not applicable |
 | [Ta static structures](cards/Ta-518f962a.md) | Ta | research | yes | 0 | Unknown / not applicable |
 | [Zr static structures](cards/Zr-e6278cae.md) | Zr | research | yes | 0 | Unknown / not applicable |
+| [Al pre-appearance birth versus liquid classification histories](cards/al-birth-preappearance-v1-20260930-290730f2.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [Full-cell relaxed Al birth histories, original cohort v1](cards/al-birth-relaxed-v1-20261001-1c79cae5.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al spontaneous births: 22 independent melts](cards/al-birth-uniform-20260926-0c99fff5.md) | Al | building | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-birth-uniform-20260926-source000-T400](cards/al-birth-uniform-20260926-source000-T400-6a1f0e72.md) | Al | unreviewed | yes | 2 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-birth-uniform-20260926-source001-T410](cards/al-birth-uniform-20260926-source001-T410-1c772800.md) | Al | unreviewed | yes | 2 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
@@ -58,7 +60,12 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [al-main-010ps-20260927-source0873](cards/al-main-010ps-20260927-source0873-cc962d49.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-main-010ps-20260927-source0874](cards/al-main-010ps-20260927-source0874-5433d806.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-main-010ps-20260927-source0875](cards/al-main-010ps-20260927-source0875-a65a6996.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [al-main-010ps-20260927-source0876-failed](cards/al-main-010ps-20260927-source0876-failed-7e16e48e.md) | Al | incomplete_or_rejected | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [al-main-010ps-20260927-source0877](cards/al-main-010ps-20260927-source0877-424d535f.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [al-main-010ps-20260927-source0878](cards/al-main-010ps-20260927-source0878-65a18830.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-main-010ps-20260927-source0879](cards/al-main-010ps-20260927-source0879-483ff043.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [al-main-010ps-20260927-source0881-failed](cards/al-main-010ps-20260927-source0881-failed-7e2a9383.md) | Al | incomplete_or_rejected | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [al-main-010ps-20260927-source0882-failed](cards/al-main-010ps-20260927-source0882-failed-5e4caee2.md) | Al | incomplete_or_rejected | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al-main-010ps-20260927-source0883](cards/al-main-010ps-20260927-source0883-b0f2a23f.md) | Al | research | yes | 1 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al · completed 520 K source extension](cards/al_520K_remaining24_20260913T204114Z-4a280fe4.md) | Al | research | yes | 24 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [al homogeneous campaign 16384 compiled mpa 110ps multiseed 20260717](cards/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717-0bb2d82c.md) | Al | review_required | yes | 0 | MACE-MPA-0 medium checkpoint |
@@ -170,6 +177,9 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Al: precision campaign and unfinished sources](cards/memory-al-precision-campaign-20260917-c8104deb.md) | Al | mixed | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Mg: six 24 ps EAM continuations](cards/mg-eam-six-24ps-ab3916d9.md) | Mg | research | yes | 6 | Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs) |
 | [MM-RD-MACE256-L3-Z256: 60 epochs in a measured 10-hour fit budget](cards/mm-rd-mace256-20260929-45128b2e.md) | Al, Mg, Ta, Ti | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
+| [MM-RD-MACE256-L3-Z256: H100 start, checkpointed two-GPU continuation](cards/mm-rd-mace256-h100-20260929-6c663a87.md) | Al, Mg, Ta, Ti | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
+| [MM-RD-MACE256-L3-Z256-LR004: restored requested LR, bounded batch, 60 epochs / 10h](cards/mm-rd-mace256-lr004-20260929-9069b5e2.md) | Al, Mg, Ta, Ti | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
+| [MM-RD-MACE256-L3-Z256-R2: bounded batch, 60 epochs / 10h on two GPUs](cards/mm-rd-mace256-repair-20260929-f9bf8814.md) | Al, Mg, Ta, Ti | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Expanded native Al JEPA 32,768 anchors: graphs](cards/neighborhood-jepa-native-al-32768-graphs-20260920-6cd4ae6d.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Native Al 32768 order anchors and frozen random MACE reservoir](cards/neighborhood-jepa-native-al-32768-order-20260920-81a8ce82.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Expanded native Al JEPA 32,768 anchors: v2](cards/neighborhood-jepa-native-al-32768-v2-20260920-229e21af.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
@@ -186,6 +196,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [potential-ta-zhong2014](cards/potential-ta-zhong2014-5e359ea0.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
 | [potential-ti-kavousi2019](cards/potential-ti-kavousi2019-3547fe9c.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
 | [potentials](cards/potentials-1f2cb720.md) | Unknown | reference | yes | 0 | Unknown / not applicable |
+| [Fixed 274-feature Al480 shooting predictive targets](cards/predictive-baseline-al480-274-20261001-37ba0228.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al · predictive-memory partial-observation cache](cards/predictive-memory-al-r17-20260917-91f24edf.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [RD-MACE256-L3-Z256: raw rich-descriptor learning, 60 full epochs](cards/rd-mace256-rich-descriptors-20260929-cc418a6c.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Paired observed/relaxed MACE pilot relaxed_cells](cards/relaxed-encoder-cells-20260920-d76dbdc7.md) | Al | research | yes | 230 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
@@ -196,10 +207,15 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Paired observed/relaxed MACE pilot training_cache](cards/relaxed-encoder-pilot-20260920-2637d1ce.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Repository dataset preprocessing caches](cards/repository-derived-data-caches-95186383.md) | Unknown | derived | yes | 0 | Unknown / not applicable |
 | [research-records-20260913](cards/research-records-20260913-54a7309f.md) | Unknown | archive | yes | 0 | Unknown / not applicable |
+| [Al256 response-oracle feasibility query bundles](cards/response-atlas-al256-feasibility-20261001-26857231.md) | Al | diagnostic | yes | 0 | MACE-MPA-0 medium checkpoint |
+| [Al256 response precision follow-up](cards/response-atlas-al256-followup-20261001-e31fb7c7.md) | Al | diagnostic | yes | 0 | MACE-MPA-0 medium checkpoint |
+| [Al256 atomistic response-training query collection](cards/response-atlas-al256-training-20261001-805fabd8.md) | Al | diagnostic | yes | 0 | MACE-MPA-0 medium checkpoint |
 | [restart boundary audit 20260905](cards/restart_boundary_audit_20260905-d2886897.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [Raw Al/Mg/Ti/Ta local rich descriptors](cards/rich-descriptors-multimaterial-raw-20260929-5cf8ff14.md) | Al, Mg, Ta, Ti | prepared | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component |
 | [Robust-onset finite coordinate perturbation bank](cards/robust-onset-noise-20260924-c395b8c8.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Al shared causal pretraining: 38,400 windows, geometry and instantaneous TDA](cards/shared-causal-38400-20260918-79d3a6ec.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [shooting-laws-al480-20260930](cards/shooting-laws-al480-20260930-951c6388.md) | Al | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
+| [shooting-laws-diagnostics-20260930](cards/shooting-laws-diagnostics-20260930-d852c992.md) | Al, Ta | research | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM; Zhong 2014 Ta EAM |
 | [shooting float32 migration 20260901](cards/shooting_float32_migration_20260901-ab3f5054.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [Fixed-snapshot Al64 crystal approach labels and probe paths](cards/spatial-approach-al64-20260926-a0bc51c1.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [Uniform atom centers for continuous crystal-distance readouts](cards/spatial-distance-uniform-al64-20260926-8f0d1e09.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
@@ -231,4 +247,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-25 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+32 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
