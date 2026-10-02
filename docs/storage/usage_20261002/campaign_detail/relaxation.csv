@@ -1,0 +1,14 @@
+partition,category,collection,GB,allocated_bytes
+STORE,Relaxation data,/store/PERSO/vmorozov/relaxed_encoder,11.837005824,11837005824
+STORE,Relaxation data,/store/PERSO/vmorozov/relaxed_tda,2.068185088,2068185088
+STORE,Relaxation data,/store/PERSO/vmorozov/liquid-predictability/full-relaxation-20260928,4.608516096,4608516096
+STORE,Relaxation data,/store/PERSO/vmorozov/birth_prediction/relaxed-temporal-20261001,2.625716224,2625716224
+SCRATCH,Relaxation data,/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_encoder,3.920979456,3920979456
+SCRATCH,Relaxation data,/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_tda,0.657314304,657314304
+SCRATCH,Relaxation data,/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_tda_pilot_20260917,0.01054208,10542080
+SCRATCH,Relaxation data,/scratch/PERSO/vmorozov/PointCloudMaterials/liquid-predictability/full-relaxation-20260928,1.439259136,1439259136
+IDS,Related training cache,/home/ids/vmorozov/training-cache/relaxed_encoder,12.174505984,12174505984
+IDS,Related training cache,/home/ids/vmorozov/training-cache/relaxed_tda,0.155183104,155183104
+IDS,Related training cache,/home/ids/vmorozov/training-cache/crystallization-structured-relaxed-reuse-20260921,1.34841344,1348413440
+IDS,Related training cache,/home/ids/vmorozov/training-cache/liquid-predictability/controls-relaxed-20260928,3.129659904,3129659904
+SCRATCH,Relaxation data,/scratch/PERSO/vmorozov/PointCloudMaterials/birth-prediction/relaxed-temporal-20261001,1.024e-06,1024

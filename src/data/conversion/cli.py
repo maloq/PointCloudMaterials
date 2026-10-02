@@ -9,6 +9,7 @@ from src.command_line import dispatch
 COMMANDS = {
     "dense-al": "src.data.conversion.dense_al",
     "dense-al-001ps": "src.data.conversion.streaming_pair",
+    "dense-al-half": "src.data.conversion.dense_al_half",
     "birth-pair": "src.data.conversion.birth_pair",
     "memory-pair": "src.data.conversion.memory_pair",
     "relaxation": "src.data.conversion.relaxation",

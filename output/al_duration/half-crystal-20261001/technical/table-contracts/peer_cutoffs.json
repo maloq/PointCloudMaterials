@@ -1,0 +1,7 @@
+{
+  "table": "tables/peer_cutoffs.csv",
+  "sha256": "28c2e067f58038c6e6b119d806a968e528e5174c09fe974afb189a330e518df0",
+  "family": "al_half_transform",
+  "contract": "technical/metric-contracts/al_half_transform.json",
+  "definitions": "tables/metric-definitions/al_half_transform.md"
+}

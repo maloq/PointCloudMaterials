@@ -1,0 +1,9 @@
+protocol,scope,temperature_K,source_count,required_half_count,peer_fraction,peer90_time_observed,peer90_stop_time_ps,effective_maximum_ps,half_ready_at_cutoff_count,right_censored_at_cutoff_count,known_later_half_by600_count,no_half_by600_count,mean_stop_with_peer_cap_ps,saved_measurement_fraction_with_peer_cap
+dense_2fs_010ps,temperature,520.0,21,19,0.9,True,426.0,426.0,19,2,0,2,258.85714285714283,0.5685714285714286
+dense_2fs_010ps,all_temperatures,,21,19,0.9,True,426.0,426.0,19,2,0,2,258.85714285714283,0.5685714285714286
+original_3fs_075ps,temperature,400.0,30,27,0.9,False,,600.0,21,9,0,9,504.2,0.15966666666666668
+original_3fs_075ps,temperature,450.0,30,27,0.9,True,291.0,291.0,27,3,3,0,225.0,0.625
+original_3fs_075ps,temperature,500.0,30,27,0.9,True,411.0,411.0,27,3,2,1,248.5,0.5858333333333333
+original_3fs_075ps,temperature,510.0,30,27,0.9,True,411.0,411.0,27,3,3,0,264.5,0.5591666666666667
+original_3fs_075ps,temperature,520.0,30,27,0.9,True,561.0,561.0,27,3,0,3,332.5,0.44583333333333336
+original_3fs_075ps,all_temperatures,,150,135,0.9,True,576.0,576.0,137,13,0,13,318.1,0.4698333333333333

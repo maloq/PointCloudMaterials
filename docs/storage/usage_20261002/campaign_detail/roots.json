@@ -1,0 +1,17 @@
+[
+  "/work/PERSO/vmorozov/simulations",
+  "/store/PERSO/vmorozov/simulations",
+  "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations",
+  "/store/PERSO/vmorozov/relaxed_encoder",
+  "/store/PERSO/vmorozov/relaxed_tda",
+  "/store/PERSO/vmorozov/liquid-predictability/full-relaxation-20260928",
+  "/store/PERSO/vmorozov/birth_prediction/relaxed-temporal-20261001",
+  "/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_encoder",
+  "/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_tda",
+  "/scratch/PERSO/vmorozov/PointCloudMaterials/relaxed_tda_pilot_20260917",
+  "/scratch/PERSO/vmorozov/PointCloudMaterials/liquid-predictability/full-relaxation-20260928",
+  "/home/ids/vmorozov/training-cache/relaxed_encoder",
+  "/home/ids/vmorozov/training-cache/relaxed_tda",
+  "/home/ids/vmorozov/training-cache/crystallization-structured-relaxed-reuse-20260921",
+  "/home/ids/vmorozov/training-cache/liquid-predictability/controls-relaxed-20260928"
+]

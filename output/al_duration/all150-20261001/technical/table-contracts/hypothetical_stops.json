@@ -1,0 +1,7 @@
+{
+  "table": "tables/hypothetical_stops.csv",
+  "sha256": "a6125169c945c62eedcd7a08b8523dab6ac4277845db2cf69d02e2ff8724e439",
+  "family": "al_duration",
+  "contract": "technical/metric-contracts/al_duration.json",
+  "definitions": "tables/metric-definitions/al_duration.md"
+}

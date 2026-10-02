@@ -1,5 +1,12 @@
 # Datasets: start here
 
+**Failed-embryo appearance histories:** [workflow](docs/birth_appearance.md) extends the birth assay with eligible candidates from the nested 184/28 fate catalogue; original source roles and old rows are unchanged. Original and relaxed input variants share labels.
+
+**Nucleus fate labels:** [CPU audit](docs/nucleus_fates.md) inventories smaller disappearing crystal episodes and adds growth/dissolution/censoring sidecars to existing Al64 birth rows. Original labels and source roles remain unchanged.
+
+**Local80 response pilot:** [workflow](docs/simulations/local_response_20261002.md) registers new MACE teacher queries from135 original fixed-Al64 MEAM sources, preserving roles and center identities; nested moving environments are gated before training.
+
+
 **Atomistic response-training collection:** [workflow](docs/response_atlas.md#atomistic-response-training)
 collects fresh fixed-MACE values/responses for56 full-cell Al256 synthetic
 configurations, with32/8/16 train/selection/test roles and shared FCC ancestry.
@@ -56,14 +63,20 @@ Al64 rows and adds uniform held-out centers for interior evaluation; derived fro
 existing trajectories and PTM lineages, with no new simulation or source split.
 
 **New Al 0.1 ps production:** [150 prepared-liquid reruns with velocities](docs/simulations/al_main_010ps_20260927/README.md)
-retain the original melt ancestry and frozen roles; 2 fs integration, 600 ps measurement.
+retain the original melt ancestry and frozen roles; 2 fs integration, originally 600 ps measurement.
 These are new descendants, not a replacement of the frozen 0.75 ps benchmark.
 The [October 1 continuation](docs/simulations/al_main_010ps_20260927/README.md#october-1-continuation)
 keeps the 20 completed descendants, recovers three native restarts and queues the
 127 unstarted sources with the same ancestor roles.
-**Additional 0.01-ps Al observations:** [two full 600-ps descendants](docs/simulations/al_main_001ps_20261001/README.md)
+**Additional 0.01-ps Al observations:** [two descendants](docs/simulations/al_main_001ps_20261001/README.md)
 reuse source 886 (400 K) and 1004 (520 K), both train ancestors, with velocities.
 They do not add independent melt lineages or alter the 0.1-ps source contract.
+
+**Shorter pending Al sources:** [confirmed-halfway stopping and peer caps](docs/simulations/al_main_half_stop_20261001/README.md)
+versions the 128 unstarted trajectories (126 main and two additions), preserving
+21 completed and three already running. Keep velocities, actual endpoints,
+termination/censoring and the frozen ancestor roles; the original Al64 release
+is unchanged. Registered collection: `al-main-half-stop-20261001`.
 
 **Material-specific distance adaptation:** the [Al/Ta fine-tuning protocol](docs/distance_encoder_material_finetune.md)
 retains fixed Al64 roles and uses newly simulated Ta velocity branches from a known
@@ -116,3 +129,5 @@ storage role, material, generating potential, provenance and ancestry when known
 Keep unknown values explicit. See [the registry guide](docs/datasets/GUIDE.md).
 
 Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
+
+**Planned fast Al256 response collection:** `response-atlas-al256-training-fast-20261002` registers the new float32/cuEquivariance default, with the same 56 generating geometries as October1 and separate stochastic streams. This is a registered recipe, not a completed collection or new independent ancestry; see [the workflow](docs/response_atlas.md#default-for-new-al256-response-runs).

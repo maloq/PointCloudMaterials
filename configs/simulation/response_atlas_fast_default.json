@@ -1,0 +1,18 @@
+{
+  "protocol": "al256_response_float32_cueq_v1",
+  "dtype": "float32",
+  "backend": "cueq",
+  "graph": "gpu",
+  "skin_A": 0.0,
+  "value_batch": 4,
+  "response_batch": 4,
+  "reuse_response_values": true,
+  "training_audit_shots": 1,
+  "audit_atol": 1e-06,
+  "audit_rtol": 1e-05,
+  "path_relative_tolerance": 0.01,
+  "path_absolute_tolerance": 0.0001,
+  "scope": "Al256 fixed-MACE BAOAB 450K, 1fs steps, 20/100fs; independent original float64 RNG streams cast to float32",
+  "reference_recipe": "configs/simulation/response_atlas_feasibility_20261001.json",
+  "reference_recipe_sha256": "3bdccb541c2982be784f7b8a82ead1fdf910d0bfd557286a9b9dfb7b3a3c9732"
+}

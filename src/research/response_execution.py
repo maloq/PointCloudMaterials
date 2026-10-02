@@ -191,8 +191,9 @@ def worker(args):
                     costs = [validate_complete(s['index'])['cost'] for s in states]
                     if not (tech/'data-complete.json').exists():
                         status('sealing')
-                        data.write_metric_rows(costs, common.root(c)/'analyses/collection-v1',
-                                               family=common.FAMILY, name='oracle-cost')
+                        fast = 'simulation_profile' in c
+                        data.write_metric_rows(costs, common.root(c)/('analyses/collection-v2' if fast else 'analyses/collection-v1'),
+                                               family=common.metric_family(c) if fast else common.FAMILY, name='oracle-cost')
                         data.seal(c)
                 # Preserve the original arm order, selector, optimizer resume,
                 # W&B identity, metric producers and nine-fit evaluation.

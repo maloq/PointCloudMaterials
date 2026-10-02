@@ -5,6 +5,11 @@ User-authorized rerun of all **150 main independent Al preparations**, with
 and velocities every **0.1 ps** (6,001 measurement frames including endpoints).
 The existing 0.75 ps trajectories are preserved.
 
+**Latest queued protocol:** [halfway stopping](../al_main_half_stop_20261001/README.md)
+applies only to 126 unstarted main descendants and the two 0.01-ps additions.
+The 21 completed and three already-running main sources keep this original
+600-ps protocol. The sections below preserve its historical recipe and estimates.
+
 Submitted CPU array **1010643** (four workers, first 24 sources) and dependent
 preservation/successor job **1010644**. Successive waves cover all 150 sources.
 The first wave stopped at the 48-hour limit on September 29. The user-authorized
@@ -16,15 +21,17 @@ See [submission receipt](submission.json), [input audit](preparation.json),
 [Recipe](../../../configs/simulation/al_main_010ps_20260927.json) ·
 [Producer](../../../src/simulation/campaigns/dense_al.py) ·
 [Original launch status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927/status.json) ·
-[Latest queue status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001/status.json) ·
+[Latest queue status](/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001/status.json) ·
 [Initial continuation status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-continue-20261001/status.json)
 
 The user-authorized [two-source 0.01-ps addition](../al_main_001ps_20261001/README.md)
 versions the execution queue to include 152 daughter trajectories from the same
-150 ancestors. Controller **1017489** replaces the pending controller **1017390**;
+150 ancestors. Its controller **1017489** replaced pending controller **1017390**;
 the current workers retain their original code and inputs. The two additional
 sources get priority after this wave, with one source per lane. The 150-source
 0.1-ps contract and earlier frozen manifests are preserved.
+That pending controller is subsequently replaced by the linked halfway queue;
+the original active worker array remains unchanged.
 
 ## Physical protocol and ancestry
 
@@ -104,6 +111,18 @@ record this observation, not ongoing monitoring.
 
 [September 29 same-parent comparison](../../../experiments/al_replay_20260929/README.md)
 checks completed dense descendants against the original paths and crystallization.
+
+The [October 1 duration audit](../../../output/al_duration/all150-20261001/README.md)
+covers all 150 historical sources and 21 completed dense descendants. It finds
+late growth at every temperature and temporary plateaus followed by additional
+ordering; the common 600 ps maximum remains unchanged. Selective early stopping
+is a future protocol question, not an enabled feature of this queue.
+The user then clarified that **50% crystal is sufficient**, and that a source
+still below the target when 90% of its peers have crossed is also interesting.
+The [halfway follow-up](../../../output/al_duration/half-crystal-20261001/README.md)
+finds about 47% hypothetical historical savings from individual halfway stops.
+It records delayed sources as censored and proposes temperature-specific peer
+caps, while preserving this active fixed-600-ps collection.
 
 ## October 1 continuation
 

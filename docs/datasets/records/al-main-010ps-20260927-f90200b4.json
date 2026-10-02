@@ -59,53 +59,2144 @@
       "provenance": {}
     },
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0880/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0880/status.json",
-      "sha256": "13e8e4240b7660158d339ce9854925e94999e7e38c23e3c82671b2398b65db54",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0884/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0884/status.json",
+      "sha256": "079e83ba0c472f9241ccc2269a0a397b1cf9a7ecde850f8cf2aa524c015bff1c",
       "kind": "metadata",
       "keys": [
-        "host",
-        "phase",
+        "created_at",
+        "reason",
         "run_id",
-        "slurm_job_id",
-        "started_at",
-        "state"
+        "state",
+        "successor_directory",
+        "successor_launch"
       ],
-      "recorded_state": "running",
+      "recorded_state": "queue_handoff",
       "facts": {},
       "provenance": {}
     },
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0881/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0881/status.json",
-      "sha256": "11429663bb1dbb8981e4a1246c005854c8c0d03c904f1cbd06e27731ccd56524",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0885/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0885/status.json",
+      "sha256": "8a021bbe5d4578e538008a44d67525e67c4b69aae41ab0625de557a875702e8a",
       "kind": "metadata",
       "keys": [
-        "host",
-        "phase",
+        "created_at",
+        "reason",
         "run_id",
-        "slurm_job_id",
-        "started_at",
-        "state"
+        "state",
+        "successor_directory",
+        "successor_launch"
       ],
-      "recorded_state": "running",
+      "recorded_state": "queue_handoff",
       "facts": {},
       "provenance": {}
     },
     {
-      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0882/status.json",
-      "relative_path": "runs/al-main-010ps-20260927-source0882/status.json",
-      "sha256": "83ad7d26f91d82b982b6c9ad8858c0f059830d9eebc6d9875e191a5ac247acc3",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0886/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0886/status.json",
+      "sha256": "0985d4c77cb2b5baa4536f40c7fa429c82d46205e0d91c1ff7e895480a5ab23e",
       "kind": "metadata",
       "keys": [
-        "host",
-        "phase",
+        "created_at",
+        "reason",
         "run_id",
-        "slurm_job_id",
-        "started_at",
-        "state"
+        "state",
+        "successor_directory",
+        "successor_launch"
       ],
-      "recorded_state": "running",
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0887/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0887/status.json",
+      "sha256": "2a1140022cbbcc6c578da38cd4985aa6c5c776b1a5d8673b9e4af70278ab0144",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0888/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0888/status.json",
+      "sha256": "993cda19fcafff439054c0ff0397928e7c77ca697b8cc3db58ceeb65183dcdbc",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0889/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0889/status.json",
+      "sha256": "bf111420d967bf60f524354dd94344fbe0e6339bb651f776fffe56ee51b67040",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0890/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0890/status.json",
+      "sha256": "0c1c31eb07a78683f3d5bdaab58d7ccfa95cf59a5ea85dfcdcbec2dfd3bfef49",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0891/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0891/status.json",
+      "sha256": "b431cba14e27fcee885e8fcd2dd25d9c89e482deab27bfc84d06c3640024e904",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0892/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0892/status.json",
+      "sha256": "5ad05fd9cbbcdf880d12360d3b506f39f585f2a9690fc3e82a0daa6ae85a0aea",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0893/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0893/status.json",
+      "sha256": "cdcfb5ec761a4ccf61e22432f9e771713cabb78d127686fff11d1dff521d990c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0894/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0894/status.json",
+      "sha256": "aefc21991dcdd89de95ee50597bae805c5c00370ff2b216533e138ba148f9f8c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0895/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0895/status.json",
+      "sha256": "f15bd5c558a3bcf72b26572b4bcc476366a3f288fd2e46ca6d7f707638c8f833",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0896/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0896/status.json",
+      "sha256": "9d53219f90a0f9d614a100fee677062aeed9cce51d7cd1c91e24b0ae555d0170",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0897/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0897/status.json",
+      "sha256": "29f1e1176a2fc2f760cf8167c1539d4a45820f07a140bbb09d95a9135387d240",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0898/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0898/status.json",
+      "sha256": "45a7989429e8a53c62a33cb597378987ac8d36cf1e47a7048e43ec2e4c81599b",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0899/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0899/status.json",
+      "sha256": "23d9144096fb5a2a6ec899bab72dd03d2b42a7c23ad473375d622df10ffa0f86",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0900/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0900/status.json",
+      "sha256": "3b51dd35468e27a11d7035ead380cce64bf2fc4fb9547ad399e95c86fd58000c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0901/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0901/status.json",
+      "sha256": "2784c6f12ae08ff198ab9165d16d3d27788ffe011e69ece0109f088bccfba3ed",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0902/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0902/status.json",
+      "sha256": "ea1a5f0f8d227ff6ee8eb0396eb5f2857e26a23137849743fad9866338148ac8",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0903/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0903/status.json",
+      "sha256": "71355878f44daeea133f5ee1ed5677e7a412fbbe4420477e59fb18bd7e387bb3",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0904/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0904/status.json",
+      "sha256": "48cc33d7b787e09cf26c4587e03fca464ba964b4cb9ebdd04473445f0122c92c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0905/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0905/status.json",
+      "sha256": "d9337bb9a25f85306e7a94b0e0bc8b52e013147e7c0d1a82c5b1af785f1ba3ef",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0906/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0906/status.json",
+      "sha256": "caf4f63618606a4039a64ea869f554c0835e6de07da1bc23ae1bd99e6e309ec5",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0907/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0907/status.json",
+      "sha256": "9332e1f98be834ec9d1ab3766533cc3ae392793b4e939c0f0e6cf7bf44122d45",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0908/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0908/status.json",
+      "sha256": "0fdba302857b2c2ea6b57fb71e3911c73d571d703acc0f61c7aae22ca05966d4",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0909/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0909/status.json",
+      "sha256": "837bb940422d60aabc68e622a6bccaddbd9e27a53feaf856c8fcf5d2015a6932",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0910/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0910/status.json",
+      "sha256": "a5e39e2e191b9c9c51783a7cdaf7f4a21a5c357194380bca1dc8ad2fcdb9d3b1",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0911/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0911/status.json",
+      "sha256": "1bbf6ed31a79c345292dd6cf60e51255b79a22d66210a9f7af7612378ddea72c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0912/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0912/status.json",
+      "sha256": "0444f7718b3addc9165d8444c239945c6b82cd28dcce23dc70122fbb4018b48d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0913/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0913/status.json",
+      "sha256": "1f6ca85e4bc66efd1641e58eb6b82dc94ac0ce5855c523443a585aa4c7cbf1b6",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0914/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0914/status.json",
+      "sha256": "5cc2edef97f2c8eede26640a738852d939b791ce787a1fb1d7102d41a2d1451f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0915/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0915/status.json",
+      "sha256": "6f82321b146bb9405620ecc389f3826c85cf85a371a87b9f191ab326b946e5d0",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0916/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0916/status.json",
+      "sha256": "5197b807a17d1580271cbd6c4b12cc71809627f3c82e67414c534d385444c772",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0917/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0917/status.json",
+      "sha256": "1038c8a3375f058cdab7121c0bc3a85f6e1c99a0fb82a388f33e7cb03f4e181d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0918/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0918/status.json",
+      "sha256": "00a3d09d4da404232d9ebb1f466a036f4d4de6b3739289424cf2c52891418bdb",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0919/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0919/status.json",
+      "sha256": "8061cc87f885f559ce7152561a2e9391c03bddd1753f346d5378e1cf03050978",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0920/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0920/status.json",
+      "sha256": "3a2db50b0edfb0df808898302f441afe28abd066a38231fdb9494dea9a40b70a",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0921/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0921/status.json",
+      "sha256": "33bc29eadb6e45e8bc68ea46673312a37b54497c9012cd450ae33ad4e460154d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0922/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0922/status.json",
+      "sha256": "1705be2b0b5b466a1c0fd75f1fc400802de4eb1ae66bf2bcd6bee680dc0b5ee3",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0923/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0923/status.json",
+      "sha256": "d74d1d28eeac843a9d8ee6a79d68e48cb1815de11dcf4ff5ca3e7cc69a08c022",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0924/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0924/status.json",
+      "sha256": "ba6a8de5a9c61413f4c54ecc954d24e3fbb3d2ccc99463a6921eafbe76a3d1e1",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0925/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0925/status.json",
+      "sha256": "c066e247abf7ee6d8df1f819a37cf2715dc5158d556dad98b3c8a968e03885b5",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0926/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0926/status.json",
+      "sha256": "b021b59815a3980a9cd8b4cf25527674d08fea918f2414fae398fd4e4f292a32",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0927/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0927/status.json",
+      "sha256": "cd5728290cb4ee17e3f5972efaeeeeb5975853813bc1fcd5c7809893f83807c9",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0928/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0928/status.json",
+      "sha256": "4dc4fac77e9c40e57c0a9c518074c4829b12688858862a708737764605231351",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0929/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0929/status.json",
+      "sha256": "6dff2707b999ff8dec28de3fb8eb2335072a4b91be5160dbca38ea76c9dd13fc",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0930/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0930/status.json",
+      "sha256": "f06eb44511a17eaf79ab9ac0eb3691433d8179b6016da1331b79c1522db5ab85",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0931/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0931/status.json",
+      "sha256": "5dc39eeffd33e3ddfb8ed14df99a6fbe478f60a4ac30b993c468d7ea0b4d9829",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0932/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0932/status.json",
+      "sha256": "1650d12b642c9a36a5fce1133d9376c809fb342b072502d68fe81ca726adaacd",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0933/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0933/status.json",
+      "sha256": "bf58562163ef6500e39ca3b2fc4b729206c38476cf82e250ce4f2e96b7eda3a8",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0934/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0934/status.json",
+      "sha256": "6702699599973fc7440cf3076d723c683d0c9ccc815db6210aae6abae3eeae83",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0935/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0935/status.json",
+      "sha256": "027e638ca1a745b4e799be975ea5792ebd0e163f01459c2003fbe57418b2ec4d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0936/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0936/status.json",
+      "sha256": "6c1f1f9a6256f3f6927e677252dc73f23ede8440dbe331f042fdd52148e8d5ec",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0937/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0937/status.json",
+      "sha256": "febb31a2a94a8713ecd9109838fb9e3bf6b7b0410c05adb302dd97498baa09b5",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0938/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0938/status.json",
+      "sha256": "7d729d467a24bcdf255601269969644e05a8c7c8dea0cff53275bb47e9cbe62c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0939/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0939/status.json",
+      "sha256": "c11d81a4af5a5fd50aae0abb910dbeee88046b7760a3aadfb39587ba0cebc2d0",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0940/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0940/status.json",
+      "sha256": "54353d9cbabf90e16de8923abd53948e3d6ffe2f2f86c7f64e30d8978099e78e",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0941/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0941/status.json",
+      "sha256": "bb88dbf661e2058a30fd9002cc370e29a15a22b21f0a900aa9b23188667bf978",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0942/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0942/status.json",
+      "sha256": "832e73b88155dde6515da0c5f0d874f399b9b7191061ca437ac6bb5cab34ae17",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0943/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0943/status.json",
+      "sha256": "b281fd1b201bf41ddde65604baf05d5debc5f9919f174d64959ce0b286861bc6",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0944/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0944/status.json",
+      "sha256": "b61a1d1628a27d47ad3abe5dc46308c131fefef7936056b5343ce4d091a33350",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0945/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0945/status.json",
+      "sha256": "e0be917b640269d2d3bbda5505dc68f0d24a398936f75fca72845422bb3162ed",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0946/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0946/status.json",
+      "sha256": "e234e72f911915e4ad63d988385abcd4eea0b64e5e6935e6aaac5395473e7cc3",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0947/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0947/status.json",
+      "sha256": "97909d1aaab9b2b6bffa4089aeeb2ca73b33871e65d1ff07a8f71ce8c73171f0",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0948/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0948/status.json",
+      "sha256": "14ab65379a709363c68bc7aa301cd455f4cf12e6f097953cb65998058b646e22",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0949/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0949/status.json",
+      "sha256": "9bc384b2b0301f4d3ae6276e7da70b514935f66f93943b89f9080da134bf7131",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0950/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0950/status.json",
+      "sha256": "2248cb28ef25d1dd60deaa7643f4a673e7fd7ababe5481b85f740fad02a06db8",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0951/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0951/status.json",
+      "sha256": "b5e3d9729a0ee567510f148fe21ce4e000b7fc7180c84d9b052e2282491c97ee",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0952/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0952/status.json",
+      "sha256": "4fe09275f95585ceb0f6739e6ea7968773311eea845c13cf5abb844b86359906",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0953/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0953/status.json",
+      "sha256": "974d6e6d58c88a3f5e2a09e0a17d9790d5fb664fceabf007680b87365886b41d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0954/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0954/status.json",
+      "sha256": "f9ebcbc9dd631df44377d2dea26bd9006335fd994862471c9a38bfd2df25a9e0",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0955/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0955/status.json",
+      "sha256": "e4fe2305728ae89f260d7719cd6338e7832891f3190587450d905e06cc350928",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0956/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0956/status.json",
+      "sha256": "9963146d1939af54310bdb086f9cb19a2ef05d858075ddc0a1331b6b4178ed27",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0957/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0957/status.json",
+      "sha256": "05e055d39a0840dd8253c5d3e39913bef9b12bf968b6b19f4a6a130db28d898c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0958/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0958/status.json",
+      "sha256": "fe23f5905de4d9927fb552822bcde05d862858975b9fa673dc6e9b3cfc024c69",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0959/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0959/status.json",
+      "sha256": "52a50e93c3575f9079a521d30d6a0764bc2917eac9379201c47bde427465ba6a",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0960/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0960/status.json",
+      "sha256": "efc06e1679ab4a46a94eb08e59355ed1ca9a9836fa4202fcd2e9a43a62841cf8",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0961/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0961/status.json",
+      "sha256": "86c072f7ca90b19d1fdab04db7494e853582a884383a70b384108329ea310dec",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0962/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0962/status.json",
+      "sha256": "56e87221079d6822e66cef73d7526600133522ce3bb9f9e6f7e8aae118f6679d",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0963/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0963/status.json",
+      "sha256": "8140a250e9d1294c21f1670873dfbf120d5b587993d2bf0b4d8670f403d849e9",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0964/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0964/status.json",
+      "sha256": "950efb7791e5761913bcb9e220723b15b0766b4b1ba7c8cd4fea20684b9ab8b4",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0965/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0965/status.json",
+      "sha256": "7a5ec26b4f9ec17f191f4162a525ede0a522a7bf9d3e85d1765de59d6f0eb3d5",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0966/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0966/status.json",
+      "sha256": "6a72a00e030c1efe8988d991e0bea8a8a0efe60577745d3816a4b0b29f400853",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0967/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0967/status.json",
+      "sha256": "d9d28be95d470c70988f81f8fbf1c2f70c295bc7f365fa74ff5e461b9705a036",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0968/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0968/status.json",
+      "sha256": "c825fdaefebd9d47e1c274d08e2997ba70807541f3911d8af3bf3a8e24c3c5b3",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0969/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0969/status.json",
+      "sha256": "7f8045f5df4027cc6894bf77e4a0569cfa5a7d2f085d972f29abb910e851539e",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0970/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0970/status.json",
+      "sha256": "c41581393af0c4bf3b16ebb222eff24ee6830c93410d6647c9efd3ae8bfa8ff5",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0971/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0971/status.json",
+      "sha256": "b42bf054eb42de4b4a06c5ed9f3e9ff95e505cf150ec082770bbc555c03f6e76",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0972/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0972/status.json",
+      "sha256": "9a264c92bbec4440088ec19afbe4217170348c141720867903ade2595d65e746",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0973/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0973/status.json",
+      "sha256": "47089e21d92ef639bb60bbb81d2030ee72b53f82cbb3d9a75acf200d09a7416b",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0974/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0974/status.json",
+      "sha256": "a33fd3aa8fd335e2b9648f12eb724b841c9a9f8cd2750498530b15355c47344e",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0975/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0975/status.json",
+      "sha256": "940addb7aee84b0df7f9dc0451d230d24e2d10ac4a23bccfc38916a00c2b9c16",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0976/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0976/status.json",
+      "sha256": "3d2925ff30a620da5935a28bfe24e30441d9906e9df6863fe3fd522c6241a31f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0977/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0977/status.json",
+      "sha256": "6b8c9009ef3d71cfa6409c570a868364a10dacf10573198baeed93172135963f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0978/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0978/status.json",
+      "sha256": "3d2c6002884d21adf5893c8d05942142edbb3fba191d9ddc5e7cb865341ca89c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0979/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0979/status.json",
+      "sha256": "97455bf63962e80feb1d06f9cc6456ddd32593ca699ddc2dc322085361489d77",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0980/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0980/status.json",
+      "sha256": "36d815d2b0146fac53b7a11079e70d83510a3e74ac14e696d07cd270333c9ece",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0981/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0981/status.json",
+      "sha256": "5aa53ad361602cb5f77f84fd79a223b2e90e5672bb0e55fbf12b8ee5efe41539",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0982/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0982/status.json",
+      "sha256": "34567ae3dbfb0a12d24e4021b605a6ac60a41bf831012ace29efd45c418eae57",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0983/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0983/status.json",
+      "sha256": "ddb913a19102bbc2378465dc449e15788836c635c1ba21e6d1fadcdb28e933bc",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0984/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0984/status.json",
+      "sha256": "71d6a59ec16dff505e6f954dc1025fdca9842d7ddf5347c5efd5fa8c9dc22af8",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0985/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0985/status.json",
+      "sha256": "5fe987bb266c6def3ca6f6643f3d3252c860b56e517f47a7db4e39988513b53f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0986/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0986/status.json",
+      "sha256": "1be26eef47768e276da7ef21cc4c291fe4b38552164e76c6c74b74a0d90aef71",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0987/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0987/status.json",
+      "sha256": "61369c25231a30f149a1cf44224926a0b3dd65d963baf5645f9458d1d80f4b6b",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0988/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0988/status.json",
+      "sha256": "04fb6de4b7478b8e8f533e126516fb12e7c8f50b23339e3a7772cce2b85dce05",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0989/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0989/status.json",
+      "sha256": "4303ddf9945b54a1955d57998e1a26789ccd671b02f290a7a82b73303196186f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0990/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0990/status.json",
+      "sha256": "d949f8a92403e3e2e30324cc4988be2262fb16151a089f7ac7db2c756a37c6e6",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0991/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0991/status.json",
+      "sha256": "ab24e1b06772cd0b4f969015e16be5dfae2191c4bd7dc9686144e113874cd021",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0992/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0992/status.json",
+      "sha256": "7902bf5deb9b565f3741df6e0e81f3d40e4887da211a789236ff63d69bea6ffa",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0993/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0993/status.json",
+      "sha256": "bb1e0377d53227773f0c51b25b27c2b789d7414553fc5a722f7069166db2be0a",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0994/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0994/status.json",
+      "sha256": "4740f99b4a4e87ff523cffb797f7562594e3cd31402eb3959bb32e64703ab1c3",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0995/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0995/status.json",
+      "sha256": "a3ec78ca764ca7074015dc929f1497c770d85089be15e8efd9e3eb7a2b76ae4c",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0996/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0996/status.json",
+      "sha256": "66dd8c5ed1dd454d9f25a05e189514f411813783513aebd09d0eb487708a1e06",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0997/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0997/status.json",
+      "sha256": "b821a97ef796676855e5e3ac7cbf8992de3c3b8de194ce672a31034305b2ab81",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0998/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0998/status.json",
+      "sha256": "61b17cf71e95766dfae19b2d8a15d5ed3f0c71e9ca042f7d5bddc6e1a626ea3b",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0999/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source0999/status.json",
+      "sha256": "2cb066d2086aa1fda838d9934d551b9a9396d8d0e4b6deb6aebb22e6c03ba95f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1000/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1000/status.json",
+      "sha256": "54d25ab0b60652cb1237547a004283c83745d159595d5ec64a79352ccd367adf",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1001/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1001/status.json",
+      "sha256": "6d723969c20397563fe172e974361b076d496868154e20d4653fd6e06a623b5f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1002/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1002/status.json",
+      "sha256": "e25b2ff24bc199770ecc5c8024160c14304385390daecf518ceb426080c8b222",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1003/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1003/status.json",
+      "sha256": "a759049b4c375739457f8bc06c941265cdaf58e20ad7ed89b173ee474814721b",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1004/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1004/status.json",
+      "sha256": "3d3ddc8c491385a047b4a35bc47aa95a4aeac9620267efe0cb7fe745aa649cdf",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1005/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1005/status.json",
+      "sha256": "10a8220da2e6d78a491817a6b6f3943d5b2a55be4d3b69b5278427d4370abf4e",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1006/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1006/status.json",
+      "sha256": "cb5c6f03e8f2afc076d8d79f417316d322926c86d1ab542cfe30c263be756eac",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1007/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1007/status.json",
+      "sha256": "a553dadd434b0a6a3e86feca5a39fb0796174a43978b5cc9b8362cc3b8899353",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1008/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1008/status.json",
+      "sha256": "c95931514affda14e84c288312a8df167445e3d2432c86e13f8901b3d4644e7f",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source1009/status.json",
+      "relative_path": "runs/al-main-010ps-20260927-source1009/status.json",
+      "sha256": "181d463ead4ad4f714a6ef1068519a04d96851c3a30258045606fb5cf9869ef4",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
       "facts": {},
       "provenance": {}
     },

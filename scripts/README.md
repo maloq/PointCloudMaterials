@@ -1,8 +1,43 @@
 # Maintained commands
 
-`python -m src.research.response_training.queue preflight|submit --config configs/response_atlas/atomistic_training_20261001.json`
+`python -m src.research.birth_prediction.appearance submit --config configs/birth_prediction/appearance_transfer_20261002.json`
+compares original-birth and combined appearance predictors on failed embryos; [workflow](../docs/birth_appearance.md).
+
+`python -m src.research.crystallization_origin.fates prepare|submit --config configs/analysis/nucleus_fates_20261002.json`
+searches failed crystal embryos and appends fate labels to existing births; [workflow](../docs/nucleus_fates.md).
+
+`python -m src.research.birth_prediction.merged prepare|submit --config configs/birth_prediction/merged_retest_20261002.json`
+retests birth predictors with merged former validation/calibration/test and
+training-only CV selection; [workflow](../docs/birth_prediction.md#merged-evaluation-retest).
+
+`python src/research/local_response_execution.py --bundle FROZEN_CODE --queued-job JOB_ID`
+uses an existing GPU allocation for the same local-response query bank while the
+two-GPU coordinator waits; it archives the current parent before handing over.
+
+`python -m src.research.local_response.queue prepare|submit --config configs/simulation/local_response_20261002.json`
+runs gated local80 MLIP responses and twelve matched fits on two GPUs; [workflow](../docs/simulations/local_response_20261002.md).
+
+
+`python -m src.research.birth_prediction.feature_families prepare|submit --config configs/birth_prediction/feature_families_20261002.json`
+compares descriptor-family refits and matched permutations on original/relaxed
+birth snapshots; [workflow](../docs/birth_prediction.md#descriptor-family-information).
+
+`python -m src.research.response_performance.benchmark run --config configs/analysis/response_performance_20261002.json`
+benchmarks numerical equivalence and full100fs oracle throughput; [workflow](../docs/response_atlas.md#october-2-oracle-acceleration-benchmark).
+Use `src.research.response_performance.validate --config CONFIG` for isolated
+repeats and acquisition-reuse verification, and
+`src.research.response_performance.publish --root RUN_ROOT` for saved-result plots
+(both invoked with `python -m`).
+
+`python -m src.research.response_pacmap --config configs/analysis/response_pacmap_20261002.json`
+plots matched held-out Al neighborhoods for response-trained MACE, MM-TDA and
+GeoFormer; [transfer diagnostic](../docs/response_atlas.md#al-neighborhood-pacmap-transfer-comparison).
+
+`python -m src.research.response_training.queue preflight|submit`
 collects fixed-simulator responses and runs nine matched full-cell value/response
-encoder fits; [workflow](../docs/response_atlas.md#atomistic-response-training).
+encoder fits with the float32/cuEquivariance/batch4 default;
+[workflow](../docs/response_atlas.md#default-for-new-al256-response-runs).
+An explicit `--config` selects a versioned recipe; preserve historical frozen runs.
 For an already frozen run, `src/research/response_execution.py --bundle FROZEN_CODE --lane NAME`
 shares parent collection across allocated GPUs; [parallel execution](../docs/response_atlas.md#parallel-collection-on-allocated-gpus).
 `src/research/response_gpu_request.py --execution EXECUTION_DIR --deadline UNIX_TIME`
@@ -106,6 +141,21 @@ cluster comparison, paired dense MD views and PaCMAP; [workflow](../docs/spatial
 `python -m src.analysis.al_replay --config configs/analysis/al_replay_completed20_20260929.json`
 compares old/new Al trajectories from the same native preparations at exact shared
 times; [paired protocol](../experiments/al_replay_20260929/README.md).
+
+`python -m src.analysis.al_duration --config configs/analysis/al_duration_all150_20261001.json`
+audits all 150 historical Al sources and the captured complete dense descendants
+for late transformation, bulk plateaus and hypothetical early stopping;
+[protocol and findings](../experiments/al_duration_20261001/README.md).
+
+`python -m src.analysis.al_half_transform --config configs/analysis/al_half_transform_20261001.json`
+evaluates the user-defined 50%-crystal stopping target from the frozen duration
+observations, including confirmation and a 6 ps prediction tail; same research protocol.
+
+`python -m src.simulation.campaigns.dense_al prepare-half-stop --config configs/simulation/al_main_half_stop_20261001.json`
+versions only unstarted Al sources to halfway/peer stopping, with native-state
+monitoring and verified variable-length exports; [workflow](../docs/simulations/al_main_half_stop_20261001/README.md).
+`python scripts/convert_trajectory.py dense-al-half RUN_DIR --delete-source`
+is its maintained converter for both 0.1 and 0.01 ps.
 
 `python -m src.research.spatial_vicreg_bias.island_audit --config configs/analysis/interface_pacmap.json --output OUTPUT_DIRECTORY` runs the screenshot-specific descriptor-island audit inside a Slurm CPU allocation; [definitions](../docs/metrics/pacmap_islands.md) and [findings](../experiments/spatial_vicreg_bias_20260929/PACMAP_ISLANDS.md).
 

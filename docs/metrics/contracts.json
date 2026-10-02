@@ -2552,17 +2552,159 @@
       "docs/metrics/response_training.md": "3684f884f335d7b0b4ebc6e6ab08ba4afbd8ac84a53dc5f7399a229db04f0c81",
       "configs/response_atlas/atomistic_training_20261001.json": "dc531eaa132f786bc42e0414042ba66a27f90ac17eb061e284af3c77262accb9",
       "src/research/response_training/__init__.py": "f77f3d5f5257b0ec343b669eb10e576611ad086e2cd45c61b2aac58ee74264d3",
-      "src/research/response_training/common.py": "20b0349d25df4e5f5a5f2d172247041a1cc8d23a3f3b05638f82739503c5fdcb",
-      "src/research/response_training/data.py": "d8238689c0419b79882942117fe66fa0e8cca29c6e66496337913cefadb6ff8f",
-      "src/research/response_training/evaluate.py": "e04d49e3e13ada05f8b99002cb9b427f2a8caa4e9fa0bc085c4e510d9bc9da8b",
+      "src/research/response_training/common.py": "ea56cb9d25a57374f24545b4a0a7627bbcb0940c158f99169758038a09456519",
+      "src/research/response_training/data.py": "97a304b26c33f2588a24185dccd7b212299806e598fb60425da8851e444f3d96",
+      "src/research/response_training/evaluate.py": "63a16bd8c363e3b51a6c8ae204373ed0a7e780734f84f3365274fb12b2636c44",
       "src/research/response_training/model.py": "4365d270636750eea350b1413cfed52934cdfa3a0acc033784cefcc8dc6028fc",
-      "src/research/response_training/preflight.py": "56e90b68469c9e535118899e6a19f812781ea8a2e20b964c03af0295edd868c5",
-      "src/research/response_training/queue.py": "6d4e6b82d454d89811a25190dacba601187f96492467850f80b6fa676a1357dc",
-      "src/research/response_training/train.py": "fc12a8885807a7b3d60a60afac07d2a4a701328c104773f39e88b8b2652e492a",
+      "src/research/response_training/preflight.py": "114b2fbe37f01be041731c9bad17172ce32be8466ee6fc54de682231b02efe86",
+      "src/research/response_training/queue.py": "11802a81b746e5ea0217f6edb4ebfd012c759ebdc17baa8b1602e3f580c8bf66",
+      "src/research/response_training/train.py": "5e61b814b6ece3e4ddef29387c1109450180dd3b7e14ba99f01c05205c6d13dd",
       "src/research/response_atlas/atomistic.py": "6a187b2313b36922c59bd526419c694ee56b86df156928dacfa4dc2a5f58baf0",
       "src/research/response_atlas/reference.py": "cf7dff85b5ef92953a92142ed4f8887bd3d6d20314a0497c8623d4d5468f25a6",
       "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
       "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8"
+    }
+  },
+  "al_duration": {
+    "files": {
+      "docs/metrics/al_duration.md": "b07961f3b7bbcf4f619fa59c141de48e7644d7fb6e7c5fac8456fe035ec6b891",
+      "src/analysis/al_duration.py": "46dece5bb54d998942d95f59f1baa0e44cc25f36653b75b2459cbbc94c4ff1ce",
+      "src/analysis/al_replay.py": "eac933472aa718a27516b36e155779f8dcc8feb4bdb189830a53387067a1b6bd",
+      "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+      "src/simulation/campaigns/common.py": "b81248e3f930d86e0f7abc7a28e8c26a0ab175a47b59de0c3751522b29cff0ad",
+      "src/simulation/campaigns/independent_meam_source.py": "3527bcc80ae272ff0d2e4848e745a83949c14363cbcbe30b85f189b45c8f49fc",
+      "configs/analysis/al_duration_all150_20261001.json": "82a7e4ff57a8dad203595e957820196a04cf2402df43cfe5802044a0f2104360"
+    }
+  },
+  "al_half_transform": {
+    "files": {
+      "docs/metrics/al_half_transform.md": "49b893ed564384f7acee64e1596b551926fa604025a49eb752bc553cc18c7202",
+      "src/analysis/al_half_transform.py": "4a22f84b7fb2b5405ea5c0f17aa51c4c349ae1cbd3652a5fc88e1422401edce7",
+      "src/analysis/al_duration.py": "46dece5bb54d998942d95f59f1baa0e44cc25f36653b75b2459cbbc94c4ff1ce",
+      "configs/analysis/al_half_transform_20261001.json": "ab63ae75fc762448fb730aad8e96946ca211e7ccf5af2bb369cf240897036fc1"
+    }
+  },
+  "response_pacmap": {
+    "files": {
+      "docs/metrics/response_pacmap.md": "f1c07f4367a3d55f7c7d482df896025bf7c051bb97058d9590400946c2b2490e",
+      "configs/analysis/response_pacmap_20261002.json": "40dd20b8db6236ae5ac82fd6471a9feed2ce3f5868a4ec3a57986d7c817d724d",
+      "src/research/response_pacmap.py": "7a5fda4923b91e37042816e329bb6b5ebf0439c721bb12ed6466c5c886b16a73",
+      "src/research/response_pacmap_infer.py": "61ec68c68f9118218207610ded4014394bbad2dcc8f2acac6833ad5b19462e26",
+      "src/research/birth_prediction/infer.py": "026b243709b0af65038313bd5d6e2482b1d14a622ba3ed5488a3e57b21d7871a"
+    }
+  },
+  "response_performance": {
+    "files": {
+      "docs/metrics/response_performance.md": "2f957b31debe49ca3e2b7a43a271cb76962f760cb8328fb06734aaa600b6d7bc",
+      "configs/analysis/response_performance_20261002.json": "e4b94ccd793da4ab73bab30b58f69c72bbd7c7d9e6d14bcb8174435eb5d89cfb",
+      "src/research/response_performance/oracle.py": "4c0ecda5b4c7bfebd749813e74dcd43dfbc5a7febb5322c91ca4be942b133761",
+      "src/research/response_performance/benchmark.py": "b5c856e305e60f99f2025b2a0ba2188731ae58643bec278fa6e705c78244a2a9",
+      "src/research/response_atlas/reference.py": "cf7dff85b5ef92953a92142ed4f8887bd3d6d20314a0497c8623d4d5468f25a6",
+      "src/research/response_atlas/atomistic.py": "6a187b2313b36922c59bd526419c694ee56b86df156928dacfa4dc2a5f58baf0",
+      "configs/simulation/response_atlas_feasibility_20261001.json": "3bdccb541c2982be784f7b8a82ead1fdf910d0bfd557286a9b9dfb7b3a3c9732"
+    }
+  },
+  "birth_feature_families": {
+    "files": {
+      "docs/metrics/birth_feature_families.md": "158c7ec5d04ba5533face2536aca910b4110a567bd46b3785ef7afdb61fe4170",
+      "src/research/birth_prediction/feature_families.py": "01808bf99279ae4f4ddddcf3bc83584eceabc4db78cc4967048d640f2c4ac4da",
+      "src/research/birth_prediction/feature_family_analysis.py": "f611c7f34254f79426640c10642115dec91adf85bb2ceb56eb81f67c721edb9a",
+      "src/research/birth_prediction/fit.py": "c539406cd740911eb3a32fa6bb5e95347f452d072ad682bcf0d7f1bc693d3c4d",
+      "src/research/birth_prediction/features.py": "8f52d9e200df0877ba375efd4815f7f4df46048fd4c65538964d0d4216349623",
+      "src/research/birth_prediction/analysis.py": "a5ba83e9766a4b628caf05e12155153bd6d47a205c44d4a40ecf910042891b68",
+      "src/research/birth_prediction/leakage.py": "0dd966b2b1834d1d380200e8a5c6fa0fc4f59ef949c44174b1aab86184b675c4",
+      "src/research/birth_prediction/temporal.py": "5787a6fa4dbbba8f8f62fc4fe98acceaa94a8734e7d72b22f5ec7292deb37502",
+      "src/research/birth_prediction/temporal_inputs.py": "886fdbbe48a85333a9c00eef088492419e67f4f0d80aa4c1498c0183c622bf96",
+      "src/research/birth_prediction/temporal_analysis.py": "0246dc4ad52b59c661695acb0fd1fe6df68b70ac2e404c5dab3e793be52c1470",
+      "src/research/birth_prediction/data.py": "5f9913129aebc3657fd88409086a5e9780e6e8779058ef51b39f403441421840",
+      "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a"
+    }
+  },
+  "response_training_fast": {
+    "files": {
+      "docs/metrics/response_training.md": "3684f884f335d7b0b4ebc6e6ab08ba4afbd8ac84a53dc5f7399a229db04f0c81",
+      "configs/response_atlas/atomistic_training_20261001.json": "dc531eaa132f786bc42e0414042ba66a27f90ac17eb061e284af3c77262accb9",
+      "src/research/response_training/__init__.py": "f77f3d5f5257b0ec343b669eb10e576611ad086e2cd45c61b2aac58ee74264d3",
+      "src/research/response_training/common.py": "ea56cb9d25a57374f24545b4a0a7627bbcb0940c158f99169758038a09456519",
+      "src/research/response_training/data.py": "97a304b26c33f2588a24185dccd7b212299806e598fb60425da8851e444f3d96",
+      "src/research/response_training/evaluate.py": "63a16bd8c363e3b51a6c8ae204373ed0a7e780734f84f3365274fb12b2636c44",
+      "src/research/response_training/model.py": "4365d270636750eea350b1413cfed52934cdfa3a0acc033784cefcc8dc6028fc",
+      "src/research/response_training/preflight.py": "114b2fbe37f01be041731c9bad17172ce32be8466ee6fc54de682231b02efe86",
+      "src/research/response_training/queue.py": "11802a81b746e5ea0217f6edb4ebfd012c759ebdc17baa8b1602e3f580c8bf66",
+      "src/research/response_training/train.py": "5e61b814b6ece3e4ddef29387c1109450180dd3b7e14ba99f01c05205c6d13dd",
+      "src/research/response_atlas/atomistic.py": "6a187b2313b36922c59bd526419c694ee56b86df156928dacfa4dc2a5f58baf0",
+      "src/research/response_atlas/reference.py": "cf7dff85b5ef92953a92142ed4f8887bd3d6d20314a0497c8623d4d5468f25a6",
+      "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+      "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+      "docs/metrics/response_training_fast.md": "275f4cf341662b3e48d00ea2b76ccd51a67470c7bfac44a845abf2b44528ab6c",
+      "src/research/response_training/fast.py": "7beac4a0577106cef9ab681d1fd76de64da9611fa031267a1fec9f40517eec63",
+      "src/research/response_performance/oracle.py": "4c0ecda5b4c7bfebd749813e74dcd43dfbc5a7febb5322c91ca4be942b133761",
+      "src/research/response_performance/collection.py": "405adf8fad1137aeeca969bf5669aee20969bc2d79fca5673386711545c6ba1c",
+      "configs/simulation/response_atlas_training_fast_20261002.json": "395ef99c3fa39f17bfa0af1a5fd55170db963cabcdc5da6fcc5dc7397e59d807",
+      "configs/simulation/response_atlas_fast_default.json": "06b2202cbe6be4f5ecf8a3c1626446bc872ac9600f849a8c11a5f1e922f8ff33",
+      "src/research/response_execution.py": "72de36054d2095ea6c0685c84bd7d6a5c1be97d8872a4c481e517ea8140fb4cb"
+    }
+  },
+  "local_response": {
+    "files": {
+      "src/research/local_response/evaluate.py": "f9ccaccfa311a734603a09b6d0879d1ce8f406b51d574cb74272a2ff2ad06045",
+      "src/research/local_response/collection.py": "fd763a1d87b35afba44341dd4526e67b9190518e59c9ef4dd646be61ca89d064",
+      "src/research/local_response/__init__.py": "c12de759c5d9a4b520eba9f6ace1403a18d9cf28ade856c128e1d936f8d82b5c",
+      "src/research/local_response/train.py": "cbb4ed01c1bab2d3bb941e7d6604ade9dc150a5ecafd5c2035a5926990f0b034",
+      "src/research/local_response/gates.py": "41c88c71c73346c8ccd0748509318ace4a35a6c2dcec3be082473acf02312d51",
+      "src/research/local_response/common.py": "b3a41dd3cf6085da8fe73671ece23adf3a8790367900d43c89b6a3c4f926551a",
+      "src/research/local_response/data.py": "7d84cb9a5365f0112458486a9161bf50bbc810c3a1dab9704c9e271e884dae10",
+      "src/research/local_response/queue.py": "a687611f552a5799f3a286b1bac12afdf7ea971f0bbab0f4dd6facac0bd6feb7",
+      "src/research/local_response/model.py": "2d68116d61e0a3124de08b6d23886903fadabf9795897c90cdcee502e907cc5a",
+      "src/research/local_response/oracle.py": "67bbeca27af60a00e3bb166a055822f1cda178f09785a8f55c6bad628878b110",
+      "docs/metrics/local_response.md": "e6d40e13164c23d107be275344ab9a8640c0a5019e3e927c45f711facebebbb8",
+      "src/research/response_training/model.py": "4365d270636750eea350b1413cfed52934cdfa3a0acc033784cefcc8dc6028fc",
+      "src/research/response_performance/oracle.py": "4c0ecda5b4c7bfebd749813e74dcd43dfbc5a7febb5322c91ca4be942b133761",
+      "src/research/response_performance/collection.py": "405adf8fad1137aeeca969bf5669aee20969bc2d79fca5673386711545c6ba1c",
+      "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+      "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+      "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb"
+    }
+  },
+  "birth_merged_test": {
+    "files": {
+      "docs/metrics/birth_merged_test.md": "4a22c23e9611a7b613fd7b90cf59e53bd88431c77763d8642f1506a765818e65",
+      "src/research/birth_prediction/merged.py": "bfc0813d0beb152eb76e5a1830dabf8c232c070e81ff1b3b082ba6e8a0cf07b1",
+      "src/research/birth_prediction/merged_fit.py": "8063c058b2edb86ce95e897f55a19b1ff10b835085c3d4953dcf55628252b923",
+      "src/research/birth_prediction/merged_analysis.py": "f3656ba1028e686a54b617b269bfd2b86d99ecd573d687e1ccc4fc961867e09a",
+      "src/research/birth_prediction/feature_families.py": "01808bf99279ae4f4ddddcf3bc83584eceabc4db78cc4967048d640f2c4ac4da",
+      "src/research/birth_prediction/data.py": "5f9913129aebc3657fd88409086a5e9780e6e8779058ef51b39f403441421840",
+      "src/research/birth_prediction/features.py": "8f52d9e200df0877ba375efd4815f7f4df46048fd4c65538964d0d4216349623",
+      "src/research/birth_prediction/infer.py": "026b243709b0af65038313bd5d6e2482b1d14a622ba3ed5488a3e57b21d7871a",
+      "src/research/birth_prediction/fit.py": "c539406cd740911eb3a32fa6bb5e95347f452d072ad682bcf0d7f1bc693d3c4d",
+      "src/research/birth_prediction/analysis.py": "a5ba83e9766a4b628caf05e12155153bd6d47a205c44d4a40ecf910042891b68",
+      "src/research/birth_prediction/temporal_inputs.py": "886fdbbe48a85333a9c00eef088492419e67f4f0d80aa4c1498c0183c622bf96",
+      "src/research/birth_prediction/temporal.py": "5787a6fa4dbbba8f8f62fc4fe98acceaa94a8734e7d72b22f5ec7292deb37502",
+      "src/research/birth_prediction/temporal_analysis.py": "0246dc4ad52b59c661695acb0fd1fe6df68b70ac2e404c5dab3e793be52c1470",
+      "src/research/birth_prediction/leakage.py": "0dd966b2b1834d1d380200e8a5c6fa0fc4f59ef949c44174b1aab86184b675c4"
+    }
+  },
+  "nucleus_fates": {
+    "files": {
+      "src/research/crystallization_origin/fates.py": "22ff2133daf20e10ae487e1834842e769bffd443110d52c3a7ca860f2009af4e",
+      "src/research/crystallization_origin/ancestry.py": "a18d8a63e89d44bdbfd72a28d9031f3fe2a4e0dfb696fe41954fd1fd92baff08",
+      "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+      "src/research/birth_prediction/data.py": "5f9913129aebc3657fd88409086a5e9780e6e8779058ef51b39f403441421840",
+      "docs/metrics/nucleus_fates.md": "3f7b98c9aac59e531862b3ce58c66d431393c91e872fde9116560355a5c6c489"
+    }
+  },
+  "birth_appearance": {
+    "files": {
+      "docs/metrics/birth_appearance.md": "4e1379d6d484dfecc36f9edf292fbac30c763db4e2f173c61be67580ff4922f0",
+      "src/research/birth_prediction/appearance.py": "97959f143b4eb82b8586cc4c142b80c432380f8eacb86119b459d10bb7778dd2",
+      "src/research/birth_prediction/appearance_data.py": "c7d093d73ec51ae9d0306fb65d4d2ee086806d4c1bb3a63057b274b3ce806ec3",
+      "src/research/birth_prediction/appearance_analysis.py": "5059aa4d5ce55d7d9686e345fd849d1d2e741c2f99c5b0a2dc507ebad7f7a4ab",
+      "src/research/birth_prediction/merged_fit.py": "8063c058b2edb86ce95e897f55a19b1ff10b835085c3d4953dcf55628252b923",
+      "src/research/birth_prediction/features.py": "8f52d9e200df0877ba375efd4815f7f4df46048fd4c65538964d0d4216349623",
+      "src/research/birth_prediction/fit.py": "c539406cd740911eb3a32fa6bb5e95347f452d072ad682bcf0d7f1bc693d3c4d",
+      "src/research/birth_prediction/temporal_inputs.py": "886fdbbe48a85333a9c00eef088492419e67f4f0d80aa4c1498c0183c622bf96",
+      "src/research/birth_prediction/temporal_analysis.py": "0246dc4ad52b59c661695acb0fd1fe6df68b70ac2e404c5dab3e793be52c1470",
+      "src/research/birth_prediction/relaxed_data.py": "988d6137b5410474478104109914cf6eb7ed957577dbad8c727ecf67df3abd12"
     }
   }
 }

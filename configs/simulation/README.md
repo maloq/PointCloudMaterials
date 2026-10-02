@@ -1,5 +1,8 @@
 # Simulation recipes
 
+[Local80 response pilot](local_response_20261002.json) uses real fixed-Al64 parent neighborhoods, gated moving MLIP environments and a two-GPU training comparison; [workflow](../../docs/simulations/local_response_20261002.md).
+
+
 `response_atlas_feasibility_20261001.json` is the bound Al256 response pilot recipe, exposed to the research workflow through `../response_atlas/feasibility_20261001.json`.
 
 
@@ -10,6 +13,7 @@ Training and analysis loaders for existing data belong in `../data/loaders/`.
 
 | Recipe | Protocol |
 | --- | --- |
+| `al_main_half_stop_20261001.json` | Halfway/90%-peer stopping for 128 unstarted Al trajectories; preserves running sources, both cadences and velocities. [Protocol](../../docs/simulations/al_main_half_stop_20261001/README.md). |
 | `al_main_010ps_20260927.json` | 150 main Al prepared-liquid descendants: 600 ps, exact 0.1 ps samples with velocities, 2 fs integration; [campaign](../../docs/simulations/al_main_010ps_20260927/README.md). |
 | `al_main_010ps_continue_20261001.json` | Native restart recovery and two-source waves for the same Al campaign; [continuation](../../docs/simulations/al_main_010ps_20260927/README.md#october-1-continuation). |
 | `al_main_001ps_20261001.json` | Two existing Al train ancestors, 400/520 K, with positions and velocities every 0.01 ps for 600 ps; [campaign](../../docs/simulations/al_main_001ps_20261001/README.md). |
@@ -46,3 +50,5 @@ does no outcome-based stopping or measurement PTM screening, and publishes each
 completed source to STORE. See the [production record](../../docs/simulations/predictive_memory_precision_20260917.md).
 
 Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
+
+The Al256 20/100-fs response oracle defaults to [float32 cuEquivariance and batch4](response_atlas_fast_default.json). The [new collection/training recipe](response_atlas_training_fast_20261002.json) uses separate paths, one training execution audit and disjoint test response seeds; [workflow](../../docs/response_atlas.md#default-for-new-al256-response-runs).

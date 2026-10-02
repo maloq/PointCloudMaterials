@@ -9,6 +9,12 @@ protocols retain their original conversion rules and files.
 
 Use one maintained command from the repository root:
 
+`python scripts/convert_trajectory.py dense-al-half RUN_DIR --delete-source`
+handles the [variable-duration Al halfway protocol](simulations/al_main_half_stop_20261001/README.md)
+at both cadences. It validates the native stop certificate, verifies every float16
+position/velocity value and exact timeline/identity, then reopens the final
+binary with termination metadata before deleting source text.
+
 ```bash
 conda run -n pointnet python scripts/convert_trajectory.py --help
 ```

@@ -37,3 +37,40 @@ potential remains frozen and distinct from the learned native encoder.
 [Recipe](../../configs/response_atlas/atomistic_training_20261001.json) ·
 [Definitions](../../docs/metrics/response_training.md) ·
 [Execution](../../docs/response_atlas.md#atomistic-response-training).
+
+## Completed results, October 2, 2026
+
+All56 configurations and nine fits completed. On the16 held-out configurations,
+averaged over three training seeds, the full256-feature noise-corrected errors are:
+
+| Supervision | Future-feature MSE | Directional-response MSE |
+| --- | ---: | ---: |
+| Constant training prior / zero response | 0.950059 | 0.686926 |
+| Values8 | 0.033864 | 0.522076 |
+| Responses8 | 0.008677 | 0.148839 |
+| Values32 | 0.033521 | 0.520655 |
+
+Responses8 reduces future-feature error by74.4% and response error by71.5%
+relative to Values8. It also improves both errors relative to Values32 and wins
+at each of the three paired training seeds. The paired full-feature difference
+versus Values8 is -0.025187 (95% configuration-bootstrap interval
+[-0.043503,-0.010417]); the response-error difference is -0.373237
+([-0.521869,-0.225844]). Improvements occur in both the20fs block and the joint
+20/100fs block. Intervals condition on this fixed synthetic training set and
+average the three training seeds before resampling held-out configurations.
+
+These are results for the declared200-update training budget. Eight of nine
+selected checkpoints are at epoch191 or later; convergence is not established.
+Response fits use about20.2 minutes of optimization/selection each, versus1.52
+minutes for value-only fits. A longer value-only optimization control, including
+a matched training-compute comparison, is therefore a useful next check before
+attributing the entire improvement to information unavailable to value training.
+Values32's small improvement alone does not establish that further value-only
+training cannot close the gap. Independent liquid states and longer physical
+horizons remain necessary to connect this result to crystallization prediction.
+
+The frozen exports are in
+`output/response_atlas/atomistic-training-20261001/analyses/comparison-v1/`:
+`tables/summary.csv`, `tables/paired-contrasts.csv`, `tables/parent-errors.csv`,
+`tables/costs.csv`, and `plots/response-comparison.png`. All nine saved prediction
+and selected-checkpoint hashes were verified when reporting these results.

@@ -206,9 +206,19 @@ def run_source(manifest, record):
             raise ValueError('Missing native final restart')
         metadata = json.loads((directory/'input_metadata.json').read_text())
         contracts = {PROTOCOL: (50, 'dense-al'), 'al_dense_replay_001ps_v1': (5, 'dense-al-001ps')}
+        from .dense_al_half_stop import PROTOCOLS as HALF_PROTOCOLS
+        contracts.update({p: (interval, 'dense-al-half') for interval,p in HALF_PROTOCOLS.items()})
         interval, conversion = contracts[metadata['protocol']]
         if metadata['sample_interval_steps'] != interval or metadata['timestep_ps'] != .002:
             raise ValueError(f'Input cadence differs from declared protocol: {directory}')
+        if metadata['protocol'] in HALF_PROTOCOLS.values():
+            termination = json.loads((directory/'technical/stop-monitor/outcome.json').read_text())
+            if termination['state'] != 'dynamics_complete' or termination['protocol'] != metadata['protocol']:
+                raise ValueError('Missing or mismatched halfway endpoint certificate')
+            metadata.update(maximum_measurement_steps=metadata['measurement_steps'],
+                measurement_steps=termination['final_step'], measurement_ps=termination['measurement_ps'],
+                termination=termination)
+            status['termination'] = termination
         expected_frames = metadata['measurement_steps']//interval+1
         metadata.update(state='dynamics_complete', source_sha256=sha256(directory/'trajectory.lammpstrj'))
         if 'recovery' in record:
@@ -367,6 +377,7 @@ def main(argv=None):
     p = sub.add_parser('prepare'); p.add_argument('--config', required=True)
     p = sub.add_parser('prepare-continuation'); p.add_argument('--config', required=True)
     p = sub.add_parser('add-dense-sources'); p.add_argument('--config', required=True)
+    p = sub.add_parser('prepare-half-stop'); p.add_argument('--config', required=True)
     for name in ('submit','worker','collect'):
         p = sub.add_parser(name); p.add_argument('--launch', type=Path, required=True)
         if name != 'submit': p.add_argument('--wave', type=int, required=True)
@@ -379,6 +390,9 @@ def main(argv=None):
     elif args.action == 'add-dense-sources':
         from .dense_al_additions import add_dense_sources
         print(json.dumps(add_dense_sources(load_json(args.config)), indent=2))
+    elif args.action == 'prepare-half-stop':
+        from .dense_al_half_queue import prepare_half_queue
+        print(json.dumps(prepare_half_queue(load_json(args.config)), indent=2))
     elif args.action == 'submit': print(json.dumps(submit(args.launch), indent=2))
     elif args.action == 'collect': print(json.dumps(collect(args.launch,args.wave), indent=2))
     else: worker(args.launch,args.wave,args.index)

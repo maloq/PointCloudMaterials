@@ -1,0 +1,7 @@
+{
+  "table": "tables/peer_capped_sources.csv",
+  "sha256": "abf240c6ef04b3c9f72370b6aa94ec3b82bd6432a4e4af5e3e3bf870673bb872",
+  "family": "al_half_transform",
+  "contract": "technical/metric-contracts/al_half_transform.json",
+  "definitions": "tables/metric-definitions/al_half_transform.md"
+}

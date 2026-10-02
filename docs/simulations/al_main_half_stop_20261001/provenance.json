@@ -1,0 +1,11 @@
+{
+  "copied_at": "2026-10-01T22:27:23.866469+00:00",
+  "source_launch": "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001",
+  "files": {
+    "submission.json": "243eb7fa8b05c681bac7add62b17ddea5dae7d927e5a845c0826e839ecfb9fbc",
+    "validation.json": "89f2bb351345e5d7b24f76ec366ac42a80d796ae1044a802466d2d1954ef2774",
+    "preparation.json": "f930f8a1d8e604466beadf76723571f2b5706119e175270aad3c7665689a3b78",
+    "startup.json": "ab11d0dbbc024b7a826fe07aa21c9183e69c00d7da9e1599109cd1b900c9ba91",
+    "reference_savings.json": "f2666d17cbb23128b4b2aab4c2e977e1e52b3ff9df3f7ba489ea67c2e50175ff"
+  }
+}

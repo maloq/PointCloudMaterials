@@ -1,0 +1,33 @@
+{
+  "dataset_id": "response-atlas-al256-training-fast-20261002",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-atlas-training-fast-20261002/plan.json",
+      "relative_path": "plan.json",
+      "sha256": "8e07dd141917337e83f41ab9cb83a3295a0257a57ca852139e3f5a763a387c3f",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "config",
+        "coordinate_precision",
+        "identity",
+        "parent_state_sha256",
+        "parents",
+        "potential_sha256"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al256_atomistic_response_training_float32_v2",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
+      }
+    }
+  ]
+}

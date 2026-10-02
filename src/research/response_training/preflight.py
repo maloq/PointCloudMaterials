@@ -45,6 +45,16 @@ def run(c):
     if max(invariance.values())>2e-5:raise ValueError(f'Full-cell invariance failure: {invariance}')
     del model,h,loss
     torch.cuda.empty_cache()
+    if 'simulation_profile' in c:
+        from .fast import oracle_gate
+        result=dict(state='complete',identity=record['identity'],physical_short_gate=physical,
+            student_jvp_fd=errors,response_only_encoder_gradient=gradient,student_invariance=invariance,
+            student_microbatch=micro,student_response_backward_seconds=seconds,student_peak_GiB=memory,
+            device=torch.cuda.get_device_name(),**oracle_gate(c),
+            note='Local numerical checks only; no online training runs')
+        write_json(root(c)/'technical/preflight.json',result)
+        print(result,flush=True)
+        return result
     # A physical-horizon common-random-number check, plus actual collection timings.
     atoms=configuration(o,0);point=torch.tensor(atoms.positions.flatten(),dtype=torch.float64,device='cuda')
     potential=MACEPotential(o,atoms,'cuda')

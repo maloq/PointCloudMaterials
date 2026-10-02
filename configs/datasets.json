@@ -6044,6 +6044,320 @@
           "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876/input_metadata.json"
         ]
       }
+    },
+    "al-main-half-stop-20261001-preparation-attempt1": {
+      "root": "simulation_runs",
+      "path": "al-main-010ps-20260927/technical/half-stop-preparation-attempts/attempt1",
+      "kind": "simulation",
+      "dependencies": [
+        "al-main-010ps-20260927",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "potentials"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "incomplete_or_rejected",
+        "title": "Preserved halfway queue preparation before activation; no dynamics",
+        "description": "Prepared input copies only, no scientific trajectory observations",
+        "ancestry": "126 retained independent melt ancestors, including two extra observations; no new independent lineages.",
+        "protocol": "al_dense_half_stop_queue_v1",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001-preparation-attempt1/status.json"
+        ]
+      }
+    },
+    "al-main-half-stop-20261001": {
+      "root": "simulation_runs",
+      "path": "al-main-010ps-20260927/al-main-half-stop-20261001",
+      "kind": "simulation",
+      "dependencies": [
+        "al-main-010ps-20260927",
+        "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+        "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903",
+        "potentials"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "title": "Unstarted main Al descendants with confirmed-halfway stopping and peer caps",
+        "description": "128 variable-duration 70304-atom trajectories, 126 main and two dense additions; 2 fs integration, exact 0.1/0.01 ps observations and velocities.",
+        "ancestry": "126 retained independent melt ancestors, including two extra observations; no new independent lineages.",
+        "protocol": "al_dense_half_stop_queue_v1",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001/manifest.json",
+          "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001/validation.json",
+          "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001/status.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0882": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0882",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0882"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_617047783",
+        "split": "test",
+        "source_id": 882,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0882/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0881": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0881",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0881"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_410549883",
+        "split": "test",
+        "source_id": 881,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/input_metadata.json"
+        ]
+      }
+    },
+    "al-main-010ps-20260927-source0880": {
+      "root": "archive",
+      "path": "simulations/al-main-010ps-20260927-source0880",
+      "kind": "simulation",
+      "state": "complete",
+      "dependencies": [
+        "al_520K_remaining24_20260913T204114Z",
+        "potentials"
+      ],
+      "aliases": [
+        "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/runs/al-main-010ps-20260927-source0880"
+      ],
+      "metadata": {
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "raw_dynamics",
+        "classification": "research",
+        "ancestry": "independent_melt_871735562",
+        "split": "calibration",
+        "source_id": 880,
+        "description": "Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.",
+        "evidence": [
+          "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0880/input_metadata.json"
+        ]
+      }
+    },
+    "response-atlas-al256-training-fast-20261002": {
+      "root": "archive",
+      "path": "simulations/response-atlas-training-fast-20261002",
+      "kind": "simulation",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Al256 response-training default: float32 batched cuEquivariance (planned)",
+        "materials": [
+          "Al"
+        ],
+        "role": "response_training_mechanism",
+        "classification": "diagnostic",
+        "potential_ids": [
+          "mace-mpa-0-medium"
+        ],
+        "description": "Planned default for the fixed MACE-MPA-0 450K BAOAB 20/100fs mechanism case. Float32, batch4 GPU graphs, eight response-value reuses and one training execution audit; test streams disjoint. Separate seed namespace 70000000. No new training or full collection launched by the default change.",
+        "ancestry": "All geometries share ideal FCC256 prototype. First16 previously examined numerical-development geometries are training only. Held-out configurations are fresh independent displacement draws, not independent melts. Same 56 generating geometries as the October1 mechanism cohort; not new independent parents. Fresh stochastic seed namespace.",
+        "evidence": [
+          "${storage:repo}/configs/simulation/response_atlas_training_fast_20261002.json",
+          "${storage:repo}/configs/simulation/response_atlas_fast_default.json",
+          "${storage:repo}/docs/response_atlas.md"
+        ],
+        "limitations": [
+          "Separate synthetic mechanism study, not Al64 window benchmark or MEAM shooting.",
+          "Short-time smooth feature responses do not establish picosecond crystallization prediction.",
+          "Branches and partial failures publish to STORE before scratch cleanup."
+        ]
+      }
+    },
+    "local80-response-20261002": {
+      "root": "archive",
+      "path": "simulations/local80-response-20261002",
+      "kind": "simulation",
+      "dependencies": [
+        "potentials"
+      ],
+      "aliases": [],
+      "metadata": {
+        "title": "Local80 response training from fixed Al64 MD parents",
+        "materials": [
+          "Al"
+        ],
+        "role": "local_response_training",
+        "classification": "research",
+        "potential_ids": [
+          "mace-mpa-0-medium",
+          "al-lee2003-meam"
+        ],
+        "description": "New MACE-MPA-0 moving-environment 20/100fs response queries from original MEAM parent positions. Inherited90/15/30 non-calibration source roles; one predetermined center each. Local80 geometry-only students. Gated nested environments18/24/30 versus36A.",
+        "ancestry": "Fixed Al64 identity e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d; original independent melt ancestry retained; no source resplit.",
+        "evidence": [
+          "${storage:repo}/configs/simulation/local_response_20261002.json",
+          "${storage:repo}/docs/simulations/local_response_20261002.md"
+        ],
+        "limitations": [
+          "MLIP teacher differs from parent MEAM potential.",
+          "Nested-environment agreement is not exact full-cell validation.",
+          "Separate response-query pilot, not all64 crystallization-window evaluation.",
+          "Parent float16 quantization retained; new response integration/perturbations float32."
+        ]
+      }
+    },
+    "al64-nucleus-fates-v1-20261002": {
+      "root": "training_storage",
+      "path": "nucleus_fates/al64-20261002",
+      "kind": "derived_dataset",
+      "dependencies": [
+        "fixed-al64-benchmark-v1-20260925",
+        "al-birth-preappearance-v1-20260930"
+      ],
+      "metadata": {
+        "title": "Al64 transient crystal episodes and established-nucleus fates",
+        "materials": [
+          "Al"
+        ],
+        "role": "label_audit",
+        "classification": "derived",
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "description": "Original full-cell PTM/lineage fate audit; all 150 sources, new transient episode inventory and additional labels for unchanged original/relaxed birth rows. No new simulations.",
+        "provenance": "src/research/crystallization_origin/fates.py; original 20260925 full-cell PTM audit and 20260930 birth cohort",
+        "lineage": "Same frozen Al64 melt/source ancestors and roles. No independent new trajectories; within-source episodes and event centers are correlated.",
+        "evidence": [
+          "configs/analysis/nucleus_fates_20261002.json",
+          "docs/metrics/nucleus_fates.md",
+          "${dataset:al64-nucleus-fates-v1-20261002}/technical/prepared.json",
+          "${dataset:al64-nucleus-fates-v1-20261002}/technical/complete.json"
+        ],
+        "limitations": [
+          "Operational PTM crystal episodes, not validated critical nuclei.",
+          "Finite observation, coarse 0.75 ps cadence, conservative exclusion of any establishment-connected component.",
+          "Four-to-seven-atom episodes inventoried but not atom-verified. New transient candidates lack classifier input-eligibility screening.",
+          "Merging, residual crystal and right-censoring are explicit; no forced binary fate for uncertain events."
+        ]
+      }
+    },
+    "al-birth-failed-appearance-original-20261002": {
+      "root": "cache",
+      "path": "birth-prediction/appearance-transients-original-20261002",
+      "kind": "derived_dataset",
+      "dependencies": [
+        "al64-nucleus-fates-v1-20261002",
+        "al-birth-preappearance-v1-20260930"
+      ],
+      "metadata": {
+        "title": "Al failed-embryo appearance histories (original)",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "event_enriched_classification",
+        "classification": "derived",
+        "description": "Strict crystal-free histories for eligible members of the nested 184/28 failed-embryo catalogue, matched liquid controls, original source roles. Failed appearances are positive. Original observed MD coordinates.",
+        "provenance": "src/research/birth_prediction/appearance_data.py; completed Al64 fate audit; no new MD",
+        "lineage": "Same fixed Al64 source/melt ancestors; events and centers within a source are correlated. No new independent trajectories.",
+        "evidence": [
+          "configs/birth_prediction/appearance_transfer_20261002.json",
+          "docs/metrics/birth_appearance.md",
+          "${dataset:al-birth-failed-appearance-original-20261002}/manifest.json"
+        ],
+        "limitations": [
+          "Retrospective selection, operational PTM embryos, 0.75 ps cadence.",
+          "Candidate counts decrease after strict history eligibility screening.",
+          "Controls are continuously liquid within a declared finite window; class prevalence is not natural incidence."
+        ]
+      }
+    },
+    "al-birth-failed-appearance-relaxed-20261002": {
+      "root": "cache",
+      "path": "birth-prediction/appearance-transients-relaxed-20261002",
+      "kind": "derived_dataset",
+      "dependencies": [
+        "al64-nucleus-fates-v1-20261002",
+        "al-birth-preappearance-v1-20260930"
+      ],
+      "metadata": {
+        "title": "Al failed-embryo appearance histories (relaxed)",
+        "materials": [
+          "Al"
+        ],
+        "potential_ids": [
+          "al-lee2003-meam"
+        ],
+        "role": "event_enriched_classification",
+        "classification": "derived",
+        "description": "Strict crystal-free histories for eligible members of the nested 184/28 failed-embryo catalogue, matched liquid controls, original source roles. Failed appearances are positive. Full-cell MEAM minimization of observed inputs.",
+        "provenance": "src/research/birth_prediction/appearance_data.py; completed Al64 fate audit; no new MD",
+        "lineage": "Same fixed Al64 source/melt ancestors; events and centers within a source are correlated. No new independent trajectories.",
+        "evidence": [
+          "configs/birth_prediction/appearance_transfer_20261002.json",
+          "docs/metrics/birth_appearance.md",
+          "${dataset:al-birth-failed-appearance-relaxed-20261002}/manifest.json"
+        ],
+        "limitations": [
+          "Retrospective selection, operational PTM embryos, 0.75 ps cadence.",
+          "Candidate counts decrease after strict history eligibility screening.",
+          "Controls are continuously liquid within a declared finite window; class prevalence is not natural incidence."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

@@ -1,0 +1,61 @@
+{
+  "protocol": "failed_embryo_appearance_transfer_v1",
+  "seed": 20260930,
+  "output": "${storage:training_storage}/birth_prediction/appearance-transfer-20261002",
+  "original_cache": "${storage:cache}/birth-prediction/appearance-transients-original-20261002",
+  "relaxed_cache": "${storage:cache}/birth-prediction/appearance-transients-relaxed-20261002",
+  "scratch": "${storage:scratch}/birth-prediction/appearance-transients-relaxed-20261002",
+  "archive": "${storage:archive}/birth_prediction/appearance-transients-relaxed-20261002",
+  "birth_config": "configs/birth_prediction/preappearance_20260930.json",
+  "fate_output": "${storage:training_storage}/nucleus_fates/al64-20261002",
+  "fate_identity": "0037ff934463bf771b439f806be2e7c20c116bcf018dc38844439dee2359491b",
+  "original_comparison_config": "configs/birth_prediction/merged_retest_20261002.json",
+  "original_comparison_output": "${storage:training_storage}/birth_prediction/merged-retest-20261002",
+  "relaxation_recipe": "configs/birth_prediction/relaxed_temporal_20261001.json",
+  "domains": [
+    "original",
+    "relaxed"
+  ],
+  "observations": [
+    {
+      "name": "current",
+      "kind": "snapshot",
+      "frames": [
+        7
+      ]
+    },
+    {
+      "name": "history8",
+      "kind": "history",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    }
+  ],
+  "folds": 5,
+  "fold_design": "${storage:training_storage}/birth_prediction/drop-to-one-cv-20260930/technical/folds.json",
+  "fold_identity": "0ea465a8a0396363cbd2caafe73b5d0ecc55db873d0d188ef7d6eb3231c203be",
+  "bootstrap_draws": 2000,
+  "fit_threads": 8,
+  "analysis_threads": 4,
+  "prepare_workers": 8,
+  "relaxation_workers": 16,
+  "relaxation_ranks": 16,
+  "gpu_partition": "L40S,A40,A100,RTX6000PRO",
+  "excluded_gpu_node": "node52",
+  "collection_node": "nodecpu06",
+  "target": "positive for any local crystal appearance, established or verified failed embryo",
+  "candidate_pools": {
+    "failed_all": 184,
+    "failed_strong": 28,
+    "failed_other": 156,
+    "strong_is_subset": true
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "family": "al_half_transform",
+  "exported_at": "2026-10-01T21:38:07.971022+00:00",
+  "files": {
+    "docs/metrics/al_half_transform.md": "49b893ed564384f7acee64e1596b551926fa604025a49eb752bc553cc18c7202",
+    "src/analysis/al_half_transform.py": "4a22f84b7fb2b5405ea5c0f17aa51c4c349ae1cbd3652a5fc88e1422401edce7",
+    "src/analysis/al_duration.py": "46dece5bb54d998942d95f59f1baa0e44cc25f36653b75b2459cbbc94c4ff1ce",
+    "configs/analysis/al_half_transform_20261001.json": "ab63ae75fc762448fb730aad8e96946ca211e7ccf5af2bb369cf240897036fc1"
+  },
+  "verified": true
+}

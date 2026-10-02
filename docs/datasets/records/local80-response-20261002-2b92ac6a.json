@@ -1,0 +1,145 @@
+{
+  "dataset_id": "local80-response-20261002",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/local80-response-20261002/parent-000/complete.json",
+      "relative_path": "parent-000/complete.json",
+      "sha256": "48b0f3c0314779fdd231d193d581fbf47c0c609d64ea67d01b971995d70ebd26",
+      "kind": "metadata",
+      "keys": [
+        "audit_rows",
+        "executed_trajectories",
+        "identity",
+        "protocol",
+        "query_sha256",
+        "response_rows",
+        "reused_value_rows",
+        "total_batch_seconds",
+        "value_rows"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "response_reuse_collection_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/local80-response-20261002/parent-001/complete.json",
+      "relative_path": "parent-001/complete.json",
+      "sha256": "336115cebe9e5c705df35a56eabd1bbf390709660b657cfbc7674d2558ad673b",
+      "kind": "metadata",
+      "keys": [
+        "audit_rows",
+        "executed_trajectories",
+        "identity",
+        "protocol",
+        "query_sha256",
+        "response_rows",
+        "reused_value_rows",
+        "total_batch_seconds",
+        "value_rows"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "response_reuse_collection_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/local80-response-20261002/parent-002/complete.json",
+      "relative_path": "parent-002/complete.json",
+      "sha256": "dd2b4b25a155d138a202aeff3431609fdbe510e1e31050eb3d744a8b99e0a329",
+      "kind": "metadata",
+      "keys": [
+        "audit_rows",
+        "executed_trajectories",
+        "identity",
+        "protocol",
+        "query_sha256",
+        "response_rows",
+        "reused_value_rows",
+        "total_batch_seconds",
+        "value_rows"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "response_reuse_collection_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/local80-response-20261002/parent-003/complete.json",
+      "relative_path": "parent-003/complete.json",
+      "sha256": "c5bb724db94c97dc1b41acadf856068c52f22d7b30c4f595ccae54bdf03a8e29",
+      "kind": "metadata",
+      "keys": [
+        "audit_rows",
+        "executed_trajectories",
+        "identity",
+        "protocol",
+        "query_sha256",
+        "response_rows",
+        "reused_value_rows",
+        "total_batch_seconds",
+        "value_rows"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "response_reuse_collection_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/local80-response-20261002/parent-004/complete.json",
+      "relative_path": "parent-004/complete.json",
+      "sha256": "f5ebe2d227a66effc772b8ce40de48de357849f347f561734364a3c65d3648dc",
+      "kind": "metadata",
+      "keys": [
+        "audit_rows",
+        "executed_trajectories",
+        "identity",
+        "protocol",
+        "query_sha256",
+        "response_rows",
+        "reused_value_rows",
+        "total_batch_seconds",
+        "value_rows"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "response_reuse_collection_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

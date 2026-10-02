@@ -1,5 +1,10 @@
 # Two main Al descendants saved every 0.01 ps — 1 October 2026
 
+**Latest queued protocol:** both additions were still unstarted and move to
+[confirmed-halfway stopping with peer caps](../al_main_half_stop_20261001/README.md).
+They retain exact 0.01 ps observations, velocities, ancestry and priority.
+The original fixed 600-ps preparation and its estimates are preserved below.
+
 User-authorized additional sampling for two existing main-Al ancestors. Each run
 has **70,304 atoms**, **15 ps equilibration**, **600 ps measurement**, and saves
 positions and velocities every **0.01 ps**: **60,001 measurement frames** including
@@ -26,11 +31,14 @@ The 0.1-ps sources, historical trajectories, and frozen scientific manifests rem
 [Queue producer](../../../src/simulation/campaigns/dense_al_additions.py) ·
 [Durable execution status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001/status.json)
 
-Replacement controller **1017489** is queued after active worker array **1017389**.
+Original replacement controller **1017489** was queued after active worker array **1017389**.
 It replaces only pending controller 1017390 and gives these two runs priority in
 the next wave. [Submission](submission.json), [prepared inputs](preparation.json),
 [startup observation](startup.json) and [receipt hashes](provenance.json) are copied
 locally. The original 150 records are exactly unchanged in the new execution manifest.
+The [metadata correction](metadata_correction.json) scopes `trajectory_roles` in
+the separate two-source collection to its two train trajectories. The original
+collection view is retained, and the queued 152-record input manifest is unchanged.
 
 ```bash
 python -m src.simulation.campaigns.dense_al add-dense-sources \

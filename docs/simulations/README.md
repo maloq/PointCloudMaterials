@@ -1,17 +1,33 @@
 # Simulations and datasets
 
+[Local80 MLIP response collection](local_response_20261002.md) samples fixed-Al64 parents with inherited source roles and gates surrounding-environment convergence before training.
+
+
+[Halfway stopping for unstarted Al sources](al_main_half_stop_20261001/README.md):
+user-authorized version for 128 pending trajectories, confirmed 50% crystal
+plus a 6 ps tail and declared peer caps; current dynamics and complete full-length
+trajectories remain intact.
+
 **Response-atlas Al256 pilot:** [execution](../response_atlas.md), fixed MACE-MPA-0, controlled FCC perturbations; development-only query bundles, not independent liquid trajectories.
 
 
 [Full liquid-information relaxation](liquid_full_relaxation_20260928.md): 2,130 missing quenches, fixed ancestry and automatic downstream experiment queue.
 
 [Main Al 0.1 ps reruns, 2026-09-27](al_main_010ps_20260927/README.md): all 150
-retained melt ancestors, 600 ps with velocities, exact 0.1 ps output and frozen
+retained melt ancestors, originally 600 ps with velocities, exact 0.1 ps output and frozen
 ancestry roles; CPU waves publish verified canonical trajectories to STORE.
 The [October 1 continuation](al_main_010ps_20260927/README.md#october-1-continuation)
 recovers three interrupted native restarts and uses two sources per worker wave.
 [Two additional Al sources at 0.01 ps](al_main_001ps_20261001/README.md) retain
-the 400/520 K train ancestors and save velocities for the full 600 ps.
+the 400/520 K train ancestors and save velocities.
+The [150-source duration audit](../../output/al_duration/all150-20261001/README.md)
+finds substantial late growth and misleading temporary plateaus under the earlier
+full-plateau objective.
+The user's subsequent **50%-crystal target** supports much earlier individual
+stops in the [halfway/90%-peer analysis](../../output/al_duration/half-crystal-20261001/README.md).
+The user-authorized [queue version](al_main_half_stop_20261001/README.md) now
+applies that target to unstarted sources. Already-running sources retain their
+full 600 ps protocol; earlier full-length data remain available.
 
 [Detailed holdings after cleanup, 2026-09-26](inventory_20260926_after_cleanup/README.md): materials, atom
 counts, observed durations/cadences, sampled velocities, formats and measured

@@ -4,7 +4,11 @@ Requested 30 September 2026. This is a new, event-enriched classification study
 on the original fixed Al source roles. It preserves the earlier arrival benchmark.
 Its labels are operational isolated establishments, not validated critical nuclei.
 
-New follow-up: [fixed-endpoint history and persistent-site controls](TEMPORAL_SITE.md).
+New follow-up: [merged evaluation with training-only CV selection](MERGED_TEST.md).
+
+Earlier follow-up: [descriptor-family information on original/relaxed snapshots](FEATURE_FAMILIES.md).
+
+Earlier follow-up: [fixed-endpoint history and persistent-site controls](TEMPORAL_SITE.md).
 It preserves the retained cohort and distinguishes changing input length from
 changing the prediction endpoint, with same-site score and descriptor diagnostics.
 

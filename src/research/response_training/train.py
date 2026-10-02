@@ -9,7 +9,7 @@ from src.experiment_runner.checkpoints import TrainingState
 from src.experiment_runner.execution import allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs, write_metric_rows
 from src.experiment_runner.wandb_tracking import online_training
-from .common import FAMILY, root, read, write_json, sha, digest
+from .common import FAMILY, root, read, write_json, sha, digest, metric_family, simulation_profile
 from .data import load, save_pt
 from .model import Predictor, initialize, responses
 
@@ -31,7 +31,7 @@ def fit(c, arm, seed):
     gate = read(root(c)/'technical/preflight.json')
     if gate['identity'] != data['identity'] or gate['state'] != 'complete':
         raise ValueError('Student/oracle preflight is missing or changed')
-    contract = check_metric_docs(family=FAMILY)[FAMILY]
+    contract = check_metric_docs(family=metric_family(c))[metric_family(c)]
     identity = digest(dict(data_identity=data['identity'], arm=arm, seed=seed, contract=contract))
     out = location(c,arm,seed); tech=out/'technical'; tech.mkdir(parents=True,exist_ok=True)
     if (tech/'complete.json').exists():
@@ -66,12 +66,19 @@ def fit(c, arm, seed):
         initialize(model,q[ids['train']],micro)
     # Arm-specific oracle time is measured on actual value-only versus AD calls.
     field={'values8':'value8_seconds','values32':'value32_seconds','responses8':'response8_seconds'}[arm]
-    acquisition=sum(r['cost'][field]+r['cost']['screen_seconds'] for r in records if r['role']=='train')
-    acquisition+=sum(r['cost']['value32_seconds']+r['cost']['screen_seconds'] for r in records if r['role']=='selection')
+    profile=simulation_profile(c)
+    if profile is not None:
+        acquisition=sum(r['cost']['collection_seconds']+r['cost']['screen_seconds']
+                        for r in records if r['role'] in ('train','selection'))
+        cost_scope='actual shared train/selection bank including responses and audits, identical charge for all arms; not arm-specific counterfactual cost'
+    else:
+        acquisition=sum(r['cost'][field]+r['cost']['screen_seconds'] for r in records if r['role']=='train')
+        acquisition+=sum(r['cost']['value32_seconds']+r['cost']['screen_seconds'] for r in records if r['role']=='selection')
+        cost_scope='arm-specific train + shared validation oracle and screens; optimization/selection; common pilot, I/O and final evaluation recorded separately'
     context=dict(identity=identity,config=c,arm=arm,seed=seed,feature_dimensions=256,
         parameters=sum(p.numel() for p in model.parameters()),input_contract=read(root(c)/'technical/prediction-context.json'),
-        selector=cfg['selector'],neural_precision='float32',oracle_precision='float64',
-        acquisition_seconds=acquisition, cost_scope='arm-specific train + shared validation oracle and screens; optimization/selection; common pilot, I/O and final evaluation recorded separately')
+        selector=cfg['selector'],neural_precision='float32',oracle_precision=profile['dtype'] if profile else 'float64',
+        acquisition_seconds=acquisition, cost_scope=cost_scope)
     write_json(tech/'identity.json',context)
     deadline=allocation_deadline(reserve_seconds=120)
     with online_training(c['wandb'],run_id='resp-al256-'+identity[:14],name=f'Al256 response | {arm} | {seed}',
@@ -123,7 +130,7 @@ def fit(c, arm, seed):
                          for i in range(0,len(q),micro)]).numpy()
         np.savez_compressed(tech/'predictions.npz',normalized_prediction=prediction,
             normalized_response=deriv,z=z,parent=np.array([r['index'] for r in records]))
-        write_metric_rows(history,out,family=FAMILY,name='learning')
+        write_metric_rows(history,out,family=metric_family(c),name='learning')
         evaluation_seconds=time.monotonic()-evaluation_start
         run.summary.update(dict(selected_epoch=best_epoch,selection_nll=best,acquisition_seconds=acquisition,
             training_seconds=elapsed,acquisition_plus_training_seconds=acquisition+elapsed,

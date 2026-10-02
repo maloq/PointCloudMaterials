@@ -1,0 +1,43 @@
+{
+  "observed_complete_utc": "2026-10-02T12:30:20.556595+00:00",
+  "method": "du -x -B1 --max-depth=4; allocated bytes; symlinks not followed; hard links counted once; live non-atomic scan",
+  "scope": "Five user storage roots. Dedicated cache totals exclude caches embedded in results/project archives. Simulation directory sizes include trajectories, restarts and campaign metadata; physical copies on different partitions count separately. Other includes results, datasets, relaxed structures, software and unrelated personal data.",
+  "scan_errors": "",
+  "by_partition": [
+    {
+      "partition": "IDS",
+      "dedicated_cache_GB": 332.984082432,
+      "simulation_directories_GB": 0.0,
+      "other_GB": 1.092908544,
+      "total_GB": 334.076990976
+    },
+    {
+      "partition": "WORK",
+      "dedicated_cache_GB": 0.0,
+      "simulation_directories_GB": 423.833491456,
+      "other_GB": 125.78573312,
+      "total_GB": 549.619224576
+    },
+    {
+      "partition": "STORE",
+      "dedicated_cache_GB": 96.949321728,
+      "simulation_directories_GB": 1034.421878784,
+      "other_GB": 230.574841856,
+      "total_GB": 1361.946042368
+    },
+    {
+      "partition": "SCRATCH",
+      "dedicated_cache_GB": 70.051479552,
+      "simulation_directories_GB": 472.223143424,
+      "other_GB": 7.869166592,
+      "total_GB": 550.143789568
+    },
+    {
+      "partition": "INFRES",
+      "dedicated_cache_GB": 0.0,
+      "simulation_directories_GB": 0.0,
+      "other_GB": 84.238500352,
+      "total_GB": 84.238500352
+    }
+  ]
+}

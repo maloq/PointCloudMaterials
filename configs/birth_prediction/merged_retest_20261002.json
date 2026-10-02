@@ -1,0 +1,243 @@
+{
+  "protocol": "birth_merged_test_train_cv_v1",
+  "output": "${storage:training_storage}/birth_prediction/merged-retest-20261002",
+  "domains": [
+    {
+      "name": "original",
+      "run": "${storage:training_storage}/birth_prediction/temporal-site-20261001",
+      "binding_sha256": "71ca58b45b1a2f29b2eaa0bb2bdc6a386553c6d744df9b7ce261dca418cb808f",
+      "dataset_identity": "7b3046cdebf539d81a9f50b4abb5629f1ddb1b27edd886e0888b7658f9f96dd9",
+      "reference_fit_sha256": "8be3bb274aab093e90a7e8af0c3676dbc1f407e4c46a5510e36dd96473c61b08"
+    },
+    {
+      "name": "relaxed",
+      "run": "${storage:training_storage}/birth_prediction/relaxed-temporal-20261001",
+      "binding_sha256": "aadf8cb15f962386c89ccc0928a4489ebafa96667d47b99a6434afaa66e44c83",
+      "dataset_identity": "ab3cbac7a1fefa431e4d55d2eadc1169553654300d6a242f54bd636df53ee886",
+      "reference_fit_sha256": "c539406cd740911eb3a32fa6bb5e95347f452d072ad682bcf0d7f1bc693d3c4d"
+    }
+  ],
+  "folds": 5,
+  "fold_design": "${storage:training_storage}/birth_prediction/drop-to-one-cv-20260930/technical/folds.json",
+  "fold_identity": "0ea465a8a0396363cbd2caafe73b5d0ecc55db873d0d188ef7d6eb3231c203be",
+  "seed": 20260930,
+  "bootstrap_draws": 2000,
+  "permutation_repeats": 32,
+  "permutation_groups": [
+    "geometry",
+    "bond_order",
+    "cna",
+    "tda",
+    "bond_order/l6",
+    "tda/n32_h0",
+    "tda/n32_h1",
+    "tda/n32_h2",
+    "tda/n80_h0",
+    "tda/n80_h1",
+    "tda/n80_h2"
+  ],
+  "cpu_workers": 2,
+  "analysis_threads": 4,
+  "gpu_partition": "L40S,A40,A100,RTX6000PRO",
+  "reviewed_reference_difference": "Original fitter predates relaxed-input provenance recording; diff consists only of prediction-context metadata and input-domain validation. Numerical fitting/calibration are unchanged.",
+  "coverage": "all_birth_comparisons",
+  "feature_cache": "${storage:cache}/context-features",
+  "fit_threads": 8,
+  "gpu_workers": 2,
+  "observations": [
+    {
+      "name": "current",
+      "kind": "snapshot",
+      "frames": [
+        7
+      ]
+    },
+    {
+      "name": "repeated_current",
+      "kind": "repeat",
+      "frames": [
+        7
+      ],
+      "slots": 8
+    },
+    {
+      "name": "history8",
+      "kind": "history",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "shuffled_past",
+      "kind": "shuffle_past",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "history2",
+      "kind": "history",
+      "frames": [
+        6,
+        7
+      ]
+    },
+    {
+      "name": "history4",
+      "kind": "history",
+      "frames": [
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "early4",
+      "kind": "history",
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "middle4",
+      "kind": "history",
+      "frames": [
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    {
+      "name": "early",
+      "kind": "snapshot",
+      "frames": [
+        0
+      ]
+    },
+    {
+      "name": "mean8",
+      "kind": "mean",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "changes8",
+      "kind": "changes",
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "name": "early_plus_change",
+      "kind": "early_plus_change",
+      "frames": [
+        0,
+        7
+      ]
+    },
+    {
+      "name": "early_capacity_control",
+      "kind": "early_repeated",
+      "frames": [
+        0
+      ]
+    }
+  ],
+  "temporal_arms": [
+    "rich_gbdt",
+    "rich_linear",
+    "mace_rich_gbdt",
+    "mace_rich_linear",
+    "mace_vicreg_gbdt",
+    "mace_vicreg_linear"
+  ],
+  "temporal_contrasts": [
+    [
+      "history8",
+      "current"
+    ],
+    [
+      "history8",
+      "repeated_current"
+    ],
+    [
+      "history8",
+      "shuffled_past"
+    ],
+    [
+      "history8",
+      "history4"
+    ],
+    [
+      "history4",
+      "history2"
+    ],
+    [
+      "history2",
+      "current"
+    ],
+    [
+      "history4",
+      "early4"
+    ],
+    [
+      "middle4",
+      "early4"
+    ],
+    [
+      "current",
+      "early"
+    ],
+    [
+      "history8",
+      "mean8"
+    ],
+    [
+      "changes8",
+      "mean8"
+    ],
+    [
+      "early_plus_change",
+      "early_capacity_control"
+    ]
+  ],
+  "encoder_selection_exposure": {
+    "mace_rich": "Frozen epoch14/update1806 selected by structural descriptor NLL on former selection sources; merged test is not unseen encoder selection data. Encoder weights fit original training ancestors only.",
+    "mace_vicreg": "Frozen predeclared epoch24; original training ancestors exposed during encoder fitting. Internal readout CV is conditional on this exposure."
+  },
+  "collection_node": "nodecpu06"
+}

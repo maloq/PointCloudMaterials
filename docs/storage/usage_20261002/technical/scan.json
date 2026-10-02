@@ -1,0 +1,12 @@
+{
+  "pid": 3050792,
+  "started": "2026-10-02T12:24:05.662522+00:00",
+  "roots": [
+    "/home/ids/vmorozov",
+    "/work/PERSO/vmorozov",
+    "/store/PERSO/vmorozov",
+    "/scratch/PERSO/vmorozov",
+    "/home/infres/vmorozov"
+  ],
+  "method": "GNU du -x -B1 --max-depth=4, one invocation, no symlink dereference; allocated bytes; hardlinks counted once"
+}

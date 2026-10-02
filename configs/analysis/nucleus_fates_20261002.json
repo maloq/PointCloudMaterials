@@ -1,0 +1,23 @@
+{
+  "protocol": "al64-nucleus-fates-v1",
+  "birth_config": "configs/birth_prediction/preappearance_20260930.json",
+  "output": "${storage:training_storage}/nucleus_fates/al64-20261002",
+  "minimum_verified_peak_atoms": 8,
+  "primary_minimum_atoms": 8,
+  "primary_persistence_frames": 2,
+  "dissolution_confirmation_frames": 3,
+  "growth_minimum_atoms": 128,
+  "growth_factor": 2.0,
+  "growth_persistence_frames": 3,
+  "workers": 8,
+  "input_contract": {
+    "population": "All 150 original Al64 full-cell trajectories, plus row-linked labels for the existing birth cohort",
+    "geometry": "Original observed MD and existing full-cell PTM; no relaxation",
+    "cadence_ps": 0.75,
+    "encoder": "none",
+    "predictor": "none",
+    "conditions": "none; source roles and temperatures are audit metadata only",
+    "future_information": "Label construction only; not predictor inputs",
+    "training_only_teachers": "none"
+  }
+}

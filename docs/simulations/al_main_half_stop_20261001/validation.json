@@ -1,0 +1,259 @@
+{
+  "state": "passed",
+  "validated_at": "2026-10-01T22:22:05.683512+00:00",
+  "scope": "Native execution and conversion at both cadences; infrastructure diagnostics excluded from scientific counts",
+  "cases": {
+    "half_010ps": {
+      "state": "passed",
+      "scope": "Excluded infrastructure fixture, not a scientific source",
+      "mpi_ranks": 2,
+      "atom_count": 108,
+      "actual_ps": 21,
+      "frame_count": 211,
+      "sampling_ps": 0.1,
+      "reason": "half_crystal",
+      "right_censored": false,
+      "monitor_steps": [
+        0,
+        7500
+      ],
+      "monitor_fractions": [
+        1.0,
+        1.0
+      ],
+      "dtypes": {
+        "positions": "float16",
+        "velocities": "float16",
+        "box_low": "float32",
+        "box_high": "float32",
+        "timesteps": "int64",
+        "atom_ids": "int64",
+        "atom_types": "int32"
+      },
+      "every_payload_checksum_verified": true,
+      "all_export_rounding_values_verified_against_actual_source_by_streaming_converter": true,
+      "final_snapshot_periodic_error_A": 0.0039043426513671875,
+      "final_snapshot_measured_error_bound_A": 0.0039111284149839776,
+      "final_snapshot_rounding_mismatch_count": 1,
+      "final_snapshot_rounding_mismatch_max_A": 7.152557373046875e-07,
+      "endpoint_comparison_note": "Snapshot is written after native restart output. Two FCC cases differ by 7.15e-7 A in one rounded coordinate from the trajectory dump; comparison uses measured float16 error plus float32 box arithmetic. Export rounding was verified exactly against the actual dump.",
+      "source_deleted_after_verification": true,
+      "endpoint_certificate_sha256": "2a3898c85eec32d82476105961685ff90b17a90b31323e9cf86cf8dff02c09d6",
+      "paired_conversion_sha256": "d7a917b33a5a67b0102a8983316c7bfd5ab89f58860a3f336c5258d2cb70ca26",
+      "native_restart_sha256": {
+        "final.restart.bin": "0445292fa344303110d92511af9f496c339b189b58f8d4d5c3ee17ae3a6bdb8c"
+      },
+      "quantization": {
+        "positions": {
+          "max_abs": 0.0039052963256835938,
+          "rms": 0.0015831359258947821,
+          "coordinate_count": 68364,
+          "units": "angstrom",
+          "periodic_minimum_image": true
+        },
+        "velocities": {
+          "max_abs": 0.0038976669311523438,
+          "rms": 0.0006295297529081144,
+          "coordinate_count": 68364,
+          "units": "angstrom_per_ps",
+          "periodic_minimum_image": false
+        }
+      }
+    },
+    "cap_010ps": {
+      "state": "passed",
+      "scope": "Excluded infrastructure fixture, not a scientific source",
+      "mpi_ranks": 2,
+      "atom_count": 108,
+      "actual_ps": 21,
+      "frame_count": 211,
+      "sampling_ps": 0.1,
+      "reason": "peer_time_cap",
+      "right_censored": true,
+      "monitor_steps": [
+        0,
+        7500,
+        10500
+      ],
+      "monitor_fractions": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dtypes": {
+        "positions": "float16",
+        "velocities": "float16",
+        "box_low": "float32",
+        "box_high": "float32",
+        "timesteps": "int64",
+        "atom_ids": "int64",
+        "atom_types": "int32"
+      },
+      "every_payload_checksum_verified": true,
+      "all_export_rounding_values_verified_against_actual_source_by_streaming_converter": true,
+      "final_snapshot_periodic_error_A": 0.0039014816284179688,
+      "final_snapshot_measured_error_bound_A": 0.003912372188096924,
+      "final_snapshot_rounding_mismatch_count": 0,
+      "final_snapshot_rounding_mismatch_max_A": 0.0,
+      "endpoint_comparison_note": "Snapshot is written after native restart output. Two FCC cases differ by 7.15e-7 A in one rounded coordinate from the trajectory dump; comparison uses measured float16 error plus float32 box arithmetic. Export rounding was verified exactly against the actual dump.",
+      "source_deleted_after_verification": true,
+      "endpoint_certificate_sha256": "e41e17be42fb6bb5372bec12788a0f0877ec0334c7b2dceb511cc9090500188f",
+      "paired_conversion_sha256": "51ecde45b4da749081607ab1bd01238e8460c52ff1d992962ec8450e260e7fbf",
+      "native_restart_sha256": {
+        "final.restart.bin": "d59cfd07d8ed8cbbf7eebb98834d1821873db5bef5838c13c5e88af3565abbd9"
+      },
+      "quantization": {
+        "positions": {
+          "max_abs": 0.00390625,
+          "rms": 0.0015465984743659956,
+          "coordinate_count": 68364,
+          "units": "angstrom",
+          "periodic_minimum_image": true
+        },
+        "velocities": {
+          "max_abs": 0.007808685302734375,
+          "rms": 0.0013218413214086946,
+          "coordinate_count": 68364,
+          "units": "angstrom_per_ps",
+          "periodic_minimum_image": false
+        }
+      }
+    },
+    "half_001ps": {
+      "state": "passed",
+      "scope": "Excluded infrastructure fixture, not a scientific source",
+      "mpi_ranks": 2,
+      "atom_count": 108,
+      "actual_ps": 21,
+      "frame_count": 2101,
+      "sampling_ps": 0.01,
+      "reason": "half_crystal",
+      "right_censored": false,
+      "monitor_steps": [
+        0,
+        7500
+      ],
+      "monitor_fractions": [
+        1.0,
+        1.0
+      ],
+      "dtypes": {
+        "positions": "float16",
+        "velocities": "float16",
+        "box_low": "float32",
+        "box_high": "float32",
+        "timesteps": "int64",
+        "atom_ids": "int64",
+        "atom_types": "int32"
+      },
+      "every_payload_checksum_verified": true,
+      "all_export_rounding_values_verified_against_actual_source_by_streaming_converter": true,
+      "final_snapshot_periodic_error_A": 0.0039043426513671875,
+      "final_snapshot_measured_error_bound_A": 0.003912082089300384,
+      "final_snapshot_rounding_mismatch_count": 1,
+      "final_snapshot_rounding_mismatch_max_A": 7.152557373046875e-07,
+      "endpoint_comparison_note": "Snapshot is written after native restart output. Two FCC cases differ by 7.15e-7 A in one rounded coordinate from the trajectory dump; comparison uses measured float16 error plus float32 box arithmetic. Export rounding was verified exactly against the actual dump.",
+      "source_deleted_after_verification": true,
+      "endpoint_certificate_sha256": "c83a0dd625706c7653e976aadbf7b26a46804cbf3ad3ac32349a46c4eadb2cbd",
+      "paired_conversion_sha256": "ab99dc047b3a50bade03744bbb84b0d7a1838e894454a38eae17d62b30537143",
+      "native_restart_sha256": {
+        "final.restart.bin": "0445292fa344303110d92511af9f496c339b189b58f8d4d5c3ee17ae3a6bdb8c"
+      },
+      "quantization": {
+        "positions": {
+          "max_abs": 0.00390625,
+          "rms": 0.0015829804435024996,
+          "coordinate_count": 680724,
+          "units": "angstrom",
+          "periodic_minimum_image": true
+        },
+        "velocities": {
+          "max_abs": 0.0039052963256835938,
+          "rms": 0.0006275667124401593,
+          "coordinate_count": 680724,
+          "units": "angstrom_per_ps",
+          "periodic_minimum_image": false
+        }
+      }
+    },
+    "cap_001ps": {
+      "state": "passed",
+      "scope": "Excluded infrastructure fixture, not a scientific source",
+      "mpi_ranks": 2,
+      "atom_count": 108,
+      "actual_ps": 21,
+      "frame_count": 2101,
+      "sampling_ps": 0.01,
+      "reason": "peer_time_cap",
+      "right_censored": true,
+      "monitor_steps": [
+        0,
+        7500,
+        10500
+      ],
+      "monitor_fractions": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "dtypes": {
+        "positions": "float16",
+        "velocities": "float16",
+        "box_low": "float32",
+        "box_high": "float32",
+        "timesteps": "int64",
+        "atom_ids": "int64",
+        "atom_types": "int32"
+      },
+      "every_payload_checksum_verified": true,
+      "all_export_rounding_values_verified_against_actual_source_by_streaming_converter": true,
+      "final_snapshot_periodic_error_A": 0.0039014816284179688,
+      "final_snapshot_measured_error_bound_A": 0.003912372188096924,
+      "final_snapshot_rounding_mismatch_count": 0,
+      "final_snapshot_rounding_mismatch_max_A": 0.0,
+      "endpoint_comparison_note": "Snapshot is written after native restart output. Two FCC cases differ by 7.15e-7 A in one rounded coordinate from the trajectory dump; comparison uses measured float16 error plus float32 box arithmetic. Export rounding was verified exactly against the actual dump.",
+      "source_deleted_after_verification": true,
+      "endpoint_certificate_sha256": "9bb1b82232dbac45b36ad0173fc3c03ed39417dd35c755bab03461ae7a4b38a7",
+      "paired_conversion_sha256": "d4026c657f8851fbdf2491cc176f52ed1e3b470777092957a883fe633a895533",
+      "native_restart_sha256": {
+        "final.restart.bin": "d59cfd07d8ed8cbbf7eebb98834d1821873db5bef5838c13c5e88af3565abbd9"
+      },
+      "quantization": {
+        "positions": {
+          "max_abs": 0.00390625,
+          "rms": 0.0015431686966739823,
+          "coordinate_count": 680724,
+          "units": "angstrom",
+          "periodic_minimum_image": true
+        },
+        "velocities": {
+          "max_abs": 0.0078125,
+          "rms": 0.001317395445122754,
+          "coordinate_count": 680724,
+          "units": "angstrom_per_ps",
+          "periodic_minimum_image": false
+        }
+      }
+    }
+  },
+  "implementation_sha256": {
+    "src/simulation/campaigns/dense_al.py": "e77349f59e57dc239c3998c28de7e57c38bc4dac40b19358656e1c6711349b8f",
+    "src/simulation/campaigns/dense_al_half_stop.py": "6d73c8bbd58014e20aa0f246578f8fcbb7ae8e0222df7c84be13e68e1ab155bc",
+    "src/simulation/campaigns/dense_al_half_queue.py": "f7a04449b1493849082b39da9256737ccd4ca4b3df58b3da9a2556f5c574c276",
+    "src/data/conversion/dense_al_half.py": "8b3ac8dcb463ad9046453c201bef34f053260d64c722fce79c63fed1a39e5d37",
+    "src/data/conversion/cli.py": "ee38d92c326163ed713692b29e8491a39023a24f47b691d58b3729283c04f194",
+    "src/data/conversion/streaming_pair.py": "730bc9a47a734ff5227afd834a02658056996a6f5e9a9d8d2d2de1a0228f85ef",
+    "src/data/conversion/shooting_text.py": "db05bc7edcece1bb8cba22353f15becb96cea1fc945c61229c26db898a14d6c1",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+    "src/analysis/al_replay.py": "eac933472aa718a27516b36e155779f8dcc8feb4bdb189830a53387067a1b6bd",
+    "configs/simulation/al_main_half_stop_20261001.json": "f2c6e3f4fafc8549a5db5de128b57a7a197b705269970dfc058138f9bd4ba81f"
+  },
+  "queue_preparation_review": {
+    "reviewed_at": "2026-10-01T22:25:27.428377+00:00",
+    "change": "Read/copy the actual add-on previous-workers.sbatch producer path; native stopping/conversion implementation unchanged",
+    "preserved_attempt": "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001-preparation-attempt1",
+    "staging": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/technical/half-stop-preparation-attempts/attempt1",
+    "additional_change": "Preflight the collection registration before creating files; reconciled first preparation entry with preserved actual location",
+    "second_preserved_attempt": "/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001-preparation-attempt2"
+  }
+}

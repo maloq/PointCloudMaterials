@@ -1,0 +1,80 @@
+{
+  "protocol": "al256_atomistic_response_training_float32_v2",
+  "output": "${storage:training_storage}/response_atlas/atomistic-training-fast-20261002",
+  "cache": "${storage:cache}/response-atlas/atomistic-training-fast-20261002",
+  "simulation_scratch": "${storage:simulation_runs}/response-atlas-training-fast-20261002",
+  "simulation_archive": "${storage:archive}/simulations/response-atlas-training-fast-20261002",
+  "oracle_recipe": "configs/simulation/response_atlas_feasibility_20261001.json",
+  "oracle_recipe_sha256": "3bdccb541c2982be784f7b8a82ead1fdf910d0bfd557286a9b9dfb7b3a3c9732",
+  "horizons_steps": [
+    20,
+    100
+  ],
+  "parent_roles": {
+    "train": [
+      0,
+      32
+    ],
+    "selection": [
+      32,
+      40
+    ],
+    "test": [
+      40,
+      56
+    ]
+  },
+  "branch_seed_base": 70000000,
+  "value_shots": 32,
+  "response_shots": 8,
+  "directions": 2,
+  "fit_seeds": [
+    20261001,
+    20261002,
+    20261003
+  ],
+  "arms": [
+    "values8",
+    "responses8",
+    "values32"
+  ],
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 2,
+    "correlation": 2,
+    "backend": "e3nn",
+    "layout": "mul_ir",
+    "conv_fusion": false
+  },
+  "head_width": 128,
+  "training": {
+    "batch_size": 32,
+    "microbatch": 4,
+    "epochs": 200,
+    "patience": 40,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05,
+    "gradient_clip": 10.0,
+    "response_weight": 1.0,
+    "value_scale_floor": 0.0001,
+    "response_scale_floor": 0.001,
+    "selector": "shared_32_shot_selection_feature_gaussian_nll",
+    "deviation": "32-parent full-batch pilot; microbatch4 bounds higher-order derivative memory; identical batches in all arms"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "bootstrap_draws": 2000,
+  "gpu_partition": "RTX6000PRO,L40S",
+  "time_limit": "24:00:00",
+  "exclude_nodes": [
+    "node52"
+  ],
+  "simulation_profile": "configs/simulation/response_atlas_fast_default.json"
+}

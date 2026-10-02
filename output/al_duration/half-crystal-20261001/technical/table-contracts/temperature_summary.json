@@ -1,0 +1,7 @@
+{
+  "table": "tables/temperature_summary.csv",
+  "sha256": "d2d7e052d555707fd205a2ace18327c87e4138a92620905b1ec28bf1784b5c20",
+  "family": "al_half_transform",
+  "contract": "technical/metric-contracts/al_half_transform.json",
+  "definitions": "tables/metric-definitions/al_half_transform.md"
+}

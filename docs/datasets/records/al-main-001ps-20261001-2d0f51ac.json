@@ -1,4 +1,39 @@
 {
   "dataset_id": "al-main-001ps-20261001",
-  "records": []
+  "records": [
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/al-main-001ps-20261001/runs/al-main-001ps-20261001-source0886/status.json",
+      "relative_path": "runs/al-main-001ps-20261001-source0886/status.json",
+      "sha256": "37ffed1c3bd0b91944259429a13967321083cdb333fcbea91fe4f846a748e737",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-main-010ps-20260927/al-main-001ps-20261001/runs/al-main-001ps-20261001-source1004/status.json",
+      "relative_path": "runs/al-main-001ps-20261001-source1004/status.json",
+      "sha256": "f17a9877d01b732a47763555008f3860142ac46b68f0bd30d4d38ec45fb02988",
+      "kind": "metadata",
+      "keys": [
+        "created_at",
+        "reason",
+        "run_id",
+        "state",
+        "successor_directory",
+        "successor_launch"
+      ],
+      "recorded_state": "queue_handoff",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
 }

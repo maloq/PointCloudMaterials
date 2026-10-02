@@ -1,0 +1,2437 @@
+{
+  "dataset_id": "al64-nucleus-fates-v1-20261002",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/source-860.json",
+      "relative_path": "technical/source-860.json",
+      "sha256": "2c5f6f475044df8792a531baa339e63f4681efd9bbde516748987fef63ead5b1",
+      "kind": "metadata",
+      "keys": [
+        "completed",
+        "finished_at",
+        "job",
+        "last_counts",
+        "source",
+        "started_at",
+        "state",
+        "total"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/source-890.json",
+      "relative_path": "technical/source-890.json",
+      "sha256": "7c905a1aac61358af4650c7dc355934aae8ebf789fd7a93746728829bc368185",
+      "kind": "metadata",
+      "keys": [
+        "completed",
+        "finished_at",
+        "job",
+        "last_counts",
+        "source",
+        "started_at",
+        "state",
+        "total"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "0ef99c4021b17410a18e81f54be01ffc3f00160e5d25d2bbbfa435cd565a8e51",
+      "kind": "metadata",
+      "keys": [
+        "birth_config",
+        "dissolution_confirmation_frames",
+        "growth_factor",
+        "growth_minimum_atoms",
+        "growth_persistence_frames",
+        "input_contract",
+        "minimum_verified_peak_atoms",
+        "output",
+        "primary_minimum_atoms",
+        "primary_persistence_frames",
+        "protocol",
+        "workers"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al64-nucleus-fates-v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.75,
+            "first_json_path": "input_contract.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/1000/complete.json",
+      "relative_path": "technical/sources/1000/complete.json",
+      "sha256": "b7124de27d02d5f1e65dd1ded6365482491c95196eaa03b9906213689101792e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/1001/complete.json",
+      "relative_path": "technical/sources/1001/complete.json",
+      "sha256": "51ad714ace7fa15bf9d56397761b8e6581a0470d07d4624dba09e2c2657c8bf6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/1002/complete.json",
+      "relative_path": "technical/sources/1002/complete.json",
+      "sha256": "93b1234a1ac9442a0074e60350e37505e1f84afa6fd2cd4c2396f8c1759fef68",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/1003/complete.json",
+      "relative_path": "technical/sources/1003/complete.json",
+      "sha256": "4815c27b1df023c3d7f70bebaec86d97961c36fc112b53abaec2ee9213f88863",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/1006/complete.json",
+      "relative_path": "technical/sources/1006/complete.json",
+      "sha256": "ba4566f38c31bac1957d749d66e92c0b03b5b2334697d203e3727562865a40ca",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/860/complete.json",
+      "relative_path": "technical/sources/860/complete.json",
+      "sha256": "ce8d06dae68f97f7c9f3875306188a7620bfdc2591d1a811129013a02fa9ac30",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/861/complete.json",
+      "relative_path": "technical/sources/861/complete.json",
+      "sha256": "a1fa2318a9b445f9a023fdb34fee2a3854e69e7acc25263e00c72060066630a4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/862/complete.json",
+      "relative_path": "technical/sources/862/complete.json",
+      "sha256": "912191183c2e22bcddfbe10523f7704644e15fcd8d0e7c270c00859c213fa0fe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/863/complete.json",
+      "relative_path": "technical/sources/863/complete.json",
+      "sha256": "be035a5c3f6c48a9c67b0f73ea1ba725924f615b54c921cfa019df4165b1436e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/864/complete.json",
+      "relative_path": "technical/sources/864/complete.json",
+      "sha256": "a0f9d568effece5f51556045cf7c178da1312d2c19b55d4fe59d7431e686daaa",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/865/complete.json",
+      "relative_path": "technical/sources/865/complete.json",
+      "sha256": "0c0ffa451d1ae2f8c2e0a9fcbfec43d68250ad1ee73b6ed32f08aa784a2a7413",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/866/complete.json",
+      "relative_path": "technical/sources/866/complete.json",
+      "sha256": "954e5f390c47ec18de2a8bf61275a9627c7cd442830647e02940b2783e65a575",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/867/complete.json",
+      "relative_path": "technical/sources/867/complete.json",
+      "sha256": "d5273b7b734aa57b02e76e443e0e05cd941be56f8e4623b7ec849b5afde51632",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/868/complete.json",
+      "relative_path": "technical/sources/868/complete.json",
+      "sha256": "b468fdcf7e6d1b04893d03916b8ceb8423df3dc425bba575596079778feea29c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/869/complete.json",
+      "relative_path": "technical/sources/869/complete.json",
+      "sha256": "cfcf6d64ebe953c76cb32382a1d5646b1476331677d95b6a16dd63ab90ec65a5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/870/complete.json",
+      "relative_path": "technical/sources/870/complete.json",
+      "sha256": "1d0a4e9e1c51ddfb0dcc70ec9f493b50628ca0bd5b938aa57806895c746270bb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/871/complete.json",
+      "relative_path": "technical/sources/871/complete.json",
+      "sha256": "1d83b48a8ade10fa2b019098825d1198a043b54d20c4dc33c8beb6c2760e2e62",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/872/complete.json",
+      "relative_path": "technical/sources/872/complete.json",
+      "sha256": "713a27482ee6fe118c3664a2295b72e9cd1feedcf93fcceeb6950a790ed88ca5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/873/complete.json",
+      "relative_path": "technical/sources/873/complete.json",
+      "sha256": "a63f3c4c857901bffedd879c63870793b3d6cbaa66ab100fd59883fd693da531",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/874/complete.json",
+      "relative_path": "technical/sources/874/complete.json",
+      "sha256": "afed194779e48d0104e9f10e87e3de2ccd3817429185efcefba6bcb0fbf411ce",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/875/complete.json",
+      "relative_path": "technical/sources/875/complete.json",
+      "sha256": "7802017c65ad5b5229ef1333fc7b2c06fe42b2a4bd317b29299a7930c4ab5bad",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/876/complete.json",
+      "relative_path": "technical/sources/876/complete.json",
+      "sha256": "55372bb2170f430678a9eaaa5df1888bb117cf597c3ea5145cd9faecd229e5d1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/877/complete.json",
+      "relative_path": "technical/sources/877/complete.json",
+      "sha256": "98437dd8270075636c3d4afedb724740521d2a0d6be5e0b1ea81b4a59567b908",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/878/complete.json",
+      "relative_path": "technical/sources/878/complete.json",
+      "sha256": "25fa89e01cbe44e47bf7038774aa18827b4b8ed861a0326da97b5709ce228f03",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/879/complete.json",
+      "relative_path": "technical/sources/879/complete.json",
+      "sha256": "598b8b40757f4a60616f5e82b0f6f5ec1fe4ce3d0db792ade9ecaf549b8823e2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/880/complete.json",
+      "relative_path": "technical/sources/880/complete.json",
+      "sha256": "d1362cf8de8ed293a1d225067c20dbf4c6a0397a811065af0975aa2b232e3738",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/881/complete.json",
+      "relative_path": "technical/sources/881/complete.json",
+      "sha256": "01e27502a63ca9e670c514652a54d3d5bb938f7424bf142b13392aee344fbcb6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/882/complete.json",
+      "relative_path": "technical/sources/882/complete.json",
+      "sha256": "b0b2ba0a644551c93a9812f1437c7d861ca492f8736e619be30e820f08b68449",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/883/complete.json",
+      "relative_path": "technical/sources/883/complete.json",
+      "sha256": "7dcc532b848b1cfdef8252231a69f037e6de1a10b54d5e2a31a5759590453bfa",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/884/complete.json",
+      "relative_path": "technical/sources/884/complete.json",
+      "sha256": "6d418bc9db0739253d7d8342c2871f7618769844d7986246bcdb6c2fdd3989e5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/885/complete.json",
+      "relative_path": "technical/sources/885/complete.json",
+      "sha256": "f73540f2122148b3a24b79e2a8c679bc0021b2cd1d3a5f45bee46b6918b865b3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/886/complete.json",
+      "relative_path": "technical/sources/886/complete.json",
+      "sha256": "fc5f8f4cdf2bba7bdc0f436e50bf6a1a5465e1112c6d9f8bf2d0b638954c79de",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/887/complete.json",
+      "relative_path": "technical/sources/887/complete.json",
+      "sha256": "8624ae39227568bcdd762919a289e356dda568e8a79eb5acd44decbcca85d2b3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/888/complete.json",
+      "relative_path": "technical/sources/888/complete.json",
+      "sha256": "2296543b8f503f059a745fb35d7fbad4a40ab82eb89503bb9a1c7e307177bf85",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/889/complete.json",
+      "relative_path": "technical/sources/889/complete.json",
+      "sha256": "df9891db6e15523a3a2d6d655b643728efea6efa9ce58051d81cd2c10d9169de",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/890/complete.json",
+      "relative_path": "technical/sources/890/complete.json",
+      "sha256": "1e9fb446785455281fcd3c8fe1cf3a427d453ed1ebccf5f164bef544dbe22876",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/891/complete.json",
+      "relative_path": "technical/sources/891/complete.json",
+      "sha256": "206a2b346ec3731d112cc55856c0234cde6b23305803529f635865cb936e8863",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/892/complete.json",
+      "relative_path": "technical/sources/892/complete.json",
+      "sha256": "7448f978b2afa5539459477e56cfc8928d1888c5163ce15bdacdb68c7281a944",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/893/complete.json",
+      "relative_path": "technical/sources/893/complete.json",
+      "sha256": "0bfa88a470ba4493e24cd0ae7a0578cab5455849ea244379d454757ae93fbe8e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/894/complete.json",
+      "relative_path": "technical/sources/894/complete.json",
+      "sha256": "b6eeb123da89d71787a82eac71d554600a8b88716317015e3952d29c79bffa1d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/895/complete.json",
+      "relative_path": "technical/sources/895/complete.json",
+      "sha256": "3a946b9b0514a35bde5386226e6f65218e69357df19a456495b6b1f0717a084b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/896/complete.json",
+      "relative_path": "technical/sources/896/complete.json",
+      "sha256": "7adb099ace4c2e467e7435188433d7bc33cb326020242b367af5cf8747a451e1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/897/complete.json",
+      "relative_path": "technical/sources/897/complete.json",
+      "sha256": "b5f668debcc0ad1f5e9927291707aae0b89c7362645192bd0a60f4b6c5493daf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/898/complete.json",
+      "relative_path": "technical/sources/898/complete.json",
+      "sha256": "a13f1b3402ce459be074d8f82db9f75c768915f012f7ee806d262f41004189bb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/899/complete.json",
+      "relative_path": "technical/sources/899/complete.json",
+      "sha256": "8d537edb429cd94a971a0f14651dd45d085ddbe412b62a99e75b674e058afb9c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/900/complete.json",
+      "relative_path": "technical/sources/900/complete.json",
+      "sha256": "8475c7c76eb5636421650c86664dc7cecf29fa9b50116ec2845b435ba84befbe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/901/complete.json",
+      "relative_path": "technical/sources/901/complete.json",
+      "sha256": "069df585ab6580c76cda76e8b5c4bb930c4c717c50ef503fcc13b6043b6d2c7e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/902/complete.json",
+      "relative_path": "technical/sources/902/complete.json",
+      "sha256": "890a7e2d74f00661e97b278084f0adb1bb4832474cdf241e1c40da53d8b0735a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/903/complete.json",
+      "relative_path": "technical/sources/903/complete.json",
+      "sha256": "596d2b755061703d59f83b33869710898f0be49069040029d4da07e634da0c1a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/904/complete.json",
+      "relative_path": "technical/sources/904/complete.json",
+      "sha256": "b7b9ea59cdefa4a86cb3c4676bb0e08dabf5c7d372f42f42e4a782573b4e2889",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/905/complete.json",
+      "relative_path": "technical/sources/905/complete.json",
+      "sha256": "d750b234fce24b23d191a31d70623ff26010309871b2a054c78d1f1036873f9d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/906/complete.json",
+      "relative_path": "technical/sources/906/complete.json",
+      "sha256": "12ac91e1da4f1326207f252f49852cfccf0089c945cacb068c7d16dbc4b49656",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/907/complete.json",
+      "relative_path": "technical/sources/907/complete.json",
+      "sha256": "4255a019b12a81f0325e67949440fadf08840f312acb422432fdf5458b7b12c4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/908/complete.json",
+      "relative_path": "technical/sources/908/complete.json",
+      "sha256": "2f17d57279738ac33e4db4e4d0006e70d21abcce2974fafc822f21d7d31d9edc",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/909/complete.json",
+      "relative_path": "technical/sources/909/complete.json",
+      "sha256": "2e30d8499c41decbf65edacb415700225ce96093ff2a6b244e24910deb54d802",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/910/complete.json",
+      "relative_path": "technical/sources/910/complete.json",
+      "sha256": "746ea70e0c5d1938bffd3469d85c5a939c8df9041bc25ad4461185a7c9b919f1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/911/complete.json",
+      "relative_path": "technical/sources/911/complete.json",
+      "sha256": "816e9389351f641d56b24338781025255882757769632db2b66db9aecae50f45",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/912/complete.json",
+      "relative_path": "technical/sources/912/complete.json",
+      "sha256": "65dfc9050a385f9687046c69c7274ee4df84c9478f8781ddf33cc64b242f0caf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/913/complete.json",
+      "relative_path": "technical/sources/913/complete.json",
+      "sha256": "182bcb39edc6f2d3f20b493efc8205f74856017914226c967c4c3bb99b5595fe",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/914/complete.json",
+      "relative_path": "technical/sources/914/complete.json",
+      "sha256": "b385c85ff64edafad451955173be6bf845725aa603e4e5cc28430761d468efb6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/915/complete.json",
+      "relative_path": "technical/sources/915/complete.json",
+      "sha256": "74ae74b00167bc935dbc0a7acd160fe0d612d25e13ec31afa2f681bcd8f05b14",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/916/complete.json",
+      "relative_path": "technical/sources/916/complete.json",
+      "sha256": "fb7f06d0b7105ff39df47ee0940ff731657f5217e22d273bbe24d5903de2e0a1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/918/complete.json",
+      "relative_path": "technical/sources/918/complete.json",
+      "sha256": "88be53c0e5d7caeceb8537ba3ad7443ab60f44a3ae7eb8a2c7f01a9b408efc5e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/919/complete.json",
+      "relative_path": "technical/sources/919/complete.json",
+      "sha256": "59ee61d60a90f460b85023cf51d65a13b8cf5f24eb9c3fe66923e44fd42897cd",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/920/complete.json",
+      "relative_path": "technical/sources/920/complete.json",
+      "sha256": "7b82929a7ae7746f7acd15a98240c0f82481514cbc7704b4316e6b33079ae9c9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/921/complete.json",
+      "relative_path": "technical/sources/921/complete.json",
+      "sha256": "2a6fd66b1cf4186429652e790afb6949795b44f7958849d3557214b1dd5fe296",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/922/complete.json",
+      "relative_path": "technical/sources/922/complete.json",
+      "sha256": "959612c6e6035cf8afef51d95ac89eed570157497c6317ef75be23e98a434437",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/923/complete.json",
+      "relative_path": "technical/sources/923/complete.json",
+      "sha256": "5c5f784b41c9ee0430959065e5f0134483ebe9dfc0c6c560a054be3c1d5f0e43",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/924/complete.json",
+      "relative_path": "technical/sources/924/complete.json",
+      "sha256": "ee7415fe2617e2edcc98cc9e5578146a11f7c3e6061dfcf1cfe7c78861617503",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/926/complete.json",
+      "relative_path": "technical/sources/926/complete.json",
+      "sha256": "e8ee75abe6b6f98686cd2401c48f67074cbed6aee04504193f20f37f14b829d6",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/927/complete.json",
+      "relative_path": "technical/sources/927/complete.json",
+      "sha256": "c777507b96b4612022c02ff72e1836744329107aed642ae0c7ac9120de2ece0e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/928/complete.json",
+      "relative_path": "technical/sources/928/complete.json",
+      "sha256": "be97f2c9a8fb588b8e7ce0b9e94974c846ad0a02d81fcd248f686e693405b99c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/929/complete.json",
+      "relative_path": "technical/sources/929/complete.json",
+      "sha256": "d77ee1dcac59b2286da61639e7afdf0a86d5210a97ed9d2948c342e42d21b8a1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/930/complete.json",
+      "relative_path": "technical/sources/930/complete.json",
+      "sha256": "bca737237674125710ce6e5f7ea1dd2e6c2a292163080a9eb11e203c668fe056",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/931/complete.json",
+      "relative_path": "technical/sources/931/complete.json",
+      "sha256": "f481560880d1c04f942a7a29078862d19ab3ab0f6815c13e2f012085a2e2f086",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/934/complete.json",
+      "relative_path": "technical/sources/934/complete.json",
+      "sha256": "572adadc8672a672b5c20163f19ffba0ba7f1506222b18d7fdc361d155cc8fc3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/935/complete.json",
+      "relative_path": "technical/sources/935/complete.json",
+      "sha256": "35fa6828aca4cba94a31498ca03604a1bb31821e02b4c1bcd061b173c1b61d6c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/936/complete.json",
+      "relative_path": "technical/sources/936/complete.json",
+      "sha256": "151fea3928663cc982778de4adefe730cef6100f34d4598f46fe182728e95860",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/937/complete.json",
+      "relative_path": "technical/sources/937/complete.json",
+      "sha256": "7dd3947707ce472a9fedabea39ba09cfeb4527174f69e4c9a083d7b1f473111c",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/938/complete.json",
+      "relative_path": "technical/sources/938/complete.json",
+      "sha256": "58a659f3e6b64edb2fe838db15c54f96514509383f9d7b61c721c56874ddf5b4",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/939/complete.json",
+      "relative_path": "technical/sources/939/complete.json",
+      "sha256": "46dd04589f9dc2ff11976f4e31425e140124b3799495fed2daa835236c2c4a27",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/942/complete.json",
+      "relative_path": "technical/sources/942/complete.json",
+      "sha256": "c2865e65891bb9cefa8ee8b0d7d1b441a9fd768974afbd108ae7856ea6139ef2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/943/complete.json",
+      "relative_path": "technical/sources/943/complete.json",
+      "sha256": "8c4eccfffaffc1dd19d1ad055171dbcd8aaf2523b97e0121d39d6b4a5be68158",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/944/complete.json",
+      "relative_path": "technical/sources/944/complete.json",
+      "sha256": "a9acb04ba9afcbb0057d1a3098635c9f313ec949648c9d1774ed2b1d46a7ab3a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/945/complete.json",
+      "relative_path": "technical/sources/945/complete.json",
+      "sha256": "8a66dc8c162ce3771f51cd925554d24d2aa934fbddd8afcd56d943a680bafaef",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/946/complete.json",
+      "relative_path": "technical/sources/946/complete.json",
+      "sha256": "d2c44e8b72308534e70bb8febb2f6c7be2b52b77e8a3eeb4d6aa9dae78a7dbd7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/947/complete.json",
+      "relative_path": "technical/sources/947/complete.json",
+      "sha256": "543329e86e7344755217aed0c3bfd89ba41634d515b0b0720efd40649a554993",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/950/complete.json",
+      "relative_path": "technical/sources/950/complete.json",
+      "sha256": "45b45da8993224e7d15973f77f7c91258f9bb1e147758d948d5140dee848095d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/951/complete.json",
+      "relative_path": "technical/sources/951/complete.json",
+      "sha256": "1ad91cf7c617ea0e86c80adbf1bc217044f83ecad66ce0d8acac94e9adff8c84",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/952/complete.json",
+      "relative_path": "technical/sources/952/complete.json",
+      "sha256": "768f7ef51527bfbed7f23f1ecb4835c7fa88981d9f0e429687f12c4027018f3a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/953/complete.json",
+      "relative_path": "technical/sources/953/complete.json",
+      "sha256": "12d238ce9483c1f65eee6647b3f33fc5dbf54e54badf559ac1e34acfdb43a743",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/954/complete.json",
+      "relative_path": "technical/sources/954/complete.json",
+      "sha256": "0da3f686e967ecbe31a9b6807f5982ffa172a8887297a741a281ef409dd8bf85",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/955/complete.json",
+      "relative_path": "technical/sources/955/complete.json",
+      "sha256": "365566be716ae4b9facdc9d2c7e00344e69afbe7d30cb085f5b8cea3cb87a7d9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/958/complete.json",
+      "relative_path": "technical/sources/958/complete.json",
+      "sha256": "f6f05598625f66780f04d70b143ea6ff9d587791c193bfa66441e7312ccd2c1e",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/959/complete.json",
+      "relative_path": "technical/sources/959/complete.json",
+      "sha256": "9b6d8adb36f45ed68666ff8130791bd23dc4e83233e3e91057515162b4235260",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/960/complete.json",
+      "relative_path": "technical/sources/960/complete.json",
+      "sha256": "fca87b9043600a061011f34be244f841aefb2131f2602a681764a751c5c3a93b",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/961/complete.json",
+      "relative_path": "technical/sources/961/complete.json",
+      "sha256": "0aa9dc33503cb3b2572bd45427201f740196413a43ab0ec67c09284556048b8d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/962/complete.json",
+      "relative_path": "technical/sources/962/complete.json",
+      "sha256": "dddeb10118e261452d71ef234c0a2e4f5209cb996ce12ec9851e9ca4e545e759",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/963/complete.json",
+      "relative_path": "technical/sources/963/complete.json",
+      "sha256": "a2672052227764b7149191bf96745c964c0970cb1290cfde07079a683204241d",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/966/complete.json",
+      "relative_path": "technical/sources/966/complete.json",
+      "sha256": "daa5c70f5c9d854d3c8569af4fdb8f9323ddca966fbf59a1f3b5982c5e46875a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/967/complete.json",
+      "relative_path": "technical/sources/967/complete.json",
+      "sha256": "5192962990135145c89774a5528656eb32aadf03685059aaf9955356a648f11f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/968/complete.json",
+      "relative_path": "technical/sources/968/complete.json",
+      "sha256": "7d7ba735bf7aa2a0543142933cd5dfaebe4def06fe364d64145922de0639aab8",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/969/complete.json",
+      "relative_path": "technical/sources/969/complete.json",
+      "sha256": "e6d0b7f5839e8277850ab7d23a7019a7fcfb80bb6ef524941b5f4c6365bddfcf",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/970/complete.json",
+      "relative_path": "technical/sources/970/complete.json",
+      "sha256": "65e1431091564062567350bcf2d6587147694d1f860d8606c08e7b54552fd923",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/971/complete.json",
+      "relative_path": "technical/sources/971/complete.json",
+      "sha256": "fb367991628728b4e715d60e5482ca6b0e54a4d12bdc7c3f5f0c6b26103912d0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/974/complete.json",
+      "relative_path": "technical/sources/974/complete.json",
+      "sha256": "b776d01e6688875c7d851aa03843d277b2f20e811b14e1c14960308607a493d9",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/975/complete.json",
+      "relative_path": "technical/sources/975/complete.json",
+      "sha256": "c74c27b054555a4d5a64c21562a0989bf541494155b8559735da91876ec9b467",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/976/complete.json",
+      "relative_path": "technical/sources/976/complete.json",
+      "sha256": "040dc01986cd0d4ab0ad673136c977493d837437c5edf48f73909d3b104f069f",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/977/complete.json",
+      "relative_path": "technical/sources/977/complete.json",
+      "sha256": "f37cb53d73e5d516f4cedb3286bf757667eac146c2c3df52cc01ccdd34e31af5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/978/complete.json",
+      "relative_path": "technical/sources/978/complete.json",
+      "sha256": "eaa44781e0b7b76fda1d83a6919f169865f532c2174ba9db6eeb6074746b2675",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/979/complete.json",
+      "relative_path": "technical/sources/979/complete.json",
+      "sha256": "3da5fc22f673a172b94b77e4fb7757f5874af7dc4633b5b1bd33486395192efb",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/982/complete.json",
+      "relative_path": "technical/sources/982/complete.json",
+      "sha256": "65b252b276fdfd27b4fbe2aaea0c5269a1dafad7bd4dccfa0f90c79e88c453a3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/983/complete.json",
+      "relative_path": "technical/sources/983/complete.json",
+      "sha256": "0aa279ffa087bc22c692825c47f5c0d56040154b33439808f68708fb89108371",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/984/complete.json",
+      "relative_path": "technical/sources/984/complete.json",
+      "sha256": "20966a175c151d3f35c257a7b8ca4393183b63ccc9de52325b8d205be012de37",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/985/complete.json",
+      "relative_path": "technical/sources/985/complete.json",
+      "sha256": "174a93430b1ff622ac326bdcc1448c0356ef5b414d3faba0407cc04735cdb725",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/986/complete.json",
+      "relative_path": "technical/sources/986/complete.json",
+      "sha256": "9da824d3ed272e27949a47d1ced95d66829c27f34e11b221a3edadb7a0be94b5",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/987/complete.json",
+      "relative_path": "technical/sources/987/complete.json",
+      "sha256": "ce59129e786a604a88cdb668ed545613b8d05c009ace0beae4f2a42dbe100e67",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/990/complete.json",
+      "relative_path": "technical/sources/990/complete.json",
+      "sha256": "a5d30141980e8c8ae1c580c34107d208c4bba42e2bd662af351a54e44d1930e2",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/991/complete.json",
+      "relative_path": "technical/sources/991/complete.json",
+      "sha256": "d30cbedf605b2ffdf4ffd89c864989044bb1da83520ecd8074662dbf6bc2b9c7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/992/complete.json",
+      "relative_path": "technical/sources/992/complete.json",
+      "sha256": "bfdfc968efef62f4b073d1de007552007913e65ce31fa783bfe8d8229034b7d3",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/993/complete.json",
+      "relative_path": "technical/sources/993/complete.json",
+      "sha256": "69cfbd45af4554ad2d935cc081d881f721f65fb0c04666e6a88762e3b5ce84d0",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/994/complete.json",
+      "relative_path": "technical/sources/994/complete.json",
+      "sha256": "3b61e098d3820d3985dfebffdab5dfa72e3ef13c0bfe56110957be5bc6475ce1",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/995/complete.json",
+      "relative_path": "technical/sources/995/complete.json",
+      "sha256": "0d1dccbb278fa8989659b7d6b4a15ccc7189d9d761a4f0db851423dfed242cb7",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/al64-20261002/technical/sources/998/complete.json",
+      "relative_path": "technical/sources/998/complete.json",
+      "sha256": "c7361dec8ac26d6538b4111327df73aa842ba617a3b8235836dcd609485d0655",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "events_sha256",
+        "files",
+        "graph_sha256",
+        "identity",
+        "role",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

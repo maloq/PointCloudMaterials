@@ -10,7 +10,7 @@ from src.experiment_runner.metric_docs import write_metric_rows
 from src.project_runtime.paths import resolve_path
 from src.research.response_atlas.atomistic import (configuration, MACEPotential, PathFeatures,
     admissible, physical_screen, basis_for, oracle_for)
-from .common import FAMILY, read, root, oracle_config, parents, sha, write_json, bind
+from .common import FAMILY, read, root, oracle_config, parents, sha, write_json, bind, simulation_profile
 
 
 def save_pt(path, value):
@@ -43,11 +43,15 @@ def prepare(c):
     shutil.copy2(path, archive/'parents.pt')
     write_json(archive/'plan.json', dict(identity=record['identity'], config=c, parents=parents(c),
         parent_state_sha256=sha(path), ancestor='synthetic-FCC-256-prototype',
-        potential_sha256=o['potential_sha256'], coordinate_precision='float64 numerical restart states; no trajectory export'))
+        potential_sha256=o['potential_sha256'], coordinate_precision=('float64 prepared geometry; float32 simulator restart states; no trajectory export'
+                              if simulation_profile(c) else 'float64 numerical restart states; no trajectory export')))
     return states
 
 
 def collect(c):
+    if 'simulation_profile' in c:
+        from .fast import collect
+        return collect(c)
     identity = bind(c)['identity']
     o = oracle_config(c)
     states = prepare(c)

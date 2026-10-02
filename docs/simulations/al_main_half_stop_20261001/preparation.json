@@ -1,0 +1,47 @@
+{
+  "state": "passed",
+  "verified_at": "2026-10-01T22:27:23.845170+00:00",
+  "execution_manifest_sha256": "093d6b48ce12d8aae187ee2836032432b3a65186a05d497eac13771579806edd",
+  "previous_manifest_sha256": "1bca66e9c235d38b971bfc2f0d4d9740f7b7e9301ceccdbd18ca388c9bc23eb4",
+  "protected_trajectories": 24,
+  "changed_unstarted_trajectories": 128,
+  "changed_main": 126,
+  "changed_additions": 2,
+  "protected_records_identical": true,
+  "all_protected_native_input_checksums_identical": true,
+  "all_new_input_checksums_verified": true,
+  "all_frozen_code_checksums_verified": true,
+  "original_main_roles": {
+    "train": 90,
+    "calibration": 15,
+    "selection": 15,
+    "test": 30
+  },
+  "changed_trajectory_roles": {
+    "train": 77,
+    "selection": 12,
+    "calibration": 12,
+    "test": 27
+  },
+  "changed_unique_ancestors": 126,
+  "total_unique_ancestors": 150,
+  "cadence_counts": {
+    "0.1": 126,
+    "0.01": 2
+  },
+  "filtered_current_wave_assignments": [
+    [
+      16,
+      22
+    ],
+    [
+      20
+    ],
+    [
+      21
+    ]
+  ],
+  "new_source_statuses_absent": true,
+  "handoff_markers_verified": 128,
+  "controller_script_sha256": "72c1cb3bd782173cd5acaee81a032e1be97c05bc5c3468fb496da23f8fced6f4"
+}

@@ -1,0 +1,7 @@
+{
+  "table": "tables/original_fine_crystallinity.csv",
+  "sha256": "af8ba1c3e37e050fa930f0e19ef3e5ccb2ee9a8d0a49ac7f85b53366a7793639",
+  "family": "al_duration",
+  "contract": "technical/metric-contracts/al_duration.json",
+  "definitions": "tables/metric-definitions/al_duration.md"
+}

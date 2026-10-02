@@ -1,0 +1,147 @@
+{
+  "protocol": "fixed_mace_response_performance_v1",
+  "output": "${storage:training_storage}/response_atlas/oracle-performance-20261002",
+  "reference_run": "${storage:training_storage}/response_atlas/atomistic-training-20261001",
+  "reference_archive": "${storage:archive}/simulations/response-atlas-training-20261001",
+  "reference_identity": "e31d09841ff478a1c3db47644817ea69980f3e947dfee823210815ac3b622c9c",
+  "oracle_recipe": "configs/simulation/response_atlas_feasibility_20261001.json",
+  "variants": [
+    {
+      "name": "reference64",
+      "graph": "ase",
+      "backend": "e3nn",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": false,
+      "skin_A": 0
+    },
+    {
+      "name": "conditional64",
+      "graph": "ase",
+      "backend": "e3nn",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0
+    },
+    {
+      "name": "gpu64",
+      "graph": "gpu",
+      "backend": "e3nn",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0
+    },
+    {
+      "name": "gpu-skin64",
+      "graph": "gpu",
+      "backend": "e3nn",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0.6
+    },
+    {
+      "name": "cueq64-b1",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0
+    },
+    {
+      "name": "cueq64-b4",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 4,
+      "conditional": true,
+      "skin_A": 0,
+      "additional_gate_parents": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "cueq64-b8",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 8,
+      "conditional": true,
+      "skin_A": 0
+    },
+    {
+      "name": "cueq64-b16",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 16,
+      "conditional": true,
+      "skin_A": 0
+    },
+    {
+      "name": "cueq32-b4",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float32",
+      "batch": 4,
+      "conditional": true,
+      "skin_A": 0,
+      "additional_gate_parents": [
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "cueq64-fd-0.01",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0,
+      "method": "fd",
+      "epsilon_A": 0.01
+    },
+    {
+      "name": "cueq64-fd-0.003",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0,
+      "method": "fd",
+      "epsilon_A": 0.003
+    },
+    {
+      "name": "cueq64-fd-0.001",
+      "graph": "gpu",
+      "backend": "cueq",
+      "dtype": "float64",
+      "batch": 1,
+      "conditional": true,
+      "skin_A": 0,
+      "method": "fd",
+      "epsilon_A": 0.001
+    }
+  ],
+  "tolerance": {
+    "float64": {
+      "static_relative": 1e-06,
+      "path_relative": 1e-05,
+      "path_absolute": 1e-07
+    },
+    "float32": {
+      "static_relative": 0.001,
+      "path_relative": 0.01,
+      "path_absolute": 0.0001
+    }
+  },
+  "scope": "Local numerical/performance benchmark only; not scientific encoder training or replacement production labels"
+}

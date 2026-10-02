@@ -1,5 +1,19 @@
 # Configuration index
 
+[Failed-embryo appearance transfer](birth_prediction/appearance_transfer_20261002.json) reuses original predictors and fits combined-pool readouts; [workflow](../docs/birth_appearance.md).
+
+[Nucleus fates](analysis/nucleus_fates_20261002.json) reuses original Al64 PTM histories for transient dissolution and established-event growth labels; [workflow](../docs/nucleus_fates.md).
+
+[Merged birth evaluation](birth_prediction/merged_retest_20261002.json)
+refits all birth comparisons with selection confined to original training sources;
+[protocol](../experiments/birth_prediction_20260930/MERGED_TEST.md).
+
+[Default Al256 response simulation](simulation/response_atlas_fast_default.json): float32 cuEquivariance, GPU graphs, batch4 and response-value reuse. The [default workflow recipe](response_atlas/atomistic_training.json) is versioned separately from the completed float64 experiment.
+
+[Birth descriptor families](birth_prediction/feature_families_20261002.json)
+compares original/relaxed family-only and leave-family-out readouts plus matched
+permutation reliance; [protocol](../experiments/birth_prediction_20260930/FEATURE_FAMILIES.md).
+
 [Atomistic simulator-response training](response_atlas/atomistic_training_20261001.json)
 compares full-cell MACE128 value and response supervision at20/100fs;
 [protocol](../experiments/response_atlas_20261001/ATOMISTIC_TRAINING.md).
@@ -532,3 +546,11 @@ see [retirement](../docs/architecture_retirement.md). AP remains an evaluation d
 `distance_encoder/material_al_20260927.json` and `material_ta_20260927.json`
 fine-tune the full six-frame CD-MACE128 parent separately. See
 [execution and evaluation scopes](../docs/distance_encoder_material_finetune.md).
+# Al response-transfer visualization
+
+`analysis/response_pacmap_20261002.json` fixes the three encoder checkpoints,
+Al64 structural-assay rows and training-only PaCMAP landmarks for the
+[response/MM-TDA/GeoFormer comparison](../docs/response_atlas.md#al-neighborhood-pacmap-transfer-comparison).
+[Response-oracle acceleration](analysis/response_performance_20261002.json)
+compares GPU neighbor construction, cuEquivariance, replica batching, precision
+and finite differences against archived float64 responses; [workflow](../docs/response_atlas.md#october-2-oracle-acceleration-benchmark).

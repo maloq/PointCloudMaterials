@@ -1,0 +1,5 @@
+{
+  "observed_at": "2026-10-01T22:27:23.865856+00:00",
+  "squeue": "1017711 PD al-dense-next (Dependency)\n1017389_1 R al-dense-010ps nodecpu06\n1017389_2 R al-dense-010ps nodecpu06\n1017389_0 R al-dense-010ps nodecpu07\n",
+  "scope": "Submission observation, not a monitor"
+}

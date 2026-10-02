@@ -1,0 +1,7 @@
+{
+  "table": "tables/temperature_summary.csv",
+  "sha256": "bfb383586bd6237c309e89edc9dd208c2f3ca7ee1bc0044f927cfc241d570741",
+  "family": "al_duration",
+  "contract": "technical/metric-contracts/al_duration.json",
+  "definitions": "tables/metric-definitions/al_duration.md"
+}

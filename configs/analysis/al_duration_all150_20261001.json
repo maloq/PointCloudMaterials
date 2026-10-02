@@ -1,0 +1,19 @@
+{
+  "campaign": "${storage:archive}/simulation-launches/al-main-010ps-plus001ps-20261001",
+  "output": "output/al_duration/all150-20261001",
+  "saved_replay": "output/al_replay/completed20-20260929",
+  "completed_dense_source_ids": [860, 861, 862, 863, 864, 865, 866, 867, 868, 869, 870, 871, 872, 873, 874, 875, 876, 877, 878, 879, 883],
+  "crossing_thresholds": [0.5, 0.7, 0.8, 0.9],
+  "cutoffs_ps": [150, 225, 300, 375, 450, 525],
+  "retrospective_crystal_floor": 0.7,
+  "connected_share_floor": 0.98,
+  "future_fraction_tolerance": 0.03,
+  "future_energy_tolerance_eV_per_atom": 0.005,
+  "future_volume_relative_tolerance": 0.005,
+  "causal_crystal_floors": [0.7, 0.8, 0.9],
+  "plateau_window_ps": 60,
+  "stable_tail_ps": 60,
+  "plateau_fraction_range": 0.02,
+  "plateau_energy_range_eV_per_atom": 0.003,
+  "plateau_volume_relative_range": 0.003
+}

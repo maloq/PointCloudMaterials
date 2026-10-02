@@ -1,0 +1,7 @@
+{
+  "table": "tables/sources.csv",
+  "sha256": "80ee47ac91e05ef7fac57428ea8ac7c74b1ee4ba5f645fd6f44d972a7bc46cb2",
+  "family": "al_half_transform",
+  "contract": "technical/metric-contracts/al_half_transform.json",
+  "definitions": "tables/metric-definitions/al_half_transform.md"
+}

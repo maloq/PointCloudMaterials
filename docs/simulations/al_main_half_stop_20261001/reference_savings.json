@@ -1,0 +1,15 @@
+{
+  "scope": "Descriptive counterfactual only: use each old parent physical curve for the exact pending source mix, not a forecast of new 2-fs kinetics or PTM wall-time overhead",
+  "unstarted_trajectories": 128,
+  "old_max_measurement_ps": 76800,
+  "reference_stopped_measurement_ps": 39324.0,
+  "reference_measurement_saved_fraction": 0.48796874999999995,
+  "reference_integration_saved_fraction_including_equilibration": 0.4760670731707317,
+  "old_vector_payload_GB": 739.143634944,
+  "reference_stopped_vector_payload_GB": 369.220859904,
+  "reference_vector_payload_saved_GB": 369.92277504,
+  "reference_vector_payload_saved_fraction": 0.500474816465174,
+  "old_parent_sources_used": 126,
+  "positions_and_velocities": true,
+  "native_artifacts_not_counted": true
+}

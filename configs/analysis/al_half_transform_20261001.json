@@ -1,0 +1,7 @@
+{
+  "observations_from": "output/al_duration/all150-20261001",
+  "output": "output/al_duration/half-crystal-20261001",
+  "prediction_tail_ps": 6,
+  "peer_fraction": 0.9,
+  "fixed_cutoffs_ps": [300, 450, 525]
+}

@@ -1,0 +1,7 @@
+{
+  "table": "tables/cutoffs.csv",
+  "sha256": "6e27339b57ef21fbec2edf2d555c64517502577a22b1c4ae414e66d83923b8da",
+  "family": "al_duration",
+  "contract": "technical/metric-contracts/al_duration.json",
+  "definitions": "tables/metric-definitions/al_duration.md"
+}

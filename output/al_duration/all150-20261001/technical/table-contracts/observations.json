@@ -1,0 +1,7 @@
+{
+  "table": "tables/observations.csv",
+  "sha256": "acf15085ee9a090daa77bbdbb6546f38648aec0f257c261d494bb0b2bfdbc9fd",
+  "family": "al_duration",
+  "contract": "technical/metric-contracts/al_duration.json",
+  "definitions": "tables/metric-definitions/al_duration.md"
+}

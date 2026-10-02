@@ -1,0 +1,7 @@
+protocol,temperature_K,source_count,confirmed_half_count,no_half_count,half_time_conditional_median_ps,stop_time_conditional_median_ps,latest_confirmed_half_ps,latest_event_stop_ps,mean_stop_all_sources_ps,saved_fraction,observed_returns_below_half,ready_to_stop_by_300_count,ready_to_stop_by_450_count,ready_to_stop_by_525_count
+dense_2fs_010ps,520.0,21,19,2,225.0,246.0,405.0,426.0,275.42857142857144,0.540952380952381,0,14,19,19
+original_3fs_075ps,400.0,30,21,9,420.0,441.0,555.0,576.0,504.2,0.15966666666666668,0,1,11,14
+original_3fs_075ps,450.0,30,30,0,195.0,216.0,285.0,306.0,226.5,0.6225,0,27,30,30
+original_3fs_075ps,500.0,30,29,1,195.0,216.0,525.0,546.0,263.3,0.5611666666666667,0,21,27,27
+original_3fs_075ps,510.0,30,30,0,240.0,261.0,480.0,501.0,270.5,0.5491666666666667,0,21,27,30
+original_3fs_075ps,520.0,30,27,3,285.0,306.0,540.0,561.0,336.4,0.43933333333333335,0,13,21,25

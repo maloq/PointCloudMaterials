@@ -1,0 +1,85 @@
+{
+  "schema_version": 1,
+  "analyses": [
+    {
+      "source": "${storage:repo}/output/al_duration/all150-20261001",
+      "destination": "output/al_duration/all150-20261001",
+      "name": "bulk-duration-v1",
+      "title": "Al duration and late annealing \u2014 all 150 ancestors",
+      "context": "Preserved full-plateau duration audit. The later user-defined 50%-crystal objective has a separate analysis and recommendation.",
+      "study": {
+        "id": "al_duration_20261001",
+        "record": "${storage:repo}/experiments/al_duration_20261001/README.md"
+      },
+      "numerical_file": "technical/summary.json",
+      "metadata": {
+        "protocol": "bulk-duration-v1",
+        "inputs": {
+          "evidence": "${storage:repo}/output/al_duration/all150-20261001/technical/protocol.json",
+          "encoder": "none",
+          "predictor": "none",
+          "conditions": "Temperature/time only physical simulation/audit metadata."
+        },
+        "population": {
+          "historical_ancestors": 150,
+          "dense_descendants": 21,
+          "dense_temperature_K": 520,
+          "scope": "Descriptive audit; no fitted models/selectors; descendants grouped by ancestry."
+        },
+        "selection": {
+          "rule": "Declared thresholds; no optimization or promotion."
+        }
+      },
+      "stages": {
+        "physical_audit": {
+          "state": "complete",
+          "evidence": "${storage:repo}/output/al_duration/all150-20261001/technical/summary.json"
+        },
+        "verification": {
+          "state": "complete",
+          "evidence": "${storage:repo}/output/al_duration/all150-20261001/technical/verification.json"
+        }
+      }
+    },
+    {
+      "source": "${storage:repo}/output/al_duration/half-crystal-20261001",
+      "destination": "output/al_duration/half-crystal-20261001",
+      "name": "half-crystal-v1",
+      "title": "Al cutoff at 50% crystal and 90% peer crossing",
+      "context": "Frozen counterfactual individual halfway stops and population peer caps; dense coverage is 21 completed 520 K descendants. The separately authorized queue version applies this target to 128 unstarted trajectories without changing the numerical audit or running simulations.",
+      "study": {
+        "id": "al_duration_20261001",
+        "record": "${storage:repo}/experiments/al_duration_20261001/README.md"
+      },
+      "numerical_file": "technical/summary.json",
+      "metadata": {
+        "protocol": "half-crystal-v1",
+        "inputs": {
+          "evidence": "${storage:repo}/output/al_duration/half-crystal-20261001/technical/protocol.json",
+          "encoder": "none",
+          "predictor": "none",
+          "conditions": "Temperature/time only physical simulation/audit metadata."
+        },
+        "population": {
+          "historical_ancestors": 150,
+          "dense_descendants": 21,
+          "dense_temperature_K": 520,
+          "scope": "Descriptive audit; no fitted models/selectors; descendants grouped by ancestry."
+        },
+        "selection": {
+          "rule": "Declared thresholds; no optimization or promotion."
+        }
+      },
+      "stages": {
+        "physical_audit": {
+          "state": "complete",
+          "evidence": "${storage:repo}/output/al_duration/half-crystal-20261001/technical/summary.json"
+        },
+        "verification": {
+          "state": "complete",
+          "evidence": "${storage:repo}/output/al_duration/half-crystal-20261001/technical/verification.json"
+        }
+      }
+    }
+  ]
+}

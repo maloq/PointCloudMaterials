@@ -31,6 +31,12 @@
   do not relabel them as condition-free. See docs/encoder_research/prediction_context.md.
 
 - Use conda `pointnet-torch214`
+- For the fixed Al256 MACE simulator-response case at 20/100 fs, use the
+  float32 cuEquivariance/GPU-graph/batch4 profile in
+  `configs/simulation/response_atlas_fast_default.json` by default (user instruction,
+  2026-10-02). Reuse training response values with one independent execution audit;
+  keep test streams disjoint. Historical frozen recipes retain their own precision.
+  This default does not extend to other potentials, MD campaigns or longer horizons.
 - MD-history experiments must use the same physical observation spacing and
   offsets across training and held-out sources (user instruction, 2026-09-26).
   Use separate protocols for different cadences and check actual source timelines.

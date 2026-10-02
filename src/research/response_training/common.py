@@ -9,6 +9,14 @@ from src.project_runtime.paths import resolve_path
 FAMILY = 'response_training'
 
 
+def metric_family(c):
+    return 'response_training_fast' if 'simulation_profile' in c else FAMILY
+
+
+def simulation_profile(c):
+    return read(Path(__file__).resolve().parents[3]/c['simulation_profile']) if 'simulation_profile' in c else None
+
+
 def read(path):
     return json.loads(Path(path).read_text())
 
@@ -44,9 +52,17 @@ def bind(c):
         Path(__file__).parents[1]/'supervised_onset/model.py',
         Path(__file__).parents[2]/'models/encoders/spatial_mace.py',
         Path(__file__).parents[2]/'models/encoders/mace_backend.py']
+    profile = simulation_profile(c)
+    if profile is not None:
+        files.extend([Path(__file__).parents[1]/'response_performance/oracle.py',
+                      Path(__file__).parents[1]/'response_performance/collection.py',
+                      Path(__file__).resolve().parents[3]/c['simulation_profile']])
     binding = dict(config=c, oracle=o, parents=parents(c),
         sources={str(p.relative_to(Path(__file__).parents[3])):sha(p) for p in files},
         packages={k:version(k) for k in ('torch', 'numpy', 'ase', 'e3nn', 'mace-torch')})
+    if profile is not None:
+        binding['simulation_profile'] = profile
+        binding['packages']['cuequivariance-torch'] = version('cuequivariance-torch')
     record = dict(identity=digest(binding), binding=binding)
     path = root(c)/'technical/binding.json'
     if path.exists() and read(path) != record:
@@ -63,8 +79,11 @@ def bind(c):
             conditions=[], history=0),
         response='J_(head o encoder)(q) V, through live radial/angular geometry and all learned layers',
         oracle_conditions=dict(temperature_K=450, timestep_fs=1, horizon_fs=[20,100],
-            potential_sha256=o['potential_sha256'], full_cell=True),
+            potential_sha256=o['potential_sha256'], full_cell=True,
+            numerical_profile=profile or dict(dtype='float64', backend='e3nn', graph='ase', replicas=1)),
         track='separate shared-FCC-prototype mechanism experiment; not Al64 window evaluation or MEAM shooting',
-        ancestry='parents0:15 seen only in numerical development, now training only; all held-out configurations fresh; all share ideal FCC prototype',
+        ancestry=('same 56 generating geometries and fixed roles as the October1 mechanism cohort; all share an ideal FCC prototype; new stochastic namespace, not new independent geometries; numerical acceptance may inspect fixed test-role streams without model fitting or selection'
+                  if profile is not None else
+                  'parents0:15 seen only in numerical development, now training only; all held-out configurations fresh; all share ideal FCC prototype'),
         training_deviation=c['training']['deviation']))
     return record

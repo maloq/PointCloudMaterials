@@ -4,7 +4,7 @@ import numpy as np
 
 from src.experiment_runner.metric_docs import write_metric_rows
 from src.experiment_runner.wandb_tracking import update_recorded_summary
-from .common import FAMILY,root,read,sha,write_json
+from .common import FAMILY,root,read,sha,write_json,metric_family
 from .data import load
 from .train import location
 
@@ -62,7 +62,7 @@ def collect(c):
                 contrasts.append(dict(left='responses8',right=right,scope=scope,metric=metric,
                     delta=float(np.mean([a[i]-b[i] for i in ids])),ci_low=float(lo),ci_high=float(hi)))
     for name,values in [('parent-errors',rows),('summary',summary),('paired-contrasts',contrasts),('costs',costs)]:
-        write_metric_rows(values,out,family=FAMILY,name=name)
+        write_metric_rows(values,out,family=metric_family(c),name=name)
     for seed in c['fit_seeds']:
         for arm in c['arms']:
             selected=[r for r in rows if r['arm']==arm and r['seed']==seed and r['scope']=='full']

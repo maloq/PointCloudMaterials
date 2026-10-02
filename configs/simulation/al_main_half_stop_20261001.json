@@ -1,0 +1,9 @@
+{
+  "source_launch": "${storage:archive}/simulation-launches/al-main-010ps-plus001ps-20261001",
+  "launch_id": "al-main-half-stop-20261001",
+  "collection_id": "al-main-half-stop-20261001",
+  "expected_unstarted_trajectories": 128,
+  "maximum_measurement_ps_by_temperature": {"400": 600, "450": 291, "500": 411, "510": 411, "520": 561},
+  "peer_reference": "output/al_duration/half-crystal-20261001",
+  "validation_receipt": "output/al_duration/half-crystal-20261001/technical/native_stopping_validation/validation.json"
+}

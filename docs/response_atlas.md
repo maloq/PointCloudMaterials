@@ -1,5 +1,135 @@
 # Response-atlas feasibility execution
 
+## Local80 response training on real MD neighborhoods
+
+[Protocol and execution](simulations/local_response_20261002.md) extend accelerated MLIP response supervision to local80 geometry, with train-only environment convergence gates and a matched optimization-time control.
+
+
+## Default for new Al256 response runs
+
+The October 2 default is [this simulator profile](../configs/simulation/response_atlas_fast_default.json):
+float32 cuEquivariance, exact GPU periodic neighbors, conditional derivative graphs
+with the last HVP graph released, batches of four independent replicas, and AD
+value reuse with one ordinary audit per training parent. The optional Verlet skin
+is zero: its measured standalone gain was negligible. Responses remain analytic
+AD; finite differences are a numerical comparison, not the production default.
+The potential, BAOAB splitting, 450K thermostat, timestep and20/100fs observations
+are unchanged. Each replica retains its own original float64 RNG stream before
+the explicit float32 cast. This setting applies only to this Al256 response case.
+
+The existing workflow now defaults to
+`configs/response_atlas/atomistic_training.json`, which points to the versioned
+[fast recipe](../configs/simulation/response_atlas_training_fast_20261002.json):
+
+```
+python -m src.research.response_training.queue preflight
+python -m src.research.response_training.queue submit
+```
+
+An explicit `--config` still selects a declared recipe. Historical runs should be
+resumed from their original frozen source/configuration. New collection uses new
+paths and the70000000 seed namespace, preserves the same parent roles/ancestry,
+and records actual float32 q/box/basis. Batch checkpoints publish to STORE before
+continuation; the existing locked multi-GPU adapter also supports this protocol.
+Changing the default itself launches no new full scientific collection or fits.
+
+Acquisition costs now report the actual shared training/selection bank for every
+arm, including response and audit calls. They do not invent value-only acquisition
+times for reused values. See [the versioned definitions](metrics/response_training_fast.md).
+The full preflight checks the actual default oracle against the original float64
+AD calculation, independently audits value/response execution, and retains the
+student gradient/geometry checks. Scientific fits remain online in W&B; checks
+and collection remain local.
+
+Acceptance completed October 2: full100-fs default-versus-float64 and student
+gradient/invariance gates passed. A105-trajectory acquisition audit covered train
+(33 executions, eight reused values), selection(32) and test(40, disjoint streams).
+All three recovered from STORE after removing their disposable scratch copies,
+with zero new model calls. The final
+[acceptance receipt](../output/response_atlas/atomistic-training-fast-20261002/technical/default-acceptance.json)
+links the numerical evidence and the corrected ancestry record. These checks
+created no encoder fits or full scientific collection.
+
+## October 2: oracle acceleration benchmark
+
+`python -m src.research.response_performance.benchmark run --config configs/analysis/response_performance_20261002.json`
+runs a separate local benchmark against the completed Al256 response bank. It
+freezes its source and configuration in `response_atlas/oracle-performance-20261002`.
+Historical numerical producers and labels remain unchanged. The variants measure
+conditional derivative graphs, GPU periodic neighbors, a Verlet skin, float64
+cuEquivariance, replica batches1/4/8/16, separate float32 arithmetic and three
+common-random-number finite-difference step sizes. See
+[measurement definitions](metrics/response_performance.md). Unsupported or
+inaccurate variants are explicitly recorded as failures; timings do not imply
+acceptance. Numerical checks and hardware benchmarks remain local, without W&B.
+
+After the sweep, `python -m src.research.response_performance.validate --config
+configs/analysis/response_performance_20261002.json` repeats the reference,
+conditional-gradient and fastest accepted float64 AD measurements. It also gates
+the saved energy errors and exercises the resumable acquisition API against
+archived streams. Repeats must run without concurrent GPU workloads. The first
+October 2 reference overlapped the previously launched PaCMAP inference; its raw
+measurement is retained, and isolated repeats supersede it for speedup estimates.
+`python -m src.research.response_performance.publish --root RUN_ROOT` plots saved
+measurements, using the isolated repeat values when available. Execution bundles,
+per-variant errors, rejected variants and timings reside in the run's `technical/`
+directories; these measurements concern the fixed Al256, 20/100-fs protocol only.
+
+The opt-in next-protocol acquisition API is
+`src.research.response_performance.collection.acquire_parent`. It requires a new
+empty destination and a caller-supplied identity binding teacher, arithmetic,
+backend, source hashes, geometry and seeds. Training response queries supply both
+their values and derivatives; only remaining ordinary values are acquired. A
+declared subset of shared training seeds is independently rerun as an execution
+audit. Test response seeds must remain disjoint from test value seeds. Batch
+payloads are saved atomically and reused on resume; changed contracts fail.
+
+Costs record measured batch times and logical force/HVP counts. They are not
+divided into fictitious per-shot acquisition times, and response-call time is not
+used as a value-only counterfactual. With 32 values, 8 responses and one ordinary
+audit per training parent, this protocol executes 33 trajectories instead of 40;
+the separate value-only benchmark remains available. The historical training
+collector and its cost schema remain on their recorded protocol. The validation
+exercise replays four archived value streams and two responses with one audit
+(five executions), then verifies that a restart makes zero model calls. It creates
+no new scientific training run or independent simulation collection.
+
+The isolated October 2 float32 comparison on RTX PRO 6000 Blackwell Server
+Edition passed all four checked parent configurations. At replica batch4, with
+cuEquivariance in both cases, ordinary-query cost fell from 7.400 to 0.807 seconds
+(9.16x), and value-plus-two-response cost from 22.489 to 1.872 seconds (12.01x).
+These are amortized batch costs, not single-query latency. Response peak allocated
+memory fell from 4.121 to 2.094 GiB. The largest checked relative response error
+against archived float64 was 3.033e-5 (0.00303%); maximum absolute response error
+was 9.454e-8. This validates the declared 20/100-fs synthetic protocol, not longer
+liquid trajectories. The first prioritized float32 attempt is retained separately;
+the accepted measurement was repeated without concurrent GPU work. See
+[the numerical receipt](../output/response_atlas/oracle-performance-20261002/analyses/benchmark-v1/technical/variants/cueq32-b4.json).
+
+## Al-neighborhood PaCMAP transfer comparison
+
+`python -m src.research.response_pacmap --config configs/analysis/response_pacmap_20261002.json`
+compares the response-trained MACE128, the previously selected
+MM-TDA-BLOCK-DIRECT-FULL, and the matched GeoFormer S1/seed17/epoch24 encoder.
+Run in `pointnet-torch214` on one allocated GPU with two CPU threads and
+`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`. This is local frozen inference, with no W&B
+training runs. It uses all24,960 uniform held-out Al64 neighborhoods and9,360
+label-free training landmarks for normalization and PaCMAP fitting. All model
+inference imports come from the recorded frozen producer trees.
+
+The response encoder's local80-atom adapter is an explicit transfer from its
+periodic256-atom training support; it retains learned weights and normalization.
+The adapter is checked against the original full-cell export before inference.
+The selected response checkpoint minimizes the existing validation NLL across
+the three seeds. The other two checkpoint identities are fixed in the recipe.
+
+Output: `output/response_atlas/al64-transfer-pacmap-20261002/analyses/comparison-v2/`.
+Open `index.html` for three interactive panels with structure, crystal-fraction
+and source-audit colors; `plots/` contains PNG/PDF exports. The six-entry leased
+feature cache protects active inference. See the
+[input and projection definitions](metrics/response_pacmap.md); these maps do not
+establish predictive performance or information sufficiency.
+
 The next stage now implements [atomistic response training](#atomistic-response-training):
 nine matched full-cell fits after fresh label collection. Historical feasibility
 and toy bundles below remain on their original definitions.

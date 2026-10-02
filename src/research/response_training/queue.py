@@ -9,11 +9,11 @@ import time
 
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage, allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
-from .common import FAMILY,root,read,bind,write_json
+from .common import FAMILY,root,read,bind,write_json,metric_family
 
 
 def submit(c):
-    record=bind(c);check_metric_docs(family=FAMILY)
+    record=bind(c);check_metric_docs(family=metric_family(c))
     gate=read(root(c)/'technical/preflight.json')
     if gate['state']!='complete' or gate['identity']!=record['identity']:raise ValueError('Numerical preflight required')
     import wandb
@@ -52,7 +52,7 @@ def worker(c):
 def main():
     parser=argparse.ArgumentParser(__doc__)
     parser.add_argument('stage',choices=('prepare','preflight','submit','worker','collect','train','evaluate'))
-    parser.add_argument('--config',required=True)
+    parser.add_argument('--config',default='configs/response_atlas/atomistic_training.json')
     parser.add_argument('--arm',choices=('values8','responses8','values32'))
     parser.add_argument('--seed',type=int)
     args=parser.parse_args();c=read(args.config)

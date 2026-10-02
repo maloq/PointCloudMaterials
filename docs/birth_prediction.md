@@ -1,5 +1,9 @@
 # Pre-appearance birth classification workflow
 
+**Failed embryos as positive appearances:** [comparison workflow](birth_appearance.md) reuses original-pool predictors and fits combined-pool counterparts, with source-held-out strong/other/all candidate results.
+
+**Additional nucleus fate labels:** [audit workflow](nucleus_fates.md) searches smaller failed embryos and appends event/row fate labels, shared by original and relaxed inputs. Existing prediction runs and binary labels stay unchanged.
+
 ## Full-cell relaxed input comparison
 
 [Recipe](../configs/birth_prediction/relaxed_temporal_20261001.json) and
@@ -194,3 +198,65 @@ the later numerical-tolerance correction is captured separately in
 `technical/audit-source`. Use a **new output analysis revision** in a copied recipe
 when recomputing tables after an implementation change. Definitions are in
 [birth prediction leakage metrics](metrics/birth_prediction_leakage.md).
+
+## Descriptor-family information
+
+Use `python -m src.research.birth_prediction.feature_families prepare --config configs/birth_prediction/feature_families_20261002.json`
+to verify the paired cached descriptors, retained full-feature models and source
+folds, then use `submit` to freeze and queue the family-only/leave-family-out fits.
+The original and relaxed snapshot inputs are paired at 0.75 ps before appearance.
+There are 192 new descriptor readouts and 24 reused full-feature models.
+
+Two CPU array workers fit linear controls; one GPU worker fits boosted controls
+and then replays the full models for matched-group permutations on its CPU.
+A dependent CPU collector writes all train/held-out errors, source-paired
+contrasts, permutation scores and PNG/PDF plots. Execution is detached under
+Slurm, with resumable per-fit receipts. These diagnostic fits remain local and
+do not create W&B runs. Existing models, source roles and caches are preserved.
+
+Results are in `birth_prediction/feature-families-20261002` under configured
+training storage. `technical/launch.json` records jobs and frozen source;
+`analyses/family-comparison-v1/README.md` is the final report and
+`analyses/permutation-v1/` contains full-model reliance effects and saved donors.
+Resume stages with the frozen `technical/code/config.json` from that bundle's
+working directory. Do not resume from subsequently edited repository source.
+
+[Protocol](../experiments/birth_prediction_20260930/FEATURE_FAMILIES.md) ·
+[Metric definitions](metrics/birth_feature_families.md).
+
+## Merged evaluation retest
+
+The user-requested October 2 revision combines former selection, calibration and
+test sources only in a new readout evaluation view. The parent release remains
+unchanged. Training has 965 histories; the combined test has 510 histories,
+102 positives and 36 births in 28 contributing sources. The new models use no
+probability calibration and choose settings exclusively within original training.
+
+Run `python -m src.research.birth_prediction.merged prepare --config configs/birth_prediction/merged_retest_20261002.json`
+to verify the cohort, source ancestry and internal folds. `submit` freezes the
+recipe/source and submits detached feature export, two CPU linear workers, two
+single-GPU boosted workers, and a dependent collection/permutation job. Internal
+five-fold CV chooses C or tree count by NLL, followed by a full-training refit.
+The 324 final readouts cover both input domains, all descriptor-family comparisons,
+the retained temporal controls, and all original truncation/model controls.
+
+Training caches use the existing IDS `context-features` pool with six-entry
+retention and protected leases. The legacy frozen scratch pool is quota-limited;
+no changes to its historical recipes or checkpoints are needed. Feature export
+reuses the recorded encoders, with no new pretraining or MD. These readouts remain
+local diagnostics and do not create W&B runs.
+
+The output is `birth_prediction/merged-retest-20261002` under configured training
+storage. `technical/prepared.json` freezes split counts and the deduplicated
+numerical treatment catalog. `technical/launch.json` lists jobs. Each fit saves
+its raw merged-test predictions, training OOF predictions, selected settings,
+source-role mapping and independent encoder/predictor context. Final tables retain
+former-role strata for transparency; the primary evaluation pools all three roles.
+
+This is an exploratory enlarged evaluation: past inspection and historical
+rich-MACE structural checkpoint selection are recorded. Training-selection CV is
+not labeled an unbiased nested-CV estimate. Resume from the frozen bundle and
+its existing receipt identities, not from a subsequently edited checkout.
+
+[Protocol](../experiments/birth_prediction_20260930/MERGED_TEST.md) ·
+[Metric definitions](metrics/birth_merged_test.md).
