@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 
 STATE_FILENAME = "state.json"
@@ -47,14 +47,12 @@ class RunState:
     @classmethod
     def load(cls, output_dir: Path) -> "RunState":
         path = output_dir / STATE_FILENAME
-        if not path.exists():
-            raise FileNotFoundError(f"No state file found at {path}.")
-
         data = json.loads(path.read_text())
         state = cls(output_dir=output_dir, plan_name=data["plan_name"])
-        state.created_at = data.get("created_at", "")
-        for stage_name, stage_data in data.get("stages", {}).items():
-            state.stages[stage_name] = StageState.from_dict(stage_data)
+        state.created_at = data["created_at"]
+        state.stages = {
+            name: StageState.from_dict(stage) for name, stage in data["stages"].items()
+        }
         return state
 
     def is_stage_complete(self, stage_name: str) -> bool:
@@ -101,11 +99,10 @@ class StageState:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "StageState":
         stage = cls(name=data["name"])
-        stage.status = data.get("status", "pending")
-        stage.started_at = data.get("started_at")
-        stage.finished_at = data.get("finished_at")
-        for name, jdata in data.get("jobs", {}).items():
-            stage.jobs[name] = JobState.from_dict(jdata)
+        stage.status = data["status"]
+        stage.started_at = data["started_at"]
+        stage.finished_at = data["finished_at"]
+        stage.jobs = {name: JobState.from_dict(job) for name, job in data["jobs"].items()}
         return stage
 
 
@@ -137,9 +134,9 @@ class JobState:
     def from_dict(cls, data: Dict[str, Any]) -> "JobState":
         js = cls(
             experiment_name=data["experiment_name"],
-            job_id=data.get("job_id"),
-            run_dir=data.get("run_dir"),
-            status=data.get("status", "pending"),
+            job_id=data["job_id"],
+            run_dir=data["run_dir"],
+            status=data["status"],
         )
-        js.checkpoint_path = data.get("checkpoint_path")
+        js.checkpoint_path = data["checkpoint_path"]
         return js

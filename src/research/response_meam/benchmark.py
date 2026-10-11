@@ -4,8 +4,6 @@ Numerical gates and hardware measurements remain local, with no model training.
 All cases retain the four original training ancestors and shared noise streams.
 """
 import argparse
-import copy
-import json
 import os
 from pathlib import Path
 import platform

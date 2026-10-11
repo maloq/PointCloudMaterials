@@ -1,6 +1,6 @@
 """Shared-backbone inner/center training with an explicit supervised control."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from pathlib import Path
 import time
 

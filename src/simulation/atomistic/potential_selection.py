@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -9,6 +8,7 @@ from typing import Any
 import numpy as np
 import yaml
 
+from src.experiment_runner.artifacts import file_hash as _sha256
 from .config import (
     CONFIGURED_MACE_IMPLEMENTATION_CLASS,
     GeneratorConfig,
@@ -132,14 +132,6 @@ def _read_json(path: Path, *, context: str) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise TypeError(f"{path}: {context} root must be a mapping.")
     return value
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _finite_metric(value: object, *, context: str) -> float:

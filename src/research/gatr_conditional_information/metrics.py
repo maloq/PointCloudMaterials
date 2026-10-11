@@ -1,5 +1,4 @@
 """Radially matched pairs and source-level conditional predictive comparisons."""
-from itertools import combinations
 import numpy as np
 
 

@@ -11,6 +11,8 @@ import numpy as np
 import torch
 from scipy.spatial import cKDTree
 
+from src.experiment_runner.artifacts import read_json_object as _load_json
+
 _SHOOTING_COLUMNS = ("id", "type", "x", "y", "z", "vx", "vy", "vz")
 
 
@@ -73,20 +75,6 @@ class PeriodicEnvironmentBatch:
     context_center_atom_ids: np.ndarray | None
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(
-            f"Required shooting metadata file is missing: {path}"
-        )
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in {path}, got {type(value).__name__}."
-        )
-    return value
-
-
 def resolve_shooting_trajectory_path(
     campaign_root: str | Path, branch: dict[str, Any]
 ) -> Path:
@@ -103,11 +91,6 @@ def resolve_shooting_trajectory_path(
             f" outcome={branch_dir / 'outcome.json'}. Run python"
             " scripts/convert_trajectory.py shooting --campaign-root"
             f" {str(root)!r}."
-        )
-    if not isinstance(artifact, dict):
-        raise TypeError(
-            "trajectory_artifact must be a JSON object in"
-            f" {branch_dir / 'outcome.json'}, got {type(artifact).__name__}."
         )
     from src.data.trajectories.shooting import FORMAT_NAME
 
@@ -784,7 +767,9 @@ def build_periodic_environment_batch(
     tree = cKDTree(frame_points, boxsize=box_lengths, balanced_tree=False)
     centers = np.asarray(frame_points[positions], dtype=np.float32)
     _, neighbor_indices = tree.query(centers, k=int(num_points))
-    neighbor_indices = np.asarray(neighbor_indices, dtype=np.int64)
+    neighbor_indices = np.asarray(neighbor_indices, dtype=np.int64).reshape(
+        len(centers), int(num_points)
+    )
     local = frame_points[neighbor_indices] - centers[:, None, :]
     local -= box_lengths[None, None, :] * np.round(
         local / box_lengths[None, None, :]
@@ -835,7 +820,9 @@ def build_periodic_environment_batch(
         )
         context_centers = frame_points[context_indices.reshape(-1)]
         _, context_neighbors = tree.query(context_centers, k=int(num_points))
-        context_neighbors = np.asarray(context_neighbors, dtype=np.int64)
+        context_neighbors = np.asarray(context_neighbors, dtype=np.int64).reshape(
+            len(context_centers), int(num_points)
+        )
         context_local = (
             frame_points[context_neighbors] - context_centers[:, None, :]
         )

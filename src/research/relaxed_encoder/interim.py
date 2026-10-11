@@ -1,7 +1,6 @@
 """Evaluate completed checkpoints on an immutable, already prepared assay cohort."""
 import argparse
 import json
-from pathlib import Path
 
 from src.data.structural_pretraining.prepare import digest, file_hash, save_json
 from src.experiment_runner.metric_docs import write_metric_table

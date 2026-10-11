@@ -1,7 +1,6 @@
 """Convert explicitly selected derived neighborhood NPY caches to float16."""
 
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -10,12 +9,8 @@ import time
 
 import numpy as np
 
+from src.experiment_runner.artifacts import file_hash as sha256
 from src.experiment_runner.artifacts import write_json
-
-
-def sha256(path):
-    with path.open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
 def convert_file(path: Path):

@@ -7,19 +7,12 @@ checksums. These are experiment-specific assumptions, not new default settings
 for the maintained independent-source campaign.
 
 Shared generation and Slurm machinery is in
-`src/simulation/campaigns/independent_meam_source.py`. This recipe customizes it
-and ensures generated Slurm jobs invoke the same specialized launcher.
-
-```bash
-conda run -n pointnet python src/simulation/campaigns/independent_meam_high_temperature.py --help
-conda run -n pointnet python src/simulation/campaigns/independent_meam_high_temperature.py prepare \
-  --campaign-root /path/to/new_source_campaign
-conda run -n pointnet python src/simulation/campaigns/local_source_queue.py --help
-```
-
-`local_source_queue.py` is the experiment's cutoff-controlled local execution
-recipe for already prepared, unsubmitted sources. Its required arguments remain
-explicit; do not use it as a generic scheduler.
+`src/simulation/campaigns/independent_meam_source.py`. The September specialization
+changed its fixed temperatures, seeds and split counts; a separate local queue
+implemented that campaign's overnight cutoff. These one-time runners were
+removed on October 11 and remain in Git history. The original 0.75-ps campaign
+is retired; do not regenerate it for new studies. See the
+[retirement record](../../storage/al075_removal_20261007/README.md).
 
 Original output:
 `/home/ids/vmorozov/simulations/al_meam_independent_sources_70304_510-520K_30perT_float16_20260903`.

@@ -1,5 +1,4 @@
 """End-to-end predictive likelihood training; AP is an evaluation diagnostic."""
-import copy
 import json
 import math
 import time

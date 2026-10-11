@@ -186,3 +186,5 @@ Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent sh
 - [Dissolved-embryo and random-liquid controls, October 5](nucleus_controls_20261005.md): matched 12 ps continuations, shared 16-hour deadline.
 - [Additional negative controls, October 5](nucleus_negative_extra_20261005.md): new liquid ancestors and repeated embryo shots, shared three-hour deadline.
 - [Continuation bias and birth-rate calibration](nucleus_continuation_bias_20261005.md): paired historical audit and present-selected, matched-temperature embryo continuations.
+
+- [Ni relaxation optimizer speed audit, October 11](ni_relaxation_speed_20261011.md): matched GPU FIRE/ABC-FIRE and ASE preconditioning benchmarks.

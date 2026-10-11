@@ -68,12 +68,6 @@ def resolve_learning_rate(
 
     config_path = _resolve_config_path(repo_root, config_name)
     cfg = OmegaConf.load(config_path)
-    if not isinstance(cfg, dict) and not OmegaConf.is_config(cfg):
-        raise ValueError(
-            f"{context}: config {config_path} is not a mapping config; "
-            f"got {type(cfg).__name__}."
-        )
-
     for key in ("learning_rate", "lr"):
         raw_value = cfg.get(key)
         if raw_value is None:

@@ -182,3 +182,17 @@ compiler logs and submitted scripts are in
 `output/hardware_benchmark/relaxation-cuda-20260921/technical`. V100 nodes lack the
 CUDA toolkit; compile VOLTA70 on the H100 host, then verify the binary on V100.
 No system installation or production LAMMPS replacement is performed.
+
+
+## Frozen Ni latent-simulator batch benchmark
+
+Run `python src/hardware_benchmark/ni_latent.py --bundle /absolute/frozen/code --checkpoint /absolute/last.pt --output /absolute/benchmark.json`
+with conda `pointnet-torch214`, `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`, and an
+explicit CUDA device. Direct execution makes all scientific imports come from
+the frozen bundle rather than the mutable checkout. It clones optimizer/model
+state, measures real forward/backward/optimizer steps for1-ps values and physical
+responses at batch256/1024, scales teacher exposure16/64, and records warmed
+latency, examples/second, allocated/reserved memory and implementation hashes.
+It creates no W&B runs and never modifies the source checkpoint. Only pause a
+scientific worker after establishing current-chat ownership; always arrange
+automatic resumption. See the [October11 continuation](ni_latent_sim.md#rtx-batch-1024-continuation-october-11).

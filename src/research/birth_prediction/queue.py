@@ -3,7 +3,6 @@ import argparse
 import json
 import os
 from pathlib import Path
-import sys
 
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage

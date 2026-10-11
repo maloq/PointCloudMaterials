@@ -1,6 +1,5 @@
 """Causal MD histories of trainable local MACE embeddings, with a matched control."""
 import json
-from pathlib import Path
 
 import numpy as np
 import torch

@@ -307,11 +307,12 @@ is now strict-complete: 36 parents, four futures per parent, 144 paths, and exac
 after first passage and 40 already contained 24 ps. A worker-finalization bug had
 left the 104 composed, checksum-valid 81-frame binaries without `outcome.json`:
 numpy memmaps were still open when an NFS intermediate directory was deleted.
-`recover-completed-compositions` now accepts only that exact cleanup failure,
-verifies the composed binary and immutable source outcome, and records that no
-frames were reconstructed and LAMMPS was not rerun. The campaign then passed its
-strict summarizer. Future workers preserve the small intermediate binary and
-delete only the large text dump.
+The one-time recovery verified the composed binaries and immutable source
+outcomes, and recorded that no frames were reconstructed and LAMMPS was not
+rerun. The campaign then passed its strict summarizer. The completed recovery
+command was removed on October 11; its implementation remains in Git history.
+Current workers preserve the small intermediate binary and delete only the
+large text dump.
 
 The atlas loader now consumes this producer directly and preserves its explicit
 source-run splits: 26 parents for optimization, four for model selection, and six

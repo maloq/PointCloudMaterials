@@ -17,6 +17,7 @@ from ase.md.velocitydistribution import (
     Stationary,
 )
 
+from src.experiment_runner.artifacts import file_hash as _sha256
 from .config import (
     REPOSITORY_ROOT,
     SUPPORTED_COMPILE_MODES,
@@ -572,14 +573,6 @@ def graph_cache_metrics_delta(
     result.update({key: after[key] for key in _GRAPH_STATE_KEYS})
     result["final_real_edge_count"] = result.pop("real_edge_count")
     return result
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _synchronize_cuda(device: str) -> None:

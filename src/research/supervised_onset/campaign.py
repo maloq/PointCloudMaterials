@@ -2,7 +2,6 @@
 import argparse
 import csv
 import json
-import os
 from pathlib import Path
 import shlex
 import subprocess

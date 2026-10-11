@@ -270,13 +270,11 @@ trajectories and trains joint native MACE history encoders using continuous
 physical targets. Its release, observation-radius contract, objective and
 checkpoint selection are separate from the earlier causal crystallization pilot.
 
-## Temporary active-job launchers
+## Simulation conversion and campaign commands
 
-`run_lammps_independent_meam_source_campaign.py` and
-`run_lammps_independent_meam_510_520K_sources.py` retain the exact paths embedded
-in already-submitted source jobs. They forward to the relocated implementation.
-Remove them only after both September independent-source campaigns and their
-controller chains finish; they are not entry points for new workflows.
+The temporary September source-job launchers were removed on 2026-10-11 after
+their campaigns and controller chains ended. Current campaign commands use
+`scripts/run_lammps_campaign.py`; historical one-off launch code is in Git.
 
 `convert_trajectory.py temporal-storage BINARY_DIR... --delete-source` converts
 verified temporal float32 artifacts to float16 positions, records periodic

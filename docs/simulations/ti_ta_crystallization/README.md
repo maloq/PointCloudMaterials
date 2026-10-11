@@ -265,14 +265,12 @@ but exhausted quota in conversion at 17:10 CEST. Its incomplete 17.4 GB allocate
 float32 scratch was removed with an audit in `float16_recovery.json`; the raw
 trajectory and final restart were retained. No dynamics are repeated.
 
-The experiment recipe `recover_float16.py` invokes maintained converters to
-compress baseline `model_1m`, baseline preflight, and the three completed new Ta
-branches, verifies the 3.0ns restart and finalizes its trajectory as float16, then
-resumes the final Ta branch followed by Ti. Reproduction (only with no active worker):
-
-```bash
-PYTHONPATH=. conda run -n pointnet python src/simulation/campaigns/recover_ta_ti_float16.py
-```
+The one-time recovery invoked the maintained converters to compress baseline
+`model_1m`, baseline preflight, and the three completed new Ta branches, verified
+the 3.0ns restart and finalized its trajectory as float16, then resumed the final
+Ta branch followed by Ti. This completed recipe was removed on October 11; its
+implementation remains in Git history. Current conversion uses
+`scripts/convert_trajectory.py temporal-storage`.
 
 Detached service: `ta-float16-recovery-v2-20260907.service`, with 48-core affinity.
 Log: `datasets/ti_ta_crystallization_20260907/float16_recovery.log`.
@@ -288,10 +286,10 @@ Original float32 paths remain compatibility symlinks. Recovery publishes
 `float16_recovery_complete.json` before starting the remaining simulations.
 The scientific settings and exact original starting configurations are preserved.
 
-New `position_storage.py` is maintained conversion implementation exposed through
-`convert_trajectory.py temporal-storage`; `recover_float16.py` and this audit are
-experiment records. Logs, service receipts and temporary arrays are disposable
-operational files in the output directory.
+`position_storage.py` is maintained conversion implementation exposed through
+`convert_trajectory.py temporal-storage`. This audit preserves the recovery
+record. Logs, service receipts and temporary arrays are disposable operational
+files in the output directory.
 
 ### Status and recovery — 2026-09-08
 

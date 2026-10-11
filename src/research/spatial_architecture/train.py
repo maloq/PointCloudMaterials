@@ -53,6 +53,8 @@ def fit(c, architecture, deadline):
         opt.load_state_dict(saved['optimizer'])
         start, history, timing = saved['update'], saved['history'], saved['timing']
     parallel_step = parallel.create(c, architecture, model)
+    if parallel_step is None and variant.endswith('direct') and micro != batch:
+        raise ValueError('Direct full-batch training requires microbatch=batch')
     if start == cfg['updates']:
         # Recover final publication after a completed fit whose export failed.
         val = read(p / 'validation.json')
@@ -113,8 +115,6 @@ def fit(c, architecture, deadline):
             if parallel_step is not None:
                 loss, stats = parallel_step.backward(q, target, weights, c['seed']+update)
             elif variant.endswith('direct'):
-                if micro != batch:
-                    raise ValueError('Direct full-batch training requires microbatch=batch')
                 loss, stats = direct_backward(model, q, target, weights, c['seed']+update)
             else:
                 loss, stats = spatial_backward(model, ema, q, target, weights, METHOD, c['seed']+update, micro)

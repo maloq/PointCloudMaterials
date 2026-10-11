@@ -17,6 +17,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import read_json_object as _load_json
 from src.simulation.campaigns.common import _write_json_atomic  # noqa: E402
 from src.simulation.campaigns.unseeded_meam_ensemble import (  # noqa: E402
     prepare as prepare_ensemble,
@@ -79,14 +80,6 @@ def _resolve(path: Path) -> Path:
 
 def _run_name(run_index: int, temperature_K: float, velocity_seed: int) -> str:
     return f"run_{run_index:03d}_T{temperature_K:g}_velocity_{velocity_seed}"
-
-
-def _load_json(path: Path) -> dict[str, object]:
-    with path.open(encoding="utf-8") as handle:
-        document = json.load(handle)
-    if not isinstance(document, dict):
-        raise TypeError(f"{path}: expected a JSON object.")
-    return document
 
 
 def _write_status(output_root: Path, state: str, **details: object) -> None:
@@ -256,11 +249,9 @@ def run_task(output_root: Path, task_index: int) -> None:
         raise RuntimeError("Source run-task requires a Slurm allocation.")
     manifest = _load_json(output_root / "manifest.json")
     runs = manifest["runs"]
-    if not isinstance(runs, list) or task_index < 0 or task_index >= len(runs):
+    if task_index < 0 or task_index >= len(runs):
         raise IndexError(f"task_index={task_index} is outside [0, {len(runs)}).")
     run = runs[task_index]
-    if not isinstance(run, dict) or int(run["run_index"]) != task_index:
-        raise RuntimeError(f"Manifest task mapping is invalid at index {task_index}: {run}.")
     slurm_tasks = int(os.environ.get("SLURM_NTASKS", "0"))
     if slurm_tasks != MPI_RANKS:
         raise RuntimeError(
@@ -304,8 +295,6 @@ def _active_submission_conflicts(output_root: Path) -> list[str]:
 def submit_next_wave(output_root: Path, start_index: int) -> dict[str, object]:
     manifest = _load_json(output_root / "manifest.json")
     runs = manifest["runs"]
-    if not isinstance(runs, list) or not runs:
-        raise TypeError(f"{output_root / 'manifest.json'}: runs must be nonempty.")
     if start_index < 0 or start_index >= len(runs):
         raise IndexError(f"start_index={start_index} is outside [0, {len(runs)}).")
     conflicts = _active_submission_conflicts(output_root)
@@ -391,12 +380,8 @@ def submit_next_wave(output_root: Path, start_index: int) -> dict[str, object]:
 def summarize(output_root: Path) -> dict[str, object]:
     manifest = _load_json(output_root / "manifest.json")
     runs = manifest["runs"]
-    if not isinstance(runs, list):
-        raise TypeError(f"{output_root / 'manifest.json'}: runs must be a list.")
     missing_or_incomplete: list[str] = []
     for run in runs:
-        if not isinstance(run, dict):
-            raise TypeError(f"Invalid run record in manifest: {run!r}.")
         run_root = output_root / str(run["run_root"])
         status_path = run_root / "status.json"
         if not status_path.is_file() or _load_json(status_path).get("state") != "complete":

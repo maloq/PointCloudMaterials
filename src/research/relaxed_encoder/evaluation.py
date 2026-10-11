@@ -1,7 +1,6 @@
 """Dense fixed-grid held-out evaluation; no encoder fitting or outcome sampling."""
 import argparse
 import json
-import subprocess
 import sys
 import time
 import traceback

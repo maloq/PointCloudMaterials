@@ -28,6 +28,7 @@ from ase import Atoms
 from ase.data import atomic_masses, atomic_numbers
 from ase.io import write
 
+from src.experiment_runner.artifacts import file_hash as _sha256_file, read_json_object as _load_json
 from src.data.trajectories.shooting import (
     ShootingBinaryTrajectory,
     convert_shooting_trajectory,
@@ -115,32 +116,12 @@ class CandidateFrame:
     basin_role: str
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        document = json.load(handle)
-    if not isinstance(document, dict):
-        raise TypeError(
-            f"{path}: expected a JSON object, got {type(document).__name__}."
-        )
-    return document
-
-
 def _write_json_atomic(path: Path, document: object) -> None:
     temporary = path.with_name(f".{path.name}.tmp-{os.getpid()}")
     with temporary.open("w", encoding="utf-8") as handle:
         json.dump(document, handle, indent=2, sort_keys=True)
         handle.write("\n")
     temporary.replace(path)
-
-
-def _sha256_file(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(16 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -732,7 +713,6 @@ def _candidate_pool(
         clusters = np.asarray(
             metadata.largest_crystalline_cluster_atoms, dtype=np.int64
         )
-        assert metadata.nucleation_time_ps is not None
         for frame_index in range(len(steps)):
             if times[frame_index] >= metadata.nucleation_time_ps:
                 continue

@@ -1,6 +1,5 @@
 """Explicit Al/Ti source-then-branches and archived Ta position-branch protocols."""
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -13,6 +12,7 @@ from datetime import datetime, timezone
 
 import numpy as np
 
+from src.experiment_runner.artifacts import file_hash as sha256
 from src.project_runtime.paths import load_json, machine, portable_config, resolve_config, storage_path
 
 REPO = Path(__file__).resolve().parents[3]
@@ -24,11 +24,6 @@ def write_json(path, value):
     temporary = path.with_suffix('.tmp')
     temporary.write_text(json.dumps(value, indent=2) + '\n')
     temporary.replace(path)
-
-
-def sha256(path):
-    with Path(path).open('rb') as handle:
-        return hashlib.file_digest(handle, 'sha256').hexdigest()
 
 
 def structure(path, cutoff):

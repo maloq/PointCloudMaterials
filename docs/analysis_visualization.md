@@ -185,23 +185,15 @@ uses the explicit display rule `1.2 × median(first 12 neighbor distances)`.
 Connections are geometric drawing aids, not inferred chemical bonds.
 
 The former reciprocal-shell and connected-kNN renderers have been removed from
-the standard producer. For already published native-MACE runs, regenerate only
-the display using frozen representative identities and source coordinates:
-
-```bash
-python -m src.analysis.saved_representatives \
-  --run output/structural_static/cd-mace128-epoch12-al-20260926
-python -m src.analysis.saved_representatives \
-  --run output/structural_static/mace-epi-epoch12-al-20260926
-```
-
-This validates recorded evidence and source hashes, reconstructs each saved focal
-shell, and writes the new PNG/HTML pair without rerunning the encoder, clustering,
-PTM or CNA. Source atom IDs, cutoffs, drawn edges, colors and implementation hashes
-are recorded in `analyses/standard-v1/technical/representative-rendering-v2.json`.
-The publication step removes superseded aliases from `plots/` and the gallery;
-original legacy images remain under `data/` with their original hashes. Both
-six-snapshot CD-MACE128 and self-supervised EPI galleries have been updated.
+the standard producer. The six-snapshot CD-MACE128 and self-supervised EPI
+galleries were also migrated using frozen representative identities and source
+coordinates, without rerunning the encoder, clustering, PTM or CNA. Source atom
+IDs, cutoffs, drawn edges, colors and implementation hashes remain recorded in
+`analyses/standard-v1/technical/representative-rendering-v2.json`. Original legacy
+images remain under `data/` with their original hashes; superseded aliases were
+removed from `plots/` and the gallery. The completed migration helper was retired;
+its source is retained in commit `7d91467d`. New analyses use the standard
+figure-set producer described above.
 
 ## Linked structure exploration
 

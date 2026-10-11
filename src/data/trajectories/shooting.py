@@ -12,6 +12,7 @@ from typing import Any, Sequence
 
 import numpy as np
 from numpy.lib.format import open_memmap
+from src.experiment_runner.artifacts import read_json_object as _load_json_object
 from src.project_runtime.paths import resolve_path
 
 from src.data.shooting import (
@@ -34,21 +35,6 @@ _ARRAY_FILES = {
     "atom_ids": "atom_ids.npy",
     "atom_types": "atom_types.npy",
 }
-
-
-def _load_json_object(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(
-            f"Required shooting-binary manifest is missing: {path}"
-        )
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in shooting-binary manifest {path}, "
-            f"got {type(value).__name__}."
-        )
-    return value
 
 
 def _array_sha256(values: np.ndarray) -> str:
@@ -90,39 +76,29 @@ class ShootingBinaryTrajectory:
     def load(cls, path: str | Path) -> "ShootingBinaryTrajectory":
         root = resolve_path(path).resolve()
         manifest = _load_json_object(root / "manifest.json")
-        if manifest.get("format") != FORMAT_NAME:
+        if manifest["format"] != FORMAT_NAME:
             raise ValueError(
                 "Unsupported shooting-binary format in"
                 f" {root / 'manifest.json'}: expected={FORMAT_NAME!r},"
-                f" observed={manifest.get('format')!r}."
+                f" observed={manifest['format']!r}."
             )
-        if int(manifest.get("schema_version", -1)) != SCHEMA_VERSION:
+        if manifest["schema_version"] != SCHEMA_VERSION:
             raise ValueError(
                 "Unsupported shooting-binary schema in"
                 f" {root / 'manifest.json'}: expected={SCHEMA_VERSION},"
-                f" observed={manifest.get('schema_version')!r}."
+                f" observed={manifest['schema_version']!r}."
             )
-        if manifest.get("state") != "complete":
+        if manifest["state"] != "complete":
             raise RuntimeError(
                 f"Shooting-binary trajectory is not complete: root={root}, "
-                f"state={manifest.get('state')!r}."
+                f"state={manifest['state']!r}."
             )
 
         arrays: dict[str, np.ndarray] = {}
-        descriptions = manifest.get("arrays")
-        if not isinstance(descriptions, dict):
-            raise TypeError(
-                "Shooting-binary manifest arrays must be a JSON object:"
-                f" {root / 'manifest.json'}."
-            )
+        descriptions = manifest["arrays"]
         for name, default_filename in _ARRAY_FILES.items():
-            description = descriptions.get(name)
-            if not isinstance(description, dict):
-                raise KeyError(
-                    "Shooting-binary manifest is missing array description"
-                    f" {name!r}: {root / 'manifest.json'}."
-                )
-            filename = description.get("file")
+            description = descriptions[name]
+            filename = description["file"]
             if filename != default_filename:
                 raise ValueError(
                     f"Unexpected file for shooting-binary array {name!r}:"
@@ -130,15 +106,9 @@ class ShootingBinaryTrajectory:
                     f" root={root}."
                 )
             array_path = root / filename
-            if not array_path.is_file():
-                raise FileNotFoundError(
-                    f"Shooting-binary array {name!r} is missing: {array_path}"
-                )
             values = np.load(array_path, mmap_mode="r", allow_pickle=False)
-            expected_shape = tuple(
-                int(value) for value in description["shape"]
-            )
-            expected_dtype = np.dtype(str(description["dtype"]))
+            expected_shape = tuple(description["shape"])
+            expected_dtype = np.dtype(description["dtype"])
             if (
                 values.shape != expected_shape
                 or values.dtype != expected_dtype
@@ -314,12 +284,7 @@ class ShootingBinaryTrajectory:
 
         observed: dict[str, str] = {}
         for name in _ARRAY_FILES:
-            expected = str(self.manifest["arrays"][name].get("sha256", ""))
-            if len(expected) != 64:
-                raise RuntimeError(
-                    "Shooting-binary manifest has no valid SHA-256 for array"
-                    f" {name!r}: {self.root / 'manifest.json'}."
-                )
+            expected = self.manifest["arrays"][name]["sha256"]
             observed[name] = _array_sha256(getattr(self, name))
             if observed[name] != expected:
                 raise RuntimeError(

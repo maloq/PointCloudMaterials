@@ -1,5 +1,4 @@
 """Read-only hooks on the native encoder, preserving its scalar output."""
-from pathlib import Path
 
 import numpy as np
 import torch

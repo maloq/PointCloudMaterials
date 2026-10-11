@@ -13,6 +13,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import read_json_object as _load_json
 from src.experiment_runner.artifacts import file_hash  # noqa: E402
 from src.data.trajectories.lammps import (  # noqa: E402
     TemporalLAMMPSBinaryTrajectory,
@@ -20,18 +21,6 @@ from src.data.trajectories.lammps import (  # noqa: E402
 from src.data.temporal import (  # noqa: E402
     TemporalLAMMPSDumpDataset,
 )
-
-
-def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required audit JSON file is missing: {path}")
-    with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"Expected a JSON object in {path}, got {type(value).__name__}."
-        )
-    return value
 
 
 def audit_campaign(

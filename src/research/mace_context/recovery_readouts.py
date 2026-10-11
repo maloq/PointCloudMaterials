@@ -1,7 +1,6 @@
 """Matched ridge and residual nonlinear probes, with no encoder optimization."""
 
 import csv
-import json
 from pathlib import Path
 import time
 

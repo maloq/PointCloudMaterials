@@ -1,0 +1,21 @@
+{
+  "revision": "rtx6000-equal-examples-b1024-v1",
+  "original_batch_size": 256,
+  "original_teacher_batch": 16,
+  "batch_size": 1024,
+  "teacher_batch_size": 64,
+  "microbatch": 1024,
+  "example_budget": 1024000,
+  "arms": [
+    "transformer_1ps_path_values-d16-h4-s20261013",
+    "transformer_1ps_path_values-d16-h4-s20261014",
+    "transformer_1ps_path_response-d16-h4-s20261013",
+    "transformer_1ps_path_response-d16-h4-s20261014"
+  ],
+  "user_decision": "Preserve remaining examples; fewer optimizer updates",
+  "learning_rate": "Original maximum and cosine floor; warmup/decay progress uses processed examples",
+  "optimizer": "Resume existing AdamW state; same LR, betas, weight decay and clipping; fewer optimizer updates changes optimization",
+  "comparison": "1ps RTX arms have a recorded batch256 prefix and batch1024 continuation; A100 6ps arms remain batch256",
+  "original_bundle": "/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1/technical/scale-v1/code",
+  "benchmark": "/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1/technical/batch1024-v1/benchmark.json"
+}

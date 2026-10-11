@@ -607,11 +607,7 @@ def _collect_split_supervised_features(
     *,
     max_samples: int | None,
 ) -> tuple[np.ndarray | None, np.ndarray | None]:
-    extractor = getattr(
-        module, "_extract_supervised_features_from_batch", None
-    )
-    if not callable(extractor):
-        return None, None
+    extractor = module._extract_supervised_features_from_batch
 
     if torch.distributed.is_available() and torch.distributed.is_initialized():
         if torch.distributed.get_world_size() > 1:
@@ -679,20 +675,11 @@ def _extract_rotated_supervised_features_from_batch(
     *,
     seed: int,
 ) -> tuple[torch.Tensor | None, torch.Tensor | None]:
-    unpack = getattr(module, "_unpack_batch", None)
-    if not callable(unpack):
-        raise RuntimeError(
-            "Module does not expose _unpack_batch(batch); cannot compute"
-            " rotated test metrics."
-        )
-
-    pc_raw, meta = unpack(batch)
-    class_id = meta.get("class_id") if isinstance(meta, dict) else None
+    pc_raw, meta = module._unpack_batch(batch)
+    class_id = meta.get("class_id")
     if class_id is None:
         return None, None
 
-    if not torch.is_tensor(pc_raw):
-        pc_raw = torch.as_tensor(pc_raw)
     if pc_raw.dim() != 3 or int(pc_raw.shape[-1]) != 3:
         raise ValueError(
             "Expected point clouds with shape (B, N, 3) for rotated test"
@@ -710,26 +697,13 @@ def _extract_rotated_supervised_features_from_batch(
     )
     # Row-vector convention: each point is rotated as x @ R.
     pc_rot = torch.matmul(pc_raw, rots)
-    if hasattr(module, "_prepare_model_input"):
-        pc_rot = module._prepare_model_input(pc_rot)
-
+    # Both maintained SSL forwards prepare/crop their input themselves.
     out = module(pc_rot)
-    if not isinstance(out, (tuple, list)) or len(out) < 2:
-        raise RuntimeError(
-            "Expected module forward(pc) to return at least "
-            "(z_inv_contrastive, z_inv_model, ...), "
-            f"got type={type(out)}."
-        )
     z_inv_contrastive = out[0]
     z_inv_model = out[1]
     features = (
         z_inv_contrastive if z_inv_contrastive is not None else z_inv_model
     )
-    if features is None:
-        raise RuntimeError(
-            "Model forward returned neither invariant latent nor fallback"
-            " latent; cannot compute rotated supervised metrics."
-        )
     return features.detach().to(torch.float32), class_id
 
 

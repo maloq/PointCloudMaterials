@@ -1,8 +1,8 @@
 # CPU crystallization-origin campaign
 
 Requested deadline: 26 September 2026, approximately 10:00 Europe/Paris.
-All work runs in detached Slurm CPU allocations using `pointnet-torch214`.
-No simulation, training or W&B run is created.
+The campaign ran in detached Slurm CPU allocations using `pointnet-torch214`.
+No simulation, training or W&B run was created.
 
 Completed 26 September: Al64 at 03:07 Paris time (job 1009235), external
 extraction/ancestry by 03:56 (array 1009244 and job 1009262). All CPU jobs have
@@ -30,20 +30,21 @@ chunks run first to expose their runtime/memory needs early. An independent
 four-worker ancestry allocation consumes each complete trajectory as soon as
 its chunks are available; it does not wait for the whole extraction array.
 
-Maintained commands (execute the workers inside a CPU Slurm allocation):
+The completed Al64 CPU-migration wrapper was removed on 2026-10-11. Its source
+is retained in commit `7d91467d`; extraction and ancestry implementations remain
+in `src/postprocessing/protocols/`. The original 0.75-ps raw Al histories have
+since been retired. Saved audit outputs and frozen execution receipts remain.
+
+The external-data worker interfaces are:
 
 ```bash
-python -m src.research.crystallization_origin.cpu fixed \
-  --config configs/analysis/crystallization_origin_20260925.json \
-  --workers 24 --analysis-workers 4
-
-python -m src.research.crystallization_origin.external_data plan \
+python -m src.postprocessing.protocols.external_data plan \
   --config configs/analysis/crystallization_origin_external_20260926.json
 
-python -m src.research.crystallization_origin.external_data extract-lane \
+python -m src.postprocessing.protocols.external_data extract-lane \
   --config configs/analysis/crystallization_origin_external_20260926.json
 
-python -m src.research.crystallization_origin.external_audit \
+python -m src.postprocessing.protocols.external_audit \
   --config configs/analysis/crystallization_origin_external_20260926.json
 ```
 

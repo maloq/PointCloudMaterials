@@ -1,5 +1,4 @@
 """Nested source-held-out linear and nonlinear ridge probes on the A100."""
-import json
 from pathlib import Path
 import time
 

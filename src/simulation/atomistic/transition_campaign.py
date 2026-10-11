@@ -21,6 +21,7 @@ import numpy as np
 from ase.calculators.singlepoint import SinglePointCalculator
 from ase.io import read, write
 
+from src.experiment_runner.artifacts import file_hash as _sha256
 from .artifacts import PHASE_TO_ID
 from .generator import select_calculator
 from .homogeneous_resumable import ThermodynamicTraceBuffer
@@ -79,14 +80,6 @@ RAW_ARTIFACTS = (
     "equilibration_trajectory.npz",
     "trajectory.npz",
 )
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(4 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _write_json_atomic(path: Path, value: object) -> None:

@@ -2,7 +2,6 @@
 import fcntl
 import importlib.metadata
 import json
-from pathlib import Path
 import traceback
 
 import numpy as np

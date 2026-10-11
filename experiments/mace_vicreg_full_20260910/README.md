@@ -117,10 +117,10 @@ It used the unchanged original Al/Mg/Ta cache to test the full-run execution
 settings before expanded-cache completion: peak allocated memory 59.304 GiB,
 median warm step 0.934 seconds under concurrent GPU load, and loss
 19.9308 → 19.2324 with finite nonzero backbone/projector gradients. These are
-execution checks, not expanded-data training results. Reproduce with
-`src/research/mace_original_vicreg/preflight.py --config
-output/mace_vicreg_full_20260910/preflight/resolved_reference_data.yaml --output
-output/mace_vicreg_full_20260910/preflight`; the report is `result.json` there.
+execution checks, not expanded-data training results. The report is
+`output/mace_vicreg_full_20260910/preflight/result.json`, with its resolved input
+in `resolved_reference_data.yaml`. The completed one-off preflight was removed
+from the live checkout on 2026-10-11; its source remains in commit `7d91467d`.
 
 File roles: this directory contains experiment records, the YAML is a training
 configuration, shared producer changes/tests are maintained code. Launch scripts,

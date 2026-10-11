@@ -64,12 +64,12 @@ Existing manifest/report names and their scientific contents remain compatible.
 | `scripts/plotting_common.py` | `Shared library; no command` | `src/analysis/plots/plotting_common.py` |
 | `scripts/prepare_spatiotemporal_vicreg_views.py` | `python src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py` | `src/research/spatiotemporal/prepare_spatiotemporal_vicreg_views.py` |
 | `scripts/run_geoframe_factor_vae_queue.py` | `python src/research/factor_vae/run_queue.py` | `src/research/factor_vae/run_queue.py` |
-| `scripts/run_geoframe_spatiotemporal_post_analysis.py` | `python src/research/spatiotemporal/run_geoframe_spatiotemporal_post_analysis.py` | `src/research/spatiotemporal/run_geoframe_spatiotemporal_post_analysis.py` |
+| `scripts/run_geoframe_spatiotemporal_post_analysis.py` | One-off queue removed 2026-10-11; use the recorded analysis configs with `python -m src.analysis.pipeline` | Historical launcher in commit `7d91467d` |
 | `scripts/run_geoframe_temporal_variability.py` | `python scripts/analyze_geoframe.py variability` | `src/temporal_vamp/commands/geoframe_variability.py` |
 | `scripts/run_lammps_homogeneous_campaign.py` | `python scripts/run_lammps_campaign.py homogeneous` | `src/simulation/campaigns/homogeneous.py` |
-| `scripts/run_lammps_independent_meam_510_520K_sources.py` | `python src/simulation/campaigns/independent_meam_high_temperature.py` | `src/simulation/campaigns/independent_meam_high_temperature.py` |
+| `scripts/run_lammps_independent_meam_510_520K_sources.py` | Completed specialization and wrapper removed 2026-10-11 | Historical source in commit `7d91467d` |
 | `scripts/run_lammps_independent_meam_source_campaign.py` | `python scripts/run_lammps_campaign.py independent-meam-source` | `src/simulation/campaigns/independent_meam_source.py` |
-| `scripts/run_lammps_local_source_queue.py` | `python src/simulation/campaigns/local_source_queue.py` | `src/simulation/campaigns/local_source_queue.py` |
+| `scripts/run_lammps_local_source_queue.py` | Completed overnight queue removed 2026-10-11 | Historical source in commit `7d91467d` |
 | `scripts/run_lammps_meam_nested_shooting_campaign.py` | `python scripts/run_lammps_campaign.py meam-nested-shooting` | `src/simulation/campaigns/meam_nested_shooting.py` |
 | `scripts/run_lammps_meam_shooting_campaign.py` | `python scripts/run_lammps_campaign.py meam-shooting` | `src/simulation/campaigns/meam_shooting.py` |
 | `scripts/run_lammps_meam_shooting_followup.py` | `python scripts/run_lammps_campaign.py meam-shooting-followup` | `src/simulation/campaigns/meam_shooting_followup.py` |
@@ -77,7 +77,7 @@ Existing manifest/report names and their scientific contents remain compatible.
 | `scripts/run_lammps_predictive_dynamics_15ps_campaign.py` | `python scripts/run_lammps_campaign.py predictive-dynamics-15ps` | `src/simulation/campaigns/predictive_dynamics_15ps.py` |
 | `scripts/run_lammps_predictive_dynamics_campaign.py` | `python scripts/run_lammps_campaign.py predictive-dynamics` | `src/simulation/campaigns/predictive_dynamics.py` |
 | `scripts/run_lammps_seeded_crystallization_campaign.py` | `python scripts/run_lammps_campaign.py seeded-crystallization` | `src/simulation/campaigns/seeded_crystallization.py` |
-| `scripts/run_lammps_ta_initial_branch.py` | `python src/simulation/campaigns/ta_initial_branch.py` | `src/simulation/campaigns/ta_initial_branch.py` |
+| `scripts/run_lammps_ta_initial_branch.py` | Completed initial-branch launcher removed 2026-10-11 | Historical source in commit `7d91467d` |
 | `scripts/run_lammps_unseeded_meam_crystallization.py` | `python scripts/run_lammps_campaign.py unseeded-meam-crystallization` | `src/simulation/campaigns/unseeded_meam_crystallization.py` |
 | `scripts/run_lammps_unseeded_meam_ensemble.py` | `python scripts/run_lammps_campaign.py unseeded-meam-ensemble` | `src/simulation/campaigns/unseeded_meam_ensemble.py` |
 | `scripts/run_lammps_unseeded_meam_source_followup.py` | `python scripts/run_lammps_campaign.py unseeded-meam-source-followup` | `src/simulation/campaigns/unseeded_meam_source_followup.py` |
@@ -94,7 +94,7 @@ Existing manifest/report names and their scientific contents remain compatible.
 | `scripts/run_shooting_short_horizon_ablation.py` | `python scripts/run_shooting_ablation.py short-horizon` | `src/temporal_vamp/commands/ablation_short_horizon.py` |
 | `scripts/run_shooting_spatial_ablation.py` | `python scripts/run_shooting_ablation.py spatial` | `src/temporal_vamp/commands/ablation_spatial.py` |
 | `scripts/run_shooting_temporal_pretraining_ablation.py` | `python scripts/run_shooting_ablation.py temporal-pretraining` | `src/temporal_vamp/commands/ablation_temporal_pretraining.py` |
-| `scripts/run_spatiotemporal_objective_comparison.py` | `python src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` | `src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` |
+| `scripts/run_spatiotemporal_objective_comparison.py` | One-off queue removed 2026-10-11; training and comparison stages remain independently available | Historical launcher in commit `7d91467d` |
 | `scripts/train_geoframe_spatiotemporal.py` | `python scripts/train_geoframe_spatiotemporal.py` | `src/training_methods/spatiotemporal.py` |
 | `scripts/analyze_shooting_branch_outcomes.py` | `python scripts/analyze_shooting_branch_outcomes.py` | `src/temporal_vamp/commands/analyze_shooting_branch_outcomes.py` |
 | `scripts/evaluate_shooting_ablation0.py` | `python scripts/evaluate_shooting_ablation0.py` | `src/temporal_vamp/commands/evaluate_shooting_ablation0.py` |

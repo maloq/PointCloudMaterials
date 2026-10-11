@@ -265,48 +265,33 @@ checking that the recorded job is no longer active.
 
 ### Parallel collection on allocated GPUs
 
-The October 1 run now uses the operational adapter
-`src/research/response_execution.py`. Job1017340 was stopped with its branch-resume
-signal and replaced by L40S coordinator1017386. Both GPUs in the existing node60
-allocation1016443 run detached collection helpers. Its original scientific bundle,
-configuration, query seeds, metric definitions and protocol identity are unchanged.
-Use `technical/parallel-v1/launch.json` for current execution, rather than rerunning
-the superseded single-writer script. The historical launch and stage receipts are
-preserved; the old worker's signal failure records the intentional handover.
+The October 1 run used an operational adapter for its frozen collector.
+Job1017340 was stopped with its branch-resume signal and replaced by L40S
+coordinator1017386. Both GPUs in node60 allocation1016443 contributed collection
+helpers. The original bundle, configuration, query seeds, metric definitions and
+protocol identity stayed unchanged. The saved launch and stage receipts retain
+the handover, including the old worker's intentional signal failure.
 
-The adapter imports the original frozen collector and scopes each invocation to
-one prepared parent. Exclusive shared-filesystem locks cover collection and final
-scratch publication. Only progress routing and task assignment change; global
-metric export and cache sealing wait for all parents and all locks. The coordinator
-then runs the original nine fits and paired evaluation. Helpers never requeue the
-interactive allocation; they stop at its deadline and leave saved branches for
-the continuing coordinator. Collection stays local; scientific fits retain online
-W&B and their original resumable IDs. Per-branch records identify the actual GPU,
-so combined acquisition timings reflect this heterogeneous hardware.
+The adapter scoped each invocation to one prepared parent. Shared-filesystem
+locks covered collection and final scratch publication; global metric export and
+cache sealing waited for every parent and lock. The coordinator then completed
+the original nine fits and paired evaluation, as recorded in
+`technical/parallel-v1/l40s-coordinator/status.json`. Scientific fits retained
+online W&B and their original run IDs. Per-branch records identify the actual GPU,
+so combined acquisition timings retain their heterogeneous hardware provenance.
 
-To start another helper inside an allocated, idle GPU, use the recorded adapter
-and frozen bundle, a unique lane name and explicit `CUDA_VISIBLE_DEVICES`:
-
-```
-python /RUN/technical/parallel-v1/response_execution.py --bundle /RUN/technical/code --lane UNIQUE_LANE
-```
-
-Inspect `technical/parallel-v1/*/status.json` and `collection-progress.json` for
-each lane, and `owners/parent-*.json` for assignments. The top-level collection
-receipt is a coarse coordinator update; individual lane receipts update per branch.
-The adapter and its execution-only revisions have hashes and retained sources in
-the launch receipt. Do not mix the legacy unguarded collector with these helpers.
+The one-off adapter was removed from the live checkout on 2026-10-11. Its exact
+sources and revisions remain under `technical/parallel-v1/` and in commit
+`7d91467d`; lane statuses, parent ownership and launch receipts remain unchanged.
 
 Two additional L40S collection helpers were requested on October 1. Slurm rejected
 the initial submission with `QOSMaxSubmitJobPerUserLimit`; no extra job was accepted.
-`src/research/response_gpu_request.py --execution EXECUTION_DIR --deadline UNIX_TIME`
-retries only that rejection every60seconds, records each accepted job immediately,
-and skips already submitted helpers. The detached requester is bounded by the
-node60 allocation deadline, stopping five minutes before it ends. It also stops
-when collection is sealed. Other submission errors fail explicitly. Inspect
-`technical/parallel-v1/gpu-request-status.json` for waiting/submitted/expired status
-and `gpu-request-launch.json` for its PID, deadline and frozen source hash. These
-helpers collect only; the existing coordinator still owns the nine sequential fits.
+The bounded requester subsequently recorded jobs1017715 and1017778 in
+`technical/parallel-v1/gpu-request-status.json`; collection was sealed on October 2
+in `technical/data-complete.json`. Its one-off submission code was removed on
+2026-10-11 and remains in commit `7d91467d`. The saved requester status and
+`gpu-request-launch.json` retain its PID, deadline and frozen source hash. These
+helpers only collected data; the coordinator owned the nine sequential fits.
 
 The [scientific protocol](../experiments/response_atlas_20261001/ATOMISTIC_TRAINING.md)
 and [metric definitions](metrics/response_training.md) explain the full observation,

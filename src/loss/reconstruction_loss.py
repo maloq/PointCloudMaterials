@@ -65,8 +65,6 @@ def sinkhorn_distance(
 
 
 def _to_b_n_3(point_cloud: torch.Tensor) -> torch.Tensor:
-    if not torch.is_tensor(point_cloud):
-        raise TypeError(f"point_cloud must be a torch.Tensor, got {type(point_cloud)!r}.")
     if point_cloud.dim() != 3:
         raise ValueError(
             "point_cloud must have shape (B, N, 3) or (B, 3, N), "
@@ -83,16 +81,7 @@ def _to_b_n_3(point_cloud: torch.Tensor) -> torch.Tensor:
 
 
 def _coerce_float(value: float) -> float:
-    if torch.is_tensor(value):
-        if value.numel() != 1:
-            raise ValueError(
-                f"Expected scalar tensor for float conversion, got shape {tuple(value.shape)}."
-            )
-        value = value.item()
-    try:
-        out = float(value)
-    except (TypeError, ValueError) as exc:
-        raise TypeError(f"Expected a finite float, got {value!r}.") from exc
+    out = float(value)
     if not math.isfinite(out):
         raise ValueError(f"Expected a finite float, got {out!r}.")
     return out

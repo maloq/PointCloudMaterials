@@ -15,6 +15,7 @@ import sys
 import time
 import traceback
 
+from src.experiment_runner.artifacts import file_hash as sha256
 from src.project_runtime.paths import REPO, load_json, machine, resolve_path, storage_path
 from src.project_runtime.transfer import write_json, publish_simulation, archive_failed_simulation
 
@@ -23,11 +24,6 @@ PROTOCOL = 'al_spontaneous_birth_sources_v1'
 
 def now():
     return datetime.now(timezone.utc).isoformat()
-
-
-def sha256(path):
-    with Path(path).open('rb') as handle:
-        return hashlib.file_digest(handle, 'sha256').hexdigest()
 
 
 def register_entry(identifier, entry):

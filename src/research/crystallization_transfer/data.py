@@ -1,6 +1,5 @@
 """Dense, ancestry-held-out local onset observations, with reusable local graphs."""
 import json
-from pathlib import Path
 import shutil
 import numpy as np
 from scipy.spatial import cKDTree
@@ -147,8 +146,9 @@ class Corpus:
                 index=len(self.rows);self.rows.append((sid,int(ai),int(ci),source['temperature_K']))
                 self.splits[source.get('validation_role',source['split'])].append(index)
         self.source_ids=np.array([r[0] for r in self.rows]);self.events=np.array([self.arrays[s]['event'][a,c] for s,a,c,_ in self.rows])
-        self.groups={s:np.flatnonzero((self.source_ids==s)&np.isin(np.arange(len(self.rows)),self.splits['train'])) for s in np.unique(self.source_ids[self.splits['train']])}
-        self.groups={s:i for s,i in self.groups.items() if len(i)}
+        training=np.asarray(self.splits['train'],dtype=np.int64)
+        training_sources=self.source_ids[training]
+        self.groups={s:training[training_sources==s] for s in np.unique(training_sources)}
 
     def sample(self,rng,n):
         sources=rng.choice(list(self.groups),n)

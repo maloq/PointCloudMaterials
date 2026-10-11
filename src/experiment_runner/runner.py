@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from importlib import import_module
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Sequence
@@ -666,21 +665,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
     if not plan.plot.enabled:
         return []
 
-    try:
-        plot_module = import_module("src.analysis.plots.plot_experiment_summary")
-    except Exception as exc:
-        raise RuntimeError(
-            "Automatic plot generation was enabled in the plan, but the plotting "
-            f"module could not be imported: {exc}"
-        ) from exc
-
-    if not hasattr(plot_module, "render_summary_plots"):
-        raise RuntimeError(
-            "Automatic plot generation was enabled in the plan, but "
-            "src.analysis.plots.plot_experiment_summary.render_summary_plots is missing."
-        )
-
-    render_summary_plots = plot_module.render_summary_plots
+    from src.analysis.plots.plot_experiment_summary import render_summary_plots
     plot_metrics = plan.plot.metrics if plan.plot.metrics else None
     output_root = summary_path.parent.parent / "plots"
     plot_variants = [
@@ -690,7 +675,6 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
 
     written_paths: List[Path] = []
     for subdir_name, error_mode, prefix in plot_variants:
-        variant_output_dir = output_root
         try:
             variant_paths = render_summary_plots(
                 summary_path,
@@ -698,7 +682,7 @@ def _render_summary_plots(plan: ExperimentPlan, summary_path: Path) -> List[Path
                 metric_scope=plan.plot.metric_scope,
                 x_pattern=plan.plot.x_pattern,
                 x_label=plan.plot.x_label,
-                output_dir=variant_output_dir,
+                output_dir=output_root,
                 prefix=prefix,
                 formats=plan.plot.formats,
                 dpi=plan.plot.dpi,

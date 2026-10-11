@@ -15,11 +15,12 @@ from .oracle import Oracle
 
 def normalizer(c):
     base=resolve_path(c['geometry_reference'])/'technical'
-    if sha(base/'feature-normalization.pt') != read(base/'parents.json')['normalizer_sha256']:
+    path=base/'feature-normalization.pt';checksum=sha(path)
+    if checksum != read(base/'parents.json')['normalizer_sha256']:
         raise ValueError('Training-only observable normalizer changed')
-    if sha(base/'feature-normalization.pt') != read(root(c)/'technical/binding.json')['observable_normalizer_sha256']:
+    if checksum != read(root(c)/'technical/binding.json')['observable_normalizer_sha256']:
         raise ValueError('Bound observable normalizer changed')
-    return torch.load(base/'feature-normalization.pt',weights_only=False)
+    return torch.load(path,weights_only=False)
 
 
 def publish(c,name,payload):

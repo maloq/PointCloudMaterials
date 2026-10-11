@@ -1,6 +1,5 @@
 """Verified reuse of paired full-radius patches and original-MD physical labels."""
 import json
-from pathlib import Path
 
 import numpy as np
 from scipy.spatial import cKDTree

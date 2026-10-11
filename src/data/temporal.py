@@ -639,15 +639,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
                 selected = self._query_local_structures(
                     frame_idx=frame_idx, centers=centers
                 )
-                expected_shape = (self.center_count, self.num_points)
-                if tuple(selected.shape) != expected_shape:
-                    raise RuntimeError(
-                        "Precomputed temporal neighbor-index cache produced"
-                        f" an unexpected shape. frame_idx={frame_idx},"
-                        f" expected_shape={expected_shape},"
-                        f" got_shape={tuple(selected.shape)},"
-                        f" cache_path={cache_path}."
-                    )
                 cache_array[frame_idx] = selected.astype(np.int32, copy=False)
                 if (
                     frame_idx == 0

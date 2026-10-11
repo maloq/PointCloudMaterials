@@ -1,6 +1,5 @@
 """Render the controlled continuity audit and its selected Ta counterexample."""
 import json
-from pathlib import Path
 import sys
 
 import matplotlib

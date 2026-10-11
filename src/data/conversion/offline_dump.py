@@ -13,16 +13,12 @@ from pathlib import Path
 
 import numpy as np
 
+from src.experiment_runner.artifacts import file_hash as sha256
 from src.data.trajectories import shooting, lammps
 from src.project_runtime.transfer import write_json
 
 MARKER = b'ITEM: TIMESTEP\n'
 COLUMNS = [('id','type','x','y','z'), ('id','type','x','y','z','vx','vy','vz'), ('id','type','vx','vy','vz')]
-
-
-def sha256(path):
-    with Path(path).open('rb') as f:
-        return hashlib.file_digest(f, 'sha256').hexdigest()
 
 
 def signature(path):

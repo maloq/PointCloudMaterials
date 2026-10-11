@@ -565,12 +565,10 @@ def run_source_task(
 ) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
     manifest = read_json_object(root / "manifest.json")
-    runs = manifest.get("runs")
-    if not isinstance(runs, list) or task_index < 0 or task_index >= len(runs):
-        raise IndexError(f"task_index={task_index} is outside [0, {len(runs) if isinstance(runs, list) else 0}).")
+    runs = manifest["runs"]
+    if task_index < 0 or task_index >= len(runs):
+        raise IndexError(f"task_index={task_index} is outside [0, {len(runs)}).")
     spec = runs[task_index]
-    if not isinstance(spec, dict) or int(spec["run_index"]) != task_index:
-        raise RuntimeError(f"Invalid source task mapping at index {task_index}: {spec!r}.")
     run_dir = root / str(spec["run_dir"])
     outcome_path = run_dir / "outcome.json"
     if outcome_path.is_file():
@@ -829,8 +827,8 @@ def _expanded_submitted_job_count() -> int:
 def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
     manifest = read_json_object(root / "manifest.json")
-    runs = manifest.get("runs")
-    if not isinstance(runs, list) or start_index < 0 or start_index >= len(runs):
+    runs = manifest["runs"]
+    if start_index < 0 or start_index >= len(runs):
         raise IndexError(f"start_index={start_index} is invalid for source campaign.")
     conflicts = _active_submission_conflicts(root)
     if conflicts:
@@ -914,9 +912,7 @@ def submit_next_wave(campaign_root: str | Path, start_index: int) -> dict[str, A
 def summarize_campaign(campaign_root: str | Path) -> dict[str, Any]:
     root = Path(campaign_root).expanduser().resolve()
     manifest = read_json_object(root / "manifest.json")
-    runs = manifest.get("runs")
-    if not isinstance(runs, list):
-        raise TypeError(f"Source manifest runs must be a list: {root / 'manifest.json'}.")
+    runs = manifest["runs"]
     outcomes: list[dict[str, Any]] = []
     missing: list[str] = []
     for spec in runs:

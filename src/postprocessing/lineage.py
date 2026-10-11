@@ -6,7 +6,6 @@ from collections import Counter, defaultdict
 import fcntl
 import gzip
 import json
-from pathlib import Path
 import time
 
 import numpy as np

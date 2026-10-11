@@ -1,6 +1,5 @@
 """Immutable future-center extraction and GPU-resident, nonleaking timeline joins."""
 import json
-from pathlib import Path
 import numpy as np
 from scipy.spatial import cKDTree
 import torch

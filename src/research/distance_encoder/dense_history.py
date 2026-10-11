@@ -4,7 +4,6 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 import json
 import multiprocessing
 from pathlib import Path
-import time
 
 import numpy as np
 import torch

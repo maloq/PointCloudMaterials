@@ -1,5 +1,4 @@
 """Source bootstrap, cross-fitted readout diagnostics and physical-lead figures."""
-from pathlib import Path
 import hashlib
 
 import numpy as np

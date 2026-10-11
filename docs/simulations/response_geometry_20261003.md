@@ -68,21 +68,15 @@ hashes accompany CSVs via the metric publication workflow.
 
 ## Additional existing GPU
 
-The October3 node58 RTX PRO6000 helper runs in allocation1019795 beside the two
-L40S collector lanes in job1020301. It calls the original frozen collector and
-retains exact seeds, precision, batch sizes and scientific identity. It considers
-parents in reverse order and shares the existing parent locks and STORE archive.
-It yields when within128 parent indices of the advancing coordinator or when fewer
-than15 allocation minutes remain; completed batches and partial queries are durable.
-This ordering leaves unfinished helper work ahead of the coordinator for resumption.
-No new W&B runs are opened for collection. The adapter, its checksum, launch receipt
-and progress/log are retained under technical/execution-v1/ in the running output.
+The October3 node58 RTX PRO6000 helper ran in allocation1019795 beside the two
+L40S collector lanes in job1020301. It called the frozen collector with unchanged
+seeds, precision, batch sizes and scientific identity, sharing parent locks and
+the STORE archive. It considered parents in reverse order and yielded within128
+parent indices of the coordinator or with fewer than15 allocation minutes left.
+Collection created no W&B runs.
 
-The helper can be invoked as:
-
-```bash
-python src/research/response_geometry_helper.py --bundle FROZEN_CODE --first-parent 0 --stop-parent 765
-```
-
-This operational scheduling addition does not modify the frozen simulation or
-training recipe. The remaining scientific pipeline continues in the two-GPU job.
+`technical/execution-v1/helper-1019795.json` records the completed helper;
+`technical/data-complete.json` records all765 sealed parents. The one-off helper
+was removed from the live checkout on 2026-10-11 and remains in commit `7d91467d`.
+Its checksum, launch receipt and log remain under `technical/execution-v1/`;
+the frozen simulation and training recipe are unchanged.

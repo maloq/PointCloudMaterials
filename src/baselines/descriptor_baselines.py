@@ -231,8 +231,6 @@ def compute_cluster_metrics(
                     seed=base_seed + run_idx,
                 )
                 acc_values.append(_hungarian_cluster_accuracy(labels, pred_labels))
-            if not acc_values:
-                continue
             prefix = _acc_metric_prefix(method, k_eval)
             if len(acc_values) == 1:
                 metrics[prefix] = float(acc_values[0])

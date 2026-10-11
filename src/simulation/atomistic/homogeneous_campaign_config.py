@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 from copy import deepcopy
@@ -10,6 +9,7 @@ from typing import Any
 
 import yaml
 
+from src.experiment_runner.artifacts import file_hash as _sha256
 from .config import GeneratorConfig, REPOSITORY_ROOT, load_config
 from .homogeneous_config import (
     HomogeneousCrystallizationConfig,
@@ -213,14 +213,6 @@ def _integer(value: Any, *, name: str, path: Path, minimum: int) -> int:
             f" {value!r}."
         )
     return value
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _validate_runtime_generator(

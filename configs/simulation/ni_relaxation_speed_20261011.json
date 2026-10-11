@@ -1,0 +1,24 @@
+{
+  "output": "${storage:training_storage}/ni_relaxation/speed-20261011-v1",
+  "scratch": "${storage:simulation_runs}/ni-relaxation-speed-20261011-v1",
+  "archive": "${storage:archive}/simulations/ni-relaxation-speed-20261011-v1",
+  "parent": "${storage:training_storage}/ni_response/relaxed-esen-original-md-20261009-v1",
+  "repeatability": "${storage:training_storage}/ni_relaxation/repeatability-20261009-v1",
+  "seed": 20261011,
+  "cuda_home": "${storage:archive}/software/cuda-13.4-meam",
+  "ase_case_limit_seconds": 60,
+  "hard_process_limit_seconds": 240,
+  "partitions": "RTX6000PRO,H100,A100,L40S,A40",
+  "profiles": [
+    {"name": "raw_fire", "engine": "native", "tolerance": 0.01},
+    {"name": "sorted_fire", "engine": "native", "tolerance": 0.01},
+    {"name": "abc_fire", "engine": "native", "tolerance": 0.01, "min_modify": "abcfire yes"},
+    {"name": "verlet_fire", "engine": "native", "tolerance": 0.01, "min_modify": "integrator verlet tmax 6.0"},
+    {"name": "dt2_fire", "engine": "native", "tolerance": 0.01, "timestep_ps": 0.002, "min_modify": "tmax 6.0"},
+    {"name": "loose_fire", "engine": "native", "tolerance": 0.03},
+    {"name": "tight_fire", "engine": "native", "tolerance": 0.003},
+    {"name": "lbfgs", "engine": "ase", "tolerance": 0.01, "case_indices": [0, 5, 11]},
+    {"name": "precon_lbfgs", "engine": "ase", "tolerance": 0.01, "case_indices": [0, 5, 11]},
+    {"name": "precon_fire", "engine": "ase", "tolerance": 0.01, "case_indices": [0, 5, 11]}
+  ]
+}

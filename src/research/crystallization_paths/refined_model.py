@@ -30,7 +30,7 @@ class RefinedForecaster(Forecaster):
         for block in [*self.context.spatial,*self.context.temporal]:block.ff.add_module('dropout',nn.Dropout(p))
         self.output_dropout=nn.Dropout(p)
         if spec['motion_input']:self.motion=nn.Sequential(nn.Linear(43,width),nn.LayerNorm(width),nn.SiLU())
-        if hasattr(self,'decoder'):
+        if self.method not in ('ar_mse','ar_gaussian'):
             for layer in self.decoder.layers:
                 layer.dropout.p=p;layer.dropout1.p=p;layer.dropout2.p=p;layer.self_attn.dropout=p
         self.rank=spec['gaussian_rank'] if self.method=='ar_gaussian' else 0

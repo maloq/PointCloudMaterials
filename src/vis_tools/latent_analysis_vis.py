@@ -1231,8 +1231,7 @@ def _set_equal_axes_3d(ax, coords: np.ndarray) -> None:
     ax.set_xlim(*xlim)
     ax.set_ylim(*ylim)
     ax.set_zlim(*zlim)
-    if hasattr(ax, "set_box_aspect"):
-        ax.set_box_aspect((1.0, 1.0, 1.0))
+    ax.set_box_aspect((1.0, 1.0, 1.0))
 
 
 def save_tsne_with_labels(
@@ -1694,8 +1693,7 @@ def save_pca_visualization(
             ax.set_xlim(*xlim)
             ax.set_ylim(*ylim)
             ax.set_zlim(*zlim)
-            if hasattr(ax, "set_box_aspect"):
-                ax.set_box_aspect((1.0, 1.0, 1.0))
+            ax.set_box_aspect((1.0, 1.0, 1.0))
             ax.view_init(elev=elev, azim=azim)
             ax.set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]*100:.1f}%)")
             ax.set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]*100:.1f}%)")

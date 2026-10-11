@@ -9,7 +9,9 @@ from pathlib import Path
 import torch
 from torch import nn
 
-from .esen_vendor.common.rotation import rotation_to_wigner
+# Installed e3nn's packaged Wigner constants contain builtin Python slices.
+with torch.serialization.safe_globals([slice]):
+    from .esen_vendor.common.rotation import rotation_to_wigner
 from .esen_vendor.common.so3 import CoefficientMapping, SO3_Grid
 from .esen_vendor.esen_block import eSEN_Block
 from .esen_vendor.nn.embedding import EdgeDegreeEmbedding

@@ -47,35 +47,11 @@ def split_encoder_output(encoder: Encoder, raw_output: object) -> EncoderOutput:
     """Apply the concrete forward-output contract declared by an encoder."""
     contract = encoder.output_contract
     if contract == "invariant":
-        if not torch.is_tensor(raw_output):
-            raise TypeError(
-                f"{encoder.__class__.__name__} must return one invariant tensor, "
-                f"got {type(raw_output)}."
-            )
         return EncoderOutput(raw_output, None, (), raw_output)
-
-    if not isinstance(raw_output, tuple) or not raw_output:
-        raise TypeError(
-            f"{encoder.__class__.__name__} declares output_contract={contract!r} "
-            f"and must return a non-empty tuple, got {type(raw_output)}."
-        )
-    invariant = raw_output[0]
-    if not torch.is_tensor(invariant):
-        raise TypeError(
-            f"{encoder.__class__.__name__} returned a non-tensor invariant value: "
-            f"{type(invariant)}."
-        )
-
     if contract == "invariant_aux":
-        return EncoderOutput(invariant, None, tuple(raw_output[1:]), raw_output)
+        return EncoderOutput(raw_output[0], None, raw_output[1:], raw_output)
     if contract == "invariant_equivariant":
-        equivariant = raw_output[1]
-        if equivariant is not None and not torch.is_tensor(equivariant):
-            raise TypeError(
-                f"{encoder.__class__.__name__} returned a non-tensor equivariant value: "
-                f"{type(equivariant)}."
-            )
-        return EncoderOutput(invariant, equivariant, tuple(raw_output[2:]), raw_output)
+        return EncoderOutput(raw_output[0], raw_output[1], raw_output[2:], raw_output)
     raise RuntimeError(
         f"{encoder.__class__.__name__} declares unknown output_contract={contract!r}."
     )

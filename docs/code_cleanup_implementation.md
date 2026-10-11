@@ -279,3 +279,68 @@ W&B run or historical-result rewrite was introduced. GPU numerical equivalence
 and a fresh scientific training trajectory were not exercised. The remaining
 large simulation/configuration functions and the relaxed-target producer-binding
 gap are explicit follow-up work in the updated review.
+
+## Repository-wide continuation, 2026-10-11
+
+The continuation after `7d91467d` screens all first-party Python under `src/`,
+`scripts/` and `benchmarks/`, starting with recent research and shared consumers.
+The final sweep compiles 1,360 remaining Python files, all ten HTML/JavaScript
+assets pass syntax checks, and the shell launcher passes `bash -n`.
+Focused reviews trace consumer assumptions back to their
+producers; static coverage does not mean every function received a manual review.
+Vendored implementations and concurrent experiment drafts remain unchanged.
+
+The new sweep simplifies 163 retained Python files and removes 639 lines from them.
+It consolidates repeated metadata readers and checksums, removes producer-guaranteed
+type/field checks and unused imports, and avoids repeated input preparation,
+normalizer hashing, config loading and training-source membership scans.
+Known historical formats and scientific integrity checks remain explicit.
+
+The ad hoc pass removes another 41 committed files, totaling 4,779 lines:
+completed storage migrations, expired campaign wrappers, fixed-run smoke checks,
+allocation monkeypatches, one-time gallery migrations and preliminary benchmarks.
+Completed recovery commands are also removed from retained modules. Current
+indexes and historical descriptions are updated together. The removed code is
+recoverable from `7d91467d`; future reuse should rebuild the relevant behavior in
+maintained modules. Scientific results, execution receipts and frozen definitions
+remain intact. `AGENTS.md` records this policy alongside producer-driven cleanup
+and the restriction on new unit tests.
+
+Concrete fixes include:
+
+- One-neighbor periodic batches now retain `(batch, 1, 3)` geometry instead of
+  accidentally broadcasting between centers, including spatial-context batches.
+- Distributed temporal-window padding fills every rank even when there are many
+  more workers than windows. Ordinary world sizes preserve sample ordering.
+- Standalone eSEN imports allow the builtin slice objects in installed e3nn constants through a
+  scoped safe-loader context.
+- A whole config operation shares one machine/catalogue snapshot; subsequent
+  operations still observe settings changes.
+- The root-anchored `/datasets` ignore rule keeps raw data ignored while exposing
+  the five existing `src/postprocessing/datasets` modules previously omitted from
+  Git. Those source files must accompany the ignore-rule fix in the next commit.
+
+CPU integration comparisons use retained coordinates, trajectories, checkpoints,
+receipts and reports with disposable output directories. They cover model forwards,
+rotated evaluation, cache integrity, reader/converter round trips, sampler ordering,
+metrics, plots and animations. Config parity covers 490 JSON files; runner-state
+round trips cover four retained runs. Research checks cover 30 model specifications,
+191,688 receipt-derived rows, 90 training-source groups and seeded sample ordering.
+The temporal sampler preserves all 48 ordinary configurations checked and fills
+all eight ranks of the one-window edge case. Surviving command interfaces and
+saved-coordinate representative rendering also pass; no imports or module-launch
+strings refer to deleted code.
+The detailed scope, producer evidence and verification receipts are retained in
+`output/maintenance/code-cleanup-20261011/technical/`.
+
+Reviewed source hashes are refreshed in active metric contracts, including new
+shared-helper dependencies. All 197 unaffected or reconciled families validate.
+Eleven families retain 19 pre-existing mismatches involving relaxation reuse and
+birth-catalogue provenance; this cleanup does not certify those earlier changes.
+Retired contracts and historical exported definitions remain unchanged. Changed
+producer hashes still require fresh export revisions under the existing rules.
+
+No unit tests or test dependencies were added. No scientific training, simulation,
+GPU execution, live scheduler submission or online tracking was run. GPU numerical
+equivalence and full distributed training are outside this verification; the
+distributed sampler is exercised locally through actual dataset/sampler objects.

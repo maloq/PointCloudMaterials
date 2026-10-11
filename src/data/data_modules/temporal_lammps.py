@@ -327,11 +327,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         if mixed_windows_per_batch_raw is None:
             mixed_windows_per_batch = min(
                 int(self.batch_size),
-                int(
-                    getattr(
-                        self.train_dataset, "window_count", self.batch_size
-                    )
-                ),
+                int(self.train_dataset.window_count),
             )
         else:
             mixed_windows_per_batch = int(mixed_windows_per_batch_raw)

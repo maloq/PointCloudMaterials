@@ -10,8 +10,6 @@ from src.data.data_modules.temporal_lammps import (
     TemporalLAMMPSDataModule,
     TemporalPointCloudDataModule,
 )
-from src.data.data_modules.temporal_window import TemporalWindowBatchSampler
-
 from src.data.data_modules.common import _resolve_temporal_window_start_frames
 from src.data.data_modules.temporal_window import TemporalWindowBatchSampler
 

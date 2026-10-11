@@ -1,10 +1,8 @@
 """Resumable fixed-budget transfer fits; cached frozen features and process-fed raw graphs."""
-import copy
 from concurrent.futures import ProcessPoolExecutor,ThreadPoolExecutor
 import json
 import math
 import multiprocessing
-from pathlib import Path
 import resource
 import signal
 import time

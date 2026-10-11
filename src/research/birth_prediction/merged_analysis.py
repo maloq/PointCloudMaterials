@@ -1,5 +1,4 @@
 """Merged evaluation, paired physical-information contrasts and reliance plots."""
-from pathlib import Path
 
 import joblib
 import numpy as np

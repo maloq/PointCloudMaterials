@@ -210,9 +210,12 @@ extrapolations are estimates, excluding validation and I/O, and must not be
 reported as completed training totals. Probe runs remain local; scientific fits
 use online W&B with stable resumable identities. One seed is exploratory.
 
-The preliminary execution-optimization benchmark in `src/hardware_benchmark/esen.py`
-uses eight full updates and the median of the final five. Execution variants for
-one architecture restore identical model/optimizer state, rows and view seeds.
+The completed preliminary execution benchmark used eight full updates and the
+median of the final five. Its retired helper is retained at
+`7d91467d:src/hardware_benchmark/esen.py`; current timing uses
+`src.research.spatial_architecture.workflow probe` and the 14-update protocol
+above. Execution variants for one architecture restored identical
+model/optimizer state, rows and view seeds.
 Its first-update gradient comparison is relative L2 error before clipping;
 embedding comparison uses eight observations before the first optimizer step.
 Peak memory is CUDA's maximum allocated bytes divided by 2^30 (GiB, despite the

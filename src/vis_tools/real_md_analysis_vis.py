@@ -658,8 +658,7 @@ def save_temporal_spatial_cluster_animation(
         ax.set_xlim(center[0] - half, center[0] + half)
         ax.set_ylim(center[1] - half, center[1] + half)
         ax.set_zlim(center[2] - half, center[2] + half)
-        if hasattr(ax, "set_box_aspect"):
-            ax.set_box_aspect((1.0, 1.0, 1.0))
+        ax.set_box_aspect((1.0, 1.0, 1.0))
         ax.view_init(elev=float(view_elev), azim=float(view_azim))
         ax.grid(False)
         ax.set_xlabel("x")
@@ -669,9 +668,8 @@ def save_temporal_spatial_cluster_animation(
         ax.set_yticks(np.linspace(center[1] - half, center[1] + half, num=3))
         ax.set_zticks(np.linspace(center[2] - half, center[2] + half, num=3))
         for axis in (ax.xaxis, ax.yaxis, ax.zaxis):
-            if hasattr(axis, "pane"):
-                axis.pane.fill = False
-                axis.pane.set_edgecolor("white")
+            axis.pane.fill = False
+            axis.pane.set_edgecolor("white")
         legend_handles = [
             plt.Line2D(
                 [0],
@@ -931,7 +929,6 @@ def save_temporal_embedding_trajectory_animation(
         embeddings_by_frame.append(embedding)
         labels_by_frame.append(labels)
 
-    assert instance_ids_ref is not None
     if fade_min_alpha_fraction <= 0.0 or fade_min_alpha_fraction > 1.0:
         raise ValueError(
             "fade_min_alpha_fraction must be in (0, 1], "

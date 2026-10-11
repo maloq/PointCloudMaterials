@@ -126,6 +126,8 @@ for both objectives. Full-batch GPU smoke tests restored all 168 model tensors a
 
 Execution uses a frozen `source/` copy because concurrent repository reorganization moved the entry points.
 The queue is `src/research/spatiotemporal/run_spatiotemporal_objective_comparison.py` inside that copy.
+This one-off queue was removed from the live checkout on 2026-10-11; its recorded
+source remains in the frozen copy and commit `7d91467d`.
 Inspect `queue_status.json`, `vicreg/status.json`, and `visreg/status.json` for progress.
 The report will be `comparison/RESULTS.md`, with `metrics.json`, plots, and saved embeddings.
 It compares baseline and best/final checkpoints for both losses on identical temporal pairs and static

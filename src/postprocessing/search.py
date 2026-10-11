@@ -6,7 +6,6 @@ from datetime import datetime, timezone
 import json
 import multiprocessing
 import os
-from pathlib import Path
 
 from src.experiment_runner.artifacts import file_hash as sha, json_digest as digest, write_json
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage

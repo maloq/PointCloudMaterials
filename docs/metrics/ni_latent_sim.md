@@ -262,5 +262,18 @@ and completed updates. Its source paths retain their own frozen metric definitio
 the snapshot's contract records the aggregation implementation. Recovery exports
 with changed implementation hashes use `analyses/recovery-metrics-<hash>/` beneath
 the original analysis, with per-table pointers in `technical/metric-exports/`.
+Comparison reports follow those pointers and publish under the current export
+revision. Report completion and retry receipts refer to that same revision;
+an older completed report cannot suppress a recovery export. This changes
+artifact selection and publication only, not metric calculations.
 Original tables and their definitions remain intact. Missing stages are listed
 explicitly; missing results and nonfinite scores are never replaced with zero.
+
+
+Batch1024 continuation (`batch_training.py`, October11): metric formulas are
+unchanged. `update` is the actual optimizer-step count, including the original
+batch256 prefix. The per-model continuation receipt records the exact prefix,
+1,024,000 sampled-sequence and64,000 sampled-teacher budgets, batch1024/teacher64,
+and example-based LR/validation/checkpoint cadence. Fewer optimizer updates
+change optimization; compare each fit with its true recorded batch history.
+The selected checkpoint may predate the continuation. AP is evaluation only.

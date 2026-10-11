@@ -1,8 +1,6 @@
 """One-GPU fits, exact epoch-boundary resume, and local execution gates."""
 import json
 import math
-import os
-from pathlib import Path
 import signal
 import time
 import numpy as np

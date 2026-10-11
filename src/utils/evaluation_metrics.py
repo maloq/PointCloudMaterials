@@ -117,7 +117,7 @@ def compute_cluster_metrics(
 
     metrics: dict[str, float] = {}
     class_count = np.unique(labels).size
-    if class_count >= 2 and latents.shape[0] >= class_count:
+    if class_count >= 2:
         assignments = KMeans(
             n_clusters=class_count,
             init="k-means++",
@@ -190,7 +190,7 @@ def compute_embedding_quality_metrics(
         other_latents = latents[labels != label]
         if class_latents.shape[0] > 1:
             intra_distances.extend(pdist(class_latents, metric="euclidean"))
-        if class_latents.shape[0] and other_latents.shape[0]:
+        if other_latents.shape[0]:
             inter_distances.extend(cdist(class_latents, other_latents, metric="euclidean").ravel())
 
     if intra_distances:

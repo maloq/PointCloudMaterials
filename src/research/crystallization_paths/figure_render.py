@@ -1,6 +1,5 @@
 """Paper-style raster rendering; explanations live beside, never inside, figures."""
 import json
-from pathlib import Path
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')

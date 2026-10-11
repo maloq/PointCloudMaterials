@@ -346,11 +346,13 @@ re-estimating an already-recorded radius and preserves delayed raw point loading
 It does not change the separate eager/lazy neighborhood-order protocols. The
 focused data/evaluation suite passed 45 tests in 25.39 seconds.
 
-Slurm was inspected read-only before moves. Active jobs 991371_3/4/5 invoke
+Slurm was inspected read-only before moves. At that time, jobs 991371_3/4/5 invoked
 `src.simulation.campaigns.independent_meam_high_temperature`; 991395 invokes
 `scripts/run_lammps_campaign.py elemental`. Those launcher paths and arguments
-are retained. The external SBATCH files were inspected but not edited. Other
-allocations were interactive/pending bash jobs. No jobs are submitted or changed.
+were retained for those jobs. The completed high-temperature specialization was
+later removed on 2026-10-11; its code remains in Git. The external SBATCH files
+were inspected but not edited. Other allocations were interactive/pending bash
+jobs. No jobs were submitted or changed during either cleanup.
 
 ### Final ownership
 
@@ -579,16 +581,14 @@ compatibility and scientific boundaries.
 
 ### Post-queue cleanup checklist
 
-This is a deferred cleanup note, not a deletion plan approved for execution.
-An empty Slurm queue alone does not retire historical commands, saved-object
-imports, source-hash contracts or required restart data.
-
-**Remove the two temporary submitted-job launchers once their dependencies end:**
-
-| File to remove | Replacement for future runs | Removal condition |
-| --- | --- | --- |
-| `scripts/run_lammps_independent_meam_source_campaign.py` | `python scripts/run_lammps_campaign.py independent-meam-source ...` | Both independent-source campaigns and their controller/retry chains have finished; no submitted job, local controller or retained live recipe invokes this file. |
-| `scripts/run_lammps_independent_meam_510_520K_sources.py` | `python -m src.simulation.campaigns.independent_meam_high_temperature ...` | Same condition, including remaining high-temperature array tasks and final summarization/publication. |
+The two temporary `run_lammps_independent_meam_*` launchers were removed on
+2026-10-11 under the user's ad hoc cleanup instruction. Their September campaigns
+have ended, current Slurm jobs belong to unrelated Ni work, and no local process
+or current code/config caller invokes the wrappers. The general
+`scripts/run_lammps_campaign.py independent-meam-source` command remains.
+The one-off high-temperature specialization is recoverable from `7d91467d`;
+future variants should use a maintained recipe rather than restoring its global
+producer monkeypatch. Saved results, launch receipts and restart data remain.
 
 The September 14 read-only check still found array tasks `991371_3/4/5`
 (`al_520K_finish`) and job `991395` (`al_1m_450K`) running. Their inspected

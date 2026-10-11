@@ -1,7 +1,6 @@
 """Reuse the verified native paired graphs and frozen random-MACE reservoir."""
 import json
 import math
-from pathlib import Path
 
 import numpy as np
 

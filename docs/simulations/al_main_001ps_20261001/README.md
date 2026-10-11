@@ -28,7 +28,6 @@ The 0.1-ps sources, historical trajectories, and frozen scientific manifests rem
 ## Execution
 
 [Recipe](../../../configs/simulation/al_main_001ps_20261001.json) ·
-[Queue producer](../../../src/simulation/campaigns/dense_al_additions.py) ·
 [Durable execution status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-plus001ps-20261001/status.json)
 
 Original replacement controller **1017489** was queued after active worker array **1017389**.
@@ -40,12 +39,9 @@ The [metadata correction](metadata_correction.json) scopes `trajectory_roles` in
 the separate two-source collection to its two train trajectories. The original
 collection view is retained, and the queued 152-record input manifest is unchanged.
 
-```bash
-python -m src.simulation.campaigns.dense_al add-dense-sources \
-  --config configs/simulation/al_main_001ps_20261001.json
-```
-
-Run once: preparation creates and freezes a new execution manifest containing the
+The one-time queue augmentation was completed on October 1. Its dedicated
+command was removed on October 11; the implementation remains in Git history.
+Preparation created and froze a new execution manifest containing the
 150 main records followed by the two additional records, and references the prior
 manifest SHA256. Only this campaign's pending next-wave controller is replaced;
 the three running workers retain their original code, inputs and allocation.

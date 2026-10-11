@@ -55,3 +55,42 @@ the frozen response adapter has the highest point estimate at nucleus64/3ps.
 Exact values, uncertainty, predictive scores, population counts and frozen metric
 definitions are under `analyses/evaluation-v1/<model>/{tables,technical}` in the
 run. No crystallization labels or AP values selected motion-training checkpoints.
+
+## Completed relaxed comparison, checked October 11
+
+All four relaxed-observation arms finished1600 updates, their five model
+evaluations completed, and the paired relaxed-minus-unrelaxed analysis completed.
+Original MD continues from original Q,V; only encoder observations/targets are
+quenched. The labels, rows, ancestry and CatBoost structural+motion readout match
+the unrelaxed comparison above.
+
+| Relaxed observation task / offset | Spatial start | Value joint | Response joint |
+|---|---:|---:|---:|
+| Appearance within1ps | .319 | .379 | .354 |
+| Nucleus32,1ps lead | .796 | .819 | .809 |
+| Nucleus32,3ps lead | .795 | .784 | .762 |
+| Nucleus32,6ps lead | .718 | .738 | .730 |
+| Nucleus64,1ps lead | .750 | .749 | .756 |
+| Nucleus64,3ps lead | .717 | .776 | .741 |
+| Nucleus64,6ps lead | .657 | .673 | .682 |
+
+For value-joint nucleus64/3ps, relaxing observations improves AP by .091,
+with whole-source paired-bootstrap95% interval[.015,.161]. At6ps its improvement
+is .020 with interval[-.054,.092], so that specific comparison is inconclusive.
+Relaxed versus unrelaxed value-joint nucleus32/6ps improves by .113 with paired
+interval[.058,.161]. These intervals compare entire input/checkpoint treatments;
+they do not isolate relaxed pretraining from relaxed inference preprocessing.
+
+Within the relaxed model, nucleus64/6ps response-joint AP is .690 structure-only,
+.587 motion-only and .682 combined. Motion-only is now informative, but appending
+it still does not improve the structural readout. Value-joint at3ps gives .764
+structure-only and .776 combined, a small point-estimate gain requiring paired
+uncertainty before declaring added motion information. Response supervision
+remains mixed; future descriptor NLL is not compared across differently defined
+relaxed/unrelaxed targets.
+
+These training targets retain the original unsorted-force quench recipe. The
+later repeatability study fixed identical-input force-order variation with
+sorted neighbors, but did not replace these frozen targets. Minima also remain
+sensitive to tiny input changes. Scores establish the behavior of the recorded
+pipeline, not a smooth physical derivative through relaxation.

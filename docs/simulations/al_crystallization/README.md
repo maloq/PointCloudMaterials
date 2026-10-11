@@ -56,9 +56,10 @@ a 72-hour allocation on CPU/cpu-high and remains detached after logout.
 
 ## Validation and file roles
 
-`src/simulation/campaigns/al_crystallization_preflight.py` is the recorded validation recipe using the maintained
-melt input and execution functions. It tests a 4000-atom hot crystal at 450 K
-and a 50 ps melt at 1325 K, measuring PTM separation and liquid diffusion.
+The completed preflight used the maintained melt input and execution functions
+to check a 4000-atom hot crystal at 450 K and a 50 ps melt at 1325 K, measuring
+PTM separation and liquid diffusion. Its one-time script was removed on
+October 11; the implementation remains in Git history.
 Production retains its separate 300 ps melt and repeats the liquid checks on all
 100000 atoms. Preflight findings are recorded under `preflight/validation.json`.
 Both potential files matched the shooting campaign's recorded SHA256 hashes.
@@ -66,8 +67,8 @@ Twenty elemental conversion, resumption, input and binary-reader tests passed,
 including FCC/BCC atom-count checks. A 16 MiB output write/fsync probe passed;
 this establishes writeability, not available NFS quota.
 
-`technical/al.json` and this README document the simulation. The preflight implementation is in `src/simulation/campaigns/`. Elemental runner
-changes and tests are maintained implementation. Generated jobs, logs and
+`technical/al.json` and this README document the simulation. The shared elemental
+runner remains in `src/simulation/campaigns/`. Generated jobs, logs and
 validation outputs are disposable operational diagnostics in the output root.
 
 Submitted on 2026-09-11: preflight job **989326**, full campaign **989327** with

@@ -4,7 +4,6 @@ import csv
 from datetime import datetime, timezone
 import json
 import os
-from pathlib import Path
 import numpy as np
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.experiment_runner.artifacts import file_hash as sha,write_json

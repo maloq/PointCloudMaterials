@@ -159,8 +159,9 @@ conda run --no-capture-output -n pointnet python -m src.analysis.pipeline \
   --specification experiments/mace_vicreg_relaxed_20260910/analysis.json
 ```
 
-File roles: configuration, plans, specs, this README and the discarded-update
-preflight recipe are experiment records. Dataset/encoder support, shared topology
+File roles: configuration, plans, specs and this README are experiment records.
+The completed discarded-update preflight was removed from the live checkout on
+2026-10-11; its source remains in commit `7d91467d`. Dataset/encoder support, shared topology
 transforms/metrics and checkpoint analysis under `src/` are maintained code used
 by the existing VICReg workflow. Prepared arrays, launch records, logs, checkpoints
 and reports under `output/` are generated run artifacts.

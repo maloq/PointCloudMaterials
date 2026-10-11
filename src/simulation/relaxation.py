@@ -1,15 +1,10 @@
 """Fixed-cell energy minimization of complete repository trajectory frames."""
-import hashlib
 from pathlib import Path
 import subprocess
 import time
 import numpy as np
+from src.experiment_runner.artifacts import file_hash as sha256
 from src.experiment_runner.artifacts import write_json
-
-
-def sha256(path):
-    with Path(path).open('rb') as handle:
-        return hashlib.file_digest(handle, 'sha256').hexdigest()
 
 
 def restart_positions(trajectory, frame, path, expected_sha256):

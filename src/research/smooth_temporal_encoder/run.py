@@ -1,7 +1,6 @@
 """Feature preparation and spatial training for the smooth temporal encoder pilot."""
 import argparse
 from datetime import datetime, timezone
-import hashlib
 import json
 import os
 from pathlib import Path

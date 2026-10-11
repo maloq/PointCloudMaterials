@@ -1,5 +1,5 @@
 """Exact-cadence, outcome-blind local observations from pinned Al sources."""
-from collections import Counter, defaultdict
+from collections import Counter
 from functools import lru_cache
 from pathlib import Path
 import json

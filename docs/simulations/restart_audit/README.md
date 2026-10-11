@@ -2,8 +2,10 @@
 
 Question: why does the 24-rank 15-to-24 ps continuation smoke diverge?
 
-Run from the repository root, in `pointnet`, inside a 24-rank CPU Slurm
-allocation:
+This completed September 5 diagnostic is a historical record. Its one-off
+launcher was removed on 2026-10-11; source is available in commit `7d91467d`.
+The recorded command ran from that checkout's root, in `pointnet`, inside a
+24-rank CPU Slurm allocation:
 
 ```bash
 python src/research/restart_audit/diagnose_restart.py \
@@ -11,7 +13,7 @@ python src/research/restart_audit/diagnose_restart.py \
   --output-root /home/ids/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001
 ```
 
-The output directory must be new. The recorded run used Slurm job 981566;
+The output directory was new. The recorded run used Slurm job 981566;
 its batch recipe is `../run.sbatch` relative to that output directory.
 Inputs come from smoke branch 0 and its existing 15 ps restart. The diagnostic
 reruns the first 5000 steps, then compares two further steps with three restart

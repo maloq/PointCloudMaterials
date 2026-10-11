@@ -743,8 +743,6 @@ class PredictiveAtlas(nn.Module):
             sequences = history_deltas.permute(0, 2, 1, 3).reshape(
                 batch_size * token_count, lag_count, embedding_dim
             )
-            assert self.history_gru is not None
-            assert self.history_norm is not None
             _, final_history = self.history_gru(sequences)
             temporal_tokens = self.history_norm(final_history[0]).reshape(
                 batch_size, token_count, self.hidden_dim

@@ -1,6 +1,5 @@
 """Frozen-encoder spatial likelihood probes and shared context predictors."""
 import json
-from pathlib import Path
 import time
 from types import SimpleNamespace
 

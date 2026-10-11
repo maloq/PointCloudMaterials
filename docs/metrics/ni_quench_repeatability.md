@@ -23,6 +23,11 @@ on the first endpoint only. All FIRE states and energy reductions are float64.
 Whole-cell native quench states and float32 local offsets are preserved before
 verified float16 global archival conversion. Repeats deliberately bypass the
 shared index; completed diagnostic receipts are reused on continuation.
+Continuation binds the diagnostic to the plan in its source manifest and reuses
+saved native coordinates and float32 patches after dump conversion. Failure
+archives live under `failures/`, leaving the completed archive destination free
+for a successful retry. Reporting requires the native repeats for each declared
+profile; the first-endpoint-only canonical64 ablation remains explicit.
 
 Two deterministic local80 coordinate jitters have atom-vector RMS1e-7 and1e-4
 angstrom, with zero mean displacement. Their canonical quench is compared to the

@@ -1,6 +1,5 @@
 """Exact matched rows from the unrelaxed Ni protocol; only geometry is quenched."""
 from collections import defaultdict
-from pathlib import Path
 import numpy as np
 import torch
 from src.research.ni_response.data import read,root,cache,digest,sha,write_json,resolve_path,load,save,Source,atomic_save

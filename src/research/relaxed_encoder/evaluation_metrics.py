@@ -1,6 +1,5 @@
 """Source-cluster uncertainty and explicit local-event coverage for the large assay."""
 import json
-from pathlib import Path
 
 import numpy as np
 import torch

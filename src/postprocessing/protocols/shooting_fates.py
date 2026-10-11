@@ -1,7 +1,6 @@
 """Shooting-specific fate adapter: physical durations and parent-present embryos."""
 from collections import Counter, defaultdict
 from functools import lru_cache
-from pathlib import Path
 import time
 import fcntl
 

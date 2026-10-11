@@ -13,7 +13,7 @@ import sys
 import time
 import traceback
 from .data import read, root, write_json, resolve_path, FAMILY
-from .artifacts import write_rows, table_path
+from .artifacts import write_rows, table_path, export_root
 
 
 def process_identity(pid):
@@ -171,10 +171,16 @@ def finish_reports(c, deadline):
         return
     with (out/'report.lock').open('a+') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        if not (root(c)/'analyses/dense-comparison-v1/technical/complete.json').exists():
-            stage(c, 'campaign', 'comparison_report', lambda: dense_response.report(c), deadline)
-        elif 'architecture_reference' in c and not (root(c)/'analyses/architecture-comparison-v1/technical/complete.json').exists():
-            stage(c, 'campaign', 'architecture_report', lambda: dense_response.architecture_report(c), deadline)
+        analyses = root(c)/'analyses'
+        comparison = export_root(analyses/'dense-comparison-v1')
+        if not (comparison/'technical/complete.json').exists():
+            stage(c, f'campaign/{comparison.relative_to(analyses)}', 'comparison_report',
+                  lambda: dense_response.report(c), deadline)
+        elif 'architecture_reference' in c:
+            architecture = export_root(analyses/'architecture-comparison-v1')
+            if not (architecture/'technical/complete.json').exists():
+                stage(c, f'campaign/{architecture.relative_to(analyses)}', 'architecture_report',
+                      lambda: dense_response.architecture_report(c), deadline)
 
 
 def worker(c, lane):
@@ -261,7 +267,8 @@ def supervise(c, lane, adopt_pid=None):
                 return
             if restarts >= 2 or time.time() > deadline-600:
                 break
-            restarts += 1
+            if pid is not None:
+                restarts += 1
             # Preserve failures rather than letting stale flags cancel a peer.
             archive = directory/f'recovery-{restarts}'; archive.mkdir(exist_ok=True)
             for name in [f'failed-worker-{lane}.json', f'budget-stop-{lane}.json']:

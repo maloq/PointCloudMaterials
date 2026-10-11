@@ -188,12 +188,14 @@ def queued_worker(c, config_path):
         from .parallel import devices
         probe_path = p/'probe.json'
         gpu_names = [torch.cuda.get_device_name(d) for d in devices(c)]
-        if probe_path.exists() and read(probe_path).get('gpu_names', [read(probe_path)['gpu']]) != gpu_names:
-            if not c['runtime'].get('reprobe_on_gpu_change', False):
-                raise ValueError('Matched speed protocol cannot resume on a different GPU')
-            archive = p/'probes'
-            archive.mkdir(exist_ok=True)
-            probe_path.rename(archive/(sha(probe_path)+'.json'))
+        if probe_path.exists():
+            probe = read(probe_path)
+            if probe.get('gpu_names', [probe['gpu']]) != gpu_names:
+                if not c['runtime'].get('reprobe_on_gpu_change', False):
+                    raise ValueError('Matched speed protocol cannot resume on a different GPU')
+                archive = p/'probes'
+                archive.mkdir(exist_ok=True)
+                probe_path.rename(archive/(sha(probe_path)+'.json'))
         if not probe_path.exists():
             stage.update(phase='numerical_and_speed_probe')
             with (p/'probe.log').open('ab') as log:

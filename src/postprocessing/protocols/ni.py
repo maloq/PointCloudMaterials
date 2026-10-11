@@ -7,7 +7,6 @@ import numpy as np
 from src.experiment_runner.artifacts import file_hash as sha,json_digest as digest,write_json
 from src.experiment_runner.metric_docs import write_metric_rows,check_metric_docs
 from src.project_runtime.paths import resolve_path
-from src.postprocessing import extraction as search_clusters, lineage as lineage_tracker
 from src.postprocessing.sources import part
 from src.data.trajectories.shooting import ShootingBinaryTrajectory
 

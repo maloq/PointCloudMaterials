@@ -16158,6 +16158,36 @@
           "Encoded targets are separately cached under IDS ni-latent-sim/dense-path-response-20261011-v1."
         ]
       }
+    },
+    "ni-relaxation-speed-20261011": {
+      "root": "archive",
+      "path": "simulations/ni-relaxation-speed-20261011-v1",
+      "kind": "derived",
+      "dependencies": [
+        "ni-response-esen-relaxed-20261009",
+        "ni-quench-repeatability-20261009"
+      ],
+      "metadata": {
+        "title": "Ni matched minimizer speed and structural fidelity pilot",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "role": "numerical_diagnostic",
+        "classification": "research",
+        "description": "Twelve full32000-atom inputs from six existing response-bank sources, retaining original atom identities, Q,V ancestry and fixed boxes. FIRE, ABC-FIRE, tolerance and bounded ASE preconditioning comparisons; no new nucleus labels or independent MD samples.",
+        "evidence": [
+          "${storage:training_storage}/ni_relaxation/speed-20261011-v1/technical/plan.json",
+          "docs/simulations/ni_relaxation_speed_20261011.md"
+        ],
+        "limitations": [
+          "Five earlier repeatability sources plus one convergence-stress source; not a population sample.",
+          "ASE methods use three-case bounded pilots, and incomplete cases do not count as speedups.",
+          "Diagnostic minima do not replace historical training targets."
+        ]
+      }
     }
   },
   "registry_discovery_roots": [

@@ -143,6 +143,10 @@
   guaranteed upstream. Keep checks for actual runtime uncertainty and scientific
   requirements such as cadence, ancestry, identity and numerical validity.
   Favor short, readable code and shared implementations over repeated branches.
+- Remove obsolete ad hoc code and one-off tools after checking their callers
+  (user instruction, 2026-10-11). Git history is the archive: if needed again,
+  recover the previous implementation and rebuild it as maintained shared code.
+  Preserve active workflows and recorded scientific results/provenance.
 - Read [scripts/README.md](scripts/README.md) before adding a command there. Reuse existing
   workflows and config/CLI arguments for run variations. Keep entry points thin;
   implementation belongs in `src/`. Preserve distinct scientific protocols.

@@ -1,7 +1,6 @@
 """Same-atom MD displacements versus equal-RMS synthetic perturbations."""
 import fcntl
 import json
-from pathlib import Path
 
 import numpy as np
 from scipy.spatial import cKDTree

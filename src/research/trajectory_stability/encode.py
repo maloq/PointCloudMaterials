@@ -1,5 +1,4 @@
 """Native checkpoint inference on centered, periodic, tracked observations."""
-import json
 from pathlib import Path
 import time
 

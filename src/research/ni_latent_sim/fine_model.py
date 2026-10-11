@@ -12,10 +12,11 @@ from .model import Latent
 class FineLatent(Latent):
     def __init__(self, arm):
         super().__init__(arm)
-        if arm.get('transition_kind', 'mlp') == 'transformer':
+        transition_kind = arm.get('transition_kind', 'mlp')
+        if transition_kind == 'transformer':
             from .transformer import TemporalTransformer
             self.transition = TemporalTransformer(self.d, self.memory, arm['transformer'])
-        elif arm.get('transition_kind', 'mlp') != 'mlp':
+        elif transition_kind != 'mlp':
             raise ValueError('Unknown latent transition architecture')
         self.step_fs = arm['neural_step_fs']
         if self.step_fs <= 0 or 100 % self.step_fs:
@@ -42,7 +43,7 @@ class FineLatent(Latent):
                 if dense or j == self.substeps - 1:
                     outputs.append(self.emit(current))
             history = torch.cat((history[..., 1:, :], current.unsqueeze(-2)), -2)
-        return tuple(torch.stack([v[k] for v in outputs], 2) for k in (0, 1))
+        return tuple(torch.stack(part, 2) for part in zip(*outputs))
 
     def rollout(self, x, steps, particles, generator):
         # Public steps remain native 0.1-ps intervals for the existing assay.

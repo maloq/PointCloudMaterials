@@ -567,7 +567,6 @@ def _extract_or_load_caches(
     }
     checkpoint = _resolve_path(_required(cfg, "encoder.checkpoint"))
     if extract:
-        assert encoder is not None
         batch_size = int(_required(cfg, "embedding.batch_size"))
         point_cloud_batch_size = int(
             OmegaConf.select(

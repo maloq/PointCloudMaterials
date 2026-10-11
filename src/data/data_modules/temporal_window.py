@@ -144,9 +144,7 @@ class TemporalWindowBatchSampler(BatchSampler):
         return rank, world_size
 
     def _epoch_seed(self, *, salt: int = 0) -> int:
-        base_seed = int(getattr(self.sampler, "seed", 0) or 0)
-        epoch = int(getattr(self.sampler, "epoch", 0) or 0)
-        return base_seed + epoch + int(salt)
+        return self.sampler.seed + self.sampler.epoch + int(salt)
 
     def _generator(self, *, salt: int = 0) -> torch.Generator:
         generator = torch.Generator()
@@ -158,10 +156,7 @@ class TemporalWindowBatchSampler(BatchSampler):
         if world_size == 1:
             return self.window_count
         if self.drop_last:
-            usable = (self.window_count // world_size) * world_size
-            if usable <= 0:
-                return 0
-            return usable // world_size
+            return self.window_count // world_size
         return math.ceil(self.window_count / world_size)
 
     def _local_sample_count(self) -> int:
@@ -236,16 +231,10 @@ class TemporalWindowBatchSampler(BatchSampler):
 
         if self.drop_last:
             usable = (len(window_slots) // world_size) * world_size
-            if usable <= 0:
-                return []
             sharded_slots = window_slots[:usable]
         else:
             total = math.ceil(len(window_slots) / world_size) * world_size
-            sharded_slots = list(window_slots)
-            if len(sharded_slots) < total:
-                sharded_slots.extend(
-                    sharded_slots[: total - len(sharded_slots)]
-                )
+            sharded_slots = (window_slots * math.ceil(total / len(window_slots)))[:total]
         return [
             int(window_slot) for window_slot in sharded_slots[rank::world_size]
         ]
@@ -288,13 +277,6 @@ class TemporalWindowBatchSampler(BatchSampler):
         take: int,
         center_order_cache: dict[int, torch.Tensor],
     ) -> list[int]:
-        if take <= 0:
-            return []
-        if offset < 0:
-            raise ValueError(f"offset must be >= 0, got {offset}.")
-        if offset >= self.center_count:
-            return []
-
         end = min(self.center_count, offset + take)
         base_index = int(window_slot) * self.center_count
         if not self.shuffle_centers:

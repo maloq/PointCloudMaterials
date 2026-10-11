@@ -1,6 +1,5 @@
 """Post-hoc analysis of frozen spatial predictions; no fitting or model selection."""
 import argparse
-import csv
 import hashlib
 import json
 from pathlib import Path

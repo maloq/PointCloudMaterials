@@ -3,9 +3,10 @@
 These readers intentionally retain the original atom-count and column contract.
 """
 from pathlib import Path
-import hashlib
 import json
 import numpy as np
+from src.experiment_runner.artifacts import file_hash as _sha256
+
 
 EXPECTED_ATOM_COUNT = 70_304
 
@@ -16,14 +17,6 @@ EXPECTED_POTENTIAL_SHA256 = (
 
 
 PRESSURE_BAR_TO_GPA = 1.0e-4
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _write_json_atomic(path: Path, document: object) -> None:

@@ -89,13 +89,8 @@ def _utc_now() -> str:
 
 
 def _load_json(path: Path) -> dict[str, Any]:
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
     with path.open("r", encoding="utf-8") as handle:
-        value = resolve_config(json.load(handle))
-    if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
-    return value
+        return resolve_config(json.load(handle))
 
 
 def _write_json_atomic(path: Path, value: object) -> None:

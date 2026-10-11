@@ -1,7 +1,6 @@
 """Local controls, frozen readouts and source-paired finite-shot diagnostics."""
 import csv
 import math
-from pathlib import Path
 import numpy as np
 
 from src.data.fixed_cohort.protocol import sha, write_json

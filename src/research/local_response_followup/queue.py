@@ -5,7 +5,6 @@ import os
 from pathlib import Path
 import signal
 import subprocess
-import sys
 import time
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, recorded_stage, allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs

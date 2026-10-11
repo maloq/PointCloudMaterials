@@ -4,7 +4,6 @@ import hashlib
 import json
 from pathlib import Path
 import threading
-import zipfile
 
 import numpy as np
 from omegaconf import OmegaConf
@@ -191,14 +190,9 @@ def _load_inference_cache(*, out_dir, cache_filename, expected_spec):
         return None, f'cache spec mismatch: expected sha256={expected}, found {meta["spec_sha256"]}'
     if file_hash(data) != meta['data_sha256']:
         raise ValueError(f'Inference cache contents changed: {data}')
-    try:
-        with np.load(data, allow_pickle=False) as arrays:
-            cache = {name: arrays[name] for name in arrays.files}
-        _validate_inference_cache_arrays(cache)
-    except (EOFError, OSError, ValueError, zipfile.BadZipFile) as exc:
-        raise ValueError(f'Inference cache validation failed for {data}: {exc}') from exc
-    if _array_schema(cache) != meta['arrays'] or len(cache['inv_latents']) != meta['num_samples']:
-        raise ValueError(f'Inference cache array schema differs from its receipt: {data}')
+    # The save producer validates these arrays before binding their exact bytes.
+    with np.load(data, allow_pickle=False) as arrays:
+        cache = {name: arrays[name] for name in arrays.files}
     return cache, f'loaded cache from {data}'
 
 

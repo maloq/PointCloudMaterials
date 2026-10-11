@@ -17,7 +17,7 @@ import numpy as np
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.data.structural_pretraining.prepare import source_arrays
 from src.experiment_runner.artifacts import result_folders
-from src.project_runtime.paths import resolve_path, portable_config
+from src.project_runtime.paths import resolve_path
 from src.postprocessing.descriptors.ptm import full_labels
 
 

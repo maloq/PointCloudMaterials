@@ -84,8 +84,7 @@ class ParallelDirect:
         # Generate the SAME two global jitter tensors as the single-GPU recipe.
         # Splitting before random generation would change its observation views.
         inputs = [[], []]
-        for x, keep in views(q, 'vicreg_descriptors', seed):
-            assert keep is None
+        for x, _ in views(q, 'vicreg_descriptors', seed):
             for device, part in enumerate(x.tensor_split(2)):
                 inputs[device].append((part.to(device=torch.device('cuda', device), non_blocking=True), None))
         if self.warmed:

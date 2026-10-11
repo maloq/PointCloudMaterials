@@ -53,11 +53,10 @@ receives the final scientific PNG/PDF; all CSVs have frozen definitions/hashes.
 No permanent generated encoder-feature cache is produced. Query initial states
 retain native precision; no trajectory-export conversion is needed.
 
-An existing GPU allocation can contribute while the coordinator is pending:
-`python src/research/local_response_execution.py --bundle FROZEN_CODE --queued-job JOB_ID`.
-This operational adapter uses the unchanged frozen collector, seeds and archive.
-It holds the existing gate lock while collecting and checks scheduler state before
-each parent. When the queued coordinator starts, the helper finishes and archives
-its current parent, then releases the lock. The coordinator can then collect the
-remaining parents and seal safely. Adapter hashes and handoff receipts live under
-`technical/execution-v1/`; scientific bindings and historical source remain intact.
+Allocation1017946 contributed through a one-off adapter while the coordinator
+was pending. It used the frozen collector, seeds and archive, held the gate lock,
+and archived its current parent before handing over. Its completed handoff is
+recorded in `technical/execution-v1/current-1017946.json`; `technical/data-complete.json`
+records all135 sealed parents. The adapter was removed from the live checkout on
+2026-10-11 and remains in commit `7d91467d`. Saved adapter hashes, handoff receipts,
+scientific bindings and frozen source remain intact.

@@ -1,5 +1,10 @@
 # Configuration index
 
+Ni RTX equal-example continuation: [`ni_latent_sim/batch1024_20261011.json`](ni_latent_sim/batch1024_20261011.json). Benchmark-backed batch1,024/teacher64 for unfinished local1-ps fits; preserve sampled examples and example-based scheduling, record fewer optimizer updates. [Execution](../docs/ni_latent_sim.md#rtx-batch-1024-continuation-october-11).
+
+
+Ni overnight GPU expansion: [`ni_latent_sim/scale_overnight_20261011.json`](ni_latent_sim/scale_overnight_20261011.json). Four additional single-GPU workers choose among compatible partitions; shared model locks and a checkpoint handoff preserve the already-running scientific queue. [Execution](../docs/ni_latent_sim.md#additional-gpus-october-11).
+
 Active autonomous Ni overnight queue: [`ni_latent_sim/autonomous_overnight_20261011.json`](ni_latent_sim/autonomous_overnight_20261011.json). Eight 4,000-update transformer fits cross 1/6-ps training, values/physical derivatives and two seeds on the completed 14,400-sequence cohort. Both GPU workers are submitted immediately; chat reviews are optional. [Execution and recovery](../docs/ni_latent_sim.md#autonomous-overnight-queue-october-11).
 
 Planned larger overnight Ni motion study: [`ni_latent_sim/overnight_queue_plan_20261011.json`](ni_latent_sim/overnight_queue_plan_20261011.json). Planning specification only:14 proposed fits, additional fitting-source windows/physical teachers, matched1/3/6ps curriculum controls, estimated10–12hours on two GPUs. **Not submitted and not yet a workflow CLI recipe.**
@@ -682,3 +687,5 @@ producers; [audit workflow](../docs/structural_response.md#completed-motion-fits
 local80 response checkpoint to the restored paired3D PaCMAP and dense MD viewer.
 It preserves old descriptor/RH2 results and the fixed Al64 observation identities;
 [workflow](../docs/spatial_vicreg_bias.md#october-3-response-encoder-addition).
+
+- `simulation/ni_relaxation_speed_20261011.json`: bounded matched Ni minimizer speed and structural-fidelity pilot; see `docs/simulations/ni_relaxation_speed_20261011.md`.

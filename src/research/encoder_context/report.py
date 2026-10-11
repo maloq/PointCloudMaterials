@@ -1,6 +1,5 @@
 """Fixed-order model comparisons; no test-driven selection or ensembles."""
 import json
-from pathlib import Path
 import numpy as np
 from sklearn.metrics import average_precision_score
 from src.research.local_predictability.metrics import source_weights

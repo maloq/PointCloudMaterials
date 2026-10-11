@@ -18,9 +18,10 @@ class Observation:
     cutoff_A: float
 
     def to(self, device):
-        return replace(self, **{name: (value.to(device) if isinstance(value, torch.Tensor)
-                        else tuple(v.to(device) for v in value))
-                        for name, value in vars(self).items() if name not in ('radius_A', 'cutoff_A')})
+        return replace(self, positions=self.positions.to(device),
+                       velocities=self.velocities.to(device), weights=self.weights.to(device),
+                       offsets_ps=self.offsets_ps.to(device), atom_ids=self.atom_ids.to(device),
+                       edges=tuple(edge.to(device) for edge in self.edges))
 
     def repeated_anchor(self):
         t = len(self.offsets_ps)

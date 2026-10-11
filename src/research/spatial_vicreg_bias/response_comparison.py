@@ -3,7 +3,6 @@ import argparse
 import copy
 from importlib.metadata import version
 import json
-import os
 from pathlib import Path
 import shutil
 

@@ -396,7 +396,6 @@ def main(argv=None):
     sub = parser.add_subparsers(dest='action', required=True)
     p = sub.add_parser('prepare'); p.add_argument('--config', required=True)
     p = sub.add_parser('prepare-continuation'); p.add_argument('--config', required=True)
-    p = sub.add_parser('add-dense-sources'); p.add_argument('--config', required=True)
     p = sub.add_parser('prepare-half-stop'); p.add_argument('--config', required=True)
     for name in ('submit','worker','collect'):
         p = sub.add_parser(name); p.add_argument('--launch', type=Path, required=True)
@@ -407,9 +406,6 @@ def main(argv=None):
     elif args.action == 'prepare-continuation':
         from .dense_al_continuation import prepare_continuation
         print(prepare_continuation(load_json(args.config)))
-    elif args.action == 'add-dense-sources':
-        from .dense_al_additions import add_dense_sources
-        print(json.dumps(add_dense_sources(load_json(args.config)), indent=2))
     elif args.action == 'prepare-half-stop':
         from .dense_al_half_queue import prepare_half_queue
         print(json.dumps(prepare_half_queue(load_json(args.config)), indent=2))

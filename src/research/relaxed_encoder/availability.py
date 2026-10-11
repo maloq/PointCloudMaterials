@@ -1,7 +1,6 @@
 """Terminal timeout exclusions shared by producers, caches and matched assays."""
 import json
 import fcntl
-from pathlib import Path
 import numpy as np
 from src.project_runtime.paths import resolve_path
 from src.data.structural_pretraining.prepare import save_json, file_hash

@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import sys
 
-from .paths import REPO, catalog, dataset_path, load_json, machine, storage_path
+from .paths import catalog, load_json, machine
 
 
 def doctor(lammps=False):

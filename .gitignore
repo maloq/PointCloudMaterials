@@ -1,7 +1,4 @@
-datasets
-# The registry contains versioned metadata and documentation, not raw datasets.
-!/docs/datasets/
-!/docs/datasets/**
+/datasets
 machine.local.yaml
 # Preserved result snapshots stay local; version the adjacent cleanup receipts.
 /docs/storage/*/results/

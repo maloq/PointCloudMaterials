@@ -29,25 +29,25 @@ def episodes(track,c,dt,last_time):
         if previous is not None and t-previous-dt>=c['liquid_return_ps']-1e-8:
             groups.append(group);group=[]
         group.append(index);previous=t
-    if group:groups.append(group)
+    groups.append(group)
     result=[]
     for gi,g in enumerate(groups):
         first=observations[g[0]];last=observations[g[-1]]
         obs=observations[g[0]:g[-1]+1]
         # Missing observations break persistence. Identity links can bridge them;
         # they cannot manufacture continuously observed establishment.
-        contacts=[x['time_ps'] for x in track['interference'] if x['time_ps']>=first['time_ps']]
-        clean=[x for x in obs if not contacts or x['time_ps']<min(contacts)]
+        first_contact=min((x['time_ps'] for x in track['interference']
+                           if x['time_ps']>=first['time_ps']),default=np.inf)
+        clean=[x for x in obs if x['time_ps']<first_contact]
         a,confirm=first_streak(clean,c['establishment_atoms'],c['establishment_persistence_ps'],dt)
-        ea,ec=first_streak(obs,c['embryo_atoms'],c['embryo_persistence_ps'],dt)
-        ga,gc=first_streak(clean,c['growth_atoms'],c['growth_persistence_ps'],dt)
+        _,ec=first_streak(obs,c['embryo_atoms'],c['embryo_persistence_ps'],dt)
+        _,gc=first_streak(clean,c['growth_atoms'],c['growth_persistence_ps'],dt)
         return_time=last['time_ps']+dt+c['liquid_return_ps']
         interference=[x for x in track['interference'] if first['time_ps']<=x['time_ps']<=return_time+1e-8]
         # Neither a merge nor a split is a demonstrated dissolution.
         dissolved=return_time<=last_time+1e-8 and not interference
-        if gi<len(groups)-1:status='dissolved' if dissolved else 'unresolved_interaction'
-        elif interference:status='unresolved_interaction'
-        elif dissolved:status='dissolved'
+        if dissolved:status='dissolved'
+        elif interference or gi<len(groups)-1:status='unresolved_interaction'
         elif last_time-last['time_ps']<dt+1e-8:status='present_at_end'
         else:status='right_censored'
         peak=max(obs,key=lambda x:x['size'])
@@ -113,15 +113,16 @@ def track(p,task):
                     established_atoms.extend(groups[cid].tolist())
             existing=cKDTree(positions[established_atoms],boxsize=box) if established_atoms else None
             for cid,indices in groups.items():
-                old_parents=sorted(set(r[0] for r in parents[cid]));is_new=cid not in assigned
-                if is_new:
+                old_parents=sorted(set(r[0] for r in parents[cid]))
+                if cid not in assigned:
                     tid=next_id;next_id+=1
                     distance=float(existing.query(positions[indices],workers=1)[0].min()) if existing is not None else None
                     kind=('parent_present' if fi==0 else 'split_descendant' if old_parents
                           else 'uncertain_ancestry' if weak[cid] else 'interface_associated'
                           if distance is not None and distance<=c['interface_distance_A'] else 'isolated')
                     tracks[tid]=dict(id=tid,origin=kind,parent_tracks=old_parents,weak_ancestry=bool(weak[cid]),
-                        nearest_established_crystal_A=distance,observations=[],interference=[],confirmed_ps=None)
+                        nearest_established_crystal_A=distance,observations=[],interference=[],confirmed_ps=None,
+                        last_large_ps=None,large_start_ps=None)
                 else:tid=assigned[cid]
                 if len(old_parents)>1:
                     for parent in old_parents:
@@ -136,7 +137,7 @@ def track(p,task):
                 tr=tracks[tid];tr['observations'].append(ob)
                 # Linear-time running establishment counter, separate from fate.
                 if len(indices)>=c['establishment_atoms']:
-                    prev=tr.get('last_large_ps');start=tr.get('large_start_ps')
+                    prev=tr['last_large_ps'];start=tr['large_start_ps']
                     if prev is None or t-prev>dt+1e-8:start=t
                     tr['large_start_ps']=start;tr['last_large_ps']=t
                     if tr['confirmed_ps'] is None and t-start>=c['establishment_persistence_ps']-1e-8:tr['confirmed_ps']=t

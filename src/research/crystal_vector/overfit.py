@@ -1,7 +1,6 @@
 """Local saved-prediction audit of fit gaps, feature spectra and source separation."""
 import argparse
 import json
-from pathlib import Path
 import numpy as np
 from scipy.spatial.distance import cdist
 

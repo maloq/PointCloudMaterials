@@ -1,5 +1,4 @@
 """Actual same-frame MD velocities for the fixed response and all64 cohorts."""
-from collections import defaultdict
 import fcntl
 import hashlib
 

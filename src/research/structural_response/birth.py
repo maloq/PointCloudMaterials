@@ -3,7 +3,6 @@ from collections import Counter
 from concurrent.futures import ProcessPoolExecutor,as_completed
 import fcntl
 import hashlib
-import json
 import multiprocessing
 from pathlib import Path
 import time

@@ -10,7 +10,7 @@ from src.experiment_runner.metric_docs import write_metric_rows
 from .data import load,read,root,digest,sha,write_json,atomic_save,FAMILY
 from .model import Motion
 
-def run(c,p,arm,deadline,micro):
+def run(c,p,arm,deadline,micro,*,objective=short_objective,family=FAMILY,run_name_prefix='ni-esen-'):
     name=arm['name'];folder=root(c)/'analyses'/name/'technical';folder.mkdir(parents=True,exist_ok=True)
     identity=digest([p['identity'],name])
     if (folder/'complete.json').exists():
@@ -30,7 +30,7 @@ def run(c,p,arm,deadline,micro):
         model.load_state_dict(old['model']);opt.load_state_dict(old['optimizer']);rng.bit_generator.state=old['rng']
         start=old['update'];history=old['history'];best=old['best'];selected=old['selected']
     def payload(update):return dict(identity=identity,model=model.state_dict(),optimizer=opt.state_dict(),rng=rng.bit_generator.state,update=update,history=history,best=best,selected=selected,config=c,arm=arm)
-    with online_training(c['wandb'],run_id='niresp-'+identity[:16],name='ni-esen-'+name,config=dict(c,arm=arm,identity=identity),folder=folder,receipt_path=folder/'wandb.json',job_type='encoder' if not arm['frozen'] else 'predictor',group=c['protocol'],receipt_fields=dict(identity=identity)) as tracking:
+    with online_training(c['wandb'],run_id='niresp-'+identity[:16],name=run_name_prefix+name,config=dict(c,arm=arm,identity=identity),folder=folder,receipt_path=folder/'wandb.json',job_type='encoder' if not arm['frozen'] else 'predictor',group=c['protocol'],receipt_fields=dict(identity=identity)) as tracking:
         for update in range(start+1,cfg['updates']+1):
             if time.time()>deadline-600:
                 atomic_save(folder/'last.pt',payload(update-1));write_json(folder/'progress.json',dict(state='checkpointed',update=update-1,total=cfg['updates']));return False
@@ -39,7 +39,7 @@ def run(c,p,arm,deadline,micro):
             nll,latent=long_backward(model,data,targets['future'],zall,ids,c,micro,int(rng.integers(2**31)))
             value=tangent=0.
             for j in short_sampler.draw(rng,cfg['short_batch']):
-                v,d=short_objective(model,targets['short'][j],c,arm,int(rng.integers(2**31)))
+                v,d=objective(model,targets['short'][j],c,arm,int(rng.integers(2**31)))
                 loss=(cfg['short_weight']*v+cfg['derivative_weight']*d)/cfg['short_batch']
                 if not torch.isfinite(loss):raise FloatingPointError('Nonfinite response loss')
                 loss.backward();value+=float(v.detach())/cfg['short_batch'];tangent+=float(d.detach())/cfg['short_batch']
@@ -52,10 +52,10 @@ def run(c,p,arm,deadline,micro):
                     best=score;selected=update;atomic_save(folder/'best.pt',dict(identity=identity,model=model.state_dict(),update=update,config=c,arm=arm))
             history.append(row);tracking.log(row,step=update)
             if update%cfg['save_every']==0 or update==cfg['updates']:atomic_save(folder/'last.pt',payload(update))
-            write_json(folder/'progress.json',dict(state='training',update=update,total=cfg['updates'],update_seconds=seconds,estimated_remaining_compute_seconds=seconds*(cfg['updates']-update),**{k:v for k,v in row.items() if k!='update'}))
+            write_json(folder/'progress.json',dict(state='training',total=cfg['updates'],update_seconds=seconds,estimated_remaining_compute_seconds=seconds*(cfg['updates']-update),**row))
             if update==1 or update%25==0:print(name,update,seconds,row,flush=True)
         tracking.summary.update(dict(selected_update=selected,selection_nll=best))
     columns=list(dict.fromkeys(k for r in history for k in r))
-    write_metric_rows(history,folder.parent,family=FAMILY,name='learning',columns=columns)
+    write_metric_rows(history,folder.parent,family=family,name='learning',columns=columns)
     write_json(folder/'complete.json',dict(identity=identity,checkpoint_sha256=sha(folder/'best.pt'),update=cfg['updates'],selected_update=selected,selection_nll=best))
     return True

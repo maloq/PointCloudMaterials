@@ -17,7 +17,7 @@ import numpy as np
 
 from src.postprocessing.datasets.births import NucleiBirthDataset
 from src.experiment_runner.artifacts import file_hash as sha,json_digest as digest,write_json
-from src.experiment_runner.metric_docs import check_metric_docs,write_metric_rows
+from src.experiment_runner.metric_docs import check_metric_docs
 from src.project_runtime import paths as runtime_paths
 from src.project_runtime.paths import resolve_path
 from src.postprocessing.io import geometry, arrays

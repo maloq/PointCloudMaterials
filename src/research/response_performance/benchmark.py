@@ -3,7 +3,6 @@ import argparse
 import gc
 from importlib.metadata import version
 import json
-import os
 from pathlib import Path
 import subprocess
 import sys

@@ -36,10 +36,25 @@ def feature_pool(c):
     return RetainedCache(folder/'features',6)
 
 
-def aggregate(values,ancestors,seed):
-    keys=np.unique(ancestors);means=np.array([values[np.asarray(ancestors)==a].mean() for a in keys])
-    rng=np.random.default_rng(seed);boot=means[rng.integers(len(keys),size=(1000,len(keys)))].mean(1)
-    return float(means.mean()),float(np.quantile(boot,.025)),float(np.quantile(boot,.975))
+def aggregate(values, ancestors, seed):
+    ancestors = np.asarray(ancestors)
+    keys = np.unique(ancestors)
+    means = np.array([values[ancestors == key].mean() for key in keys])
+    rng = np.random.default_rng(seed)
+    boot = means[rng.integers(len(keys), size=(1000, len(keys)))].mean(1)
+    lo, hi = np.quantile(boot, [.025, .975])
+    return float(means.mean()), float(lo), float(hi)
+
+
+def rollout_rows(values, ancestors, offsets, seed, **context):
+    rows = []
+    sources = len(set(ancestors))
+    for (space, metric), scores in values.items():
+        for horizon, column in zip(offsets, scores.T):
+            value, lo, hi = aggregate(column, ancestors, seed)
+            rows.append(dict(context, space=space, metric=metric, horizon_ps=horizon*.1,
+                             value=value, lo=lo, hi=hi, sources=sources, rows=len(ancestors)))
+    return rows
 
 
 def run(c,p,arm):
@@ -65,24 +80,19 @@ def run(c,p,arm):
                         nonfinite_particle_rate=(~torch.isfinite(m).all(-1)).float().mean(1),
                         predictive_variance=s.var(1).mean(-1))
                 for key,a in metrics.items():values.setdefault((space,key),[]).append(a.cpu().numpy())
-    report=[]
-    for (space,metric),parts in values.items():
-        a=np.concatenate(parts)
-        for j,h in enumerate(offsets):
-            value,lo,hi=aggregate(a[:,j],ancestors,c['seed']);report.append(dict(model=arm['name'],space=space,metric=metric,horizon_ps=h*.1,value=value,lo=lo,hi=hi,sources=len(set(ancestors)),rows=len(ids)))
+    values={key:np.concatenate(parts) for key,parts in values.items()}
+    report=rollout_rows(values,ancestors,offsets,c['seed'],model=arm['name'])
     write_metric_rows(report,out,family=FAMILY,name='free_rollout',columns=list(report[0]))
+    by_regime=[]
     if 'enrichment' in c or c['evaluation'].get('by_regime',False):
-        regimes=np.array([data['rows'][i]['regime'] for i in ids]);by_regime=[]
+        regimes=np.array([data['rows'][i]['regime'] for i in ids])
         for regime in ['original','liquid_liquid','growing_front']:
             mask=regimes==regime;parents=np.asarray(ancestors)[mask]
             if not mask.any():raise ValueError('Missing held-out motion regime: '+regime)
-            for (space,metric),parts in values.items():
-                a=np.concatenate(parts)[mask]
-                for j,h in enumerate(offsets):
-                    value,lo,hi=aggregate(a[:,j],parents,c['seed'])
-                    by_regime.append(dict(model=arm['name'],regime=regime,space=space,metric=metric,horizon_ps=h*.1,value=value,lo=lo,hi=hi,sources=len(set(parents)),rows=int(mask.sum())))
+            by_regime.extend(rollout_rows({key:a[mask] for key,a in values.items()},parents,
+                                         offsets,c['seed'],model=arm['name'],regime=regime))
         write_metric_rows(by_regime,out,family=FAMILY,name='free_rollout_by_regime',columns=list(by_regime[0]))
-    atomic_save(tech/'rollout-scores.pt',dict(ids=ids,ancestors=ancestors,offsets_ps=[h*.1 for h in offsets],metrics={f'{s}/{m}':np.concatenate(a) for (s,m),a in values.items()}))
+    atomic_save(tech/'rollout-scores.pt',dict(ids=ids,ancestors=ancestors,offsets_ps=[h*.1 for h in offsets],metrics={f'{s}/{m}':a for (s,m),a in values.items()}))
     birth_codes(c,p,arm,model=model,data=data)
     from .train import short_loss
     bank=load(c,'short');held=np.flatnonzero([r['role']=='test' for r in bank]);short=[]
@@ -93,7 +103,7 @@ def run(c,p,arm):
     write_metric_rows(short,out,family=FAMILY,name='heldout_physical_response',columns=list(short[0]))
     write_json(tech/'evaluation-complete.json',dict(state='complete',rows=len(report)))
     update_recorded_summary(tech/'wandb.json',{f"rollout/{r['space']}/{r['horizon_ps']:g}ps/{r['metric']}":r['value'] for r in report},evaluation='free-rollout-v1',expected=dict(mode='online'))
-    if 'enrichment' in c or c['evaluation'].get('by_regime',False):
+    if by_regime:
         update_recorded_summary(tech/'wandb.json',{f"regime/{r['regime']}/{r['space']}/{r['horizon_ps']:g}ps/{r['metric']}":r['value'] for r in by_regime},evaluation='free-rollout-regimes-v1',expected=dict(mode='online'))
 
 

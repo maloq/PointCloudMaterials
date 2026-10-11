@@ -143,6 +143,7 @@ def resolve_path(value):
     return path if path.is_absolute() else REPO / path
 
 
+@path_snapshot()
 def resolve_config(value):
     """Repository JSON/YAML config trees: dictionaries, lists and scalar values."""
     if isinstance(value, dict):
@@ -154,10 +155,12 @@ def resolve_config(value):
     return value
 
 
+@path_snapshot()
 def load_json(path):
     return resolve_config(json.loads(resolve_path(path).read_text()))
 
 
+@path_snapshot()
 def portable_config(value):
     """Canonical path spelling for config comparisons, independent of mount points."""
     if isinstance(value, dict):
@@ -167,7 +170,7 @@ def portable_config(value):
     if not isinstance(value, str):
         return value
     value = resolve_text(value)
-    roots = machine()['roots']
+    roots = _path_snapshot.get().roots
     for role, root in sorted(roots.items(), key=lambda item: -len(item[1])):
         token = '${storage:' + role + '}'
         if value == root:

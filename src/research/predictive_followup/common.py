@@ -1,6 +1,5 @@
 """Shared historical inputs; independent identities for this factorial study."""
 from itertools import product
-from pathlib import Path
 import numpy as np
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json

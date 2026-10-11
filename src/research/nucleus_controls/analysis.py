@@ -1,7 +1,6 @@
 """Finite-horizon nucleus establishment and tracked-seed fate measurements."""
 from collections import defaultdict
 import fcntl
-from pathlib import Path
 import time
 
 import numpy as np

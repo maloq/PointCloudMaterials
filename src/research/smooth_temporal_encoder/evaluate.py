@@ -5,7 +5,6 @@ import json
 import os
 from pathlib import Path
 import sys
-import time
 import traceback
 
 ROOT = Path(__file__).resolve().parents[3]

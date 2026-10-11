@@ -1,5 +1,5 @@
 """Replay the recorded neighborhood veto and quantify the components responsible."""
-from collections import Counter, defaultdict
+from collections import defaultdict
 import gzip
 import hashlib
 import json

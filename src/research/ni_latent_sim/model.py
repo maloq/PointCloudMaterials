@@ -40,7 +40,7 @@ class Latent(nn.Module):
         for _ in range(steps):
             noise=torch.randn(*hist.shape[:2],self.d,device=x.device,generator=generator)
             hist=self.step(hist,noise);outputs.append(self.emit(hist[:,:,-1]))
-        return torch.stack([v[0] for v in outputs],2),torch.stack([v[1] for v in outputs],2)
+        return tuple(torch.stack(part,2) for part in zip(*outputs))
 
 
 def nll(mean,logvar,target):

@@ -1,5 +1,54 @@
 # First compressed Ni simulator experiments
 
+## Additional GPUs, October 11
+
+`configs/ni_latent_sim/scale_overnight_20261011.json` requests four additional
+single-GPU workers with the combined alternative partition list
+RTX6000PRO/H100/A100/L40S/A40. It changes execution only: the actual frozen
+scientific bundle/config, plan identity, data, 4,000-update targets, full
+batch/microbatch256, seeds, losses and checkpoint selectors are retained.
+The6ps training preflight used21.36GiB, within these GPUs' memory capacities.
+Actual GPU names and worker assignments are recorded at execution.
+
+```bash
+TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 python -m src.research.ni_latent_sim.scale launch --config configs/ni_latent_sim/scale_overnight_20261011.json
+```
+
+The original two workers have fixed, in-memory model lists. A receipt-verified
+checkpoint handoff replaces only those current-chat worker process groups,
+leaving the allocation shell and all other jobs alone. New remote workers wait
+behind the handoff gate until the old model writers have exited. Original
+model/optimizer/sampler checkpoints resume under the same W&B IDs; at most the
+updates since the last100-update checkpoint are repeated. Original launch
+receipts and producer code remain untouched.
+
+Six workers share per-model filesystem locks covering training and evaluation.
+The four remote workers prefer distinct6ps fits; the two local workers resume
+their existing1ps fits first. Free workers can take other unclaimed work. They
+keep bounded process/stage recovery, independent evaluations and the original
+campaign deadline. A queued remote job that starts after all its candidate
+models are complete exits without rerunning fits. No duplicate GPU reservations
+are made per GPU type.
+
+Execution records live in the campaign's `technical/scale-v1/`; consult its
+`launch.json`, `handoff.json`, `worker-*.json` and `tasks/` alongside the original
+scientific checkpoints. `technical/active-execution.json` points to this receipt
+so a later optional chat review does not mistakenly revive the retired two-lane
+supervisors. The orchestration module has its own implementation hash; numerical
+producers retain the original frozen metric contracts. Final comparison tables
+are published once every model and its evaluations finish.
+
+At13:56 CEST the four jobs1034059/1034060/1034061/1034062 were running on
+nodeaudible01 (A10040GB), each owning a distinct6ps values/response seed.
+Local supervisors4194016/4194018 resumed the1ps runs on node60. The saved
+checkpoints were at updates1400/1500;76/3 subsequent updates were repeated,
+respectively. All six models advanced after handoff. The scientific-code audit
+verifies byte-identical training, model, physical-response, evaluator,
+configuration and metric-contract files against the original frozen bundle.
+A separate lightweight publisher refreshes the shared progress report every
+30seconds. The optional19:40 review prompt now points to the new ownership
+receipts and explicitly forbids reviving the retired fixed-lane workers.
+
 ## Autonomous overnight queue, October 11
 
 The earlier larger overnight study was only a planning document. Its optional
@@ -274,3 +323,59 @@ restarts. Both GPUs remained active; three MLP models had all four evaluation
 tables and a fourth had finished training. These are observations at deployment,
 not a claim that the campaigns are complete. The previously rejected real path
 20cc229669394e788bb4 was replay-audited successfully in diagnostic-only mode.
+
+
+## RTX batch-1024 continuation, October 11
+
+The user requested testing batch1,024 on the RTX PRO6000 and explicitly chose
+preserving remaining sampled examples. The local benchmark clones a saved
+checkpoint and optimizer from the actual frozen scale-v1 bundle. It measures
+eight full optimizer steps per case, with the last five used for the median;
+there are no W&B benchmark runs. One receipt-owned local worker was paused
+for55seconds and automatically resumed. Other workers continued.
+
+| 1-ps training objective | Batch256 / teacher16 | Batch1024 / teacher64 | Equal-example training saving |
+| --- | --- | --- | --- |
+| Values | 0.614–0.637s/update | 1.775s/update | 28–30% |
+| Physical responses | 0.752s/update | 1.953s/update | 35% |
+
+Peak allocated tensor memory was4.610GiB and15.258GiB respectively. This is
+training throughput; evaluation and the four independent A1006-ps fits do not
+receive the same acceleration. Sequential5-fs recurrent steps remain.
+
+Active profile: `configs/ni_latent_sim/batch1024_20261011.json`. Execution, frozen
+code, exact timings, source hashes, checkpoint rehearsal and handoff receipts:
+`output/ni_latent_sim/autonomous-overnight-20261011-v1/technical/batch1024-v1/`.
+The canonical absolute location is
+`/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1/technical/batch1024-v1/`.
+Local supervisors10534/10536 in allocation1034050 replace4194016/4194018, which
+must not be restarted. Shared per-model locks remain in scale-v1. The four
+A100 jobs1034059–1034062 retain their original batch256, 4000-update settings.
+
+Seed20261013's1-ps values fit resumes checkpoint3900, retaining its optimizer,
+RNG and validation-selected checkpoint. Fifteen unsaved updates are replayed
+from that checkpoint; the receipt preserves this fact. Twenty-five batch1024
+updates finish exactly1,024,000 sampled sequence examples and64,000 sampled
+physical teachers, at3925 actual optimizer updates. Seed20261014 completed all
+4000 batch256 updates before migration; its finished fit is retained. Its
+in-progress evaluation restarted during migration. The two pending1-ps response
+fits start at batch1024 with1000 updates each. All use the original stable
+online W&B IDs. Historical W&B steps beyond a recovered checkpoint remain
+historical; authoritative continued training history is preserved locally.
+
+The learning rate is not scaled up: max0.001 with the original cosine floor.
+Warmup, decay, validation and checkpoint intervals advance by processed
+examples. The teacher batch grows16→64 so its sampled exposure also stays
+fixed. Update counters remain actual optimizer updates. This changes gradient
+statistics, Adam moment evolution and the number of weight-decay operations;
+equal sampled exposure is not equivalent optimization. Comparisons must record
+each model's batch256 prefix and batch1024 continuation, including the completed
+model that was not switched. Selection remains label-free validation NLL.
+
+The resumed fit finished numerical training successfully. Its first table export
+rejected a newly changed status-producer hash; metadata was corrected and its
+saved history published without repeating optimization. The original error,
+repair and revised implementation hashes remain in `publication-repair.json`.
+The detached status publisher reconciles the recovered stage only after all
+independent evaluation stages have completed. No data-identity or finite-value
+checks were disabled. The optional six-hour review now points to this execution.

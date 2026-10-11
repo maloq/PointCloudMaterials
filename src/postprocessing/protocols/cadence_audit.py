@@ -1,6 +1,5 @@
 """Assess the original Al 0.75-ps birth campaign from frozen search evidence."""
 import argparse
-from collections import Counter
 import json
 from pathlib import Path
 import re

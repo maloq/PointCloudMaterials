@@ -1,11 +1,8 @@
 """Time-budgeted descriptor-free temporal representation hypothesis campaign."""
 
 import argparse
-import copy
 from datetime import datetime, timezone
-import hashlib
 import json
-import math
 import os
 from pathlib import Path
 import signal

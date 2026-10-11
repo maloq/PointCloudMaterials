@@ -8,8 +8,6 @@ import os
 from pathlib import Path
 import shutil
 import socket
-import subprocess
-import sys
 import time
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json

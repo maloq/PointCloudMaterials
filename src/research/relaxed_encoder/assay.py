@@ -1,6 +1,5 @@
 """Frozen snapshot readouts on original MD onset, never on quenched labels."""
 import json
-from pathlib import Path
 import numpy as np
 import torch
 from src.project_runtime.paths import resolve_path

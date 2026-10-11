@@ -1,7 +1,6 @@
 """Extract measured controls without modifying checkpoints or source trajectories."""
 
 import argparse
-import json
 import os
 from pathlib import Path
 import time

@@ -6,7 +6,6 @@ import hashlib
 import json
 import multiprocessing
 from pathlib import Path
-import time
 
 import numpy as np
 from scipy.spatial import cKDTree

@@ -1,6 +1,5 @@
 """Create and verify one shared periodic liquid ancestor using native LAMMPS."""
 import argparse
-import ctypes
 import os
 from pathlib import Path
 import shutil

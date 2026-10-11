@@ -31,9 +31,9 @@ def prepare(c):
     out=Path(c['output']);out.mkdir(parents=True,exist_ok=True)
     parent=Path(c['parent']);old=read(parent/'technical/plan.json')
     audit=read(parent/'technical/repeatability-audit-node60.json')
-    jobs=[]
+    response_jobs={job['key']:job for job in old['response_jobs']};jobs=[]
     for key in audit['jobs']:
-        job=next(j for j in old['response_jobs'] if j['key']==key)
+        job=response_jobs[key]
         folder=parent/'technical/physical-bank'/key
         jobs.append(dict(key=key,source=job['source_key'],folder=str(folder),
             restart_sha256=file_hash(folder/'restart.pt'),response_sha256=file_hash(folder/'response.pt')))
@@ -102,7 +102,7 @@ def quench(c,p,pc,job,md,qv,profile,variant,repeat):
     archive=Path(c['archive'])/name;work=Path(c['scratch'])/name
     if (archive/'complete.json').exists():
         done=read(archive/'complete.json')
-        if done['plan_identity']!=p['identity']:raise ValueError('Diagnostic archive belongs to another plan')
+        if read(archive/'source/manifest.json')['plan']!=p['identity']:raise ValueError('Diagnostic archive belongs to another plan')
         if file_hash(archive/'patches.npz')!=done['patches_sha256']:raise ValueError('Changed diagnostic patch')
         with np.load(archive/'patches.npz') as a:return a['positions'],done
     work.mkdir(parents=True,exist_ok=True);source=work/'source';source.mkdir(exist_ok=True)
@@ -124,13 +124,17 @@ def quench(c,p,pc,job,md,qv,profile,variant,repeat):
     try:
         if not (work/'metadata.json').exists():
             relax_frame(trajectory,0,work,settings,reuse=False,runner=runner)
-        xyz,meta=read_relaxed(work)
-        # Preserve the native endpoint as a quench restart, separately from the
-        # float16 trajectory archive and float32 encoder patch.
-        np.savez_compressed(work/'native-quench-state.npz',positions=xyz,box=box,atom_ids=md['atom_ids'])
-        q=xyz[md['neighbors']]-xyz[md['neighbors'][0]];q-=box*np.rint(q/box)
-        patch=q.astype(np.float32)[None];np.savez_compressed(work/'patches.npz',positions=patch)
-        convert(work,delete_source=True,local_cloud_dtype='float32')
+        if not (work/'patches.npz').exists():
+            xyz,_=read_relaxed(work)
+            # Save both native coordinates and local offsets before conversion
+            # deletes the dump; a continuation uses these exact saved values.
+            np.savez_compressed(work/'native-quench-state.npz',positions=xyz,box=box,atom_ids=md['atom_ids'])
+            q=xyz[md['neighbors']]-xyz[md['neighbors'][0]];q-=box*np.rint(q/box)
+            np.savez_compressed(work/'patches.npz',positions=q.astype(np.float32)[None])
+        with np.load(work/'patches.npz') as saved:patch=saved['positions']
+        meta=read(work/'metadata.json')
+        if not (work/'conversion.json').exists():
+            convert(work,delete_source=True,local_cloud_dtype='float32')
         done=dict(plan_identity=p['identity'],profile=profile,variant=variant,repeat=repeat,source=job['source'],
             input_sha256=meta['input_sha256'],fmax_eV_A=meta['fmax_eV_per_A'],energy_eV=meta['energy_eV'],
             seconds=meta['seconds'],total_seconds=time.monotonic()-start,
@@ -139,7 +143,8 @@ def quench(c,p,pc,job,md,qv,profile,variant,repeat):
         return patch,done
     except Exception:
         write_json(work/'failure.json',dict(error=traceback.format_exc(),time=time.time()))
-        if not archive.exists():publish(work,archive)
+        failure=Path(c['archive'])/'failures'/name/str(time.time_ns())
+        publish(work,failure)
         raise
 
 
@@ -149,8 +154,8 @@ def collect(c,p,pc,lane):
     model=Motion(parent_config).cuda().eval().requires_grad_(False)
     rows=[]
     with torch.no_grad():
-        for global_index,job in enumerate(p['jobs']):
-            if global_index%2!=lane:continue
+        for global_index in range(lane,len(p['jobs']),2):
+            job=p['jobs'][global_index]
             md,bank=inputs(job);qv=md['future'][0,0].numpy();factor=parent_config['length_factor']
             results={}
             profiles=['raw32','canonical32','canonical32_tight']+(['canonical64'] if global_index==0 else [])

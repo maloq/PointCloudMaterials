@@ -14,7 +14,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 from dataclasses import dataclass
 
-from .plan import ExperimentPlan, MetricBestSpec, MetricsConfig
+from .plan import ExperimentPlan, MetricsConfig
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 FAILURE_LOG_PATTERNS = (
@@ -41,9 +41,7 @@ def find_best_checkpoint(run_dir: Path) -> Optional[Path]:
     candidates: List[Path] = []
 
     # Standard Lightning checkpoints/ subfolder.
-    ckpt_dir = run_dir / "checkpoints"
-    if ckpt_dir.exists():
-        candidates.extend(ckpt_dir.glob("*.ckpt"))
+    candidates.extend((run_dir / "checkpoints").glob("*.ckpt"))
 
     # Checkpoints saved directly in the run dir.
     candidates.extend(run_dir.glob("*.ckpt"))
@@ -121,8 +119,6 @@ def _read_checkpoint_metric(run_dir: Path, metric_name: str) -> Optional[float]:
                 score = state.get("current_score")
             if score is None:
                 continue
-            if hasattr(score, "item"):
-                return float(score.item())
             return float(score)
     return None
 

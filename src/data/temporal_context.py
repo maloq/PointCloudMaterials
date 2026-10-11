@@ -193,14 +193,6 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
         if self.context_center_count == 0:
             token_points = present.points[:, None]
         else:
-            if (
-                present.context_points is None
-                or present.context_center_offsets is None
-            ):
-                raise RuntimeError(
-                    "Present environment builder did not return context"
-                    " tokens."
-                )
             token_points = torch.cat(
                 [present.points[:, None], present.context_points], dim=1
             )
@@ -212,7 +204,6 @@ class TemporalBinaryContextDataset(Dataset[dict[str, object]]):
             (self.center_atom_ids.size, token_count, 3), dtype=np.float32
         )
         if self.context_center_count > 0:
-            assert present.context_center_offsets is not None
             offsets[:, 1:] = present.context_center_offsets
         future_points: list[torch.Tensor] = []
         future_frames: list[int] = []

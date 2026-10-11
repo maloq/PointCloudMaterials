@@ -17,6 +17,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
+from src.experiment_runner.artifacts import read_json_object as _load_json
 from src.simulation.atomistic.lammps_shooting import run_local_campaign  # noqa: E402
 
 
@@ -28,14 +29,6 @@ def _arguments(argv=None) -> argparse.Namespace:
     parser.add_argument("--campaign-root", required=True, type=Path)
     parser.add_argument("--poll-seconds", default=30, type=int)
     return parser.parse_args(argv)
-
-
-def _load_json(path: Path) -> dict[str, object]:
-    with path.open("r", encoding="utf-8") as handle:
-        document = json.load(handle)
-    if not isinstance(document, dict):
-        raise TypeError(f"{path}: expected a JSON object, got {type(document).__name__}.")
-    return document
 
 
 def _write_json_atomic(path: Path, document: dict[str, object]) -> None:

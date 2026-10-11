@@ -2,7 +2,6 @@
 import argparse
 import copy
 import fcntl
-import hashlib
 import json
 import os
 from pathlib import Path

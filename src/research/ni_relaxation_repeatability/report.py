@@ -20,8 +20,9 @@ def main():
     out=root/'analyses/overview';columns=list(dict.fromkeys(k for r in rows for k in r))
     write_metric_rows(rows,out,family='ni_quench_repeatability',name='quenches',columns=columns)
     sources=[j['source'] for j in plan['jobs']];x=np.arange(len(sources))
+    by_comparison={(r['source'],r['profile'],r['comparison']):r for r in rows}
     def values(profile,comparison,key):
-        return [next(r[key] for r in rows if r['source']==s and r['profile']==profile and r['comparison']==comparison) for s in sources]
+        return [by_comparison[s,profile,comparison][key] for s in sources]
     fig,axes=plt.subplots(1,2,figsize=(11.5,4.6),layout='constrained')
     for mode,color,label in [('raw32','#aa493d','Original order'),('canonical32','#167d8d','Sorted neighbors')]:
         axes[0].plot(x,values(mode,'independent_repeat','embedding_rms'),'o-',color=color,label=label)
@@ -38,10 +39,11 @@ def main():
     plots=out/'plots';plots.mkdir(parents=True,exist_ok=True)
     fig.savefig(plots/'repeatability.png',dpi=180);fig.savefig(plots/'repeatability.pdf');plt.close(fig)
     native=[]
-    for job in plan['jobs']:
-        for profile in ['canonical32','canonical32_tight','canonical64']:
+    for index,job in enumerate(plan['jobs']):
+        # collect() runs the float64-force ablation only on the first endpoint.
+        profiles=['canonical32','canonical32_tight']+(['canonical64'] if index==0 else [])
+        for profile in profiles:
             folder=Path(plan['config']['archive'])/job['key']/profile
-            if not (folder/'base-r1/native-quench-state.npz').exists():continue
             with np.load(folder/'base-r0/native-quench-state.npz') as first,np.load(folder/'base-r1/native-quench-state.npz') as second:
                 native.append(dict(source=job['source'],profile=profile,atoms=len(first['positions']),
                     exact_native_float64_coordinates=bool(np.array_equal(first['positions'],second['positions']))))

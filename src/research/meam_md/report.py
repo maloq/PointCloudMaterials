@@ -1,7 +1,6 @@
 """Publish native-precision CPU/GPU comparisons, including incomplete coverage."""
 import argparse
 import csv
-from pathlib import Path
 
 import numpy as np
 from ase import units

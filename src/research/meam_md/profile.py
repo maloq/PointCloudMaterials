@@ -1,9 +1,7 @@
 """Same-cell periodic force correctness and isolated CPU/GPU cost measurements."""
 import argparse
-import json
 import os
 import time
-from pathlib import Path
 
 import numpy as np
 

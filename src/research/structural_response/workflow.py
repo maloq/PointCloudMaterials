@@ -7,7 +7,6 @@ from pathlib import Path
 import subprocess
 import sys
 import time
-import traceback
 from src.experiment_runner.execution import ExecutionBundle,SlurmQueue,allocation_deadline,recorded_stage
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.project_runtime.paths import REPO

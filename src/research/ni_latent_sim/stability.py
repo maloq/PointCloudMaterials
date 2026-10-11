@@ -8,6 +8,7 @@ import math
 import numpy as np
 import torch
 from .data import read, root, cache, sha, digest, write_json, FAMILY
+from .artifacts import write_rows as write_metric_rows, table_path, export_root
 
 
 def unit(v):
@@ -78,16 +79,15 @@ def prepare(c):
 
 
 def report(c):
-    from src.experiment_runner.metric_docs import write_metric_rows
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    out=root(c)/'analyses/stability-comparison-v1';roll=[];birth=[];short=[];regimes=[]
+    out=export_root(root(c)/'analyses/stability-comparison-v1');roll=[];birth=[];short=[];regimes=[]
+    tables=[(roll,'free_rollout'),(birth,'nucleus_prediction'),(short,'heldout_physical_response')]
+    if 'enrichment' in c:tables.append((regimes,'free_rollout_by_regime'))
     for arm in c['arms']:
-        tables=[(roll,'free_rollout'),(birth,'nucleus_prediction'),(short,'heldout_physical_response')]
-        if 'enrichment' in c:tables.append((regimes,'free_rollout_by_regime'))
         for target,name in tables:
-            path=root(c)/'analyses'/arm['name']/'tables'/(name+'.csv')
+            path=table_path(root(c)/'analyses'/arm['name'],name)
             with path.open() as stream:
                 for row in csv.DictReader(stream):
                     target.append(dict(row,train_steps=arm['train_steps'],jacobian=arm['jacobian'],response=arm['response'],seed=arm['seed']))
@@ -102,7 +102,8 @@ def report(c):
                 for jacobian in [False,True]:
                     selected=[r for r in roll if r['space']=='structure' and r['metric']==metric and r['train_steps']==steps and r['response']==response and r['jacobian']==jacobian]
                     times=sorted({float(r['horizon_ps']) for r in selected})
-                    values=np.array([[float(next(r['value'] for r in selected if float(r['horizon_ps'])==t and r['seed']==s)) for t in times] for s in c['seeds']])
+                    scores={(r['seed'],float(r['horizon_ps'])):float(r['value']) for r in selected}
+                    values=np.array([[scores[s,t] for t in times] for s in c['seeds']])
                     label=('Physical response' if response else 'Values')+(' + Jacobian' if jacobian else '')
                     ax.plot(times,values.mean(0),'o-',label=label)
                     ax.fill_between(times,values.min(0),values.max(0),alpha=.12)

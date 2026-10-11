@@ -1,6 +1,5 @@
 """Native 0.10 ps Al birth search and six-frame crystal-free descriptor cohort."""
 from collections import Counter
-from pathlib import Path
 
 import numpy as np
 

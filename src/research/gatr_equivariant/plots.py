@@ -1,5 +1,4 @@
 """Standalone scientific figures and offline 3D direction explorer."""
-import html
 import json
 
 import matplotlib

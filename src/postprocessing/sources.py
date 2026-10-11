@@ -10,7 +10,7 @@ from pathlib import Path
 import numpy as np
 
 from src.experiment_runner.artifacts import file_hash as sha, json_digest as digest, write_json
-from src.project_runtime.paths import REPO, resolve_path, path_snapshot
+from src.project_runtime.paths import resolve_path, path_snapshot
 from src.postprocessing.io import arrays
 
 

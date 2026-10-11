@@ -1,7 +1,6 @@
 """Read-only crystal-content and exclusion audit of the completed Ta birth search."""
 import argparse
 from collections import Counter, defaultdict
-from pathlib import Path
 
 import numpy as np
 

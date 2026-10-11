@@ -10,19 +10,13 @@ import traceback
 from src.experiment_runner.execution import ExecutionBundle,allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.project_runtime.paths import REPO
-from .data import read,root,cache,prepare,collect,seal,write_json,resolve_path,FAMILY
+from .data import read,root,prepare,collect,seal,write_json,resolve_path,FAMILY
 
 
 def barrier(c,name,deadline):
     out=root(c)/'technical'
-    def completed(lane):
-        path=out/f'{name}-{lane}.json'
-        if not path.exists():return False
-        if name=='dense-complete':
-            launch=read(out/'launch.json')
-            return read(path).get('execution_started')==launch.get('resumed_at',launch['started'])
-        return True
-    while not all(completed(i) for i in [0,1]):
+    markers=[out/f'{name}-{lane}.json' for lane in [0,1]]
+    while not all(path.exists() for path in markers):
         for lane in [0,1]:
             if (out/f'failed-worker-{lane}.json').exists():raise RuntimeError('Other lane failed; see failure receipt')
             if (out/f'budget-stop-{lane}.json').exists():raise TimeoutError('Other lane reached its budget')
@@ -47,11 +41,7 @@ def worker(c,lane):
                     raise RuntimeError('Preceding GPU lane did not complete; see '+str(previous))
                 if time.time()>deadline-600:raise TimeoutError('Budget reached waiting for previous GPU lane')
                 time.sleep(10)
-        if 'dense_response' in c:
-            from . import dense_response
-            dense_response.collect(c,p,lane,deadline)
-            if 'reuse_output' not in c['dense_response']:barrier(c,'dense-complete',deadline)
-        elif 'enrichment' in c:
+        if 'enrichment' in c:
             from . import enrichment
             enrichment.scan(c,p,lane,deadline);barrier(c,'scan-complete',deadline)
             with (out/'selection.lock').open('a+') as shared:
@@ -67,7 +57,6 @@ def worker(c,lane):
             write_json(out/f'worker-{lane}.json',dict(stage='training',arm=arm['name'],deadline_unix=deadline))
             if not train.run(c,p,arm,deadline):raise TimeoutError('Training checkpointed at budget')
             evaluate.run(c,p,arm);evaluate.births(c,p,arm)
-            if 'dense_response' in c:dense_response.evaluate(c,p,arm)
         # Two declared primary models, one per lane; never selected by AP.
         if c['lifting'].get('enabled',True):
             arm=next(a for a in c['arms'] if a['dimension']==16 and a['history']==4 and a['seed']==c['seed'] and a['response']==bool(lane))
@@ -77,8 +66,7 @@ def worker(c,lane):
         with (out/'report.lock').open('a+') as lock:
             fcntl.flock(lock,fcntl.LOCK_EX)
             if all((out/f'worker-complete-{i}.json').exists() for i in [0,1]):
-                if 'dense_response' in c:from .dense_response import report as run
-                elif 'stability' in c:from .stability import report as run
+                if 'stability' in c:from .stability import report as run
                 else:from .report import run
                 run(c)
 
@@ -91,9 +79,9 @@ def submit(c):
     env=dict(os.environ,PYTHONPATH=str(bundle.root),PCM_PROJECT_ROOT=str(REPO),OMP_NUM_THREADS='2',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',OVITO_THREAD_COUNT='1',TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1',UCX_TLS='self,sm,tcp',CUDA_HOME='/usr/local/cuda',PATH=str(Path(sys.executable).parent)+':/usr/local/cuda/bin:/usr/local/bin:/usr/bin:/bin')
     receipt=dict(identity=p['identity'],allocation=os.environ['SLURM_JOB_ID'],host=os.uname().nodename,bundle=str(bundle.root),started=time.time(),deadline_unix=deadline,pids=[],gpus=[0,1],owner='current chat: '+c['protocol'],budget_hours=c['runtime']['hours'])
     write_json(out/'launch.json',receipt)
+    stage='supervise' if 'dense_response' in c else 'worker'
     for lane in [0,1]:
         with (out/f'worker-{lane}.log').open('a') as log:
-            stage='supervise' if 'dense_response' in c else 'worker'
             command=['timeout','--signal=TERM','--kill-after=60',str(max(1,int(deadline-time.time())))+'s',sys.executable,'-u','-m','src.research.ni_latent_sim.workflow',stage,'--config',str(bundle.config_path),'--lane',str(lane)]
             proc=subprocess.Popen(command,cwd=bundle.root,env=dict(env,CUDA_VISIBLE_DEVICES=str(lane)),stdout=log,stderr=subprocess.STDOUT,start_new_session=True)
         receipt['pids'].append(proc.pid);write_json(out/'launch.json',receipt)

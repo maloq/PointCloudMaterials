@@ -4,13 +4,11 @@ import argparse
 from collections import defaultdict
 from concurrent.futures import ProcessPoolExecutor,as_completed
 import csv
-import fcntl
 import gzip
 import html
 import json
 import multiprocessing
 import os
-from pathlib import Path
 import time
 
 import numpy as np

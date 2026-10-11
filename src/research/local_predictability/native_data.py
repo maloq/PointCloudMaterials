@@ -4,7 +4,6 @@ The encoder path reads only declared observation frames. Physical packets use
 the maintained producer and are kept separate from observations and assay labels.
 """
 from collections import OrderedDict
-import hashlib
 import json
 from pathlib import Path
 

@@ -616,153 +616,6 @@ def run_branch(campaign_root: str | Path, task_index: int) -> dict[str, Any]:
         raise
 
 
-def recover_completed_compositions(campaign_root: str | Path) -> dict[str, int]:
-    """Finalize branches that failed only during post-composition NFS cleanup.
-
-    This recovery never invokes LAMMPS and never reconstructs frames. It accepts
-    only the exact historical cleanup failure, verifies every self-contained
-    composed binary and its immutable first-passage source, and writes outcomes
-    only after all recoverable branches have passed validation.
-    """
-
-    root = Path(campaign_root).expanduser().resolve()
-    manifest = read_json_object(root / "manifest.json")
-    if manifest.get("campaign_type") != CAMPAIGN_TYPE:
-        raise ValueError(
-            f"Unsupported compatibility campaign_type={manifest.get('campaign_type')!r}: "
-            f"{root / 'manifest.json'}."
-        )
-
-    planned: list[tuple[Path, dict[str, Any]]] = []
-    already_complete = 0
-    for branch in manifest["branches"]:
-        branch_dir = root / str(branch["branch_dir"])
-        outcome_path = branch_dir / "outcome.json"
-        if outcome_path.is_file():
-            outcome = read_json_object(outcome_path)
-            if outcome.get("state") != "complete":
-                raise RuntimeError(
-                    f"Existing recovery outcome is not complete: {outcome_path}."
-                )
-            already_complete += 1
-            continue
-        if not bool(branch["continuation_required"]):
-            raise RuntimeError(
-                "A branch that reused an existing 24 ps path has no outcome and "
-                f"cannot be handled by cleanup recovery: {branch['branch_id']}."
-            )
-        status_path = branch_dir / "status.json"
-        status = read_json_object(status_path)
-        error = str(status.get("error", ""))
-        if (
-            status.get("state") != "failed"
-            or status.get("error_type") != "OSError"
-            or "Directory not empty" not in error
-            or "continuation_binary_float16" not in error
-        ):
-            raise RuntimeError(
-                "Refusing to recover a branch whose failure was not the known "
-                f"post-composition NFS cleanup error: branch={branch['branch_id']}, "
-                f"status={status_path}."
-            )
-
-        source_outcome_path = Path(str(branch["source_outcome_path"]))
-        if file_hash(source_outcome_path) != branch["source_outcome_sha256"]:
-            raise RuntimeError(f"Nested source outcome changed: {source_outcome_path}.")
-        source_outcome = read_json_object(source_outcome_path)
-        target = branch_dir / "trajectory_binary_float16"
-        composed = ShootingBinaryTrajectory.load(target)
-        composed.verify_checksums()
-        if (
-            composed.storage_dtype != np.dtype(STORAGE_DTYPE)
-            or composed.atom_count != EXPECTED_ATOM_COUNT
-            or not np.array_equal(composed.timesteps, FIXED_TIMESTEPS)
-        ):
-            raise RuntimeError(
-                "Recovery candidate violates the fixed-horizon binary contract: "
-                f"branch={branch['branch_id']}, dtype={composed.storage_dtype.name}, "
-                f"atoms={composed.atom_count}, timesteps={composed.timesteps.tolist()}."
-            )
-        provenance = composed.manifest.get("provenance")
-        if (
-            not isinstance(provenance, dict)
-            or provenance.get("campaign_type") != CAMPAIGN_TYPE
-            or provenance.get("branch_id") != branch["branch_id"]
-            or provenance.get("source_first_passage_outcome_sha256")
-            != branch["source_outcome_sha256"]
-        ):
-            raise RuntimeError(
-                f"Recovery binary provenance disagrees with branch={branch['branch_id']}."
-            )
-        final_restart = branch_dir / "final.restart.bin"
-        if not final_restart.is_file() or final_restart.stat().st_size == 0:
-            raise RuntimeError(f"Recovery restart is missing: {final_restart}.")
-        sizes = binary_directory_sizes(target)
-        recovered_at = _utc_now()
-        outcome = {
-            **branch,
-            "schema_version": SCHEMA_VERSION,
-            "state": "complete",
-            "completed_at": str(composed.manifest["created_at"]),
-            "slurm_job_id": status.get("slurm_job_id"),
-            "hostname": None,
-            "elapsed_seconds": None,
-            "first_passage_outcome": source_outcome["first_passage_outcome"],
-            "first_passage_onset_timestep": source_outcome[
-                "first_passage_onset_timestep"
-            ],
-            "first_passage_confirmation_timestep": source_outcome[
-                "first_passage_confirmation_timestep"
-            ],
-            "first_passage_time_ps": source_outcome["first_passage_time_ps"],
-            "censored": source_outcome["censored"],
-            "frame_count": composed.frame_count,
-            "first_timestep": int(composed.timesteps[0]),
-            "last_timestep": int(composed.timesteps[-1]),
-            "trajectory_artifact": {
-                "format": composed.manifest["format"],
-                "path": str(target),
-                "storage_dtype": STORAGE_DTYPE,
-                "frame_count": composed.frame_count,
-                "apparent_size_bytes": sizes["apparent_bytes"],
-                "allocated_size_bytes": sizes["allocated_bytes"],
-            },
-            "continuation_source_lammpstrj": {
-                "deleted": True,
-                "size_bytes": None,
-                "sha256": None,
-                "unavailable_reason": (
-                    "worker deleted the verified text dump before the historical "
-                    "NFS intermediate-cleanup failure"
-                ),
-            },
-            "continuation_binary_intermediate": {
-                "path": str(branch_dir / "continuation_binary_float16"),
-                "preserved": False,
-                "unavailable_reason": (
-                    "historical cleanup removed its files before NFS reported an "
-                    "open-memmap directory"
-                ),
-            },
-            "recovery": {
-                "recovered_at": recovered_at,
-                "reason": "post-composition NFS cleanup failure",
-                "composed_binary_checksums_verified": True,
-                "frames_reconstructed": False,
-                "lammps_rerun": False,
-                "previous_status": str(status_path),
-            },
-        }
-        planned.append((branch_dir, outcome))
-
-    for branch_dir, outcome in planned:
-        _write_json_atomic(branch_dir / "outcome.json", outcome)
-        _write_json_atomic(branch_dir / "status.json", outcome)
-    result = {"already_complete": already_complete, "recovered": len(planned)}
-    print(json.dumps(result, indent=2, sort_keys=True))
-    return result
-
-
 def run_batch(campaign_root: str | Path, start_index: int, stop_index: int) -> None:
     root = Path(campaign_root).expanduser().resolve()
     manifest = read_json_object(root / "manifest.json")
@@ -1034,8 +887,6 @@ def _arguments(argv=None) -> argparse.Namespace:
     submit.add_argument("--start-index", type=int, required=True)
     summary = commands.add_parser("summarize")
     summary.add_argument("--campaign-root", type=Path, required=True)
-    recover = commands.add_parser("recover-completed-compositions")
-    recover.add_argument("--campaign-root", type=Path, required=True)
     return parser.parse_args(argv)
 
 
@@ -1052,8 +903,6 @@ def main(argv=None) -> None:
         submit_next_batch(args.campaign_root, args.start_index)
     elif args.action == "summarize":
         summarize_campaign(args.campaign_root)
-    elif args.action == "recover-completed-compositions":
-        recover_completed_compositions(args.campaign_root)
     else:
         raise AssertionError(f"Unhandled action {args.action!r}.")
 

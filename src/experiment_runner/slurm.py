@@ -12,7 +12,6 @@ from typing import Dict, List, Optional, Sequence
 from .plan import (
     Experiment,
     ExperimentPlan,
-    SlurmConfig,
     StageSpec,
     resolve_experiment_config_name,
     resolve_experiment_train_script,

@@ -1,0 +1,10 @@
+{
+  "campaign": "/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1",
+  "additional_workers": 4,
+  "partitions": "RTX6000PRO,H100,A100,L40S,A40",
+  "job_hours": 13,
+  "scientific_change": false,
+  "batch_size": 256,
+  "microbatch": 256,
+  "reason": "Run pending scientific fits concurrently; GPU types are alternatives. The measured six-ps forward/backward peak is21.36GiB, so the original full batch fits the requested GPU types."
+}

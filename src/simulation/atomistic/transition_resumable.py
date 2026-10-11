@@ -12,6 +12,7 @@ from ase import Atoms, units
 from ase.io import read, write
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
 
+from src.experiment_runner.artifacts import file_hash as _sha256
 from .homogeneous_resumable import MTKState
 from .provenance import ExecutionProvenance
 from .simulation import ThermodynamicTrace, validate_thermodynamic_trace
@@ -34,14 +35,6 @@ class TransitionCheckpoint:
     trace: ThermodynamicTrace
     state: MTKState
     metadata: dict[str, object]
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(4 * 1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
 
 
 def _identity(

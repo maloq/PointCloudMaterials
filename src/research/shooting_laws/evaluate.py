@@ -1,5 +1,4 @@
 """Proper held-out scores, source uncertainty and split-shot law diagnostics."""
-from pathlib import Path
 
 import numpy as np
 from scipy.special import logsumexp

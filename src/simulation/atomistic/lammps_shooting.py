@@ -11,7 +11,6 @@ the original NPT path.
 from __future__ import annotations
 
 import fcntl
-import hashlib
 import json
 import math
 import os
@@ -30,6 +29,7 @@ from ase import Atoms
 from ase.data import atomic_masses, atomic_numbers
 from ase.io import write
 
+from src.experiment_runner.artifacts import file_hash as _sha256, read_json_object as _load_json
 from src.data.temporal import TemporalLAMMPSDumpDataset
 from src.simulation.runtime import lammps_environment
 from src.temporal_vamp.simulation_catalog import (
@@ -127,30 +127,12 @@ def _positive_integer(value: Any, *, context: str, path: Path) -> int:
     return value
 
 
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as handle:
-        for block in iter(lambda: handle.read(1024 * 1024), b""):
-            digest.update(block)
-    return digest.hexdigest()
-
-
 def _write_json_atomic(path: Path, document: object) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     with temporary.open("w", encoding="utf-8") as handle:
         json.dump(document, handle, indent=2)
         handle.write("\n")
     temporary.replace(path)
-
-
-def _load_json(path: Path) -> dict[str, Any]:
-    with path.open("r", encoding="utf-8") as handle:
-        document = json.load(handle)
-    if not isinstance(document, dict):
-        raise TypeError(
-            f"{path}: expected a JSON object, got {type(document).__name__}."
-        )
-    return document
 
 
 def load_shooting_config(path: str | Path) -> ShootingConfig:
@@ -670,7 +652,6 @@ def prepare_campaign(config: ShootingConfig) -> dict[str, Any]:
         ):
             continue
         metadata = entry.metadata
-        assert metadata.nucleation_time_ps is not None
         frame_indices = select_parent_frame_indices(
             np.asarray(metadata.progress_times_ps),
             nucleation_time_ps=metadata.nucleation_time_ps,

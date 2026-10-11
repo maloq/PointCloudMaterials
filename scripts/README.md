@@ -116,9 +116,7 @@ source assignments remain disjoint, and the original analysis dependency is
 extended to include all new workers and the drain controller. New reservations
 use the recipe's combined compatible partitions and respect the user's GPU quota.
 
-`python -m src.simulation.campaigns.ni_births.reconcile --config configs/simulation/ni_births_010_20261007.json`
-verifies completed Ni Q/V and restores completion records after the original NFS
-cleanup error. `python -m src.postprocessing ni-preview --config configs/simulation/ni_births_010_20261007.json --output OUTPUT`
+`python -m src.postprocessing ni-preview --config configs/simulation/ni_births_010_20261007.json --output OUTPUT`
 exports a versioned progress plot and a descriptive, retrospective local-order
 comparison; [definitions](../docs/metrics/ni_births_preview.md).
 
@@ -194,10 +192,6 @@ retains the separate small pilot and its shared three-hour deadline.
 `python -m src.postprocessing descriptors prepare|submit|progress --config configs/analysis/al_nuclei_search_20261003.json`
 searches all compatible Al trajectories on separate exact0.75/0.1/0.3ps grids,
 including paired0.1-to0.3 decimation; [protocol and execution](../docs/al_nuclei_search.md).
-
-`python src/research/response_geometry_helper.py --bundle FROZEN_CODE --first-parent 0 --stop-parent 765`
-adds an existing one-GPU allocation to the running unrelaxed response collection; [shared-query helper](../docs/simulations/response_geometry_20261003.md#additional-existing-gpu).
-
 
 `python scripts/project.py relaxations scan|status|plan`
 indexes existing relaxed cells and precise neighborhoods; `plan --requests REQUESTS.json --output MISSING.json`
@@ -293,10 +287,6 @@ searches failed crystal embryos and appends fate labels to existing births; [wor
 retests birth predictors with merged former validation/calibration/test and
 training-only CV selection; [workflow](../docs/birth_prediction.md#merged-evaluation-retest).
 
-`python src/research/local_response_execution.py --bundle FROZEN_CODE --queued-job JOB_ID`
-uses an existing GPU allocation for the same local-response query bank while the
-two-GPU coordinator waits; it archives the current parent before handing over.
-
 `python -m src.research.local_response.queue prepare|submit --config configs/simulation/local_response_20261002.json`
 runs gated local80 MLIP responses and twelve matched fits on two GPUs; [workflow](../docs/simulations/local_response_20261002.md).
 
@@ -321,10 +311,6 @@ collects fixed-simulator responses and runs nine matched full-cell value/respons
 encoder fits with the float32/cuEquivariance/batch4 default;
 [workflow](../docs/response_atlas.md#default-for-new-al256-response-runs).
 An explicit `--config` selects a versioned recipe; preserve historical frozen runs.
-For an already frozen run, `src/research/response_execution.py --bundle FROZEN_CODE --lane NAME`
-shares parent collection across allocated GPUs; [parallel execution](../docs/response_atlas.md#parallel-collection-on-allocated-gpus).
-`src/research/response_gpu_request.py --execution EXECUTION_DIR --deadline UNIX_TIME`
-requests two additional L40S helpers, with bounded retries for Slurm's submitted-job limit.
 
 `python -m src.research.predictive_followup.pacmap_views run --config configs/analysis/predictive_pacmap_20261001.json`
 plots the saved shooting encoders with training-fitted PaCMAP, matched held-out
@@ -503,22 +489,16 @@ treatments, including crystal-interior evaluation; [workflow](../docs/crystal_in
 runs the joint snapshot crystal-distance/vector experiment with random batches;
 [workflow](../docs/crystal_vector.md).
 
-`python -m src.simulation.campaigns.dense_al prepare|prepare-continuation|add-dense-sources|submit|worker|collect`
+`python -m src.simulation.campaigns.dense_al prepare|prepare-continuation|submit|worker|collect`
 reruns the main Al preparations at exact 0.1 ps, preserving ancestor roles;
 `convert_trajectory.py dense-al RUN_DIR` verifies their canonical exports.
 [Campaign and execution](../docs/simulations/al_main_010ps_20260927/README.md).
-`add-dense-sources --config configs/simulation/al_main_001ps_20261001.json`
-adds two 0.01-ps sources to the next wave;
 `convert_trajectory.py dense-al-001ps RUN_DIR` verifies their float16 exports in
 bounded chunks. [Protocol and execution](../docs/simulations/al_main_001ps_20261001/README.md).
 
 `python -m src.research.distance_encoder.material_queue submit|worker --config CONFIG --allocation JOB --gpu INDEX`
 fine-tunes CD-MACE128-D6 separately for Al and Ta, followed by paired parent
 evaluations; [workflow](../docs/distance_encoder_material_finetune.md).
-
-`python -m src.analysis.saved_representatives --run RUN_DIR` updates published
-native-MACE snapshot representatives from frozen sample IDs and source coordinates;
-[display-only workflow](../docs/analysis_visualization.md#snapshot-representatives).
 
 `python -m src.analysis.cluster_explorer --config configs/analysis/cd_mace128_explorer.json --stage compute|render`
 builds the offline linked static explorer over published standard/order analyses;
@@ -592,8 +572,8 @@ and bond order; [CPU operations](../docs/nucleus_harvest.md).
 `python -m src.research.spatial_approach.queue prepare|worker|collect --config configs/analysis/spatial_approach_20260926.json`
 runs fixed-snapshot spatial warning-distance probes; [workflow](../docs/spatial_approach.md).
 
-`python -m src.postprocessing.protocols.cpu|external_data|external_audit`
-resumes the fixed audit on CPUs and processes large Al/Mg/Ti/Ta histories in
+`python -m src.postprocessing.protocols.external_data|external_audit`
+processes large Al/Mg/Ti/Ta histories in
 parallel chunks; [CPU commands and deadlines](../docs/crystallization_origin_cpu.md).
 
 `python -m src.postprocessing.protocols.extract|audit --config configs/analysis/crystallization_origin_20260925.json`
@@ -1050,21 +1030,16 @@ verified random/MLIP embedding distances and top-10 neighborhoods directly with
 the three TDA blocks on held-out structures. This stage fits no readout or scaling;
 it reports both global and within-frame geometry, including shuffled controls.
 
-The September 13 queue audit found no remaining simulation controllers. The old
-spatiotemporal experiment-path forwarder was retired; use the maintained preparation
-module above. Historical simulation specialization/queue code is now under
-`src/simulation/campaigns/` (`independent_meam_high_temperature`, `local_source_queue`,
-`ta_initial_branch`, `al_crystallization_preflight`, `recover_ta_ti_float16`).
-The two existing `run_lammps_independent_meam_*` forwarding commands still import
-maintained simulation implementations. Remove those two temporary launchers only
-after the [post-queue cleanup conditions](../docs/src_refactor.md#post-queue-cleanup-checklist)
-are satisfied. Historical exact protocols and arguments
-are documented in [simulation records](../docs/simulations/README.md).
+Completed one-off simulation specializations, recovery scripts and temporary
+launchers were removed on 2026-10-11. Use the maintained campaign dispatcher and
+conversion commands; recover older implementations from Git when designing a
+new shared workflow. Historical protocols, arguments and completion receipts
+remain in [simulation records](../docs/simulations/README.md).
 The historical Aluminum shell launcher requires `PYTHON` and an explicit
 `CAMPAIGN_CONFIG`, and accepts `DEVICES`; restore its dependency tree as described
-in the [config index](../configs/README.md). The FactorVAE and historical GeoFrame
-objective queues require `--config-dir` for restored recipes; the spatiotemporal
-trainer accepts it too. All maintained simulation recipes live in `configs/simulation/`.
+in the [config index](../configs/README.md). The historical FactorVAE queue and
+spatiotemporal trainer accept `--config-dir` for restored recipes.
+All maintained simulation recipes live in `configs/simulation/`.
 
 `project.py` manages machine settings (`paths`, `doctor`), dataset IDs (`datasets`), JSON resolution (`resolve`), verified selected exports (`bundle`, `verify-bundle`), full checkout snapshots (`snapshot`), completed simulation publication (`publish-simulation`), and stopped failure archives (`archive-failed-simulation --inactive`). Inputs and copy semantics are documented in [portability](../docs/portability.md); implementation is in `src/project_runtime/`.
 

@@ -1,6 +1,5 @@
 """Condition the fixed population on no interface atom in any encoder patch."""
 import json
-from pathlib import Path
 
 import numpy as np
 

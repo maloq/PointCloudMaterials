@@ -1,5 +1,4 @@
 """Paired relaxed/raw comparison and explicit resubstitution-versus-test errors."""
-from pathlib import Path
 
 import numpy as np
 

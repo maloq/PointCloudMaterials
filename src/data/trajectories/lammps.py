@@ -113,67 +113,44 @@ class TemporalLAMMPSBinaryTrajectory:
     def load(cls, path: str | Path) -> "TemporalLAMMPSBinaryTrajectory":
         root = resolve_path(path).resolve()
         manifest_path = root / "manifest.json"
-        if not manifest_path.is_file():
-            raise FileNotFoundError(
-                f"Temporal binary manifest is missing: {manifest_path}"
-            )
         with manifest_path.open("r", encoding="utf-8") as handle:
             manifest = json.load(handle)
-        if not isinstance(manifest, dict):
-            raise TypeError(
-                "Temporal binary manifest must be a JSON object:"
-                f" {manifest_path}"
-            )
-        if manifest.get("format") != FORMAT_NAME:
+        if manifest["format"] != FORMAT_NAME:
             raise ValueError(
                 f"Unsupported temporal binary format in {manifest_path}:"
                 f" expected={FORMAT_NAME!r},"
-                f" observed={manifest.get('format')!r}."
+                f" observed={manifest['format']!r}."
             )
-        if int(manifest.get("schema_version", -1)) != SCHEMA_VERSION:
+        if manifest["schema_version"] != SCHEMA_VERSION:
             raise ValueError(
                 f"Unsupported temporal binary schema in {manifest_path}:"
                 f" expected={SCHEMA_VERSION},"
-                f" observed={manifest.get('schema_version')!r}."
+                f" observed={manifest['schema_version']!r}."
             )
-        if manifest.get("state") != "complete":
+        if manifest["state"] != "complete":
             raise RuntimeError(
                 f"Temporal binary trajectory is not complete: root={root}, "
-                f"state={manifest.get('state')!r}."
+                f"state={manifest['state']!r}."
             )
-        if manifest.get("storage_dtype") not in {"float32", "float16"}:
+        if manifest["storage_dtype"] not in {"float32", "float16"}:
             raise ValueError(
                 "Temporal binary storage must be float32 or float16, got"
-                f" {manifest.get('storage_dtype')!r}."
+                f" {manifest['storage_dtype']!r}."
             )
 
-        descriptions = manifest.get("arrays")
-        if not isinstance(descriptions, dict):
-            raise TypeError(
-                "Temporal binary arrays must be a JSON object:"
-                f" {manifest_path}"
-            )
+        descriptions = manifest["arrays"]
         arrays: dict[str, np.ndarray] = {}
         for name, filename in _ARRAY_FILES.items():
-            description = descriptions.get(name)
-            if (
-                not isinstance(description, dict)
-                or description.get("file") != filename
-            ):
+            description = descriptions[name]
+            if description["file"] != filename:
                 raise ValueError(
                     "Temporal binary array description is invalid for"
                     f" {name!r}: {manifest_path}"
                 )
             array_path = root / filename
-            if not array_path.is_file():
-                raise FileNotFoundError(
-                    f"Temporal binary array is missing: {array_path}"
-                )
             values = np.load(array_path, mmap_mode="r", allow_pickle=False)
-            expected_shape = tuple(
-                int(value) for value in description["shape"]
-            )
-            expected_dtype = np.dtype(str(description["dtype"]))
+            expected_shape = tuple(description["shape"])
+            expected_dtype = np.dtype(description["dtype"])
             if (
                 values.shape != expected_shape
                 or values.dtype != expected_dtype
@@ -231,7 +208,7 @@ class TemporalLAMMPSBinaryTrajectory:
                 "Temporal binary trajectory has non-positive box lengths:"
                 f" {root}"
             )
-        if frame_count > 1 and np.any(np.diff(arrays["timesteps"]) <= 0):
+        if np.any(np.diff(arrays["timesteps"]) <= 0):
             raise RuntimeError(
                 "Temporal binary timesteps are not strictly increasing:"
                 f" {root}"
@@ -249,12 +226,7 @@ class TemporalLAMMPSBinaryTrajectory:
     def verify_checksums(self) -> dict[str, str]:
         observed: dict[str, str] = {}
         for name in _ARRAY_FILES:
-            expected = str(self.manifest["arrays"][name].get("sha256", ""))
-            if len(expected) != 64:
-                raise RuntimeError(
-                    "Temporal binary manifest has no valid checksum for"
-                    f" {name!r}: {self.root}"
-                )
+            expected = self.manifest["arrays"][name]["sha256"]
             observed[name] = _array_sha256(getattr(self, name))
             if observed[name] != expected:
                 raise RuntimeError(

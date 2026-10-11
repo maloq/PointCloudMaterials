@@ -1,6 +1,5 @@
 """Pack an existing fitting subset once; globally permute its rows each epoch."""
 import fcntl
-from pathlib import Path
 import shutil
 
 import numpy as np

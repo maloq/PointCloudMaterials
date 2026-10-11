@@ -1,5 +1,4 @@
 """Held-out family reliance, paired ablation scores and scientific figures."""
-from pathlib import Path
 
 import joblib
 import numpy as np
