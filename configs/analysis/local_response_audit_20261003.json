@@ -1,0 +1,8 @@
+{
+  "run": "${storage:training_storage}/response_atlas/local80-training-20261002",
+  "identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+  "analysis": "disturbance-audit-v1",
+  "epsilons_A": [0.003, 0.01, 0.03],
+  "device": "cuda",
+  "microbatch": 8
+}

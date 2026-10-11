@@ -1,0 +1,7 @@
+{
+  "ptm": {
+    "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429"
+  },
+  "audit": "docs/postprocessing.md#verification",
+  "meaning": "Equivalent classifier implementation only; actual execution hashes remain in extraction receipts."
+}

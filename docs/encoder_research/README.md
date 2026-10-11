@@ -1,5 +1,10 @@
 # Encoder research handbook
 
+[Response MACE128: interactive held-out Al comparison](../../output/spatial_vicreg_bias/response-local80-best-20261003/heldout-al.html)
+and [six static Al snapshots](../../output/spatial_vicreg_bias/response-local80-best-20261003/al-static.html)
+add the October 3 validation-selected response-weight-1 checkpoint (update 250)
+to the restored PaCMAP/MD/descriptor viewer. [Protocol and restoration](../spatial_vicreg_bias.md#october-3-response-encoder-addition).
+
 [Fixed-endpoint history and persistent-site controls](../../experiments/birth_prediction_20260930/TEMPORAL_SITE.md)
 separate available history, prediction lead and within-site structural evolution
 using retained descriptors and frozen MACE representations.

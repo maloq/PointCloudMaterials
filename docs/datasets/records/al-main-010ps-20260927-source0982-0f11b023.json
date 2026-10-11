@@ -1,0 +1,439 @@
+{
+  "dataset_id": "al-main-010ps-20260927-source0982",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0982/metadata.json",
+      "relative_path": "metadata.json",
+      "sha256": "32452d2db2c8f7ed920293f6cea9ac8971b062c0c9d02313eddb786d4174d38e",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "barostat_ps",
+        "duration_policy",
+        "ensemble",
+        "equilibration_steps",
+        "failure_id",
+        "material",
+        "maximum_frame_count",
+        "maximum_measurement_steps",
+        "measurement_ps",
+        "measurement_steps",
+        "momentum_removal_interval_ps",
+        "parent_dataset",
+        "parent_directory",
+        "parent_input_sha256",
+        "parent_integration_ps",
+        "parent_manifest_sha256",
+        "positions",
+        "preparation_reused",
+        "preparation_seed",
+        "pressure_bar",
+        "previous_preparation_manifest_sha256",
+        "previous_prepared_run_dir",
+        "protocol",
+        "root_lineage",
+        "run_dir",
+        "run_id",
+        "sample_interval_steps",
+        "sampling_ps",
+        "source_id",
+        "source_sha256",
+        "split",
+        "state",
+        "stopping",
+        "stopping_rule",
+        "temperature_K",
+        "termination",
+        "thermostat_ps",
+        "timestep_ps",
+        "velocities",
+        "velocity_seed"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_dense_half_stop_010ps_v1",
+            "first_json_path": "protocol",
+            "occurrences": 2
+          }
+        ],
+        "material": [
+          {
+            "value": "Al",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "thermostat_ps": [
+          {
+            "value": 0.3,
+            "first_json_path": "thermostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "barostat_ps": [
+          {
+            "value": 3.0,
+            "first_json_path": "barostat_ps",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0.0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 510.0,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 87283751,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 19173877,
+            "first_json_path": "velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0982/outcome.json",
+      "relative_path": "outcome.json",
+      "sha256": "b8746b83ca4f6dc7cc95605fc73db1099362145e8d1b70e8049ef46bd8fcb997",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "dynamics_seconds",
+        "frame_count",
+        "host",
+        "native_restart_sha256",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state",
+        "termination"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_dense_half_stop_010ps_v1",
+            "first_json_path": "termination.protocol",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1411,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0982/status.json",
+      "relative_path": "status.json",
+      "sha256": "b8746b83ca4f6dc7cc95605fc73db1099362145e8d1b70e8049ef46bd8fcb997",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "dynamics_seconds",
+        "frame_count",
+        "host",
+        "native_restart_sha256",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state",
+        "termination"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_dense_half_stop_010ps_v1",
+            "first_json_path": "termination.protocol",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1411,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0982/technical/stop-monitor/outcome.json",
+      "relative_path": "technical/stop-monitor/outcome.json",
+      "sha256": "5e8a54a5e30cbb4dd969020ad1b250ea7c06e337f5b002be88cb64691bc33439",
+      "kind": "metadata",
+      "keys": [
+        "confirmation_time_ps",
+        "confirmed_half_crossing",
+        "detection_step",
+        "final_crystal_fraction",
+        "final_largest_crystal_cluster",
+        "final_snapshot_sha256",
+        "final_step",
+        "first_half_observation_ps",
+        "half_event_right_censored",
+        "maximum_measurement_ps",
+        "maximum_measurement_steps",
+        "measurement_ps",
+        "peer90_observed_in_reference",
+        "prediction_tail_truncated",
+        "protocol",
+        "reason",
+        "recorded_at",
+        "retained_prediction_tail_ps",
+        "retained_prediction_tail_steps",
+        "state"
+      ],
+      "recorded_state": "dynamics_complete",
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_dense_half_stop_010ps_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0982/trajectory_binary_float16/manifest.json",
+      "relative_path": "trajectory_binary_float16/manifest.json",
+      "sha256": "bb50a5e41c5bedce0e2461a692c5dcf12b39bb58a07f10cb1d976f679d07cbbd",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1411,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al_dense_half_stop_010ps_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 2
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "independent_melt_87283751",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.002,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "source_run_id": [
+          {
+            "value": "al-main-010ps-20260927-source0982",
+            "first_json_path": "provenance.source_run_id",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1411,
+        "arrays": {
+          "positions": {
+            "shape": [
+              1411,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "2afdb7fa18e6f6044826647613918388275e4400ae32669c4f779943d66707bb",
+            "file": "positions.npy"
+          },
+          "velocities": {
+            "shape": [
+              1411,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "9116fd918a2f852e4d78da59945c59851e9620d1b24da774d6eadd6ba4c0a016",
+            "file": "velocities.npy"
+          },
+          "timesteps": {
+            "shape": [
+              1411
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "714f3aaf74cb2e66f835cb35dfa6e9d546af5e08baea7e859ac9e21b52a503be",
+            "file": "timesteps.npy"
+          },
+          "box_low": {
+            "shape": [
+              1411,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e6d78112454cc76b43e8d4bf3524af4f8a5411b188925c07230ff289ccbe9a50",
+            "file": "box_low.npy"
+          },
+          "box_high": {
+            "shape": [
+              1411,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "33ebdf94b95c0b7debff0e6cbd49247c436209f2f26d4c3ba96b2cd3c4718ca3",
+            "file": "box_high.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 70500,
+          "step_intervals": [
+            50
+          ]
+        },
+        "content_signature_from_manifest": "19d17f99c755ec7e396d1c88f38059d3b62bd0f9aed13b31b2c0ef1c76de41d2",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

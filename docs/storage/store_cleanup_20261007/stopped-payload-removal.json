@@ -1,0 +1,39 @@
+{
+  "state": "complete",
+  "completed_at": "2026-10-07T16:12:25.663995+00:00",
+  "removed": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "sha256": "9982dcca331e07505ff5b47388edeaca138bd24688d7d6dcbc71b469f2dd67a5",
+      "bytes": 22352231302,
+      "allocated_bytes": 29880541184,
+      "signature": [
+        58,
+        5854541329,
+        22352231302,
+        1791113934082709000
+      ],
+      "workspace_symlink": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891/trajectory.lammpstrj",
+      "completed_successor": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "sha256": "6467f229e88c27b788089821a5824236f38e68ff949b375e10bc2a311818c13d",
+      "bytes": 33554394558,
+      "allocated_bytes": 44857139200,
+      "signature": [
+        58,
+        5850250026,
+        33554394558,
+        1791113934078254000
+      ],
+      "workspace_symlink": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0892/trajectory.lammpstrj",
+      "completed_successor": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892"
+    }
+  ],
+  "released_allocated_bytes": 74737680384,
+  "authorization": "User requested continuing these two stopped runs only if not already finished, otherwise deleting their files; both verified as completed native-restart successors.",
+  "verification": "All 28 selected completed-archive files match publication SHA-256; complete Q/V timelines and shapes verified. Removed text identities unchanged from earlier byte-for-byte archive audit.",
+  "preserved": "Completed Q/V archives, native checkpoints of all attempts, logs and scientific provenance; no jobs started, canceled or altered",
+  "released_GiB": 69.60488891601562
+}

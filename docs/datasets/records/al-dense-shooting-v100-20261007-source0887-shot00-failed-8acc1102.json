@@ -1,0 +1,24 @@
+{
+  "dataset_id": "al-dense-shooting-v100-20261007-source0887-shot00-failed",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-dense-shooting-v100-20261007-source0887-shot00-failed/status.json",
+      "relative_path": "status.json",
+      "sha256": "74f54c195c7881b50de406ffffebd752d7a3204c5a418c4a44b98998fd6e1241",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

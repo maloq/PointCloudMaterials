@@ -69,7 +69,7 @@ def prepare_source(c,sid):
     import torch
     from scipy.spatial import cKDTree
     from src.research.encoder_context.geometry import physical_targets
-    from src.research.crystallization_origin import ancestry
+    from src.postprocessing.protocols import ancestry
     torch.set_num_threads(2)
     root=resolve_path(c['dataset']['root']);manifest=json.loads((root/'manifest.json').read_text())
     plan=json.loads((root/'plan.json').read_text());item=next(s for s in plan['sources'] if s['id']==sid)

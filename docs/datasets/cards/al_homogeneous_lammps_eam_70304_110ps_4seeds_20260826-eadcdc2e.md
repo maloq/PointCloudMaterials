@@ -10,9 +10,9 @@ Inspect current producer records and array headers; historical directory labels 
 - Location: `/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826`
 - Present on this machine: True
 - Potentials: Mishin 1999 Al EAM (Al99.eam.alloy)
-- Complete binary records with arrays present: 4; these are not independent-source counts.
-- Stored frames: 464; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 1.004 GiB
+- Complete binary records with arrays present: 0; these are not independent-source counts.
+- Stored frames: 0; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 0.034 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -28,6 +28,14 @@ Inspect current producer records and array headers; historical directory labels 
   "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
   "evidence": [
     "${dataset:al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826}"
+  ],
+  "storage_cleanup": {
+    "date": "2026-10-07",
+    "payload_files_removed": 17,
+    "receipt": "docs/storage/store_cleanup_20261007/payload-cleanup-receipt.json"
+  },
+  "limitations": [
+    "2026-10-07 user-authorized archive cleanup: binary payloads >=1 MiB in this old repository snapshot were deleted. Reports, figures, tables, code and provenance remain; historical producer completion does not imply payload availability."
   ]
 }
 ```
@@ -51,6 +59,6 @@ All 6 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

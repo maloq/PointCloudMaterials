@@ -1,0 +1,23 @@
+{
+  "dataset_id": "structural-response-futures-20261007",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/structural-response/c3-l3-bf16-20261007-v1/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "2d3830ee4a4b02bdf0aaba0917397ac999055b559de5fec70ad39103984d2686",
+      "kind": "metadata",
+      "keys": [
+        "config_identity",
+        "data_identity",
+        "files",
+        "identity_schema",
+        "motion_rows",
+        "response_identity",
+        "spatial"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

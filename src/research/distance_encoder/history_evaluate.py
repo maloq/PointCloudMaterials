@@ -15,7 +15,7 @@ from src.data.fixed_cohort.dataset import read_release
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.artifacts import result_folders
 from src.experiment_runner.metric_docs import snapshot_metric_docs
-from src.research.crystallization_origin import ancestry
+from src.postprocessing.protocols import ancestry
 from src.research.spatial_approach.evaluate import csv_rows
 from src.research.spatial_distance.confidence import tables, RADII
 from src.research.spatial_distance.train import distance_metrics

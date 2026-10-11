@@ -1,0 +1,42 @@
+[
+  {
+    "source": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+    "source_bytes": 22352231302,
+    "source_allocated_bytes": 29880541184,
+    "source_signature": [
+      58,
+      5854541329,
+      22352231302,
+      1791113934082709000
+    ],
+    "last_complete_step": 128650,
+    "last_complete_time_ps": 257.3,
+    "crystal_fraction": 0.01257396449704142,
+    "largest_crystal_cluster": 389,
+    "monitor_max_crystal_fraction": 0.011862767410104688,
+    "qualifies_for_user_requested_conversion": false,
+    "frame_sha256": "406ae769c466180f39ed6caa01d2768d35ad789e49d6c503a142f58e72d5a47c",
+    "frame": "docs/storage/store_cleanup_20261007/source0891-last-complete.lammpstrj.gz",
+    "frame_sha256_scope": "Uncompressed frame bytes; gzip round-trip verified"
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+    "source_bytes": 33554394558,
+    "source_allocated_bytes": 44857139200,
+    "source_signature": [
+      58,
+      5850250026,
+      33554394558,
+      1791113934078254000
+    ],
+    "last_complete_step": 193150,
+    "last_complete_time_ps": 386.3,
+    "crystal_fraction": 0.013754551661356395,
+    "largest_crystal_cluster": 186,
+    "monitor_max_crystal_fraction": 0.012104574419663177,
+    "qualifies_for_user_requested_conversion": false,
+    "frame_sha256": "5ef3ffcb2887e588ab5566585c909b4ed18448d20dfca4cd0d44070e5c602b40",
+    "frame": "docs/storage/store_cleanup_20261007/source0892-last-complete.lammpstrj.gz",
+    "frame_sha256_scope": "Uncompressed frame bytes; gzip round-trip verified"
+  }
+]

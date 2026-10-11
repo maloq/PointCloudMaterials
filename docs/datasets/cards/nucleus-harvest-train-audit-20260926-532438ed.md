@@ -40,7 +40,8 @@ Exploratory atom-origin references, causal region eligibility, event/control out
     "Operational establishment candidates, not validated critical nuclei.",
     "Enriched event references and overlapping uniform controls are not a finalized probability-training population.",
     "Future-centered review crops are for inspection only, never model inputs."
-  ]
+  ],
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -65,6 +66,6 @@ All 92 producer records, their hashes, field paths and current array schemas: [m
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

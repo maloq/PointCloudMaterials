@@ -12,7 +12,7 @@ Raw sharded geometry in Angstrom with material/atomic-number audit metadata. The
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 14.668 GiB
+- Allocated storage, excluding registered nested datasets: 14.655 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -46,7 +46,8 @@ Raw sharded geometry in Angstrom with material/atomic-number audit metadata. The
   "limitations": [
     "Static generating potentials remain unknown; exact dynamic potential IDs are retained per source.",
     "This is a structural expansion; all64/legacy16 crystallization evaluation rows remain unchanged."
-  ]
+  ],
+  "source_availability_note": "One or more raw Ta trajectory dependencies were deleted on 2026-10-03. Historical derived artifacts retain their original scientific definitions; see docs/storage/ta_simulation_removal_20261003/receipt.json."
 }
 ```
 
@@ -70,6 +71,6 @@ All 22400 producer records, their hashes, field paths and current array schemas:
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

@@ -1,0 +1,9 @@
+{
+  "name": "small-gpu-v1",
+  "campaign": "${storage:training_storage}/continuous_motion/all010-20261006-v3",
+  "partitions": ["A40", "A100", "L40S"],
+  "microbatch": 128,
+  "effective_batch": 256,
+  "accumulation_steps": 2,
+  "description": "One separate GPU request per partition, sharing the existing nine-fit queue. All256 noncollapse statistics and reference latent-noise samples are preserved. Existing256 workers keep their frozen implementation."
+}

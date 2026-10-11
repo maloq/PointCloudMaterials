@@ -274,16 +274,19 @@ def inspect_dataset(identifier, entry, root, child_roots, potential_hashes, refe
 
 def source_references(entries):
     result = defaultdict(list)
+    explicit = re.compile(r'["\'](?:dataset|dataset_id)["\']\s*:\s*["\']([^"\']+)["\']')
+    tokens = re.compile(r'\$\{dataset:([^{}]+)\}')
+    long_ids = [re.escape(key) for key in entries if len(key) > 10]
+    quoted = re.compile(r'(?=(["\'])(' + '|'.join(long_ids) + r')\1)') if long_ids else None
     for base in ('configs', 'src'):
         for path in (REPO/base).rglob('*'):
             if path.suffix not in ('.json','.yaml','.yml','.py') or path.name == 'datasets.json':
                 continue
             text = path.read_text()
-            for identifier in entries:
-                explicit_id = re.search(r'["\'](?:dataset|dataset_id)["\']\s*:\s*["\']'+re.escape(identifier)+r'["\']', text)
-                long_id = len(identifier)>10 and ('"'+identifier+'"' in text or "'"+identifier+"'" in text)
-                if '${dataset:'+identifier+'}' in text or explicit_id or long_id:
-                    result[identifier].append(str(path.relative_to(REPO)))
+            found = set(explicit.findall(text)) | set(tokens.findall(text))
+            if quoted is not None:found.update(identifier for _,identifier in quoted.findall(text))
+            for identifier in found & entries.keys():
+                result[identifier].append(str(path.relative_to(REPO)))
     return result
 
 

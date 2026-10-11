@@ -1,0 +1,10 @@
+{
+  "source_url": "https://www.ctcms.nist.gov/potentials/Download/2012--Mendelev-M-I-Kramer-M-J-Hao-S-G-et-al--Ni/1/Ni1_Mendelev_2012.eam.fs",
+  "sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "citation": "Mendelev et al., Philosophical Magazine 92, 4454-4469 (2012)",
+  "doi": "10.1080/14786435.2012.712220",
+  "element": "Ni",
+  "pair_style": "eam/fs",
+  "cutoff_A": 6.0,
+  "unchanged_author_file": true
+}

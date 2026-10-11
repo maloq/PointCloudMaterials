@@ -1,0 +1,121 @@
+{
+  "protocol": "al_cluster_structure_additions_20261008_v1",
+  "output": "${storage:training_storage}/nuclei_search/al-focused-additions-20261008-extraction",
+  "cache": "${storage:cache}/nuclei-search/al-focused-additions-20261008-extraction",
+  "registry": "${storage:training_storage}/nuclei_search/al-focused-additions-20261008-extraction/technical/inventory/registry.json",
+  "cadences": {
+    "010": 0.1
+  },
+  "detectors": [
+    "ptm",
+    "coherent_loose",
+    "coherent",
+    "coherent_strict"
+  ],
+  "ptm_rmsd_cutoff": 0.1,
+  "neighbor_cutoff_A": 3.6,
+  "bond_order": {
+    "l": 6,
+    "thresholds": [
+      [
+        0.65,
+        6
+      ],
+      [
+        0.7,
+        7
+      ],
+      [
+        0.75,
+        8
+      ]
+    ]
+  },
+  "minimum_tracked_atoms": 4,
+  "embryo_atoms": 8,
+  "minimum_shared_atoms": 4,
+  "minimum_overlap_fraction": 0.25,
+  "maximum_link_interval_ps": 1.5,
+  "embryo_persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "establishment_sensitivity_atoms": [
+    32,
+    128
+  ],
+  "establishment_persistence_ps": 1.5,
+  "liquid_return_ps": 1.5,
+  "growth_atoms": 128,
+  "growth_persistence_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "chunk_frames": 16,
+  "workers_per_lane": 8,
+  "extraction_lanes": 4,
+  "analysis_lanes": 1,
+  "time_limit": "06:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "geometry": "Full periodic original MD cells; exact source timelines and atom identities",
+    "relaxation": "Existing relaxed views inventoried separately; no independent birth counts or new quenches",
+    "conditions": "Audit metadata only; no model fitted",
+    "selection": "33 newly completed focused Al trajectories at native 0.10 ps; original ancestry and roles retained. No new MD, outcome filtering or interpolation.",
+    "criticality": "Operational embryos and establishment; no claim of committor validation",
+    "population": "33 newly completed focused Al trajectories at native 0.10 ps; original ancestry and roles retained. No new MD, outcome filtering or interpolation.",
+    "motion": "Velocities retained in source archives; structural labels and lineages use positions, box and atom identities only",
+    "history": "All saved observations from initialization, including the first 15 ps settling"
+  },
+  "exclude_plan": "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+  "native_cadence_ps": 0.1,
+  "allowed_roles": [
+    "raw_dynamics"
+  ],
+  "required_simulation_state": "complete",
+  "production_inventory": {
+    "potential_id": "al-lee2003-meam",
+    "producer_protocol": "al_birth_focused_010ps_v1",
+    "previous_plans": [
+      "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261007-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-v100-seven-20261007-extraction/technical/plan.json"
+    ],
+    "source_ids": [
+      "al-birth-focused-v100-20261007-source1008-shot01",
+      "al-birth-focused-v100-20261007-source1001-shot01",
+      "al-birth-focused-v100-20261007-source0925-shot01",
+      "al-birth-focused-v100-20261007-source1008-shot00",
+      "al-birth-focused-v100-20261007-source0902-shot01",
+      "al-birth-focused-v100-20261007-source0902-shot00",
+      "al-birth-focused-v100-20261007-source0983-shot00",
+      "al-birth-focused-v100-20261007-source0953-shot00",
+      "al-birth-focused-v100-20261007-source0860-shot01",
+      "al-birth-focused-v100-20261007-source0957-shot00",
+      "al-birth-focused-v100-20261007-source0925-shot00",
+      "al-birth-focused-v100-20261007-source0871-shot00",
+      "al-birth-focused-v100-20261007-source0957-shot01",
+      "al-birth-focused-v100-20261007-source0993-shot01",
+      "al-birth-focused-v100-20261007-source0971-shot01",
+      "al-birth-focused-v100-20261007-source0908-shot01",
+      "al-birth-focused-v100-20261007-source0871-shot01",
+      "al-birth-focused-v100-20261007-source0971-shot00",
+      "al-birth-focused-v100-20261007-source0938-shot00",
+      "al-birth-focused-v100-20261007-source0938-shot01",
+      "al-birth-focused-v100-20261007-source0933-shot01",
+      "al-birth-focused-v100-20261007-source0866-shot00",
+      "al-birth-focused-v100-20261007-source0926-shot01",
+      "al-birth-focused-v100-20261007-source0965-shot00",
+      "al-birth-focused-v100-20261007-source0897-shot01",
+      "al-birth-focused-v100-20261007-source0983-shot01",
+      "al-birth-focused-v100-20261007-source0866-shot01",
+      "al-birth-focused-v100-20261007-source0953-shot01",
+      "al-birth-focused-v100-20261007-source0965-shot01",
+      "al-birth-focused-v100-20261007-source1001-shot00",
+      "al-birth-focused-v100-20261007-source0887-shot01",
+      "al-birth-focused-v100-20261007-source0860-shot00",
+      "al-birth-focused-v100-20261007-source0993-shot00"
+    ],
+    "campaign_manifest": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/manifest.json"
+  },
+  "descriptor_threads": 1
+}

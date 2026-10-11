@@ -12,7 +12,7 @@ Original full-cell PTM/lineage fate audit; all 150 sources, new transient episod
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.163 GiB
+- Allocated storage, excluding registered nested datasets: 0.200 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -42,7 +42,8 @@ Original full-cell PTM/lineage fate audit; all 150 sources, new transient episod
     "Finite observation, coarse 0.75 ps cadence, conservative exclusion of any establishment-connected component.",
     "Four-to-seven-atom episodes inventoried but not atom-verified. New transient candidates lack classifier input-eligibility screening.",
     "Merging, residual crystal and right-censoring are explicit; no forced binary fate for uncertain events."
-  ]
+  ],
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -55,10 +56,10 @@ Original full-cell PTM/lineage fate audit; all 150 sources, new transient episod
 
 ## Evidence
 
-All 127 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al64-nucleus-fates-v1-20261002-e3a0dfe6.json).
+All 154 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al64-nucleus-fates-v1-20261002-e3a0dfe6.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

@@ -1,5 +1,64 @@
 # Simulations and datasets
 
+[Ni birth-window GPU relaxation](ni_birth_relaxation_20261008.md): full periodic
+fixed-box FIRE for native 0.10 ps windows from -6 to +6 ps around all 70 currently
+catalogued established liquid-origin Ni births; shared native-state cache,
+deduplicated source frames and audited persistent CUDA callback optimization.
+
+[Ni low-temperature nucleus-birth campaign](ni_births_lowT_010_20261008.md):
+36 new independent melts, six each at 950/1000/1050/1100/1125/1150 K,
+four GPU workers, native 0.10 ps positions/velocities and automatic birth search.
+
+[Million-atom Al velocity recovery](al_million_velocity_replay_20261007.md):
+checkpoint-anchored native CPU replay of 400 ps production, with 0.10 ps Q/V,
+per-section fidelity gates and no added independent ancestry.
+
+[Independent Ni nucleus-birth campaign](ni_births_010_20261007.md): the original twelve
+plus twelve additional independent 32,000-atom melts, 1100–1400K NPT, 0.10ps
+positions/velocities, three added GPU workers and automatic birth search.
+
+[Fast Ni EAM/FS on GPU](ni_eam_gpu_20261007.md): pinned Mendelev 2012 tables, analytic force tangents, graph replay and LAMMPS numerical validation.
+
+[Additional dense Al V100 reshoots](al_dense_shooting_v100_20261007.md): 40 planned
+velocity reshoots from 20 existing liquid parents, exact 0.10 ps Q/V, inherited
+roles and native NPT; one V100 with a combined 24-hour validation/production budget.
+
+[Continuous-motion tangent teachers](../continuous_motion.md): outcome-blind native Q,V, full-cell100fs BAOAB with float64 integration, and a frozen1600-update training campaign with an extended execution window.
+
+[Native-velocity response training to 0.5 ps](response_native500_20261006.md): float64 integration, source temperature, weaker damping, four model arms and three fitting seeds.
+
+[Box and thermostat continuation controls](nucleus_dynamics_ablation_20261006.md): 384 new 12 ps NVT/damping controls on the same 64 calibration states, nine-hour cap.
+
+**October 4 Ti duplicate cleanup:** six `Ti_early_slurm` branch exports were removed after checksum comparison of all 36 arrays against retained `Ti/branches` files. [Deletion receipt](../storage/ti_duplicates_float32_20261004/deletion.json). Retained Ta/Ti text snapshots receive verified float32 sidecars; existing float16 trajectories and native restart/input files keep their precision.
+
+[Dense Al on GPU MEAM](al_dense_gpu_20261004.md): five unstarted 70,304-atom sources transferred to two GPUs, with native isotropic NPT and original dense sampling/stopping preserved.
+
+[Differentiable CUDA MEAM on Blackwell](meam_gpu_blackwell_20261004.md): compiled analytic response derivatives, precision gates, shared-liquid200ps and separate seeded-growth controls.
+
+[Periodic16k MEAM CPU/GPU comparison](meam_md_16k_20261004.md): new shared liquid,200ps at450K, native-precision divergence and compiled force benchmarks.
+
+[Initial-velocity MEAM response](response_velocity_20261004.md): new float32 compiled CUDA MEAM full-cohort comparison at0.1/0.5ps; separate three-hour0.1/0.5/1ps subset, stopped original large campaign and recorded prior validation.
+
+[Differentiable Lee2003 Al MEAM](response_meam_torch_20261004.md) validates the exact PyTorch port and measures complete20/100fs responses against MACE on the same GPU.
+
+
+[Expanded unrelaxed local80 responses](response_geometry_20261003.md):720 training geometries, generic future-target ablations and two-GPU detached collection/training.
+
+
+**Ta holdings after October 3 cleanup:** the earlier million-atom baseline and
+original Ta snapshots remain. The five earlier large-cell runs and 24 shooting
+futures were explicitly deleted; historical inventories below describe their
+former availability. Reports/provenance remain in
+[the cleanup archive](../storage/ta_simulation_removal_20261003/preserved.json).
+
+[October 3 Al rerun recovery](al_main_half_stop_20261001/README.md#october-3-quota-recovery)
+resumes native checkpoints from the stopped exact 0.1/0.01 ps queue with verified
+binary prefixes; temporary execution is on STORE after SCRATCH quota failure.
+
+[Force-only UNEP/MEAM response comparison](response_force_engines_20261002.md)
+measures complete common-noise finite-difference bundles and checks potential-specific
+halos against the existing local80 MACE reference.
+
 [Local80 MLIP response collection](local_response_20261002.md) samples fixed-Al64 parents with inherited source roles and gates surrounding-environment convergence before training.
 
 
@@ -119,3 +178,11 @@ commands and current recipes; old exact launcher paths remain in the STORE repo 
   six of thirty initially complete; remaining 24 submitted as Slurm array 991371.
 
 Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
+
+- [Local80 finite-displacement forwards](local_response_followup_20261003.md): common-noise20/100fs simulation at0.0034–0.338Å per-atom RMS and matched training controls.
+
+- [Saved-state nucleus recovery, October 4](nucleus_recovery_20261004.md): known-site recovery vs restart offset and paired precision controls.
+
+- [Dissolved-embryo and random-liquid controls, October 5](nucleus_controls_20261005.md): matched 12 ps continuations, shared 16-hour deadline.
+- [Additional negative controls, October 5](nucleus_negative_extra_20261005.md): new liquid ancestors and repeated embryo shots, shared three-hour deadline.
+- [Continuation bias and birth-rate calibration](nucleus_continuation_bias_20261005.md): paired historical audit and present-selected, matched-temperature embryo continuations.

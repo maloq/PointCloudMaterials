@@ -1,0 +1,5045 @@
+{
+  "dataset_id": "ni-births-010-20261007-extension01",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/complete.json",
+      "relative_path": "ni-T1100-melt03/complete.json",
+      "sha256": "71c6d61de3922609ea1a71100d99f1c12a3e3b6416532d253bf63393b355a9f4",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008614,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 480.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/metadata.json",
+      "relative_path": "ni-T1100-melt03/metadata.json",
+      "sha256": "8d1b1c1fe448922b4670a545d368b5241380b3a6e67eb9bcb14f873bd961d07a",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008614,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt03",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/outcome.json",
+      "relative_path": "ni-T1100-melt03/outcome.json",
+      "sha256": "71c6d61de3922609ea1a71100d99f1c12a3e3b6416532d253bf63393b355a9f4",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008614,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 480.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1100-melt03/trajectory_binary_float16/manifest.json",
+      "sha256": "1e8aa4458013b03330990135bd5041a9b448da5bcdc43304206f2273df0d30f6",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 4801,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 480.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008614,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt03",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 97
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 4801,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              4801,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e0cec5594866093e7e7c2a1888ea21cacebaac884c287f6886e05c4e51a032ca",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              4801,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "024f07b7f4f1b0362bd1c2656b542e300938f9e8f774955b7343d96cc983735d",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              4801,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "71a6dfba3c6991648139d85058e0bc0261907aa41a983e83cdd38b970039b89c",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              4801
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b78a4e9910054b05a92fbd93a63e669929b2b9181491f9e1cbc843850a0b5d44",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              4801,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "18c3be601fce81d5276e700d34699c8be22703a849aa65057d31088fc97bf11d",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 480000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "0c495b4375fc5e78a35aaa389ce917dd3ae2fe91449bd6cab77250b010e72c56",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/complete.json",
+      "relative_path": "ni-T1100-melt04/complete.json",
+      "sha256": "f230f8b8d64db9dfced09b2619afe53d31dbf71be9fbec547565bb7580590219",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009018,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 160.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/metadata.json",
+      "relative_path": "ni-T1100-melt04/metadata.json",
+      "sha256": "0cae188bbc71656dec036c4c00692a4a5d1736db7774792e3fd34ee0327e8d4d",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009018,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt04",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/outcome.json",
+      "relative_path": "ni-T1100-melt04/outcome.json",
+      "sha256": "f230f8b8d64db9dfced09b2619afe53d31dbf71be9fbec547565bb7580590219",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009018,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 160.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1100-melt04/trajectory_binary_float16/manifest.json",
+      "sha256": "06e5001a66653c7178ccaf3ce8f580524146bbf7bf5edd42de757be99397b88b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 160.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009018,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt04",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 33
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 1601,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ff90a919b4960f4bd357613981b6425846132a202eb63e94004d1d3f92448c4c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              1601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "40229d9f33feb03097906cdd1063df593418f4c52052389f61e50d915d87dac8",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              1601,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "038f8141697280d1a876c0d2404573f962227d7cf08f85acbad524d86a5ee361",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              1601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3b69f9b5c341706d4105ef73db75b0a08c4ea164eaab51ff96cf877296a8c8d4",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              1601,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "762d3859f799ae50e6c2cba4399d54121fe76acff805ea1a2b14778c1b902c7b",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 160000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "058d2d1a27168a5e3dcd56b5e22db8b8834dbde35d4f86c8c2051c0bee786c6a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/complete.json",
+      "relative_path": "ni-T1100-melt05/complete.json",
+      "sha256": "bddd88d0dfda1495624488092174c89bea318f0b4702f86a10aca0444958bbc2",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009422,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 115.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/metadata.json",
+      "relative_path": "ni-T1100-melt05/metadata.json",
+      "sha256": "6a95249d700d9a35d5069318a1f7c7c82b8e008d3b7335671679ff0ba6fd7c35",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009422,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt05",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/outcome.json",
+      "relative_path": "ni-T1100-melt05/outcome.json",
+      "sha256": "bddd88d0dfda1495624488092174c89bea318f0b4702f86a10aca0444958bbc2",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009422,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 115.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1100-melt05/trajectory_binary_float16/manifest.json",
+      "sha256": "cf4e3c1dc775365486e27ce3ef982866d728d167b061d069f3a9bdc8288f82c9",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1151,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 115.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009422,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1100-melt05",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1100,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 24
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 1151,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              1151,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "70a51e65d96c7f4b68f8bd1739a532d7f6d5a766faec978c0e300e74dd10dd18",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              1151,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "80b4baaa5acca17f96cbc3dcad2eae33a441b4f7f1fd8ae5d5d01308d8fa655b",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              1151,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "cb419e894cc836e934b004819e4d2fb5763f6540b9d44cef394d46e90d13b9e8",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              1151
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "5220c78feb08fced4027133bd0be174faa95f33b729b1b797274801d42cb7d7b",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              1151,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "e3c374b56255542018f4f8a3b182b19fd874dfe92e2f9a5596183d1ebf6c9748",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 115000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "26880c9310d30430740fe36c3e260d4e4d35fb452073bc9299b74fbb9622c018",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/complete.json",
+      "relative_path": "ni-T1200-melt03/complete.json",
+      "sha256": "ae87396c3f7dc80da593f8f53f65a5ba4dc6238ab7fd6e27ad0dddc77e31abef",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008513,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/metadata.json",
+      "relative_path": "ni-T1200-melt03/metadata.json",
+      "sha256": "5885320af7b821465c75a4e7d5f5436f7a83792b0e68f604f603ca76ae9017e4",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008513,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt03",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/outcome.json",
+      "relative_path": "ni-T1200-melt03/outcome.json",
+      "sha256": "ae87396c3f7dc80da593f8f53f65a5ba4dc6238ab7fd6e27ad0dddc77e31abef",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008513,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1200-melt03/trajectory_binary_float16/manifest.json",
+      "sha256": "d803fdd291ac225016f9eb1b082bcb892cfa3e3fe4932d23427c563166427e10",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008513,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt03",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "c2706b4d828a4830c858ef0ee5822824175ebd467c39a01f080086cd96490aa5",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6893930145534a3a8ba331d8f6a1778a0c0eda8fa2b4639eff41a74ca1d85256",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "37de259f2b91a2b0d6501e4cb7cd8d5d8f56395de0fa177bf759b180fed6dd66",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "852a63e37a7dff9e17a56595986d25847ccab6e9f787107eecde0a00c05cb4f6",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "0de408e2bde7295f7f1202ba2cdce608bc0ff99cda08b63ce5f8cf577102fd7d",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/complete.json",
+      "relative_path": "ni-T1200-melt04/complete.json",
+      "sha256": "3f3d7961dacfcd91d160bee240ee9fa3ac17d92ff6e8fb7c9e3181cc1e895965",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008917,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/metadata.json",
+      "relative_path": "ni-T1200-melt04/metadata.json",
+      "sha256": "b61554e834daf30b031523602eeff25ad2674cf74647837eabac2092192c820b",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008917,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt04",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/outcome.json",
+      "relative_path": "ni-T1200-melt04/outcome.json",
+      "sha256": "3f3d7961dacfcd91d160bee240ee9fa3ac17d92ff6e8fb7c9e3181cc1e895965",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008917,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1200-melt04/trajectory_binary_float16/manifest.json",
+      "sha256": "97b8b5bd5df8cec88c2ceb5a496c2ac08b61f5b849436fa2450215dce1deec17",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008917,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt04",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a13318656e82b184f67d26406e2429a20fa4663391fc64014a8570101e24779f",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "b3d9142dd4466ed446cf1d00da9400443a9957526be68c7d4ec8bb607d173dbb",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "41f90b4f0782555b7f90df52c2ef0f7ab4e2d4da64010ea7b71624219dcf1fd0",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "cd3dc2356f7c9fa8627006be6cd25d83a3e23e6b7cd5277ec3a1948d76548381",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "6eda537e7bdfb8672477ddaa8fc6e092595a28455e130cea03d0b33364190b0a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/complete.json",
+      "relative_path": "ni-T1200-melt05/complete.json",
+      "sha256": "c39e6064e324653825f6d4317fb29b1e80a565f7c5a5ca2ddda996fb8b3caea5",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009321,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/metadata.json",
+      "relative_path": "ni-T1200-melt05/metadata.json",
+      "sha256": "490fde3973238bcf792b09a7f7d17b1857ded76092c4c5e69eff90656f3c950d",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009321,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt05",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/outcome.json",
+      "relative_path": "ni-T1200-melt05/outcome.json",
+      "sha256": "c39e6064e324653825f6d4317fb29b1e80a565f7c5a5ca2ddda996fb8b3caea5",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009321,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1200-melt05/trajectory_binary_float16/manifest.json",
+      "sha256": "098d9b40be7b22d1a964d6445ce9b16f59fbc0feb632493a526b4f3a522323ce",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009321,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1200-melt05",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1200,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "8c9069d1d1fcf8a36a16307280a8f8edfc972f3e4d65f335adcb294e8f8fb99c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "b9c02b134a50c8e5a91309800d6217aba9a9a6d1e89ddff223cd19b91e5d036b",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7f0d9cc4d258dd90c5c6745e59f9f15691c2942291d4ea8904dffcff0e59bb53",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "46059f7c92bbe02b72f53c9deda4f37f36537fc704d765e7223ac3912b2f572a",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "ce9f700e4106da49fbd057d463870ea411e3e89daffae428113c7557785591c4",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/complete.json",
+      "relative_path": "ni-T1300-melt03/complete.json",
+      "sha256": "34ca3eb14d9765fd96f82ad412de32e12c131d2eae58f0974df9930450581768",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008715,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/metadata.json",
+      "relative_path": "ni-T1300-melt03/metadata.json",
+      "sha256": "3c14e5b95374689944cfc23d677264392508629b98f26561143acee6faa3b594",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008715,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt03",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/outcome.json",
+      "relative_path": "ni-T1300-melt03/outcome.json",
+      "sha256": "34ca3eb14d9765fd96f82ad412de32e12c131d2eae58f0974df9930450581768",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008715,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1300-melt03/trajectory_binary_float16/manifest.json",
+      "sha256": "4d555c1baffbd47ee3140130a67ffeb16280046cf7c34c6d3da4ecf9c97dfb0b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008715,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt03",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "1302f84c5b8edfc6dd938cda14570c8c9bacca7de9fa324333f70c3dfd7529a6",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3cfc927aeb209fe43778b27978b4521a043e9bd82ab1dece06aff13aaab9df3e",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "2f64c72dbe3aee25f4d64ada3103e5bdd47a8b73feca54042907ccbe44f3ccb5",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "374395f455b806c40b964ed4e2900558381fe7f2d98aca1561a9c92501231180",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "6c9e5feaa324e242d1e9e24646dbc4c8963dbbc69a5e33c20328a830ea2ad21c",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/complete.json",
+      "relative_path": "ni-T1300-melt04/complete.json",
+      "sha256": "172f86ccd02053da08dd16b3e462b7fcdb1e19d571825bd6f8dc9f10c0510786",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009119,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/metadata.json",
+      "relative_path": "ni-T1300-melt04/metadata.json",
+      "sha256": "4fb07fa50a78ff180490f687da8e7ff336d79aeece703b1b35a63c3f2e11f9d5",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009119,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt04",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/outcome.json",
+      "relative_path": "ni-T1300-melt04/outcome.json",
+      "sha256": "172f86ccd02053da08dd16b3e462b7fcdb1e19d571825bd6f8dc9f10c0510786",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009119,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1300-melt04/trajectory_binary_float16/manifest.json",
+      "sha256": "236306c8da1cfaefae358179fc163acb4fb0d388e6becd2e80f5a9c55e0b8b21",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009119,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt04",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "454e585fa4a5aaf2cd03bf0815274a6236f130686e13bccf51482914be1b66b4",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "04535262a92b684938c8297624d8f236690cd296b6998e5c2d470f9e6916f15c",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7fa76b18eaaa4c78237ad00e729ac254e7b483c1a2dcbf8644955b921d9e6c35",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0e284c84852595e6b95931bc3d4fb7c1a9e83f814d732bcba3c2d4b135d6ae6d",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "0c2fa540b89616df28247c07ed8168fdaf4ff48b941747c40039c5cd13a74264",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/complete.json",
+      "relative_path": "ni-T1300-melt05/complete.json",
+      "sha256": "e61f30d1b4341fbbb119d8381407af2b9ba2ef4830fe7650039c1bbc643df284",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009523,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/metadata.json",
+      "relative_path": "ni-T1300-melt05/metadata.json",
+      "sha256": "4b48d80a147ffa30819f8e62a76c80d40d893182f43ee7a00a0d08ad19899102",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009523,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt05",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/outcome.json",
+      "relative_path": "ni-T1300-melt05/outcome.json",
+      "sha256": "e61f30d1b4341fbbb119d8381407af2b9ba2ef4830fe7650039c1bbc643df284",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009523,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1300-melt05/trajectory_binary_float16/manifest.json",
+      "sha256": "e0adb9f734bfa4a670807e4beff968ca3376aa1b2b0e0b9860cb87e33d6de9b8",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009523,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1300-melt05",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1300,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cc6a6891d3024cce67405fd71fe22cab5b91942ff4c248a7317658cc609a89e3",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f78311e15aa31ba1d071701403b199f62b5a3abb83622d2fc480d3c8bbc700a3",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "1e55aaaf04732b55d6acbce38e4f9443232f230daa45143adaaeb625cb6808fe",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b451186f50af8a445dffa6b9888f48a5575df915f1fce952275b45a50e5b2e4f",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "eee108551d5d17226f7093ea6091dc76e120ace73ddf8aa465ea1ba916ee8e4d",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/complete.json",
+      "relative_path": "ni-T1400-melt03/complete.json",
+      "sha256": "f51321b6147dac4dc20d53cfe5a740600165551474905d89b91858b31e1091e6",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008816,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/metadata.json",
+      "relative_path": "ni-T1400-melt03/metadata.json",
+      "sha256": "e467c90e2738b8b0e9d6db884378462d3a9f24fbafd82102d1a6bae3aa58a409",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008816,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt03",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/outcome.json",
+      "relative_path": "ni-T1400-melt03/outcome.json",
+      "sha256": "f51321b6147dac4dc20d53cfe5a740600165551474905d89b91858b31e1091e6",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008816,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1400-melt03/trajectory_binary_float16/manifest.json",
+      "sha256": "624cfdda938a30d7fb5de0335992efc529a3833dda883187847e77fda3a02b42",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261008816,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt03",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "train",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "550accb3957f10077b48fd08e53a09747da8ac9dc6ad84600bd66966c62bbbb8",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ed9af2c8c784b246f03a2da082236356b7c50241372c254ca14dcc52b852a77e",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "55ff09116ed8a9cb8682c8fca0eaad1cec8d42788cfd315305d3692ab83da169",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "75d050b9cd3930ba858128313fa2e062a807ad6b18016543ef00243e5c79b113",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "a1225a317a7fb0e7c730c63ed0a47a283dbb646ad7e7a523163f682a96b20d7a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/complete.json",
+      "relative_path": "ni-T1400-melt04/complete.json",
+      "sha256": "9dce9b644329f0235e9e947f3d594432ae989044e816e669de76d18acf2559c1",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009220,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/metadata.json",
+      "relative_path": "ni-T1400-melt04/metadata.json",
+      "sha256": "ae58cf03ac0535dfacc85033f0b38922ba1c93ed8d5537a41d509f31fe4f77aa",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009220,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt04",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/outcome.json",
+      "relative_path": "ni-T1400-melt04/outcome.json",
+      "sha256": "9dce9b644329f0235e9e947f3d594432ae989044e816e669de76d18acf2559c1",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009220,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1400-melt04/trajectory_binary_float16/manifest.json",
+      "sha256": "641e0cf0abd698af514a583141809e5d3b93cab2822c66c3abd2c5c3c4776c39",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009220,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt04",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "selection",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6d20119084b07b5d4561a1e019ffc4ea9a822c40919fc74c5e51449d6de1831f",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ae925d1cf4909987b642cc984b3d9a2e5f0fae08769a949735d84bdc361b59fd",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "104bed2c9f5c0a4407c3951db8d597267d39fecf2dfee5be1ae906b43b6c9aab",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d73330101874ac6ccae61785f56e6a5b115e732b465072bf9da1ed1447893b53",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "8e18068a191317f93178e4a83f435e5f67e2bddda619849bd998417d07f56bf2",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/complete.json",
+      "relative_path": "ni-T1400-melt05/complete.json",
+      "sha256": "a9384b1f48adb5f01c82c52d9d4b790c541c24478cd4cc1fa92bcb931e567838",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009624,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/metadata.json",
+      "relative_path": "ni-T1400-melt05/metadata.json",
+      "sha256": "eb4776dd4befb84e5a4db5d9e07f942a200d83a2136e665988f47edfed97554c",
+      "kind": "metadata",
+      "keys": [
+        "atom_count",
+        "cooling_ps",
+        "ensemble",
+        "force_dtype",
+        "hold_max_ps",
+        "id",
+        "integration_dtype",
+        "material",
+        "native_velocity_units",
+        "observation_dtype",
+        "potential",
+        "potential_sha256",
+        "preparation_seed",
+        "pressure_bar",
+        "protocol",
+        "replicate",
+        "role",
+        "root_lineage",
+        "sample_interval_ps",
+        "split",
+        "state",
+        "temperature_K",
+        "timestep_ps"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009624,
+            "first_json_path": "preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "material",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "ensemble",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt05",
+            "first_json_path": "root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+        "potential": "ni-mendelev2012-eam"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/outcome.json",
+      "relative_path": "ni-T1400-melt05/outcome.json",
+      "sha256": "a9384b1f48adb5f01c82c52d9d4b790c541c24478cd4cc1fa92bcb931e567838",
+      "kind": "metadata",
+      "keys": [
+        "callbacks",
+        "duration_ps",
+        "frames",
+        "gpu",
+        "job",
+        "record",
+        "seconds",
+        "state",
+        "termination",
+        "trajectory_manifest_sha256"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "record.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009624,
+            "first_json_path": "record.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/trajectory_binary_float16/manifest.json",
+      "relative_path": "ni-T1400-melt05/trajectory_binary_float16/manifest.json",
+      "sha256": "ff4c5c386e83752781be7b99437eca7864e8afa639b761ee6ca2c2b9b97c5171",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 32000,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 5201,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "ensemble": [
+          {
+            "value": "isotropic NPT",
+            "first_json_path": "provenance.ensemble",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ni",
+            "first_json_path": "provenance.material",
+            "occurrences": 1
+          }
+        ],
+        "measurement_duration_ps": [
+          {
+            "value": 520.0,
+            "first_json_path": "provenance.measurement_duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "preparation_seed": [
+          {
+            "value": 261009624,
+            "first_json_path": "provenance.preparation_seed",
+            "occurrences": 1
+          }
+        ],
+        "pressure_bar": [
+          {
+            "value": 0,
+            "first_json_path": "provenance.pressure_bar",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "ni_mendelev2012_independent_npt_births_v1",
+            "first_json_path": "provenance.protocol",
+            "occurrences": 1
+          }
+        ],
+        "root_lineage": [
+          {
+            "value": "ni-T1400-melt05",
+            "first_json_path": "provenance.root_lineage",
+            "occurrences": 1
+          }
+        ],
+        "sample_interval_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "provenance.sample_interval_ps",
+            "occurrences": 1
+          }
+        ],
+        "split": [
+          {
+            "value": "test",
+            "first_json_path": "provenance.split",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 1400,
+            "first_json_path": "provenance.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_ps": [
+          {
+            "value": 0.001,
+            "first_json_path": "provenance.timestep_ps",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.components[0].storage_dtype",
+            "occurrences": 105
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 32000,
+        "frame_count": 5201,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a44bb57301843b639d62311d00b0f25a68539cdd3e018b6d158ad38c218370f",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              32000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "b36b2e56731b1ecf66a6f2563dafffdc9cfd7102d554c20109195bc4ab08369b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "875e10c070db6931ff853e074bd1c3347ef18bca055c5b26626d4a2c36bd74f6",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              5201,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "1ea1f7f08191028a0513bd50918525194e99e949914d4db48dc08e36458498e3",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "dc381a2c6b3665ec9759b024bcd3f7abb9d67a17c266726f4c8347db63cffe17",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              5201
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cae1e5d7e6c472445cedec5b66431256c79b9fb3b0f1cb55eb5f804f27827c28",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              5201,
+              32000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "947807aaf05fbb1d25c176bbd20faffb99ba7b5380fe7f0a7fc2865074621832",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 520000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "c9ace2b794496a9e5d51e18a48f071c01a3ea9b3966f9ed4fd61a414d379f97c",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

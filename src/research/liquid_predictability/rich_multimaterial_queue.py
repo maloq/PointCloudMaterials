@@ -87,7 +87,7 @@ def preflight(c,path):
         print(json.dumps(dict(reused_sealed_release=True,identity=m['identity'],counts=m['counts'])),flush=True)
         return
     from .rich_multimaterial_data import plan,prepare_task
-    from .descriptors import patch_descriptors
+    from .descriptors import patch_descriptors,descriptor_options
     p=plan(c);samples=[];seen=set()
     for t in p['tasks']:
         key=t['role'],t['material']
@@ -96,7 +96,7 @@ def preflight(c,path):
         ids=np.asarray(t['row_indices'][:8],np.int64) if 'row_indices' in t else np.arange(min(8,len(raw)))
         start=time.monotonic()
         for row in ids:
-            values,names=patch_descriptors(np.asarray(raw[row],np.float32)*np.float32(t['factor']))
+            values,names=patch_descriptors(np.asarray(raw[row],np.float32)*np.float32(t['factor']),**descriptor_options(c))
             if names!=[v['name'] for v in p['columns']] or not np.isfinite(values).all():raise ValueError('Multimaterial descriptor check failed')
         samples.append(dict(role=t['role'],material=t['material'],rows=len(ids),seconds=time.monotonic()-start,outputs=len(values)))
     # Exercise resumable shard production on one small real task. It remains

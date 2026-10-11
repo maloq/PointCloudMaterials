@@ -1,0 +1,13 @@
+{
+  "campaign_id": "al-birth-focused-v100-20261007",
+  "protocol": "al_birth_focused_010ps_v1",
+  "predecessor_campaign": "al-dense-shooting-v100-20261007",
+  "target": "Nuclei forming within the recorded trajectory; origins/fates determined by the full-cadence lineage search",
+  "record_from_initialization": true,
+  "sampling_ps": 0.1,
+  "monitor_ps": 3.0,
+  "stopping_cluster_atoms": 128,
+  "confirmation": "Matched components at two consecutive checks; not a continuous-persistence birth label",
+  "followup_ps": 12.0,
+  "budget": "Replace only reserved unstarted branches; keep the four existing lane deadlines"
+}

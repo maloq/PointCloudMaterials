@@ -1,0 +1,7037 @@
+{
+  "date": "2026-10-08",
+  "purpose": "Calculate only current training-active spatial targets",
+  "benchmark": {
+    "rows": 936,
+    "sources": 117,
+    "materials": [
+      "Al",
+      "Mg",
+      "Ta",
+      "Ti"
+    ],
+    "hostname": "nodecpu04",
+    "affinity": [
+      22,
+      24,
+      26,
+      28,
+      58,
+      60,
+      62,
+      64
+    ],
+    "workers": 4,
+    "warmup_seconds": {
+      "reference": 3.5336921522393823,
+      "spatial_safe": 9.701946389395744,
+      "native_batch": 37.44997484982014,
+      "native_selected": 0.006014180835336447
+    },
+    "worker_startup_seconds": 0.09864429291337729,
+    "single_worker_seconds": {
+      "reference": [
+        14.497856260742992,
+        14.531477467156947,
+        14.594360131304711
+      ],
+      "spatial_safe": [
+        7.4774308279156685,
+        7.449033162090927,
+        7.447269825730473
+      ],
+      "native_batch": [
+        5.113367958925664,
+        5.132362601812929,
+        5.134391386993229
+      ],
+      "native_selected": [
+        4.944187257904559,
+        4.957664488814771,
+        4.962372688110918
+      ]
+    },
+    "parallel_seconds": {
+      "reference": [
+        3.9653890798799694,
+        3.9631879492662847,
+        3.9624837171286345
+      ],
+      "spatial_safe": [
+        2.0294048879295588,
+        2.0311139128170907,
+        2.028956924099475
+      ],
+      "native_batch": [
+        1.4201405798085034,
+        1.416529188863933,
+        1.4178215260617435
+      ],
+      "native_selected": [
+        1.367671711370349,
+        1.3680810602381825,
+        1.366445653140545
+      ]
+    },
+    "numerical": [
+      {
+        "variant": "reference",
+        "family": "bond_order",
+        "rows": 936,
+        "columns": 40,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "bond_order/l2_q",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "reference",
+        "family": "cna",
+        "rows": 936,
+        "columns": 45,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "cna/fixed32_coordination",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "reference",
+        "family": "geometry",
+        "rows": 936,
+        "columns": 99,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "geometry/count",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "reference",
+        "family": "tda",
+        "rows": 936,
+        "columns": 258,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "tda/n32_h0_count",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "spatial_safe",
+        "family": "bond_order",
+        "rows": 936,
+        "columns": 40,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "bond_order/l2_q",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "spatial_safe",
+        "family": "tda",
+        "rows": 936,
+        "columns": 258,
+        "max_absolute": 5.684341886080802e-14,
+        "rms_standardized": 4.211481180892557e-13,
+        "max_standardized": 1.7233576517388562e-10,
+        "unequal_values": 10699,
+        "max_error_feature": "tda/n80_h1_betti2.75",
+        "max_error_row": {
+          "source": "native-892",
+          "material": "Al",
+          "lineage": "independent_melt_392346167",
+          "row": 93458
+        }
+      },
+      {
+        "variant": "native_batch",
+        "family": "bond_order",
+        "rows": 936,
+        "columns": 40,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "bond_order/l2_q",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "native_batch",
+        "family": "tda",
+        "rows": 936,
+        "columns": 258,
+        "max_absolute": 5.684341886080802e-14,
+        "rms_standardized": 4.211481180892557e-13,
+        "max_standardized": 1.7233576517388562e-10,
+        "unequal_values": 10699,
+        "max_error_feature": "tda/n80_h1_betti2.75",
+        "max_error_row": {
+          "source": "native-892",
+          "material": "Al",
+          "lineage": "independent_melt_392346167",
+          "row": 93458
+        }
+      },
+      {
+        "variant": "native_selected",
+        "family": "bond_order",
+        "rows": 936,
+        "columns": 40,
+        "max_absolute": 0.0,
+        "rms_standardized": 0.0,
+        "max_standardized": 0.0,
+        "unequal_values": 0,
+        "max_error_feature": "bond_order/l2_q",
+        "max_error_row": {
+          "source": "native-860",
+          "material": "Al",
+          "lineage": "independent_melt_511618678",
+          "row": 0
+        }
+      },
+      {
+        "variant": "native_selected",
+        "family": "tda",
+        "rows": 936,
+        "columns": 113,
+        "max_absolute": 5.684341886080802e-14,
+        "rms_standardized": 5.865888831178227e-13,
+        "max_standardized": 1.7233576517388562e-10,
+        "unequal_values": 25,
+        "max_error_feature": "tda/n80_h1_betti2.75",
+        "max_error_row": {
+          "source": "native-892",
+          "material": "Al",
+          "lineage": "independent_melt_392346167",
+          "row": 93458
+        }
+      }
+    ],
+    "implementation": {
+      "rich_multimaterial_data.py": "474549188950e5aa5b41166f09a296a51a2188aef35c5d292da0b64a785d1427",
+      "descriptors.py": "df9301550eb851ccdf0ea3c2ae99a221ca3bfade6974eecff250bdc47f17030d",
+      "rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+      "alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+      "alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+      "selection.py": "099abb41d2a0a301113df151e53dcf3966b9ff9f3805e22322f808c18e597dc2"
+    },
+    "reference_sha256": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
+    "benchmark_sha256": "c163a8719d8de87f7cf201064cfcf4e6de2fc654f68567d0d9b58725e885e74e",
+    "reference_vs_cached": {
+      "max_standardized": 0.0,
+      "rms_standardized": 0.0,
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      },
+      "max_error_feature": "geometry/count",
+      "note": "Original producer on this CPU versus sealed targets; measured separately from optimization drift."
+    },
+    "cpu": "Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz",
+    "versions": {
+      "numpy": "1.26.4",
+      "scipy": "1.17.1",
+      "gudhi": "3.11.0",
+      "numba": "0.65.0"
+    },
+    "note": "Steady-state compute timings exclude input sampling, warmup and publication; no online run.",
+    "native_build": {
+      "identity": "57ed49eb7df45e0615fb4c022662140a7ad5c46fffb27b870bf7a3d672c7f903",
+      "binding": {
+        "source_sha256": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+        "loader_sha256": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+        "gudhi_revision": "84974f4ebb9e7c29cfc02b35edb8a9bd5ff4a55e",
+        "dependency_packages": {
+          "cgal-cpp-5.6.1-hd557e15_2.json": "fe2fc5ba3a9edd904161d36167297574e4d16fc46ebe886906c2102840138bea",
+          "libboost-headers-1.86.0-ha770c72_5.json": "ad2f29cfebee489c73dd49836802a770a9620350ead4b2ade14975fddfc261e0",
+          "gmp-6.3.0-hfd2156b_3.json": "0221d7be9116f29e4ce1cf2f871018a7fc99bee736a960512ea46bc3a56a1809",
+          "mpfr-4.2.2-ha2cb11d_1.json": "1282099b0ad9f2ca7ba6672bc693aa41e36f4c02e321679af96ddda334ba7974",
+          "eigen-3.4.0-h54a6638_2.json": "04c6ff74592e3266b10964d1f798ae3f0f013dc2faf35e25d030def20c9273a7"
+        },
+        "dependency_root": "/store/PERSO/vmorozov/software/tda3d-build",
+        "gudhi_root": "/store/PERSO/vmorozov/software/gudhi-3.11.0-src",
+        "compiler": "g++",
+        "compiler_version": "g++ (GCC) 14.3.1 20251022 (Red Hat 14.3.1-4)\nCopyright (C) 2024 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.\n\n",
+        "flags": [
+          "-O3",
+          "-DNDEBUG",
+          "-std=c++17",
+          "-shared",
+          "-fPIC",
+          "-frounding-math",
+          "-ffp-contract=off",
+          "-fopenmp",
+          "-march=native"
+        ],
+        "python_abi": "cpython-312-x86_64-linux-gnu",
+        "pybind11": "3.0.4",
+        "libc": [
+          "glibc",
+          "2.39"
+        ],
+        "architecture": "x86_64",
+        "cpu_target": {
+          "vendor_id": "GenuineIntel",
+          "cpu family": "6",
+          "model": "85",
+          "model name": "Intel(R) Xeon(R) Gold 6154 CPU @ 3.00GHz",
+          "stepping": "4",
+          "flags": "fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 pti intel_ppin ssbd mba ibrs ibpb stibp fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb intel_pt avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts pku ospke md_clear flush_l1d arch_capabilities"
+        }
+      },
+      "command": [
+        "g++",
+        "-O3",
+        "-DNDEBUG",
+        "-std=c++17",
+        "-shared",
+        "-fPIC",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fopenmp",
+        "-march=native",
+        "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/alpha3d.cpp",
+        "-o",
+        "/home/ids/vmorozov/training-cache/compiled/rich-alpha/57ed49eb7df45e0615fb4c022662140a7ad5c46fffb27b870bf7a3d672c7f903/pcm_alpha3d.cpython-312-x86_64-linux-gnu.so",
+        "-I/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/include/python3.12",
+        "-I/home/infres/vmorozov/miniconda3/envs/pointnet-torch214/lib/python3.12/site-packages/pybind11/include",
+        "-I/store/PERSO/vmorozov/software/tda3d-build/include",
+        "-I/store/PERSO/vmorozov/software/tda3d-build/include/eigen3",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Alpha_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Bitmap_cubical_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Bottleneck_distance/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Cech_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Collapse/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Contraction/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Coxeter_triangulation/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Hasse_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Nerve_GIC/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Persistence_matrix/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Persistence_representations/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Persistent_cohomology/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Rips_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Ripser/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Simplex_tree/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Skeleton_blocker/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Spatial_searching/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Subsampling/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Tangential_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Toplex_map/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Witness_complex/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/Zigzag_persistence/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/common/include",
+        "-I/store/PERSO/vmorozov/software/gudhi-3.11.0-src/src/python/include",
+        "-L/store/PERSO/vmorozov/software/tda3d-build/lib",
+        "-Wl,-rpath,/store/PERSO/vmorozov/software/tda3d-build/lib",
+        "-lgmp",
+        "-lmpfr"
+      ],
+      "binary_sha256": "e3b4eb2054539d1db3280272d4b4c1dcf073801b42f072891e84f7032c93b852",
+      "seconds": 37.146684125997126
+    },
+    "selection": {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/configs/data/spatial_active_targets.json",
+      "sha256": "a53af2b3c388324579bfce6564cce817ef1db167e39f1ba86cac94fa615bfa1d",
+      "columns": [
+        "bond_order/l2_q",
+        "bond_order/l2_qbar",
+        "bond_order/l2_neighbor_q_mean",
+        "bond_order/l2_neighbor_q_std",
+        "bond_order/l2_coherence_mean",
+        "bond_order/l2_coherence_std",
+        "bond_order/l2_coherence_q10",
+        "bond_order/l2_coherence_q50",
+        "bond_order/l2_coherence_q90",
+        "bond_order/l4_q",
+        "bond_order/l4_qbar",
+        "bond_order/l4_neighbor_q_mean",
+        "bond_order/l4_neighbor_q_std",
+        "bond_order/l4_w",
+        "bond_order/l4_wbar",
+        "bond_order/l4_coherence_mean",
+        "bond_order/l4_coherence_std",
+        "bond_order/l4_coherence_q10",
+        "bond_order/l4_coherence_q50",
+        "bond_order/l4_coherence_q90",
+        "bond_order/l6_q",
+        "bond_order/l6_qbar",
+        "bond_order/l6_neighbor_q_mean",
+        "bond_order/l6_neighbor_q_std",
+        "bond_order/l6_w",
+        "bond_order/l6_wbar",
+        "bond_order/l6_coherence_mean",
+        "bond_order/l6_coherence_std",
+        "bond_order/l6_coherence_q10",
+        "bond_order/l6_coherence_q50",
+        "bond_order/l6_coherence_q90",
+        "bond_order/l8_q",
+        "bond_order/l8_qbar",
+        "bond_order/l8_neighbor_q_mean",
+        "bond_order/l8_neighbor_q_std",
+        "bond_order/l8_coherence_mean",
+        "bond_order/l8_coherence_std",
+        "bond_order/l8_coherence_q10",
+        "bond_order/l8_coherence_q50",
+        "bond_order/l8_coherence_q90",
+        "tda/n32_h0_loglife_sum",
+        "tda/n32_h0_loglife_sq",
+        "tda/n32_h0_loglife_max",
+        "tda/n32_h0_entropy",
+        "tda/n32_h0_logdeath_sum",
+        "tda/n32_h0_death1",
+        "tda/n32_h0_death2",
+        "tda/n32_h0_death3",
+        "tda/n32_h0_death4",
+        "tda/n32_h0_death5",
+        "tda/n32_h0_death6",
+        "tda/n32_h0_betti1.25",
+        "tda/n32_h0_betti1.75",
+        "tda/n32_h1_count",
+        "tda/n32_h1_loglife_sum",
+        "tda/n32_h1_loglife_sq",
+        "tda/n32_h1_loglife_max",
+        "tda/n32_h1_entropy",
+        "tda/n32_h1_logbirth_sum",
+        "tda/n32_h1_logdeath_sum",
+        "tda/n32_h1_image0",
+        "tda/n32_h1_image1",
+        "tda/n32_h1_image6",
+        "tda/n32_h1_image7",
+        "tda/n32_h1_image8",
+        "tda/n32_h1_image9",
+        "tda/n32_h1_image12",
+        "tda/n32_h1_image13",
+        "tda/n32_h1_image14",
+        "tda/n32_h1_image15",
+        "tda/n32_h1_image18",
+        "tda/n32_h1_betti1.25",
+        "tda/n32_h1_betti1.75",
+        "tda/n32_h1_betti2.25",
+        "tda/n32_h1_betti2.75",
+        "tda/n32_h2_count",
+        "tda/n32_h2_loglife_sum",
+        "tda/n32_h2_loglife_sq",
+        "tda/n32_h2_loglife_max",
+        "tda/n32_h2_entropy",
+        "tda/n32_h2_logbirth_sum",
+        "tda/n32_h2_logdeath_sum",
+        "tda/n32_h2_image6",
+        "tda/n32_h2_image7",
+        "tda/n32_h2_image8",
+        "tda/n32_h2_image12",
+        "tda/n32_h2_image13",
+        "tda/n32_h2_image14",
+        "tda/n32_h2_image15",
+        "tda/n32_h2_image18",
+        "tda/n32_h2_image19",
+        "tda/n32_h2_image20",
+        "tda/n32_h2_betti1.75",
+        "tda/n32_h2_betti2.25",
+        "tda/n32_h2_betti2.75",
+        "tda/n80_h0_loglife_sum",
+        "tda/n80_h0_loglife_sq",
+        "tda/n80_h0_loglife_max",
+        "tda/n80_h0_entropy",
+        "tda/n80_h0_logdeath_sum",
+        "tda/n80_h0_death1",
+        "tda/n80_h0_death2",
+        "tda/n80_h0_death3",
+        "tda/n80_h0_death4",
+        "tda/n80_h0_death5",
+        "tda/n80_h0_death6",
+        "tda/n80_h0_betti1.25",
+        "tda/n80_h0_betti1.75",
+        "tda/n80_h1_count",
+        "tda/n80_h1_loglife_sum",
+        "tda/n80_h1_loglife_sq",
+        "tda/n80_h1_loglife_max",
+        "tda/n80_h1_entropy",
+        "tda/n80_h1_logbirth_sum",
+        "tda/n80_h1_logdeath_sum",
+        "tda/n80_h1_image0",
+        "tda/n80_h1_image1",
+        "tda/n80_h1_image2",
+        "tda/n80_h1_image6",
+        "tda/n80_h1_image7",
+        "tda/n80_h1_image8",
+        "tda/n80_h1_image9",
+        "tda/n80_h1_image12",
+        "tda/n80_h1_image13",
+        "tda/n80_h1_image14",
+        "tda/n80_h1_image15",
+        "tda/n80_h1_image18",
+        "tda/n80_h1_betti1.25",
+        "tda/n80_h1_betti1.75",
+        "tda/n80_h1_betti2.25",
+        "tda/n80_h1_betti2.75",
+        "tda/n80_h2_count",
+        "tda/n80_h2_loglife_sum",
+        "tda/n80_h2_loglife_sq",
+        "tda/n80_h2_loglife_max",
+        "tda/n80_h2_entropy",
+        "tda/n80_h2_logbirth_sum",
+        "tda/n80_h2_logdeath_sum",
+        "tda/n80_h2_image6",
+        "tda/n80_h2_image7",
+        "tda/n80_h2_image8",
+        "tda/n80_h2_image9",
+        "tda/n80_h2_image12",
+        "tda/n80_h2_image13",
+        "tda/n80_h2_image14",
+        "tda/n80_h2_image15",
+        "tda/n80_h2_image16",
+        "tda/n80_h2_image18",
+        "tda/n80_h2_image19",
+        "tda/n80_h2_image20",
+        "tda/n80_h2_betti1.75",
+        "tda/n80_h2_betti2.25",
+        "tda/n80_h2_betti2.75"
+      ]
+    }
+  },
+  "preparation_audit": {
+    "rows": 112,
+    "shards": 7,
+    "columns": 153,
+    "bond_order": 40,
+    "tda": 113,
+    "max_absolute": 0.0,
+    "completed_reuse": true,
+    "partial_resume_byte_identical": true,
+    "threaded_batch_identical": true,
+    "packed_spatial_consumer": true,
+    "training_objective_mask_exact": true,
+    "training_metadata_sha256": "22f91a20b2a0cca4649db71e888047c808cd9b2b67c0cfc3787600640aa4188e",
+    "cache": "/home/ids/vmorozov/training-cache/target-preparation/active153-20261008/shard-audit",
+    "implementation": {
+      "rich_multimaterial_data.py": "474549188950e5aa5b41166f09a296a51a2188aef35c5d292da0b64a785d1427",
+      "descriptors.py": "df9301550eb851ccdf0ea3c2ae99a221ca3bfade6974eecff250bdc47f17030d",
+      "rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+      "alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+      "alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+      "selection.py": "099abb41d2a0a301113df151e53dcf3966b9ff9f3805e22322f808c18e597dc2"
+    },
+    "selection": {
+      "path": "configs/data/spatial_active_targets.json",
+      "sha256": "a53af2b3c388324579bfce6564cce817ef1db167e39f1ba86cac94fa615bfa1d"
+    }
+  },
+  "timing": [
+    {
+      "variant": "reference",
+      "workers": 1,
+      "rows": 936,
+      "median_seconds": 14.531477467156947,
+      "patches_per_second": 64.41189494430166,
+      "speedup": 1.0,
+      "comparison": null,
+      "additional_speedup": null,
+      "time_reduction_fraction": null
+    },
+    {
+      "variant": "spatial_safe",
+      "workers": 1,
+      "rows": 936,
+      "median_seconds": 7.449033162090927,
+      "patches_per_second": 125.65389086511556,
+      "speedup": 1.9507870553066504,
+      "comparison": null,
+      "additional_speedup": null,
+      "time_reduction_fraction": null
+    },
+    {
+      "variant": "native_batch",
+      "workers": 1,
+      "rows": 936,
+      "median_seconds": 5.132362601812929,
+      "patches_per_second": 182.37214955727646,
+      "speedup": 2.831342715735619,
+      "comparison": "spatial_safe",
+      "additional_speedup": 1.4513848182627762,
+      "time_reduction_fraction": 0.3110028522987155
+    },
+    {
+      "variant": "native_selected",
+      "workers": 1,
+      "rows": 936,
+      "median_seconds": 4.957664488814771,
+      "patches_per_second": 188.79857685241817,
+      "speedup": 2.9311135313698866,
+      "comparison": "native_batch",
+      "additional_speedup": 1.0352379862316827,
+      "time_reduction_fraction": 0.03403853674260038
+    },
+    {
+      "variant": "reference",
+      "workers": 4,
+      "rows": 936,
+      "median_seconds": 3.9631879492662847,
+      "patches_per_second": 236.1735077876597,
+      "speedup": 1.0,
+      "comparison": null,
+      "additional_speedup": null,
+      "time_reduction_fraction": null
+    },
+    {
+      "variant": "spatial_safe",
+      "workers": 4,
+      "rows": 936,
+      "median_seconds": 2.0294048879295588,
+      "patches_per_second": 461.2189541708095,
+      "speedup": 1.9528818388279392,
+      "comparison": null,
+      "additional_speedup": null,
+      "time_reduction_fraction": null
+    },
+    {
+      "variant": "native_batch",
+      "workers": 4,
+      "rows": 936,
+      "median_seconds": 1.4178215260617435,
+      "patches_per_second": 660.1677170185939,
+      "speedup": 2.7952657484858183,
+      "comparison": "spatial_safe",
+      "additional_speedup": 1.4313542647124275,
+      "time_reduction_fraction": 0.30136093862066404
+    },
+    {
+      "variant": "native_selected",
+      "workers": 4,
+      "rows": 936,
+      "median_seconds": 1.367671711370349,
+      "patches_per_second": 684.3747605645567,
+      "speedup": 2.897762610952404,
+      "comparison": "native_batch",
+      "additional_speedup": 1.036668020749765,
+      "time_reduction_fraction": 0.03537103490782423
+    }
+  ],
+  "input": {
+    "packed": "/home/ids/vmorozov/training-cache/rich-descriptors/packed-rh2-20260930/full",
+    "manifest_sha256": "39589e9186ef24b07c1e7d26babaef6a501f17646495580a1fbfd97bea907bbe",
+    "packed_identity": "2f4bcb1c063801a46d5c417e30b3d983504e8ee4e13952566504cd6d6516117c",
+    "rows": [
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 3
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 7
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 10
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 14
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 17
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 21
+      },
+      {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 25
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4116
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4118
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4121
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4123
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4126
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4128
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4131
+      },
+      {
+        "source": "native-861",
+        "material": "Al",
+        "lineage": "independent_melt_455949696",
+        "row": 4134
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8254
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8257
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8260
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8263
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8267
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8270
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8273
+      },
+      {
+        "source": "native-862",
+        "material": "Al",
+        "lineage": "independent_melt_691988874",
+        "row": 8277
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12327
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12330
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12333
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12336
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12339
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12342
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12345
+      },
+      {
+        "source": "native-863",
+        "material": "Al",
+        "lineage": "independent_melt_804308644",
+        "row": 12349
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16407
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16409
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16412
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16415
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16417
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16420
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16423
+      },
+      {
+        "source": "native-864",
+        "material": "Al",
+        "lineage": "independent_melt_808961974",
+        "row": 16426
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20440
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20442
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20445
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20448
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20450
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20453
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20456
+      },
+      {
+        "source": "native-865",
+        "material": "Al",
+        "lineage": "independent_melt_434160560",
+        "row": 20459
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24420
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24422
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24424
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24427
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24429
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24432
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24434
+      },
+      {
+        "source": "native-866",
+        "material": "Al",
+        "lineage": "independent_melt_200290231",
+        "row": 24437
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28553
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28555
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28557
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28560
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28562
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28565
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28567
+      },
+      {
+        "source": "native-867",
+        "material": "Al",
+        "lineage": "independent_melt_144370470",
+        "row": 28570
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32631
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32634
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32637
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32640
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32643
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32646
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32649
+      },
+      {
+        "source": "native-868",
+        "material": "Al",
+        "lineage": "independent_melt_76681035",
+        "row": 32653
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36584
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36585
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36587
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36589
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36590
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36592
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36594
+      },
+      {
+        "source": "native-869",
+        "material": "Al",
+        "lineage": "independent_melt_77880009",
+        "row": 36596
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40702
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40705
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40708
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40711
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40715
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40718
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40721
+      },
+      {
+        "source": "native-870",
+        "material": "Al",
+        "lineage": "independent_melt_746071054",
+        "row": 40725
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44781
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44783
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44786
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44788
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44791
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44793
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44796
+      },
+      {
+        "source": "native-871",
+        "material": "Al",
+        "lineage": "independent_melt_294342775",
+        "row": 44799
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48788
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48790
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48792
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48795
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48797
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48800
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48802
+      },
+      {
+        "source": "native-872",
+        "material": "Al",
+        "lineage": "independent_melt_184384186",
+        "row": 48805
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52918
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52920
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52922
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52924
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52927
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52929
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52931
+      },
+      {
+        "source": "native-873",
+        "material": "Al",
+        "lineage": "independent_melt_160380922",
+        "row": 52934
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 56997
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57000
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57003
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57006
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57009
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57012
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57015
+      },
+      {
+        "source": "native-874",
+        "material": "Al",
+        "lineage": "independent_melt_330985692",
+        "row": 57018
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61086
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61088
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61090
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61092
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61094
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61096
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61098
+      },
+      {
+        "source": "native-884",
+        "material": "Al",
+        "lineage": "independent_melt_206158192",
+        "row": 61100
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65150
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65153
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65156
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65159
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65162
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65165
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65168
+      },
+      {
+        "source": "native-885",
+        "material": "Al",
+        "lineage": "independent_melt_248699045",
+        "row": 65171
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69303
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69304
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69306
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69307
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69309
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69310
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69312
+      },
+      {
+        "source": "native-886",
+        "material": "Al",
+        "lineage": "independent_melt_235751553",
+        "row": 69314
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73345
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73347
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73349
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73352
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73354
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73357
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73359
+      },
+      {
+        "source": "native-887",
+        "material": "Al",
+        "lineage": "independent_melt_750494487",
+        "row": 73362
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77353
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77356
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77359
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77362
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77365
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77368
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77371
+      },
+      {
+        "source": "native-888",
+        "material": "Al",
+        "lineage": "independent_melt_378118914",
+        "row": 77374
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81400
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81402
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81404
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81406
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81408
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81410
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81412
+      },
+      {
+        "source": "native-889",
+        "material": "Al",
+        "lineage": "independent_melt_387039544",
+        "row": 81415
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85442
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85444
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85446
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85448
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85450
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85452
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85454
+      },
+      {
+        "source": "native-890",
+        "material": "Al",
+        "lineage": "independent_melt_394685168",
+        "row": 85456
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89470
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89473
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89476
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89479
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89482
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89485
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89488
+      },
+      {
+        "source": "native-891",
+        "material": "Al",
+        "lineage": "independent_melt_648456630",
+        "row": 89492
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93446
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93448
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93451
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93453
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93456
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93458
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93461
+      },
+      {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93464
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97495
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97498
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97501
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97505
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97508
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97512
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97515
+      },
+      {
+        "source": "native-893",
+        "material": "Al",
+        "lineage": "independent_melt_373247889",
+        "row": 97519
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101457
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101459
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101461
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101463
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101465
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101467
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101469
+      },
+      {
+        "source": "native-894",
+        "material": "Al",
+        "lineage": "independent_melt_319035304",
+        "row": 101471
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105403
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105405
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105407
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105409
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105411
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105413
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105415
+      },
+      {
+        "source": "native-895",
+        "material": "Al",
+        "lineage": "independent_melt_40651136",
+        "row": 105418
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109454
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109457
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109461
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109465
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109468
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109472
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109476
+      },
+      {
+        "source": "native-896",
+        "material": "Al",
+        "lineage": "independent_melt_146234076",
+        "row": 109480
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113511
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113513
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113516
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113518
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113521
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113523
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113526
+      },
+      {
+        "source": "native-897",
+        "material": "Al",
+        "lineage": "independent_melt_472193600",
+        "row": 113529
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117526
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117528
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117531
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117534
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117537
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117540
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117543
+      },
+      {
+        "source": "native-898",
+        "material": "Al",
+        "lineage": "independent_melt_63365650",
+        "row": 117546
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121540
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121542
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121544
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121547
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121549
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121552
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121554
+      },
+      {
+        "source": "native-899",
+        "material": "Al",
+        "lineage": "independent_melt_220809849",
+        "row": 121557
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125488
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125489
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125490
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125492
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125493
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125495
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125496
+      },
+      {
+        "source": "native-900",
+        "material": "Al",
+        "lineage": "independent_melt_142641279",
+        "row": 125498
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129517
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129519
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129521
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129523
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129525
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129527
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129529
+      },
+      {
+        "source": "native-901",
+        "material": "Al",
+        "lineage": "independent_melt_262380798",
+        "row": 129532
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133540
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133542
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133544
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133546
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133548
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133550
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133552
+      },
+      {
+        "source": "native-914",
+        "material": "Al",
+        "lineage": "independent_melt_607972874",
+        "row": 133555
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137590
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137592
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137594
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137596
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137599
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137601
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137603
+      },
+      {
+        "source": "native-915",
+        "material": "Al",
+        "lineage": "independent_melt_522035807",
+        "row": 137606
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141716
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141718
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141721
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141723
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141726
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141728
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141731
+      },
+      {
+        "source": "native-916",
+        "material": "Al",
+        "lineage": "independent_melt_884700972",
+        "row": 141734
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145773
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145776
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145779
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145782
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145786
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145789
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145792
+      },
+      {
+        "source": "native-917",
+        "material": "Al",
+        "lineage": "independent_melt_134462729",
+        "row": 145796
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149826
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149829
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149832
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149836
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149839
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149843
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149846
+      },
+      {
+        "source": "native-918",
+        "material": "Al",
+        "lineage": "independent_melt_147978527",
+        "row": 149850
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154004
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154007
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154010
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154013
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154016
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154019
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154022
+      },
+      {
+        "source": "native-919",
+        "material": "Al",
+        "lineage": "independent_melt_700628451",
+        "row": 154026
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158069
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158071
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158074
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158077
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158079
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158082
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158085
+      },
+      {
+        "source": "native-920",
+        "material": "Al",
+        "lineage": "independent_melt_843445030",
+        "row": 158088
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162254
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162256
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162258
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162260
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162263
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162265
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162267
+      },
+      {
+        "source": "native-921",
+        "material": "Al",
+        "lineage": "independent_melt_446448988",
+        "row": 162270
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166314
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166316
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166319
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166322
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166324
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166327
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166330
+      },
+      {
+        "source": "native-922",
+        "material": "Al",
+        "lineage": "independent_melt_638959948",
+        "row": 166333
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170325
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170326
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170327
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170329
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170330
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170332
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170333
+      },
+      {
+        "source": "native-923",
+        "material": "Al",
+        "lineage": "independent_melt_23525568",
+        "row": 170335
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174338
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174340
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174342
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174344
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174346
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174348
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174350
+      },
+      {
+        "source": "native-924",
+        "material": "Al",
+        "lineage": "independent_melt_493123960",
+        "row": 174353
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178351
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178353
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178355
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178357
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178360
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178362
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178364
+      },
+      {
+        "source": "native-925",
+        "material": "Al",
+        "lineage": "independent_melt_866573682",
+        "row": 178367
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182394
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182396
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182399
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182402
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182405
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182408
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182411
+      },
+      {
+        "source": "native-926",
+        "material": "Al",
+        "lineage": "independent_melt_580598490",
+        "row": 182414
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186395
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186397
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186399
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186401
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186403
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186405
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186407
+      },
+      {
+        "source": "native-927",
+        "material": "Al",
+        "lineage": "independent_melt_794706897",
+        "row": 186409
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190420
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190423
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190427
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190431
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190434
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190438
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190442
+      },
+      {
+        "source": "native-928",
+        "material": "Al",
+        "lineage": "independent_melt_622811055",
+        "row": 190446
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194457
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194460
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194463
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194466
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194469
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194472
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194475
+      },
+      {
+        "source": "native-929",
+        "material": "Al",
+        "lineage": "independent_melt_15458297",
+        "row": 194478
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198524
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198527
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198530
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198533
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198536
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198539
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198542
+      },
+      {
+        "source": "native-930",
+        "material": "Al",
+        "lineage": "independent_melt_889862759",
+        "row": 198545
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202517
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202518
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202520
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202521
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202523
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202524
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202526
+      },
+      {
+        "source": "native-931",
+        "material": "Al",
+        "lineage": "independent_melt_630014638",
+        "row": 202528
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206567
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206568
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206570
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206572
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206573
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206575
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206577
+      },
+      {
+        "source": "native-944",
+        "material": "Al",
+        "lineage": "independent_melt_372484460",
+        "row": 206579
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210696
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210698
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210700
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210703
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210705
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210708
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210710
+      },
+      {
+        "source": "native-945",
+        "material": "Al",
+        "lineage": "independent_melt_505713304",
+        "row": 210713
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214676
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214679
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214682
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214685
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214689
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214692
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214695
+      },
+      {
+        "source": "native-946",
+        "material": "Al",
+        "lineage": "independent_melt_876710010",
+        "row": 214699
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218762
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218766
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218770
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218774
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218778
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218782
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218786
+      },
+      {
+        "source": "native-947",
+        "material": "Al",
+        "lineage": "independent_melt_586618377",
+        "row": 218791
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222847
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222850
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222853
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222856
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222859
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222862
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222865
+      },
+      {
+        "source": "native-948",
+        "material": "Al",
+        "lineage": "independent_melt_66157331",
+        "row": 222868
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226923
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226925
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226928
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226931
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226934
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226937
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226940
+      },
+      {
+        "source": "native-949",
+        "material": "Al",
+        "lineage": "independent_melt_210998254",
+        "row": 226943
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230893
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230895
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230897
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230899
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230902
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230904
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230906
+      },
+      {
+        "source": "native-950",
+        "material": "Al",
+        "lineage": "independent_melt_558747183",
+        "row": 230909
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 234996
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 234998
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235001
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235003
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235006
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235008
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235011
+      },
+      {
+        "source": "native-951",
+        "material": "Al",
+        "lineage": "independent_melt_850903391",
+        "row": 235014
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239132
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239135
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239138
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239141
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239144
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239147
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239150
+      },
+      {
+        "source": "native-952",
+        "material": "Al",
+        "lineage": "independent_melt_254084297",
+        "row": 239154
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243123
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243125
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243127
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243130
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243132
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243135
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243137
+      },
+      {
+        "source": "native-953",
+        "material": "Al",
+        "lineage": "independent_melt_851781959",
+        "row": 243140
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247210
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247212
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247215
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247217
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247220
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247222
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247225
+      },
+      {
+        "source": "native-954",
+        "material": "Al",
+        "lineage": "independent_melt_433626529",
+        "row": 247228
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251290
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251292
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251295
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251297
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251300
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251302
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251305
+      },
+      {
+        "source": "native-955",
+        "material": "Al",
+        "lineage": "independent_melt_630952489",
+        "row": 251308
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255383
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255384
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255386
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255388
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255389
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255391
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255393
+      },
+      {
+        "source": "native-956",
+        "material": "Al",
+        "lineage": "independent_melt_114745743",
+        "row": 255395
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259363
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259365
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259368
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259370
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259373
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259375
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259378
+      },
+      {
+        "source": "native-957",
+        "material": "Al",
+        "lineage": "independent_melt_324310850",
+        "row": 259381
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263395
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263398
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263402
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263405
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263409
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263412
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263416
+      },
+      {
+        "source": "native-958",
+        "material": "Al",
+        "lineage": "independent_melt_234173051",
+        "row": 263420
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267510
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267512
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267514
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267517
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267519
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267522
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267524
+      },
+      {
+        "source": "native-959",
+        "material": "Al",
+        "lineage": "independent_melt_13937749",
+        "row": 267527
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271604
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271606
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271609
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271612
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271614
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271617
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271620
+      },
+      {
+        "source": "native-960",
+        "material": "Al",
+        "lineage": "independent_melt_725446415",
+        "row": 271623
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275635
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275638
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275641
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275644
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275647
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275650
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275653
+      },
+      {
+        "source": "native-961",
+        "material": "Al",
+        "lineage": "independent_melt_234029248",
+        "row": 275656
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279618
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279619
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279621
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279623
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279625
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279627
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279629
+      },
+      {
+        "source": "native-974",
+        "material": "Al",
+        "lineage": "independent_melt_151871197",
+        "row": 279631
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283588
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283590
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283592
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283594
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283596
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283598
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283600
+      },
+      {
+        "source": "native-975",
+        "material": "Al",
+        "lineage": "independent_melt_681943887",
+        "row": 283602
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287662
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287665
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287668
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287671
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287675
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287678
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287681
+      },
+      {
+        "source": "native-976",
+        "material": "Al",
+        "lineage": "independent_melt_655109113",
+        "row": 287685
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291727
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291729
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291731
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291733
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291736
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291738
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291740
+      },
+      {
+        "source": "native-977",
+        "material": "Al",
+        "lineage": "independent_melt_661426236",
+        "row": 291743
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295814
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295816
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295819
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295822
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295825
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295828
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295831
+      },
+      {
+        "source": "native-978",
+        "material": "Al",
+        "lineage": "independent_melt_564513410",
+        "row": 295834
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299882
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299884
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299887
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299890
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299893
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299896
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299899
+      },
+      {
+        "source": "native-979",
+        "material": "Al",
+        "lineage": "independent_melt_603302271",
+        "row": 299902
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303870
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303871
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303873
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303875
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303877
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303879
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303881
+      },
+      {
+        "source": "native-980",
+        "material": "Al",
+        "lineage": "independent_melt_398617878",
+        "row": 303883
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307858
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307861
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307865
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307868
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307872
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307875
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307879
+      },
+      {
+        "source": "native-981",
+        "material": "Al",
+        "lineage": "independent_melt_83132283",
+        "row": 307883
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311876
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311877
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311879
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311881
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311882
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311884
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311886
+      },
+      {
+        "source": "native-982",
+        "material": "Al",
+        "lineage": "independent_melt_87283751",
+        "row": 311888
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315988
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315989
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315990
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315991
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315993
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315994
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315995
+      },
+      {
+        "source": "native-983",
+        "material": "Al",
+        "lineage": "independent_melt_86832792",
+        "row": 315997
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320089
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320092
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320096
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320099
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320103
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320106
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320110
+      },
+      {
+        "source": "native-984",
+        "material": "Al",
+        "lineage": "independent_melt_745135969",
+        "row": 320114
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324138
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324139
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324141
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324143
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324144
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324146
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324148
+      },
+      {
+        "source": "native-985",
+        "material": "Al",
+        "lineage": "independent_melt_442136159",
+        "row": 324150
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328256
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328259
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328262
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328265
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328268
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328271
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328274
+      },
+      {
+        "source": "native-986",
+        "material": "Al",
+        "lineage": "independent_melt_269696945",
+        "row": 328278
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332305
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332307
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332309
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332311
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332314
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332316
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332318
+      },
+      {
+        "source": "native-987",
+        "material": "Al",
+        "lineage": "independent_melt_561573362",
+        "row": 332321
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336381
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336383
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336385
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336387
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336389
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336391
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336393
+      },
+      {
+        "source": "native-988",
+        "material": "Al",
+        "lineage": "independent_melt_729671835",
+        "row": 336395
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340545
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340547
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340549
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340551
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340553
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340555
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340557
+      },
+      {
+        "source": "native-989",
+        "material": "Al",
+        "lineage": "independent_melt_379031575",
+        "row": 340559
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344563
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344566
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344570
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344574
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344578
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344582
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344586
+      },
+      {
+        "source": "native-990",
+        "material": "Al",
+        "lineage": "independent_melt_234122652",
+        "row": 344590
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348641
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348644
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348647
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348650
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348653
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348656
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348659
+      },
+      {
+        "source": "native-991",
+        "material": "Al",
+        "lineage": "independent_melt_746727007",
+        "row": 348663
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352657
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352659
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352662
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352665
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352667
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352670
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352673
+      },
+      {
+        "source": "native-1004",
+        "material": "Al",
+        "lineage": "independent_melt_76354933",
+        "row": 352676
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356669
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356671
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356673
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356675
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356678
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356680
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356682
+      },
+      {
+        "source": "native-1005",
+        "material": "Al",
+        "lineage": "independent_melt_542619615",
+        "row": 356685
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360733
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360735
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360737
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360739
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360742
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360744
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360746
+      },
+      {
+        "source": "native-1006",
+        "material": "Al",
+        "lineage": "independent_melt_298754492",
+        "row": 360749
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 364666
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 364790
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 364914
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 365038
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 365162
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 365286
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 365410
+      },
+      {
+        "source": "6c906a946baf3b722a98",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 365535
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372074
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372188
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372302
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372416
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372530
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372644
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372758
+      },
+      {
+        "source": "b1810a2378bec540378b",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 372872
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 379456
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 379569
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 379683
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 379796
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 379910
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 380023
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 380137
+      },
+      {
+        "source": "364338e8a8f288048934",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 380251
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 386847
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 386963
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387080
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387196
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387313
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387429
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387546
+      },
+      {
+        "source": "1ccb83e1325a791d6acc",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 387663
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394333
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394444
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394556
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394667
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394779
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 394890
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 395002
+      },
+      {
+        "source": "9dbd8029253ea9cf68ec",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 395114
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 401780
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 401895
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402010
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402125
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402240
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402355
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402470
+      },
+      {
+        "source": "be004f3d2506ad691cd6",
+        "material": "Al",
+        "lineage": "Al-archived-root",
+        "row": 402585
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409126
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409240
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409354
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409468
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409582
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409696
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409810
+      },
+      {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409924
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 488951
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489065
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489179
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489294
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489408
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489523
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489637
+      },
+      {
+        "source": "7aa3910f511bc57fa96d",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 489752
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 593617
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 593741
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 593866
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 593990
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 594115
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 594239
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 594364
+      },
+      {
+        "source": "557f9d4494e4c16b42ca",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 594489
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601022
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601149
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601276
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601403
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601530
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601657
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601784
+      },
+      {
+        "source": "73b397e6a1a9ceb35ee5",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 601912
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 608447
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 608565
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 608683
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 608802
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 608920
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 609039
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 609157
+      },
+      {
+        "source": "6ff0c67b8139acdf1065",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 609276
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 615862
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 615981
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616100
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616219
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616338
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616457
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616576
+      },
+      {
+        "source": "dde82c07f1e6160f739b",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 616696
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623320
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623438
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623556
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623674
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623793
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 623911
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 624029
+      },
+      {
+        "source": "bc7c1b0a874f631b214a",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 624148
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 630707
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 630826
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 630946
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 631066
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 631185
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 631305
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 631425
+      },
+      {
+        "source": "56c826cef2fbbcf12577",
+        "material": "Mg",
+        "lineage": "Mg-archived-root",
+        "row": 631545
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 637986
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 637995
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638004
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638014
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638023
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638033
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638042
+      },
+      {
+        "source": "5cce9fb961a09dba0210",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 638052
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644343
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644353
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644363
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644373
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644384
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644394
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644404
+      },
+      {
+        "source": "2b458cb655817bacdb6e",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 644415
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650697
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650706
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650716
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650726
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650736
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650746
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650756
+      },
+      {
+        "source": "ec5ecc1b13dd3976d5df",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 650766
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657056
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657066
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657077
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657088
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657098
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657109
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657120
+      },
+      {
+        "source": "48689a30826dc7ccbca8",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 657131
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663514
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663523
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663533
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663543
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663552
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663562
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663572
+      },
+      {
+        "source": "9170aa4e647b6d2e7394",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 663582
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669791
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669802
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669813
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669824
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669836
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669847
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669858
+      },
+      {
+        "source": "db84b69babd29edfc80f",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 669870
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676313
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676325
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676337
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676349
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676361
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676373
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676385
+      },
+      {
+        "source": "8b2bfefd81620234fd52",
+        "material": "Ti",
+        "lineage": "Ti-archived-root",
+        "row": 676397
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 695270
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 695635
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 696001
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 696367
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 696732
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 697098
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 697464
+      },
+      {
+        "source": "f7ecb979a367ce1b6ebb",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 697830
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 766059
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 766435
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 766811
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 767187
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 767563
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 767939
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 768315
+      },
+      {
+        "source": "8aee8bb8abe645c96f1f",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 768691
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 836282
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 836653
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 837025
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 837397
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 837768
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 838140
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 838512
+      },
+      {
+        "source": "8ee5e077946023ab0f92",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 838884
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 907237
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 907605
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 907974
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 908343
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 908711
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 909080
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 909449
+      },
+      {
+        "source": "2a5950291b0e67495ad3",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 909818
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 978321
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 978695
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 979069
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 979443
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 979818
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 980192
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 980566
+      },
+      {
+        "source": "b6a10214ca3c5d213848",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 980941
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1049461
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1049579
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1049698
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1049817
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1049935
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1050054
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1050173
+      },
+      {
+        "source": "76802cc009c7cbd98448",
+        "material": "Ta",
+        "lineage": "Ta-archived-root",
+        "row": 1050292
+      }
+    ],
+    "positions_sha256": "61528d803c81398f47d9a4802cd5986174b19a1bb24d7621144161effdbd2054",
+    "cached_targets_sha256": "013c7207a153682bb160ea6346a17823e81c7faf92ae48ed11f75a2358b1ce08",
+    "reference_sha256": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a"
+  },
+  "launch": {
+    "job": "1028624",
+    "task": "Active-only spatial target preparation comparison",
+    "submitted_at": "2026-10-08T12:07:03.087965+00:00",
+    "script": "output/target-preparation/active153-20261008/technical/run.sh",
+    "gpu_count": 0,
+    "cpus": 4,
+    "node": "nodecpu04"
+  },
+  "full_plan": {
+    "path": "/home/ids/vmorozov/training-cache/rich-descriptors/spatial-active-153/plan.json",
+    "sha256": "98f847ee04723ac567d29dc864d827088f284f94b2279a3f26ad495078c89d44",
+    "identity": "61b8f4522b46d3956b27a729ccd9be73534d59b8f3ea37291dd4206f34be35ba",
+    "tasks": 22409,
+    "counts": {
+      "train/Al": 7537284,
+      "selection/Al": 192960,
+      "train/Mg": 566244,
+      "train/Ti": 728000,
+      "train/Ta": 4592340,
+      "calibration/Al": 16848,
+      "test/Al": 45291
+    },
+    "columns": 153,
+    "status": "planned; full preparation not launched"
+  },
+  "selection": {
+    "protocol": "spatial-training-active-columns-v1",
+    "columns": [
+      {
+        "name": "bond_order/l2_q",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_qbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_neighbor_q_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_neighbor_q_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_coherence_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_coherence_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_coherence_q10",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_coherence_q50",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l2_coherence_q90",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_q",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_qbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_neighbor_q_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_neighbor_q_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_w",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_wbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_coherence_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_coherence_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_coherence_q10",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_coherence_q50",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l4_coherence_q90",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_q",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_qbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_neighbor_q_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_neighbor_q_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_w",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_wbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_coherence_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_coherence_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_coherence_q10",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_coherence_q50",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l6_coherence_q90",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_q",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_qbar",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_neighbor_q_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_neighbor_q_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_coherence_mean",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_coherence_std",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_coherence_q10",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_coherence_q50",
+        "family": "bond_order"
+      },
+      {
+        "name": "bond_order/l8_coherence_q90",
+        "family": "bond_order"
+      },
+      {
+        "name": "tda/n32_h0_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death1",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death2",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death3",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death4",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death5",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_death6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_betti1.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h0_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_count",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_logbirth_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image0",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image1",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image7",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image8",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image9",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image12",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image13",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image14",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image15",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_image18",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_betti1.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_betti2.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h1_betti2.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_count",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_logbirth_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image7",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image8",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image12",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image13",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image14",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image15",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image18",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image19",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_image20",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_betti2.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n32_h2_betti2.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death1",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death2",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death3",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death4",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death5",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_death6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_betti1.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h0_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_count",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_logbirth_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image0",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image1",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image2",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image7",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image8",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image9",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image12",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image13",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image14",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image15",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_image18",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_betti1.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_betti2.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h1_betti2.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_count",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_loglife_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_loglife_sq",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_loglife_max",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_entropy",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_logbirth_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_logdeath_sum",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image6",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image7",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image8",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image9",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image12",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image13",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image14",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image15",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image16",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image18",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image19",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_image20",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_betti1.75",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_betti2.25",
+        "family": "tda"
+      },
+      {
+        "name": "tda/n80_h2_betti2.75",
+        "family": "tda"
+      }
+    ],
+    "reference_packed_identity": "2f4bcb1c063801a46d5c417e30b3d983504e8ee4e13952566504cd6d6516117c",
+    "reference_manifest_sha256": "39589e9186ef24b07c1e7d26babaef6a501f17646495580a1fbfd97bea907bbe",
+    "reference_transform_sha256": "5387d7e199ed9f476fbb958aa3fb95eee1cbb27c56a19058571d9b291aed5841",
+    "reference_training_rows": 1056768,
+    "selection": "training SD >= 1e-4; retain active bond_order and tda; no held-out errors or labels",
+    "training_ancestry": [
+      "Al-archived-root",
+      "Mg-archived-root",
+      "Ta-archived-root",
+      "Ti-archived-root",
+      "al-1m-independent-melt-911001",
+      "independent_melt_114745743",
+      "independent_melt_134462729",
+      "independent_melt_13937749",
+      "independent_melt_142641279",
+      "independent_melt_144370470",
+      "independent_melt_146234076",
+      "independent_melt_147978527",
+      "independent_melt_151871197",
+      "independent_melt_15458297",
+      "independent_melt_160380922",
+      "independent_melt_184384186",
+      "independent_melt_200290231",
+      "independent_melt_206158192",
+      "independent_melt_210998254",
+      "independent_melt_220809849",
+      "independent_melt_234029248",
+      "independent_melt_234122652",
+      "independent_melt_234173051",
+      "independent_melt_23525568",
+      "independent_melt_235751553",
+      "independent_melt_248699045",
+      "independent_melt_254084297",
+      "independent_melt_262380798",
+      "independent_melt_269696945",
+      "independent_melt_294342775",
+      "independent_melt_298754492",
+      "independent_melt_319035304",
+      "independent_melt_324310850",
+      "independent_melt_330985692",
+      "independent_melt_372484460",
+      "independent_melt_373247889",
+      "independent_melt_378118914",
+      "independent_melt_379031575",
+      "independent_melt_387039544",
+      "independent_melt_392346167",
+      "independent_melt_394685168",
+      "independent_melt_398617878",
+      "independent_melt_40651136",
+      "independent_melt_433626529",
+      "independent_melt_434160560",
+      "independent_melt_442136159",
+      "independent_melt_446448988",
+      "independent_melt_455949696",
+      "independent_melt_472193600",
+      "independent_melt_493123960",
+      "independent_melt_505713304",
+      "independent_melt_511618678",
+      "independent_melt_522035807",
+      "independent_melt_542619615",
+      "independent_melt_558747183",
+      "independent_melt_561573362",
+      "independent_melt_564513410",
+      "independent_melt_580598490",
+      "independent_melt_586618377",
+      "independent_melt_603302271",
+      "independent_melt_607972874",
+      "independent_melt_622811055",
+      "independent_melt_630014638",
+      "independent_melt_630952489",
+      "independent_melt_63365650",
+      "independent_melt_638959948",
+      "independent_melt_648456630",
+      "independent_melt_655109113",
+      "independent_melt_661426236",
+      "independent_melt_66157331",
+      "independent_melt_681943887",
+      "independent_melt_691988874",
+      "independent_melt_700628451",
+      "independent_melt_725446415",
+      "independent_melt_729671835",
+      "independent_melt_745135969",
+      "independent_melt_746071054",
+      "independent_melt_746727007",
+      "independent_melt_750494487",
+      "independent_melt_76354933",
+      "independent_melt_76681035",
+      "independent_melt_77880009",
+      "independent_melt_794706897",
+      "independent_melt_804308644",
+      "independent_melt_808961974",
+      "independent_melt_83132283",
+      "independent_melt_843445030",
+      "independent_melt_850903391",
+      "independent_melt_851781959",
+      "independent_melt_866573682",
+      "independent_melt_86832792",
+      "independent_melt_87283751",
+      "independent_melt_876710010",
+      "independent_melt_884700972",
+      "independent_melt_889862759"
+    ],
+    "identity": "9da5190c087d7cb6f8270b7283dcd062d3bcc41376f5e2954564b444ee87192e"
+  },
+  "native_selected_equal_to_full_native": true,
+  "native_selected_equal_to_previous_safe": true,
+  "target_storage_reduction_fraction": {
+    "from298": 0.4865771812080537,
+    "from442": 0.6538461538461539
+  },
+  "limitations": [
+    "936 benchmark patches; 112 producer-audit rows, no full corpus rebuild",
+    "Compute timings exclude cache I/O and training",
+    "Shared n32/n80 complexes and H0/H1/H2 persistence remain required"
+  ],
+  "artifacts": {
+    "output/target-preparation/active153-20261008/technical/results.json": "3350fdbe3d3e5c6422ac1700b65f52ab97cfda21fbd26beb0c98640ca3fe4923",
+    "output/target-preparation/active153-20261008/technical/preparation-audit.json": "bc6787f67a40cf1da1de80dd93413c7fc2186208b6f7f41557d51f8475395760",
+    "output/target-preparation/active153-20261008/technical/input.json": "4f538c5778308d8dc65a987555c24fb9df96d66bce660ae4ed8241c18945dea5"
+  }
+}

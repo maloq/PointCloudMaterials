@@ -1,0 +1,11 @@
+{
+  "launch": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/rtx-handoff-01",
+  "campaign_config": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/code/config.json",
+  "campaign_plan_sha256": "c7a85ad7ceab6e43691782ac35774b85bd65fbacf95683f285915fa408804a66",
+  "entry_sha256": "8d3f221b507c2bc72fafe667c5ecac21548395d3aa92d315eb260c2062ff1b4c",
+  "previous_job": "1028490",
+  "resume_source": "ni-T1100-melt10",
+  "fresh_source": "ni-T1150-melt11",
+  "hold_ps": 400,
+  "validation": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/scale-01/validation-reuse.json"
+}

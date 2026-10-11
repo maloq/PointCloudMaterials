@@ -1,0 +1,7 @@
+{
+  "table": "tables/matched-cadences.csv",
+  "sha256": "0700a083ff03e743f8d1290a96cd82b94577e16cc91965ef9800ebf4118c0659",
+  "family": "al075_birth_quality",
+  "contract": "technical/metric-contracts/al075_birth_quality.json",
+  "definitions": "tables/metric-definitions/al075_birth_quality.md"
+}

@@ -1,0 +1,661 @@
+{
+  "state": "reserved",
+  "created_at": "2026-10-07T17:29:56.427147+00:00",
+  "parent_launch": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007",
+  "parent_manifest_sha256": "b3f4960dc7874c859846acc6dc96a9e603401c2b3dfd07bd3d1eacaf4d7fa2e5",
+  "previous_collector": "1027415",
+  "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+  "lanes": [
+    {
+      "predecessor": "1026907_0",
+      "indices": [
+        1,
+        33,
+        4,
+        0,
+        39,
+        35,
+        25,
+        19,
+        22,
+        2
+      ],
+      "old_end_time": "2026-10-08T13:02:14",
+      "old_start_time": "2026-10-07T14:02:14",
+      "node": "node12",
+      "transferred_indices": [
+        39,
+        35,
+        25,
+        19,
+        22,
+        2
+      ]
+    },
+    {
+      "predecessor": "1027414_0",
+      "indices": [
+        13,
+        12,
+        8,
+        36,
+        9,
+        5,
+        18,
+        29,
+        34,
+        31
+      ],
+      "old_end_time": "2026-10-08T17:39:16",
+      "old_start_time": "2026-10-07T18:39:16",
+      "node": "node10",
+      "transferred_indices": [
+        12,
+        8,
+        36,
+        9,
+        5,
+        18,
+        29,
+        34,
+        31
+      ]
+    },
+    {
+      "predecessor": "1027414_1",
+      "indices": [
+        6,
+        23,
+        38,
+        11,
+        7,
+        27,
+        26,
+        17,
+        24,
+        10
+      ],
+      "old_end_time": "2026-10-08T17:39:16",
+      "old_start_time": "2026-10-07T18:39:16",
+      "node": "node42",
+      "transferred_indices": [
+        23,
+        38,
+        11,
+        7,
+        27,
+        26,
+        17,
+        24,
+        10
+      ]
+    },
+    {
+      "predecessor": "1027414_2",
+      "indices": [
+        3,
+        20,
+        32,
+        37,
+        28,
+        30,
+        15,
+        21,
+        16,
+        14
+      ],
+      "old_end_time": "2026-10-08T17:39:16",
+      "old_start_time": "2026-10-07T18:39:16",
+      "node": "node42",
+      "transferred_indices": [
+        20,
+        32,
+        37,
+        28,
+        30,
+        15,
+        21,
+        16,
+        14
+      ]
+    }
+  ],
+  "reservations": [
+    {
+      "index": 39,
+      "run_id": "al-dense-shooting-v100-20261007-source1008-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1008-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source1008-shot01"
+      }
+    },
+    {
+      "index": 35,
+      "run_id": "al-dense-shooting-v100-20261007-source1001-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1001-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source1001-shot01"
+      }
+    },
+    {
+      "index": 25,
+      "run_id": "al-dense-shooting-v100-20261007-source0925-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0925-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0925-shot01"
+      }
+    },
+    {
+      "index": 19,
+      "run_id": "al-dense-shooting-v100-20261007-source1008-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1008-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source1008-shot00"
+      }
+    },
+    {
+      "index": 22,
+      "run_id": "al-dense-shooting-v100-20261007-source0902-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0902-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0902-shot01"
+      }
+    },
+    {
+      "index": 2,
+      "run_id": "al-dense-shooting-v100-20261007-source0902-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0902-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0902-shot00"
+      }
+    },
+    {
+      "index": 12,
+      "run_id": "al-dense-shooting-v100-20261007-source0983-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0983-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0983-shot00"
+      }
+    },
+    {
+      "index": 8,
+      "run_id": "al-dense-shooting-v100-20261007-source0953-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0953-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0953-shot00"
+      }
+    },
+    {
+      "index": 36,
+      "run_id": "al-dense-shooting-v100-20261007-source0860-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0860-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0860-shot01"
+      }
+    },
+    {
+      "index": 9,
+      "run_id": "al-dense-shooting-v100-20261007-source0957-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0957-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0957-shot00"
+      }
+    },
+    {
+      "index": 5,
+      "run_id": "al-dense-shooting-v100-20261007-source0925-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0925-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0925-shot00"
+      }
+    },
+    {
+      "index": 18,
+      "run_id": "al-dense-shooting-v100-20261007-source0871-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0871-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0871-shot00"
+      }
+    },
+    {
+      "index": 29,
+      "run_id": "al-dense-shooting-v100-20261007-source0957-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0957-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0957-shot01"
+      }
+    },
+    {
+      "index": 34,
+      "run_id": "al-dense-shooting-v100-20261007-source0993-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0993-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0993-shot01"
+      }
+    },
+    {
+      "index": 31,
+      "run_id": "al-dense-shooting-v100-20261007-source0971-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0971-shot01/status.json",
+      "existing_reservation": {
+        "state": "expansion_reserved",
+        "expansion": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007/technical/three-more-v100-20261007",
+        "reserved_at": "2026-10-07T16:39:15.264674+00:00"
+      }
+    },
+    {
+      "index": 23,
+      "run_id": "al-dense-shooting-v100-20261007-source0908-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0908-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0908-shot01"
+      }
+    },
+    {
+      "index": 38,
+      "run_id": "al-dense-shooting-v100-20261007-source0871-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0871-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0871-shot01"
+      }
+    },
+    {
+      "index": 11,
+      "run_id": "al-dense-shooting-v100-20261007-source0971-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0971-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0971-shot00"
+      }
+    },
+    {
+      "index": 7,
+      "run_id": "al-dense-shooting-v100-20261007-source0938-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0938-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0938-shot00"
+      }
+    },
+    {
+      "index": 27,
+      "run_id": "al-dense-shooting-v100-20261007-source0938-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0938-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0938-shot01"
+      }
+    },
+    {
+      "index": 26,
+      "run_id": "al-dense-shooting-v100-20261007-source0933-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0933-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0933-shot01"
+      }
+    },
+    {
+      "index": 17,
+      "run_id": "al-dense-shooting-v100-20261007-source0866-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0866-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0866-shot00"
+      }
+    },
+    {
+      "index": 24,
+      "run_id": "al-dense-shooting-v100-20261007-source0926-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0926-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0926-shot01"
+      }
+    },
+    {
+      "index": 10,
+      "run_id": "al-dense-shooting-v100-20261007-source0965-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0965-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0965-shot00"
+      }
+    },
+    {
+      "index": 20,
+      "run_id": "al-dense-shooting-v100-20261007-source0897-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0897-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0897-shot01"
+      }
+    },
+    {
+      "index": 32,
+      "run_id": "al-dense-shooting-v100-20261007-source0983-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0983-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0983-shot01"
+      }
+    },
+    {
+      "index": 37,
+      "run_id": "al-dense-shooting-v100-20261007-source0866-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0866-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0866-shot01"
+      }
+    },
+    {
+      "index": 28,
+      "run_id": "al-dense-shooting-v100-20261007-source0953-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0953-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0953-shot01"
+      }
+    },
+    {
+      "index": 30,
+      "run_id": "al-dense-shooting-v100-20261007-source0965-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0965-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0965-shot01"
+      }
+    },
+    {
+      "index": 15,
+      "run_id": "al-dense-shooting-v100-20261007-source1001-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1001-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source1001-shot00"
+      }
+    },
+    {
+      "index": 21,
+      "run_id": "al-dense-shooting-v100-20261007-source0887-shot01",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0887-shot01/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0887-shot01"
+      }
+    },
+    {
+      "index": 16,
+      "run_id": "al-dense-shooting-v100-20261007-source0860-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0860-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0860-shot00"
+      }
+    },
+    {
+      "index": 14,
+      "run_id": "al-dense-shooting-v100-20261007-source0993-shot00",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0993-shot00/status.json",
+      "status": {
+        "state": "birth_focus_transferred",
+        "new_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+        "reserved_at": "2026-10-07T17:29:56.427147+00:00",
+        "original_run_id": "al-dense-shooting-v100-20261007-source0993-shot00"
+      }
+    }
+  ],
+  "kept": [
+    {
+      "index": 1,
+      "run_id": "al-dense-shooting-v100-20261007-source0887-shot00",
+      "status": {
+        "state": "complete",
+        "phase": "converted",
+        "started_at": "2026-10-07T12:02:28.497815+00:00",
+        "slurm_job_id": "1026907",
+        "host": "node12",
+        "run_id": "al-dense-shooting-v100-20261007-source0887-shot00",
+        "termination": {
+          "protocol": "al_dense_half_stop_010ps_v1",
+          "reason": "peer_time_cap",
+          "detection_step": 300000,
+          "confirmation_time_ps": 600.0,
+          "first_half_observation_ps": null,
+          "confirmed_half_crossing": false,
+          "half_event_right_censored": true,
+          "retained_prediction_tail_steps": 0,
+          "retained_prediction_tail_ps": 0.0,
+          "prediction_tail_truncated": false,
+          "final_step": 300000,
+          "measurement_ps": 600.0,
+          "maximum_measurement_steps": 300000,
+          "maximum_measurement_ps": 600.0,
+          "peer90_observed_in_reference": false,
+          "recorded_at": "2026-10-07T13:57:41.066064+00:00",
+          "final_crystal_fraction": 0.10640930814747383,
+          "final_snapshot_sha256": "723bb8993b14c3ac78dbec8db11bd0b992f9eb08a02416fc1ebb4ea696a5d2ff",
+          "final_largest_crystal_cluster": 6966,
+          "state": "dynamics_complete"
+        },
+        "dynamics_seconds": 6921.70207812218,
+        "completed_at": "2026-10-07T14:37:18.371932+00:00",
+        "frame_count": 6001,
+        "native_restart_sha256": {
+          "melt_final.restart.bin": "7300999b70006b7aec1c48130b030fa2d13317119d3ec99dd766225698b5c7f4",
+          "final.restart.bin": "022678e0e711afc1d3eab17494a54d65e3a9623d3bdc28589615df81dece9451"
+        }
+      }
+    },
+    {
+      "index": 33,
+      "run_id": "al-dense-shooting-v100-20261007-source0979-shot01",
+      "status": {
+        "state": "complete",
+        "phase": "converted",
+        "started_at": "2026-10-07T14:38:52.008175+00:00",
+        "slurm_job_id": "1026907",
+        "host": "node12",
+        "run_id": "al-dense-shooting-v100-20261007-source0979-shot01",
+        "termination": {
+          "protocol": "al_dense_half_stop_010ps_v1",
+          "reason": "half_crystal",
+          "detection_step": 82500,
+          "confirmation_time_ps": 165.0,
+          "first_half_observation_ps": 150.0,
+          "confirmed_half_crossing": true,
+          "half_event_right_censored": false,
+          "retained_prediction_tail_steps": 3000,
+          "retained_prediction_tail_ps": 6.0,
+          "prediction_tail_truncated": false,
+          "final_step": 85500,
+          "measurement_ps": 171.0,
+          "maximum_measurement_steps": 205500,
+          "maximum_measurement_ps": 411.0,
+          "peer90_observed_in_reference": true,
+          "recorded_at": "2026-10-07T15:12:19.048206+00:00",
+          "final_crystal_fraction": 0.7253783568502503,
+          "final_snapshot_sha256": "ba50808d7e2804478ea85197682c0cd951f1ae9a3b3d1ece311766e02b59b601",
+          "final_largest_crystal_cluster": 50990,
+          "state": "dynamics_complete"
+        },
+        "dynamics_seconds": 2080.785658732988,
+        "completed_at": "2026-10-07T15:23:52.959442+00:00",
+        "frame_count": 1711,
+        "native_restart_sha256": {
+          "melt_final.restart.bin": "807027f17c50b580242d5c5d6681eb0fcb21ef8244c3ab6866039c811154b438",
+          "final.restart.bin": "d78a580cd58664f4882e352f184b6201a89adcc2618cf970ec7649e769e23007"
+        }
+      }
+    },
+    {
+      "index": 4,
+      "run_id": "al-dense-shooting-v100-20261007-source0926-shot00",
+      "status": {
+        "state": "complete",
+        "phase": "converted",
+        "started_at": "2026-10-07T15:24:35.911296+00:00",
+        "slurm_job_id": "1026907",
+        "host": "node12",
+        "run_id": "al-dense-shooting-v100-20261007-source0926-shot00",
+        "termination": {
+          "protocol": "al_dense_half_stop_010ps_v1",
+          "reason": "half_crystal",
+          "detection_step": 67500,
+          "confirmation_time_ps": 135.0,
+          "first_half_observation_ps": 120.0,
+          "confirmed_half_crossing": true,
+          "half_event_right_censored": false,
+          "retained_prediction_tail_steps": 3000,
+          "retained_prediction_tail_ps": 6.0,
+          "prediction_tail_truncated": false,
+          "final_step": 70500,
+          "measurement_ps": 141.0,
+          "maximum_measurement_steps": 145500,
+          "maximum_measurement_ps": 291.0,
+          "peer90_observed_in_reference": true,
+          "recorded_at": "2026-10-07T15:52:18.646048+00:00",
+          "final_crystal_fraction": 0.7762147246244879,
+          "final_snapshot_sha256": "f7d5fac13463ddd1b48364ddcdd19594ad68aaa6f2c54993a621ecda39c8ea33",
+          "final_largest_crystal_cluster": 54570,
+          "state": "dynamics_complete"
+        },
+        "dynamics_seconds": 1737.3005538992584,
+        "completed_at": "2026-10-07T16:01:18.378510+00:00",
+        "frame_count": 1411,
+        "native_restart_sha256": {
+          "melt_final.restart.bin": "676534d65f5e9da4909576862d567647dec8e7e46ba3d55916b5030b576716af",
+          "final.restart.bin": "843d59c804ec732b985f32d27302f862046b8aab18d42694c63102ac21245670"
+        }
+      }
+    },
+    {
+      "index": 0,
+      "run_id": "al-dense-shooting-v100-20261007-source0897-shot00",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T16:01:57.781747+00:00",
+        "slurm_job_id": "1026907",
+        "host": "node12",
+        "run_id": "al-dense-shooting-v100-20261007-source0897-shot00"
+      }
+    },
+    {
+      "index": 13,
+      "run_id": "al-dense-shooting-v100-20261007-source0979-shot00",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T16:39:27.575471+00:00",
+        "slurm_job_id": "1027416",
+        "host": "node10",
+        "run_id": "al-dense-shooting-v100-20261007-source0979-shot00"
+      }
+    },
+    {
+      "index": 6,
+      "run_id": "al-dense-shooting-v100-20261007-source0933-shot00",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T16:39:27.643540+00:00",
+        "slurm_job_id": "1027417",
+        "host": "node42",
+        "run_id": "al-dense-shooting-v100-20261007-source0933-shot00"
+      }
+    },
+    {
+      "index": 3,
+      "run_id": "al-dense-shooting-v100-20261007-source0908-shot00",
+      "status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T16:39:27.608820+00:00",
+        "slurm_job_id": "1027414",
+        "host": "node42",
+        "run_id": "al-dense-shooting-v100-20261007-source0908-shot00"
+      }
+    }
+  ],
+  "note": "User authorized birth protocol for unstarted branches only. Existing active MD continues; status guards prevent next old-protocol source."
+}

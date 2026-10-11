@@ -181,6 +181,14 @@ def publish_record(directory, record, failed=False):
             sampling_ps=metadata['sampling_ps'], protocol=metadata['protocol'],
             description=f'Exact {metadata["sampling_ps"]:g} ps sampled descendant of retained Al prepared liquid; 2 fs integration.',
             evidence=[str(Path(result['destination'])/'input_metadata.json')])
+        if 'execution_backend' in metadata:
+            entry['metadata'].update(execution_backend=metadata['execution_backend'],
+                                     execution=metadata['execution'])
+        if 'sampling_protocol' in metadata:
+            entry['metadata'].update(sampling_protocol=metadata['sampling_protocol'],
+                source_origin=metadata['source_origin'], collection_id=metadata['collection_id'],
+                shot_index=metadata['shot_index'], velocity_seed=metadata['velocity_seed'])
+            entry['dependencies'] = sorted(set(entry['dependencies']+[metadata['collection_id']]))
         write_json(catalog, value)
 
 
@@ -195,9 +203,17 @@ def run_source(manifest, record):
         slurm_job_id=os.environ['SLURM_JOB_ID'], host=socket.gethostname(), run_id=record['run_id'])
     write_json(directory/'status.json', status)
     try:
-        if 'recovery' in record:
+        if 'binary_prefix_recovery' in record:
+            from .dense_al_half_recovery import recover_dynamics
+            elapsed = recover_dynamics(directory, manifest, record)
+        elif 'recovery' in record:
             from .dense_al_continuation import recover_dynamics
             elapsed = recover_dynamics(directory, manifest, record)
+        elif 'execution_backend' in record:
+            if record['execution_backend'] != 'torch_meam_lammps_iso_npt_v1':
+                raise ValueError(f'Unknown dense Al backend: {record["execution_backend"]}')
+            from .dense_al_gpu import execute_gpu
+            elapsed = execute_gpu(directory, timeout_seconds=record.get('execution_timeout_seconds'))
         else:
             elapsed = execute(directory, 'source.in.lammps', 'source.stdout.log', manifest['config']['mpi_ranks'])
         if f'DENSE_AL_COMPLETE {record["run_id"]}' not in (directory/'source.stdout.log').read_text().splitlines():
@@ -207,20 +223,24 @@ def run_source(manifest, record):
         metadata = json.loads((directory/'input_metadata.json').read_text())
         contracts = {PROTOCOL: (50, 'dense-al'), 'al_dense_replay_001ps_v1': (5, 'dense-al-001ps')}
         from .dense_al_half_stop import PROTOCOLS as HALF_PROTOCOLS
+        from .dense_al_birth_stop import PROTOCOL as BIRTH_PROTOCOL
         contracts.update({p: (interval, 'dense-al-half') for interval,p in HALF_PROTOCOLS.items()})
+        contracts[BIRTH_PROTOCOL] = (50, 'dense-al-birth')
         interval, conversion = contracts[metadata['protocol']]
         if metadata['sample_interval_steps'] != interval or metadata['timestep_ps'] != .002:
             raise ValueError(f'Input cadence differs from declared protocol: {directory}')
-        if metadata['protocol'] in HALF_PROTOCOLS.values():
+        if metadata['protocol'] in (*HALF_PROTOCOLS.values(), BIRTH_PROTOCOL):
             termination = json.loads((directory/'technical/stop-monitor/outcome.json').read_text())
             if termination['state'] != 'dynamics_complete' or termination['protocol'] != metadata['protocol']:
-                raise ValueError('Missing or mismatched halfway endpoint certificate')
+                raise ValueError('Missing or mismatched variable-duration endpoint certificate')
             metadata.update(maximum_measurement_steps=metadata['measurement_steps'],
                 measurement_steps=termination['final_step'], measurement_ps=termination['measurement_ps'],
                 termination=termination)
             status['termination'] = termination
         expected_frames = metadata['measurement_steps']//interval+1
         metadata.update(state='dynamics_complete', source_sha256=sha256(directory/'trajectory.lammpstrj'))
+        if 'binary_prefix_recovery' in record:
+            metadata['binary_prefix_recovery'] = record['binary_prefix_recovery']
         if 'recovery' in record:
             metadata['restart_recovery'] = record['recovery']
         write_json(directory/'metadata.json', metadata)

@@ -1,0 +1,28 @@
+JobId=1013281 JobName=LC-full-study
+   UserId=vmorozov(39135) GroupId=tsi(16000) MCS_label=N/A
+   Priority=2066 Nice=0 Account=s2a QOS=normal
+   JobState=PENDING Reason=DependencyNeverSatisfied Dependency=afterok:1013277_*(failed)
+   Requeue=1 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0
+   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A
+   SubmitTime=2026-09-28T20:27:19 EligibleTime=Unknown
+   AccrueTime=Unknown
+   StartTime=Unknown EndTime=Unknown Deadline=N/A
+   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-28T20:27:19 Scheduler=Main
+   Partition=CPU AllocNode:Sid=node58:2095895
+   ReqNodeList=(null) ExcNodeList=(null)
+   NodeList=
+   NumNodes=1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*
+   ReqTRES=cpu=4,mem=48G,node=1,billing=4
+   AllocTRES=(null)
+   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*
+   MinCPUsNode=4 MinMemoryNode=48G MinTmpDiskNode=0
+   Features=(null) DelayBoot=00:00:00
+   OverSubscribe=OK Contiguous=0 Licenses=(null) Network=(null)
+   Command=/work/PERSO/vmorozov/analysis/liquid_predictability/full-relaxation-20260928/technical/study-v2.sbatch
+   WorkDir=/home/infres/vmorozov/PointCloudMaterials
+   StdErr=/work/PERSO/vmorozov/analysis/liquid_predictability/full-relaxation-20260928/technical/study-1013281_4294967294.log
+   StdIn=/dev/null
+   StdOut=/work/PERSO/vmorozov/analysis/liquid_predictability/full-relaxation-20260928/technical/study-1013281_4294967294.log
+   TresPerTask=cpu=4
+   
+

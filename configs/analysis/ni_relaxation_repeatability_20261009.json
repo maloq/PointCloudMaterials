@@ -1,0 +1,19 @@
+{
+  "parent": "/store/PERSO/vmorozov/experiments/ni_response/relaxed-esen-original-md-20261009-v1",
+  "output": "${storage:training_storage}/ni_relaxation/repeatability-20261009-v1",
+  "scratch": "${storage:simulation_runs}/ni-relaxation-repeatability-20261009-v1",
+  "seed": 20261009,
+  "sources": ["98da5a4c359a786179ea", "d4dcd577c93e0eefa716", "47cc82c30c7a9a776c38"],
+  "repeats": 2,
+  "force_repeats": 12,
+  "variants": [
+    {"name": "production32", "ordered": false, "force_dtype": "float32", "tolerance": 0.01},
+    {"name": "ordered32", "ordered": true, "force_dtype": "float32", "tolerance": 0.01},
+    {"name": "unordered64", "ordered": false, "force_dtype": "float64", "tolerance": 0.01},
+    {"name": "ordered32_tight", "ordered": true, "force_dtype": "float32", "tolerance": 0.001}
+  ],
+  "max_iterations": 20000,
+  "max_evaluations": 100000,
+  "perturbation_rms_A": [0.0000001, 0.00001, 0.001, 0.005],
+  "perturbation_source": "98da5a4c359a786179ea"
+}

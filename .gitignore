@@ -3,6 +3,8 @@ datasets
 !/docs/datasets/
 !/docs/datasets/**
 machine.local.yaml
+# Preserved result snapshots stay local; version the adjacent cleanup receipts.
+/docs/storage/*/results/
 /data/
 /tmp/
 log

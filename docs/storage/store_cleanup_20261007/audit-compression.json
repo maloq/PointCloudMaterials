@@ -1,0 +1,58 @@
+[
+  {
+    "original": "files.json",
+    "archive": "files.json.gz",
+    "uncompressed_sha256": "b61227239faf5fa7cc237b8bc41b2fea35fdf659fb9b6739ead6469367755765",
+    "archive_sha256": "772d313fe3c25814f8d7e86e43481b203a70551e7fa25d237a3f0a8a3925a4d3",
+    "uncompressed_bytes": 40613086,
+    "compressed_bytes": 2968676
+  },
+  {
+    "original": "deletion-plan.json",
+    "archive": "deletion-plan.json.gz",
+    "uncompressed_sha256": "008465dc2316dc25e55aa8de50f9d00415e84079652693ccac0f95027a2e56a9",
+    "archive_sha256": "798d22758f81d69523a9c9e17513802ed60f59f7615c57d5aebcd6db87c9bd06",
+    "uncompressed_bytes": 7648529,
+    "compressed_bytes": 425541
+  },
+  {
+    "original": "preserved-files.json",
+    "archive": "preserved-files.json.gz",
+    "uncompressed_sha256": "ad484098744c8ce7c58f5e0e66f018295eeccb8467b07b0209d015f2a8c2388a",
+    "archive_sha256": "667e27d53a111f146f6200eb1acf0c5d91bf36b5147acff722b527c0484768a0",
+    "uncompressed_bytes": 34793779,
+    "compressed_bytes": 2537542
+  },
+  {
+    "original": "protected-birth-labels.json",
+    "archive": "protected-birth-labels.json.gz",
+    "uncompressed_sha256": "650bbe84984b51ef2b587643a7610bf6d4330575214215b62a2118365272e98c",
+    "archive_sha256": "12073528be8e567b21f6119703f75bbfc8a962ac3850703f3e67f2798c51bc76",
+    "uncompressed_bytes": 3700855,
+    "compressed_bytes": 783243
+  },
+  {
+    "original": "deleted.jsonl",
+    "archive": "deleted.jsonl.gz",
+    "uncompressed_sha256": "2daaa3fd8b325bd60f5c15643eddd9050617a03fff6102a519e8e8903b8fce68",
+    "archive_sha256": "f454c721506c09b57b88579f57056e85f280f2bdf2c2320eb55248aef32393dc",
+    "uncompressed_bytes": 6950285,
+    "compressed_bytes": 418291
+  },
+  {
+    "original": "source0891-last-complete.lammpstrj",
+    "archive": "source0891-last-complete.lammpstrj.gz",
+    "uncompressed_sha256": "406ae769c466180f39ed6caa01d2768d35ad789e49d6c503a142f58e72d5a47c",
+    "archive_sha256": "6d4445522ae9d8dd70062648f9ce476a88c2429a848a330110e01bfa298fcbf2",
+    "uncompressed_bytes": 8684532,
+    "compressed_bytes": 4158204
+  },
+  {
+    "original": "source0892-last-complete.lammpstrj",
+    "archive": "source0892-last-complete.lammpstrj.gz",
+    "uncompressed_sha256": "5ef3ffcb2887e588ab5566585c909b4ed18448d20dfca4cd0d44070e5c602b40",
+    "archive_sha256": "c7c4a41e22f52fc7cbee313f5cbdfd4ae3e20ca08c19341063513ba77edef885",
+    "uncompressed_bytes": 8683738,
+    "compressed_bytes": 4157769
+  }
+]

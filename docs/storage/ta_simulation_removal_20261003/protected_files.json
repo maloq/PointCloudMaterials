@@ -1,0 +1,338 @@
+{
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/manifest.json": [
+    86,
+    37191,
+    2532,
+    1788562385092531918
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/status.json": [
+    86,
+    37194,
+    3229,
+    1788562385092531918
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/runner.json": [
+    86,
+    37193,
+    789,
+    1788561727542613258
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight.json": [
+    86,
+    37192,
+    1472,
+    1788561727534613333
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/README.md": [
+    86,
+    31078,
+    2681,
+    1788561727542613258
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/driver.log": [
+    86,
+    37190,
+    4170,
+    1788562385480528329
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam": [
+    86,
+    31080,
+    73049,
+    1788561503000689851
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float32": [
+    86,
+    34517,
+    25,
+    1788795586674424619
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/binary_conversion.json": [
+    86,
+    31081,
+    2740,
+    1788795586678424581
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/float16_conversion.json": [
+    86,
+    31082,
+    1760,
+    1788795586678424581
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/in.lammps": [
+    86,
+    31083,
+    1127,
+    1788561503000689851
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/stdout.log": [
+    86,
+    31086,
+    4692,
+    1788561544316307761
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/log.lammps": [
+    86,
+    31085,
+    155,
+    1788561521264520946
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/lammps.log": [
+    86,
+    31084,
+    5570,
+    1788561544220308650
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory.lammpstrj": [
+    86,
+    31087,
+    468860407,
+    1788561544212308723
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/manifest.json": [
+    86,
+    32289,
+    5011,
+    1788795586602425331
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/atom_ids.npy": [
+    86,
+    31420,
+    8192128,
+    1788795586538425963
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/timesteps.npy": [
+    86,
+    32680,
+    216,
+    1788795586526426081
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/positions.npy": [
+    86,
+    32290,
+    67584128,
+    1788795586182429474
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/atom_types.npy": [
+    86,
+    32286,
+    4096128,
+    1788795586542425922
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/box_low.npy": [
+    86,
+    32288,
+    260,
+    1788795586526426081
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory_binary_float16/box_high.npy": [
+    86,
+    32287,
+    260,
+    1788795586526426081
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float32": [
+    86,
+    36139,
+    25,
+    1788795584170449329
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/final.restart.bin": [
+    86,
+    37195,
+    90113552,
+    1788562247629803262
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/in.lammps": [
+    86,
+    33866,
+    1165,
+    1788561503000689851
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/float16_conversion.json": [
+    86,
+    33865,
+    1786,
+    1788795584170449329
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/stdout.log": [
+    86,
+    33871,
+    52256,
+    1788562248145798491
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/metadata.json": [
+    86,
+    33869,
+    2270,
+    1788561503052689370
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/outcome.json": [
+    86,
+    33870,
+    3359,
+    1788772787970005516
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/lammps.log": [
+    86,
+    33867,
+    53172,
+    1788562248025799601
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/log.lammps": [
+    86,
+    33868,
+    155,
+    1788561730082589767
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/box_high.npy": [
+    86,
+    37380,
+    3020,
+    1788795519487087847
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/atom_types.npy": [
+    86,
+    27259,
+    4096128,
+    1788795519503087688
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/timesteps.npy": [
+    86,
+    31079,
+    2056,
+    1788795519487087847
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/manifest.json": [
+    86,
+    37382,
+    5049,
+    1788795520463078209
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/positions.npy": [
+    86,
+    37383,
+    1480704128,
+    1788795511983161947
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/atom_ids.npy": [
+    86,
+    33872,
+    8192128,
+    1788795519499087728
+  ],
+  "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/branches/Ta/model_1m/trajectory_binary_float16/box_low.npy": [
+    86,
+    37381,
+    3020,
+    1788795519487087847
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/3.0ns.npy": [
+    86,
+    36271,
+    120005192,
+    1772112325573877296
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/2.7ns.npy": [
+    86,
+    39827,
+    120005192,
+    1772112278360505247
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/3.60ns.npy": [
+    86,
+    37484,
+    120005192,
+    1772112340967998684
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/2.9ns.npy": [
+    86,
+    36270,
+    120005192,
+    1772112310274756657
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/model_1m.npy": [
+    86,
+    37485,
+    12288128,
+    1772112342244008744
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/inherent_configurations/2.8ns.npy": [
+    86,
+    26601,
+    120005192,
+    1772112294287630586
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos": [
+    86,
+    38035,
+    67717285,
+    1788561002296600237
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos": [
+    86,
+    26602,
+    653477641,
+    1788561077751237241
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos": [
+    86,
+    38798,
+    664366721,
+    1788561078909247016
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos": [
+    86,
+    36272,
+    650491887,
+    1788561077416234413
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos": [
+    86,
+    36095,
+    669035197,
+    1788561079446251549
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos": [
+    86,
+    34635,
+    666816260,
+    1788561079196249438
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C5.xyz": [
+    86,
+    38038,
+    4316,
+    1616412725000000000
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C2.xyz": [
+    86,
+    38036,
+    4107,
+    1616412725000000000
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C3.xyz": [
+    86,
+    38037,
+    4228,
+    1616412725000000000
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C4.xyz": [
+    86,
+    39801,
+    4312,
+    1616412725000000000
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C1.xyz": [
+    86,
+    38799,
+    4354,
+    1616412725000000000
+  ],
+  "/work/PERSO/vmorozov/datasets/Ta/representative_structures_clusters_model/C6.xyz": [
+    86,
+    39505,
+    4313,
+    1616412725000000000
+  ]
+}

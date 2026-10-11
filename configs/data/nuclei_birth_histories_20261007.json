@@ -1,0 +1,19 @@
+{
+  "dataset": "al-nuclei-birth-010",
+  "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+  "output": "${storage:training_storage}/nucleus_histories/birth-tails-010-20261007-v1",
+  "cache": "${storage:cache}/nucleus-histories/birth-tails-010-20261007-v1",
+  "publication": "${dataset:al-nuclei-birth}/histories/birth-tails-010-v1",
+  "appearance_producer": "${storage:training_storage}/structural_response/first-appearance-20261007-v1",
+  "lookback_ps": 12.0,
+  "early_after_ps": 2.0,
+  "establishment_before_ps": 3.0,
+  "establishment_after_ps": 2.0,
+  "maximum_frame_gap": 2,
+  "ptm_rmsd_cutoff": 0.1,
+  "neighbor_cutoff_A": 3.6,
+  "radius_A": 14.0,
+  "lanes": 6,
+  "example_count": 3,
+  "time_limit": "12:00:00"
+}

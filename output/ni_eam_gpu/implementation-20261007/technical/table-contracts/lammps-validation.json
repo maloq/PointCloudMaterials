@@ -1,0 +1,7 @@
+{
+  "table": "tables/lammps-validation.csv",
+  "sha256": "5649656672466c0b0175e61063fa2e7f19213a4ad4549b3ee868910dbb5cc730",
+  "family": "ni_eam_gpu",
+  "contract": "technical/metric-contracts/ni_eam_gpu.json",
+  "definitions": "tables/metric-definitions/ni_eam_gpu.md"
+}

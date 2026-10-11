@@ -12,7 +12,7 @@ Inspect current producer records and array headers; historical directory labels 
 - Potentials: MACE-MPA-0 medium checkpoint
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 1.067 GiB
+- Allocated storage, excluding registered nested datasets: 0.010 GiB
 - Missing metadata: ensemble
 
 ## Notes and relationships
@@ -28,6 +28,14 @@ Inspect current producer records and array headers; historical directory labels 
   "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
   "evidence": [
     "${dataset:al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720}"
+  ],
+  "storage_cleanup": {
+    "date": "2026-10-07",
+    "payload_files_removed": 11,
+    "receipt": "docs/storage/store_cleanup_20261007/payload-cleanup-receipt.json"
+  },
+  "limitations": [
+    "2026-10-07 user-authorized archive cleanup: binary payloads >=1 MiB in this old repository snapshot were deleted. Reports, figures, tables, code and provenance remain; historical producer completion does not imply payload availability."
   ]
 }
 ```
@@ -44,13 +52,16 @@ Inspect current producer records and array headers; historical directory labels 
 | temperature_K | [500.0] |
 | scientific_scope | [{"supported_claim": "A descriptive conditional waiting-time survival curve across randomized momenta from one shared liquid coordinate/cell configuration, for the configured online PTM connected-cluster event. The original saved-frame persistence definition is preserved while denser frames monitor control, and stopped/full-duration/right-censored outcomes remain explicit.", "unsupported_claim": "Independent-configuration ensemble uncertainty, a converged homogeneous nucleation rate, a committor-derived critical nucleus, or potential-independent kinetics without a decorrelated source bank plus separate stationarity, finite-size, model, and undercooling validation."}] |
 | frame_count | [131] |
+| storage_dtype | ["float16"] |
+| atom_count | [70304] |
+| coordinate_convention | ["wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 
 ## Evidence
 
-All 5 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720-2ab16012.json).
+All 7 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720-2ab16012.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

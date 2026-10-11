@@ -1,0 +1,10 @@
+{
+  "protocol": "all010_response_birth_pooled_train_selected_v3",
+  "parent": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/all010-birth-v2",
+  "parent_identity": "658e23330e8b49b6cc2170daed845d5bab2d426927508306a34f34208ef241f6",
+  "output": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/all010-pooled-v3",
+  "seed": 20261006,
+  "inner_selection_ancestors": 4,
+  "bootstrap_draws": 2000,
+  "wall_seconds": 7200
+}

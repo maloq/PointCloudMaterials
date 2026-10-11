@@ -1,0 +1,1143 @@
+{
+  "dataset_id": "ta-births-fates-v1-20261002",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/complete.json",
+      "relative_path": "technical/complete.json",
+      "sha256": "b4e134a64bfb8709d68544ef366ef0971c6cab792c86145c94ecda066c835e7a",
+      "kind": "metadata",
+      "keys": [
+        "counts",
+        "futures",
+        "identity"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/plan.json",
+      "relative_path": "technical/plan.json",
+      "sha256": "be55bfd7c979bbbb617b9c37d35274a0cd0f5b0bf0626d9e350dfc3c23f83fa7",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "excluded",
+        "identity",
+        "implementation",
+        "initial_manifest_sha256",
+        "lane_cost_units",
+        "launch_manifest_sha256",
+        "legacy_plan_sha256",
+        "outcomes",
+        "scales",
+        "sources"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "ta-full-cell-births-fates-v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "config.cadence_ps",
+            "occurrences": 31
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "sources[0].material",
+            "occurrences": 30
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.7ns",
+            "first_json_path": "sources[0].parent_id",
+            "occurrences": 5
+          },
+          {
+            "value": "2.8ns",
+            "first_json_path": "sources[1].parent_id",
+            "occurrences": 5
+          },
+          {
+            "value": "2.9ns",
+            "first_json_path": "sources[2].parent_id",
+            "occurrences": 5
+          },
+          {
+            "value": "3.0ns",
+            "first_json_path": "sources[3].parent_id",
+            "occurrences": 5
+          },
+          {
+            "value": "3.60ns",
+            "first_json_path": "sources[4].parent_id",
+            "occurrences": 5
+          },
+          {
+            "value": "model_1m",
+            "first_json_path": "sources[5].parent_id",
+            "occurrences": 5
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 891071441,
+            "first_json_path": "sources[0].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 891072441,
+            "first_json_path": "sources[1].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 891073441,
+            "first_json_path": "sources[2].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 891074441,
+            "first_json_path": "sources[3].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 891075441,
+            "first_json_path": "sources[4].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 891051440,
+            "first_json_path": "sources[5].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 608134340,
+            "first_json_path": "sources[6].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 186999831,
+            "first_json_path": "sources[7].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 688081017,
+            "first_json_path": "sources[8].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 32816276,
+            "first_json_path": "sources[9].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 897840983,
+            "first_json_path": "sources[10].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 779428654,
+            "first_json_path": "sources[11].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 533918726,
+            "first_json_path": "sources[12].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 376325111,
+            "first_json_path": "sources[13].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 254269500,
+            "first_json_path": "sources[14].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 852288974,
+            "first_json_path": "sources[15].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 47085415,
+            "first_json_path": "sources[16].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 241723527,
+            "first_json_path": "sources[17].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 869939435,
+            "first_json_path": "sources[18].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 381745835,
+            "first_json_path": "sources[19].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 80229349,
+            "first_json_path": "sources[20].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 796497251,
+            "first_json_path": "sources[21].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 395820186,
+            "first_json_path": "sources[22].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 436100696,
+            "first_json_path": "sources[23].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 145515637,
+            "first_json_path": "sources[24].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 591518361,
+            "first_json_path": "sources[25].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 827237809,
+            "first_json_path": "sources[26].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 549417302,
+            "first_json_path": "sources[27].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 357008615,
+            "first_json_path": "sources[28].velocity_seed",
+            "occurrences": 1
+          },
+          {
+            "value": 535089732,
+            "first_json_path": "sources[29].velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "sources[0].parts[0].timestep_fs",
+            "occurrences": 30
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "sources[0].parts[0].storage_dtype",
+            "occurrences": 30
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "sources[0].atom_count",
+            "occurrences": 25
+          },
+          {
+            "value": 1024000,
+            "first_json_path": "sources[5].atom_count",
+            "occurrences": 5
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "sources[0].frame_count",
+            "occurrences": 30
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "sources[0].lineage",
+            "occurrences": 30
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "1b585f5f2b05c2113273c44a0eeb795243ad695ab2cc36ff81e5707a225c41ee",
+      "kind": "metadata",
+      "keys": [
+        "ancestry_group",
+        "cadence_ps",
+        "chunk_frames",
+        "fates",
+        "input_contract",
+        "lane_memory",
+        "lanes",
+        "launch_dataset",
+        "legacy_initial_dataset",
+        "legacy_large_dataset",
+        "legacy_plan",
+        "output",
+        "potential_sha256",
+        "protocol",
+        "ptm_rmsd_cutoff",
+        "ptm_threads",
+        "time_limit",
+        "workers_per_lane"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "ta-full-cell-births-fates-v1",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-2a5950291b0e67495ad3/complete.json",
+      "relative_path": "technical/sources/ta-old-2a5950291b0e67495ad3/complete.json",
+      "sha256": "9183504b368f98961f39403fb464f5c299edc24105ac1e35dafebf524f1441f0",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-76802cc009c7cbd98448/complete.json",
+      "relative_path": "technical/sources/ta-old-76802cc009c7cbd98448/complete.json",
+      "sha256": "8b20be6d4f45a006d5b647f19ac7da5f1043a4cede7c759eab5ed63a9f152094",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-8aee8bb8abe645c96f1f/complete.json",
+      "relative_path": "technical/sources/ta-old-8aee8bb8abe645c96f1f/complete.json",
+      "sha256": "903cd9f6b91cbec8ae650b030fb484b23431c8895eb37d3ee6bea629808aedbf",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-8ee5e077946023ab0f92/complete.json",
+      "relative_path": "technical/sources/ta-old-8ee5e077946023ab0f92/complete.json",
+      "sha256": "9e515bfc12f970c62222b4c5908b2a1bc67c0c30a73ba1d1d6c7f3b6ba4137ed",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-b6a10214ca3c5d213848/complete.json",
+      "relative_path": "technical/sources/ta-old-b6a10214ca3c5d213848/complete.json",
+      "sha256": "961095f0979688aaea5400358606d545a899556f5f05ae7507cb097331576d13",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-old-f7ecb979a367ce1b6ebb/complete.json",
+      "relative_path": "technical/sources/ta-old-f7ecb979a367ce1b6ebb/complete.json",
+      "sha256": "f21353a6ddaa2ad05b3744ded7ea219925932372a37f8c64fd9ae50c8cad86b6",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent00-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent00-shot00/complete.json",
+      "sha256": "5c3090b88d4147021b2c85e7356f805f933c24b90d7100bce9c004f668a562a3",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent00-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent00-shot01/complete.json",
+      "sha256": "5f2075b050dea3bd4a35bc34806cb8355c36897cd7e3e2f358137a6513b8dc17",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent00-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent00-shot02/complete.json",
+      "sha256": "fe4f0d593845e42abcfd5427400e2e4edb9a29e28c44884176134228c5b909fd",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent00-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent00-shot03/complete.json",
+      "sha256": "3614114f89cb4b8ed30c11273dd822f0bcf95fe6213901ac745074d1aba27e5f",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent01-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent01-shot00/complete.json",
+      "sha256": "aef91471ed1b743b3b232b7ca8bfa9f61e87ad58097047ad450bd1ddac45c8fb",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent01-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent01-shot01/complete.json",
+      "sha256": "a9e72550643146577c597309ca2c9e60e9afd84aae26666063a7c8513c02bbfa",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent01-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent01-shot02/complete.json",
+      "sha256": "5f5a3b7a8bd702fd33404c3d654696e8eb0500d30e15c92ecd88f2c13ae30354",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent01-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent01-shot03/complete.json",
+      "sha256": "aa4646d29c81b1f12139fded895cfa992eb687a4118ad82e3bba59b0f5d38612",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent02-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent02-shot00/complete.json",
+      "sha256": "d9d6d9e5d29405ee1eb0fb9fa3267c8534a71a12d5a72e17683523ac08e15c90",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent02-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent02-shot01/complete.json",
+      "sha256": "6d39c44cfb990e99d1d0df4fe8e497f9555102f1b4fbd04c87aecfbc593074a4",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent02-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent02-shot02/complete.json",
+      "sha256": "b22b2ebffd9901507a5d1c457c059fad775df375849485b38743a1b0942ff417",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent02-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent02-shot03/complete.json",
+      "sha256": "408d19a60ec71a76c7ecec8626a5a72b34dd67bbb3a2e12b7df836f1163eb488",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent03-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent03-shot00/complete.json",
+      "sha256": "d6d423108086e502e8c89fd073a27074d58250b23bbe549468d8b9bcc09cff31",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent03-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent03-shot01/complete.json",
+      "sha256": "f822ee9959ca43f15022d7a6434dd665ec756f80cce97aca23a5cd477fad2fe1",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent03-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent03-shot02/complete.json",
+      "sha256": "8d2e9f903682b197a2f6e9dd460375b09189eb87721f24eab238ac4ce76649b3",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent03-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent03-shot03/complete.json",
+      "sha256": "bf647b255402281b2abc9cb2c424a75d38e2d94820fd5b9df87c0d9823682a7d",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent04-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent04-shot00/complete.json",
+      "sha256": "104cae44792b3a936168a69cd88b43ee675dbb0adf3d181e05fd8e692826b4c0",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent04-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent04-shot01/complete.json",
+      "sha256": "598ade9e74a3f2d91fd73f06982a4ea45211c9614da4808b0c10777bfa74793c",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent04-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent04-shot02/complete.json",
+      "sha256": "c29345be2ec8ae07fb9d41b147a606eab0ac30520917cebfe8970d95a0856967",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent04-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent04-shot03/complete.json",
+      "sha256": "5aefaa9f646c4df8e9a0cd538b7d93aed20cb26e826382692f790da7f5945a85",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent05-shot00/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent05-shot00/complete.json",
+      "sha256": "bfa807b451cdcd951bbb6a56348029e2123063dd33d29b10666a7c7127ff8175",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent05-shot01/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent05-shot01/complete.json",
+      "sha256": "cf54adc9e7243d77ba8a727b8c562dffd2b03ca1e7bd5f3a54e85af2a2755d59",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent05-shot02/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent05-shot02/complete.json",
+      "sha256": "4abe05b9cc4b0040dd60f89ef019aad4031c200f895e6f5a9578d96addc75065",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nucleus_fates/ta-20261002/technical/sources/ta-shooting-20260926-parent05-shot03/complete.json",
+      "relative_path": "technical/sources/ta-shooting-20260926-parent05-shot03/complete.json",
+      "sha256": "c04e1660b045ce4d6e9e9f62af7244b682c4da9fe5d2e7a7ec0c43b6ef8898dd",
+      "kind": "metadata",
+      "keys": [
+        "actual_durations",
+        "counts",
+        "files",
+        "identity",
+        "reused_ptm",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "actual_durations.cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

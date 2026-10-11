@@ -1,0 +1,27 @@
+{
+  "protocol": "lee2003_al_torch_response_benchmark_v1",
+  "output": "${storage:training_storage}/response_meam/torch-port-20261004",
+  "simulation_scratch": "${storage:simulation_runs}/response-meam-torch-20261004",
+  "simulation_archive": "${storage:archive}/simulations/response-meam-torch-20261004",
+  "force_reference": "${storage:training_storage}/response_atlas/force-engines-20261002",
+  "input_archive": "${storage:archive}/simulations/response-force-engines-20261002",
+  "force_reference_identity": "e6fac87a0e07a2a32c2ddebb6ac1ae24afbf22628e59273fac73622e588b458c",
+  "geometry_reference": "${storage:training_storage}/response_geometry/unrelaxed-expanded-20261003",
+  "geometry_reference_identity": "366c55cc62befce14520a9132efd12d1cc7295f472b207323f361582201c7b6f",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "parents": [0, 1, 2, 45],
+  "radius_A": 24,
+  "repeats": 3,
+  "batch_sizes": [1, 2],
+  "hvp_epsilon_A": 0.0001,
+  "response_fd_epsilon_A": 0.003,
+  "energy_per_atom_tolerance_eV": 1e-8,
+  "force_rms_tolerance_eV_A": 1e-8,
+  "hvp_relative_tolerance": 0.002,
+  "response_relative_tolerance": 0.02,
+  "value_rms_tolerance": 0.0001,
+  "meam_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "parent": "${storage:training_storage}/structural_response/c3-l3-fast-20261007-v4",
+  "output": "/store/PERSO/vmorozov/experiments/structural_response/c3-l3-fast-20261007-feature-audit-v1/analyses/embedding-interventions-v3",
+  "cohort_identity": "2fa9931c982e498560d2103cc6a2c40c2ff8ef662b454065c6dc5f8bd1efae63",
+  "seed": 20261007,
+  "workers": 4,
+  "physical_controls": [
+    "q6",
+    "qbar6",
+    "order_small",
+    "radial",
+    "bond_order",
+    "cna",
+    "tda",
+    "rich",
+    "kinematics",
+    "precision"
+  ],
+  "attribution_lead_ps": 3.0,
+  "neighborhood_filter": false,
+  "scope": "Frozen structural and structural+motion readouts only, all eight models and unchanged cases at 3ps. Future-law numerical repeatability audited separately in v2 and not used for this attribution.",
+  "replay_tolerance": {
+    "structural": {
+      "mean": 0.0001,
+      "q99": 0.005
+    },
+    "structural_motion": {
+      "mean": 0.0001,
+      "q99": 0.005
+    },
+    "future_law": {
+      "mean": 0.002,
+      "q99": 0.02
+    }
+  },
+  "spaces": [
+    "structural",
+    "structural_motion"
+  ]
+}

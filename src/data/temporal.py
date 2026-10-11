@@ -48,18 +48,6 @@ _POSITION_COLUMNS = ("x", "y", "z")
 _PRECOMPUTED_NEIGHBOR_INDEX_PROCESS_CACHE: dict[str, np.ndarray] = {}
 
 
-def _normalize_point_cloud(
-    points: np.ndarray, radius: float | None
-) -> np.ndarray:
-    if radius is None:
-        raise ValueError(
-            "Temporal local-structure normalization requires an explicit"
-            " cutoff radius. Resolve data.radius or enable data.auto_cutoff so"
-            " the normalization scale is well-defined."
-        )
-    return points / float(radius)
-
-
 def _sanitize_periodic_points(
     points: np.ndarray, box_lengths: np.ndarray
 ) -> np.ndarray:
@@ -78,10 +66,8 @@ def _sanitize_periodic_points(
 
 def _stable_unique_int(values: np.ndarray) -> np.ndarray:
     arr = np.asarray(values, dtype=np.int64).reshape(-1)
-    if arr.size == 0:
-        return np.zeros((0,), dtype=np.int64)
     _, first_positions = np.unique(arr, return_index=True)
-    return arr[np.sort(first_positions)].astype(np.int64, copy=False)
+    return arr[np.sort(first_positions)]
 
 
 @dataclass(frozen=True)
@@ -472,37 +458,11 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return np.asarray(self._window_start_frames, dtype=np.int64).copy()
 
     def __getitem__(self, index: int) -> dict[str, Any]:
-        batch = self._build_batch_from_indices(
-            np.asarray([index], dtype=np.int64)
-        )
-        sample = {
-            "points": batch["points"][0],
-            "local_atom_ids": batch["local_atom_ids"][0],
-            "coords": batch["coords"][0],
-            "center_positions": batch["center_positions"][0],
-            "timesteps": batch["timesteps"][0],
-            "frame_indices": batch["frame_indices"][0],
-            "center_atom_id": batch["center_atom_id"][0],
-            "instance_id": batch["instance_id"][0],
-            "anchor_frame_index": batch["anchor_frame_index"][0],
-            "anchor_timestep": batch["anchor_timestep"][0],
-            "source_path": batch["source_path"][0],
-        }
-        if "spatial_context_points" in batch:
-            sample["spatial_context_points"] = batch["spatial_context_points"][
-                0
-            ]
-            sample["spatial_context_center_atom_ids"] = batch[
-                "spatial_context_center_atom_ids"
-            ][0]
-            sample["spatial_context_center_offsets"] = batch[
-                "spatial_context_center_offsets"
-            ][0]
-        return sample
+        batch = self._build_batch_from_indices([index])
+        return {key: value[0] for key, value in batch.items()}
 
     def __getitems__(self, indices: Sequence[int]) -> dict[str, Any]:
-        index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
-        return self._build_batch_from_indices(index_array)
+        return self._build_batch_from_indices(indices)
 
     def __getstate__(self) -> dict[str, Any]:
         state = dict(self.__dict__)
@@ -1356,11 +1316,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
         )
 
         if mode == "atom_ids":
-            if center_atom_ids is None:
-                raise RuntimeError(
-                    "Internal error: atom_ids mode resolved without"
-                    " center_atom_ids."
-                )
             requested = np.asarray(center_atom_ids, dtype=np.int64)
             if requested.ndim != 1:
                 raise ValueError(
@@ -1388,11 +1343,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
             return positions.astype(np.int64, copy=False)
 
         if mode == "atom_stride":
-            if center_atom_stride is None:
-                raise RuntimeError(
-                    "Internal error: atom_stride mode resolved without"
-                    " center_atom_stride."
-                )
             stride = int(center_atom_stride)
             if stride <= 0:
                 raise ValueError(
@@ -1403,16 +1353,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
         if mode == "regular_grid":
             return self._resolve_regular_grid_center_atom_indices()
 
-        if mode != "random_subset":
-            raise RuntimeError(
-                f"Unsupported center selection mode resolved: {mode!r}."
-            )
-
-        if max_center_atoms is None:
-            raise RuntimeError(
-                "Internal error: random_subset mode resolved without"
-                " max_center_atoms."
-            )
         count = int(max_center_atoms)
         if count <= 0:
             raise ValueError(f"max_center_atoms must be > 0, got {count}")
@@ -1502,16 +1442,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def _resolve_regular_grid_center_atom_indices(
         self,
     ) -> np.ndarray:
-        if self.radius is None:
-            raise RuntimeError(
-                "Regular-grid center selection requires radius, but radius is"
-                " None."
-            )
-        if self.center_grid_overlap is None:
-            raise RuntimeError(
-                "Regular-grid center selection requires center_grid_overlap,"
-                " but it is None."
-            )
         reference_frame_idx = self._resolve_center_grid_reference_frame_index()
         box_lengths = np.asarray(
             self.box_lengths[reference_frame_idx], dtype=np.float64
@@ -1526,23 +1456,9 @@ class TemporalLAMMPSDumpDataset(Dataset):
         desired_stride = (2.0 - float(self.center_grid_overlap)) * float(
             self.radius
         )
-        if desired_stride <= 0.0:
-            raise ValueError(
-                "Regular-grid center selection requires positive grid stride."
-                f" radius={self.radius},"
-                f" center_grid_overlap={self.center_grid_overlap},"
-                f" derived_stride={desired_stride}."
-            )
-
         counts = np.maximum(
             1, np.floor(box_lengths / desired_stride).astype(np.int64)
         )
-        if np.prod(counts.astype(np.int64), dtype=np.int64) <= 0:
-            raise RuntimeError(
-                "Regular-grid center selection produced a non-positive grid"
-                f" size. counts={counts.tolist()},"
-                f" reference_frame_idx={reference_frame_idx}."
-            )
 
         actual_spacing = box_lengths / counts.astype(np.float64)
         grid_axes = [
@@ -1667,38 +1583,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
             self._tree_cache.popitem(last=False)
         return tree
 
-    def _query_local_structure(
-        self, *, frame_idx: int, center: np.ndarray
-    ) -> np.ndarray:
-        tree = self._get_tree(frame_idx)
-        distances, indices = tree.query(center, k=self.num_points)
-        distances = np.atleast_1d(np.asarray(distances, dtype=np.float32))
-        indices = np.atleast_1d(np.asarray(indices, dtype=np.int64))
-        if indices.size != self.num_points:
-            raise RuntimeError(
-                "KDTree query returned an unexpected number of neighbors."
-                f" frame_idx={frame_idx}, expected={self.num_points},"
-                f" got={indices.size}, source_path={self.dump_file}."
-            )
-
-        if self.selection_method == "radius_then_closest":
-            assert self.radius is not None
-            within_mask = distances <= self.radius
-            within_count = int(within_mask.sum())
-            if within_count < self.num_points:
-                raise RuntimeError(
-                    "selection_method='radius_then_closest' found fewer atoms"
-                    " within the cutoff radius than required, so the"
-                    " requested local structure is ill-defined."
-                    f" frame_idx={frame_idx}, within_radius={within_count},"
-                    f" required={self.num_points}, radius={self.radius},"
-                    f" max_distance_queried={float(distances.max()):.6f},"
-                    f" source_path={self.dump_file}. Increase radius, decrease"
-                    " num_points, or switch selection_method to 'closest'."
-                )
-            return indices[within_mask][: self.num_points]
-        return indices
-
     def _query_local_structures(
         self,
         *,
@@ -1707,23 +1591,11 @@ class TemporalLAMMPSDumpDataset(Dataset):
     ) -> np.ndarray:
         tree = self._get_tree(frame_idx)
         distances, indices = tree.query(centers, k=self.num_points)
-        distances = np.asarray(distances, dtype=np.float32)
-        indices = np.asarray(indices, dtype=np.int64)
-        if indices.ndim == 1:
-            indices = indices.reshape(1, -1)
-            distances = distances.reshape(1, -1)
-        if indices.shape != (int(centers.shape[0]), self.num_points):
-            raise RuntimeError(
-                "KDTree batch query returned an unexpected neighbor array"
-                f" shape. frame_idx={frame_idx},"
-                f" centers_shape={tuple(centers.shape)},"
-                f" expected_shape={(int(centers.shape[0]), self.num_points)},"
-                f" got_shape={tuple(indices.shape)},"
-                f" source_path={self.dump_file}."
-            )
+        shape = (len(centers), self.num_points)
+        distances = np.asarray(distances, dtype=np.float32).reshape(shape)
+        indices = np.asarray(indices, dtype=np.int64).reshape(shape)
 
         if self.selection_method == "radius_then_closest":
-            assert self.radius is not None
             within_counts = np.sum(distances <= self.radius, axis=1)
             shortfall_rows = np.where(within_counts < self.num_points)[0]
             if shortfall_rows.size > 0:
@@ -1740,27 +1612,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
                     f" source_path={self.dump_file}. Increase radius, decrease"
                     " num_points, or switch selection_method to 'closest'."
                 )
-            selected = np.empty_like(indices)
-            for row_idx in range(indices.shape[0]):
-                selected[row_idx] = indices[
-                    row_idx, distances[row_idx] <= self.radius
-                ][: self.num_points]
-            return selected
         return indices
-
-    def _to_local_coordinates(
-        self,
-        *,
-        frame_idx: int,
-        points: np.ndarray,
-        center: np.ndarray,
-    ) -> np.ndarray:
-        if not self.center_neighborhoods:
-            return points.astype(np.float32, copy=False)
-        rel = points - center[None, :]
-        box_lengths = np.asarray(self.box_lengths[frame_idx], dtype=np.float32)
-        rel = rel - box_lengths[None, :] * np.round(rel / box_lengths[None, :])
-        return rel.astype(np.float32, copy=False)
 
     def _to_local_coordinates_batch(
         self,
@@ -1788,11 +1640,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
     ) -> tuple[np.ndarray, np.ndarray]:
         """Select deterministic, spatially separated satellite atoms around each center."""
         context_count = self.spatial_context_center_count
-        if context_count <= 0:
-            raise RuntimeError(
-                "Spatial context center selection was called with context"
-                " disabled."
-            )
         frame_points = np.asarray(self.positions[frame_idx], dtype=np.float32)
         candidate_points = np.asarray(
             frame_points[central_neighbor_indices], dtype=np.float32
@@ -1856,15 +1703,9 @@ class TemporalLAMMPSDumpDataset(Dataset):
         return selected_indices.astype(np.int64, copy=False), selected_offsets
 
     def _normalize_point_cloud_batch(self, points: np.ndarray) -> np.ndarray:
-        if self.radius is None:
-            raise RuntimeError(
-                "Temporal local-structure batch normalization requires an"
-                " explicit cutoff radius, but dataset.radius is None for"
-                f" dump_file={self.dump_file}."
-            )
-        return points / float(self.radius)
+        return points / self.radius
 
-    def _build_batch_from_indices(self, indices: np.ndarray) -> dict[str, Any]:
+    def _build_batch_from_indices(self, indices: Sequence[int]) -> dict[str, Any]:
         index_array = np.asarray(indices, dtype=np.int64).reshape(-1)
         if index_array.size == 0:
             raise ValueError("Temporal batch indices must be non-empty.")
@@ -2013,8 +1854,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
                     centers + self.box_low[frame_idx]
                 )
                 if spatial_context_points is not None:
-                    assert spatial_context_center_atom_ids is not None
-                    assert spatial_context_center_offsets is not None
                     context_indices, context_offsets = (
                         self._select_spatial_context_center_indices(
                             frame_idx=frame_idx,
@@ -2081,8 +1920,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
             "source_path": [str(self.dump_file)] * batch_size,
         }
         if spatial_context_points is not None:
-            assert spatial_context_center_atom_ids is not None
-            assert spatial_context_center_offsets is not None
             batch["spatial_context_points"] = torch.from_numpy(
                 spatial_context_points
             )
@@ -2128,6 +1965,7 @@ class TemporalLAMMPSDumpDataset(Dataset):
         handle,
         *,
         source_path: Path,
+        box_dtype=np.float32,
     ) -> dict[str, Any] | None:
         line = handle.readline()
         if line == "":
@@ -2171,8 +2009,8 @@ class TemporalLAMMPSDumpDataset(Dataset):
             )
         box_mode_tokens = box_header.strip().split()[3:]
 
-        box_low = np.empty((3,), dtype=np.float32)
-        box_high = np.empty((3,), dtype=np.float32)
+        box_low = np.empty((3,), dtype=box_dtype)
+        box_high = np.empty((3,), dtype=box_dtype)
         for axis in range(3):
             bounds_line = handle.readline()
             if bounds_line == "":

@@ -1,0 +1,4916 @@
+[
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/melt/liquid.lammpstrj",
+    "source_sha256": "c1f836afbdd63ec90de9f22cd6ab9ac7955293808c8a5a966b69183e335e9408",
+    "source_signature": [
+      62,
+      31450,
+      3165510,
+      1788876537953522254
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 50000,
+    "last_timestep": 50000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:46.350445+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_0.lammpstrj",
+    "source_sha256": "81683ab43c209b87da5b64a76b39de339116e7467fa269f5b5ac7ef8d85e610c",
+    "source_signature": [
+      62,
+      38413,
+      3165514,
+      1788876539309509741
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 0,
+    "last_timestep": 0,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:48.184616+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_100000.lammpstrj",
+    "source_sha256": "95b1676fc93ea8128e39ae473ed764d608cdba9d03820f214be5c9d64241b581",
+    "source_signature": [
+      62,
+      34632,
+      3161329,
+      1788880905449426873
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 100000,
+    "last_timestep": 100000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:50.157804+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_104000.lammpstrj",
+    "source_sha256": "a624c1d802d2c990be7d764f7413497846146d85ab72a3d3ed4865f820430673",
+    "source_signature": [
+      62,
+      34633,
+      3161036,
+      1788881078523867162
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 104000,
+    "last_timestep": 104000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:52.007745+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_108000.lammpstrj",
+    "source_sha256": "892eb51ce6cd7537bd24fbb925cb546c6b27644e3cd4b220c25bfbd6a4bd921c",
+    "source_signature": [
+      62,
+      37770,
+      3161584,
+      1788881251494308452
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 108000,
+    "last_timestep": 108000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:53.834913+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_112000.lammpstrj",
+    "source_sha256": "f33bac149efe553189955b85329d12e26f449d000015c83a42d5a20be4395b11",
+    "source_signature": [
+      62,
+      33735,
+      3161149,
+      1788881424564747365
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 112000,
+    "last_timestep": 112000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:55.651485+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_116000.lammpstrj",
+    "source_sha256": "e6fce37c957e2ea4b8d8e4c1afd226f2c72a034090f5ff818eedec457d3358d7",
+    "source_signature": [
+      62,
+      35933,
+      3161493,
+      1788881597523185863
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 116000,
+    "last_timestep": 116000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:57.413657+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_12000.lammpstrj",
+    "source_sha256": "ad571d15ceaf64d257d44d7b860d96f0b5c5885efa0c51e0aba5669b25e8d76b",
+    "source_signature": [
+      62,
+      15060,
+      3161930,
+      1788877066996654360
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 12000,
+    "last_timestep": 12000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:50:59.267978+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_120000.lammpstrj",
+    "source_sha256": "37929b2c78e32f2d412d6ae2fa951222de14234c11588a85b237689762992302",
+    "source_signature": [
+      62,
+      15061,
+      3161677,
+      1788881770549622371
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 120000,
+    "last_timestep": 120000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:01.052047+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_124000.lammpstrj",
+    "source_sha256": "4b5d67df6bc8f56b8408634ed733ba79da0dad3fa49a2f96a50511f1a9319404",
+    "source_signature": [
+      62,
+      37771,
+      3161490,
+      1788881943668056746
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 124000,
+    "last_timestep": 124000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:02.822985+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_128000.lammpstrj",
+    "source_sha256": "fff9f34cbda8e766356683855102116a9dd9ef6d33c5c58c93039a8b8637ad57",
+    "source_signature": [
+      62,
+      34634,
+      3161615,
+      1788882117650478444
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 128000,
+    "last_timestep": 128000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:04.637985+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_132000.lammpstrj",
+    "source_sha256": "caae0109f334c42797a1fe9c7cd7097e7ed6e5fd51bbf568674cb71668ba535c",
+    "source_signature": [
+      62,
+      37772,
+      3161318,
+      1788882290780906591
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 132000,
+    "last_timestep": 132000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:06.615404+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_136000.lammpstrj",
+    "source_sha256": "24f48e8bc7e3c1c82e77a8bddd68e2e921b3279041cc121d4717a38fcc5dffe0",
+    "source_signature": [
+      62,
+      38414,
+      3161323,
+      1788882463691335740
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 136000,
+    "last_timestep": 136000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:08.726961+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_140000.lammpstrj",
+    "source_sha256": "90e839ee34e3a6385d36538e254d47ca18e937e1e7f472971154d71b8cd81420",
+    "source_signature": [
+      62,
+      37773,
+      3161706,
+      1788882636753762574
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 140000,
+    "last_timestep": 140000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:10.649530+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_144000.lammpstrj",
+    "source_sha256": "d8ed5628a2fa4010d695bcac219698bb1f7c70f8c9cd499e5c045a8bf1872d09",
+    "source_signature": [
+      62,
+      37774,
+      3161344,
+      1788882809716189400
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 144000,
+    "last_timestep": 144000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:12.486796+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_148000.lammpstrj",
+    "source_sha256": "e953919928831ebc668a4b1246472931b296538d5fe65b8a3990f1bacccc74c3",
+    "source_signature": [
+      62,
+      37775,
+      3161116,
+      1788882982558616448
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 148000,
+    "last_timestep": 148000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:14.265880+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_152000.lammpstrj",
+    "source_sha256": "ab05e01a0706207ee57c09831554678c715effd22bfa53327c489c83c38cfe3c",
+    "source_signature": [
+      62,
+      15062,
+      3161318,
+      1788883155389042788
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 152000,
+    "last_timestep": 152000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:16.083264+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_156000.lammpstrj",
+    "source_sha256": "c3fd35d5097461eb3079913f999d5e9cd11ac34546397d96dbd4a854e3ecf3e8",
+    "source_signature": [
+      62,
+      15063,
+      3161377,
+      1788883328315467446
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 156000,
+    "last_timestep": 156000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:17.918101+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_16000.lammpstrj",
+    "source_sha256": "d7649d094cf0a44ce0eccd5af3759c470e177d45a6a8e9c6a2cac850c074b903",
+    "source_signature": [
+      62,
+      37240,
+      3162534,
+      1788877243179031178
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 16000,
+    "last_timestep": 16000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:19.914415+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_160000.lammpstrj",
+    "source_sha256": "367b0249d4c7184f4faf3c664b139e82627c8af0cf98fa9730dbeeda168e8e10",
+    "source_signature": [
+      62,
+      34000,
+      3161683,
+      1788883500777895569
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 160000,
+    "last_timestep": 160000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:22.084589+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_164000.lammpstrj",
+    "source_sha256": "ce8d5b8efc117c6cd75b4c69cd5df77ead3f18b6fe386577b5d7a37c34ce2bb2",
+    "source_signature": [
+      62,
+      37241,
+      3161264,
+      1788883673464320921
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 164000,
+    "last_timestep": 164000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:24.224119+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_168000.lammpstrj",
+    "source_sha256": "b17b5e63af152ec027724d46efbd8192f23b72437355d58c5e5122a8364371e4",
+    "source_signature": [
+      62,
+      37242,
+      3161276,
+      1788883846530742103
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 168000,
+    "last_timestep": 168000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:26.454065+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_172000.lammpstrj",
+    "source_sha256": "809bb927e50b6f1468ebac752c1b9524bd13d6675351734e833d67f3362196c0",
+    "source_signature": [
+      62,
+      37243,
+      3160982,
+      1788884019413164288
+    ],
+    "source_allocated_bytes": 2395648,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 172000,
+    "last_timestep": 172000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:28.647083+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_176000.lammpstrj",
+    "source_sha256": "80525b798cb2c2028cb090c969a0668a4d139bbe0657907f71d011ff76e562b4",
+    "source_signature": [
+      62,
+      37244,
+      3161092,
+      1788884192315584902
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 176000,
+    "last_timestep": 176000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:30.711673+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_180000.lammpstrj",
+    "source_sha256": "5c56d7399b22a9ec3239a61cc6f1221a9d03c683b2a1070bd86b678fa1c6f101",
+    "source_signature": [
+      62,
+      37245,
+      3161407,
+      1788884365326003920
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 180000,
+    "last_timestep": 180000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:32.575595+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_184000.lammpstrj",
+    "source_sha256": "386495f78a2e1a9862cf4415a2e5100fbc05bd093ac05aa292183b099412c204",
+    "source_signature": [
+      62,
+      37776,
+      3161274,
+      1788884538320422706
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 184000,
+    "last_timestep": 184000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:34.896513+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_188000.lammpstrj",
+    "source_sha256": "692e0124e824827dba164b328fc630608bc489b58da8c3dbcc5d64f98a4d4375",
+    "source_signature": [
+      62,
+      37777,
+      3161415,
+      1788884711426840120
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 188000,
+    "last_timestep": 188000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:37.135271+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_192000.lammpstrj",
+    "source_sha256": "0fb7c99c3ba4b8d80b18bd87e323a5965bfaa206ac0a490c1d6533b2482f945a",
+    "source_signature": [
+      62,
+      34001,
+      3160910,
+      1788884884569256877
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 192000,
+    "last_timestep": 192000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:39.317018+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_196000.lammpstrj",
+    "source_sha256": "90e358701501b50707b6e7ab98cf739098323fe7a6d6a716c052f0aefd29b6d0",
+    "source_signature": [
+      62,
+      35934,
+      3161407,
+      1788885057231677696
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 196000,
+    "last_timestep": 196000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:41.166189+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_20000.lammpstrj",
+    "source_sha256": "75c8ce6d7f48f4fe7f42d74eefdd7607ef9032ef5986b4f8af652475c00477e3",
+    "source_signature": [
+      62,
+      37778,
+      3162042,
+      1788877419373405943
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 20000,
+    "last_timestep": 20000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:43.051950+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_200000.lammpstrj",
+    "source_sha256": "43f139c7d096447eb140474cb82c9d1b4e6fb26a7c95ddb10a52ce3c6f6f99f1",
+    "source_signature": [
+      62,
+      15064,
+      3161504,
+      1788885230418073488
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 200000,
+    "last_timestep": 200000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:44.896540+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_204000.lammpstrj",
+    "source_sha256": "b2c4e05d402d5bedf5492702a39d4392e7d7aa7e0f2ccd984182f9d446dfceea",
+    "source_signature": [
+      62,
+      35935,
+      3161452,
+      1788885403564452708
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 204000,
+    "last_timestep": 204000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:46.896204+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_208000.lammpstrj",
+    "source_sha256": "a9ba7168e37a7e7527e0e08876b6f63ad800347bb45ec44e3120e160da1d5943",
+    "source_signature": [
+      62,
+      37779,
+      3161386,
+      1788885576578834372
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 208000,
+    "last_timestep": 208000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:48.660818+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_212000.lammpstrj",
+    "source_sha256": "133729d8d6740b4675c9862ffd74e9aec51c4357b24fff311e0cf292cdde9ae2",
+    "source_signature": [
+      62,
+      15065,
+      3161093,
+      1788885749525217833
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 212000,
+    "last_timestep": 212000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:50.612992+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_216000.lammpstrj",
+    "source_sha256": "65923f5d9d780a01f1fd6b460f2f0b140c0d2f9c2d267be829ee26b76dc407dd",
+    "source_signature": [
+      62,
+      15066,
+      3160924,
+      1788885922419602887
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 216000,
+    "last_timestep": 216000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:52.558038+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_220000.lammpstrj",
+    "source_sha256": "8ba418b31297f1815667887cd09d0038d46e0dcdb6123a182425e8a31a3b710d",
+    "source_signature": [
+      62,
+      37246,
+      3161438,
+      1788886095365988536
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 220000,
+    "last_timestep": 220000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:54.402442+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_224000.lammpstrj",
+    "source_sha256": "6ed1c67e69dedeaa4a06aeecc45349de3b5061dd52c31c849694dbd1044cd477",
+    "source_signature": [
+      62,
+      37780,
+      3161162,
+      1788886268420374181
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 224000,
+    "last_timestep": 224000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:56.260865+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_228000.lammpstrj",
+    "source_sha256": "40d8a9f0365aa52f42d5fe7e8af55fecdc50ca448ad88fb3da769d90ea78c208",
+    "source_signature": [
+      62,
+      15067,
+      3161359,
+      1788886440898766172
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 228000,
+    "last_timestep": 228000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:58.180110+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_232000.lammpstrj",
+    "source_sha256": "0c68230e022d8fc5713199092bafb6b10c7139a28126ae057738a84b246e59e3",
+    "source_signature": [
+      62,
+      34002,
+      3161367,
+      1788886613405158847
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 232000,
+    "last_timestep": 232000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:51:59.992790+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_236000.lammpstrj",
+    "source_sha256": "2c70bf278f997a7529b52101a613d1958e2860adbb1677f4bee00ebda397d8b3",
+    "source_signature": [
+      62,
+      37247,
+      3161135,
+      1788886786331548493
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 236000,
+    "last_timestep": 236000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:01.725812+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_24000.lammpstrj",
+    "source_sha256": "ca633c76ac6e4218065cc2186dd2cf55c9171af9208020638d5b9bb0021bfec7",
+    "source_signature": [
+      62,
+      37781,
+      3162195,
+      1788877595491779562
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 24000,
+    "last_timestep": 24000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:03.422392+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_240000.lammpstrj",
+    "source_sha256": "882ae58184e52c00243d87af613ca59e0461e310e7a0f05509abdda95d99b326",
+    "source_signature": [
+      62,
+      15068,
+      3161365,
+      1788886959153939977
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 240000,
+    "last_timestep": 240000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:05.190090+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_244000.lammpstrj",
+    "source_sha256": "c1b8b1d2a8c11b77a992629fdd0ed90ffbdea20541795c03fd94e72a8cf20be1",
+    "source_signature": [
+      62,
+      35936,
+      3161726,
+      1788887132112331013
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 244000,
+    "last_timestep": 244000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:07.022440+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_248000.lammpstrj",
+    "source_sha256": "01a78e797829296b3e1ebeec1bdfb75efd985b2b8747822035f8dc7cb5df853b",
+    "source_signature": [
+      62,
+      15069,
+      3161198,
+      1788887305038707506
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 248000,
+    "last_timestep": 248000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:08.827643+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_252000.lammpstrj",
+    "source_sha256": "da43785c75320d41cd0feffb495491ef3eee19a54649c9862e8b1a042fb199b6",
+    "source_signature": [
+      62,
+      37782,
+      3161117,
+      1788887477977056634
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 252000,
+    "last_timestep": 252000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:10.623444+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_256000.lammpstrj",
+    "source_sha256": "16bc3309781867871053b99b3673d83e47dcd8c34dbf694c238267468c38e590",
+    "source_signature": [
+      62,
+      15070,
+      3161208,
+      1788887650963406940
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 256000,
+    "last_timestep": 256000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:12.454807+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_260000.lammpstrj",
+    "source_sha256": "db481c009f26d9e9590c8433cf64ce102e1bf276a9737b7a138958344efdbf1c",
+    "source_signature": [
+      62,
+      35937,
+      3161195,
+      1788887824121757188
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 260000,
+    "last_timestep": 260000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:14.294087+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_264000.lammpstrj",
+    "source_sha256": "7e3818c93d2dd42874848fd17fade195861729bf63194332b9f0bac509f00cf8",
+    "source_signature": [
+      62,
+      37783,
+      3161373,
+      1788887997996102143
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 264000,
+    "last_timestep": 264000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:16.161668+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_268000.lammpstrj",
+    "source_sha256": "0d3f8dc3cd54f86b5add9976944422ea98d92a6c4a1ba530a8f8bc18bad15dbf",
+    "source_signature": [
+      62,
+      37784,
+      3161266,
+      1788888170838458380
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 268000,
+    "last_timestep": 268000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:18.048221+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_272000.lammpstrj",
+    "source_sha256": "1553ae61169711e7e8fc3976253406d64478f3fe483d4acc28bc67d6f5a8dcb4",
+    "source_signature": [
+      62,
+      15071,
+      3161105,
+      1788888343656813838
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 272000,
+    "last_timestep": 272000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:19.871912+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_276000.lammpstrj",
+    "source_sha256": "ef88a1c63f6f4f962ad4b77e6394687aecbae3eec07480a135520ba543dc12bd",
+    "source_signature": [
+      62,
+      37785,
+      3161568,
+      1788888516459163931
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 276000,
+    "last_timestep": 276000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:21.725949+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_28000.lammpstrj",
+    "source_sha256": "5c42eb035eb1a8c30324c4458baac47f535cee613dc9e06139f0615bb382f5f6",
+    "source_signature": [
+      62,
+      34003,
+      3162001,
+      1788877771474152659
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 28000,
+    "last_timestep": 28000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:23.551168+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_280000.lammpstrj",
+    "source_sha256": "31e8dd4d3ec126b1f08409a79e177dfc1923512b12878a21447784bcac5d2938",
+    "source_signature": [
+      62,
+      38528,
+      3161526,
+      1788888689389514433
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 280000,
+    "last_timestep": 280000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:25.380920+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_284000.lammpstrj",
+    "source_sha256": "d6e70069bddc0aa30164b3ead98b04ff785f6b0017a4ae01ca25e9adca77ba92",
+    "source_signature": [
+      62,
+      37786,
+      3161219,
+      1788888862135868255
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 284000,
+    "last_timestep": 284000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:58.179246+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_288000.lammpstrj",
+    "source_sha256": "1efc7b0b7c16915fd628aad4d90a5b72ec026559755367ab72498469c8a61498",
+    "source_signature": [
+      62,
+      37787,
+      3161510,
+      1788889034938223042
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 288000,
+    "last_timestep": 288000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:58.748610+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_292000.lammpstrj",
+    "source_sha256": "4ac89fd00f412a22479a35a8e8f585201701f077b98ed333e8a3b161d30e3f6c",
+    "source_signature": [
+      62,
+      38529,
+      3161262,
+      1788889207872578011
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 292000,
+    "last_timestep": 292000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:59.167391+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_296000.lammpstrj",
+    "source_sha256": "bb068b13bf2c398e4d6e6c73c1f9ebb87cd962e3d0757f787c867bcad8bc5e3f",
+    "source_signature": [
+      62,
+      36659,
+      3161044,
+      1788889380322937630
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 296000,
+    "last_timestep": 296000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:52:59.582298+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_300000.lammpstrj",
+    "source_sha256": "b0c0cf9c65fb7970204bcd21cf41e5be35bd20ca4e19213b6485960e3ac785fb",
+    "source_signature": [
+      62,
+      35938,
+      3161296,
+      1788889552881294679
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 300000,
+    "last_timestep": 300000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:00.002353+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_304000.lammpstrj",
+    "source_sha256": "7941c62b80ac7d75c0d293576ad5a50a398d9df6be2e4c8b45841fb541da0c4a",
+    "source_signature": [
+      62,
+      38530,
+      3161276,
+      1788889725539652186
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 304000,
+    "last_timestep": 304000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:00.476236+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_308000.lammpstrj",
+    "source_sha256": "bcf4155fc54f1ad9f081e7e40db80faf0643e53206e00554d9a2c6f80a067a05",
+    "source_signature": [
+      62,
+      37788,
+      3161043,
+      1788889898542007784
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 308000,
+    "last_timestep": 308000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:00.897863+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_312000.lammpstrj",
+    "source_sha256": "e74f925841f74d32fe75b1850a4fe0b372c6a685b28b322b4da60ab936068192",
+    "source_signature": [
+      62,
+      36660,
+      3161448,
+      1788890071332366695
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 312000,
+    "last_timestep": 312000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:01.321539+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_316000.lammpstrj",
+    "source_sha256": "5060a4d296c534352deb2c0b0419518b291deceef5744bb073b3279dd6da5fb9",
+    "source_signature": [
+      62,
+      35939,
+      3161093,
+      1788890243962728370
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 316000,
+    "last_timestep": 316000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:01.740509+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_32000.lammpstrj",
+    "source_sha256": "4463fdec7b5f8da6fdfc3ff16cb637c091633424f23fc67134812b5943621646",
+    "source_signature": [
+      62,
+      15072,
+      3161715,
+      1788877947144526953
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 32000,
+    "last_timestep": 32000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:02.208389+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_320000.lammpstrj",
+    "source_sha256": "63185d8a55ad643101006a0df968274ad388aab632f5e0b44f76499cc4e331a7",
+    "source_signature": [
+      62,
+      15073,
+      3160869,
+      1788890416753089718
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 320000,
+    "last_timestep": 320000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:02.620701+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_324000.lammpstrj",
+    "source_sha256": "28aea68ac76d09d0cf0e40178e7235da1162c0d7da0fc353a1e73ba030f34e4d",
+    "source_signature": [
+      62,
+      37789,
+      3161284,
+      1788890589323454305
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 324000,
+    "last_timestep": 324000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:03.057662+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_328000.lammpstrj",
+    "source_sha256": "bba74d6d5fcfe278e733e4005a3bb948a3b7aa6df20cc17e62be16a3b699589b",
+    "source_signature": [
+      62,
+      37790,
+      3161308,
+      1788890761677822040
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 328000,
+    "last_timestep": 328000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:03.468225+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_332000.lammpstrj",
+    "source_sha256": "fcc9cc82b04d2cd848ff9312c9a5365e32dfe6783be776d1d680b94bff50a4b0",
+    "source_signature": [
+      62,
+      37791,
+      3161151,
+      1788890933976191346
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 332000,
+    "last_timestep": 332000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:03.933797+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_336000.lammpstrj",
+    "source_sha256": "a503f338194f565b9b6c4cbdb61ccf66cdb3e08765a983a6fda7bcc6b089f02b",
+    "source_signature": [
+      62,
+      37792,
+      3161231,
+      1788891106654558064
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 336000,
+    "last_timestep": 336000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:04.353443+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_340000.lammpstrj",
+    "source_sha256": "11df862dd5f8645ff774d3404416f2e5f354fc1598a8f5b8112c7fe3f4ca40f0",
+    "source_signature": [
+      62,
+      37793,
+      3161159,
+      1788891279272926318
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 340000,
+    "last_timestep": 340000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:04.781675+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_344000.lammpstrj",
+    "source_sha256": "6615363ae8517da31c23b4159d87e10d3d090c89e63e95d5461a4e3ba2e0a80e",
+    "source_signature": [
+      62,
+      38531,
+      3161290,
+      1788891452007294404
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 344000,
+    "last_timestep": 344000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:05.207359+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_348000.lammpstrj",
+    "source_sha256": "1da4770517b75bd479ef39fa634fcc04baab493147cc71752561309b5d571a75",
+    "source_signature": [
+      62,
+      37794,
+      3161032,
+      1788891624861643245
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 348000,
+    "last_timestep": 348000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:05.674527+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_352000.lammpstrj",
+    "source_sha256": "9dad3d159ad686baf4e0c0906df4ea1e20de3aeefa2aaaa3daae6802ee63991b",
+    "source_signature": [
+      62,
+      15074,
+      3161137,
+      1788891797415994387
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 352000,
+    "last_timestep": 352000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:06.081663+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_356000.lammpstrj",
+    "source_sha256": "bececdfbdaf1d6d71dfc63ce985fe4320ebbdf5d09288c5c334dd7030b81ca68",
+    "source_signature": [
+      62,
+      38532,
+      3161294,
+      1788891969998346342
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 356000,
+    "last_timestep": 356000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:06.500473+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_36000.lammpstrj",
+    "source_sha256": "3520825e2d19747e44bf964ed1938fbea1ee03ed6971b0fe225853a56dac8c25",
+    "source_signature": [
+      62,
+      37795,
+      3161930,
+      1788878122834899440
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 36000,
+    "last_timestep": 36000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:06.925190+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_360000.lammpstrj",
+    "source_sha256": "3fbaa5e31d46e632da514cf09f85879152ecc50810bc85c3b053d43c2ad8aa99",
+    "source_signature": [
+      62,
+      15075,
+      3161123,
+      1788892142576699362
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 360000,
+    "last_timestep": 360000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:07.436537+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_364000.lammpstrj",
+    "source_sha256": "1081ea48f0071d28ea3a2fce591eabfa9f035ad4ef360786314d25824161d3bb",
+    "source_signature": [
+      62,
+      38533,
+      3161143,
+      1788892314927055543
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 364000,
+    "last_timestep": 364000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:07.884816+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_368000.lammpstrj",
+    "source_sha256": "0298afeded28c6b296fdbf66865f149255181be49380831e70444607f0aa1efc",
+    "source_signature": [
+      62,
+      15076,
+      3161275,
+      1788892487653409097
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 368000,
+    "last_timestep": 368000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:08.421323+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_372000.lammpstrj",
+    "source_sha256": "87d9ec206d9c96e32838bdbdd59df2d583831301688450eaece6bd0f298d9e92",
+    "source_signature": [
+      62,
+      38534,
+      3161356,
+      1788892660475760338
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 372000,
+    "last_timestep": 372000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:08.868050+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_376000.lammpstrj",
+    "source_sha256": "f8a39dc9279722777ef66b911febc43262b14511ebd653b8e26109e2814d00b7",
+    "source_signature": [
+      62,
+      15077,
+      3161152,
+      1788892833246112444
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 376000,
+    "last_timestep": 376000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:09.360882+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_380000.lammpstrj",
+    "source_sha256": "18220e51204f5d4627180880153ec88c90b2df084f5536482d5efecb4352d16f",
+    "source_signature": [
+      62,
+      35940,
+      3161115,
+      1788893006128464405
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 380000,
+    "last_timestep": 380000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:09.802930+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_384000.lammpstrj",
+    "source_sha256": "8fb1e8b5bec02398c265b595b0a8f60216ce88dd6f1e2116db05fb3f996d162e",
+    "source_signature": [
+      62,
+      37796,
+      3160909,
+      1788893178902818294
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 384000,
+    "last_timestep": 384000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:10.246182+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_388000.lammpstrj",
+    "source_sha256": "5e3962cda39bb9627f353a8f5bd0c237849123482bf49810b1e1f60476051973",
+    "source_signature": [
+      62,
+      37797,
+      3161422,
+      1788893351645173356
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 388000,
+    "last_timestep": 388000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:10.690070+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_392000.lammpstrj",
+    "source_sha256": "e5bb33d3e428f7fc8c02a32cdc1b6f07fbee389db3443cd19fd2ee79c1b9a1e8",
+    "source_signature": [
+      62,
+      37798,
+      3161189,
+      1788893524547527710
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 392000,
+    "last_timestep": 392000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:11.158076+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_396000.lammpstrj",
+    "source_sha256": "e2f482ff0f4b3e8ec93878aa2240f996a58ade0adb11c2f257b11ffe8e81d5bf",
+    "source_signature": [
+      62,
+      37799,
+      3161149,
+      1788893696945887660
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 396000,
+    "last_timestep": 396000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:11.576716+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_4000.lammpstrj",
+    "source_sha256": "2914911c540c5c4ff2f98e3fba2522c5a18cb60cf93db5f7c0dcfa0a2730c6a0",
+    "source_signature": [
+      62,
+      37800,
+      3162453,
+      1788876714403896670
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 4000,
+    "last_timestep": 4000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:11.992475+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_40000.lammpstrj",
+    "source_sha256": "31dfcbd0f818f4d7535ef7b21923f8f88fd90a916742d7cec3c763cce241ec12",
+    "source_signature": [
+      62,
+      36661,
+      3161965,
+      1788878298309272374
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 40000,
+    "last_timestep": 40000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:12.418972+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_400000.lammpstrj",
+    "source_sha256": "bf6c2debd87c5572f085a98954d614ce11abf3bf7e6e31b20c29af403b763475",
+    "source_signature": [
+      62,
+      35941,
+      3161525,
+      1788893869856243490
+    ],
+    "source_allocated_bytes": 2395648,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 400000,
+    "last_timestep": 400000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:12.845070+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_404000.lammpstrj",
+    "source_sha256": "fb5d197b2f5e515824111583f9953666ebba3e27998c1ddf80f56fc8b8e0ad9d",
+    "source_signature": [
+      62,
+      35942,
+      3161101,
+      1788894042742600280
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 404000,
+    "last_timestep": 404000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:13.330052+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_408000.lammpstrj",
+    "source_sha256": "64981798e64c65b36017e8957274753828b02a2991f191a8d8d09ae24b0e90ca",
+    "source_signature": [
+      62,
+      38535,
+      3161197,
+      1788894215620957856
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 408000,
+    "last_timestep": 408000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:13.755141+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_412000.lammpstrj",
+    "source_sha256": "dce95e0c86de323683f273a354c1265aa8e6bc564cafdacc4b5ad5db43687300",
+    "source_signature": [
+      62,
+      15078,
+      3161243,
+      1788894388335317643
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 412000,
+    "last_timestep": 412000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:14.183856+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_416000.lammpstrj",
+    "source_sha256": "a524e6aebad89cc9babac6005dea4a3f9c290b56ffe0df2b9c530823615c53cc",
+    "source_signature": [
+      62,
+      15079,
+      3161163,
+      1788894561057678004
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 416000,
+    "last_timestep": 416000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:14.600892+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_420000.lammpstrj",
+    "source_sha256": "ec9a4bab9d543fbf769148d43d60e4a6f77bcb7515fef05ebbea6eceb7f6abf5",
+    "source_signature": [
+      62,
+      15080,
+      3161446,
+      1788894733956030480
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 420000,
+    "last_timestep": 420000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:15.074770+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_424000.lammpstrj",
+    "source_sha256": "a584b83cfec6d1ebf2a835659a9393f520f8d0e4f752918f79742d401992252e",
+    "source_signature": [
+      62,
+      36662,
+      3161332,
+      1788894906798376824
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 424000,
+    "last_timestep": 424000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:15.503879+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_428000.lammpstrj",
+    "source_sha256": "02e445b98cccbf8670ab21199dd153646f6b56dea14c370d9e67e66b34f8b38f",
+    "source_signature": [
+      62,
+      36010,
+      3161157,
+      1788895079324726939
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 428000,
+    "last_timestep": 428000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:15.926595+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_432000.lammpstrj",
+    "source_sha256": "e55c9960034c1359dba37ec278ac58595ecabae51e085bbd846ed6c236469dfb",
+    "source_signature": [
+      62,
+      36011,
+      3161177,
+      1788895252195074477
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 432000,
+    "last_timestep": 432000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:16.355714+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_436000.lammpstrj",
+    "source_sha256": "a611a066ec352790bb9d6c2245405c406f130ff90a2e34fb2d283b8bebe3936d",
+    "source_signature": [
+      62,
+      36894,
+      3160848,
+      1788895424849424768
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 436000,
+    "last_timestep": 436000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:16.837594+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_44000.lammpstrj",
+    "source_sha256": "e6a4a8b12b0144a37c0574a228d274759334c567b49d2fe29dbb4cfc5ec38d70",
+    "source_signature": [
+      62,
+      32690,
+      3161680,
+      1788878473263648655
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 44000,
+    "last_timestep": 44000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:17.270206+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_440000.lammpstrj",
+    "source_sha256": "272e01ace877d2ea9356183ac4518d23bcdd78555426846e618011f0c2c33cc5",
+    "source_signature": [
+      62,
+      32233,
+      3161007,
+      1788895597603774757
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 440000,
+    "last_timestep": 440000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:17.702301+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_444000.lammpstrj",
+    "source_sha256": "241a0f19fa50fac39255d98b2b70c1374fc4ddb90d66c58ca1fce1d9be9b43b7",
+    "source_signature": [
+      62,
+      36012,
+      3161276,
+      1788895770334129596
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 444000,
+    "last_timestep": 444000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:18.133693+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_448000.lammpstrj",
+    "source_sha256": "e3c20f4121b8ca4e3ff5b9ae409e98cab37a03f67c18ca52a61561d6559b6aee",
+    "source_signature": [
+      62,
+      33906,
+      3160882,
+      1788895943100488790
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 448000,
+    "last_timestep": 448000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:18.611303+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_452000.lammpstrj",
+    "source_sha256": "43e3d2945f10bd3fb5a293b5e1656c5642b1b2b72509dfca74299c3a5edefda8",
+    "source_signature": [
+      62,
+      26594,
+      3161677,
+      1788896115786848984
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 452000,
+    "last_timestep": 452000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:19.130423+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_456000.lammpstrj",
+    "source_sha256": "18654c3162dd88a47e8ec5a7214245bef1135da8e63165809e97501eda0e746e",
+    "source_signature": [
+      62,
+      35407,
+      3161015,
+      1788896288657207665
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 456000,
+    "last_timestep": 456000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:19.554603+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_460000.lammpstrj",
+    "source_sha256": "8f29123aac15068fa4ed84774cb694e5bf19c61526c42eb0ecd5597bcce109af",
+    "source_signature": [
+      62,
+      38415,
+      3161033,
+      1788896461087570743
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 460000,
+    "last_timestep": 460000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:19.972440+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_464000.lammpstrj",
+    "source_sha256": "e0d2596ea602b54d098cf6cb75c625e530c1491411625db6fcc2ae20b5247a35",
+    "source_signature": [
+      62,
+      37895,
+      3161601,
+      1788896633697932339
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 464000,
+    "last_timestep": 464000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:20.437702+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_468000.lammpstrj",
+    "source_sha256": "b9f920c118de0dc31becfb391f93836bb42bdd64a5d6fe25b876e7da06c6d2b7",
+    "source_signature": [
+      62,
+      36895,
+      3161379,
+      1788896806584290708
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 468000,
+    "last_timestep": 468000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:20.870418+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_472000.lammpstrj",
+    "source_sha256": "963d05b54fbf8bbe97b4e03ff85ed060af3cb187ae159d583228175398511948",
+    "source_signature": [
+      62,
+      38416,
+      3161047,
+      1788896979546647450
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 472000,
+    "last_timestep": 472000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:21.296830+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_476000.lammpstrj",
+    "source_sha256": "533fa920bf6088565f5c5d54435fb4daf87a27a1aa82bea158318e9ef145aedb",
+    "source_signature": [
+      62,
+      35943,
+      3161463,
+      1788897152805001654
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 476000,
+    "last_timestep": 476000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:21.715023+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_48000.lammpstrj",
+    "source_sha256": "66d1a99295c38d383c2f95f7952a0d0797251f5e3612d045603ea0808c957fed",
+    "source_signature": [
+      62,
+      35944,
+      3161947,
+      1788878647934026167
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 48000,
+    "last_timestep": 48000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:22.181899+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_480000.lammpstrj",
+    "source_sha256": "1dceccbe6be735697d8349d009393a4f066fd2b73586722b273da2cb606f76f1",
+    "source_signature": [
+      62,
+      35945,
+      3161293,
+      1788897325903357618
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 480000,
+    "last_timestep": 480000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:22.596088+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_484000.lammpstrj",
+    "source_sha256": "1f6dd35db9cc544bb478db6ec45e99e27140c7a598d18d196713f94420507a06",
+    "source_signature": [
+      62,
+      31098,
+      3161051,
+      1788897498881714968
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 484000,
+    "last_timestep": 484000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:23.012693+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_488000.lammpstrj",
+    "source_sha256": "4f80b58bc9e723ac2e2e86d03afddbb3a0c13a9b7c4910e0f38f60a84d103c18",
+    "source_signature": [
+      62,
+      15081,
+      3161021,
+      1788897672028070948
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 488000,
+    "last_timestep": 488000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:23.440237+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_492000.lammpstrj",
+    "source_sha256": "f907e4ae0c7d858f29c6d5724821a9d073f62cbf5136e4c84898a8d3423fa92f",
+    "source_signature": [
+      62,
+      31099,
+      3161133,
+      1788897845102427837
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 492000,
+    "last_timestep": 492000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:23.921820+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_496000.lammpstrj",
+    "source_sha256": "20d4d53c253d7ffd46c429b573e1009dbc38b3ba5e13937be3013d5027168b49",
+    "source_signature": [
+      62,
+      15082,
+      3161291,
+      1788898017568790713
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 496000,
+    "last_timestep": 496000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:24.341451+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_500000.lammpstrj",
+    "source_sha256": "3d06896569baef28415d918b4dac9b60e72a7e16164ed52aa26eff7f05af536a",
+    "source_signature": [
+      62,
+      15083,
+      3161229,
+      1788898190555148848
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 500000,
+    "last_timestep": 500000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:24.762391+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_504000.lammpstrj",
+    "source_sha256": "19a32d8c2917e945831c6e49d7f8b61f276b9eaaf9b846157f8ff0368497390c",
+    "source_signature": [
+      62,
+      36013,
+      3161217,
+      1788898363513507448
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 504000,
+    "last_timestep": 504000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:25.192210+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_508000.lammpstrj",
+    "source_sha256": "1c688495e76aa54a7c264c138444a2246465442e066c6ac2f7e73e14742e1c8d",
+    "source_signature": [
+      62,
+      36014,
+      3161309,
+      1788898536431866612
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 508000,
+    "last_timestep": 508000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:25.667750+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_512000.lammpstrj",
+    "source_sha256": "fa6f9221802743138814352786572d0fa0c254364024c5af4c6da0f023db078a",
+    "source_signature": [
+      62,
+      15084,
+      3161268,
+      1788898709286226572
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 512000,
+    "last_timestep": 512000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:26.099438+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_516000.lammpstrj",
+    "source_sha256": "1165070db2c646720138b9229b666e683da19a29a4c997ac32796a3e3b751ee3",
+    "source_signature": [
+      62,
+      31100,
+      3161029,
+      1788898882352584681
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 516000,
+    "last_timestep": 516000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:26.525424+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_52000.lammpstrj",
+    "source_sha256": "55ab4477bd77a65b8febda94a123318ba79ccae8b022f9d3548f5b980e161a5c",
+    "source_signature": [
+      62,
+      38417,
+      3161429,
+      1788878821816426728
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 52000,
+    "last_timestep": 52000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:26.949215+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_520000.lammpstrj",
+    "source_sha256": "6e98e2b0beab2a36ffd28a8db67016dcdbf353012bf8400ad4a13cca8c3c8078",
+    "source_signature": [
+      62,
+      35946,
+      3161159,
+      1788899055150950625
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 520000,
+    "last_timestep": 520000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:27.419761+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_524000.lammpstrj",
+    "source_sha256": "1a10b036d6143cd889939e7489b745056edff8378cda753f4413fa15f406ff9e",
+    "source_signature": [
+      62,
+      36015,
+      3160797,
+      1788899228073315551
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 524000,
+    "last_timestep": 524000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:27.837529+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_528000.lammpstrj",
+    "source_sha256": "81bfacecf0cee55d4ead7b3e53c6d146d941010433d1e5c25f6eb2ce553cea4c",
+    "source_signature": [
+      62,
+      36016,
+      3161116,
+      1788899400547684687
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 528000,
+    "last_timestep": 528000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:28.254437+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_532000.lammpstrj",
+    "source_sha256": "c4f0a1e2a828dee1fb56f49ce2ff65cc7dad277f67dd7eea40e53f6a3f95cde5",
+    "source_signature": [
+      62,
+      31101,
+      3161582,
+      1788899572930054636
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 532000,
+    "last_timestep": 532000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:28.694382+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_536000.lammpstrj",
+    "source_sha256": "202ba0071bd053bb1c59f7036ee9bfa73cd6905eb31adabb19cb596c83f8ddda",
+    "source_signature": [
+      62,
+      31102,
+      3160918,
+      1788899745672421162
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 536000,
+    "last_timestep": 536000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:29.169460+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_540000.lammpstrj",
+    "source_sha256": "66d0cfd4f575b469015cd03cb0850a3b54ee227b3aadf2e1123cf08d4c4fad44",
+    "source_signature": [
+      62,
+      31103,
+      3161513,
+      1788899918362788145
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 540000,
+    "last_timestep": 540000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:29.605337+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_544000.lammpstrj",
+    "source_sha256": "bb34396747fe3f157d09abb2a77c4a624a80fc29028a328674f8cc931acc9aee",
+    "source_signature": [
+      62,
+      38418,
+      3161218,
+      1788900091025155352
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 544000,
+    "last_timestep": 544000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:30.032158+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_548000.lammpstrj",
+    "source_sha256": "91806c47b4fe3ac16624fa07e513cf59a1a234d7215bba63f42fba85750495e6",
+    "source_signature": [
+      62,
+      31482,
+      3160918,
+      1788900263943520114
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 548000,
+    "last_timestep": 548000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:30.456179+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_552000.lammpstrj",
+    "source_sha256": "0aa776dfccbe73fa918a5290bb1d88bc6c130f45dec1fb45110364360f8db983",
+    "source_signature": [
+      62,
+      37801,
+      3161224,
+      1788900436777885627
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 552000,
+    "last_timestep": 552000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:30.930857+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_556000.lammpstrj",
+    "source_sha256": "617b6e1ab5c0b63365ed0be696aece8e405ab4db656122c712de02ded759d2b9",
+    "source_signature": [
+      62,
+      31483,
+      3161197,
+      1788900609556251653
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 556000,
+    "last_timestep": 556000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:31.359545+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_56000.lammpstrj",
+    "source_sha256": "1a4763ae77e9e7dfe3275efcf3a6f97bc2ad5731f5e0569a93ec53c9c4b60e15",
+    "source_signature": [
+      62,
+      38536,
+      3161704,
+      1788878995762849776
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 56000,
+    "last_timestep": 56000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:31.791018+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_560000.lammpstrj",
+    "source_sha256": "8780b9b49ad01cadd80ddbfb175b2e30b6c3fda23d7fc30532f6b21a60c0c779",
+    "source_signature": [
+      62,
+      38537,
+      3160835,
+      1788900782310617874
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 560000,
+    "last_timestep": 560000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:32.224493+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_564000.lammpstrj",
+    "source_sha256": "03f2ac9cef61e1be084bb0272fe587dda49d5e6ddb129d1ec359ff6035dc3f9b",
+    "source_signature": [
+      62,
+      38538,
+      3160957,
+      1788900954652987957
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 564000,
+    "last_timestep": 564000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:32.656189+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_568000.lammpstrj",
+    "source_sha256": "6353d333c950c02e6e5a1a1d3b8277753b94f7d4ddd045a1fcbc8d3d61c2e79d",
+    "source_signature": [
+      62,
+      31484,
+      3161654,
+      1788901127487379810
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 568000,
+    "last_timestep": 568000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:33.147717+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_572000.lammpstrj",
+    "source_sha256": "6fa6e384021fa298a38377abc358ad5ddef4b173e42ab9f8ff1eb3a5b5ffb213",
+    "source_signature": [
+      62,
+      37802,
+      3161079,
+      1788901300413777516
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 572000,
+    "last_timestep": 572000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:33.569125+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_576000.lammpstrj",
+    "source_sha256": "42064b3aeacf11bb404b3aec1f831c26bf664fcf43a46b8aa5d9fbf6d8fcc56b",
+    "source_signature": [
+      62,
+      31485,
+      3161133,
+      1788901473080176730
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 576000,
+    "last_timestep": 576000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:34.000350+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_580000.lammpstrj",
+    "source_sha256": "6c323bf7de06ca35d65552ebc5db29aaf7ed884c995214b673953897c0d6ccec",
+    "source_signature": [
+      62,
+      38656,
+      3161140,
+      1788901645978572926
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 580000,
+    "last_timestep": 580000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:34.420274+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_584000.lammpstrj",
+    "source_sha256": "c037959eb373690545d17409e1f4ca1d23571b1898274db91be04e4eb55f2ccf",
+    "source_signature": [
+      62,
+      31486,
+      3161043,
+      1788901818664970270
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 584000,
+    "last_timestep": 584000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:34.882166+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_588000.lammpstrj",
+    "source_sha256": "1a5b277de040eeef2f054b5df37ce421e1053e21ad730f62e9f05794f89f2d57",
+    "source_signature": [
+      62,
+      38657,
+      3161231,
+      1788901991391366442
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 588000,
+    "last_timestep": 588000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:35.294392+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_592000.lammpstrj",
+    "source_sha256": "273f31bf02fb5a08ca9bc178e1c8f79339550b49a5eb8979beeef14c90a4a7f6",
+    "source_signature": [
+      62,
+      37803,
+      3161540,
+      1788902164169768070
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 592000,
+    "last_timestep": 592000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:35.709534+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_596000.lammpstrj",
+    "source_sha256": "45705efbd64c9bab4c57be37fb0fc2576968e76a72e53805de47c394fe766bd7",
+    "source_signature": [
+      62,
+      38539,
+      3161231,
+      1788902336548174302
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 596000,
+    "last_timestep": 596000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:36.122198+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_60000.lammpstrj",
+    "source_sha256": "02841c12c51ea44df573d7c2d6a9872fb85f9ddf82b0e9483192d688f0186187",
+    "source_signature": [
+      62,
+      37804,
+      3161277,
+      1788879169933268872
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 60000,
+    "last_timestep": 60000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:36.585571+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_600000.lammpstrj",
+    "source_sha256": "33961bc5e49fe8a788d7a3de2de080d587330e3b8dece985033d930493fa1b1e",
+    "source_signature": [
+      62,
+      37805,
+      3161266,
+      1788902509486574330
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 600000,
+    "last_timestep": 600000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:37.007380+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_604000.lammpstrj",
+    "source_sha256": "223f8a69a66f1ba2388ed405d95850d2239e3a42e32e8c689adc7fdb655bda8b",
+    "source_signature": [
+      62,
+      38540,
+      3160967,
+      1788902682184975596
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 604000,
+    "last_timestep": 604000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:37.428873+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_608000.lammpstrj",
+    "source_sha256": "bf56b55417880ccdf17dbc818185c4bb1a5a6200d4d1f0ef08c859a0dac6b794",
+    "source_signature": [
+      62,
+      38658,
+      3161317,
+      1788902854871376028
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 608000,
+    "last_timestep": 608000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:37.854089+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_612000.lammpstrj",
+    "source_sha256": "f2691af55ffc0b409a54e56b447c4b00bffc0830a42155e1efaabc64c7288baa",
+    "source_signature": [
+      62,
+      36663,
+      3161092,
+      1788903027701774223
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 612000,
+    "last_timestep": 612000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:38.329282+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_616000.lammpstrj",
+    "source_sha256": "94ccfdf24ac13392ed4be7c54bd3a44451787abb09a4df6e17eb9ebe16242ca6",
+    "source_signature": [
+      62,
+      37806,
+      3160844,
+      1788903200292181088
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 616000,
+    "last_timestep": 616000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:38.757774+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_620000.lammpstrj",
+    "source_sha256": "0e2850901fd6fa128725d018e143e81a891ff46cacbe3cd45b03e9f84ef4fd1b",
+    "source_signature": [
+      62,
+      38541,
+      3161190,
+      1788903372838589150
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 620000,
+    "last_timestep": 620000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:39.194517+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_624000.lammpstrj",
+    "source_sha256": "03746037e9f018016cdf20a88720ccfd65ae2345c7ffea3ef4baa6f853fc361f",
+    "source_signature": [
+      62,
+      36664,
+      3161418,
+      1788903545456995387
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 624000,
+    "last_timestep": 624000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:39.717307+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_628000.lammpstrj",
+    "source_sha256": "769e3cd18aa297f223a1bf2ff1587b67ec17c41ed779e596f48decac06ab0545",
+    "source_signature": [
+      62,
+      36665,
+      3161295,
+      1788903717663404351
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 628000,
+    "last_timestep": 628000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:40.180533+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_632000.lammpstrj",
+    "source_sha256": "737edda6cb9562c44df2fea4f1ca31452ba23f0781c423ec926655351d4179c4",
+    "source_signature": [
+      62,
+      37807,
+      3161229,
+      1788903890429807076
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 632000,
+    "last_timestep": 632000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:40.600324+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_636000.lammpstrj",
+    "source_sha256": "245e79aca790784adac023d9be6187653983db37230f762b893466b512edc651",
+    "source_signature": [
+      62,
+      38419,
+      3161092,
+      1788904063080209876
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 636000,
+    "last_timestep": 636000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:41.026401+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_64000.lammpstrj",
+    "source_sha256": "799f2c564f8008355f109304abfe7675c6cc7fcf52c6b855d4cdf6e6358bc3d7",
+    "source_signature": [
+      62,
+      36666,
+      3161291,
+      1788879343703689763
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 64000,
+    "last_timestep": 64000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:41.454352+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_640000.lammpstrj",
+    "source_sha256": "bdabb039d6bbc71fac79ba86dce550b5f13288c5f6559f7eed96875c0464afa3",
+    "source_signature": [
+      62,
+      36667,
+      3160956,
+      1788904235982616728
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 640000,
+    "last_timestep": 640000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:41.920273+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_644000.lammpstrj",
+    "source_sha256": "05875d77c2ef030a078ee166a4fa3b8dbd15242cab4399ffa9332077ba8dd280",
+    "source_signature": [
+      62,
+      36668,
+      3161425,
+      1788904408749024825
+    ],
+    "source_allocated_bytes": 2395648,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 644000,
+    "last_timestep": 644000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:42.347269+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_648000.lammpstrj",
+    "source_sha256": "07b8b5891e70f3cc00dd689f3c9a5311b5b737e01aca59f8606755dbcafb3a70",
+    "source_signature": [
+      62,
+      38659,
+      3160912,
+      1788904581415432635
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 648000,
+    "last_timestep": 648000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:42.770678+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_652000.lammpstrj",
+    "source_sha256": "a2ea69609466da5f0413e634e9fc20951a0ba806eaf0312a206f19dd920edb6d",
+    "source_signature": [
+      62,
+      37465,
+      3160948,
+      1788904754125838870
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 652000,
+    "last_timestep": 652000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:43.204199+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_656000.lammpstrj",
+    "source_sha256": "cbf926235f15e7dc73b62384e8fdf561435c0237cbd126d4465281188bc85c2b",
+    "source_signature": [
+      62,
+      38660,
+      3161381,
+      1788904926708245185
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 656000,
+    "last_timestep": 656000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:43.686442+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_660000.lammpstrj",
+    "source_sha256": "b2ebaef3966fe255ff3287e4e3fcb25c3b0828d4dc3ccf0de05eba2efa1bb9cc",
+    "source_signature": [
+      62,
+      29925,
+      3161293,
+      1788905099114652057
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 660000,
+    "last_timestep": 660000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:44.133600+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_664000.lammpstrj",
+    "source_sha256": "d705fc46e6635360be96550cb6e59560fb62384ce3aa9cb19ed415273ed522dc",
+    "source_signature": [
+      62,
+      29926,
+      3161496,
+      1788905271889054494
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 664000,
+    "last_timestep": 664000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:44.550419+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_668000.lammpstrj",
+    "source_sha256": "e86126e62c180fa4897a6e73a5ccd8823e7d86d9cfa123eb7a02e79c2b922df2",
+    "source_signature": [
+      62,
+      38661,
+      3161086,
+      1788905444839454331
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 668000,
+    "last_timestep": 668000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:44.973304+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_672000.lammpstrj",
+    "source_sha256": "531410704ce1131db02cc2b9bd164891cac553d2214c926dd41fd2e8db529d36",
+    "source_signature": [
+      62,
+      38662,
+      3161422,
+      1788905617733853723
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 672000,
+    "last_timestep": 672000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:45.448370+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_676000.lammpstrj",
+    "source_sha256": "60c6fe0f56782f664ad5231362a04e0a42647c5a11b52e0c9fe7e16822efaf20",
+    "source_signature": [
+      62,
+      37466,
+      3161156,
+      1788905790568252790
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 676000,
+    "last_timestep": 676000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:45.875440+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_68000.lammpstrj",
+    "source_sha256": "262e6c47a15e08b102b7cb1ccdd2f64bc39e34b5fbf18176c995905f82719622",
+    "source_signature": [
+      62,
+      38663,
+      3161246,
+      1788879517414109441
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 68000,
+    "last_timestep": 68000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:46.301953+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_680000.lammpstrj",
+    "source_sha256": "dd27e347b7187558ee9c9ab92f17db3d900a7adbd123202f327ea95f686991db",
+    "source_signature": [
+      62,
+      33380,
+      3161171,
+      1788905963474650322
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 680000,
+    "last_timestep": 680000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:46.731445+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_684000.lammpstrj",
+    "source_sha256": "62bbc468963c82f86100080a301734c89fed4dc63b9b49f34f1d48576acf67c3",
+    "source_signature": [
+      62,
+      37808,
+      3161285,
+      1788906136225048472
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 684000,
+    "last_timestep": 684000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:47.200372+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_688000.lammpstrj",
+    "source_sha256": "2f7dc30dee8f0726c9d970fbd661465ca351ad46713ae490cb3dd2d992183de5",
+    "source_signature": [
+      62,
+      36669,
+      3160970,
+      1788906308835477324
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 688000,
+    "last_timestep": 688000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:47.637961+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_692000.lammpstrj",
+    "source_sha256": "ef8a7b8243560470db41faa3ed2978328a41c25abbdfe2e4c20b52aec2a0670d",
+    "source_signature": [
+      62,
+      38664,
+      3161245,
+      1788906485389874252
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 692000,
+    "last_timestep": 692000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:48.063561+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_696000.lammpstrj",
+    "source_sha256": "13d0bef1d03c62ac5fa60515d692135f2f811cac8e14dd6872f5879f243636e3",
+    "source_signature": [
+      62,
+      33381,
+      3161247,
+      1788906657864306815
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 696000,
+    "last_timestep": 696000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:48.496307+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_700000.lammpstrj",
+    "source_sha256": "49c86aab5e96b4418689fdcb4552bb75662bc6ba140040295ddf6d6a75711d15",
+    "source_signature": [
+      62,
+      37467,
+      3161462,
+      1788906830654735171
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 700000,
+    "last_timestep": 700000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:48.971719+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_704000.lammpstrj",
+    "source_sha256": "93df2099d4e0078f2deef444d0004baeb7badc49b21eaee648328e1d476f6ad3",
+    "source_signature": [
+      62,
+      37468,
+      3161682,
+      1788907003285163705
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 704000,
+    "last_timestep": 704000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:49.438340+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_708000.lammpstrj",
+    "source_sha256": "4781d29b49a12d6ddb14cae030e646612c35e3b53d2642f19c61e2e469ef4f08",
+    "source_signature": [
+      62,
+      37469,
+      3160947,
+      1788907178823564507
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 708000,
+    "last_timestep": 708000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:49.866503+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_712000.lammpstrj",
+    "source_sha256": "240f1436b496304aa8f883780266c336f62d6830e333b74700637b0ece756a08",
+    "source_signature": [
+      62,
+      37470,
+      3161015,
+      1788907351717988205
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 712000,
+    "last_timestep": 712000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:50.293568+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_716000.lammpstrj",
+    "source_sha256": "99ae222beff83be89b42d3cc063b98ebf260bd0dc7d0802ce2b016cfcc8a9c9d",
+    "source_signature": [
+      62,
+      33382,
+      3161450,
+      1788907525076406540
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 716000,
+    "last_timestep": 716000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:50.770416+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_72000.lammpstrj",
+    "source_sha256": "1d4ca7c4a46fc875c8315cbbfaab98802805950e620826ec98cb94b8a3a1ee36",
+    "source_signature": [
+      62,
+      37471,
+      3161205,
+      1788879691076527872
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 72000,
+    "last_timestep": 72000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:51.193121+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_720000.lammpstrj",
+    "source_sha256": "7940b39119ee4df0dc60288397ef27aa52865d37e321d3603a8fc585d4f518bd",
+    "source_signature": [
+      62,
+      38665,
+      3161315,
+      1788907697910828571
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 720000,
+    "last_timestep": 720000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:51.623360+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_724000.lammpstrj",
+    "source_sha256": "7a48b60c6180848866f9407a007630024f306c60d7b3c75d6ec8c57c780f937d",
+    "source_signature": [
+      62,
+      33383,
+      3161512,
+      1788907870765249398
+    ],
+    "source_allocated_bytes": 2409984,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 724000,
+    "last_timestep": 724000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:52.049731+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_76000.lammpstrj",
+    "source_sha256": "6e94364c987589435c3c56a49de1928662229a1eefb15222f6958f92a212be2d",
+    "source_signature": [
+      62,
+      33384,
+      3161327,
+      1788879864842943741
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 76000,
+    "last_timestep": 76000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:52.529402+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_8000.lammpstrj",
+    "source_sha256": "e4b99e0239b1c7e86d4eadb261cc26b819b31d55e74a619336d95e4429a8b7f7",
+    "source_signature": [
+      62,
+      37472,
+      3162478,
+      1788876890802275634
+    ],
+    "source_allocated_bytes": 2417664,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 8000,
+    "last_timestep": 8000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:52.965350+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_80000.lammpstrj",
+    "source_sha256": "c965c790a6d93f04e49732e1129adee69729576f82b6b429ebd49942dc98075a",
+    "source_signature": [
+      62,
+      37473,
+      3161431,
+      1788880038349360444
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 80000,
+    "last_timestep": 80000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:53.395220+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_84000.lammpstrj",
+    "source_sha256": "bc392447fde17deca88d6b22074d95949159cd4029b3e84385ae60fd87e42e72",
+    "source_signature": [
+      62,
+      37474,
+      3161498,
+      1788880211971774597
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 84000,
+    "last_timestep": 84000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:53.823962+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_88000.lammpstrj",
+    "source_sha256": "7050f17bec7785116f5bcab910fa9e78f2f2a72652322b319e903d4a42f387d2",
+    "source_signature": [
+      62,
+      37475,
+      3161255,
+      1788880385502188176
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 88000,
+    "last_timestep": 88000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:54.311861+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_92000.lammpstrj",
+    "source_sha256": "7efb222ac451c2405abee706199198addad2247d65afc4f49dd187d556c64231",
+    "source_signature": [
+      62,
+      37476,
+      3161177,
+      1788880558772602773
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 92000,
+    "last_timestep": 92000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:54.731272+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_96000.lammpstrj",
+    "source_sha256": "dc836aee53aa70966256c2ba8b158ceecafb4882200622397bb2ecbe2d34fbf3",
+    "source_signature": [
+      62,
+      37477,
+      3161082,
+      1788880732095015593
+    ],
+    "source_allocated_bytes": 2402816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 96000,
+    "last_timestep": 96000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 300000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:53:55.145970+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos",
+    "source_sha256": "e3eeeccd3b982361947fb427b9f311ff0251c2ee317e21976033f08c32f9fc19",
+    "source_signature": [
+      62,
+      34635,
+      666816260,
+      1788561079196249438
+    ],
+    "source_allocated_bytes": 324986880,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1350000,
+    "last_timestep": 1350000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 30001266
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:54:12.260303+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos",
+    "source_sha256": "7d20d67091eedf2f24a27978a5bc2e33c1755ed12f3ecd37ccfcfafff6b2376a",
+    "source_signature": [
+      62,
+      36272,
+      650491887,
+      1788561077416234413
+    ],
+    "source_allocated_bytes": 313368064,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1400000,
+    "last_timestep": 1400000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 30001266
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:54:27.989219+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos",
+    "source_sha256": "5519012640516f89ddd5a82c7ed00c3c5ca471201610d23576ce47a6fa5bdfc3",
+    "source_signature": [
+      62,
+      36095,
+      669035197,
+      1788561079446251549
+    ],
+    "source_allocated_bytes": 308701696,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1450000,
+    "last_timestep": 1450000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 30001266
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:54:44.149039+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos",
+    "source_sha256": "8e962c9d3d7f584105e22acb13edebfa8dbda3c715936cd85f1b4605e0f4f805",
+    "source_signature": [
+      62,
+      26602,
+      653477641,
+      1788561077751237241
+    ],
+    "source_allocated_bytes": 297199104,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1500000,
+    "last_timestep": 1500000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 30001266
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:54:59.991987+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos",
+    "source_sha256": "d451ebf7f7169e201f6af75ecc42ac17ce1139dc0739c425a8a005ce3bbf421e",
+    "source_signature": [
+      62,
+      38798,
+      664366721,
+      1788561078909247016
+    ],
+    "source_allocated_bytes": 332172288,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1800000,
+    "last_timestep": 1800000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 30001266
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:55:16.760051+00:00"
+  },
+  {
+    "state": "verified",
+    "source_path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos",
+    "source_sha256": "1038b1c87e081ce501ca2724d3c16d73d93531a14bbb3f9ea55649d822c36856",
+    "source_signature": [
+      62,
+      38035,
+      67717285,
+      1788561002296600237
+    ],
+    "source_allocated_bytes": 33058816,
+    "has_velocities": false,
+    "frame_count": 1,
+    "first_timestep": 1480000,
+    "last_timestep": 1480000,
+    "quantization": {
+      "positions": {
+        "max_abs": 0.0,
+        "rms": 0.0,
+        "coordinate_count": 3072000
+      }
+    },
+    "incomplete_tail": null,
+    "source_deleted": false,
+    "completed_utc": "2026-10-04T12:55:18.957935+00:00"
+  }
+]

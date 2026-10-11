@@ -10,7 +10,7 @@ input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radiu
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
 details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
 @media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
-</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ta static structures</h1><p>Archived inherent configurations and representative local structures; inspect file headers for current contents.</p><span class="badge">research</span><span class="badge warning">1 metadata gaps</span><p><code>Ta</code> · Ta</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta">/work/PERSO/vmorozov/datasets/Ta</a></p><p>18 owned files · 2.070 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ta static structures</h1><p>Archived inherent configurations and representative local structures; inspect file headers for current contents.</p><span class="badge">research</span><span class="badge warning">1 metadata gaps</span><p><code>Ta</code> · Ta</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta">/work/PERSO/vmorozov/datasets/Ta</a></p><p>72 owned files · 2.862 GiB allocated · 6 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
   &quot;title&quot;: &quot;Ta static structures&quot;,
   &quot;materials&quot;: [
     &quot;Ta&quot;
@@ -24,22 +24,24 @@ details{background:white;border:1px solid var(--line);border-radius:7px;padding:
   &quot;potential_ids&quot;: [],
   &quot;limitations&quot;: [
     &quot;A material label does not establish the exact generating potential. Static snapshots do not provide a sampled trajectory or velocities.&quot;
-  ]
-}</pre><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta">${dataset:Ta}</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><p>Not established from the inspected metadata. Do not infer a potential from the material name.</p><h2>Missing metadata and integrity</h2><p>generating potential identity</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  ],
+  &quot;storage_conversion_note&quot;: &quot;2026-10-04: verified float32 binary sidecars for original text snapshots; existing float16 trajectories and float32 inherent arrays unchanged. Input text and native restarts retained. Receipt: docs/storage/ti_duplicates_float32_20261004/complete.json.&quot;
+}</pre><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta">${dataset:Ta}</a></li></ul><p>Dependencies: None recorded<br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><p>Not established from the inspected metadata. Do not infer a potential from the material name.</p><h2>Missing metadata and integrity</h2><p>generating potential identity</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>frame_count</td><td><code>[1]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float32&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[10000422, 1024000]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
   &quot;observed&quot;: {
-    &quot;files&quot;: 18,
-    &quot;apparent_bytes&quot;: 3984244709,
-    &quot;allocated_bytes&quot;: 2222199296,
+    &quot;files&quot;: 72,
+    &quot;apparent_bytes&quot;: 5208894825,
+    &quot;allocated_bytes&quot;: 3073518080,
     &quot;file_extensions&quot;: {
-      &quot;.npy&quot;: 6,
+      &quot;.npy&quot;: 42,
       &quot;.pos&quot;: 6,
+      &quot;.json&quot;: 18,
       &quot;.xyz&quot;: 6
     },
     &quot;producer_state_record_counts&quot;: {},
-    &quot;metadata_records&quot;: 0,
-    &quot;binary_trajectory_records&quot;: 0,
-    &quot;available_complete_binary_records&quot;: 0,
-    &quot;stored_frames&quot;: 0,
+    &quot;metadata_records&quot;: 12,
+    &quot;binary_trajectory_records&quot;: 6,
+    &quot;available_complete_binary_records&quot;: 6,
+    &quot;stored_frames&quot;: 6,
     &quot;binary_records_in_duplicate_groups&quot;: 0
   },
   &quot;loose_arrays&quot;: [
@@ -96,7 +98,319 @@ details{background:white;border:1px solid var(--line);border-radius:7px;padding:
       ],
       &quot;dtype&quot;: &quot;float32&quot;,
       &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        10000422,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.7ns.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        10000422,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.8ns.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        10000422,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/2.9ns.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        10000422,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.0ns.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        10000422
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        10000422,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/3.60ns.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1024000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        1024000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;initial_configurations/model_1m.pos.float32/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
     }
   ],
   &quot;symlinks&quot;: []
-}</pre></details><details><summary>Referenced by maintained configs/code (2)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/simulation/ta_shooting_20260926.json">configs/simulation/ta_shooting_20260926.json</a></li><li><a href="../../../configs/simulation/ta_crystallization.json">configs/simulation/ta_crystallization.json</a></li></ul></details><details><summary>Producer evidence (0 records)</summary><p><a href="../records/Ta-518f962a.json">Complete structured metadata with field paths and current binary schemas</a></p><ul></ul></details><p class="muted">Observed 2026-10-02T12:18:52.028981+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>
+}</pre></details><details><summary>Referenced by maintained configs/code (2)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/simulation/ta_shooting_20260926.json">configs/simulation/ta_shooting_20260926.json</a></li><li><a href="../../../configs/simulation/ta_crystallization.json">configs/simulation/ta_crystallization.json</a></li></ul></details><details><summary>Producer evidence (12 records)</summary><p><a href="../records/Ta-518f962a.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos.float32/conversion.json">initial_configurations/2.7ns.pos.float32/conversion.json</a> · verified · <code>7ac211de27fdd10314f8a70f46bca054715d055ea8193f4c8b6e6c902b140e45</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos.float32/manifest.json">initial_configurations/2.7ns.pos.float32/manifest.json</a> · complete · <code>e4ebdb7cfb30ac393ced98f274ec2719d1f1a11fb27e5ae2aaba833ba2882f4b</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos.float32/conversion.json">initial_configurations/2.8ns.pos.float32/conversion.json</a> · verified · <code>b6855d061ab088601f897de9326a43dec416703923c664173aa1696f202d2e4b</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos.float32/manifest.json">initial_configurations/2.8ns.pos.float32/manifest.json</a> · complete · <code>d3434caaf4547b68703a091ec4995510e31ea4b6b4073b355216b9fbe4e1f4e0</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos.float32/conversion.json">initial_configurations/2.9ns.pos.float32/conversion.json</a> · verified · <code>b4636c50b7ce61e4968449ff22b156fa7c3a475bf6bb3f6ae42d4bf17b5d6378</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos.float32/manifest.json">initial_configurations/2.9ns.pos.float32/manifest.json</a> · complete · <code>07ba0c51eeb11e4734573f4406fe8c8d449cb4d81a9c69793e40be71f876cf0e</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos.float32/conversion.json">initial_configurations/3.0ns.pos.float32/conversion.json</a> · verified · <code>ac0494bcfe3a2b331d70d234c24ff905663e6be4d6cacf5a05d085a3122fc677</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos.float32/manifest.json">initial_configurations/3.0ns.pos.float32/manifest.json</a> · complete · <code>b9420124c342acdc3f17f16193a346abf9148d22a641d2fa29310188fd1d7830</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos.float32/conversion.json">initial_configurations/3.60ns.pos.float32/conversion.json</a> · verified · <code>2cdf4b546bc964cd0be64d5134dfc5323af595503d02fadd4c0d5eb94a418968</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos.float32/manifest.json">initial_configurations/3.60ns.pos.float32/manifest.json</a> · complete · <code>e1679f62bd3d1d0e28d2503a54fc24f5a6d0f86e1d23db2ceebe316291445213</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos.float32/conversion.json">initial_configurations/model_1m.pos.float32/conversion.json</a> · verified · <code>b1361a75c3f26f6d1b9599dc61a6eb81e2443f45f0126d5f1c3fefc6b5aa1bf4</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos.float32/manifest.json">initial_configurations/model_1m.pos.float32/manifest.json</a> · complete · <code>68b15d2ad0846bff22f95fa535218e9fa5e77567d913728f315d48383dc388c2</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

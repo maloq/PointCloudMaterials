@@ -1,0 +1,12 @@
+{
+  "protocol": "ta_appearance_review_windows_v1",
+  "source": "${storage:analysis}/nucleus_crops/ta-20A-18ps-20261003",
+  "source_identity": "2cbc3fc9d5b4fecdd86c33787ac853cbcecec300da7bb6e56d7cb2371331c8f7",
+  "output": "${storage:analysis}/nucleus_crops/ta-appearance-20A-12ps-20261003",
+  "kind": "appearing",
+  "expected_events": 8,
+  "radius_A": 20.0,
+  "before_ps": 12.0,
+  "after_ps": 12.0,
+  "archive_name": "ta_appearance_20A_12ps.zip"
+}

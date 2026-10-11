@@ -1,0 +1,6 @@
+{
+  "source_plan": "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+  "catalogue": "${storage:training_storage}/nuclei_search/al-all-20261005-v3/analyses/catalogue-v3",
+  "historical_prediction_coverage": "${storage:training_storage}/birth_prediction/preappearance-20260930/analyses/coverage-v1",
+  "output": "${storage:repo}/output/nucleus_detection/al075-audit-20261007/analyses/campaign-quality-v1"
+}

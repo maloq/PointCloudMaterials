@@ -1,0 +1,344 @@
+{
+  "rows": 936,
+  "sources": 117,
+  "materials": [
+    "Al",
+    "Mg",
+    "Ta",
+    "Ti"
+  ],
+  "hostname": "nodecpu10",
+  "affinity": [
+    0,
+    1,
+    2,
+    9,
+    12,
+    13,
+    14,
+    21
+  ],
+  "workers": 4,
+  "warmup_seconds": {
+    "reference": 1.3516482189297676,
+    "full_safe": 0.05536546790972352,
+    "spatial_safe": 0.004539400804787874,
+    "spatial_fast": 0.0037085996009409428
+  },
+  "worker_startup_seconds": 0.06627783505246043,
+  "single_worker_seconds": {
+    "reference": [
+      9.486767092719674,
+      9.60122854495421,
+      9.157666281796992
+    ],
+    "full_safe": [
+      5.540110046975315,
+      5.470241293311119,
+      5.5167420618236065
+    ],
+    "spatial_safe": [
+      4.352967775892466,
+      4.408024159260094,
+      4.404192461166531
+    ],
+    "spatial_fast": [
+      3.586546751204878,
+      3.5535971242934465,
+      3.5485043949447572
+    ]
+  },
+  "parallel_seconds": {
+    "reference": [
+      2.4945180281065404,
+      2.4890350569039583,
+      2.4791114409454167
+    ],
+    "full_safe": [
+      1.4808299369178712,
+      1.4762420230545104,
+      1.483159280847758
+    ],
+    "spatial_safe": [
+      1.203698722179979,
+      1.1948227281682193,
+      1.2018216429278255
+    ],
+    "spatial_fast": [
+      0.9681986109353602,
+      0.9666576199233532,
+      0.9682805109769106
+    ]
+  },
+  "numerical": [
+    {
+      "variant": "reference",
+      "family": "bond_order",
+      "rows": 936,
+      "columns": 40,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "bond_order/l2_q",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "reference",
+      "family": "cna",
+      "rows": 936,
+      "columns": 45,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "cna/fixed32_coordination",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "reference",
+      "family": "geometry",
+      "rows": 936,
+      "columns": 99,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "geometry/count",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "reference",
+      "family": "tda",
+      "rows": 936,
+      "columns": 258,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "tda/n32_h0_count",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "full_safe",
+      "family": "bond_order",
+      "rows": 936,
+      "columns": 40,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "bond_order/l2_q",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "full_safe",
+      "family": "cna",
+      "rows": 936,
+      "columns": 45,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "cna/fixed32_coordination",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "full_safe",
+      "family": "geometry",
+      "rows": 936,
+      "columns": 99,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "geometry/count",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "full_safe",
+      "family": "tda",
+      "rows": 936,
+      "columns": 258,
+      "max_absolute": 5.684341886080802e-14,
+      "rms_standardized": 4.211481180892557e-13,
+      "max_standardized": 1.7233576517388562e-10,
+      "unequal_values": 10699,
+      "max_error_feature": "tda/n80_h1_betti2.75",
+      "max_error_row": {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93458
+      }
+    },
+    {
+      "variant": "spatial_safe",
+      "family": "bond_order",
+      "rows": 936,
+      "columns": 40,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "bond_order/l2_q",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "spatial_safe",
+      "family": "tda",
+      "rows": 936,
+      "columns": 258,
+      "max_absolute": 5.684341886080802e-14,
+      "rms_standardized": 4.211481180892557e-13,
+      "max_standardized": 1.7233576517388562e-10,
+      "unequal_values": 10699,
+      "max_error_feature": "tda/n80_h1_betti2.75",
+      "max_error_row": {
+        "source": "native-892",
+        "material": "Al",
+        "lineage": "independent_melt_392346167",
+        "row": 93458
+      }
+    },
+    {
+      "variant": "spatial_fast",
+      "family": "bond_order",
+      "rows": 936,
+      "columns": 40,
+      "max_absolute": 0.0,
+      "rms_standardized": 0.0,
+      "max_standardized": 0.0,
+      "unequal_values": 0,
+      "max_error_feature": "bond_order/l2_q",
+      "max_error_row": {
+        "source": "native-860",
+        "material": "Al",
+        "lineage": "independent_melt_511618678",
+        "row": 0
+      }
+    },
+    {
+      "variant": "spatial_fast",
+      "family": "tda",
+      "rows": 936,
+      "columns": 258,
+      "max_absolute": 0.1112600564956665,
+      "rms_standardized": 0.0031934790517642326,
+      "max_standardized": 0.4635674323610167,
+      "unequal_values": 10820,
+      "max_error_feature": "tda/n80_h2_logbirth_sum",
+      "max_error_row": {
+        "source": "5a96282209df75111d22",
+        "material": "Al",
+        "lineage": "al-1m-independent-melt-911001",
+        "row": 409468
+      }
+    }
+  ],
+  "implementation": {
+    "rich_multimaterial_data.py": "6ac7ecaf0f54b5164d5186b049618a19b7cc7311a295227aa80e05ed173de9c2",
+    "descriptors.py": "b666ff18fdcaf6a13130a5d7c2273dbc4cc41b051323e83f672ad98711dd3c7f",
+    "rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848"
+  },
+  "reference_sha256": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
+  "benchmark_sha256": "52a302fdb5745cc2e0da71f52aba1435c75a7aaadba9bf958f5680f97fdd2937",
+  "reference_vs_cached": {
+    "max_standardized": 0.7685440668386608,
+    "rms_standardized": 0.002019765864040849,
+    "max_error_row": {
+      "source": "7aa3910f511bc57fa96d",
+      "material": "Al",
+      "lineage": "al-1m-independent-melt-911001",
+      "row": 489408
+    },
+    "max_error_feature": "bond_order/l2_coherence_q90",
+    "note": "Original producer on this CPU versus sealed targets; measured separately from optimization drift."
+  },
+  "cpu": "Intel(R) Xeon(R) CPU E5-2643 v4 @ 3.40GHz",
+  "versions": {
+    "numpy": "1.26.4",
+    "scipy": "1.17.1",
+    "gudhi": "3.11.0",
+    "numba": "0.65.0"
+  },
+  "note": "Steady-state compute timings exclude input sampling, warmup and publication; no online run.",
+  "data": {
+    "packed": "/home/ids/vmorozov/training-cache/rich-descriptors/packed-rh2-20260930/full",
+    "manifest_sha256": "39589e9186ef24b07c1e7d26babaef6a501f17646495580a1fbfd97bea907bbe",
+    "packed_identity": "2f4bcb1c063801a46d5c417e30b3d983504e8ee4e13952566504cd6d6516117c",
+    "positions_sha256": "61528d803c81398f47d9a4802cd5986174b19a1bb24d7621144161effdbd2054",
+    "cached_targets_sha256": "013c7207a153682bb160ea6346a17823e81c7faf92ae48ed11f75a2358b1ce08",
+    "reference_sha256": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a"
+  },
+  "preparation_audit": {
+    "plan_rows_preserved": true,
+    "full_plan_shards": 22409,
+    "audit_shards": 7,
+    "audit_rows": 112,
+    "numerical_max_absolute": 7.105427357601002e-15,
+    "completed_reuse": true,
+    "partial_resume_byte_identical": true,
+    "changed_precision_rejected": true,
+    "loader_columns": 298,
+    "cache": "/home/ids/vmorozov/training-cache/target-preparation/optimization-20261008/shard-audit",
+    "packed_spatial_consumer": {
+      "rows": 64,
+      "columns": 298,
+      "weights_sum": 1.0,
+      "identity": "a3503d85f8736bb1dfec0e5e51796d7605ebd3c6f3d277ec6ca4a74326d7c0e8"
+    }
+  },
+  "launch": {
+    "job": "1028561",
+    "task": "rich spatial target preparation timing and numerical audit",
+    "submitted_at": "2026-10-08T11:07:44.933015+00:00",
+    "script": "output/target-preparation/optimization-20261008/technical/run.sh",
+    "gpu_count": 0,
+    "cpus": 4,
+    "node": "nodecpu10",
+    "previous_job": "1028538",
+    "state": "complete",
+    "completed_numerical_audit": true
+  }
+}

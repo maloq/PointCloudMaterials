@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "output": "${storage:training_storage}/al_research/pool-v1",
+  "cache": "${storage:cache}/al-research-pool/v1",
+  "appearance_config": "configs/birth_prediction/appearance_transfer_20261002.json",
+  "shooting_config": "configs/birth_prediction/shooting_appearance_20261003.json",
+  "dense_config": "configs/birth_prediction/dense010_20261003.json",
+  "simulation_launch": "${storage:archive}/simulation-launches/al-main-half-recovery-20261003",
+  "protocols": {
+    "legacy075": {"offsets_ps": [-6.0, -5.25, -4.5, -3.75, -3.0, -2.25, -1.5, -0.75]},
+    "common150": {"offsets_ps": [-6.0, -4.5, -3.0, -1.5]},
+    "dense010": {"offsets_ps": [-0.6, -0.5, -0.4, -0.3, -0.2, -0.1]}
+  },
+  "studies": [
+    {"id": "original-appearance", "root": "${storage:training_storage}/birth_prediction/preappearance-20260930", "receipt": "analyses/comparison-v1/technical/complete.json"},
+    {"id": "merged-heldout", "root": "${storage:training_storage}/birth_prediction/merged-retest-20261002", "receipt": "analyses/merged-comparison-v1/technical/complete.json"},
+    {"id": "descriptor-families", "root": "${storage:training_storage}/birth_prediction/feature-families-20261002", "receipt": "analyses/family-comparison-v1/technical/complete.json"},
+    {"id": "failed-appearance-transfer", "root": "${storage:training_storage}/birth_prediction/appearance-transfer-20261002", "receipt": "analyses/comparison-v1/technical/complete.json"},
+    {"id": "original-appearance-cv", "root": "${storage:training_storage}/birth_prediction/appearance-cv-20261002", "receipt": "analyses/original-cv-v1/technical/complete.json"},
+    {"id": "relaxed-appearance-cv", "root": "${storage:training_storage}/birth_prediction/appearance-cv-20261002", "receipt": "analyses/relaxed-cv-v1/technical/complete.json"},
+    {"id": "shooting-appearance-and-fate", "root": "${storage:training_storage}/birth_prediction/shooting-appearance-20261003", "receipt": "analyses/transfer-and-fate-v1/technical/complete.json"},
+    {"id": "native-010-appearance", "root": "${storage:training_storage}/birth_prediction/dense010-20261003", "receipt": "analyses/nested-cv-v1/technical/complete.json"}
+  ]
+}

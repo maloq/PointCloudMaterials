@@ -1,5 +1,17 @@
 # Failed-embryo appearance comparison
 
+This is one cohort in the [shared Al pool](al_research_pool.md). Its completion
+does not cover the entire Al workload; use the pool overview for all-Al status.
+
+The [native 0.1 ps follow-up](birth_dense010.md) searches the completed dense
+descendants separately, then compares six-frame original-MD histories with
+snapshot and repeated-frame controls. It does not reuse this sparse-grid cohort.
+
+The [Al shooting extension and fate experiment](al_shooting_prediction.md) adds
+eligible new shooting cases on matched physical input offsets, and separately
+predicts verified dissolution versus documented continued growth. Historical
+results and this protocol's relaxed-input runs remain unchanged.
+
 Use `pointnet-torch214` and the maintained module command:
 
 ```bash
@@ -61,3 +73,61 @@ positive. The 28 strong episodes occur once within the 184 candidate union.
 
 [Scientific protocol](../experiments/birth_prediction_20260930/APPEARANCE.md) ·
 [Metric definitions](metrics/birth_appearance.md).
+
+## Nested cross-validation
+
+October3 recovery: the original-coordinate nested CV finished all40 outer fits
+and its analysis. Relaxation completed1,096/1,208 cells; two grouped jobs hit
+the16-hour allocation limit, and cell972-392 exceeded its two-hour subprocess
+timeout. Job1019811 now distributes the112 unfinished cells across nine16-CPU
+lanes, isolating972-392. The per-cell allowance is six hours; the generating
+potential, precision,16 ranks, FIRE settings, force tolerance and iteration
+limits are unchanged. No completed cell is recomputed.
+
+The extension command is `python -m src.research.birth_prediction.appearance_resume
+submit --config configs/birth_prediction/appearance_resume_20261003.json`.
+It snapshots the original code dependencies, records the cell timeout extension,
+freezes path resolution and reconnects seal job1018566 to the recovery array.
+The existing descriptor, fit, comparison and relaxed-CV chain follows normally.
+Recovery provenance is `technical/resume-20261003/`; interrupted attempts and
+their failure archives are preserved. Incomplete minimizations with no final dump
+restart from their original observed frame, with a separate attempt directory.
+
+Requested October 2 after the fixed held-out stronger-candidate subset contained
+only six events. Run with `pointnet-torch214`:
+
+```bash
+python -m src.research.birth_prediction.appearance_cv prepare \
+  --config configs/birth_prediction/appearance_cv_20261002.json
+python -m src.research.birth_prediction.appearance_cv submit \
+  --config configs/birth_prediction/appearance_cv_20261002.json
+```
+
+This separate protocol evaluates all 3,670 eligible rows from119 recorded
+ancestors using five outer folds and five inner selection folds, one seed.
+All18 eligible stronger failed events receive an outer-held-out prediction:
+the folds contain4,4,3,4,3 such events. Models use exactly the same observations,
+event weights and controls as the previous comparison. The original train/test
+results and fixed-Al64 release remain intact; CV uses all historical roles by
+the user's explicit request and is labeled exploratory.
+
+Two detached one-GPU jobs run the original and relaxed domains, respectively.
+Each serially runs both readouts, both observations, both training pools and five
+outer folds (40 final fits, with inner selection). The relaxed job depends on
+the existing descriptor-ready job1018568 and creates no new relaxation work.
+Each job exports its results after fitting, without waiting for the other domain.
+Path resolution, catalogue and code are frozen with the run.
+
+Results live at `${storage:training_storage}/birth_prediction/appearance-cv-20261002`.
+Use `technical/launch.json`, `technical/worker-{domain}.json` and per-fit receipts
+for progress. `analyses/{domain}-cv-v1/` contains exactly-once outer predictions,
+train/test scores, calibration and paired2,000-ancestor-bootstrap intervals.
+Resume the recorded frozen `worker --domain original|relaxed`; existing fits are
+identity-checked and reused. Collectors can be replayed with `collect --domain`.
+
+[CV metric definitions](metrics/birth_appearance_cv.md) describe nested selection,
+ancestry grouping, conditional uncertainty and the mapping of shared fitter roles.
+
+Submitted jobs: **1018745** (original, observed running on node26) and **1018746**
+(relaxed, after successful descriptor-ready job1018568). Both run detached with
+one GPU and eight CPUs. Allocation limits are12hours, not runtime estimates.

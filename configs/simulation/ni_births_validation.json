@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "policy": "Reuse existing passed numerical validation across unchanged Ni protocols; never validate each seed or source. Hardware-specific allocation attachments reuse their matching reviewed GPU audit.",
+  "settings": {
+    "protocol": "ni_mendelev2012_independent_npt_births_v1",
+    "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+    "atoms": 32000,
+    "fcc_repeats": 20,
+    "mass_amu": 58.71,
+    "timestep_ps": 0.001,
+    "melt_temperature_K": 2300,
+    "thermostat_damping_ps": 0.1,
+    "barostat_damping_ps": 1.0,
+    "pressure_bar": 0,
+    "force_dtype": "float32",
+    "integration_dtype": "float64",
+    "observation_dtype": "float16",
+    "sample_interval_ps": 0.1,
+    "velocity_units": "angstrom_per_ps"
+  },
+  "implementation_sha256": {
+    "src/simulation/campaigns/ni_births/md.py": "22a6f61488201cd01ac0636d18fa2243e802aff83236d6c1e410664ef08a45b0",
+    "src/simulation/eam_gpu/npt.py": "b5ebdbb8987c6bc8cf0bf78d90f42eb94f600858c86e262695e2261fdcc61416",
+    "src/simulation/eam_gpu/potential.py": "fde6451589698a1700f414cc3916cd4bd65d764afe88594917b5592a1e65c57f",
+    "src/simulation/eam_gpu/tables.py": "22b8ced57d1aa3a6a71eef553a3ea17e2998e3fb89b412f7db02d1504f36349d",
+    "src/simulation/eam_gpu/kernels.cu": "21ff52757f3bc4eed2a2e0ba9ca3c81f0d3c1449a52674b2d9f4455055732297",
+    "src/data/conversion/native_qv.py": "fdd5fbd527af06d2adf7b3e9b3609baeffb49228f314a7b691090cd594588753",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da"
+  },
+  "audits": [
+    {
+      "validation": "output/ni_nucleation/campaign-20261007-extension01/technical/allocation-worker-02/audit/validation.json",
+      "validation_sha256": "ec5090091587f5a011b3e7bfc8b2fc8a4bc10d7d767f21de10f4981c151e695f"
+    },
+    {
+      "validation": "output/ni_nucleation/campaign-20261007-extension01/technical/audit/validation.json",
+      "validation_sha256": "47b22279ef65a7d3342dd79bcb873559a48ec13adff516917882058910e151a7"
+    }
+  ],
+  "implementation_equivalences": {
+    "src/simulation/campaigns/ni_births/md.py": {
+      "validated_sha256": "22a6f61488201cd01ac0636d18fa2243e802aff83236d6c1e410664ef08a45b0",
+      "compatible_sha256": "e778e992a28096724aa8ab7f4d989523810b93537b38f67f1866461ea99e8e4d",
+      "review": "docs/metrics/ni_validation_import_review_20261008.json",
+      "review_sha256": "9255434f96c46d348a113907af6e5ca3c9814fc1bad7c38bb35fb88199646486"
+    }
+  }
+}

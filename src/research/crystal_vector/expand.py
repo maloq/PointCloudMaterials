@@ -6,7 +6,7 @@ from scipy.spatial import cKDTree
 
 from src.data.fixed_cohort.protocol import digest,sha,write_json
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry
+from src.postprocessing.protocols import ancestry
 from .data import context_atoms
 from .interface import interface_mask,nearest_target
 

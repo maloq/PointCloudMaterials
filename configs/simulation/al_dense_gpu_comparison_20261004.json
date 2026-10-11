@@ -1,0 +1,7 @@
+{
+  "gpu_launch": "${storage:archive}/simulation-launches/al-dense-gpu-20261004",
+  "cpu_launch": "${storage:archive}/simulation-launches/al-main-half-recovery-20261003",
+  "gpu_source_ids": [894, 914, 944, 974, 1005],
+  "cached_cpu_analysis": "${storage:output}/al_duration/all150-20261001",
+  "output": "${storage:output}/meam_gpu/dense-cpu-comparison-20261004"
+}

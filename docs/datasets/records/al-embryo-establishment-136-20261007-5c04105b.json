@@ -1,0 +1,1773 @@
+{
+  "dataset_id": "al-embryo-establishment-136-20261007",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "d765341a492b8c9f21a73992a84524f7f045f9d0529925939d7feffa956d3f31",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "identity",
+        "melt_ancestors",
+        "observations",
+        "physical_families",
+        "source_views",
+        "state",
+        "summary",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/000a80e47877553f49b8/complete.json",
+      "relative_path": "sources/000a80e47877553f49b8/complete.json",
+      "sha256": "6a24ac794d92528d19e119636ea0f82e353dee5d8486a3eb0fb98e747bcc6c81",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/017ca530d49c963fe560/complete.json",
+      "relative_path": "sources/017ca530d49c963fe560/complete.json",
+      "sha256": "41ff90c7a0d300eacf64d4e4298b15b3145d3ea9a2e0e49920fe91a6074e7c58",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/05c4c6c154e6939223bc/complete.json",
+      "relative_path": "sources/05c4c6c154e6939223bc/complete.json",
+      "sha256": "f83969caf9d07e809046b93b856a960a9c6c17179f0a82ef2bb7a572a004a4a1",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/060fc75a23714ac20e23/complete.json",
+      "relative_path": "sources/060fc75a23714ac20e23/complete.json",
+      "sha256": "1bb7dcecebd8c79d98daea589aba67945ddcf105b0ece2378fc3c9699b48858a",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/08145903d3297dad26b9/complete.json",
+      "relative_path": "sources/08145903d3297dad26b9/complete.json",
+      "sha256": "e5a73385ccd2f62ede5d72e390286ee30f499a6ebb36305cd0dd61c30faf6a3c",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/09a5d23e24017195f12a/complete.json",
+      "relative_path": "sources/09a5d23e24017195f12a/complete.json",
+      "sha256": "42c0a1ed83749e355064d9164f2e484bead681006d22d2d899cc2f1e0a29431a",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/0b56952490da9127f5f0/complete.json",
+      "relative_path": "sources/0b56952490da9127f5f0/complete.json",
+      "sha256": "59a857f334c78162b4b08f60aef0b4882cd9c7c85910323476246eb7c0ce7b4c",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/0d9669d0e8151fbf6d3c/complete.json",
+      "relative_path": "sources/0d9669d0e8151fbf6d3c/complete.json",
+      "sha256": "15989fd311dabcc80aaad8e8f29c0412803cd111f3f29b2a0f98eb1523732c6d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/0e939ee84ec480885a4e/complete.json",
+      "relative_path": "sources/0e939ee84ec480885a4e/complete.json",
+      "sha256": "2ade3a93b7a93f6d1c49af9d27f1f0727ade5bf284a79945971754586de58792",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/0f98638b733b82d88409/complete.json",
+      "relative_path": "sources/0f98638b733b82d88409/complete.json",
+      "sha256": "698929fc5721b074b59dc852608c42f93ef77ba03b4cb164d02efc7988e1af78",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/125ca57bff7762665cb6/complete.json",
+      "relative_path": "sources/125ca57bff7762665cb6/complete.json",
+      "sha256": "45b576b8b9ee15f4f5466361a401052b0a0538b64da7cecdcecc6f973ce943a9",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/1abd351a757f8bae13a1/complete.json",
+      "relative_path": "sources/1abd351a757f8bae13a1/complete.json",
+      "sha256": "516f164bdf29ad3da24fc0a686724cb944f99b4130aaa776a145d1c9c16b7240",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/1b301ce5605f42d3264a/complete.json",
+      "relative_path": "sources/1b301ce5605f42d3264a/complete.json",
+      "sha256": "b0f39ce39b0bed965a6f0b8b7c0784fc5292759e9751df815ece20c813b6140b",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/1ba429ad5df731b7a4a3/complete.json",
+      "relative_path": "sources/1ba429ad5df731b7a4a3/complete.json",
+      "sha256": "453fe5ff7939118b669337c78dd53ca1c6f9408eca1bdaadca6bdcc14c6f13a9",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/1d1b36784cd7f540b65b/complete.json",
+      "relative_path": "sources/1d1b36784cd7f540b65b/complete.json",
+      "sha256": "53e3b6d4a961833189e76441aac51e9b40049215d4c9682f99be39953ee320cc",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/1d89e3ca41e461d2d34d/complete.json",
+      "relative_path": "sources/1d89e3ca41e461d2d34d/complete.json",
+      "sha256": "cb54deced4ceb67948d4565e95f6c9a2849faa5106f565cc5a17e4f9a47a8b83",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/206c4d763d6314e64855/complete.json",
+      "relative_path": "sources/206c4d763d6314e64855/complete.json",
+      "sha256": "30b390d1cd8c5d1fb8db99b2bfdcf97367afa81f67f72b0ad3f5c06e1d4c198d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/20e517ac40247fe5e415/complete.json",
+      "relative_path": "sources/20e517ac40247fe5e415/complete.json",
+      "sha256": "481c52bc080a0154a54f80d49a191e488c218d88b5ef9241a6e2de6f3551158b",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/24f5d5630efda802230b/complete.json",
+      "relative_path": "sources/24f5d5630efda802230b/complete.json",
+      "sha256": "5e15b4c6cafe42a64a48da74a5687e14a3f36d2c38499b0ae1cfe37c22d87051",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/2600c9b278b480c46dcf/complete.json",
+      "relative_path": "sources/2600c9b278b480c46dcf/complete.json",
+      "sha256": "cab8b183dc134db156ae452c881c68f6d4eee59f77dd254472ae0bb094af8d93",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/2a9008ed6b412a3449f0/complete.json",
+      "relative_path": "sources/2a9008ed6b412a3449f0/complete.json",
+      "sha256": "b16139599016a614ba701e0e22d810684f9e077fe8fe7682b433d341e2bdbfc7",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/2dd09ac1c1911710d15d/complete.json",
+      "relative_path": "sources/2dd09ac1c1911710d15d/complete.json",
+      "sha256": "a4579810c888a43f9c5d6fd2227936375c18dc22d2ca97192eea401d6ee12ec5",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/325e74bd3690b8e1582c/complete.json",
+      "relative_path": "sources/325e74bd3690b8e1582c/complete.json",
+      "sha256": "050da2847ef845d974586f88167bc27ef142a05a4f3dc086e4dfb9d6ec119dae",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/37bb9240bdb5955a9734/complete.json",
+      "relative_path": "sources/37bb9240bdb5955a9734/complete.json",
+      "sha256": "92228ce7412863704c27ba36aa6646f0c057f12464d3f301fa42dc1ce8c8c4c7",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/3d24f1e18edfa282d3e6/complete.json",
+      "relative_path": "sources/3d24f1e18edfa282d3e6/complete.json",
+      "sha256": "36a60589ed3e5df1724145d9caeda65feccb63ecf678714d4f81217617db923f",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/3dcd0cb5e137f9311647/complete.json",
+      "relative_path": "sources/3dcd0cb5e137f9311647/complete.json",
+      "sha256": "0afaa6f0455a8f5dac0ad3d8f6592a3b6e1b0ec351160bbd08686cfb523f4de2",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/3e3dfdb6ad802db60fdf/complete.json",
+      "relative_path": "sources/3e3dfdb6ad802db60fdf/complete.json",
+      "sha256": "31a186759cd6c89556d595f2bc4f0bd4903729cc8919ba2c71c973e152bddec4",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/3fa6ac626cd97faf1955/complete.json",
+      "relative_path": "sources/3fa6ac626cd97faf1955/complete.json",
+      "sha256": "0a2569f4f8afed3a3f50e161d47bb2f70fbcb634642ed476af23a407c4f5694c",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/4b29ced1272ce3951574/complete.json",
+      "relative_path": "sources/4b29ced1272ce3951574/complete.json",
+      "sha256": "c09373be24d9a1eb3d3208fb23a5a0b00d48bf16b31c25df45f80180bc77a75b",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/4c78821ca1f3bb5d48ac/complete.json",
+      "relative_path": "sources/4c78821ca1f3bb5d48ac/complete.json",
+      "sha256": "b0a9eac8fbdbd2db4b1d3c3a66cabfe252b0f164cdbc6290170fd95648782147",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/4f86363ab251ea94a0cb/complete.json",
+      "relative_path": "sources/4f86363ab251ea94a0cb/complete.json",
+      "sha256": "4818e84e9ba04ae252bb93ddb74240536187942a50db15ed03f5dfb492140ca3",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/5a27076b35549ca2f903/complete.json",
+      "relative_path": "sources/5a27076b35549ca2f903/complete.json",
+      "sha256": "2fee170c0b0da636a7712b103fcb14e66ad3925355bc99124a6281f3e51fed05",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/6322cd5a74fc14a0a97b/complete.json",
+      "relative_path": "sources/6322cd5a74fc14a0a97b/complete.json",
+      "sha256": "84052e67acf6e1c2dabfb95c70928111cc184e994af0e3b4a91ca56ecf4d8ee0",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/63624ce1ceeb3ef8541f/complete.json",
+      "relative_path": "sources/63624ce1ceeb3ef8541f/complete.json",
+      "sha256": "8cf0e05775e2eb7c180ec6f9ff40e4f6c1c3a6214e2fa553aa116cec5a1b56a2",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/6cff8e2278ed3694408c/complete.json",
+      "relative_path": "sources/6cff8e2278ed3694408c/complete.json",
+      "sha256": "c1ef8cf5d302290e7a379eb431922611af3c461ab1460a56e4538601cb20bb97",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/735f206cbcba3e28c727/complete.json",
+      "relative_path": "sources/735f206cbcba3e28c727/complete.json",
+      "sha256": "cdc8797a4cd20b577eddef42dcabc46f0a0d41da1d4b8e2a02da50f5b277a891",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/7430080d19c19f593a71/complete.json",
+      "relative_path": "sources/7430080d19c19f593a71/complete.json",
+      "sha256": "e5d85fec1b02f9f183d04350cfba961f48b2deb9b578410c9aaa1c017332897e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/7904399f27ebf993fa34/complete.json",
+      "relative_path": "sources/7904399f27ebf993fa34/complete.json",
+      "sha256": "774e397dab2bcbd7770ce68795c1093b392c1aef5680c17c35a9ec5cf950b77e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/7c842233af599c0f0073/complete.json",
+      "relative_path": "sources/7c842233af599c0f0073/complete.json",
+      "sha256": "088d2ba3b0b496abf47b67893175526ad16eb254a31efd4ed6e9a86f9593677e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/7f79a8901bfcd8485c03/complete.json",
+      "relative_path": "sources/7f79a8901bfcd8485c03/complete.json",
+      "sha256": "659d55729ae03560f041d72e0bf4ed558ab4a8bce678326283fda78d44091c3f",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/81d5111081a80aed3ca2/complete.json",
+      "relative_path": "sources/81d5111081a80aed3ca2/complete.json",
+      "sha256": "b9430f3fb3d4bd5304f5b2113010e9d843a89d4a8f203b97c67dbb7444f8d18d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/858b0be98c32fefe18e9/complete.json",
+      "relative_path": "sources/858b0be98c32fefe18e9/complete.json",
+      "sha256": "bb0f696b34fe7e8040f4afcc763279fcae9bcf9ff8ec009b2dfd12f1d60f63ad",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/8626da380281fc98b8c1/complete.json",
+      "relative_path": "sources/8626da380281fc98b8c1/complete.json",
+      "sha256": "5bad0cce79fa19ccf60c92b64e093872fafbb45b5825475e4d6eb180d72ca526",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/8668b1cd1d5d8b2d2364/complete.json",
+      "relative_path": "sources/8668b1cd1d5d8b2d2364/complete.json",
+      "sha256": "6b6c477541471f57eba165c8996200731ecd437dae8fd4a1b18fdfe537d678a6",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/87c88d118a8d6b922bd0/complete.json",
+      "relative_path": "sources/87c88d118a8d6b922bd0/complete.json",
+      "sha256": "3cbdd37be4e871c2cbd27ca45982bf5852257263aff96dbd0fe0c47877652255",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/88cbe661a61a90141cd3/complete.json",
+      "relative_path": "sources/88cbe661a61a90141cd3/complete.json",
+      "sha256": "ae37c3d689bb545faff953ed9a82a58f5f59170f49fbcc10689842641b570bb1",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/92e0dea0f7d635427f69/complete.json",
+      "relative_path": "sources/92e0dea0f7d635427f69/complete.json",
+      "sha256": "c3f66c7e0db74bf15f3938c51f1bd83cb5b9f13543935add856b3b77cd1e7930",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/9526e6163330caac573f/complete.json",
+      "relative_path": "sources/9526e6163330caac573f/complete.json",
+      "sha256": "71ddbca1c793cb212b4b2849eacf2d9ee00f3c983dc7ca4ae644bfef7b07731d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/953425694a8cd6f03b5f/complete.json",
+      "relative_path": "sources/953425694a8cd6f03b5f/complete.json",
+      "sha256": "60a308ab1d9e9503143d9325f352333d96287fbb6c9c6297d41649656502d663",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/96405836c65e9263672e/complete.json",
+      "relative_path": "sources/96405836c65e9263672e/complete.json",
+      "sha256": "3cad9bdd96c8581153a8fdc6c614f84fa82e42131ba46c8d93010fa55d796bb9",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/9d65b10ee68273a5c489/complete.json",
+      "relative_path": "sources/9d65b10ee68273a5c489/complete.json",
+      "sha256": "4b35a3464c76994c0fe978ea63c371fe5929c326747e526b786d0d7a483de54b",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a0ed84de50812b710c42/complete.json",
+      "relative_path": "sources/a0ed84de50812b710c42/complete.json",
+      "sha256": "b34652964cce6d76e192177187f430ac57b92dadbdac96103e5ac6dce08d7bd5",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a0fc46567933d310fb42/complete.json",
+      "relative_path": "sources/a0fc46567933d310fb42/complete.json",
+      "sha256": "8f6709e77456074f2fcc78a61f3deae6ee574b6cc2a5ebe1818c462c5fde0c22",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a29dc7461c5b5b11f75d/complete.json",
+      "relative_path": "sources/a29dc7461c5b5b11f75d/complete.json",
+      "sha256": "4e68b971df1d2f9f2391a73aceeaf91327f28a41c918ddbf5b78f590d1352259",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a330891c7bd1a3c14dc1/complete.json",
+      "relative_path": "sources/a330891c7bd1a3c14dc1/complete.json",
+      "sha256": "6e77a2ab5718be480fc52c7515d80efea85bd48085d1e5808f8e20c114a2f753",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a715559b00aee094b00f/complete.json",
+      "relative_path": "sources/a715559b00aee094b00f/complete.json",
+      "sha256": "61219cee27c878e3edbd6ad63b2f02e4c11cdc0ac6c8626b31208f6effd49d46",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a71cac4a84a74bad03f0/complete.json",
+      "relative_path": "sources/a71cac4a84a74bad03f0/complete.json",
+      "sha256": "68c00867c597542da9ed9acd6e346bf7ed8206f1369c59aa416d4dc2353ec159",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a76cf2f43c40acd63e05/complete.json",
+      "relative_path": "sources/a76cf2f43c40acd63e05/complete.json",
+      "sha256": "35a3c245e2555e2e3c685d2393edbca011e0c5cd619ae3000adb6da2da971d4b",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/a7e07f64bb69eff7c9eb/complete.json",
+      "relative_path": "sources/a7e07f64bb69eff7c9eb/complete.json",
+      "sha256": "3a86677981b7f81fe8c1173a3eeb873c1834b3eb986631f8be1871f9b316598e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/aa8523d9f529e8870479/complete.json",
+      "relative_path": "sources/aa8523d9f529e8870479/complete.json",
+      "sha256": "9af06dd03abb4ac686af8d85dd0cc22b20a4be5dca4ac9e14fc32ee69a7d479d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/ab757abd85236e72bc8e/complete.json",
+      "relative_path": "sources/ab757abd85236e72bc8e/complete.json",
+      "sha256": "2a987041648a422dd0a707a63c085abb86754dfac085ee6629e71e9241b518d4",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/b08ec09a09a146e7df6a/complete.json",
+      "relative_path": "sources/b08ec09a09a146e7df6a/complete.json",
+      "sha256": "3037345288c08c6b510df058da1b64c4617c1b7a0a180f2f10d17b4e84a5355a",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/b17ca0b67360384e0460/complete.json",
+      "relative_path": "sources/b17ca0b67360384e0460/complete.json",
+      "sha256": "f1664ce85622f1d9659691c66633b259156367667a8067dc49df9040962281ae",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/b3c425e16c825089a099/complete.json",
+      "relative_path": "sources/b3c425e16c825089a099/complete.json",
+      "sha256": "6fdde5bb12ff5ee8ea9898bc056576e6ed6226acf302cfc5d3fedaa103f4d8a6",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/b3da539c04721687275a/complete.json",
+      "relative_path": "sources/b3da539c04721687275a/complete.json",
+      "sha256": "0cc9ba50d1c0dba34cd0ff1d21011a6b41610c1b690f27cd5bc576569874a3bc",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/b3e5af5b4b4f03bd8789/complete.json",
+      "relative_path": "sources/b3e5af5b4b4f03bd8789/complete.json",
+      "sha256": "b49cba471a8224d4a34c04219c84d5c30b7d6f8e39ebdecc7f26277f7bc76385",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/ba2e083ea22d5af6ff1f/complete.json",
+      "relative_path": "sources/ba2e083ea22d5af6ff1f/complete.json",
+      "sha256": "dd6926e9be9f1adae7430b3b5a22a9d78595c826f5908d2d1eca07f9118f945e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/bb51f7c757e567c13df6/complete.json",
+      "relative_path": "sources/bb51f7c757e567c13df6/complete.json",
+      "sha256": "b37a532c4cab02a714c7959f8c498c66dd1d31c03762a7f72d8a1de6c5d74e8d",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/c030472c63cd0603233a/complete.json",
+      "relative_path": "sources/c030472c63cd0603233a/complete.json",
+      "sha256": "0e2d8df43633e97451b1fcc719c782ea7035cc9758e27fd7be200e5b43861914",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/c0fd74490eaacdcc7e3b/complete.json",
+      "relative_path": "sources/c0fd74490eaacdcc7e3b/complete.json",
+      "sha256": "f4b1e90ac9c2b87810aec2af53be2c2e9b06ea531f8eaeaac75459c50ee61040",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/c6f2e4ed6961b8ff46dc/complete.json",
+      "relative_path": "sources/c6f2e4ed6961b8ff46dc/complete.json",
+      "sha256": "6efeda32c65273417dc3bc10028ee117ff5291c44bbe31fd02b1f091c79adf92",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/c87041afd557a43f0816/complete.json",
+      "relative_path": "sources/c87041afd557a43f0816/complete.json",
+      "sha256": "98cd860a0a8c8ee4d8e997f7f5a31dbcc90e6ff942be1a46749743d41c7a2ee6",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d2e8de14d20886071410/complete.json",
+      "relative_path": "sources/d2e8de14d20886071410/complete.json",
+      "sha256": "ce2f10e4c7c4253724712a6504294a01f814da966c2760e1fd5ed33bf8c5251e",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d35067988a51cf82afa4/complete.json",
+      "relative_path": "sources/d35067988a51cf82afa4/complete.json",
+      "sha256": "722417d159260401d99c8aaea9853696dd1abb0b3fe96d060d5906ccd085ccf0",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d3ea81b59d1ac3ba7293/complete.json",
+      "relative_path": "sources/d3ea81b59d1ac3ba7293/complete.json",
+      "sha256": "81d430c457079f2901b4f1a767480187ebdb6e643a7cfd01021b552a07a4a4bf",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d400b89aeb08e256f68b/complete.json",
+      "relative_path": "sources/d400b89aeb08e256f68b/complete.json",
+      "sha256": "27f6083d550963dccd63c77c1aed2764f0c52e01baceba3811ffef939eccfaff",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d48c8a6706483df32995/complete.json",
+      "relative_path": "sources/d48c8a6706483df32995/complete.json",
+      "sha256": "6249380ec669db50de694d3e0f36710d877240f890a53fd7e6448e1acf0e7801",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/d89c6cfa3d8eaf440de6/complete.json",
+      "relative_path": "sources/d89c6cfa3d8eaf440de6/complete.json",
+      "sha256": "8a5ba59a0bc861c2c6f446179c2a1a1cadea9e7a7c9b5ffa2cbec9aa31313bb5",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/dae3d775d32a6394eabc/complete.json",
+      "relative_path": "sources/dae3d775d32a6394eabc/complete.json",
+      "sha256": "d9efc601c9a35779e715ecdb0536b706196071c1d9501622ef32b211a9108466",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/dc167f0025db55fc44df/complete.json",
+      "relative_path": "sources/dc167f0025db55fc44df/complete.json",
+      "sha256": "60c4f1be9fe81761daa40abadd193fbfdc5d02897c793183cb318c8ebc3f7552",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/ddcc5f4baee926ad70e3/complete.json",
+      "relative_path": "sources/ddcc5f4baee926ad70e3/complete.json",
+      "sha256": "12c07131ca191fe36941c27616fa17d6cf8afd8785a78ab3ac884a1e555dd23c",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/ecda1b71fdbccb215753/complete.json",
+      "relative_path": "sources/ecda1b71fdbccb215753/complete.json",
+      "sha256": "0e895d542b1ebf2f73f7d3591a65574b3081d1a7f9160b27408f7d8ad75a2219",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/f0faa41c6d2a970ace53/complete.json",
+      "relative_path": "sources/f0faa41c6d2a970ace53/complete.json",
+      "sha256": "bedbe91bc8d194a1551ded1a895a13956d8985bb2e567eb4375e93103ce1dba4",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/f23b6a85fe27c3179368/complete.json",
+      "relative_path": "sources/f23b6a85fe27c3179368/complete.json",
+      "sha256": "e75faf398cc52fe41dd8d539b230d236e475312b6bbebfd16ec3e207fce27212",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/f30c0abefa2a797a20cb/complete.json",
+      "relative_path": "sources/f30c0abefa2a797a20cb/complete.json",
+      "sha256": "6dbf207790bcd689362b856a1d57917a328accd9c06532ed4d6e848b00bb7d40",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/f648c275d7ecfced3296/complete.json",
+      "relative_path": "sources/f648c275d7ecfced3296/complete.json",
+      "sha256": "a0871ab5c42848bbc6bea019cf2bb235ffa16d49306a124126415003b57cf9da",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/f64e94897cfe66428e97/complete.json",
+      "relative_path": "sources/f64e94897cfe66428e97/complete.json",
+      "sha256": "76caf2552f4f2105b2687a440b83aefcf3c3a808e03b5ec9322acc9a5852e2c8",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/faacddb1896b01e716d3/complete.json",
+      "relative_path": "sources/faacddb1896b01e716d3/complete.json",
+      "sha256": "d050c1951a9340e3e749ff0960cb25530fb75898352c40a65ec93167fc566448",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/fb8647f96781daf163cc/complete.json",
+      "relative_path": "sources/fb8647f96781daf163cc/complete.json",
+      "sha256": "7d76a760cfcfc91c25f28d235c3df639ca9791c97371503dbc09be3d9a3dbc90",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/fbba43b89b8f3d960297/complete.json",
+      "relative_path": "sources/fbba43b89b8f3d960297/complete.json",
+      "sha256": "847ecfff73e66cd02a80f7f60b781e6e090c57201eec63287de0c2644f13bbb1",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/fc5d6e63e6270814fe9e/complete.json",
+      "relative_path": "sources/fc5d6e63e6270814fe9e/complete.json",
+      "sha256": "b3cb28ac417c36df1bba276b551e64323ae752a1cf0ff5d765107fc5b9b9a167",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/continuous-motion/embryo-establishment-20261007-v1/sources/fdfd5a6427b846986dce/complete.json",
+      "relative_path": "sources/fdfd5a6427b846986dce/complete.json",
+      "sha256": "362fa1a24c6e4ed6e3d7e8baf51ffbd78684fce23502716ab71fda24e3c117cb",
+      "kind": "metadata",
+      "keys": [
+        "ancestor",
+        "counts",
+        "files",
+        "identity",
+        "observations",
+        "physical_families",
+        "role",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

@@ -1,5 +1,8 @@
 # Current research
 
+- [Continuous motion between sparse Al observations](continuous_motion_20261006/README.md):
+  real-velocity latent dynamics, short simulator derivatives and0.1–12ps futures.
+
 - [Predictive baseline follow-up with MM-TDA-BLOCK-DIRECT-FULL](predictive_baseline_20261001/FOLLOWUP.md): matched nonlinear heads, moment/Fourier supervision and positive variance.
 
 - [Value-only predictive representations from repeated Al shooting](predictive_baseline_20261001/README.md): three trainable MACE128 seeds, 274 fixed future features, frozen controls and source-paired uncertainty.
@@ -216,3 +219,5 @@ re-evaluation, event coverage, and a staged existing-data experiment proposal.
   uncertainty for descriptor/frozen-MACE readouts.
 
 Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
+
+- [Local80 response weights and finite disturbances](local_response_20261003/README.md):15 fixed400-update fits and384 larger-displacement forwards.

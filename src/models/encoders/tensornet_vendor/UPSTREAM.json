@@ -1,0 +1,32 @@
+{
+  "repository": "https://github.com/torchmd/torchmd-net",
+  "revision": "7e22a231f34a855f894daaeb218c8b393068f846",
+  "tag": "v2.4.11",
+  "files": {
+    "torchmdnet/models/tensornet.py": "4dd0aca5ea9b698a0db3e72ba38c50f3031563fbd0a0b84c9acc0e48ca9bd5e4",
+    "torchmdnet/models/utils.py": "49ca77d65cc3efa48cfd8436450c5d4dab1574e1490e64a5447452dc97d03381",
+    "LICENSE": "eed533e6f54f0f761caa5cfd6f964a39dc5633af8a41f95b47d97e3080085a40"
+  },
+  "extracted_definitions": {
+    "blocks.py": [
+      "vector_to_skewtensor",
+      "vector_to_symtensor",
+      "decompose_tensor",
+      "tensor_norm",
+      "TensorEmbedding",
+      "tensor_message_passing",
+      "Interaction"
+    ],
+    "radial.py": [
+      "CosineCutoff",
+      "ExpNormalSmearing"
+    ]
+  },
+  "modifications": "Selected definitions copied verbatim with local imports only. Geometry-only interface, FP32 norm reduction and promoted edge-message accumulation during AMP, graph construction and pooling adaptations are in spatial_tensornet.py.",
+  "vendored_files": {
+    "LICENSE": "eed533e6f54f0f761caa5cfd6f964a39dc5633af8a41f95b47d97e3080085a40",
+    "__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "blocks.py": "e2b0e5b650f8fe27df1a83995616ad64197aaef30ef8c97a7df93184452f19f5",
+    "radial.py": "97270165b06d2effd1015c90972653284327307d24bea46064100fd9a83c2074"
+  }
+}

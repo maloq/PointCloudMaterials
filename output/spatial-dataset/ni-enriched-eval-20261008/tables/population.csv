@@ -1,0 +1,9 @@
+role,material,rows
+train,Al,593617
+train,Mg,44369
+train,Ti,57284
+train,Ta,361498
+train,Ni,317030
+evaluation,Al,238251
+calibration,Al,16848
+evaluation,Ni,9830

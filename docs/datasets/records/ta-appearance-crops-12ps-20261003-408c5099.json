@@ -1,0 +1,1132 @@
+{
+  "dataset_id": "ta-appearance-crops-12ps-20261003",
+  "records": [
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/complete.json",
+      "sha256": "d3611b0b6c138df1608b47038d2bbf3be3847463458bcfbd54466a5a213ac0f3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/metadata.json",
+      "sha256": "2b4271a37e5b57a8dac94d0fa31dc32129cb0468417cf6811d748788ed7ce57f",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.7ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 779428654,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/complete.json",
+      "sha256": "f74161b49a7f7d9ec3878c4dc3e8b18e7fff4a6e02ff12024f4ac7d2fc2f298e",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/metadata.json",
+      "sha256": "309388515c817fa18451e986a4e2c8b952527de86bbecbdb7f47466d924f5de1",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.8ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 852288974,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/complete.json",
+      "sha256": "ac436ce18e13bfb1301d5ae09799e5e3dbe8cf109d90f266c8133e713ac764cd",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/metadata.json",
+      "sha256": "a8e587399e7e81a42c76b60dbd7d22a88ebaad4ba2bc7335ec74a6dddc1400dd",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.8ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 47085415,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/complete.json",
+      "sha256": "5e543421681301dcc84efe7a0556f20cb0bd04d92c87d0a16d11a970b9b311cc",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/metadata.json",
+      "sha256": "03f7e81673207279385290fda9be0fe05847358077cc436feffc53cb5e6c0c5a",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.9ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 869939435,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/complete.json",
+      "sha256": "498d49c7fc3886ac807f37b93cf15c7edb6cd92283c492f59718d76655501bd2",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/metadata.json",
+      "sha256": "81463ba011059bdda676cb8cd9ff21ff80233e37c62f097f812a2643a66fd717",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.9ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 869939435,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/complete.json",
+      "sha256": "88c8872e83a7290cac33d36d743b5dced085c66ceea45502246dcaf665054266",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/metadata.json",
+      "sha256": "f9c9712b5447e3c3fc5fcc0619a9fd0e5590bdb5347bfd546179d9ab852282e1",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "2.9ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 796497251,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/complete.json",
+      "sha256": "ffd5cf509f8231755f023a4b41013c50b8338e38541e1714032855154a387898",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/metadata.json",
+      "sha256": "ca097ebc70f7cd83b88cb1ddac702d08ac0aa7e44df68da497a8ce842412ffdf",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.0ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 395820186,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/complete.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/complete.json",
+      "sha256": "a4ac5934f71d1ad00ee34533ce4904bfa93127d990d496ddc3abbf69fec03af3",
+      "kind": "metadata",
+      "keys": [
+        "files",
+        "frames",
+        "identity",
+        "validated_xyz_frames"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/metadata.json",
+      "relative_path": "crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/metadata.json",
+      "sha256": "2ddd901afacdc1409ba4f5421102b344607b019d53fbc6423b6108f7860af053",
+      "kind": "metadata",
+      "keys": [
+        "available_after_ps",
+        "available_before_ps",
+        "available_window_ps",
+        "center_atom_id",
+        "center_fractional_offset",
+        "coordinates",
+        "derived_from",
+        "event",
+        "frames",
+        "full_window",
+        "identity",
+        "missing_after_ps",
+        "missing_before_ps",
+        "plan",
+        "precision",
+        "ptm",
+        "radius_A",
+        "requested_window_ps",
+        "source",
+        "source_crop_files",
+        "temporal_membership",
+        "use"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "material": [
+          {
+            "value": "Ta",
+            "first_json_path": "source.material",
+            "occurrences": 1
+          }
+        ],
+        "parent_id": [
+          {
+            "value": "3.0ns",
+            "first_json_path": "source.parent_id",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 145515637,
+            "first_json_path": "source.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 2.0,
+            "first_json_path": "source.parts[0].timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "source.parts[0].storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 10000422,
+            "first_json_path": "source.atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 49,
+            "first_json_path": "source.frame_count",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.5,
+            "first_json_path": "source.cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": {
+              "minimum_tracked_size": 4,
+              "minimum_shared_atoms": 4,
+              "minimum_overlap_fraction": 0.25,
+              "maximum_missing_frames": 1,
+              "neighbor_cutoff_A": 3.70496348320465,
+              "local_birth_radius_A": 8.233252184899222,
+              "interface_distance_A": 8.233252184899222,
+              "thresholds": [
+                {
+                  "name": "primary",
+                  "size": 64,
+                  "persistence_ps": 1.5,
+                  "persistence_frames": 4
+                }
+              ]
+            },
+            "first_json_path": "source.lineage",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/technical/complete.json",
+      "relative_path": "technical/complete.json",
+      "sha256": "fad82d3603a76094ec7e1758e376088e78279525f77eb8ede92c08a10d44bdc8",
+      "kind": "metadata",
+      "keys": [
+        "archive",
+        "crops",
+        "frames",
+        "full_windows",
+        "identity"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/technical/plan.json",
+      "relative_path": "technical/plan.json",
+      "sha256": "e719d45d210063d970c86356b8aced264f503238cb7302df6949baf9b0c401e7",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "events",
+        "identity",
+        "implementation",
+        "source_identity"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "ta_appearance_review_windows_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "radius_A": [
+          {
+            "value": 20.0,
+            "first_json_path": "config.radius_A",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

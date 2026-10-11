@@ -25,8 +25,9 @@ def study(path):
         raise ValueError('Encoder checkpoint mismatch')
     repo = Path(__file__).resolve().parents[3]
     dependencies = []
-    for package in ('spatial_distance', 'spatial_approach', 'equivariant_context', 'crystallization_origin'):
+    for package in ('spatial_distance', 'spatial_approach', 'equivariant_context'):
         dependencies += list((repo/'src/research'/package).glob('*.py'))
+    dependencies += list((repo/'src/postprocessing').rglob('*.py'))
     dependencies += [repo/p for p in ('src/research/supervised_onset/model.py',
         'src/research/supervised_onset/tracking.py', 'src/research/structured_context/geometry.py',
         'src/research/encoder_context/geometry.py', 'src/models/encoders/spatial_mace.py')]

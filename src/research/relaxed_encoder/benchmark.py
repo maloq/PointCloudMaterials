@@ -41,7 +41,7 @@ def run(plan,ranks):
                 work=resolve_path(c['scratch'])/'benchmark'/name;archive=resolve_path(c['archive'])/'benchmark'/name
                 absolute=SimpleNamespace(**vars(raw),atom_count=raw.atom_count);absolute.positions=AbsolutePositions(raw)
                 try:
-                    if not (work/'metadata.json').exists():relax_frame(absolute,frame,work,settings(plan,ranks,force_tolerance=tol))
+                    if not (work/'metadata.json').exists():relax_frame(absolute,frame,work,settings(plan,ranks,force_tolerance=tol),reuse=False)
                     pos,meta=read_relaxed(work);_,cold,_=paired_clouds(hot,pos-low,box,queries)
                     np.save(root/f'{name}.npy',cold)
                     row=dict(source=source['id'],temperature_K=temperature,tolerance_eV_per_A=tol,seconds=meta['seconds'],fmax_eV_per_A=meta['fmax_eV_per_A'],

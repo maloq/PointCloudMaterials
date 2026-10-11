@@ -1,0 +1,7 @@
+{
+  "table": "tables/population.csv",
+  "sha256": "139c5f3ea787630b9b657e0f3432406db743e41c65d426607935febd4f6c1c45",
+  "family": "spatial_ni_enrichment",
+  "contract": "technical/metric-contracts/spatial_ni_enrichment.json",
+  "definitions": "tables/metric-definitions/spatial_ni_enrichment.md"
+}

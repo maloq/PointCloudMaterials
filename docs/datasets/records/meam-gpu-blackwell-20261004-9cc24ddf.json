@@ -1,0 +1,1645 @@
+{
+  "dataset_id": "meam-gpu-blackwell-20261004",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/interface-f64-50ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "interface-f64-50ps/trajectory_binary_float16/manifest.json",
+      "sha256": "0842905e257abd7981a6496bab41be1ef81e067a134896cae928c3aa5125d6f3",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 82,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "protocol": [
+          {
+            "value": "stopped hot-crystal control; excluded from liquid growth",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 82,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              82,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2cc1fe35f40ca2d013eab31027f5065c48794fd0c40915d6f22ea14900468893",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              82,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "77f3ea088c1912c736945e6e81b45af66d6137fee50b828b5ecdebbe52137169",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              82,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "65a6b558f0cf4834457ea3e42478d0164b0c71c282533a6c2a063e0612f001df",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              82
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "6fb9d8cec8ce3e2f0b18d25d2c079c1e3716897b1bdc1005e3813274cbc49d1d",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 8100,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "f94f0ebdc25bd3aba1bc4029f1e8e57f385dc87b1ff69a8975610ec699b8aa6e",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/interface-mixed-50ps/complete.json",
+      "relative_path": "interface-mixed-50ps/complete.json",
+      "sha256": "5ea59dd1192273b4f5821ccb6965acb9119ca3d811313aed81787e47b878889d",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 50.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/interface-mixed-50ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "interface-mixed-50ps/trajectory_binary_float16/manifest.json",
+      "sha256": "3453cb1f3b9ffdbd69d52e7cce37deafd63798f14ee854c66dd50e9d1f3734b2",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 501,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 501,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fcee89de06d8cc51e8cecb8392a161e369291ea9d66891b1603e508e6eda5343",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fbb2304d12e90b13691349086ebbfcbb8b7aa6c611d172cca45417869922b15d",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              501,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "5c8ed7693cd1115b789ee11f8c8b07c627e0bab8f79c9e7b04151e8a3cc9aa99",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              501
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "296ac3fcab71b54ecd607bd706edccdfe6928111e81e4ea6ef398e299981ce65",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 50000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "cb5cf65a39fb97e8ed836013045a5b98584042194d8932ed625c3bb1519bec22",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/interface-preparation/complete.json",
+      "relative_path": "interface-preparation/complete.json",
+      "sha256": "099ed99bca7734dadfef3ce5a549c8abbbe334b1b75a146cabdd9e4bdc7a2494",
+      "kind": "metadata",
+      "keys": [
+        "allocation",
+        "atoms",
+        "box_A",
+        "gate",
+        "initial_sha256",
+        "interpretation",
+        "potential",
+        "provenance",
+        "structure"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {
+        "potential": "Pinned Lee2003 Al; float32 force / float64 state"
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-liquid-200ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "mixed-liquid-200ps/trajectory_binary_float16/manifest.json",
+      "sha256": "df029a73c1db75b20d1b5e8829ccab70879b3dab07a607625e5dca80ad355e23",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 104,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "protocol": [
+          {
+            "value": "failed periodic-bin prefix; not production",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 104,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              104,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "95fa8d3459ff499ed43c9a44133be8c295ae6639c482acfc362436b9c7067b4d",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              104,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2c253d268f274610134a7a0131fbf74a507bb6726c1b2c37193efe293c352e2c",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              104,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "afa2088d7325aba54c5af2910573b62e20f443b1f2dcc20aad422c46014f978d",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              104
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "bfe92cf898916ca225974ae9f3ba0ee9e4597efad16cf05c545421e4c7c03c52",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 10300,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "68697a23ddca156ffc54d0c3dc507a7a5ec64bb33430777327a1bb510d3ba3c9",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-liquid-200ps-v2/complete.json",
+      "relative_path": "mixed-liquid-200ps-v2/complete.json",
+      "sha256": "85a521fa8f79477ed476b16d5c5c23b84ef3a9ed3ad3850f7466b2e28cba894c",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 200.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 2
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-liquid-200ps-v2/trajectory_binary_float16/manifest.json",
+      "relative_path": "mixed-liquid-200ps-v2/trajectory_binary_float16/manifest.json",
+      "sha256": "8d49e3786238f74bcb9b40c38248f33cd7b74bc92cb0fa9f6397f2c9f3486b52",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2001,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 2001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9b4fd045f59072e85ea4853634e8501865d51a2b7249c53268901b6d0c4af139",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "88d6bcf3cffd8329b20bd926de68aeef107636295633697ffaa37437d19211ec",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2001,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "338aee29bf46b4ce785c86d82ba182b950c9882ca86ab43938dec522771a94f3",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "631ac95ab96c49d1c0a8ff8ea732a0bdfe49367274e14228a4fa85219cb64e6d",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 200000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "6c24b5cdf67a2132774c88dab26452e5171c64bf396f6ed97f7f27d49b2b11be",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-nve/complete.json",
+      "relative_path": "mixed-nve/complete.json",
+      "sha256": "015db5265bc5ec98aa5ef7ab23e3eec845c7c03300cf5bdd601f22cf10edb3d3",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-nve/trajectory_binary_float16/manifest.json",
+      "relative_path": "mixed-nve/trajectory_binary_float16/manifest.json",
+      "sha256": "2070977dadd1e40718279bb3bf5aae4f86f42a95d1df513a657a30d0419921d3",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 11,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "382b409be75c187b186402911bfefe78f1d814ab5afb2d2e31b4be1798532d3c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "115bad14f1c9f2c027a84de21b107015722cb76be8d0abf3760ad8e00d6c24a5",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "91fc56f384ef0331abad88fc113bd0f32c661c8bcfdb5ece51d6b46fee239e5e",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c97f09b7d6651cc374d501a12e4ab1dd6a55e9018231b3ef1658697a85c60c87",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 1000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "753df9b90f1f556cb742e66b6bf0ee99f4ebe794e47ca5ed7e8698efecdfb971",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-nve-v2/complete.json",
+      "relative_path": "mixed-nve-v2/complete.json",
+      "sha256": "df52c8c721ad327038863ac738ba94f9463766f2745aa21dfbb2ca42e6069aaa",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/mixed-nve-v2/trajectory_binary_float16/manifest.json",
+      "relative_path": "mixed-nve-v2/trajectory_binary_float16/manifest.json",
+      "sha256": "b170daf25bde61be30bf6b9c7cb72311d459029d9046fa89a5297079fac74554",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 11,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "382b409be75c187b186402911bfefe78f1d814ab5afb2d2e31b4be1798532d3c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "115bad14f1c9f2c027a84de21b107015722cb76be8d0abf3760ad8e00d6c24a5",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b0fc2107514f4cb3abab7b22576474c92da6b1193179398c4b78e6ddc109c24a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c97f09b7d6651cc374d501a12e4ab1dd6a55e9018231b3ef1658697a85c60c87",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 1000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "1d295cee6e8493a733776418fc064898264226ac61e791e9059d3cfacd4f42db",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/verified-interface-f64-50ps/complete.json",
+      "relative_path": "verified-interface-f64-50ps/complete.json",
+      "sha256": "63beef52f7c27b2c1b07cbbea22ec95b4fecc2d4ea58fb244d1f38997b2c9357",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 50.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/verified-interface-f64-50ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "verified-interface-f64-50ps/trajectory_binary_float16/manifest.json",
+      "sha256": "3df6accf39ae6fe8bc5c6b4b03f0072a2ea45d30ac75a518cee0a98b06c609fe",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 501,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 501,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fcee89de06d8cc51e8cecb8392a161e369291ea9d66891b1603e508e6eda5343",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fbb2304d12e90b13691349086ebbfcbb8b7aa6c611d172cca45417869922b15d",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              501,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "6f90d0b942e9e3661f530c8fc2030522f8ed2eb4bd07e56fab7fa2057ccc51da",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              501
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "296ac3fcab71b54ecd607bd706edccdfe6928111e81e4ea6ef398e299981ce65",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 50000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "87d7b781a098415801de0be9055a08c808af896e0484feb1f41260d6b948b08b",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/verified-interface-mixed-50ps/complete.json",
+      "relative_path": "verified-interface-mixed-50ps/complete.json",
+      "sha256": "9379449683a8d7675880bd83355c45bbc18420f7f55b735896c5aa5599eb62b5",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 50.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/verified-interface-mixed-50ps/trajectory_binary_float16/manifest.json",
+      "relative_path": "verified-interface-mixed-50ps/trajectory_binary_float16/manifest.json",
+      "sha256": "88fe44c86e48ba6bb0d68790c239dcb0f3ea7a7b01069299808443e0b7f11c74",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 501,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "cuda_differentiable_meam_baoab_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 501,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fcee89de06d8cc51e8cecb8392a161e369291ea9d66891b1603e508e6eda5343",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              501,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "fbb2304d12e90b13691349086ebbfcbb8b7aa6c611d172cca45417869922b15d",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              501,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b8c4556448ae0cb397426e5945bf0804b59e38d9038e4c32f8bea76190b0ea0a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              501
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "296ac3fcab71b54ecd607bd706edccdfe6928111e81e4ea6ef398e299981ce65",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 50000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "1eb37f6eb93a1d117b8a684a9f36c27c3a9a91b576a0bef8e9d29ce245ac9674",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-gpu-blackwell-20261004/verified-interface-preparation/complete.json",
+      "relative_path": "verified-interface-preparation/complete.json",
+      "sha256": "26f2448f754642913b80489458f7ea2ea7f1a2ebd5879b9eca2e72a0daf57770",
+      "kind": "metadata",
+      "keys": [
+        "allocation",
+        "atoms",
+        "box_A",
+        "gate",
+        "initial_sha256",
+        "interpretation",
+        "phase_audit",
+        "potential",
+        "provenance",
+        "structure"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {
+        "potential": "Pinned Lee2003 Al; float32 force / float64 state"
+      }
+    }
+  ]
+}

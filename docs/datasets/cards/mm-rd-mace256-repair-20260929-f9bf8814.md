@@ -6,13 +6,13 @@ Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head
 
 - ID: `mm-rd-mace256-repair-20260929`
 - Materials: Al, Mg, Ta, Ti
-- Classification: **research**; role: trained_encoder
+- Classification: **retired**; role: provenance_only
 - Location: `/work/PERSO/vmorozov/analysis/liquid_predictability/mm-rd-mace256-l3-z256-repair-20260929`
-- Present on this machine: True
+- Present on this machine: False
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.012 GiB
+- Allocated storage, excluding registered nested datasets: 0.000 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -33,8 +33,8 @@ Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head
     "ta-zhong2014-eam",
     "ti-kavousi2019-meam"
   ],
-  "role": "trained_encoder",
-  "classification": "research",
+  "role": "provenance_only",
+  "classification": "retired",
   "description": "Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head and global scalar/vector VCReg. Reuses sealed raw Al/Mg/Ti/Ta cache. Batch at most2048/GPU, frozen uniform subset sized by two-GPU timing; 60 full epochs; encoder/head peak LR1e-4/2e-4 with five-epoch warmup/cosine. Online W&B; no Al context restart.",
   "provenance": "src/research/liquid_predictability/rich_multimaterial_queue.py; frozen code and source identities.",
   "ancestry": "Existing structural train ancestors only; unchanged Al64 held-out sources.",
@@ -46,7 +46,10 @@ Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head
   "limitations": [
     "Training subset count is only final after timing job; do not report the full 13.42M pool as fitted rows.",
     "One seed; broad local task is not directly comparable to 25-patch liquid context reconstruction."
-  ]
+  ],
+  "retirement_record": "docs/storage/experiment_removal_20261002/receipt.json",
+  "retirement_note": "Experiment folder deleted at user request on 2026-10-02. Reports, tables, plots and text provenance preserved under docs/storage/experiment_removal_20261002/results; mapping and checksums in preserved.json.",
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -54,16 +57,13 @@ Fresh geometry-only width256/depth3/state256 fit with direct 442 descriptor head
 
 | Field | Values |
 | --- | --- |
-| radius | [8.0] |
-| seed | [20260929] |
-| protocol | ["fixed_material_cutoff_al_reference_v1", "rich_multimaterial_patch_descriptors_v1"] |
 
 ## Evidence
 
-All 1 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/mm-rd-mace256-repair-20260929-f9bf8814.json).
+All 0 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/mm-rd-mace256-repair-20260929-f9bf8814.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

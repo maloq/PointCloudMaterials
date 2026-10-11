@@ -1,0 +1,23 @@
+{
+  "family": "ni_eam_gpu",
+  "exported_at": "2026-10-07T11:28:40.665674+00:00",
+  "files": {
+    "docs/metrics/ni_eam_gpu.md": "408cd277e4be3baa7bd630e4e50dc8e37326622087d010b8c85574258de4168e",
+    "configs/simulation/ni_eam_gpu_20261007.json": "06d9757093e5a7fef724461a547fc52a48f28f613ab6273d3eef0fec8d6d73b5",
+    "src/simulation/eam_gpu/COPYING": "be38e38d9482c2beae35408e413045b4363e0e067b0d9f31549047948637a7ed",
+    "src/simulation/eam_gpu/NOTICE.md": "b8116d971e8967fdae527b059593aca4ff2ae2a7032ed9a2872ff51acd2b9507",
+    "src/simulation/eam_gpu/__init__.py": "7cb8601029e91d5bb467fce9663d7ef5c2ff74eea49d3857c27694c03c880469",
+    "src/simulation/eam_gpu/benchmark.py": "15694ad110b12f64f6c5c41cc6c036b0d495a358234ebcd172d2340b9c319101",
+    "src/simulation/eam_gpu/dynamics.py": "ae445db699e072b289d3f4c8ee7630f99fc6da7faab00f2e25b1f2d77a5a1bc5",
+    "src/simulation/eam_gpu/kernels.cu": "21ff52757f3bc4eed2a2e0ba9ca3c81f0d3c1449a52674b2d9f4455055732297",
+    "src/simulation/eam_gpu/potential.py": "fde6451589698a1700f414cc3916cd4bd65d764afe88594917b5592a1e65c57f",
+    "src/simulation/eam_gpu/tables.py": "22b8ced57d1aa3a6a71eef553a3ea17e2998e3fb89b412f7db02d1504f36349d",
+    "configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+    "configs/simulation/potentials/ni_mendelev2012/provenance.json": "0225b80f2d7ba8f62dd7cde316b58f205578e20c1af337d272d2e6d34b6bb496",
+    "src/research/meam_gpu/potential.py": "3778dea618f951f3b7c476894ae58a35b4189a0de5a4597936d22614597e4d3c",
+    "src/research/meam_gpu/topology.cu": "33fe6224a66233e0bdacc650069d04a3a2e81574a86f4fba57bf0826bc8a65df",
+    "src/research/meam_gpu/energy.py": "f2aa8366d014cac00c2262a64c08e83a295612b28b07d20a5348ce982f858542",
+    "src/research/response_meam/potential.py": "2397e3fde21eb02000a5f2038652a620af1f4dc1c5c8debf59f2710d3d557254"
+  },
+  "verified": true
+}

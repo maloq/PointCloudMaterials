@@ -2,6 +2,1865 @@
   "dataset_id": "al_relaxed_cells_expanded_20260917",
   "records": [
     {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/diagnostics/cpu/relaxed.dump.float16/conversion.json",
+      "relative_path": "diagnostics/cpu/relaxed.dump.float16/conversion.json",
+      "sha256": "2ecc670adbde219692f1ef7acaa64730ff13a9a40e6eefbfe8fc25bc8716cb55",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012661748571467315,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/diagnostics/cpu/relaxed.dump.float16/manifest.json",
+      "relative_path": "diagnostics/cpu/relaxed.dump.float16/manifest.json",
+      "sha256": "152a55c3a1da458919d69b5e71d767d00db51a6ca467419fa19c0446bedf536d",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "738bef8fedbaa70e13b8f2ea3e762d9a05fb349ac6bb81bb0501c0a6383d87e9",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e9be25dbffdc63d8b3c35bd7d179a7829010b11d8888de7228e4c15a7a0b7313",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "cf817f8e6e471a13a7aefa7e62863e12ca2ed40c57229e601a0f3cf557592904",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "049a9e666bf701ae9e03585c1f0bb6842cff4824ea1cbee39697e09f3398e261",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 16000,
+          "last_step": 16000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "16ab7002d9b916a61af78eb360e87328b7580ca8fdccf9947e845555a4f404c2",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/diagnostics/gpu/relaxed.dump.float16/conversion.json",
+      "relative_path": "diagnostics/gpu/relaxed.dump.float16/conversion.json",
+      "sha256": "0d068a26938bd1012fcc58125e46fc998d04b1d4dc1c9908e7c3e940eb19b2f1",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012676919389126925,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/diagnostics/gpu/relaxed.dump.float16/manifest.json",
+      "relative_path": "diagnostics/gpu/relaxed.dump.float16/manifest.json",
+      "sha256": "887b9c9485448230d0f67a4d5e3a8a529ea43bb06b3e7a10104aba1c3f9428a2",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "738bef8fedbaa70e13b8f2ea3e762d9a05fb349ac6bb81bb0501c0a6383d87e9",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e9be25dbffdc63d8b3c35bd7d179a7829010b11d8888de7228e4c15a7a0b7313",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0c3971b2671e5072bb471bef6582253f217397eea266a051a216b8b089099398",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "049a9e666bf701ae9e03585c1f0bb6842cff4824ea1cbee39697e09f3398e261",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 16000,
+          "last_step": 16000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "52d8757b9dfcb885951fe84cd5685051cb150b62c05be3f68906753f9c3a4812",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/00aa5aa5ddea22a57f8f76e9f5fbb6c2db04e345cc6f992b8731d5e2e8e69c72/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/00aa5aa5ddea22a57f8f76e9f5fbb6c2db04e345cc6f992b8731d5e2e8e69c72/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "61b21a2375fccbc2c28f468b976e46ca16714c6ad9b1c0a0d21a1cb901684e0b",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.01262422539767653,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/00aa5aa5ddea22a57f8f76e9f5fbb6c2db04e345cc6f992b8731d5e2e8e69c72/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/00aa5aa5ddea22a57f8f76e9f5fbb6c2db04e345cc6f992b8731d5e2e8e69c72/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "fad0644ffe2c29bf4e027c57830857b6d9c5b34bdf194272e1e95ce078cc2e54",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a79a8e4519657abc7f8a70a150978a3ccbea28a9e200a20eae84933f1723025f",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9dd79f0a896d6e40d0d0751fd8a23c10a9a3be8d0e6f86249db900f019dc5440",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "9f6bbe4843a0319bfe89ca8ad6b1bd0b942049c8fb58092bd814c01834c9ff75",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 3000,
+          "last_step": 3000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "183ed4c994ba08ea69a9967545cbf4871d8dc6972c16fc754709b788ce75bf5d",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/138efb15ae3bc8bf822b0bd3942ebdff2bd5c94622b15a36d504ef8ee9fd5b72/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/138efb15ae3bc8bf822b0bd3942ebdff2bd5c94622b15a36d504ef8ee9fd5b72/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "f3dd550457570588c2ddb29d618553047c18aa5550ea505ec75bab17c0c763c0",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012643299174030665,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/138efb15ae3bc8bf822b0bd3942ebdff2bd5c94622b15a36d504ef8ee9fd5b72/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/138efb15ae3bc8bf822b0bd3942ebdff2bd5c94622b15a36d504ef8ee9fd5b72/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "621a81ff5e278812c93b98e3ff930757a31582b97fedb2fd22d3522deb96adc5",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "738bef8fedbaa70e13b8f2ea3e762d9a05fb349ac6bb81bb0501c0a6383d87e9",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "aa0380049595e9561c9d95773f63d8c6518b24e1700d3ab426cd3d75b764817c",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "14e5299292b285e2820a7bd701e7d5121a9e3318f850f56c99b6cd3310ca0296",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ad364d779ed84b8ffb931cb8b10b1d913d1745c63b712d99eb29716d23d06f5e",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 16000,
+          "last_step": 16000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "bf93aba08c718877cdae158b1acd23977e25fc28368f663eea06c567bfe0b5c0",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/18fb9b8d357aa86686a0345d4c7f098cf649dee3674dc4b222770e7d909450ad/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/18fb9b8d357aa86686a0345d4c7f098cf649dee3674dc4b222770e7d909450ad/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "ac5ec0a9b77c228bbb1aef07e5c522a6b00edabf8a6278287877fff9c5856791",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012634323709736625,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/18fb9b8d357aa86686a0345d4c7f098cf649dee3674dc4b222770e7d909450ad/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/18fb9b8d357aa86686a0345d4c7f098cf649dee3674dc4b222770e7d909450ad/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "9f79d0a203a8d3aebc3bd9754a1669a80a5a86b951686f79ec45d6e62a66c445",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c5c63ad0c4e2dda2d13fcf4ec119c5dda24c06195e5ba459a2e55acd428fed27",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "364c411d2529ebbc9e8f6d0219db9e5e07ba7e239637656cea466721941aeacd",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "655d4274e53fd1077e87baaba93bbcd4182527909dd6aa8719097cb0aa4b1537",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 9000,
+          "last_step": 9000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "fc066be824e9775da75ab3edfa2adb83f663251cb41397e5d599b97cb89a33f6",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/2aa76b56ec6d67fed4db3cc66ebf58cf545b1a635cbc02be4f67e26d20e4abcf/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/2aa76b56ec6d67fed4db3cc66ebf58cf545b1a635cbc02be4f67e26d20e4abcf/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "e0e5237ab7197d94c401666b00ff597138c841cfdb4a0ebd3066c7a5a1d474f9",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012613409748776906,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/2aa76b56ec6d67fed4db3cc66ebf58cf545b1a635cbc02be4f67e26d20e4abcf/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/2aa76b56ec6d67fed4db3cc66ebf58cf545b1a635cbc02be4f67e26d20e4abcf/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "e94c2a22b05a87d8b896c27dc89a84595fe05f9ba13059e0c06cdd2b32b786e1",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a79a8e4519657abc7f8a70a150978a3ccbea28a9e200a20eae84933f1723025f",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "d17fa98481652ac9066b134d9ec10d7708f0bc28e95e0bb87c78a1f0036dfc2d",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "914e17677727df4fa6183f6f8bcc5dfa322f5f16f85b204b328c5e1e8e64bcd1",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 3000,
+          "last_step": 3000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "c404a4b2900d439be97158806308f8f14cc79b4430d96fa7770bac3bf4c34f4e",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/3b9b9dc841ab9e209936f21553087c8458259a7a0763f32920d07715ead6eec9/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/3b9b9dc841ab9e209936f21553087c8458259a7a0763f32920d07715ead6eec9/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "e907fe31c125f67753bb2ff93be42489c2cce45cc0d0a16f967798e4bfe440c6",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012609844648403097,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/3b9b9dc841ab9e209936f21553087c8458259a7a0763f32920d07715ead6eec9/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/3b9b9dc841ab9e209936f21553087c8458259a7a0763f32920d07715ead6eec9/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "58aa84e4c1ef0d4fbb522f2e7ab234d77199573793228e05e6748559977b0e63",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f76343dc4d5d9507cf73e8036cf96a18a66b4f85ffb3f5a30d27889d3e7246dc",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "8b469d6d4f23e6df93ca36745e5fdfeb4f1a6ee49d341894241042a4291ba308",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "c31ec72c4a7426907f94d71a1b82ec321ce1a2baa8fe6c27a3d2373c838ffffa",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 5000,
+          "last_step": 5000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "ea9f7a5c96d009d45232ae61c738061ee2d4fde18f66fe23ff27662ed3dbb9bf",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/50b9be39e0b9a741c77ef4248a4ebff9cb8cf0e3ff871efbedd1337ccd00f61a/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/50b9be39e0b9a741c77ef4248a4ebff9cb8cf0e3ff871efbedd1337ccd00f61a/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "f83d16ec0b57debd790809705f93998bf6f6dc19ee5073a5703b4634c494f4b2",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012623342919443333,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/50b9be39e0b9a741c77ef4248a4ebff9cb8cf0e3ff871efbedd1337ccd00f61a/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/50b9be39e0b9a741c77ef4248a4ebff9cb8cf0e3ff871efbedd1337ccd00f61a/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "53e42033dcfac67d2f0c157d09fbc4cfd8550fb22cbe2cb72605f696e18d8d41",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "738bef8fedbaa70e13b8f2ea3e762d9a05fb349ac6bb81bb0501c0a6383d87e9",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "b09d764d0090f638803cd2ee61091b66e300bf2b86f54a54f68b774c1684e432",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b6078e69ddc9e1a494be86a2f26c2f862310e2191620706fbdefa7ae9ef1d7ed",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "37e2b3e8e28548cf2a39ed54418a20267ec57ea2cec61778e9fe1d14fb8b747a",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 16000,
+          "last_step": 16000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "4335113bfe5c83daf0df44554c14994f073315a26ab48c026c46957c994cc510",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/5bb310d2383b2f148dc7b467f3eaef2c035646acbdc55befd1466061216b98df/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/5bb310d2383b2f148dc7b467f3eaef2c035646acbdc55befd1466061216b98df/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "58449ddf0e7f7738759ff6362ba81f4ff6cde1962c740c6f412f290c048f86ce",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012638221544933208,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/5bb310d2383b2f148dc7b467f3eaef2c035646acbdc55befd1466061216b98df/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/5bb310d2383b2f148dc7b467f3eaef2c035646acbdc55befd1466061216b98df/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "05a57ec25ac3f55865aaf06aaf40a7c43ebb5b4ea5e4a215382dbef7e6583d51",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f76343dc4d5d9507cf73e8036cf96a18a66b4f85ffb3f5a30d27889d3e7246dc",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "41dc2bfbf72cc9bae64d914da5f002d4ee8d4f940efeb3582990dc31edf36b1c",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "8baf8c81bf4805f1753ed23785990e9e534f6c3e02ea9d559b811cd86f1d5efb",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 5000,
+          "last_step": 5000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "d27a095d805d4fd60417b7cc34d90d9f23baa10f9798be743a7be1608bbedb34",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/77dca85bc6ea2ac93bf4a282ce678c59072856acf04097f199ea11572a1801af/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/77dca85bc6ea2ac93bf4a282ce678c59072856acf04097f199ea11572a1801af/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "df97d8155b4c2f8eff25d7f7248a6bb5199b1e8269f206c2d799f3e383c3583b",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012649513415534453,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/77dca85bc6ea2ac93bf4a282ce678c59072856acf04097f199ea11572a1801af/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/77dca85bc6ea2ac93bf4a282ce678c59072856acf04097f199ea11572a1801af/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "9976618bbe2858f81dd6943332efa05e54b3277b0bd1bc6d4bbf14dfad9f7168",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a79a8e4519657abc7f8a70a150978a3ccbea28a9e200a20eae84933f1723025f",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f2811a7f00287d6699ac0df8baef910313799941f8c42c5613f35af7d5db1f43",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "38a724a30d47d0fba16b47d1cd0416ee006e827141ee8288d5818d2c4f70846b",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 3000,
+          "last_step": 3000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "5b131c488ccafb977ec372afe8a1179fb1d74e6fd47d295a187d8f3dea48a77a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/f55b00aa4a05563f630a41c6bfaf346fa81c22a7a978cfc175a67eb21f6fe95e/attempt_000/relaxed.dump.float16/conversion.json",
+      "relative_path": "failures/f55b00aa4a05563f630a41c6bfaf346fa81c22a7a978cfc175a67eb21f6fe95e/attempt_000/relaxed.dump.float16/conversion.json",
+      "sha256": "c3160b616c0a9614b6084f7c284a3cebe1a3a1aa39f59e4d2ac550e61c2416fd",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012645957801218436,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/failures/f55b00aa4a05563f630a41c6bfaf346fa81c22a7a978cfc175a67eb21f6fe95e/attempt_000/relaxed.dump.float16/manifest.json",
+      "relative_path": "failures/f55b00aa4a05563f630a41c6bfaf346fa81c22a7a978cfc175a67eb21f6fe95e/attempt_000/relaxed.dump.float16/manifest.json",
+      "sha256": "85eda893505f2f6251fb33c3f504caaf603c89326da93e0285cf79086d918b24",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f3df896830df06dd8776fdee81c344884cb6cfbfd2d849ec2123ca43bafd6fd6",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "0ee173dd07d18a31f16b02c258c9f36d8f5d270cd72de2f871d43924c4ebc3d5",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "095b500d4e45edc8cf7c2806b8609ddb04857378b4cf08609028f67cc383991e",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "15ec7bf0b50732b49f8228e07d24365338f9e3ab994b00af08e5a3bffe55fd8b",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 2000,
+          "last_step": 2000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "7cfa58aafd740f0193f5aed099880d4acb3983b7ed101fa902f42910ce460bb8",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
       "path": "/store/PERSO/vmorozov/relaxed_tda/al-expanded-20260917/frames/003fcb2b7865e82c1e3e2b33cd393061359573b3be081ecedb39f1590f6b241c/conversion.json",
       "relative_path": "frames/003fcb2b7865e82c1e3e2b33cd393061359573b3be081ecedb39f1590f6b241c/conversion.json",
       "sha256": "84c71609ecba3ef6b79976b1661c89cbc19c3f2c7d466a19d82b5bc3aefcd5b9",

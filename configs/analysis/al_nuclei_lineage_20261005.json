@@ -1,0 +1,36 @@
+{
+  "protocol": "al_nucleus_lineage_v3",
+  "parent_output": "${storage:training_storage}/nuclei_search/al-all-20261003-v2",
+  "output": "${storage:training_storage}/nuclei_search/al-all-20261005-v3",
+  "minimum_shared_atoms": 4,
+  "continuation_fraction": 0.5,
+  "minor_parent_fraction": 0.2,
+  "embryo_atoms": 8,
+  "reset_atoms": 4,
+  "reset_ps": 1.5,
+  "persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "growth_atoms": 128,
+  "thresholds": [
+    8,
+    32,
+    64,
+    128
+  ],
+  "durations_ps": [
+    1.5,
+    3.0
+  ],
+  "prehistory_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "lanes": 8,
+  "workers_per_lane": 8,
+  "time_limit": "1-00:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "conditions": "Audit metadata only",
+    "relaxation": "Same original MD classifications as v2; relaxed views remain paired inventory",
+    "population": "Frozen all-Al v2 population, all 1042 source records and exact cadence views; new or still-running simulations require a subsequent release"
+  }
+}

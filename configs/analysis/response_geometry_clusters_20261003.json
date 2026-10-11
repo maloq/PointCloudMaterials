@@ -1,0 +1,165 @@
+{
+  "protocol": "unrelaxed_response_cluster_spaces_v1",
+  "output": "${storage:training_storage}/response_geometry/frozen-spaces-20261003",
+  "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "viewer": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/heldout-al.json",
+  "viewer_sha256": "1fb5d538baeabce6295fa1803c67b5cfcc4202aebba953b20764145ee032633d",
+  "model_config": {
+    "protocol": "local_al80_mlip_response_v1",
+    "seed": 20261002,
+    "output": "${storage:training_storage}/response_atlas/local80-training-20261002",
+    "cache": "${storage:cache}/response-atlas/local80-training-20261002",
+    "simulation_scratch": "${storage:simulation_runs}/local80-response-20261002",
+    "simulation_archive": "${storage:archive}/simulations/local80-response-20261002",
+    "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "sampling": {
+      "frames": [
+        64,
+        320,
+        656
+      ],
+      "center_stride": 17,
+      "selection": "one center per source, rank-based, no outcomes; all non-calibration sources retain roles"
+    },
+    "oracle": {
+      "potential": "${dataset:potentials}/mace-mpa-0-medium.model",
+      "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "temperature_K": 450.0,
+      "timestep_fs": 1.0,
+      "friction_time_fs": 100.0,
+      "feature_cutoff_A": 5.5,
+      "path_coordinate_scale": 0.1,
+      "horizons_steps": [
+        20,
+        100
+      ],
+      "feature_seed": 20261002,
+      "skin_A": 0.6,
+      "maximum_batch": 4,
+      "batch_atom_budget": 4096,
+      "dtype": "float32",
+      "backend": "cueq",
+      "boundary": "open moving environment; no artificial PBC"
+    },
+    "halo": {
+      "candidates_A": [
+        18,
+        24,
+        30
+      ],
+      "reference_A": 36,
+      "gate_parent_indices": [
+        0,
+        1,
+        2,
+        45
+      ],
+      "gate_shots": 2,
+      "value_rms_tolerance": 0.0001,
+      "response_relative_tolerance": 0.05,
+      "fd_epsilon_A": [
+        0.03,
+        0.01
+      ],
+      "fd_relative_tolerance": 0.02
+    },
+    "branch_seed_base": 81000000,
+    "value_shots": 32,
+    "response_shots": 8,
+    "fit_seeds": [
+      20261002,
+      20261003,
+      20261004
+    ],
+    "arms": [
+      "values8",
+      "responses8",
+      "values32",
+      "values8_time"
+    ],
+    "encoder": {
+      "channels": 128,
+      "code_dim": 128,
+      "cutoff": 5.0,
+      "num_interactions": 2,
+      "max_ell": 2,
+      "correlation": 2,
+      "backend": "e3nn",
+      "layout": "mul_ir",
+      "conv_fusion": false
+    },
+    "training": {
+      "batch_size": 256,
+      "microbatch": 8,
+      "epochs": 200,
+      "patience": 40,
+      "compute_control_max_epochs": 6000,
+      "encoder_lr": 0.0001,
+      "head_lr": 0.0005,
+      "weight_decay": 1e-05,
+      "gradient_clip": 10.0,
+      "response_weight": 1.0,
+      "value_scale_floor": 0.0001,
+      "response_scale_floor": 0.001,
+      "deviation": "90 training queries form one actual90-parent optimizer batch below configured256; microbatch8 explicitly bounds third-order response-gradient memory; all arms use the same accumulation"
+    },
+    "wandb": {
+      "entity": "teshbek",
+      "project": "PointCloudMaterials",
+      "mode": "online"
+    },
+    "bootstrap_draws": 2000,
+    "lanes": 2,
+    "gpu_partition": "RTX6000PRO,L40S",
+    "time_limit": "24:00:00"
+  },
+  "model_dependencies": {
+    "src/research/local_response/model.py": "2d68116d61e0a3124de08b6d23886903fadabf9795897c90cdcee502e907cc5a",
+    "src/research/response_training/model.py": "4365d270636750eea350b1413cfed52934cdfa3a0acc033784cefcc8dc6028fc",
+    "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+    "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+    "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb"
+  },
+  "models": [
+    {
+      "name": "values8_400-20261002",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/values8_400-seed-20261002/technical/best.pt",
+      "sha256": "c75cf71d3694538f2cac36fc5228f9c4cdfadbe2a13cd814ad9b41b83362326e"
+    },
+    {
+      "name": "values8_400-20261003",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/values8_400-seed-20261003/technical/best.pt",
+      "sha256": "6555813a6ca1da5678e10be95577fd3d7a6c15c13720a494167060e282503f85"
+    },
+    {
+      "name": "values8_400-20261004",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/values8_400-seed-20261004/technical/best.pt",
+      "sha256": "8c711ddf2dfecee02f41d2a753284fb404192babce99451f8945293a2bebc821"
+    },
+    {
+      "name": "response_w1-20261002",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/response_w1-seed-20261002/technical/best.pt",
+      "sha256": "5d69ca906d188b4e88796ec679d969a18889f232f2e136660cd350ced05b5e79"
+    },
+    {
+      "name": "response_w1-20261003",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/response_w1-seed-20261003/technical/best.pt",
+      "sha256": "8936fff3fe54621a2e4056b09638d57386337f2270fb16bcd6a8d7d0ff6a7375"
+    },
+    {
+      "name": "response_w1-20261004",
+      "checkpoint": "/store/PERSO/vmorozov/experiments/response_atlas/local80-followup-20261003/analyses/response_w1-seed-20261004/technical/best.pt",
+      "sha256": "6a5863c9b96c221f59cd8970be84fe3083c8e150d89fae2a0c326e9cfbadd860"
+    }
+  ],
+  "batch_size": 256,
+  "cluster_seeds": [
+    20260929,
+    20261003,
+    20261004
+  ],
+  "whitening_shrinkage": 0.05,
+  "gpu_partition": "RTX6000PRO,L40S"
+}

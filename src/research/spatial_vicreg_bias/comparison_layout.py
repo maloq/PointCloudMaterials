@@ -2,11 +2,29 @@
 import argparse
 import html
 import json
+import os
 from pathlib import Path
 import shutil
 
 from src.data.fixed_cohort.protocol import sha, write_json
 from .viewer_payload import fill_template, read_payload, write_comparison
+
+
+def model_navigation(dataset, selected, origin):
+    from src.project_runtime.paths import resolve_path
+    repo=Path(__file__).resolve().parents[3]
+    name='heldout-al.html' if dataset=='matched' else 'al-static.html'
+    geo='matched-al64-20260929' if dataset=='matched' else 'static-al-six-20260929'
+    choices=[('geoformer','GeoFormer',repo/'output/spatial_vicreg_bias'/geo/name)]
+    for identity,recipe in [('mace','mace_rich_current.json'),('response','response_cluster_comparison_20261003.json')]:
+        path=repo/'configs/analysis'/recipe
+        if path.exists():
+            c=json.loads(path.read_text())
+            choices.append((identity,c['model']['title'],resolve_path(c['output'])/name))
+    options=''.join('<option value="'+html.escape(os.path.relpath(target,origin))+'"'
+        +(' selected' if identity==selected else '')+'>'+html.escape(title)+'</option>'
+        for identity,title,target in choices if identity==selected or target.exists())
+    return '<label>Model <select onchange="location.href=this.value">'+options+'</select></label>'
 
 
 def dataset_navigation(selected):
@@ -16,18 +34,9 @@ def dataset_navigation(selected):
     ]
     options = ''.join(f'<option value="../../../../{path}"'+(' selected' if kind == selected else '')+f'>{label}</option>'
                       for kind, label, path in choices)
-    model = ''
-    latest = Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_current.json'
-    if latest.exists():
-        from src.project_runtime.paths import resolve_config
-        frozen = resolve_config(json.loads(latest.read_text()))
-        target = Path(frozen['datasets'][selected]['publication'])/'index.html'
-        if target.exists():
-            import os
-            origin = Path(frozen['datasets'][selected]['reference'])/'interactive'
-            url = html.escape(os.path.relpath(target, origin))
-            title = html.escape(frozen['model']['title'])
-            model = '<label>Model <select onchange="if(this.value)location.href=this.value"><option value="">GeoFormer</option><option value="'+url+'">'+title+'</option></select></label>'
+    relative=next(path for kind,_,path in choices if kind==selected)
+    origin=Path(__file__).resolve().parents[3]/'output/spatial_vicreg_bias'/Path(relative).parent
+    model=model_navigation(selected,'geoformer',origin)
     return '<nav class="controls"><label>Data <select id="dataset" onchange="location.href=this.value">'+options+'</select></label>'+model+'</nav>'
 
 
@@ -76,8 +85,16 @@ def refresh(publication, dataset, dense_source=None):
     primary = dest/'interactive'/('comparison-all_test.html' if dataset == 'matched' else 'comparison-all_static.html')
     if dataset == 'static' and not primary.exists():
         primary = dest/'interactive/S1-seed17-epoch24-encoder-all_static.html'
-    frozen = read_payload(primary).get('frozen_model')
-    if frozen:
+    initial = read_payload(primary)
+    frozen = initial.get('frozen_model')
+    if initial.get('publication_recipe'):
+        from .response_comparison import load, template as response_template
+        c,_=load(initial['publication_recipe'])
+        if c['model']['id']!=frozen['id']:raise ValueError('Response viewer checkpoint changed')
+        template=response_template(c,dataset)
+        pages=sorted((dest/'interactive').glob('comparison-*.html'))
+        default='comparison-all_test.html' if dataset=='matched' else 'comparison-all_static.html'
+    elif frozen:
         from .mace_checkpoint import read
         from .mace_publication import template as mace_template
         c, _ = read(Path(__file__).resolve().parents[3]/'configs/analysis/mace_rich_current.json')

@@ -222,6 +222,346 @@
       "provenance": {}
     },
     {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source002-T420/assessment.lammpstrj.float16/conversion.json",
+      "relative_path": "assessment.lammpstrj.float16/conversion.json",
+      "sha256": "efdcfe287c825c58336ee6884e3e17c352196cbf1a2174406e22ffa883aa6502",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012596473177432139,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source002-T420/assessment.lammpstrj.float16/manifest.json",
+      "relative_path": "assessment.lammpstrj.float16/manifest.json",
+      "sha256": "6036bfbdd86fc1ffdb7889739cf8f7e54ef41ad604b4f75cca1b284cf7098fb4",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b04e9dd24a00f4d85aa1dabd7bf223067d93aa9d8fe80a16b03a711ba9d9d158",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "28f6468d189fb0ba23a7f3f5956d6b4a11254a5e2d01df58f600ff8af8af7165",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "4e80db68b0ccfa38b1d4e836a644783f283c8e697b3683414df41647d21d7b47",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e19ec610cfc51d278a256caf9db142986e261e3a1ea2cedc696f7fb68f78d162",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 92500,
+          "last_step": 92500,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "c66c5a422fc0e747925124e9a53f3cd8a06bfbb9f8880764f8ef9aea27e07faa",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source002-T420/melt_validation.lammpstrj.float16/conversion.json",
+      "relative_path": "melt_validation.lammpstrj.float16/conversion.json",
+      "sha256": "78a6d1b892695cd00a905b7884774f1ebeda5342dcabd0ca7d3f585cd09968cc",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.0128779800752865,
+            "coordinate_count": 2320032
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source002-T420/melt_validation.lammpstrj.float16/manifest.json",
+      "relative_path": "melt_validation.lammpstrj.float16/manifest.json",
+      "sha256": "84ab38aa643973694e824480c38d0dd31fa099ac5cf25d63af6d48f51006d32e",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 11,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "01683dabeed19fec13b1b635b1efbffb244193638ca452bcdde9016f7d5110aa",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3536b3bfc88b7cd58bb89f3169a6634a72690c05fed582bbc040929670445870",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "6ef583764e4cbd985105737174ff9fdea2922eb1fc83ddacc4cf10bc03cfe4f3",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ce05ad6b21971aeff0b6a8c10482ce48d1f8d453e2e017a8b246cab4a2ba7a31",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 95000,
+          "last_step": 100000,
+          "step_intervals": [
+            500
+          ]
+        },
+        "content_signature_from_manifest": "5fa44706a4efcb3996d9c691b15d3645956f9fd24835563174adc490dd97fcf3",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
       "path": "/store/PERSO/vmorozov/simulations/al-birth-uniform-20260926-source002-T420/trajectory_binary_float16/manifest.json",
       "relative_path": "trajectory_binary_float16/manifest.json",
       "sha256": "23c9bcf78f5b5c560708b37e70590d5318756e58a352cd4143c9a127a5fa188c",

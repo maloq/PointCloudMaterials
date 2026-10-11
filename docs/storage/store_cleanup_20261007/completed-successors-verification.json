@@ -1,0 +1,252 @@
+{
+  "state": "verified",
+  "completed_runs": [
+    {
+      "run_id": "al-main-010ps-20260927-source0891",
+      "completed_path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891",
+      "failed_path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003",
+      "completed_at": "2026-10-04T15:00:05.377612+00:00",
+      "duration_ps": 456.0,
+      "final_crystal_fraction": 0.8388285161583978,
+      "termination_reason": "half_crystal",
+      "frame_count": 4561,
+      "cadence_ps": 0.1,
+      "matching_identity_fields": [
+        "source_id",
+        "root_lineage",
+        "parent_manifest_sha256",
+        "preparation_seed",
+        "velocity_seed",
+        "protocol",
+        "timestep_ps",
+        "sampling_ps",
+        "parent_input_sha256"
+      ],
+      "native_recovery": {
+        "restart_step": 127500,
+        "restart_time_ps": 255.0,
+        "original_restart": "source.restart.1.bin",
+        "previous_attempt": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891",
+        "failure_archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003",
+        "failure_publication_receipt": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003.publication.json",
+        "partial_dump_sha256": "9982dcca331e07505ff5b47388edeaca138bd24688d7d6dcbc71b469f2dd67a5",
+        "partial_dump_bytes": 22352231302,
+        "retained_prefix_bytes": 22152500733,
+        "retained_frame_count": 2551,
+        "checkpoint_frame_sha256": "382a52213e256bab9817bb4c753d1b487539dc14752168db854f6ef1f97ea926",
+        "checkpoint_check": {
+          "step": 127500,
+          "atom_count": 70304,
+          "box_max_abs_A": 0.0,
+          "position_max_abs_minimum_image_A": 0.0,
+          "velocity_max_abs_A_per_ps": 0.0
+        },
+        "cause": "Assistant accidentally interrupted a foreign-chat job; exact native recovery"
+      },
+      "completed_publication_sha256": "b665b90ace00e1b112942d5a9eec478ecb6eec9a6168e400c3e0a1fcac94dde7",
+      "failed_publication_sha256": "05ff03574cc80711aee18fd33409e9df7b0b7de85c674cf319f444e17b5d8df4",
+      "files_to_delete": [
+        {
+          "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+          "bytes": 22352231302,
+          "sha256": "9982dcca331e07505ff5b47388edeaca138bd24688d7d6dcbc71b469f2dd67a5"
+        }
+      ]
+    },
+    {
+      "run_id": "al-main-010ps-20260927-source0892",
+      "completed_path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892",
+      "failed_path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003",
+      "completed_at": "2026-10-04T14:33:12.770494+00:00",
+      "duration_ps": 600.0,
+      "final_crystal_fraction": 0.07197314519799727,
+      "termination_reason": "peer_time_cap",
+      "frame_count": 6001,
+      "cadence_ps": 0.1,
+      "matching_identity_fields": [
+        "source_id",
+        "root_lineage",
+        "parent_manifest_sha256",
+        "preparation_seed",
+        "velocity_seed",
+        "protocol",
+        "timestep_ps",
+        "sampling_ps",
+        "parent_input_sha256"
+      ],
+      "native_recovery": {
+        "restart_step": 187500,
+        "restart_time_ps": 375.0,
+        "original_restart": "source.restart.1.bin",
+        "previous_attempt": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0892",
+        "failure_archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003",
+        "failure_publication_receipt": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003.publication.json",
+        "partial_dump_sha256": "6467f229e88c27b788089821a5824236f38e68ff949b375e10bc2a311818c13d",
+        "partial_dump_bytes": 33554394558,
+        "retained_prefix_bytes": 32573116356,
+        "retained_frame_count": 3751,
+        "checkpoint_frame_sha256": "a28c8ed40341091dc3bbbf3e75b1bf513898d390c4be3ce5982db7a333b9404b",
+        "checkpoint_check": {
+          "step": 187500,
+          "atom_count": 70304,
+          "box_max_abs_A": 0.0,
+          "position_max_abs_minimum_image_A": 0.0,
+          "velocity_max_abs_A_per_ps": 0.0
+        },
+        "cause": "Assistant accidentally interrupted a foreign-chat job; exact native recovery"
+      },
+      "completed_publication_sha256": "d46f79169ec1b7fcf98927a87f4ed787fed329d69a729ea2ab87db70ddd6d565",
+      "failed_publication_sha256": "4811beb249c229cdf8ddea3a02d283ef4a4fbe13243ab9319936c8f657d5f717",
+      "files_to_delete": [
+        {
+          "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+          "bytes": 33554394558,
+          "sha256": "6467f229e88c27b788089821a5824236f38e68ff949b375e10bc2a311818c13d"
+        }
+      ]
+    }
+  ],
+  "verified_completed_files": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/metadata.json",
+      "bytes": 5973,
+      "sha256": "937224c4257b239873e70d9e51ff70d9c53e025f0d9c1257f24e0849e3d3e757"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/outcome.json",
+      "bytes": 1407,
+      "sha256": "8d540ed321e8a8bb77f84fc5fa63c9a8b399a165bf6950955b4427b3d99123b5"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/paired_conversion.json",
+      "bytes": 2075,
+      "sha256": "22e770e1540529aa0a0e9dad4557303b1e6160ba0ec4cc3abacab127fcc777c8"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/atom_ids.npy",
+      "bytes": 562560,
+      "sha256": "548f64cd20555d125de507e49b4c0526485a2099e1bda5a0720c90b147a24dc7"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/atom_types.npy",
+      "bytes": 281344,
+      "sha256": "8b5e8d8b8ce0302cee181671efc49518a36e87ee11cded9b1fc0fa95bb5a140f"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/box_high.npy",
+      "bytes": 54860,
+      "sha256": "99c1c60841adf0011ae41a973eb904e67b57bf115c9a8b30e5a3707d5c18b5ea"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/box_low.npy",
+      "bytes": 54860,
+      "sha256": "ea81e8383e5fbfc0b96e0dcfe25973e401bcb46703c14ee25f5a63c1084f9559"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/manifest.json",
+      "bytes": 3810,
+      "sha256": "985f9c395da276f144654a8998e2f480210ff7482ad82c9e633d26436318d132"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/melt_final.restart.bin",
+      "bytes": 6188295,
+      "sha256": "9a788b82f287ad6e8a1e17dc97ade8b0ec3f6c409692f500c1c53fe4bbe53aab"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/timesteps.npy",
+      "bytes": 36616,
+      "sha256": "2289fbb6576a869e41fbefd4657b84e0b23a1c04cb56b51ecbb17d562efba50b"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/recovery.restart.bin",
+      "bytes": 6188299,
+      "sha256": "2c02a438fa5efff74139530ef66d5684ab25dd3ac8d53dc467dd0f8481a5229a"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/final.restart.bin",
+      "bytes": 6188299,
+      "sha256": "bc04f44ebc1de1490648c8df0b67d21b79050bb1e61a50020d835a5aa377b9a9"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/final.restart.bin",
+      "bytes": 6188299,
+      "sha256": "0be54ab18d0279f0df95a489b8e849165876fff8d21d9fb9ebb45710a230e26a"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/metadata.json",
+      "bytes": 5970,
+      "sha256": "001ec9bd5f01f1e588a92f89b2feb56a1ed50e23f55c9c8f10aa309107c2028c"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/outcome.json",
+      "bytes": 1405,
+      "sha256": "e402bd2259471e0820c830de430d78b8ed30fc67b3cc54000aa62c950334ed27"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/paired_conversion.json",
+      "bytes": 2071,
+      "sha256": "cf08bc73db7474db7680f08c2c28c90e8a9577a2abbe05294f86af8d0732557f"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/melt_final.restart.bin",
+      "bytes": 6188295,
+      "sha256": "b490ccbbf117efb47cb3c1433c3eb1c6be868eef5326d4e0fd1c57b0d042a4ce"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/atom_ids.npy",
+      "bytes": 562560,
+      "sha256": "548f64cd20555d125de507e49b4c0526485a2099e1bda5a0720c90b147a24dc7"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/atom_types.npy",
+      "bytes": 281344,
+      "sha256": "8b5e8d8b8ce0302cee181671efc49518a36e87ee11cded9b1fc0fa95bb5a140f"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/box_high.npy",
+      "bytes": 72140,
+      "sha256": "fd5ea26667e93598550a1a01afc8b3bbd6cd67f7d1a319dfc6057af0d9ebd2f3"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/box_low.npy",
+      "bytes": 72140,
+      "sha256": "2fe6d55c151c33905c229eca2873fdac7c898997244af82c93c6fed7b0663cea"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/manifest.json",
+      "bytes": 3807,
+      "sha256": "c101428615af35401bafd9e76571e5cd609aadfdf861fc1d9d3a071f647b0ecd"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/recovery.restart.bin",
+      "bytes": 6188299,
+      "sha256": "4a15ff3447da55e5e980b8c2eaa30a0f2bdade70c132b7084fcf7edd4471276b"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/timesteps.npy",
+      "bytes": 48136,
+      "sha256": "da10a4cb00dac09717b36541a06664bc9064a04c7859ea4a4fb83635eca38da2"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/positions.npy",
+      "bytes": 1923939392,
+      "sha256": "49f93e7e9a27bbdbc2b0bc6c3d828da73b1a67dd3f14222a2e6b8da13923cb38"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891/trajectory_binary_float16/velocities.npy",
+      "bytes": 1923939392,
+      "sha256": "24c02c6c93ef836c9e3fb7a0267cdfc191f01f5a156a0127a52052d4762c0c31"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/positions.npy",
+      "bytes": 2531365952,
+      "sha256": "a49d3a73e05e8a5577d9df365bd5fb0717d5be447179994e4161c60388c478e7"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892/trajectory_binary_float16/velocities.npy",
+      "bytes": 2531365952,
+      "sha256": "edc2bf5d1b4f582445fa631410d7f8986a5cc74f7bc1ceb2acef693a1df4766f"
+    }
+  ],
+  "scope": "Both completed native-restart successors, full array/publication hashes, array shapes/dtypes and exact 0.1-ps timeline; no MD or files changed"
+}

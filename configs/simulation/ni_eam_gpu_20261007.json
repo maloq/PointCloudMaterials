@@ -1,0 +1,36 @@
+{
+  "protocol": "ni_mendelev2012_cuda_eam_validation_v1",
+  "output": "output/ni_eam_gpu/implementation-20261007",
+  "potential": "configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "state_dtype": "float64",
+  "force_dtype": "float32",
+  "energy_reduction_dtype": "float64",
+  "skin_A": 0.6,
+  "validation_atoms": 1372,
+  "benchmark_atoms": [
+    8788,
+    32000
+  ],
+  "timestep_fs": 1.0,
+  "melt_temperature_K": 2300.0,
+  "melt_steps": 10000,
+  "nve_steps": 1000,
+  "benchmark_steps": 500,
+  "seed": 26100711,
+  "gates": {
+    "float64_energy_eV_per_atom": 1e-08,
+    "float64_force_rms_eV_A": 1e-08,
+    "float32_energy_eV_per_atom": 3e-05,
+    "float32_force_rms_eV_A": 0.001,
+    "float64_virial_eV_per_atom": 1e-08,
+    "float32_virial_eV_per_atom": 0.003,
+    "hvp_relative": 0.01,
+    "nve_excursion_eV_per_atom": 0.001
+  },
+  "scientific_scope": "Engineering validation and timings only. Thermodynamic/melting, long NPT and precursor collection require separate protocols. No training, no W&B run.",
+  "meam_comparison_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  }
+}

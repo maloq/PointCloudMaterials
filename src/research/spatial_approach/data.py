@@ -11,8 +11,9 @@ from scipy.spatial import cKDTree
 
 from src.data.fixed_cohort.protocol import sha, write_json, digest
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols import ancestry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from src.research.structured_context.geometry import stencil, representatives
 from src.research.encoder_context.geometry import physical_targets
 from src.research.equivariant_context.cache import RetainedCache

@@ -1,0 +1,11 @@
+{
+  "parent": "${storage:training_storage}/structural_response/c3-l3-fast-20261007-v4",
+  "output": "${storage:training_storage}/structural_response/c3-l3-fast-20261007-feature-audit-v1",
+  "cohort_identity": "2fa9931c982e498560d2103cc6a2c40c2ff8ef662b454065c6dc5f8bd1efae63",
+  "seed": 20261007,
+  "workers": 4,
+  "physical_controls": ["q6", "qbar6", "order_small", "radial", "bond_order", "cna", "tda", "rich", "kinematics", "precision"],
+  "attribution_lead_ps": 3.0,
+  "neighborhood_filter": false,
+  "scope": "All existing birth cases and all eight completed motion models. No replacement of labels, controls, roles or historical metrics. Physical controls at all three leads; frozen-model interventions and surrogate explanations at the declared 3ps lead. Predictive controls selected by inner-training NLL, surrogate by inner-training RMSE, never AP. Metadata and full-cell component information are audit-only."
+}

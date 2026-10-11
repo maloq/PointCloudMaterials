@@ -1,0 +1,30 @@
+{
+  "state": "deleted",
+  "started_at": "2026-10-07T18:06:20.754015+00:00",
+  "completed_at": "2026-10-07T18:06:20.866808+00:00",
+  "scope": "Only 150 production final.restart.bin files in the retired original native 0.75 ps Al campaign. All melt checkpoints and prepared liquids preserved.",
+  "files_deleted": 150,
+  "allocated_bytes_released": 765628416,
+  "apparent_bytes_deleted": 928244850,
+  "by_dataset": {
+    "al_520K_remaining24_20260913T204114Z": {
+      "files": 24,
+      "allocated_bytes": 199557120,
+      "apparent_bytes": 148519176
+    },
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902": {
+      "files": 90,
+      "allocated_bytes": 404298752,
+      "apparent_bytes": 556946910
+    },
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903": {
+      "files": 36,
+      "allocated_bytes": 161772544,
+      "apparent_bytes": 222778764
+    }
+  },
+  "protected_files_verified_unchanged": 750,
+  "melt_restarts_preserved": 150,
+  "prepared_liquids_preserved": 150,
+  "jobs_modified": []
+}

@@ -10,9 +10,9 @@ Inspect current producer records and array headers; historical directory labels 
 - Location: `/store/PERSO/vmorozov/simulations/memory-al-precision-20260917-source001-T500`
 - Present on this machine: True
 - Potentials: Unknown / not applicable
-- Complete binary records with arrays present: 2; these are not independent-source counts.
-- Stored frames: 5122; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 8.145 GiB
+- Complete binary records with arrays present: 3; these are not independent-source counts.
+- Stored frames: 5123; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 8.143 GiB
 - Missing metadata: generating potential identity
 
 ## Notes and relationships
@@ -50,16 +50,16 @@ Inspect current producer records and array headers; historical directory labels 
 | split | ["train"] |
 | preparation_seed | [407215734] |
 | velocity_seed | [612992447] |
-| frame_count | [2561] |
-| coordinate_convention | ["positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)", "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)"] |
+| frame_count | [1, 2561] |
 | storage_dtype | ["float16", "float32"] |
+| coordinate_convention | ["positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)", "positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)", "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 
 ## Evidence
 
-All 5 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/memory-al-precision-20260917-source001-T500-515f97a7.json).
+All 7 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/memory-al-precision-20260917-source001-T500-515f97a7.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

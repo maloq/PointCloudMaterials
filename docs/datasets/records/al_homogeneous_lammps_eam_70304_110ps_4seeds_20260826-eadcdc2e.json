@@ -136,7 +136,7 @@
       "trajectory": {
         "format": "pointcloudmaterials.temporal_lammps_trajectory",
         "recorded_state": "complete",
-        "usable_binary": true,
+        "usable_binary": false,
         "atom_count": 70304,
         "frame_count": 116,
         "arrays": {
@@ -178,17 +178,6 @@
             "declared_sha256": "3b2b4cb68eeefa46160dd5d318ab31d24ca9bb25f71eb9f5936e6886685afdb2",
             "file": "box_low.npy"
           },
-          "positions": {
-            "shape": [
-              116,
-              70304,
-              3
-            ],
-            "dtype": "float32",
-            "fortran_order": false,
-            "declared_sha256": "ed039af0e51ac266ddc9e9f8a44ba98e640139b2e917244eb84394dbe375f206",
-            "file": "positions.npy"
-          },
           "timesteps": {
             "shape": [
               116
@@ -207,7 +196,10 @@
           ]
         },
         "content_signature_from_manifest": "2421d529658f29016b4636338ede936cb6a93faeec2db23721c564e14ee4af8e",
-        "issues": [],
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826/replicas/replica_000_seed_35803/trajectory_binary_float32/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
         "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
       }
     },
@@ -267,7 +259,7 @@
       "trajectory": {
         "format": "pointcloudmaterials.temporal_lammps_trajectory",
         "recorded_state": "complete",
-        "usable_binary": true,
+        "usable_binary": false,
         "atom_count": 70304,
         "frame_count": 116,
         "arrays": {
@@ -309,17 +301,6 @@
             "declared_sha256": "3e3478334f0d004a866bce1ec1e4792d4f26a91db5b4da1f77967d5d4be7debc",
             "file": "box_low.npy"
           },
-          "positions": {
-            "shape": [
-              116,
-              70304,
-              3
-            ],
-            "dtype": "float32",
-            "fortran_order": false,
-            "declared_sha256": "a192b058b2b6b93f1a45ea8d011f4298cd78124c958118dd1e5c27ea91bd8d92",
-            "file": "positions.npy"
-          },
           "timesteps": {
             "shape": [
               116
@@ -338,7 +319,10 @@
           ]
         },
         "content_signature_from_manifest": "1a38d310131f80370f7bbf67744cd9946317083ed5510451ccef3c0e7808992c",
-        "issues": [],
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826/replicas/replica_001_seed_35831/trajectory_binary_float32/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
         "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
       }
     },
@@ -398,7 +382,7 @@
       "trajectory": {
         "format": "pointcloudmaterials.temporal_lammps_trajectory",
         "recorded_state": "complete",
-        "usable_binary": true,
+        "usable_binary": false,
         "atom_count": 70304,
         "frame_count": 116,
         "arrays": {
@@ -440,17 +424,6 @@
             "declared_sha256": "ad92d388325f0a022e018e73264089bf5dd3cae789bf86d600b66c336b3a19b1",
             "file": "box_low.npy"
           },
-          "positions": {
-            "shape": [
-              116,
-              70304,
-              3
-            ],
-            "dtype": "float32",
-            "fortran_order": false,
-            "declared_sha256": "d9300b6ad6156ce6761827ac5178a0674c29ac663b564d6b62f4886361399875",
-            "file": "positions.npy"
-          },
           "timesteps": {
             "shape": [
               116
@@ -469,7 +442,10 @@
           ]
         },
         "content_signature_from_manifest": "864f8914187d4a97fce7482e6ac31a6423bf84ca25c5f1511abbd4f01276793f",
-        "issues": [],
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826/replicas/replica_002_seed_35839/trajectory_binary_float32/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
         "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
       }
     },
@@ -529,7 +505,7 @@
       "trajectory": {
         "format": "pointcloudmaterials.temporal_lammps_trajectory",
         "recorded_state": "complete",
-        "usable_binary": true,
+        "usable_binary": false,
         "atom_count": 70304,
         "frame_count": 116,
         "arrays": {
@@ -571,17 +547,6 @@
             "declared_sha256": "adae3f4c4ec98b16a43906cabe3f637e6ea574e078a9f803451f1c11e812a8b4",
             "file": "box_low.npy"
           },
-          "positions": {
-            "shape": [
-              116,
-              70304,
-              3
-            ],
-            "dtype": "float32",
-            "fortran_order": false,
-            "declared_sha256": "269d5342857028821f0ecb9887703821dfc0fdac97d54e1ce4ab0dd016b3a98f",
-            "file": "positions.npy"
-          },
           "timesteps": {
             "shape": [
               116
@@ -600,7 +565,10 @@
           ]
         },
         "content_signature_from_manifest": "dbe37b9593b687f06ebf464c519d2a8c81a1261dce2d73e100fe2a1f1d2d2c1d",
-        "issues": [],
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826/replicas/replica_003_seed_35851/trajectory_binary_float32/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
         "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
       }
     }

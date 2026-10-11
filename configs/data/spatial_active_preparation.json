@@ -1,0 +1,58 @@
+{
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "evaluation": {
+    "training_audit_per_material": 8192,
+    "fixed_roles": [
+      "calibration",
+      "test"
+    ]
+  },
+  "loader": {
+    "shards_per_block": 64,
+    "max_open_shards": 128,
+    "prefetch": 2
+  },
+  "protocol": "spatial-training-active-columns-v1",
+  "cache": "${storage:cache}/rich-descriptors/spatial-active-153",
+  "descriptors": {
+    "families": [
+      "bond_order",
+      "tda"
+    ],
+    "alpha_backend": "native",
+    "alpha_precision": "safe",
+    "selection": {
+      "path": "configs/data/spatial_active_targets.json",
+      "sha256": "a53af2b3c388324579bfce6564cce817ef1db167e39f1ba86cac94fa615bfa1d"
+    }
+  },
+  "preparation": {
+    "lanes": 1,
+    "workers": 4,
+    "checkpoint_rows": 64
+  }
+}

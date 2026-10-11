@@ -7,14 +7,9 @@ from pathlib import Path
 
 
 def read_json_object(path: Path) -> dict:
-    """Read required UTF-8 metadata and reject a non-object JSON root."""
-    if not path.is_file():
-        raise FileNotFoundError(f"Required JSON file is missing: {path}")
+    """Read the UTF-8 metadata objects written by repository producers."""
     with path.open("r", encoding="utf-8") as handle:
-        value = json.load(handle)
-    if not isinstance(value, dict):
-        raise TypeError(f"Expected a JSON object in {path}, got {type(value).__name__}.")
-    return value
+        return json.load(handle)
 
 
 def file_hash(path):

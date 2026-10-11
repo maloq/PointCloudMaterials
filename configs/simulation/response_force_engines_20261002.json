@@ -1,0 +1,41 @@
+{
+  "protocol": "local80_force_only_teachers_v1",
+  "output": "${storage:training_storage}/response_atlas/force-engines-20261002",
+  "simulation_scratch": "${storage:simulation_runs}/response-force-engines-20261002",
+  "simulation_archive": "${storage:archive}/simulations/response-force-engines-20261002",
+  "reference": "${storage:training_storage}/response_atlas/local80-training-20261002",
+  "reference_identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+  "parents": [0, 1, 2, 45],
+  "radii_A": [18, 24, 36],
+  "epsilons_A": [0.03, 0.01, 0.003],
+  "vacuum_margin_A": 12,
+  "value_rms_tolerance": 0.0001,
+  "response_relative_tolerance": 0.05,
+  "fd_relative_tolerance": 0.02,
+  "engines": {
+    "unep": {
+      "engine": "unep",
+      "potential_id": "unep-v1-main-2024",
+      "files": {
+        "model": {
+          "path": "${dataset:potentials}/UNEP-v1-main.txt",
+          "sha256": "8f97c30cc366c30e687a8672bd8d76e624a16caf4337b1277a44aa166c5bceb4"
+        }
+      }
+    },
+    "meam": {
+      "engine": "meam",
+      "potential_id": "al-lee2003-meam",
+      "files": {
+        "library": {
+          "path": "${dataset:potentials}/Lee2003_Al.library.meam",
+          "sha256": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e"
+        },
+        "parameters": {
+          "path": "${dataset:potentials}/Lee2003_Al.meam",
+          "sha256": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        }
+      }
+    }
+  }
+}

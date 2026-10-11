@@ -1,0 +1,11 @@
+{
+  "collection_id": "al-dense-gpu-20261004",
+  "source_launch": "${storage:archive}/simulation-launches/al-main-half-recovery-20261003",
+  "launch": "${storage:archive}/simulation-launches/al-dense-gpu-20261004",
+  "root": "${storage:simulation_runs}/al-dense-gpu-20261004",
+  "source_ids": [894, 914, 944, 974, 1005],
+  "workers": 2,
+  "walltime": "06:00:00",
+  "cpu_controller": "1020296",
+  "expected_cpu_dependency": "afterok:1020820_*(unfulfilled)"
+}

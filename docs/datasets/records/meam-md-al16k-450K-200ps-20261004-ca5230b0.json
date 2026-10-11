@@ -1,0 +1,1030 @@
+{
+  "dataset_id": "meam-md-al16k-450K-200ps-20261004",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/cpu-mpi8/complete.json",
+      "relative_path": "cpu-mpi8/complete.json",
+      "sha256": "d5246a57be6a445957640a2b0474a2d5957d835c7c4ad891782656f3a8105df1",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 200.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 2
+          }
+        ],
+        "lammps_version": [
+          {
+            "value": 20250722,
+            "first_json_path": "hardware.lammps_version",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "config.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 26100417,
+            "first_json_path": "config.melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/cpu-mpi8/trajectory_binary_float16/manifest.json",
+      "relative_path": "cpu-mpi8/trajectory_binary_float16/manifest.json",
+      "sha256": "bf2d26635c99dafa22a173a182228e0930a77ee197054205a5a7120a60fded7b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2001,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 2001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9b4fd045f59072e85ea4853634e8501865d51a2b7249c53268901b6d0c4af139",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "88d6bcf3cffd8329b20bd926de68aeef107636295633697ffaa37437d19211ec",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2001,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "302009972f27fcd741f2b45f6962f9b2fd8fe3b32c357933c8efc7fbb34e03d9",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "631ac95ab96c49d1c0a8ff8ea732a0bdfe49367274e14228a4fa85219cb64e6d",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 200000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "379c3ca9cddc265ba53acbd1f7d0e706c881d48032a6b10dec08975b2860f8fd",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/cpu-nve-control/complete.json",
+      "relative_path": "cpu-nve-control/complete.json",
+      "sha256": "53dcd9e4f98a2a1bdbdfa033a4f37e55f5a2797f3ea345d3e82690f8ca5da71c",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "lammps_version": [
+          {
+            "value": 20250722,
+            "first_json_path": "hardware.lammps_version",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "config.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 26100417,
+            "first_json_path": "config.melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/cpu-nve-control/trajectory_binary_float16/manifest.json",
+      "relative_path": "cpu-nve-control/trajectory_binary_float16/manifest.json",
+      "sha256": "85a8cf3aa81bb6284a729040510b700464e0c6b66ff20f3149732b60f9429da7",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 11,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "382b409be75c187b186402911bfefe78f1d814ab5afb2d2e31b4be1798532d3c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "115bad14f1c9f2c027a84de21b107015722cb76be8d0abf3760ad8e00d6c24a5",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "72f1d9549cd900d01a8a8f3c6eb068326cc219e499b1a695c09353f39796d649",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c97f09b7d6651cc374d501a12e4ab1dd6a55e9018231b3ef1658697a85c60c87",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 1000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "56b3637281611895b4d6eee40514a1e11f68a06887155d832229ba2d4419f33b",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/gpu-compiled/complete.json",
+      "relative_path": "gpu-compiled/complete.json",
+      "sha256": "138070d2e65028b471a7d489653886449ad8ad2d61d05e17c5552592c93b2d35",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 200.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 2
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "config.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 26100417,
+            "first_json_path": "config.melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/gpu-compiled/trajectory_binary_float16/manifest.json",
+      "relative_path": "gpu-compiled/trajectory_binary_float16/manifest.json",
+      "sha256": "b0928bfc812b7ee6349910df758479330d95be46473d7c4ed6b13c135bfb7a87",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 2001,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 2001,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9b4fd045f59072e85ea4853634e8501865d51a2b7249c53268901b6d0c4af139",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              2001,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "88d6bcf3cffd8329b20bd926de68aeef107636295633697ffaa37437d19211ec",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              2001,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "aa01d4aec2957296acdd65fbb562b18a7e52c1f7c504365faf78df1c69d6c845",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              2001
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "631ac95ab96c49d1c0a8ff8ea732a0bdfe49367274e14228a4fa85219cb64e6d",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 200000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "35debd333efdc410206af2d2b3817f752ed9b9a5253c6a83bcad1861008a041e",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/gpu-nve-control/complete.json",
+      "relative_path": "gpu-nve-control/complete.json",
+      "sha256": "33117eed0f602a160ae56ef1754a71ca0b062d0e9b483d0748e6b466feffd800",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "duration_ps",
+        "elapsed_seconds",
+        "hardware",
+        "identity",
+        "starting_step",
+        "state",
+        "steps",
+        "steps_per_second",
+        "warmup_seconds"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "duration_ps": [
+          {
+            "value": 1.0,
+            "first_json_path": "duration_ps",
+            "occurrences": 1
+          },
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "config.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 26100417,
+            "first_json_path": "config.melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/gpu-nve-control/trajectory_binary_float16/manifest.json",
+      "relative_path": "gpu-nve-control/trajectory_binary_float16/manifest.json",
+      "sha256": "114023a699eff5323149c8f99b9d68c75b8c1421c6459054ff60535182e35b08",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "created_at",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 2
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 2
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 11,
+            "first_json_path": "frame_count",
+            "occurrences": 2
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "provenance.float32_manifest.provenance.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "provenance.float32_manifest.source.protocol",
+            "occurrences": 2
+          }
+        ],
+        "storage_dtype": [
+          {
+            "value": "float32",
+            "first_json_path": "provenance.float32_manifest.storage_dtype",
+            "occurrences": 1
+          },
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 16384,
+        "frame_count": 11,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "382b409be75c187b186402911bfefe78f1d814ab5afb2d2e31b4be1798532d3c",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              11,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "115bad14f1c9f2c027a84de21b107015722cb76be8d0abf3760ad8e00d6c24a5",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              11,
+              16384,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "72f1d9549cd900d01a8a8f3c6eb068326cc219e499b1a695c09353f39796d649",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              11
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c97f09b7d6651cc374d501a12e4ab1dd6a55e9018231b3ef1658697a85c60c87",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 1000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "56b3637281611895b4d6eee40514a1e11f68a06887155d832229ba2d4419f33b",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/meam-md-al16k-450K-200ps-20261004/preparation/complete.json",
+      "relative_path": "preparation/complete.json",
+      "sha256": "e01a731a75d5d3578ecb5cb574bafb19f5b66091343c80e3ceb4df069973af95",
+      "kind": "metadata",
+      "keys": [
+        "atoms",
+        "box_A",
+        "config",
+        "crystal_fraction",
+        "finished_unix",
+        "initial_sha256",
+        "lineage",
+        "meaning",
+        "potential_hashes"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "matched_periodic_meam_16k_200ps_v1",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ],
+        "melt_temperature_K": [
+          {
+            "value": 1325.0,
+            "first_json_path": "config.melt_temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "melt_seed": [
+          {
+            "value": 26100417,
+            "first_json_path": "config.melt_seed",
+            "occurrences": 1
+          }
+        ],
+        "temperature_K": [
+          {
+            "value": 450.0,
+            "first_json_path": "config.temperature_K",
+            "occurrences": 1
+          }
+        ],
+        "timestep_fs": [
+          {
+            "value": 1.0,
+            "first_json_path": "config.timestep_fs",
+            "occurrences": 1
+          }
+        ],
+        "duration_ps": [
+          {
+            "value": 200.0,
+            "first_json_path": "config.duration_ps",
+            "occurrences": 1
+          }
+        ],
+        "velocity_seed": [
+          {
+            "value": 26100423,
+            "first_json_path": "config.velocity_seed",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "lineage": [
+          {
+            "value": "new_meam_fcc16_melt_26100417",
+            "first_json_path": "lineage",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "potential_hashes": {
+          "library": "f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e",
+          "parameters": "b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a"
+        }
+      }
+    }
+  ]
+}

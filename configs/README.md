@@ -1,5 +1,111 @@
 # Configuration index
 
+Active autonomous Ni overnight queue: [`ni_latent_sim/autonomous_overnight_20261011.json`](ni_latent_sim/autonomous_overnight_20261011.json). Eight 4,000-update transformer fits cross 1/6-ps training, values/physical derivatives and two seeds on the completed 14,400-sequence cohort. Both GPU workers are submitted immediately; chat reviews are optional. [Execution and recovery](../docs/ni_latent_sim.md#autonomous-overnight-queue-october-11).
+
+Planned larger overnight Ni motion study: [`ni_latent_sim/overnight_queue_plan_20261011.json`](ni_latent_sim/overnight_queue_plan_20261011.json). Planning specification only:14 proposed fits, additional fitting-source windows/physical teachers, matched1/3/6ps curriculum controls, estimated10–12hours on two GPUs. **Not submitted and not yet a workflow CLI recipe.**
+
+Transformer motion comparison: `ni_latent_sim/transformer_path_response_20261011.json`; two causal attention blocks, matched dense-path response supervision, queued after the current MLP lanes. [Protocol](../experiments/ni_latent_sim_20261010/TRANSFORMER.md).
+
+Dense Ni paths: `ni_latent_sim/dense_path_response_20261011.json`; matched5-fs integrators with endpoint or whole-path physical supervision. [Execution](../docs/ni_latent_sim.md).
+
+Compact Ni simulator: `ni_latent_sim/compact_memory_response_20261010.json`; [two-GPU overnight workflow](../docs/ni_latent_sim.md).
+Derivative stability follow-up: `ni_latent_sim/derivative_stability_20261010.json`; same cached Ni data, matched sensitivity and training-horizon factors.
+Threefold motion collection: `ni_latent_sim/regimes3x_20261010.json`; fixed-atom liquid-persistence and front-advance sequences, followed by the same derivative factorial.
+
+Ni quench repeatability: `ni_response/relaxation_repeatability_20261009.json`; [diagnostic workflow](../docs/ni_relaxation_repeatability.md).
+
+Relaxed Ni response: `ni_response/esen_relaxed_original_md_20261009.json`; [workflow](../docs/ni_relaxed_response.md).
+
+Ni response recipe: `ni_response/esen_unrelaxed_20261009.json`; [workflow](../docs/ni_response.md).
+
+`spatial_architecture/esen_small_ni_20261008.json`: fresh Small eSEN C64/H32/E32
+on 1,373,798 Ni-enriched patches and 198 BO/CNA/TDA targets, 12 full epochs,
+pooled plus Ni monitoring, one independent GPU across compatible partitions.
+
+`spatial_architecture/tensornet_20261008.json`: geometry-only TensorNet128,
+two Cartesian-tensor layers, 5 Å cutoff, common 12-epoch spatial training and
+numerical/derivative/speed probes; replaces the unstarted eSEN-3.2M job.
+[Workflow](../docs/spatial_esen.md#tensornet-replacement-october-8).
+
+`spatial_architecture/esen_3m2_20261008.json`: published eSEN-3.2M materials
+architecture adapted to geometry-only local80 spatial pretraining, L2/M2,
+width128, 6 Å cutoff, ten Gaussians, and the common 12-epoch objective/schedule.
+Preserved after its pending job was replaced by TensorNet;
+[workflow](../docs/spatial_esen.md#esen-32m-materials-preset-october-8).
+
+`spatial_architecture/mace_l2_c2_20261008.json`: matched 12-epoch MACE angular2/
+correlation2 ablation against the pinned angular3/correlation3 run;
+[workflow](../docs/spatial_esen.md#mace-angular2correlation2-ablation-october-8).
+
+`spatial_architecture/esen_small_20261007.json`: eSEN C64/H32/E32 with fewer
+encoder parameters than MACE128; optimized execution, common data and 12 epochs.
+`spatial_architecture/esen_efficient_20261007.json` preserves the wider eSEN recipe:
+geometry-only eSEN and MACE
+with architecture-appropriate widths and optimized execution, common 12-epoch
+VICReg/bond-order/TDA training and equal-epoch timing;
+[workflow](../docs/spatial_esen.md).
+`spatial_architecture/esen_l3_20261007.json` preserves the superseded capacity-matched pilot.
+
+Post-simulation execution contracts: [`postprocessing/`](postprocessing/README.md).
+
+`structural_response/first_appearance_20261007.json`: prospectively drawn local sites,
+first PTM-crystalline atom within 0.1/0.5/1/3/6 ps, and frozen spatial/motion controls;
+[workflow](../docs/structural_response.md#first-crystalline-appearance-october-7).
+
+`structural_response/overnight_20261007.json`: 12 complete spatial epochs with warmup/cosine, then matched derivative motion training; [workflow](../docs/structural_response.md).
+
+`structural_response/motion_20261007_v2.json`: reuse both completed epoch-12 exports;
+exact motion derivatives with bounded graph microbatches, shared teacher caches and eight resumed
+motion comparisons at effective batch256; [workflow](../docs/structural_response.md).
+
+
+[Present-selected embryo establishment](analysis/embryo_establishment_20261007.json): separate 8–63 atom embryo cohort, common current Q/V inputs and 1/3/6 ps establishment labels; original strict birth benchmark retained.
+
+[October7 Al birth additions](analysis/al_nuclei_dense_additions_20261007.json):22 newly completed velocity-bearing production trajectories, unchanged lineage rules and separate source inventory.
+
+[October 8 GPU Al additions](analysis/al_nuclei_gpu_additions_20261008.json):
+45 main trajectories plus 33 birth-focused branches, 165,828 native 0.10-ps
+frames. The [main inventory](analysis/al_nuclei_main_extract_20261008.json) and
+[focused inventory](analysis/al_nuclei_focused_extract_20261008.json) verify
+their distinct producer protocols. GPU extraction, CPU lineage and automatic
+catalogue publication share one frozen dependency chain; consult its launch
+receipt before resubmission. The earlier seven-source results are reused.
+
+[Seven original Al V100 branches](analysis/al_nuclei_v100_seven_20261007.json)
+and their [scoped extraction inventory](analysis/al_nuclei_v100_seven_extract_20261007.json):
+native 0.10 ps, six ancestors, unchanged four detectors and v3 lineage rules;
+GPU producer provenance and unsaved initial equilibration recorded explicitly.
+
+
+[Continuous-motion nucleus birth](analysis/continuous_motion_birth_20261006.json): exact1/3/6ps leads, nine frozen encoders and pooled-test diagnostic readouts.
+
+
+[Continuous-motion smaller-GPU workers](continuous_motion/small_gpu_20261006.json):
+separate A40/A100/L40S requests,128x2 accumulation and the shared1600-update queue.
+
+[Continuous local motion](continuous_motion/all010_1600_20261006.json): nine matched
+fits, exact0.1ps Q,V inputs,0.1–12ps futures and short FastAl tangent teachers;
+[workflow](../docs/continuous_motion.md).
+
+[Future-outcome similarity](analysis/response_future_similarity_20261004.json): held-out distance agreement and retrieval for all twelve completed float32 response encoders; no new training or MD.
+
+[Periodic16k MEAM comparison](simulation/meam_md_16k_20261004.json): matched200ps CPU/GPU crystallization at450K.
+
+Initial-velocity MEAM response: [active CUDA 0.5 ps recipe](simulation/response_velocity_cuda500_float32_20261004.json); [separate three-hour pilot](simulation/response_velocity_three_hour_20261004.json); [stopped large 1 ps recipe](simulation/response_velocity_20261004.json).
+
+[Differentiable MEAM benchmark](simulation/response_meam_torch_20261004.json) freezes the existing local80 train-only inputs for same-GPU MEAM/MACE response timing; [workflow](../docs/simulations/response_meam_torch_20261004.md).
+
+
+[Unified relaxation index](relaxation_index.json): retained full-cell
+archives, engine evidence and saved neighborhood caches;
+[usage](../docs/data_storage.md#unified-relaxation-index).
+
+[Unrelaxed response geometry](simulation/response_geometry_20261003.json) queues720-parent future-response ablations; [frozen clustering spaces](analysis/response_geometry_clusters_20261003.json) compares existing models. [Workflow](../docs/simulations/response_geometry_20261003.md).
+
+
+[Shared Al data pool](al_research_pool.json): all-Al inventory and joined,
+selectable appearance/fate inputs; [workflow](../docs/al_research_pool.md).
+
 [Failed-embryo appearance transfer](birth_prediction/appearance_transfer_20261002.json) reuses original predictors and fits combined-pool readouts; [workflow](../docs/birth_appearance.md).
 
 [Nucleus fates](analysis/nucleus_fates_20261002.json) reuses original Al64 PTM histories for transient dissolution and established-event growth labels; [workflow](../docs/nucleus_fates.md).
@@ -554,3 +660,25 @@ Al64 structural-assay rows and training-only PaCMAP landmarks for the
 [Response-oracle acceleration](analysis/response_performance_20261002.json)
 compares GPU neighbor construction, cuEquivariance, replica batching, precision
 and finite differences against archived float64 responses; [workflow](../docs/response_atlas.md#october-2-oracle-acceleration-benchmark).
+# Motion data revision
+
+`structural_response/motion_fast_20261007_v4.json` reuses completed spatial
+checkpoints, disables broad spatial replay and compares centered-difference
+joint motion learning with cached-backbone adapters. Eight1600-update fits;
+birth prediction uses `al-nuclei-birth-010` without neighborhood filtering.
+`motion_20261007_v3.json` is the superseded, unlaunched data proposal.
+See [workflow](../docs/structural_response.md).
+
+`structural_response/birth_feature_audit_20261007.json` binds the unchanged birth
+cohort for leakage checks, physical diagnostic readouts and surrogate explanations.
+`birth_embedding_audit_20261007_v3.json` defines completed frozen structural/motion
+interventions. The intermediate `birth_interventions_20261007_v2.json` preserves
+partial future-law numerical diagnostics. Historical exports use their frozen
+producers; [audit workflow](../docs/structural_response.md#completed-motion-fits-and-birth-feature-audit).
+
+# Response encoder comparison
+
+`analysis/response_cluster_comparison_20261003.json` binds the validation-selected
+local80 response checkpoint to the restored paired3D PaCMAP and dense MD viewer.
+It preserves old descriptor/RH2 results and the fixed Al64 observation identities;
+[workflow](../docs/spatial_vicreg_bias.md#october-3-response-encoder-addition).

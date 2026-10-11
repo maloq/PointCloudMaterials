@@ -10,8 +10,8 @@ Parent container for separately registered Ti source/branches, duplicate exports
 - Location: `/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907`
 - Present on this machine: True
 - Potentials: Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component
-- Complete binary records with arrays present: 7; these are not independent-source counts.
-- Stored frames: 25; duplicate-group records: 0
+- Complete binary records with arrays present: 18; these are not independent-source counts.
+- Stored frames: 36; duplicate-group records: 0
 - Allocated storage, excluding registered nested datasets: 0.651 GiB
 - Missing metadata: None in the core fields
 
@@ -29,7 +29,8 @@ Parent container for separately registered Ti source/branches, duplicate exports
   "description": "Parent container for separately registered Ti source/branches, duplicate exports, additional shooting and Ta branches.",
   "evidence": [
     "docs/simulations/ti_ta_crystallization/README.md"
-  ]
+  ],
+  "storage_status": "Ta subcollection deleted on 2026-10-03; Ti collections retained. See docs/storage/ta_simulation_removal_20261003/receipt.json."
 }
 ```
 
@@ -46,16 +47,16 @@ Parent container for separately registered Ti source/branches, duplicate exports
 | thermostat_ps | [0.1, 0.2] |
 | barostat_ps | [1.0, 2.0] |
 | mass_g_mol | [180.95, 47.88] |
-| atom_count | [10000422, 1024000, 128] |
+| atom_count | [10000422, 1024000, 128, 3456] |
 | velocity_seed | [189980460, 293653075, 533319719, 674707733, 80245850, 889339747, 891071441, 891072441, 891073441, 891074441, 891075441, 917101] … (17 values; see JSON) |
 | melt_temperature_K | [3000] |
 | melt_seed | [917001] |
 | ptm_rmsd_cutoff | [0.15, 0.17] |
 | branch_semantics | ["Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations."] |
-| frame_count | [241, 3, 7] |
-| root_lineage | ["/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source"] |
-| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)"] |
+| frame_count | [1, 241, 3, 7] |
 | storage_dtype | ["float32"] |
+| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in the half-open periodic interval [0, box_high-box_low)", "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again"] |
+| root_lineage | ["/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source"] |
 | material_order | [["Al", "Mg", "Zr"]] |
 | ensemble | ["isotropic Nose-Hoover NPT"] |
 | duration_ps | [24.0] |
@@ -66,10 +67,10 @@ Parent container for separately registered Ti source/branches, duplicate exports
 
 ## Evidence
 
-All 38 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/ti_ta_crystallization_20260907-2bcfd479.json).
+All 60 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/ti_ta_crystallization_20260907-2bcfd479.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

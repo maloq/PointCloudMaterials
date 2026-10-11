@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/facebookresearch/fairchem",
+  "revision": "977a80328f2be44649b414a9907a1d6ef2f81e95",
+  "tag": "fairchem_core-1.10.0",
+  "source_prefix": "src/fairchem/core/models/esen",
+  "files": {
+    "esen_block.py": "65d25144389ef5660485cdae6e3d3e1cf336bf5bd5de077a3e65c76b9918f109",
+    "common/so3.py": "10e683b5a3b4a6f7360c5267c41ef52bfb01925d75662810c6599d5dfb47fb2d",
+    "common/rotation.py": "934b0b3e00a83c2bd0593dceb394ea7fa868dcde3cca574ef5cd523165ec2878",
+    "nn/activation.py": "6fab9c3a2f10408e4e55d2c54b28df07569c29420d0b9c266b53818f0bf8c709",
+    "nn/embedding.py": "cc18b7a840530f109008dda94c6aa0499fadfda6ab347b6fb6d33c4a07df7f47",
+    "nn/layer_norm.py": "a6a453a9ad4bf820b1f9ddc00c72509b44b90b7c5e29af6571116bcff6e1de58",
+    "nn/radial.py": "1570e88b7668fac03f2c29e53dfea136f4b6ba5dc025ba5e7bc6cd711dc89a51",
+    "nn/so2_layers.py": "b7eee86608a8b2bc8a1b624d1f2d82c8fc9dd34d55f68777fe50cbcbc88de183",
+    "nn/so3_layers.py": "59d3ad115a564faa0d518a5ab2822d039b73ed0fea4ca840c3f9af5bdbbfd264",
+    "Jd.pt": "b4059c45be246dcb6c49c545670b65c56550eb0c2e7a9c92b4b50a92d370dbe2",
+    "LICENSE": "3e10827938aae9e591647722c830065a95b3af2721f0d7f02f373869b40fe81d"
+  },
+  "modifications": "None; low-level eSEN modules only, local input/output adaptation is in spatial_esen.py"
+}

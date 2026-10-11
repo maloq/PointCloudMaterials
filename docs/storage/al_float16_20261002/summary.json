@@ -1,0 +1,18 @@
+{
+  "state": "complete",
+  "planned_files": 1065,
+  "verified_and_deleted": 1065,
+  "remaining_files": 0,
+  "original_allocated_bytes_removed": 651303119360,
+  "replacement_allocated_bytes_unique": 97047011840,
+  "net_allocated_bytes_reduction": 554256107520,
+  "original_allocated_bytes_removed_by_partition": {
+    "STORE": 159756910592,
+    "SCRATCH": 466395815424,
+    "WORK": 24864377856,
+    "INFRES": 260511744,
+    "IDS": 25503744
+  },
+  "updated_utc": "2026-10-02T16:01:00.062793+00:00",
+  "note": "Logical source bytes and allocated storage differ. Filesystem-wide free space can change independently. Incomplete terminal bytes are preserved; native restarts are untouched."
+}

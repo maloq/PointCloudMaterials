@@ -1,0 +1,16 @@
+{
+  "protocol": "ta_event_review_crops_v1",
+  "audit": "${storage:training_storage}/nucleus_fates/ta-20261002",
+  "output": "${storage:analysis}/nucleus_crops/ta-20A-18ps-20261003",
+  "radius_A": 20.0,
+  "before_ps": 18.0,
+  "after_ps": 18.0,
+  "cadence_ps": 0.1,
+  "appearance_selection": "weak_link_dependent_establishments",
+  "dissolution_selection": "all_verified",
+  "include_historical": false,
+  "workers": 4,
+  "chunk_atoms": 500000,
+  "expected_appearance_events": 8,
+  "expected_dissolution_events": 28
+}

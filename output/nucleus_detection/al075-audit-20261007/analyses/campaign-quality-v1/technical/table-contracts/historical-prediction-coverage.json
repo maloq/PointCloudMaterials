@@ -1,0 +1,7 @@
+{
+  "table": "tables/historical-prediction-coverage.csv",
+  "sha256": "756fe865faabb0b038805d6207b04216ed733413ecf3b0a31049eaaaa4599089",
+  "family": "al075_birth_quality",
+  "contract": "technical/metric-contracts/al075_birth_quality.json",
+  "definitions": "tables/metric-definitions/al075_birth_quality.md"
+}

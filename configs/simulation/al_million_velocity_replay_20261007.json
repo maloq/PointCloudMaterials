@@ -1,0 +1,17 @@
+{
+  "campaign_id": "al-million-velocity-replay-20261007",
+  "parent_dataset": "al_meam_1m_450K_400ps_with_melt_20260913T205405Z",
+  "scope": "400 ps production only",
+  "mpi_ranks": 96,
+  "processor_grid": [3, 4, 8],
+  "partition": "CPU",
+  "memory": "32G",
+  "audit_walltime": "03:00:00",
+  "production_walltime": "2-00:00:00",
+  "segment_timeout_seconds": 7200,
+  "audit_segments": [0, 1],
+  "endpoint_position_max_A": 0.00001,
+  "endpoint_velocity_max_A_per_ps": 0.0001,
+  "endpoint_box_max_A": 0.0000001,
+  "frame_position_extra_tolerance_A": 0.0001
+}

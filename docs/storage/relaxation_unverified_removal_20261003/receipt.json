@@ -1,0 +1,18 @@
+{
+  "state": "complete",
+  "completed_at": "2026-10-03T20:02:05.198246+00:00",
+  "deleted_cell_archives": 1707,
+  "deleted_neighborhood_files": 3235,
+  "deleted_files": 25426,
+  "removed_allocated_bytes": 4629230080,
+  "removed_by_kind": {
+    "cell_archive": 4087185408,
+    "neighborhood": 542044672
+  },
+  "audit_allocated_bytes": 7778304,
+  "net_reclaimed_bytes_approx": 4621451776,
+  "preserved_provenance_files": 15184,
+  "protected_entries_checked": 13743,
+  "remaining_available_entries": 13743,
+  "index_unavailable_entries": 4942
+}

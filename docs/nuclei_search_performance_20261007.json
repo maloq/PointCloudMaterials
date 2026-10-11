@@ -1,0 +1,803 @@
+{
+  "date": "2026-10-07",
+  "node": "node60",
+  "threads": 1,
+  "implementation": {
+    "src/project_runtime/paths.py": "bc81caff7159247e2e1bffea692f1d94cf0d3e36cde9e8c217f7c8511962240a",
+    "src/research/crystallization_origin/birth_histories.py": "cdec8071424f404b7e90fb8b170a4285bf1afb71c2f23647eaff757f45ebb1eb",
+    "src/research/crystallization_origin/lineage_tracker.py": "876ee63dc50111cd520bc763b025f0dadf2282031dc98127e8776e1404fe055c",
+    "src/data/nuclei_birth.py": "d408fa05ab8136d35725bf93ff792ee44f71300d4468790e9ec4a1d0cc9e6b51"
+  },
+  "reference": {
+    "reference-birth_histories.py": "cb977f22f1cf3572ebe8fd50bf3e0871ed7912ef9ca3872f1daa1274e9bec682",
+    "reference-external_data.py": "b7d5f550a5d13906d5db1186173c4d7ff22df5b61c2fe27ea790f68a86b22d97",
+    "reference-lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+    "reference-search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b",
+    "reference-paths.py": "df562a3eb2a696b018ea74ae5231287623963e81fab76ccd6b899f908a2e0217"
+  },
+  "timings": {
+    "reference-cold-tail-time": {
+      "seconds": 282.12319163186476,
+      "event": "birth-bbb975c7c927ba9697e0",
+      "ptm_cache": "empty at start"
+    },
+    "reference-tail-time": {
+      "seconds": 291.5225365648512,
+      "event": "birth-bbb975c7c927ba9697e0"
+    },
+    "unprofiled-optimized-tail-time": {
+      "seconds": 6.371930133085698,
+      "event": "birth-bbb975c7c927ba9697e0"
+    },
+    "optimized-tail-time": {
+      "seconds": 6.350013088900596,
+      "event": "birth-bbb975c7c927ba9697e0"
+    },
+    "unprofiled-reference-tail-time": {
+      "seconds": 134.538911501877,
+      "event": "birth-bbb975c7c927ba9697e0"
+    },
+    "optimized-cold-tail-time": {
+      "seconds": 157.32405878207646,
+      "event": "birth-bbb975c7c927ba9697e0",
+      "ptm_cache": "empty at start"
+    },
+    "reference-lineage-time": {
+      "seconds": 29.189709431957453,
+      "task": {
+        "source": "al-d8848eb7ee825086",
+        "cadence": "010",
+        "detector": "ptm",
+        "lane": 6
+      }
+    },
+    "lazy-lineage-time": {
+      "seconds": 9.906613218132406,
+      "task": {
+        "source": "al-d8848eb7ee825086",
+        "cadence": "010",
+        "detector": "ptm",
+        "lane": 6
+      }
+    }
+  },
+  "tail_equivalence": [
+    {
+      "event": "birth-096d5876c93a01170d94",
+      "identical": {
+        "graph.json": true,
+        "birth.json": true,
+        "family-history.json": true,
+        "movie.npz": true,
+        "movie-frames.json": true,
+        "summary.json": true
+      }
+    },
+    {
+      "event": "birth-2bcd400fa8fffc951285",
+      "identical": {
+        "graph.json": true,
+        "birth.json": true,
+        "family-history.json": true,
+        "movie.npz": true,
+        "movie-frames.json": true,
+        "summary.json": true
+      }
+    },
+    {
+      "event": "birth-51ab3c358457bd4355b6",
+      "identical": {
+        "graph.json": true,
+        "birth.json": true,
+        "family-history.json": true,
+        "movie.npz": true,
+        "movie-frames.json": true,
+        "summary.json": true
+      }
+    }
+  ],
+  "tracking_equivalence": [
+    {
+      "task": {
+        "source": "al-d8848eb7ee825086",
+        "cadence": "010",
+        "detector": "ptm",
+        "lane": 6
+      },
+      "reference_seconds": 27.003311957931146,
+      "optimized_seconds": 8.84756591101177,
+      "identical": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      },
+      "counts": {
+        "events": 409,
+        "birth_records": 392,
+        "liquid_emergences": 374,
+        "established_liquid_emergences": 2,
+        "dissolved": 112
+      }
+    },
+    {
+      "task": {
+        "source": "shot-bb4d1463b8780eb6",
+        "cadence": "030",
+        "detector": "ptm",
+        "lane": 2
+      },
+      "reference_seconds": 1.4138484811410308,
+      "optimized_seconds": 0.5390157150104642,
+      "identical": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      },
+      "counts": {
+        "events": 64,
+        "birth_records": 58,
+        "liquid_emergences": 58,
+        "established_liquid_emergences": 0,
+        "dissolved": 23
+      }
+    },
+    {
+      "task": {
+        "source": "shot-bb4d1463b8780eb6",
+        "cadence": "030",
+        "detector": "coherent_loose",
+        "lane": 2
+      },
+      "reference_seconds": 1.4535772358067334,
+      "optimized_seconds": 1.6797345250379294,
+      "identical": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      },
+      "counts": {
+        "events": 1592,
+        "birth_records": 1471,
+        "liquid_emergences": 1380,
+        "established_liquid_emergences": 1,
+        "dissolved": 977
+      }
+    },
+    {
+      "task": {
+        "source": "shot-bb4d1463b8780eb6",
+        "cadence": "030",
+        "detector": "coherent",
+        "lane": 2
+      },
+      "reference_seconds": 0.8067310689948499,
+      "optimized_seconds": 0.669094338780269,
+      "identical": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      },
+      "counts": {
+        "events": 253,
+        "birth_records": 226,
+        "liquid_emergences": 223,
+        "established_liquid_emergences": 0,
+        "dissolved": 130
+      }
+    },
+    {
+      "task": {
+        "source": "shot-bb4d1463b8780eb6",
+        "cadence": "030",
+        "detector": "coherent_strict",
+        "lane": 2
+      },
+      "reference_seconds": 0.6749182878993452,
+      "optimized_seconds": 0.535131499171257,
+      "identical": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      },
+      "counts": {
+        "events": 68,
+        "birth_records": 65,
+        "liquid_emergences": 65,
+        "established_liquid_emergences": 0,
+        "dissolved": 19
+      }
+    }
+  ],
+  "lock_check": {
+    "nonblocking_claim_skips_owned_packet": true,
+    "seconds": 0.46790415490977466,
+    "existing_complete_preserved": true
+  },
+  "path_cases": 15,
+  "contracts": [
+    "al_nuclei_lineage",
+    "embryo_establishment_cohort",
+    "structural_response",
+    "nuclei_birth_dataset",
+    "ni_births",
+    "motion_first_appearance",
+    "nucleus_histories",
+    "ni_birth_histories"
+  ],
+  "jobs": {
+    "assist": "1027677"
+  },
+  "cold_tail_equivalence": {
+    "optimized-cold-tail-equality.json": {
+      "graph.json": true,
+      "birth.json": true,
+      "family-history.json": true,
+      "movie.npz": true,
+      "movie-frames.json": true,
+      "summary.json": true
+    },
+    "reference-cold-tail-equality.json": {
+      "graph.json": true,
+      "birth.json": true,
+      "family-history.json": true,
+      "movie.npz": true,
+      "movie-frames.json": true,
+      "summary.json": true
+    }
+  },
+  "comparison_scope": "Single-node real-data equivalence and performance audit; source extraction is unchanged; timings are not population throughput estimates.",
+  "descriptor_followup": {
+    "implementation": {
+      "src/research/crystallization_origin/search_clusters.py": "ff4294ade089f19175d82559c05058ee601d6259e2722d4c364a17691a568c01",
+      "src/research/crystallization_origin/birth_histories.py": "0614cdc24d7fd95a9a1fbf1b4275ad9fdad0df04b0b46967b520fe990e84d3d3",
+      "src/research/crystallization_origin/ni_birth_histories.py": "10e11b0dc85be24e1958377dfdb20da956e59c555c87f8ffa47134f82f6c3417",
+      "src/research/crystallization_origin/search.py": "8716c168381b1a3400daed56d277d1aa7b992ef20520b673e0a4f31b1ac9d299",
+      "src/research/crystallization_origin/lineage_search.py": "5bb2503155db0a60535d0bd8a3c35b14c99f549e37463ef684e6d28aa7272641"
+    },
+    "metric_families": [
+      "al_nuclei_search",
+      "al_nuclei_lineage",
+      "response_dense_birth",
+      "response_birth_pooled",
+      "continuous_motion_birth",
+      "embryo_establishment_cohort",
+      "structural_response",
+      "nuclei_birth_dataset",
+      "ni_births",
+      "motion_birth_attribution",
+      "ni_births_preview",
+      "nucleus_histories",
+      "ni_birth_histories"
+    ],
+    "accepted_historical_searches": 4,
+    "verification": {
+      "threads-2.json": [
+        {
+          "frame": 0,
+          "threads": 2,
+          "ptm_seconds": 1.3684813370928168,
+          "bond_seconds": 1.3103328668512404,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 1500,
+          "threads": 2,
+          "ptm_seconds": 1.1448354320600629,
+          "bond_seconds": 1.2452273298986256,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 3000,
+          "threads": 2,
+          "ptm_seconds": 1.230466870823875,
+          "bond_seconds": 1.6819645089562982,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        }
+      ],
+      "retained-ptm-reuse.json": {
+        "frames": [
+          {
+            "frame": 0,
+            "reused_verified_ptm": true,
+            "small_component_atoms_preserved": 121,
+            "seconds": 0.005605774000287056
+          },
+          {
+            "frame": 1,
+            "reused_verified_ptm": true,
+            "small_component_atoms_preserved": 87,
+            "seconds": 0.0002257379237562418
+          }
+        ],
+        "extraction_arrays_equal": {
+          "clusters": true,
+          "solid_counts": true,
+          "bond_histogram": true,
+          "frames": true
+        },
+        "receipt": {
+          "identity": "d26e865e1398af50f15dd054cbb185aeb9da3dc82ed6f02ac3dfe317f1402eae",
+          "source": "al-d8848eb7ee825086",
+          "start": 0,
+          "stop": 2,
+          "lane": 0,
+          "atom_frames": 140608,
+          "sha256": "ecda73ce09bcda1f111f8de140bb559836dd602ad7d3b025b06bb2de98922ddb",
+          "seconds": 6.793545979773626,
+          "ptm_producer_sha256": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+          "descriptor_threads": 1,
+          "descriptor_producer_sha256": "961f6b88646f834288957b572bec6f1b64487dafb3f9364207a0d4fa66209ee6"
+        }
+      },
+      "ni-descriptor-comparison.json": [
+        {
+          "source": "ni-T1100-melt00",
+          "frame": 0,
+          "atoms": 32000,
+          "reference_seconds": 2.0814656170550734,
+          "optimized_seconds": 1.5559835860040039,
+          "exact": {
+            "clusters": true,
+            "solid_counts": true,
+            "bond_histogram": true
+          },
+          "counts": [
+            0,
+            37,
+            4,
+            0
+          ]
+        },
+        {
+          "source": "ni-T1100-melt00",
+          "frame": 840,
+          "atoms": 32000,
+          "reference_seconds": 1.5628043001051992,
+          "optimized_seconds": 1.1158041679300368,
+          "exact": {
+            "clusters": true,
+            "solid_counts": true,
+            "bond_histogram": true
+          },
+          "counts": [
+            2244,
+            9198,
+            7203,
+            5319
+          ]
+        }
+      ],
+      "ordered-correlation-investigation.json": [
+        {
+          "frame": 0,
+          "exact": true,
+          "max_error": 0.0,
+          "seconds": 0.01981590990908444,
+          "mismatches": 0
+        },
+        {
+          "frame": 1500,
+          "exact": true,
+          "max_error": 0.0,
+          "seconds": 0.019188991049304605,
+          "mismatches": 0
+        },
+        {
+          "frame": 3000,
+          "exact": true,
+          "max_error": 0.0,
+          "seconds": 0.01974265999160707,
+          "mismatches": 0
+        }
+      ],
+      "tail-integration-comparison.json": [
+        {
+          "event": "birth-bbb975c7c927ba9697e0",
+          "seconds": 6.0402195958886296,
+          "exact": {
+            "graph.json": true,
+            "birth.json": true,
+            "family-history.json": true,
+            "movie.npz": true,
+            "movie-frames.json": true,
+            "summary.json": true
+          }
+        },
+        {
+          "event": "birth-096d5876c93a01170d94",
+          "seconds": 6.141911617014557,
+          "exact": {
+            "graph.json": true,
+            "birth.json": true,
+            "family-history.json": true,
+            "movie.npz": true,
+            "movie-frames.json": true,
+            "summary.json": true
+          }
+        },
+        {
+          "event": "birth-2bcd400fa8fffc951285",
+          "seconds": 6.006976681994274,
+          "exact": {
+            "graph.json": true,
+            "birth.json": true,
+            "family-history.json": true,
+            "movie.npz": true,
+            "movie-frames.json": true,
+            "summary.json": true
+          }
+        },
+        {
+          "event": "birth-51ab3c358457bd4355b6",
+          "seconds": 6.06855450803414,
+          "exact": {
+            "graph.json": true,
+            "birth.json": true,
+            "family-history.json": true,
+            "movie.npz": true,
+            "movie-frames.json": true,
+            "summary.json": true
+          }
+        }
+      ],
+      "threads-1.json": [
+        {
+          "frame": 0,
+          "threads": 1,
+          "ptm_seconds": 1.9283633378800005,
+          "bond_seconds": 1.7653061370365322,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 1500,
+          "threads": 1,
+          "ptm_seconds": 1.6097109790425748,
+          "bond_seconds": 1.77151919901371,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 3000,
+          "threads": 1,
+          "ptm_seconds": 1.5875568690244108,
+          "bond_seconds": 2.086669537005946,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        }
+      ],
+      "steinhardt-investigation.json": [
+        {
+          "frame": 0,
+          "full_seconds": 1.6858400290366262,
+          "steinhardt_seconds": 0.6267042339313775,
+          "exact_harmonics": true,
+          "correlation_max_error": 3.5762786865234375e-07
+        },
+        {
+          "frame": 1500,
+          "full_seconds": 1.5099609969183803,
+          "steinhardt_seconds": 0.6187351918779314,
+          "exact_harmonics": true,
+          "correlation_max_error": 4.172325134277344e-07
+        },
+        {
+          "frame": 3000,
+          "full_seconds": 1.8004981288686395,
+          "steinhardt_seconds": 0.6340119747910649,
+          "exact_harmonics": true,
+          "correlation_max_error": 4.76837158203125e-07
+        }
+      ],
+      "affected-families.json": [
+        "al_nuclei_search",
+        "al_nuclei_lineage",
+        "response_dense_birth",
+        "response_birth_pooled",
+        "continuous_motion_birth",
+        "embryo_establishment_cohort",
+        "structural_response",
+        "nuclei_birth_dataset",
+        "ni_births",
+        "motion_birth_attribution",
+        "ni_births_preview",
+        "nucleus_histories",
+        "ni_birth_histories"
+      ],
+      "stage-timings.json": [
+        {
+          "frame": 0,
+          "ptm_seconds": 1.6050870369654149,
+          "neighbors_seconds": 0.12775503704324365,
+          "bond_order_seconds": 0.5011154860258102,
+          "components_seconds": 0.016400975873693824,
+          "ptm_counts": [
+            70153,
+            37,
+            114,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "frame": 1500,
+          "ptm_seconds": 1.5666029180865735,
+          "neighbors_seconds": 0.1275904499925673,
+          "bond_order_seconds": 0.5007379911839962,
+          "components_seconds": 0.01651322399266064,
+          "ptm_counts": [
+            69704,
+            311,
+            289,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "frame": 3000,
+          "ptm_seconds": 1.5522217969410121,
+          "neighbors_seconds": 0.1153127180878073,
+          "bond_order_seconds": 0.846535543911159,
+          "components_seconds": 0.10190424299798906,
+          "ptm_counts": [
+            31427,
+            34730,
+            4146,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "threads-8.json": [
+        {
+          "frame": 0,
+          "threads": 8,
+          "ptm_seconds": 0.9599396139383316,
+          "bond_seconds": 0.7683788680005819,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 1500,
+          "threads": 8,
+          "ptm_seconds": 0.3739642349537462,
+          "bond_seconds": 0.6453145937994123,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 3000,
+          "threads": 8,
+          "ptm_seconds": 0.34604257880710065,
+          "bond_seconds": 1.0846582050435245,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        }
+      ],
+      "threads-4.json": [
+        {
+          "frame": 0,
+          "threads": 4,
+          "ptm_seconds": 1.045418863883242,
+          "bond_seconds": 1.1353977019898593,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 1500,
+          "threads": 4,
+          "ptm_seconds": 0.641381133813411,
+          "bond_seconds": 0.7687757208477706,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        },
+        {
+          "frame": 3000,
+          "threads": 4,
+          "ptm_seconds": 0.5771685941144824,
+          "bond_seconds": 1.081368668936193,
+          "exact": {
+            "ptm": true,
+            "correlation": true,
+            "pair": true
+          }
+        }
+      ],
+      "full-descriptor-comparison.json": [
+        {
+          "frame": 0,
+          "reference_seconds": 4.115372979082167,
+          "optimized_seconds": 2.6550457989796996,
+          "exact": {
+            "clusters": true,
+            "solid_counts": true,
+            "bond_histogram": true
+          },
+          "local_reference_seconds": 0.14464536891318858,
+          "local_optimized_seconds": 0.03431003098376095,
+          "local_patches": 5,
+          "local_repeats": 20
+        },
+        {
+          "frame": 1500,
+          "reference_seconds": 3.275119851808995,
+          "optimized_seconds": 2.486035168170929,
+          "exact": {
+            "clusters": true,
+            "solid_counts": true,
+            "bond_histogram": true
+          },
+          "local_reference_seconds": 0.14276034710928798,
+          "local_optimized_seconds": 0.03493095003068447,
+          "local_patches": 5,
+          "local_repeats": 20
+        },
+        {
+          "frame": 3000,
+          "reference_seconds": 3.7370588090270758,
+          "optimized_seconds": 2.608283483888954,
+          "exact": {
+            "clusters": true,
+            "solid_counts": true,
+            "bond_histogram": true
+          },
+          "local_reference_seconds": 0.14489524415694177,
+          "local_optimized_seconds": 0.03683017403818667,
+          "local_patches": 5,
+          "local_repeats": 20
+        }
+      ],
+      "optimized-4-thread-descriptors.json": [
+        {
+          "frame": 0,
+          "threads": 4,
+          "seconds": 2.163716756971553,
+          "exact": {
+            "clusters": true,
+            "ptm": true,
+            "hist": true
+          }
+        },
+        {
+          "frame": 1500,
+          "threads": 4,
+          "seconds": 1.5494218377862126,
+          "exact": {
+            "clusters": true,
+            "ptm": true,
+            "hist": true
+          }
+        },
+        {
+          "frame": 3000,
+          "threads": 4,
+          "seconds": 1.4653672568965703,
+          "exact": {
+            "clusters": true,
+            "ptm": true,
+            "hist": true
+          }
+        }
+      ],
+      "cold-tail-four-threads.json": {
+        "event": "birth-bbb975c7c927ba9697e0",
+        "seconds": 49.71784713305533,
+        "threads": 4,
+        "ptm_cache": "empty at start",
+        "exact": {
+          "graph.json": true,
+          "birth.json": true,
+          "family-history.json": true,
+          "movie.npz": true,
+          "movie-frames.json": true,
+          "summary.json": true
+        }
+      },
+      "million-descriptor-comparison.json": {
+        "source": "external-al-million-continuous",
+        "frame": 6000,
+        "atoms": 1000000,
+        "reference_seconds": 59.6754102029372,
+        "optimized_seconds": 39.992457557003945,
+        "exact": {
+          "clusters": true,
+          "solid_counts": true,
+          "bond_histogram": true
+        },
+        "counts": [
+          827608,
+          966450,
+          947161,
+          919816
+        ]
+      },
+      "helper-replacement.json": {
+        "owner": "This chat: descriptor speedup requested 2026-10-07",
+        "submitted_unix": 1791400125.251595,
+        "jobs": {
+          "assist": "1027684"
+        },
+        "plan_identity": "69159abf497614f7d51c00b77216d42bdcd39f64124f95ddc9cb5a24c45b8e51",
+        "replaces": {
+          "job": "1027677",
+          "receipt": "/store/PERSO/vmorozov/experiments/nucleus_histories/birth-tails-010-20261007-v1/technical/optimized-20261007/queue.json",
+          "reason": "Verified descriptor implementation and four allocated cores per helper"
+        },
+        "resource_profile": {
+          "workers": 2,
+          "cpus_per_worker": 4,
+          "ovito_threads": 4,
+          "blas_threads": 1,
+          "memory_per_worker": "16G",
+          "time_limit": "08:00:00"
+        },
+        "config": "/store/PERSO/vmorozov/experiments/nucleus_histories/birth-tails-010-20261007-v1/technical/descriptors-20261007/code/config.json",
+        "validation": "/home/infres/vmorozov/PointCloudMaterials/output/nucleus_detection/descriptors-performance-20261007/technical/audit.json",
+        "implementation": {
+          "docs/metrics/nucleus_histories.md": "815626558f6c59a240661b2fa504fd74fd27eca39e3330eb0c1fed88352735dc",
+          "src/research/crystallization_origin/birth_histories.py": "0614cdc24d7fd95a9a1fbf1b4275ad9fdad0df04b0b46967b520fe990e84d3d3",
+          "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+          "src/research/crystallization_origin/external_data.py": "b7d5f550a5d13906d5db1186173c4d7ff22df5b61c2fe27ea790f68a86b22d97",
+          "src/research/crystallization_origin/search_clusters.py": "ff4294ade089f19175d82559c05058ee601d6259e2722d4c364a17691a568c01",
+          "src/research/liquid_predictability/descriptors.py": "15d55916a23fc63cce7d671510fa5f61404f28c0d30b7a1ccc16e30ac0c3985a",
+          "src/data/nuclei_birth.py": "d408fa05ab8136d35725bf93ff792ee44f71300d4468790e9ec4a1d0cc9e6b51",
+          "src/data/nuclei_birth_cadence.py": "76c0c2ef3a51b9051798078a5b5f8f37dfd94793d5580bc379c2acf93725e4fb"
+        },
+        "previous_helper_cancel_requested_unix": 1791400125.290959
+      }
+    }
+  }
+}

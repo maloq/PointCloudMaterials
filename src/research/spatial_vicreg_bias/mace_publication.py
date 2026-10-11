@@ -19,7 +19,7 @@ from .cluster_matching import summarize
 from .embedding_travel import payload
 from .mace_checkpoint import read
 from .sample_lattice import fit_batch
-from .comparison_layout import comparison_template, population_controls, publish_run_entrypoint
+from .comparison_layout import comparison_template, population_controls, publish_run_entrypoint, model_navigation
 from .viewer_payload import read_payload, read_asset, write_comparison, write_asset, write_vector_asset
 
 FAMILIES = {'joint': 'Joint descriptor clusters', 'tda': 'TDA clusters',
@@ -94,7 +94,7 @@ def template(c, kind):
     reference = Path(c['datasets'][kind]['reference'])
     dest = Path(c['datasets'][kind]['publication'])
     link = os.path.relpath(reference/'index.html', dest/'interactive')
-    nav = f'<nav><label>Data <select onchange="location.href=this.value">{options}</select> <a href="{link}">GeoFormer comparison</a></label></nav>'
+    nav = f'<nav class="controls"><label>Data <select onchange="location.href=this.value">{options}</select></label>'+model_navigation(kind,'mace',dest/'interactive')+'</nav>'
     note = '<p class="status">'+html.escape(c['model']['title'])+' · 256-D embedding</p>'
     methods = '<details><summary>Methods and checkpoint</summary><p>'+html.escape(c['model']['title'])+'. '
     methods += 'The frozen scalar encoder state is clustered into seven groups using the original 74,880 training-source observations. '

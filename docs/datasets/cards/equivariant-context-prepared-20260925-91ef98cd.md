@@ -6,7 +6,7 @@ Frozen shared-MACE scalar/tensor feature cache at 25 patches for 31,609 prospect
 
 - ID: `equivariant-context-prepared-20260925`
 - Materials: Al
-- Classification: **derived**; role: training_cache
+- Classification: **retired**; role: provenance_only
 - Location: `/home/ids/vmorozov/training-cache/equivariant-context/node59-b512-v2-20260925`
 - Present on this machine: False
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
@@ -23,8 +23,8 @@ Frozen shared-MACE scalar/tensor feature cache at 25 patches for 31,609 prospect
   "materials": [
     "Al"
   ],
-  "role": "training_cache",
-  "classification": "derived",
+  "role": "provenance_only",
+  "classification": "retired",
   "potential_ids": [
     "al-lee2003-meam"
   ],
@@ -39,7 +39,10 @@ Frozen shared-MACE scalar/tensor feature cache at 25 patches for 31,609 prospect
     "Historical test sources reused.",
     "Box-fixed query stencil and hard nearest-80 membership are not globally rotation-invariant under resampling.",
     "Inherited float16 absolute-coordinate quantization; no new simulation or quench."
-  ]
+  ],
+  "retirement_record": "docs/storage/cache_cleanup_20261002/receipt.json",
+  "storage_status": "Cache arrays deleted at user request on 2026-10-02. Historical scientific description and provenance retained; rebuild before reuse.",
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -54,6 +57,6 @@ All 0 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

@@ -1,0 +1,24 @@
+{
+  "workspace": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891/trajectory.lammpstrj",
+  "archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+  "byte_identical": true,
+  "unchanged": true,
+  "signatures": [
+    [
+      58,
+      5843832133,
+      22352231302,
+      1791113934082709000
+    ],
+    [
+      58,
+      5854541329,
+      22352231302,
+      1791113934082709000
+    ]
+  ],
+  "comparison_seconds": 170.33040727605112,
+  "allocated_workspace_bytes": 29879066624,
+  "stdout": "",
+  "stderr": ""
+}

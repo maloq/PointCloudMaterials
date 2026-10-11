@@ -1,0 +1,10 @@
+{
+  "checked_utc": "2026-10-03T10:40:00.036977+00:00",
+  "production_trajectories": 30,
+  "parent_configurations": 6,
+  "aggregate_duration_ps": 720,
+  "total_allocated_bytes": 581207816192,
+  "work_allocated_bytes": 87282440192,
+  "store_allocated_bytes": 493925376000,
+  "scope": "Production campaign directories including restarts/logs and retained preflight in baseline; archived input snapshots excluded. SCRATCH publication symlinks counted only at STORE target. Actual NPY headers and timelines checked."
+}

@@ -43,6 +43,8 @@ def main(argv=None):
     p = sub.add_parser('datasets')
     p.add_argument('--refresh', action='store_true', help='Build the evidence-backed dataset browser, cards, JSON and CSV.')
     p.add_argument('--output', type=Path, default=Path('docs/datasets'))
+    from src.data.relaxation_inventory import add_arguments
+    add_arguments(sub.add_parser('relaxations', help='Shared relaxed-cell and neighborhood index.'))
     p = sub.add_parser('simulations'); p.add_argument('--output', required=True, type=Path)
     p.add_argument('--details', action='store_true', help='Measure trajectory schemas, timelines and owned disk sizes.')
     p = sub.add_parser('resolve'); p.add_argument('config', type=Path)
@@ -67,6 +69,9 @@ def main(argv=None):
             result = {key: dict(entry, location=str(Path(settings['roots'][entry['root']])/entry['path']),
                       available=(Path(settings['roots'][entry['root']])/entry['path']).exists())
                       for key, entry in catalog().items()}
+    elif args.command == 'relaxations':
+        from src.data.relaxation_inventory import dispatch
+        result = dispatch(args)
     elif args.command == 'resolve':
         result = load_json(args.config)
     elif args.command == 'simulations':

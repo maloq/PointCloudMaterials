@@ -1,0 +1,7 @@
+{
+  "table": "tables/dynamics-and-derivatives.csv",
+  "sha256": "9b08995159601ddb4fe81563375574fa9ee87f92c000d1d82034a98e27ce1e17",
+  "family": "ni_eam_gpu",
+  "contract": "technical/metric-contracts/ni_eam_gpu.json",
+  "definitions": "tables/metric-definitions/ni_eam_gpu.md"
+}

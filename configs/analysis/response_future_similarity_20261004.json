@@ -1,0 +1,8 @@
+{
+  "campaign": "${storage:training_storage}/response_velocity/cuda-meam-500fs-float32-20261004-v2",
+  "campaign_identity": "1bab5d3e0286ec262f343bade31884cc01a1e781f62f21197680ef92dfad9829",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "output": "${storage:training_storage}/response_velocity/cuda-meam-500fs-float32-20261004-v2/analyses/future-similarity-v1",
+  "lanes": 2,
+  "batch_size": 32
+}

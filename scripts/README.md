@@ -1,9 +1,292 @@
 # Maintained commands
 
+Use `python -m src.postprocessing --help` for the unified descriptor, search,
+dataset, history and visualization commands; [module guide](../docs/postprocessing.md).
+
+`python -m src.postprocessing al-gpu-search prepare|submit --config configs/analysis/al_nuclei_gpu_additions_20261008.json`
+queues verified completed Al inputs through GPU extraction, unchanged CPU lineage
+and dependent catalogue publication. The same interface owns `extract`, `track`,
+`collect` and `publish` worker stages. Consult its recorded launch before any
+resubmission; completed CPU searches are incorporated without recomputation.
+
+`python -m src.postprocessing ni-gpu-search prepare|submit --config configs/analysis/ni_lowT_gpu_search_20261008.json`
+switches the receipt-owned pending Ni CPU search to a GPU `resident`/`voronoi`
+extraction job followed by unchanged CPU lineage tracking. It pins the original
+campaign and reviewed GPU implementation, uses separate cache/result paths and
+preserves all source roles and native frames. `extract` and `track` are worker
+stages. [Launch and checks](../docs/simulations/ni_births_lowT_010_20261008.md#gpu-nucleus-search-october-8).
+
+The same command with `configs/analysis/ni_lowT_gpu_search_400ps_20261008.json`
+replaces the receipt-owned pending GPU search with the user's 400-ps hold revision.
+It preserves original raw histories, caps every source view at 420 ps including
+cooling and exports explicit zero-birth outcomes. Original plans remain frozen.
+That analysis cap was subsequently withdrawn: use
+`configs/analysis/ni_lowT_gpu_search_full_20261008.json` for all saved native
+frames, including verified longer histories and retained post-stop chunks.
+The simulation hold limit remains 400 ps; analysis has no time cap.
+`configs/analysis/ni_lowT_gpu_search_handoff_20261008.json` retains that same
+scientific analysis and prepared plans after moving the last Ni work off the
+session's RTX6000 allocation. Its pinned handoff receipt replaces only producer
+dependencies; the original allocation remains available to the user.
+
+`src.simulation.campaigns.ni_births.handoff resume|fresh|gate --config CONFIG`
+is the worker interface for the native-checkpoint handoff. Its receipt-bound
+entry runs against the original frozen Ni producer, preserves the verified
+prefix and matching NPT restart state, and enforces the 400-ps hold directly.
+The current handoff is already submitted; see the campaign's launch receipts.
+
+`python -m src.simulation.campaigns.ni_births.hard_stop prepare|submit --config configs/simulation/ni_births_lowT_hard_stop_400ps_20261008.json`
+launches the receipt-owned live cap controller (`run` is its worker stage).
+It verifies and publishes exact saved prefixes plus native cap checkpoints before
+ending matching source children. Queue supervisors continue; actual native
+overshoot and nonzero worker exits remain in the stopping audit. It has already
+been submitted for this campaign; do not duplicate it.
+
+`python -m src.postprocessing cache repack --plan EXTRACTION_PLAN --output NEW_PREPARATION --cache NEW_CACHE`
+copies completed structural labels into selective detector arrays, with checksum
+and plan checks and resumable chunks. It leaves original caches intact and does
+not rerun PTM; use an external cache directory. See the module guide for wiring
+the copied preparation into a new search.
+
+`python -m src.postprocessing ni-search analyse --config FROZEN_CONFIG --plan-sha256 SHA256`
+resumes an explicitly pinned Ni search with an audited equivalent implementation,
+reusing completed chunks and recording actual execution hashes. See the module
+guide for the frozen-plan and population checks.
+
+Ni analysis uses bounded chunk scheduling; set `--workers` to the allocated
+one-thread CPU workers. For a new campaign still producing trajectories, add
+`--wait-for-jobs JOB1 JOB2` to admit completed, verified sources immediately
+and wait for the remaining producers. Al history workers now checkpoint event
+frames and share source-frame precursor preparation in the external cache.
+
+For an existing birth-tail plan, `python -m
+src.postprocessing histories assist --config <config>`
+cooperatively processes unfinished, unlocked events. It preserves completed
+packets and records the executing implementation. This does not submit or stop
+other jobs. See [nuclei search performance](../docs/nuclei_search_performance.md).
+New full-cell extraction retains atom-level PTM for reuse by tails. Search
+configurations may set `descriptor_threads` (default 1); extraction launchers
+allocate that many cores per frame worker, without increasing tracking cores.
+
+`python -m src.simulation.campaigns.dense_al_birth_queue prepare|submit|repair|worker|collect`
+executes the reserved V100 handoff for continuous Al birth-focused collection;
+[protocol and receipts](../docs/simulations/al_dense_shooting_v100_20261007.md#birth-focused-handoff-october-7-evening).
+`repair --launch LAUNCH` recovers the recorded missing-module startup failure in
+a separate launch revision, after all original jobs have ended and before any
+transferred trajectory has started. It retains source assignments and absolute
+deadlines, checks frozen imports before GPU submission, and preserves the failed
+launch and its code. Do not resubmit an already repaired queue.
+`python scripts/convert_trajectory.py dense-al-birth DIRECTORY --delete-source`
+verifies its variable-duration Q/V against the continuous timeline and stopping certificate.
+
+`python -m src.simulation.campaigns.al_million_replay prepare|submit|worker`
+recovers million-atom Al production Q/V at 0.10 ps through native checkpoint
+replay with historical agreement gates;
+[workflow](../docs/simulations/al_million_velocity_replay_20261007.md).
+
+`python -m src.simulation.campaigns.ni_births.workflow prepare|submit-audit|submit|status --config configs/simulation/ni_births_010_20261007.json`
+collects independent Ni NPT melts/cooling/holds with exact0.10ps Q/V and a dependent
+full-cell nucleus-birth search; [workflow](../docs/simulations/ni_births_010_20261007.md).
+The `ni_births_010_20261007_extension01.json` recipe uses the same commands for
+three disjoint GPU lanes and adds an automatic `combine` stage that publishes
+both verified birth catalogues without rerunning their analyses.
+The `ni_births_lowT_010_20261008.json` recipe uses the same commands for a separate
+36-source temperature screen at 950–1150 K on four GPU workers;
+[protocol and launch](../docs/simulations/ni_births_lowT_010_20261008.md).
+Passed numerical audits are reused through
+`configs/simulation/ni_births_validation.json`: `submit-audit` returns the
+existing receipt without submitting a job when compatible, and `submit` records
+that reference. New seeds or campaign names do not require another audit.
+
+`python -m src.simulation.campaigns.ni_births.allocation attach --config CONFIG --lane LANE --allocation JOB`
+uses an explicitly authorized, idle GPU in the current allocation for queued Ni
+sources. For a running lane, explicit `--worker-pid`, `--source-pid` and
+`--source-index` identify its owned supervisor and current MD child: only the
+supervisor pauses, the current MD finishes uninterrupted, and future sources
+move to the attached GPU. The detached controller reuses its GPU type's reviewed
+numerical validation and preserves
+analysis dependencies on both executions. See the campaign's allocation receipt.
+
+`python -m src.simulation.campaigns.ni_births.scale submit --config CONFIG --workers N --output NEW_LAUNCH_REVISION`
+redistributes unstarted sources from receipt-owned running Ni lanes into new GPU
+reservations. Existing native MD children continue while only their queue
+supervisors pause; a detached controller verifies completion before releasing
+those old allocations. The original frozen producer/configuration is reused,
+source assignments remain disjoint, and the original analysis dependency is
+extended to include all new workers and the drain controller. New reservations
+use the recipe's combined compatible partitions and respect the user's GPU quota.
+
+`python -m src.simulation.campaigns.ni_births.reconcile --config configs/simulation/ni_births_010_20261007.json`
+verifies completed Ni Q/V and restores completion records after the original NFS
+cleanup error. `python -m src.postprocessing ni-preview --config configs/simulation/ni_births_010_20261007.json --output OUTPUT`
+exports a versioned progress plot and a descriptive, retrospective local-order
+comparison; [definitions](../docs/metrics/ni_births_preview.md).
+
+`python scripts/convert_trajectory.py native-qv INPUT.npz OUTPUT --delete-source`
+verifies native float64 Q/V chunks, writes standard float16 observations with exact
+identities/timelines and quantization receipts, and retains separate native restarts.
+
+`python -m src.simulation.eam_gpu.benchmark --config configs/simulation/ni_eam_gpu_20261007.json` validates the pure-Ni CUDA EAM forces, analytic response derivatives and MD throughput against LAMMPS; [workflow](../docs/simulations/ni_eam_gpu_20261007.md).
+
+`python -m src.simulation.campaigns.dense_al_shooting prepare|submit`
+prepares additional dense-Al velocity reshoots and submits a gated V100 queue;
+[recipe and commands](../docs/simulations/al_dense_shooting_v100_20261007.md).
+
+`python -m src.postprocessing dataset refresh|status|verify` maintains the cumulative
+Al nuclei-birth dataset with exact 0.10 ps views and native-only 0.30 ps data,
+stable IDs, audited raw-cadence selection and incremental
+updates from completed searches; [dataset guide](../docs/datasets/nuclei_birth.md).
+
+`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 python -m src.research.continuous_motion.small_gpu launch --config configs/continuous_motion/small_gpu_20261006.json`
+requests A40, A100 and L40S separately for the same1600-update fits, with128x2
+accumulation and full256-sample noncollapse statistics; [workflow](../docs/continuous_motion.md#separate-smaller-gpu-requests).
+
+`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 python -m src.research.continuous_motion.workflow prepare|launch|status --config configs/continuous_motion/all010_1600_20261006.json`
+runs the1600-update fixed-step/continuous/derivative comparison with real Q,V,
+long saved futures and short full-cell MEAM teachers; [workflow](../docs/continuous_motion.md).
+
+`TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 python -m src.research.response_dense_birth.pooled launch --config configs/analysis/response_all010_pooled_20261006.json` pools validation/calibration/test by user request, refits frozen readouts with training-only NLL selection, and audits neighborhood rejections. [Workflow](../docs/response_dense_birth.md#pooled-test-and-neighborhood-audit).
+
+`python -m src.research.response_dense_birth.workflow launch --config configs/analysis/response_all010_birth_20261006.json` evaluates the twelve new response encoders on all available exact 0.10 ps v3 birth views with saved velocities, including partial archives and finer histories. It waits for newest labels without changing their jobs. The earlier `response_dense_birth_20261006.json` launch is preserved as superseded. [Workflow](../docs/response_dense_birth.md).
+
+`python -m src.research.response_velocity.queue prepare|prepare-clustering|launch --config configs/simulation/response_native500_20261006.json` runs the native-velocity, source-temperature 0.5 ps response comparison; [workflow](../docs/simulations/response_native500_20261006.md).
+
+`python -m src.postprocessing inventory --config configs/analysis/al_nuclei_dense_additions_extract_20261006.json`
+verifies new production MD against executed MEAM commands, potential hashes and
+prepared-liquid provenance, then freezes a fresh inventory and extraction plan.
+Use `lineage_search prepare|submit --config configs/analysis/al_nuclei_dense_additions_20261006.json`
+to run the unchanged birth protocol; [workflow](../docs/al_nuclei_lineage.md#october-6-verified-meam-production-addition).
+
+`python -m src.research.nucleus_controls.ablation prepare|launch|summarize --config configs/simulation/nucleus_dynamics_ablation_20261006.json` runs the bounded box/thermostat comparison; [workflow](../docs/simulations/nucleus_dynamics_ablation_20261006.md).
+
+`python -m src.postprocessing descriptors prepare --config configs/analysis/al_nuclei_dense_additions_extract_20261005.json`
+freezes newly available native 0.10 ps observations, excluding the earlier population.
+Then use `lineage_search prepare|submit --config configs/analysis/al_nuclei_dense_additions_20261005.json`
+for detached extraction and revised 0.10/0.30 ps lineage searches;
+[workflow](../docs/al_nuclei_lineage.md#new-dense-observations).
+
+`python -m src.postprocessing search prepare|submit --config configs/analysis/al_nuclei_lineage_20261005.json`
+restarts all frozen Al cadence views from existing structural classifications,
+with separate birth and interaction fates; [workflow](../docs/al_nuclei_lineage.md).
+
+`python -m src.research.response_birth launch --config configs/analysis/response_birth_20261004.json` runs frozen Q/QV response encoders on the original crystal-free nucleus-birth cohort with actual MD velocities and two GPU lanes; [workflow](../docs/response_birth.md).
+
+`python -m src.research.response_future_similarity prepare|analyze|tracking --config configs/analysis/response_future_similarity_20261004.json` evaluates frozen response embeddings against independent future-shot banks. The `extract` stage imports the frozen campaign code; see [workflow](../docs/simulations/response_velocity_20261004.md#future-outcome-similarity).
+
+`python -m src.simulation.campaigns.dense_al_gpu_transfer submit --config configs/simulation/al_dense_gpu_transfer_20261004.json` submits the captured unstarted-source hardware handoff; immutable preparation and previous launch receipts are required. [A100/L40S/A40 transfer](../docs/simulations/al_dense_gpu_20261004.md#october-4-hardware-transfer).
+
+`python -m src.simulation.campaigns.dense_al_gpu prepare --config configs/simulation/al_dense_gpu_20261004.json` prepares a bounded dense-source transfer; `submit --launch LAUNCH` submits it as documented in the [GPU dense workflow](../docs/simulations/al_dense_gpu_20261004.md). Two GPU lanes retain the native NPT integrator, dense converter and stopping monitor.
+
+`python -m src.research.meam_gpu.workflow launch --config configs/simulation/meam_gpu_blackwell_20261004.json --allocation ALLOCATION` freezes and detaches the CUDA force/response/MD campaign; `python -m src.research.meam_gpu.report --config configs/simulation/meam_gpu_blackwell_20261004.json` publishes current progress. [Workflow](../docs/simulations/meam_gpu_blackwell_20261004.md).
+
+`python -m src.research.meam_md.prepare --config configs/simulation/meam_md_16k_20261004.json` prepares the shared periodic liquid; `python -m src.research.meam_md.workflow launch --config configs/simulation/meam_md_16k_20261004.json` runs gated CPU/GPU200ps trajectories; [workflow](../docs/simulations/meam_md_16k_20261004.md).
+
+`python -m src.research.response_velocity.queue launch --config configs/simulation/response_velocity_20261004.json`
+launches the fixed-initial-velocity MEAM comparison at0.1/0.5/1ps; [workflow](../docs/simulations/response_velocity_20261004.md).
+The original large campaign is stopped. The new `configs/simulation/response_velocity_cuda500_float32_20261004.json`
+recipe uses compiled CUDA MEAM,100/500fs and the full cohort, with longer runtime
+reauthorized. `configs/simulation/response_velocity_three_hour_20261004.json`
+retains the separate small pilot and its shared three-hour deadline.
+
+`python -m src.research.response_meam.benchmark all --config configs/simulation/response_meam_torch_20261004.json` validates the differentiable Lee2003 Al PyTorch potential and compares complete local responses against MACE on one GPU; [workflow](../docs/simulations/response_meam_torch_20261004.md). `python -m src.research.response_meam.report --config configs/simulation/response_meam_torch_20261004.json` publishes saved timings.
+
+
+`python -m src.postprocessing descriptors prepare|submit|progress --config configs/analysis/al_nuclei_search_20261003.json`
+searches all compatible Al trajectories on separate exact0.75/0.1/0.3ps grids,
+including paired0.1-to0.3 decimation; [protocol and execution](../docs/al_nuclei_search.md).
+
+`python src/research/response_geometry_helper.py --bundle FROZEN_CODE --first-parent 0 --stop-parent 765`
+adds an existing one-GPU allocation to the running unrelaxed response collection; [shared-query helper](../docs/simulations/response_geometry_20261003.md#additional-existing-gpu).
+
+
+`python scripts/project.py relaxations scan|status|plan`
+indexes existing relaxed cells and precise neighborhoods; `plan --requests REQUESTS.json --output MISSING.json`
+separates reuse, native-checkpoint extraction and missing minimizations.
+[Shared API and precision contract](../docs/data_storage.md#unified-relaxation-index).
+
+`python -m src.research.response_geometry.clusters launch --config configs/analysis/response_geometry_clusters_20261003.json` and
+`python -m src.research.response_geometry.queue prepare|submit --config configs/simulation/response_geometry_20261003.json`
+compare unrelaxed response clustering spaces and queue expanded future-response training; [workflow](../docs/simulations/response_geometry_20261003.md).
+
+
+`python -m src.data.al_pool refresh|status|select --config configs/al_research_pool.json`
+maintains the shared Al inventory and joined appearance/fate observations,
+with explicit cohort, input-domain and physical-cadence selection.
+[Workflow](../docs/al_research_pool.md).
+
+`python -m src.research.spatial_vicreg_bias.response_comparison restore|publish --config configs/analysis/response_cluster_comparison_20261003.json`
+restores archived paired PaCMAP/MD viewers or publishes the selected local80
+response encoder beside the retained descriptor and RH2 results. Frozen GPU
+inference uses `python src/research/spatial_vicreg_bias/response_infer.py RESOLVED_CONFIG`.
+[Workflow](../docs/spatial_vicreg_bias.md#october-3-response-encoder-addition).
+
+`python -m src.research.birth_prediction.dense submit --config configs/birth_prediction/dense010_20261003.json`
+searches completed native0.1ps Al descendants, then compares six-frame
+preappearance descriptors against matched snapshot controls; [workflow](../docs/birth_dense010.md).
+
+`python -m src.simulation.campaigns.dense_al_half_recovery prepare --config configs/simulation/al_main_half_recovery_20261003.json`
+prepares native restart recovery of the stopped Al rerun queue with verified
+binary observation prefixes; submit through the existing `dense_al submit`.
+[Recovery contract](../docs/simulations/al_main_half_stop_20261001/README.md#october-3-quota-recovery).
+
+`python -m src.postprocessing crop-windows --config configs/analysis/ta_appearance_crops_12ps_20261003.json`
+saves separate±12ps Ta appearance-candidate windows from the verified20Å
+movies; [workflow](../docs/ta_nucleus_crops.md).
+
+`python -m src.postprocessing crops submit --config configs/analysis/ta_nucleus_crops_20261003.json`
+exports separate native-cadence20Å Ta event movies with explicit window
+truncation; [workflow](../docs/ta_nucleus_crops.md).
+
+`python -m src.research.local_response_followup.queue prepare|launch --config configs/simulation/local_response_followup_20261003.json`
+launches fifteen fixed-update response-weight fits and a separate GPU finite-displacement
+forward campaign; [workflow](../docs/simulations/local_response_followup_20261003.md).
+
+`python -m src.postprocessing.protocols.ta_content --config configs/analysis/ta_births_20261002.json`
+summarizes saved Ta crystal fractions and conservative birth exclusions without
+relabeling events; [definitions](../docs/metrics/ta_crystal_content.md).
+
+`python -m src.research.birth_prediction.shooting_appearance submit --config configs/birth_prediction/shooting_appearance_20261003.json`
+extends Al appearance prediction to shooting events and compares dissolution
+with documented growth; [workflow](../docs/al_shooting_prediction.md).
+
+`python -m src.research.local_response_audit --config configs/analysis/local_response_audit_20261003.json`
+audits physical perturbation sizes, target/noise scales and competing gradients
+at frozen local80 checkpoints; [definitions](../docs/metrics/local_response_audit.md).
+
+`python -m src.research.birth_prediction.appearance_resume submit --config configs/birth_prediction/appearance_resume_20261003.json`
+resumes unfinished full-cell quenches with an explicit execution-time extension;
+[recovery and dependent CV](../docs/birth_appearance.md#nested-cross-validation).
+
+`python -m src.research.response_force_engines.benchmark prepare|launch|summarize --config configs/simulation/response_force_engines_20261002.json`
+compares persistent UNEP/MEAM force-only local responses with frozen MACE references;
+[workflow](../docs/simulations/response_force_engines_20261002.md).
+Use `python -m src.research.response_force_engines.parallel --config CONFIG --engine meam|unep --workers 3`
+for persistent parallel replicas and `python -m src.research.response_force_engines.publish --config CONFIG`
+for the saved-result figure and numerical-gate review (`--watch` waits for both workers).
+
+`python -m src.research.birth_prediction.appearance_cv prepare|submit --config configs/birth_prediction/appearance_cv_20261002.json`
+adds nested ancestry-grouped CV to the established/failed appearance comparison;
+[workflow](../docs/birth_appearance.md#nested-cross-validation).
+
+`python -m src.postprocessing.protocols.ta prepare|submit --config configs/analysis/ta_births_20261002.json`
+searches full-cell Ta births and dissolved embryos; [workflow](../docs/ta_births.md).
+
+`python scripts/convert_trajectory.py offline-dump SOURCE --delete-source`
+archives an orthogonal position/velocity text dump with its actual timeline,
+verified float16 observations by default, exact identities, float32 boxes and
+quantization/checksum receipts. Use `--storage-dtype float32` for explicitly
+requested float32 archives; existing float16 archives are not upcast.
+Incomplete terminal-frame bytes are preserved separately. Native restarts and
+scientific run states are unchanged. Execution inventory:
+`docs/storage/al_float16_20261002/plan.json`.
+
+`python -m src.postprocessing.protocols.shooting prepare|submit --config configs/analysis/shooting_births_20261002.json`
+extends the full-cell birth/fate search to Al shooting futures; [workflow](../docs/shooting_births.md).
+
 `python -m src.research.birth_prediction.appearance submit --config configs/birth_prediction/appearance_transfer_20261002.json`
 compares original-birth and combined appearance predictors on failed embryos; [workflow](../docs/birth_appearance.md).
 
-`python -m src.research.crystallization_origin.fates prepare|submit --config configs/analysis/nucleus_fates_20261002.json`
+`python -m src.postprocessing.protocols.fates prepare|submit --config configs/analysis/nucleus_fates_20261002.json`
 searches failed crystal embryos and appends fate labels to existing births; [workflow](../docs/nucleus_fates.md).
 
 `python -m src.research.birth_prediction.merged prepare|submit --config configs/birth_prediction/merged_retest_20261002.json`
@@ -302,18 +585,18 @@ while retaining its observation date. See the
 `python -m src.research.encoder_quality.queue submit|worker|report --config configs/analysis/encoder_quality_latest_20260926.json`
 evaluates eight frozen native MACE checkpoints; [checks, Slurm execution and results](../docs/encoder_quality.md).
 
-`python -m src.research.crystallization_origin.harvest --config configs/analysis/nucleus_harvest_20260926.json`
+`python -m src.postprocessing.protocols.harvest --config configs/analysis/nucleus_harvest_20260926.json`
 audits training-source birth coverage, causal eligibility, competing contacts
 and bond order; [CPU operations](../docs/nucleus_harvest.md).
 
 `python -m src.research.spatial_approach.queue prepare|worker|collect --config configs/analysis/spatial_approach_20260926.json`
 runs fixed-snapshot spatial warning-distance probes; [workflow](../docs/spatial_approach.md).
 
-`python -m src.research.crystallization_origin.cpu|external_data|external_audit`
+`python -m src.postprocessing.protocols.cpu|external_data|external_audit`
 resumes the fixed audit on CPUs and processes large Al/Mg/Ti/Ta histories in
 parallel chunks; [CPU commands and deadlines](../docs/crystallization_origin_cpu.md).
 
-`python -m src.research.crystallization_origin.extract|audit --config configs/analysis/crystallization_origin_20260925.json`
+`python -m src.postprocessing.protocols.extract|audit --config configs/analysis/crystallization_origin_20260925.json`
 audits full-cell crystal ancestry and label availability without fitting;
 [commands and definitions](../docs/encoder_research/crystallization_origins.md).
 
@@ -950,3 +1233,18 @@ The standalone GeoFrame fit and saved-result analysis modules remain;
 [historical campaign reproduction](../docs/architecture_retirement.md).
 
 `python -m src.research.mace_epi.queue submit --config configs/mace_epi/campaign.json` runs the paired MACE VICReg/Epi comparison; see [operations](../docs/mace_epi.md) and [scientific protocol](../experiments/mace_paired_epi_20260923/README.md).
+
+`python -m src.research.nucleus_recovery prepare|launch|summarize --config configs/simulation/nucleus_recovery_20261004.json`
+runs known-nucleus saved-state recovery and paired Q/V rounding controls; [workflow](../docs/simulations/nucleus_recovery_20261004.md).
+
+`python -m src.research.nucleus_controls.queue prepare|submit|assist|summarize --config configs/simulation/nucleus_controls_20261005.json`
+compares dissolved embryos, size/temperature matched establishing seeds and present-only random liquid under a shared 16-hour cap; [workflow](../docs/simulations/nucleus_controls_20261005.md).
+
+`python -m src.research.nucleus_controls.negative prepare|launch|summarize --config configs/simulation/nucleus_negative_extra_20261005.json`
+adds 64 liquid ancestors and fresh shots for the 12 failed embryos under a separate three-hour cap; [workflow](../docs/simulations/nucleus_negative_extra_20261005.md).
+
+`python -m src.research.nucleus_controls.bias --config configs/analysis/nucleus_continuation_bias_20261005.json`
+audits paired structure and thermodynamics with common observation precision.
+`python -m src.research.nucleus_controls.calibration prepare|launch|summarize --config configs/simulation/nucleus_rate_calibration_20261005.json`
+runs the present-selected birth-rate check; [workflow](../docs/simulations/nucleus_continuation_bias_20261005.md).
+`assist --frozen-code FROZEN_CODE --gpus 4` adds leased workers within that same deadline; scheduler partitions and excluded nodes are explicit optional arguments.

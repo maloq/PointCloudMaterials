@@ -1,0 +1,1204 @@
+[
+  {
+    "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_same_job/boundary.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id proc x y z vx vy vz"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_no_sort/boundary.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id proc x y z vx vy vz"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/uninterrupted/boundary.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id proc x y z vx vy vz"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_existing/boundary.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id proc x y z vx vy vz"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/melt/liquid.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_308000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_532000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_384000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_248000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_156000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_472000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_296000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_188000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_420000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_104000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_560000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_656000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_548000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_372000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_16000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_484000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_716000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_408000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_232000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_260000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_44000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_320000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_604000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_688000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_596000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_236000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_128000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_712000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_480000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_12000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_376000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_652000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_592000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_600000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_324000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_40000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_264000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_68000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_476000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_152000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_380000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_628000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_536000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_564000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_100000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_424000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_292000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_456000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_172000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_48000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_608000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_516000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_684000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_544000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_488000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_96000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_120000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_404000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_32000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_184000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_216000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_108000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_356000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_672000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_620000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_304000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_388000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_244000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_60000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_676000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_568000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_352000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_428000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_212000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_36000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_180000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_64000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_240000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_300000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_624000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_680000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_328000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_512000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_268000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_176000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_452000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_400000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_92000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_124000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_0.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_540000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_468000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_252000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_76000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_528000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_636000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_312000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_340000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_664000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_192000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_24000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_200000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_724000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_136000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_228000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_80000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_412000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_368000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_552000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_500000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_692000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_440000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_164000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_556000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_648000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_416000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_708000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_132000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_84000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_4000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_160000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_444000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_588000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_696000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_504000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_316000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_632000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_72000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_148000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_256000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_720000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_204000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_196000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_288000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_20000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_660000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_344000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_336000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_612000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_580000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_168000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_276000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_52000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_492000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_700000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_224000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_640000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_364000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_576000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_668000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_28000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_280000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_436000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_112000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_140000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_464000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_524000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_392000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_116000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_208000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_432000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_284000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_348000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_572000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_396000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_520000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_460000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_144000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_56000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_8000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_448000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_272000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_584000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_508000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_616000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_332000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_360000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_644000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_88000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_220000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_704000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source/snapshot_496000.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ti_crystal/crystal.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000300/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000100/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000000/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000400/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000500/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/branches/parent_000000600/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_600.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_400.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_200.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_0.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_300.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_100.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/trajectory.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_500.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/melt/liquid.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow/melt/liquid.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ti/liquid.lammpstrj",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/a100-liquid-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-current-liquid-400K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-legacy-transition-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/h100-liquid-400K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/h100-transition-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-legacy-liquid-400K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-current-transition-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-legacy-liquid-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/h100-liquid-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/h100-post-onset-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-current-liquid-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-legacy-post-onset-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/hardware_benchmark/relaxation-cuda-20260921/cpu-current-post-onset-520K-r0/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id type fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/maintenance/analysis-refactor/technical/input-fingerprint-96x9_7fh/source.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": ""
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/maintenance/analysis-cleanup/technical/cache/actual.lammpstrj",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": ""
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/maintenance/analysis-cleanup/technical/temporal-overrides.dump",
+    "reason": "Al identity not established"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/relaxation_equivalence/cpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/relaxation_equivalence/gpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_backend/cpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_backend/gpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/relaxation_recovery_benchmark/force_equivalence/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  }
+]

@@ -1,5 +1,7 @@
 # Pre-appearance birth classification workflow
 
+**Response-trained Q/QV encoders:** [October 4 transfer assay](response_birth.md) retains the original birth cohort and actual simultaneous velocities, compares embeddings and future heads, and reuses saved structural controls.
+
 **Failed embryos as positive appearances:** [comparison workflow](birth_appearance.md) reuses original-pool predictors and fits combined-pool counterparts, with source-held-out strong/other/all candidate results.
 
 **Additional nucleus fate labels:** [audit workflow](nucleus_fates.md) searches smaller failed embryos and appends event/row fate labels, shared by original and relaxed inputs. Existing prediction runs and binary labels stay unchanged.

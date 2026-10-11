@@ -1,0 +1,37 @@
+{
+  "protocol": "al_nucleus_lineage_v3",
+  "parent_output": "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-extraction",
+  "output": "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-v3",
+  "minimum_shared_atoms": 4,
+  "continuation_fraction": 0.5,
+  "minor_parent_fraction": 0.2,
+  "embryo_atoms": 8,
+  "reset_atoms": 4,
+  "reset_ps": 1.5,
+  "persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "growth_atoms": 128,
+  "thresholds": [
+    8,
+    32,
+    64,
+    128
+  ],
+  "durations_ps": [
+    1.5,
+    3.0
+  ],
+  "prehistory_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "lanes": 4,
+  "workers_per_lane": 4,
+  "time_limit": "1-00:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "conditions": "Audit metadata only",
+    "relaxation": "Original MD full cells; no quenches or additional relaxed temporal outcomes",
+    "population": "October 6 newly completed native LAMMPS Lee2003 Al MEAM production; input and executed pair style, potential-file hashes, prepared-liquid hashes, completion and exact cadence verified. Earlier releases, selected-nucleus restarts and diagnostic/control simulations excluded."
+  },
+  "parent_stage": "extraction"
+}

@@ -1,0 +1,235 @@
+{
+  "protocol": "ni-autonomous-overnight-20261011-v1",
+  "seed": 20261013,
+  "parent": "/store/PERSO/vmorozov/experiments/ni_response/unrelaxed-esen-20261009-v1",
+  "parent_plan_sha256": "27ebcfc231695c89fb376629413562f4ddf3479fd8029900f4a78fd81c94aacd",
+  "output": "${storage:training_storage}/ni_latent_sim/autonomous-overnight-20261011-v1",
+  "cache": "${storage:cache}/ni-latent-sim/regimes3x-20261010-v2",
+  "simulation_archive": "${storage:archive}/simulations/ni-dense-path-response-20261011-v1",
+  "simulation_scratch": "${storage:simulation_runs}/ni-dense-path-response-20261011-v1",
+  "centers_per_anchor": 16,
+  "encoder_microbatch": 64,
+  "arms": [
+    {
+      "name": "transformer_1ps_path_values-d16-h4-s20261013",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "train_steps": 10,
+      "seed": 20261013,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_1ps_path_values",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_1ps_path_values-d16-h4-s20261014",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "train_steps": 10,
+      "seed": 20261014,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_1ps_path_values",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_1ps_path_response-d16-h4-s20261013",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "train_steps": 10,
+      "seed": 20261013,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_1ps_path_response",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_1ps_path_response-d16-h4-s20261014",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "train_steps": 10,
+      "seed": 20261014,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_1ps_path_response",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_6ps_path_values-d16-h4-s20261013",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "train_steps": 60,
+      "seed": 20261013,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_6ps_path_values",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_6ps_path_values-d16-h4-s20261014",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "train_steps": 60,
+      "seed": 20261014,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_6ps_path_values",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_6ps_path_response-d16-h4-s20261013",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "train_steps": 60,
+      "seed": 20261013,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_6ps_path_response",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    },
+    {
+      "name": "transformer_6ps_path_response-d16-h4-s20261014",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "train_steps": 60,
+      "seed": 20261014,
+      "neural_step_fs": 5,
+      "supervision": "path",
+      "treatment": "transformer_6ps_path_response",
+      "transition_kind": "transformer",
+      "transformer": {
+        "layers": 2,
+        "width": 64,
+        "heads": 4,
+        "feedforward": 192
+      }
+    }
+  ],
+  "training": {
+    "updates": 4000,
+    "batch_size": 256,
+    "microbatch": 256,
+    "lr": 0.001,
+    "warmup": 200,
+    "precision": "BF16 long recurrence; float32 short-response secants and scores",
+    "fixed_anchor": true
+  },
+  "evaluation": {
+    "particles": 32,
+    "by_regime": true
+  },
+  "lifting": {
+    "queries": 8,
+    "shots": 2,
+    "horizons_ps": [
+      0.1,
+      0.5
+    ],
+    "enabled": false
+  },
+  "runtime": {
+    "hours": 14,
+    "gpus": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "seeds": [
+    20261013,
+    20261014
+  ],
+  "feature_cache": "${storage:cache}/ni-latent-sim/compact-memory-response-20261010-v1/features",
+  "reuse_data": {
+    "output": "${storage:training_storage}/ni_latent_sim/regimes3x-20261010-v2",
+    "plan_sha256": "41fcdc550c4aa012e65908c7904e44b026a9ab62279a1f7fa785fd2af9ca8aae",
+    "receipt_sha256": "872000c9c3047c8e9ba57fbd281852a0b3bf33858b07b7cc94f4e2153e3d1d85"
+  },
+  "dense_response": {
+    "cache": "${storage:cache}/ni-latent-sim/dense-path-response-20261011-v1",
+    "save_fs": [
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100
+    ],
+    "target_microbatch": 8,
+    "reuse_output": "/store/PERSO/vmorozov/experiments/ni_latent_sim/dense-path-response-20261011-v1",
+    "reuse_plan_sha256": "eccc814b0ac027180aa8c54872e342e0ae8316b2e8e103f4b3e1995aa72eadd9"
+  },
+  "queue_contract": {
+    "requires_chat_review": false,
+    "primary_order": "matched 1ps controls, then matched 6ps training; two seeds, one per GPU",
+    "failure_policy": "two recorded attempts per stage; checkpoint resume; independent evaluations; continue next arm after a failure",
+    "data": "existing sealed 14400 local Ni sequences (3840 fit / 960 selection / 9600 heldout), not the unimplemented 36608-row expansion",
+    "optional_review": "May steer subsequent work; no training stage depends on a chat wakeup",
+    "deadline": "14 hours from launch, capped five minutes before the allocation ends"
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "output": "${storage:training_storage}/nucleus_histories/ni-four-births-20261007-v1",
+  "cache": "${storage:cache}/nucleus-histories/ni-four-births-20261007-v1",
+  "sources": [
+    {"config": "configs/simulation/ni_births_010_20261007.json", "source": "ni-T1100-melt00"},
+    {"config": "configs/simulation/ni_births_010_20261007.json", "source": "ni-T1100-melt01"},
+    {"config": "configs/simulation/ni_births_010_20261007.json", "source": "ni-T1100-melt02"},
+    {"config": "configs/simulation/ni_births_010_20261007_extension01.json", "source": "ni-T1100-melt04"}
+  ],
+  "after_monitor_128_ps": 20.0,
+  "lookback_ps": 12.0,
+  "early_after_ps": 2.0,
+  "establishment_before_ps": 3.0,
+  "establishment_after_ps": 2.0,
+  "ptm_rmsd_cutoff": 0.1,
+  "neighbor_cutoff_A": 3.2,
+  "radius_A": 14.0,
+  "metric_family": "ni_birth_histories",
+  "workers": 4,
+  "time_limit": "02:00:00",
+  "scope": "Four illustrative births in completed independent Ni melts, confirmed in native 0.1 ps prefixes. No population catalogue, new MD or prediction training. Continuous saved-frame movies."
+}

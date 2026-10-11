@@ -1,0 +1,218 @@
+{
+  "protocol": "ni-liquid-front-regimes3x-20261010-v2",
+  "seed": 20261010,
+  "parent": "/store/PERSO/vmorozov/experiments/ni_response/unrelaxed-esen-20261009-v1",
+  "parent_plan_sha256": "27ebcfc231695c89fb376629413562f4ddf3479fd8029900f4a78fd81c94aacd",
+  "output": "${storage:training_storage}/ni_latent_sim/regimes3x-20261010-v2",
+  "cache": "${storage:cache}/ni-latent-sim/regimes3x-20261010-v2",
+  "simulation_archive": "${storage:archive}/simulations/ni-latent-lifting-20261010-v1",
+  "simulation_scratch": "${storage:simulation_runs}/ni-latent-lifting-20261010-v1",
+  "centers_per_anchor": 16,
+  "encoder_microbatch": 64,
+  "arms": [
+    {
+      "name": "d16-h4-t10-value-control-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": false,
+      "train_steps": 10,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t10-value-jacobian-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": true,
+      "train_steps": 10,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t10-value-jacobian-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": true,
+      "train_steps": 10,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t10-value-control-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": false,
+      "train_steps": 10,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t10-response-control-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": false,
+      "train_steps": 10,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t10-response-jacobian-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": true,
+      "train_steps": 10,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t10-response-jacobian-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": true,
+      "train_steps": 10,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t10-response-control-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": false,
+      "train_steps": 10,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t60-value-control-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": false,
+      "train_steps": 60,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t60-value-jacobian-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": true,
+      "train_steps": 60,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t60-value-jacobian-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": true,
+      "train_steps": 60,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t60-value-control-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "jacobian": false,
+      "train_steps": 60,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t60-response-control-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": false,
+      "train_steps": 60,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t60-response-jacobian-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": true,
+      "train_steps": 60,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-t60-response-jacobian-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": true,
+      "train_steps": 60,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-t60-response-control-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "jacobian": false,
+      "train_steps": 60,
+      "seed": 20261011
+    }
+  ],
+  "training": {
+    "updates": 3200,
+    "batch_size": 256,
+    "microbatch": 256,
+    "lr": 0.001,
+    "warmup": 200,
+    "precision": "BF16 long recurrence; float32 short-response secants and scores",
+    "fixed_anchor": true
+  },
+  "evaluation": {
+    "particles": 32
+  },
+  "lifting": {
+    "queries": 8,
+    "shots": 2,
+    "horizons_ps": [
+      0.1,
+      0.5
+    ],
+    "enabled": false
+  },
+  "runtime": {
+    "hours": 8.5,
+    "gpus": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "seeds": [
+    20261010,
+    20261011
+  ],
+  "stability": {
+    "batch_size": 32,
+    "map_steps": 10,
+    "free_state_steps": [
+      10,
+      30,
+      50
+    ],
+    "power_iterations": 2,
+    "gain_cap": 3.0,
+    "weight": 1.0,
+    "precision": "float32 exact learned-map JVP, reverse-over-reverse differentiation; physical MD teachers unchanged"
+  },
+  "enrichment": {
+    "base_output": "/store/PERSO/vmorozov/experiments/ni_latent_sim/compact-memory-response-20261010-v1",
+    "base_cache": "${storage:cache}/ni-latent-sim/compact-memory-response-20261010-v1",
+    "plan_sha256": "efd8d0e97d64998ff5cf93886cadcafcee67970c6a7acf5df31f05888b021a05",
+    "receipt_sha256": "39097f034d80f7ef638f460d649ff67a0a82ab5c4bdfc6ce149977d1664d19c2",
+    "liquid_anchors": 2,
+    "front_anchors": 16,
+    "screen_liquid_max_atoms": 320,
+    "screen_front_min_atoms": 320,
+    "screen_growth_min_atoms": 64,
+    "liquid_candidates_per_anchor": 512,
+    "front_candidates_per_anchor": 2048
+  }
+}

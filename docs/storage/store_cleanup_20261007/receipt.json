@@ -1,0 +1,142 @@
+{
+  "state": "cleanup_complete",
+  "finished_at": "2026-10-07T14:59:50.680364+00:00",
+  "total_released_allocated_bytes": 133240504320,
+  "total_released_GiB": 124.08988952636719,
+  "accounting": "File allocation actually released; hard links counted only on final-link deletion. Directory blocks and tiny new symlinks/audit files excluded. Active simulation growth means this is not a whole-STORE before/after usage delta.",
+  "released_GiB": {
+    "old_repository_snapshot": 35.82884979248047,
+    "obsolete_search_payloads": 18.66027069091797,
+    "verified_recovery_duplicates": 69.60076904296875
+  },
+  "birth_dataset": {
+    "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+    "verified": true,
+    "upstream": true,
+    "upstream_tasks": 4372,
+    "upstream_files": 17488,
+    "protected_files_verified": 17488,
+    "hash_method": "Producer sha() SHA-256 for every recorded upstream file, eight parallel readers",
+    "sample_event_reads": [
+      {
+        "cadence": "010",
+        "event_id": "3af09e9b51e6341e66f1e0510a066b8d0afe90c3d04a0f6dc024760bc98129eb:255:0",
+        "source_id": "04ea4ea4e9ebb1545f53a1906e90ae2cd5ae3361fdc55291b48745a66a458ae9",
+        "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9"
+      },
+      {
+        "cadence": "030",
+        "event_id": "643551ceab3cc821f6321d5aa58a1b10a8a3e022a3c430ee69988430de9dc038:63:0",
+        "source_id": "036f5f8ea87be8f3f844d4c13e60c0f53eddeb90c8a876077159bc3823c9a12f",
+        "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9"
+      }
+    ],
+    "elapsed_seconds": 49.441379961092025
+  },
+  "refresh_contract": {
+    "completed_compatible_searches": [
+      "al-all-cadences-nuclei-lineage-20261005",
+      "al-nuclei-dense-additions-20261005",
+      "al-nuclei-dense-additions-20261006",
+      "al-nuclei-dense-additions-20261007"
+    ],
+    "pending": [],
+    "frozen_plans_and_producer_contracts_verified": true
+  },
+  "stopped_runs": [
+    {
+      "source": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "source_bytes": 22352231302,
+      "source_allocated_bytes": 29880541184,
+      "source_signature": [
+        58,
+        5854541329,
+        22352231302,
+        1791113934082709000
+      ],
+      "last_complete_step": 128650,
+      "last_complete_time_ps": 257.3,
+      "crystal_fraction": 0.01257396449704142,
+      "largest_crystal_cluster": 389,
+      "monitor_max_crystal_fraction": 0.011862767410104688,
+      "qualifies_for_user_requested_conversion": false,
+      "frame_sha256": "406ae769c466180f39ed6caa01d2768d35ad789e49d6c503a142f58e72d5a47c",
+      "frame": "docs/storage/store_cleanup_20261007/source0891-last-complete.lammpstrj.gz",
+      "frame_sha256_scope": "Uncompressed frame bytes; gzip round-trip verified"
+    },
+    {
+      "source": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "source_bytes": 33554394558,
+      "source_allocated_bytes": 44857139200,
+      "source_signature": [
+        58,
+        5850250026,
+        33554394558,
+        1791113934078254000
+      ],
+      "last_complete_step": 193150,
+      "last_complete_time_ps": 386.3,
+      "crystal_fraction": 0.013754551661356395,
+      "largest_crystal_cluster": 186,
+      "monitor_max_crystal_fraction": 0.012104574419663177,
+      "qualifies_for_user_requested_conversion": false,
+      "frame_sha256": "5ef3ffcb2887e588ab5566585c909b4ed18448d20dfca4cd0d44070e5c602b40",
+      "frame": "docs/storage/store_cleanup_20261007/source0892-last-complete.lammpstrj.gz",
+      "frame_sha256_scope": "Uncompressed frame bytes; gzip round-trip verified"
+    }
+  ],
+  "crystallinity_method": "PTM RMSD cutoff 0.1; FCC/HCP/BCC on last complete raw frame via src.analysis.al_replay.structure; existing monitoring records inspected, not every saved frame reprocessed. Neither source meets requested >50% criterion; both archive originals retained.",
+  "protected_snapshot_figures": {
+    "png": 4092,
+    "svg": 118,
+    "pdf": 31,
+    "gif": 8
+  },
+  "remaining_targeted_storage": {
+    "observed_at": "2026-10-07T14:55:45.808829+00:00",
+    "method": "Allocated blocks; no symlink traversal; unique inodes; live non-atomic scan while simulations write",
+    "locations": [
+      {
+        "scope": "snapshot",
+        "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z",
+        "allocated_bytes": 20079509504,
+        "allocated_GiB": 18.70050048828125
+      },
+      {
+        "scope": "search",
+        "path": "/store/PERSO/vmorozov/experiments/nuclei_search",
+        "allocated_bytes": 37349867520,
+        "allocated_GiB": 34.78477478027344
+      },
+      {
+        "scope": "recovery",
+        "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003",
+        "allocated_bytes": 52243775488,
+        "allocated_GiB": 48.65580749511719
+      }
+    ]
+  },
+  "recovery_policy": "Only two inactive byte-identical dump copies replaced by archive symlinks; native restarts, metadata, active and prepared runs retained. No Slurm jobs stopped or modified.",
+  "other_data": "36.536 GiB geospatial/remote-sensing data under /store/PERSO/vmorozov/data; unchanged. See other-datasets.json.",
+  "registry_annotations": 25,
+  "evidence": {
+    "payload-cleanup-receipt.json": "328a8973f2278932c9f87e3e8e21bc22e973350e0fc876513ec532f6f5f6b93f",
+    "recovery-cleanup-receipt.json": "ab9f79bd81381641824039d624ac20daee16bf250e3e5b497da4c157e21b14b6",
+    "birth-dataset-verification.json": "d1aa35302ef7fe43f6f074c7910878b9bb4c1a663bd6299a3e7f3d63113853d1",
+    "birth-refresh-contract-verification.json": "71223cb0dd67e683aa5c9d56a7443687ea02586d1ed93d0be6c70ec72d8e14b6",
+    "affected-registry-entries.json": "d59718e2a32c3f87e6b610f138ea6df80f5ac35d0601e5ad42ce4dde9883048a",
+    "deleted.jsonl.gz": "f454c721506c09b57b88579f57056e85f280f2bdf2c2320eb55248aef32393dc",
+    "deletion-plan.json.gz": "798d22758f81d69523a9c9e17513802ed60f59f7615c57d5aebcd6db87c9bd06",
+    "preserved-files.json.gz": "667e27d53a111f146f6200eb1acf0c5d91bf36b5147acff722b527c0484768a0",
+    "protected-birth-labels.json.gz": "12073528be8e567b21f6119703f75bbfc8a962ac3850703f3e67f2798c51bc76",
+    "audit-compression.json": "05e4da0c11999bb49da17f52155388f28905ad8fd591004ead0c0d99faac494f",
+    "other-datasets.json": "0aabb0f185dc1c46d08326a205230e4b165ee6acee6d47f5032b241d55e25c69"
+  },
+  "registry_browser_refresh": {
+    "observed_at": "2026-10-07T15:00:26.719174+00:00",
+    "state": "running",
+    "pid": 3468180,
+    "log": "docs/storage/store_cleanup_20261007/registry-refresh.log",
+    "note": "Full metadata browser refresh continues independently of completed cleanup; authoritative catalog annotations already written to configs/datasets.json."
+  }
+}

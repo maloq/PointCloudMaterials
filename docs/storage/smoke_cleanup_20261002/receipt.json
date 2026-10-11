@@ -1,0 +1,29 @@
+{
+  "completed_utc": "2026-10-02T13:09:06.093298+00:00",
+  "authorization": "User: please delete all smoke tests data",
+  "directories_deleted": 65,
+  "files_unlinked": 4086,
+  "allocated_bytes_before_by_partition": {
+    "WORK": 6853540864,
+    "STORE": 823156736,
+    "SCRATCH": 9185280,
+    "IDS": 96129536,
+    "INFRES": 825975296
+  },
+  "allocated_bytes_before_total": 8607987712,
+  "verification": "All 65 target directories absent after removal. No target path appeared in allocated-node process command snapshots. SSH unavailable; snapshots obtained using srun in existing allocations.",
+  "scope": "Smoke-named generated directories in WORK, STORE, SCRATCH, IDS training-cache and repository output; no symlink target traversal. Source code/configuration outside these output directories and historical inventory documents retained.",
+  "size_note": "Pre-deletion du allocated bytes, hardlinks counted once; not a measured quota delta.",
+  "retired_dataset_ids": [
+    "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+    "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+    "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+    "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+    "portability-smoke-forecast",
+    "portability-ti-smoke-20260913",
+    "mace-causal-implementation-smoke-20260916",
+    "mace-causal-physical-smoke-20260916",
+    "mace-causal-verified-smoke-20260916",
+    "mace-local-motion-smoke-20260916"
+  ]
+}

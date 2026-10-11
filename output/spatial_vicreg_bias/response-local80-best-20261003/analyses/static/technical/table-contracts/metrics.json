@@ -1,0 +1,7 @@
+{
+  "table": "tables/metrics.csv",
+  "sha256": "d4070b3547abbf05e2eccb680c6cfcfe9e070b8d5a261c2ab4fb0a751a503833",
+  "family": "response_cluster_comparison",
+  "contract": "technical/metric-contracts/response_cluster_comparison.json",
+  "definitions": "tables/metric-definitions/response_cluster_comparison.md"
+}

@@ -1,0 +1,43 @@
+{
+  "protocol": "local80_response_weight_and_finite_displacement_v1",
+  "reference": "${storage:training_storage}/response_atlas/local80-training-20261002",
+  "reference_identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+  "output": "${storage:training_storage}/response_atlas/local80-followup-20261003",
+  "simulation_scratch": "${storage:simulation_runs}/local80-finite-response-20261003",
+  "simulation_archive": "${storage:archive}/simulations/local80-finite-response-20261003",
+  "fit_seeds": [20261002, 20261003, 20261004],
+  "arms": [
+    {"name": "values8_400", "response_weight": 0.0, "warmup_updates": 0, "ramp_updates": 0},
+    {"name": "response_w01", "response_weight": 0.1, "warmup_updates": 0, "ramp_updates": 0},
+    {"name": "response_w03", "response_weight": 0.3, "warmup_updates": 0, "ramp_updates": 0},
+    {"name": "response_w1", "response_weight": 1.0, "warmup_updates": 0, "ramp_updates": 0},
+    {"name": "response_w03_warm", "response_weight": 0.3, "warmup_updates": 100, "ramp_updates": 50}
+  ],
+  "training": {
+    "updates": 400,
+    "batch_size": 256,
+    "microbatch": 8,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 0.00001,
+    "gradient_clip": 10.0,
+    "deviation": "Inherited local80 higher-derivative memory protocol: microbatch8, full90-parent accumulated optimizer batch below nominal256. All arms receive400 updates without patience stopping."
+  },
+  "forward": {
+    "parent_indices": [0, 1, 2, 45],
+    "radii_A": [24, 36],
+    "epsilons_A": [0.03, 0.1, 0.3, 1.0, 2.0, 3.0],
+    "shots": 2,
+    "directions": 2,
+    "horizons_fs": [20, 100],
+    "seed_policy": "Original train-only halo-gate seeds; exact full70304-atom CUDA float64 noise stream before environment gather",
+    "initial_close_contact_limit_A": 1.0,
+    "value_rms_tolerance": 0.0001,
+    "response_relative_tolerance": 0.05
+  },
+  "wandb": {"entity": "teshbek", "project": "PointCloudMaterials", "mode": "online"},
+  "bootstrap_draws": 2000,
+  "seed": 20261003,
+  "gpu_partition": "RTX6000PRO,L40S",
+  "time_limit": "08:00:00"
+}

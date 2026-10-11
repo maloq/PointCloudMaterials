@@ -1,0 +1,55 @@
+{
+  "protocol": "spatial-ni20-active-cna-v1",
+  "dataset_id": "spatial-training-ni20",
+  "cache": "${storage:cache}/spatial-pretraining/ni20-20261008-r2",
+  "output": "${storage:output}/spatial-dataset/ni20-20261008-r2",
+  "parent_packed": "${storage:cache}/rich-descriptors/packed-rh2-20260930/full",
+  "parent_cache": "${storage:cache}/rich-descriptors/multimaterial-raw-20260929",
+  "parent_identity": "2f4bcb1c063801a46d5c417e30b3d983504e8ee4e13952566504cd6d6516117c",
+  "ni_training_fraction": 0.2,
+  "ni_heldout_rows": 4096,
+  "frame_spacing_ps": 3.0,
+  "center_fraction": 0.01,
+  "seed": 20261008,
+  "workers": 16,
+  "cpu_node": "nodecpu04",
+  "ni_campaigns": [
+    "${storage:archive}/simulations/ni-births-010-20261007/campaign.json",
+    "${storage:archive}/simulations/ni-births-010-20261007-extension01/campaign.json",
+    "${storage:archive}/simulations/ni-births-lowT-010-20261008/campaign.json"
+  ],
+  "normalization": {
+    "protocol": "fixed_material_cutoff_al_reference_v1",
+    "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+    "scales_A": {
+      "Mg": 10.148997617371739,
+      "Al": 9.121389139452193,
+      "Ti": 9.309864688636168,
+      "Zr": 10.353008987883314,
+      "Ta": 9.38733713271385
+    },
+    "reference_scale_A": 9.121389139452193,
+    "model_inputs": [
+      "normalized coordinates"
+    ],
+    "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+  },
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "descriptors": {
+    "families": [
+      "bond_order",
+      "cna",
+      "tda"
+    ],
+    "alpha_backend": "native",
+    "alpha_precision": "safe",
+    "selection": {
+      "path": "configs/data/spatial_active_cna_targets.json",
+      "sha256": "138825b5081c25d5aa83e111124c3d18016801b6ee2260b32756c8305f9430d7"
+    }
+  }
+}

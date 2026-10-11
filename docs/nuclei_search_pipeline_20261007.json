@@ -1,0 +1,328 @@
+{
+  "history-final-validation": [
+    {
+      "phase": "fresh_final_identity",
+      "seconds": 3.4633100440260023,
+      "restored": 0,
+      "written": 93,
+      "files": {
+        "graph.json": true,
+        "birth.json": true,
+        "family-history.json": true,
+        "movie.npz": true,
+        "movie-frames.json": true,
+        "summary.json": true
+      }
+    },
+    {
+      "phase": "resumed_final_identity",
+      "seconds": 0.6647272179834545,
+      "restored": 93,
+      "written": 0,
+      "files": {
+        "graph.json": true,
+        "birth.json": true,
+        "family-history.json": true,
+        "movie.npz": true,
+        "movie-frames.json": true,
+        "summary.json": true
+      }
+    }
+  ],
+  "ni-scheduler-validation": {
+    "seconds": 19.85011682496406,
+    "initial": {
+      "state": "complete",
+      "job": "1026285",
+      "workers": 2,
+      "completed_sources": [
+        "ni-T1100-melt00",
+        "ni-T1200-melt00"
+      ],
+      "available_sources": 2,
+      "total_sources": 2,
+      "finished_chunks": 4,
+      "reused_chunks": 2,
+      "initial_cached_chunks": 2,
+      "pending_chunks": 0,
+      "in_flight": 0,
+      "updated_unix": 1791407598.0335364
+    },
+    "resume": {
+      "state": "complete",
+      "job": "1026285",
+      "workers": 2,
+      "completed_sources": [
+        "ni-T1100-melt00",
+        "ni-T1200-melt00"
+      ],
+      "available_sources": 2,
+      "total_sources": 2,
+      "finished_chunks": 4,
+      "reused_chunks": 4,
+      "initial_cached_chunks": 4,
+      "pending_chunks": 0,
+      "in_flight": 0,
+      "updated_unix": 1791407601.3822746
+    },
+    "arrays_equal": true,
+    "sources": 2,
+    "frames_each": 32,
+    "scope": "Manual workflow audit on real native trajectory prefixes; not a scientific cohort"
+  },
+  "ni-source-validation": {
+    "source": "ni-T1200-melt00",
+    "source_equal": true,
+    "one_source_plan_verified": true,
+    "frames": 5201
+  },
+  "million-anchor-validation": {
+    "atoms": 1000000,
+    "events": 37,
+    "distinct_anchors": 37,
+    "frame": 3125,
+    "batch_tree_and_queries_seconds": 0.23733175196684897,
+    "identical_neighbors": true
+  },
+  "launch": {
+    "owner": "This chat: user authorized chunk scheduling, streaming Ni and shared/checkpointed Al history frames",
+    "previous_receipt": "/home/infres/vmorozov/PointCloudMaterials/output/postprocessing/acceleration-20261007/technical/relaunch.json",
+    "previous_sha256": "87a24a2e84afb3176329372bf297540f1f24866a4688e0c8bf35aec38deeee68",
+    "replaces": {
+      "al_assist": "1027795",
+      "al_finish": "1027796",
+      "ni_analyse": "1027797",
+      "ni_extension_analyse": "1027798",
+      "ni_combine": "1027799"
+    },
+    "jobs": {
+      "al_assist": "1027851",
+      "al_finish": "1027852",
+      "ni_analyse": "1027853",
+      "ni_extension_analyse": "1027854",
+      "ni_combine": "1027855"
+    },
+    "cancellations": [
+      {
+        "job": "1027796",
+        "unix": 1791407979.3483324,
+        "stderr": ""
+      },
+      {
+        "job": "1027799",
+        "unix": 1791407979.354954,
+        "stderr": ""
+      },
+      {
+        "job": "1027798",
+        "unix": 1791407979.3619444,
+        "stderr": ""
+      },
+      {
+        "job": "1027795",
+        "unix": 1791407979.3695126,
+        "stderr": ""
+      },
+      {
+        "job": "1027797",
+        "unix": 1791407979.3762705,
+        "stderr": ""
+      }
+    ],
+    "state": "running_verified",
+    "started_unix": 1791407979.33759,
+    "verification": {
+      "ni-20261007-v1": {
+        "progress": {
+          "state": "running",
+          "job": "1027853",
+          "workers": 12,
+          "completed_sources": [],
+          "available_sources": 12,
+          "total_sources": 12,
+          "finished_chunks": 96,
+          "reused_chunks": 36,
+          "initial_cached_chunks": 555,
+          "pending_chunks": 3392,
+          "in_flight": 23,
+          "updated_unix": 1791408191.1631773
+        },
+        "chunks_written_since_switch": 60,
+        "source_plans": 0
+      },
+      "ni-20261007-extension01-v1": {
+        "progress": {
+          "state": "running",
+          "job": "1027854",
+          "workers": 12,
+          "completed_sources": [],
+          "available_sources": 8,
+          "total_sources": 12,
+          "finished_chunks": 36,
+          "reused_chunks": 0,
+          "initial_cached_chunks": 0,
+          "pending_chunks": 2299,
+          "in_flight": 23,
+          "updated_unix": 1791408191.3304472
+        },
+        "chunks_written_since_switch": 36,
+        "source_plans": 8
+      },
+      "al": {
+        "helpers": [
+          {
+            "path": "assist-1027857-1.json",
+            "total": 295,
+            "completed": 1,
+            "busy": 4,
+            "started_at": 1791407983.9400396,
+            "state": "running",
+            "last_event": "birth-fc557e15f8e44638ec04"
+          },
+          {
+            "path": "assist-1027856-0.json",
+            "total": 295,
+            "completed": 1,
+            "busy": 3,
+            "started_at": 1791407983.9385073,
+            "state": "running",
+            "last_event": "birth-042cdcee4d87ffc7fd88"
+          },
+          {
+            "path": "assist-1027858-2.json",
+            "total": 295,
+            "completed": 1,
+            "busy": 5,
+            "started_at": 1791407984.6736279,
+            "state": "running",
+            "last_event": "birth-d63f03fd9efeab474d81"
+          },
+          {
+            "path": "assist-1027851-3.json",
+            "total": 295,
+            "completed": 1,
+            "busy": 6,
+            "started_at": 1791407984.8283007,
+            "state": "running",
+            "last_event": "birth-8535b8952b7509c567f6"
+          }
+        ],
+        "progress": [
+          {
+            "event": "birth-d4fcd6def4d6aed7fb09",
+            "state": "classifying",
+            "completed": 191,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 191,
+            "updated_unix": 1791408067.646123
+          },
+          {
+            "event": "birth-0dfc749525864c36e12e",
+            "state": "classifying",
+            "completed": 1,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 1,
+            "updated_unix": 1791408191.468194
+          },
+          {
+            "event": "birth-0bc269d5ecc970782afa",
+            "state": "classifying",
+            "completed": 191,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 191,
+            "updated_unix": 1791408175.1191292
+          },
+          {
+            "event": "birth-9e66abd644a5370431e0",
+            "state": "classifying",
+            "completed": 191,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 191,
+            "updated_unix": 1791408140.2014182
+          },
+          {
+            "event": "birth-042cdcee4d87ffc7fd88",
+            "state": "classifying",
+            "completed": 171,
+            "total": 180,
+            "restored_frames": 0,
+            "new_frames": 171,
+            "updated_unix": 1791408176.1959236
+          },
+          {
+            "event": "birth-fc557e15f8e44638ec04",
+            "state": "classifying",
+            "completed": 131,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 131,
+            "updated_unix": 1791408189.6081212
+          },
+          {
+            "event": "birth-8535b8952b7509c567f6",
+            "state": "classifying",
+            "completed": 21,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 21,
+            "updated_unix": 1791408188.6425226
+          },
+          {
+            "event": "birth-d63f03fd9efeab474d81",
+            "state": "classifying",
+            "completed": 31,
+            "total": 192,
+            "restored_frames": 0,
+            "new_frames": 31,
+            "updated_unix": 1791408184.7998426
+          }
+        ],
+        "completed": [
+          {
+            "job": "1027856",
+            "restored_frames": 0,
+            "new_frames": 192,
+            "seconds": 84.70196429081261,
+            "frame_cache_identity": "50812de1088e985ccde1049d99feaec02bfdb7327d357efcfd35c5ef00df36d6"
+          },
+          {
+            "job": "1027858",
+            "restored_frames": 0,
+            "new_frames": 192,
+            "seconds": 190.2048641690053,
+            "frame_cache_identity": "a1aaf0e68c116adc233c05d4a0db0aadcc5a0b628881fd244743e25a29d36789"
+          },
+          {
+            "job": "1027857",
+            "restored_frames": 0,
+            "new_frames": 192,
+            "seconds": 156.8027989999391,
+            "frame_cache_identity": "50812de1088e985ccde1049d99feaec02bfdb7327d357efcfd35c5ef00df36d6"
+          },
+          {
+            "job": "1027851",
+            "restored_frames": 0,
+            "new_frames": 180,
+            "seconds": 198.95934868976474,
+            "frame_cache_identity": "641651c211fd3d49b977de33065cd66b80ec754f117183c921885b2a70b66735"
+          }
+        ],
+        "checkpoint_files": 964,
+        "shared_frames": 899
+      },
+      "squeue": "1027855|ni-chunks-combine|PENDING|(Dependency)\n1027852|al-frame-finish|PENDING|(Dependency)\n1027851_0|al-frame-assist|RUNNING|nodecpu11\n1027851_1|al-frame-assist|RUNNING|nodecpu11\n1027851_2|al-frame-assist|RUNNING|nodecpu12\n1027851_3|al-frame-assist|RUNNING|nodecpu12\n1027853|ni-chunks-analyse|RUNNING|nodecpu04\n1027854|ni-chunks-analyse|RUNNING|nodecpu04\n"
+    },
+    "verified_unix": 1791408195.6000476
+  },
+  "implementation": {
+    "src/postprocessing/protocols/ni.py": "23c03a8f6c09e6a2a1e31c8b9c1c644d9eb5d74644cd3b6b05bb37465b33b70d",
+    "src/postprocessing/protocols/ni_queue.py": "466081a7593489fef8de5b03a12c07b5e0835a7fdb0e54598c719d0b4c37828e",
+    "src/postprocessing/histories/al.py": "e9a1e7c1504a8175a40b276647ca781e5084351b87618f19dd04a895f4282534",
+    "src/postprocessing/histories/frames.py": "82ff3047f16d6946a67544a6ebc9de3555fcbd7341373a356e8802fda4e4f200",
+    "src/postprocessing/histories/common.py": "0126affe6f7ca29ebb53c68ec82d54ef98a326bdbf7739c7959f871aa6acc916"
+  }
+}

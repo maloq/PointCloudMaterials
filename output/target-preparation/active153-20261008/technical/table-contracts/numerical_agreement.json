@@ -1,0 +1,7 @@
+{
+  "table": "tables/numerical_agreement.csv",
+  "sha256": "dfe72cd852977ff8bf4001ac608ab68291186e826acd9055a2f4bdda1538f3ec",
+  "family": "spatial_target_preparation",
+  "contract": "technical/metric-contracts/spatial_target_preparation.json",
+  "definitions": "tables/metric-definitions/spatial_target_preparation.md"
+}

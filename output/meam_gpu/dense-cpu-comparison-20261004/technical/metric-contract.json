@@ -1,0 +1,10 @@
+{
+  "family": "meam_dense_comparison",
+  "exported_at": "2026-10-04T16:26:15.289206+00:00",
+  "files": {
+    "docs/metrics/meam_dense_comparison.md": "b21dc3f0710e9e2e3fd3f3643ae0493135675d4f7a0e80967dc32918bbbab396",
+    "src/research/meam_gpu/dense_comparison.py": "91a1d970db12ee6be96a6e6334fb67cf9d19c9ba123d707337e4ac9fe5dc5a8b",
+    "src/analysis/al_replay.py": "eac933472aa718a27516b36e155779f8dcc8feb4bdb189830a53387067a1b6bd"
+  },
+  "verified": true
+}

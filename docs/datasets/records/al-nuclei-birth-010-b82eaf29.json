@@ -1,0 +1,32 @@
+{
+  "dataset_id": "al-nuclei-birth-010",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_birth/al/cadences/010/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "ea85ad411965b3f64514fa499e29e00f16eed944f8e1b2ef73bf95c2e388311d",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "cadence_ps",
+        "database",
+        "dataset",
+        "default_detector",
+        "default_selection",
+        "fingerprint",
+        "sampling_policy"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

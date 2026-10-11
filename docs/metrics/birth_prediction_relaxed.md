@@ -1,5 +1,10 @@
 # Paired full-cell relaxed birth inputs (v1)
 
+The shared cell executor accepts an explicitly recorded recovery wall-time
+extension. This changes no quench convergence criterion or numerical setting.
+Recovered cell receipts record requested/executed timeout and old/new producer
+hashes. Historical frozen runs retain their original execution and definitions.
+
 This study retains the original 1,475 histories, 295 cases, 1,180 controls,
 source roles, event weights and five frozen readout folds. Every original
 sampled `(source, frame)` full periodic cell is quenched independently with

@@ -1,5 +1,30 @@
 # Spatial VICReg mechanism study and coordinate diagnostics
 
+## October 3 response encoder addition
+
+The old paired 3D PaCMAP/MD viewer is restored from the checksum-verified October 2
+JSON archive. [Response encoder, held-out Al](../output/spatial_vicreg_bias/response-local80-best-20261003/heldout-al.html)
+and [six static snapshots](../output/spatial_vicreg_bias/response-local80-best-20261003/al-static.html)
+are top-level interactive pages. They also retain the RH2 checkpoint as a neural
+choice.
+
+The new native local80 MACE128 is response weight 1, seed 20261002, update 250,
+selected by validation future-feature Gaussian NLL 0.9949387311935425 among the
+12 response follow-up fits. Geometry-only frozen inference uses its exact training
+source, on the same observation rows and all 19 dense snapshots. Original input
+patch hashes must match after recovery. Descriptor clusters/projections and
+historical RH2 neural values are reused. GeoFormer's full MD, sample/lattice and
+travel assets were JS-only and removed; its complete viewer cannot be restored
+from this archive. The new response and retained RH2 views include those panels.
+See [definitions](metrics/response_cluster_comparison.md).
+
+Recipe: `configs/analysis/response_cluster_comparison_20261003.json`.
+`response_comparison restore|publish --config CONFIG` uses the existing renderer;
+`response_infer.py RESOLVED_CONFIG` runs frozen inference in an allocated GPU.
+The immutable checkpoint, selection receipts, reconstruction checks and input
+records are under the response comparison's `technical/`. No encoder training,
+new descriptor fitting or W&B run is launched.
+
 ## Six relaxed static Al snapshots
 
 The [static recipe](../configs/analysis/static_al_interface.json) extends the

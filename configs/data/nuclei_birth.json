@@ -1,0 +1,251 @@
+{
+  "dataset_id": "al-nuclei-birth",
+  "output": "${storage:training_storage}/nuclei_birth/al",
+  "search_dataset_patterns": [
+    "al-all-cadences-nuclei-lineage-*",
+    "al-nuclei-dense-additions-*"
+  ],
+  "cadences": {
+    "010": 0.1,
+    "030": 0.3
+  },
+  "sampling_policy": {
+    "010": "exact_saved",
+    "030": "native_saved"
+  },
+  "lineage": {
+    "protocol": "al_nucleus_lineage_v3",
+    "minimum_shared_atoms": 4,
+    "continuation_fraction": 0.5,
+    "minor_parent_fraction": 0.2,
+    "embryo_atoms": 8,
+    "reset_atoms": 4,
+    "reset_ps": 1.5,
+    "persistence_ps": 1.5,
+    "establishment_atoms": 64,
+    "growth_atoms": 128,
+    "thresholds": [
+      8,
+      32,
+      64,
+      128
+    ],
+    "durations_ps": [
+      1.5,
+      3.0
+    ],
+    "prehistory_ps": 1.5,
+    "interface_distance_A": 8.0
+  },
+  "structure": {
+    "detectors": [
+      "ptm",
+      "coherent_loose",
+      "coherent",
+      "coherent_strict"
+    ],
+    "ptm_rmsd_cutoff": 0.1,
+    "neighbor_cutoff_A": 3.6,
+    "bond_order": {
+      "l": 6,
+      "thresholds": [
+        [
+          0.65,
+          6
+        ],
+        [
+          0.7,
+          7
+        ],
+        [
+          0.75,
+          8
+        ]
+      ]
+    },
+    "minimum_tracked_atoms": 4
+  },
+  "scientific_producers": {
+    "src/research/crystallization_origin/lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+    "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+  },
+  "producer_equivalences": {
+    "src/research/crystallization_origin/lineage_tracker.py": {
+      "876ee63dc50111cd520bc763b025f0dadf2282031dc98127e8776e1404fe055c": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814"
+    },
+    "src/research/crystallization_origin/search_clusters.py": {
+      "ff4294ade089f19175d82559c05058ee601d6259e2722d4c364a17691a568c01": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+    }
+  },
+  "execution_equivalences": [
+    {
+      "files": {
+        "docs/metrics/al_nuclei_lineage.md": "6844b031041c939213d47db0b2a52779d6895fef27281331b28ecd2074c30310",
+        "src/postprocessing/lineage.py": "4d12c1d124c42ba2743f92b684d8ff95b0b37b9732358cca1f06f9a5dc2339c8",
+        "src/postprocessing/search.py": "b45c7edf4a2892c4f112f25a8e05a307ac1ee715a580312cda214dcf884502e9",
+        "src/postprocessing/extraction.py": "d347690e766310aff7ccfe4be0ba78a2a65759b658ee886e20b8a06aa779e908",
+        "src/postprocessing/sources.py": "02dce6a12eaa8438c7adcfe3b66ed5585bf7f388b8564b7b257a3d9f4081df1f",
+        "src/postprocessing/protocols/external_data.py": "91006b5a88f97effb713dc9f267fc91242a5eba661628065ea63931715f4758a",
+        "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+        "src/postprocessing/inventory.py": "acc33bbb17f573c5b606a34fba7b39e3164d328647866fdbad10bc923db4ff7f",
+        "src/project_runtime/dataset_registry.py": "7dc8ff08deca2e045334c6a0f221e45b8dc63c7c5740b50730180ab71b99c932",
+        "src/postprocessing/io.py": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+        "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+        "src/postprocessing/descriptors/structure.py": "6244a6352c61755a6337d316c2a237f2d64deaa137be5c1240aa7ff5a81c3183",
+        "src/postprocessing/protocols/extract.py": "0c3448f0a3ac72582b39e05f25e0a38b6f6be2fa0fa416c6dec7caa80402279e",
+        "docs/metrics/postprocessing.md": "7853c6ada60f94345de0dc1b7ae19d3b92e226868f0afc0d02804f1b8646c625",
+        "configs/postprocessing/producer_equivalence.json": "1e5db1341262f4bceea78649bd1d8f0552ccef5c015ec79f2495ea6b38d2835a"
+      },
+      "scientific_producers": {
+        "src/research/crystallization_origin/lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+        "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+      },
+      "audit": "docs/postprocessing.md#verification"
+    },
+    {
+      "files": {
+        "docs/metrics/al_nuclei_lineage.md": "6844b031041c939213d47db0b2a52779d6895fef27281331b28ecd2074c30310",
+        "src/postprocessing/lineage.py": "9a037432444d50ffbddde4f8e48bfe523d56ac4eb9391b7e7b5334d5eb5cce03",
+        "src/postprocessing/search.py": "f3ab2ead6cd4d443c370d5c2dcc930a31608ed08f77b200f3d15637d0c62709d",
+        "src/postprocessing/extraction.py": "5ade2b1b7d2e8b269cefe1d768ee49131e6a1d1054bdc402497ee9e6680eff2d",
+        "src/postprocessing/sources.py": "0f7e58c2887e96309929108a40005c321fea162557fca29f3b1d1db9de3a9252",
+        "src/postprocessing/protocols/external_data.py": "91006b5a88f97effb713dc9f267fc91242a5eba661628065ea63931715f4758a",
+        "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+        "src/postprocessing/inventory.py": "08c9bd84cee0a0d6f4c9b9c7142ddeed921af3d876037fe02a1d757bfa7e6b9a",
+        "src/project_runtime/dataset_registry.py": "5923dadbbd6828a4aacf2ffd86aa81c222f596b01ffc9ce0abf191f2160f41e3",
+        "src/postprocessing/io.py": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+        "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+        "src/postprocessing/descriptors/structure.py": "56d07aa24378c9942cd72035760dbcf826e6bbe6e31112ace60078447cc20f18",
+        "src/postprocessing/protocols/extract.py": "0c3448f0a3ac72582b39e05f25e0a38b6f6be2fa0fa416c6dec7caa80402279e",
+        "docs/metrics/postprocessing.md": "66abcf8c9563625e7564d97133fb21334c91f2291398e96c7b661e679217107f",
+        "configs/postprocessing/producer_equivalence.json": "1e5db1341262f4bceea78649bd1d8f0552ccef5c015ec79f2495ea6b38d2835a",
+        "src/postprocessing/membership.py": "0d2711444d204c4fb547b646ba9e04fe096fe62e3908aafcbccfe03db9eef9fe",
+        "src/project_runtime/paths.py": "dfdb393235e3c80685777f926164752ca842a843c6e8dd37eba0199b267fa5e4",
+        "src/postprocessing/cache.py": "2d9174d4b6c827c79bbde9ac93730a1f45bdbf13b971df6083353cac046e10f3"
+      },
+      "scientific_producers": {
+        "src/research/crystallization_origin/lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+        "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+      },
+      "audit": "docs/nuclei_search_performance.md#second-acceleration-pass"
+    },
+    {
+      "files": {
+        "docs/metrics/al_nuclei_lineage.md": "bc6f507a040bf0c731d9bda51b2d20673c6046abe883c0bb33855c2c2cb8235e",
+        "src/postprocessing/lineage.py": "9a037432444d50ffbddde4f8e48bfe523d56ac4eb9391b7e7b5334d5eb5cce03",
+        "src/postprocessing/search.py": "f3ab2ead6cd4d443c370d5c2dcc930a31608ed08f77b200f3d15637d0c62709d",
+        "src/postprocessing/extraction.py": "5ade2b1b7d2e8b269cefe1d768ee49131e6a1d1054bdc402497ee9e6680eff2d",
+        "src/postprocessing/sources.py": "0f7e58c2887e96309929108a40005c321fea162557fca29f3b1d1db9de3a9252",
+        "src/postprocessing/protocols/external_data.py": "91006b5a88f97effb713dc9f267fc91242a5eba661628065ea63931715f4758a",
+        "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+        "src/postprocessing/inventory.py": "ee11e8581cdfe2e74e75447dfa15e921961b7894cff2f9a319343c4dca5dc64a",
+        "src/project_runtime/dataset_registry.py": "5923dadbbd6828a4aacf2ffd86aa81c222f596b01ffc9ce0abf191f2160f41e3",
+        "src/postprocessing/io.py": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+        "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+        "src/postprocessing/descriptors/structure.py": "56d07aa24378c9942cd72035760dbcf826e6bbe6e31112ace60078447cc20f18",
+        "src/postprocessing/protocols/extract.py": "0c3448f0a3ac72582b39e05f25e0a38b6f6be2fa0fa416c6dec7caa80402279e",
+        "docs/metrics/postprocessing.md": "66abcf8c9563625e7564d97133fb21334c91f2291398e96c7b661e679217107f",
+        "configs/postprocessing/producer_equivalence.json": "1e5db1341262f4bceea78649bd1d8f0552ccef5c015ec79f2495ea6b38d2835a",
+        "src/postprocessing/membership.py": "0d2711444d204c4fb547b646ba9e04fe096fe62e3908aafcbccfe03db9eef9fe",
+        "src/project_runtime/paths.py": "dfdb393235e3c80685777f926164752ca842a843c6e8dd37eba0199b267fa5e4",
+        "src/postprocessing/cache.py": "2d9174d4b6c827c79bbde9ac93730a1f45bdbf13b971df6083353cac046e10f3"
+      },
+      "scientific_producers": {
+        "src/research/crystallization_origin/lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+        "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+      },
+      "audit": "docs/al_nuclei_lineage.md#seven-original-v100-branches-october-7"
+    },
+    {
+      "files": {
+        "configs/postprocessing/producer_equivalence.json": "1e5db1341262f4bceea78649bd1d8f0552ccef5c015ec79f2495ea6b38d2835a",
+        "docs/metrics/al_nuclei_lineage.md": "6bed4528ec0eba3af4cd46553ddc0870ccc23d6db69585ab75c8c27781cb33e8",
+        "docs/metrics/postprocessing.md": "66abcf8c9563625e7564d97133fb21334c91f2291398e96c7b661e679217107f",
+        "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+        "src/postprocessing/cache.py": "2d9174d4b6c827c79bbde9ac93730a1f45bdbf13b971df6083353cac046e10f3",
+        "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+        "src/postprocessing/descriptors/structure.py": "56d07aa24378c9942cd72035760dbcf826e6bbe6e31112ace60078447cc20f18",
+        "src/postprocessing/extraction.py": "5ade2b1b7d2e8b269cefe1d768ee49131e6a1d1054bdc402497ee9e6680eff2d",
+        "src/postprocessing/inventory.py": "453098cbe7f189902122f5c24bbd847bb5d26137172c8810f4ccc53666af54cf",
+        "src/postprocessing/io.py": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+        "src/postprocessing/lineage.py": "9a037432444d50ffbddde4f8e48bfe523d56ac4eb9391b7e7b5334d5eb5cce03",
+        "src/postprocessing/membership.py": "0d2711444d204c4fb547b646ba9e04fe096fe62e3908aafcbccfe03db9eef9fe",
+        "src/postprocessing/protocols/external_data.py": "91006b5a88f97effb713dc9f267fc91242a5eba661628065ea63931715f4758a",
+        "src/postprocessing/protocols/extract.py": "0c3448f0a3ac72582b39e05f25e0a38b6f6be2fa0fa416c6dec7caa80402279e",
+        "src/postprocessing/search.py": "f3ab2ead6cd4d443c370d5c2dcc930a31608ed08f77b200f3d15637d0c62709d",
+        "src/postprocessing/sources.py": "0f7e58c2887e96309929108a40005c321fea162557fca29f3b1d1db9de3a9252",
+        "src/project_runtime/dataset_registry.py": "5923dadbbd6828a4aacf2ffd86aa81c222f596b01ffc9ce0abf191f2160f41e3",
+        "src/project_runtime/paths.py": "dfdb393235e3c80685777f926164752ca842a843c6e8dd37eba0199b267fa5e4",
+        "src/postprocessing/protocols/al_gpu.py": "10219ae98efb9286f693fb57aa418dcb344c8222433cb1a8d8f2133474ae9565",
+        "src/postprocessing/protocols/ni_gpu.py": "fe3fb1c5ee7b4a065f6ad4458b03e40870c3bd4a7a3015685ac9bcfa717f9772",
+        "src/postprocessing/gpu_extract.py": "e4e1b0394ec5fe1f963a1d7d297902182ff6383dba3a74d894c75a9339e1b29c",
+        "src/postprocessing/descriptors/gpu/__init__.py": "f373d44bcd996e0cae483a8ad6f0781032f0363141d42e6b04cae052c4ae25a7",
+        "src/postprocessing/descriptors/gpu/kernels.cu": "eded67fd0dd0db957eb67d879ab2e2d87e6b880cb4758ebe0ad3373529e6a7db",
+        "src/postprocessing/descriptors/gpu/ptm.py": "d118308eaf257d96c6db84677677c5f9f976aac6b0246864ab60aa44be65f77d",
+        "src/postprocessing/descriptors/gpu/ptm_kernels.cu": "5a04a648f0d52c34520249d0524b6eacd02176cfd8bb095d2d9dddae6271ce23",
+        "src/postprocessing/descriptors/gpu/ptm/LICENSE": "b9f798871d41ffda918baf33457efd0f19c4053b609b2b39765006355546da0d",
+        "src/postprocessing/descriptors/gpu/ptm/PROVENANCE.json": "512054957c08f09935368c7dfd607f6469ccfe27e0c435cab93e3528d28204c9",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.cuh": "70c8f4ce20a6fac8e124cd487458ab07fc278b153997730915a247230f8278f9",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.h": "e73de89301491ced44e8ce3b9fa2fa3a18fcae73fdbc8883c4e0fec3d8ac8e7f",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_constants.h": "fe1fbb181e609a47ad66540f722744e82971332d98fa262890a892a98c98d760",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.cuh": "7c023fd86113c052ddaea42e267307f05b9b1173fc9237c7cd790e04fa43bdcf",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.h": "cafbc2b336548b1d4d629cc7f5d370fd889409821247c894418675e91b8b2155",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.cuh": "076b8dde98e5f668015f9d4647c03d8edcc07aa2caeb8d34d0629f8f27581dd7",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.h": "fd0606909869bc273e28e2f813e81a2dc286bc17b8d9561b3dd523c27b3ab1d2",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.cuh": "791662c79fb6c2938f2af8e0f038d6ea716de74009ee27a81574348584785133",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.h": "24e9390cec10dfb4ebce9a21db76094e8ef59a435eb63cabfa54c8184d3e54dc",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_initialize_data.h": "b622c2ea5839f671594b4c2f8f16044b0ef96992984b8df66d23a5cda8e03afd",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.cuh": "f217265fcc48e1f224c4ef83ec60fb90c54cd1f7b02a57ce4e02912e380ea5d7",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.h": "4dd803f590e84af144fcc822652085d3dc7b3194f790d8b617ede65ca8d47cbd",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_polar.cuh": "a8386c01fceef228b48f51d6ef86a097b3fee3c723b257ceb8c2289d687d9d6a",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_polar.h": "0fcc2f16e16e9ad45654560520326d5b5698f15fe252d3cd297c2eeb7d48cc35",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.cuh": "70ea9d238572af089a2af8d17d1f10d5d6d4424aa11cb729c91081a5432b6d98",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.h": "e4530299960b975974654bfed45de7c073dca4a515d9ca01dac23ddfef9c5463",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_templates.h": "9735915f778db702b363ab80bfc1affb55dc2b1d85c9dad4204cdc11497d56c2"
+      },
+      "scientific_producers": {
+        "src/research/crystallization_origin/lineage_tracker.py": "8c5d96038b3bb124e88219cc21fd61a559e6b53892c6beaad28120843527f814",
+        "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b"
+      },
+      "audit": "docs/postprocessing.md#workflow; GPU descriptor provenance is separately pinned in accepted_descriptor_backends; CPU lineage and selection rules unchanged"
+    }
+  ],
+  "accepted_descriptor_backends": [
+    {
+      "name": "gpu-extract",
+      "execution": "resident",
+      "ptm_ordering": "voronoi",
+      "numerical_audit": "docs/postprocessing_gpu_ptm_20261008.json",
+      "numerical_audit_sha256": "97062217e280300e2cf5be0eb1f79be3f519cf76684087c83b1911f1d44e299f",
+      "implementation": {
+        "src/postprocessing/gpu_extract.py": "e4e1b0394ec5fe1f963a1d7d297902182ff6383dba3a74d894c75a9339e1b29c",
+        "src/postprocessing/io.py": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+        "src/postprocessing/descriptors/gpu/__init__.py": "f373d44bcd996e0cae483a8ad6f0781032f0363141d42e6b04cae052c4ae25a7",
+        "src/postprocessing/descriptors/gpu/kernels.cu": "eded67fd0dd0db957eb67d879ab2e2d87e6b880cb4758ebe0ad3373529e6a7db",
+        "src/postprocessing/descriptors/gpu/ptm.py": "d118308eaf257d96c6db84677677c5f9f976aac6b0246864ab60aa44be65f77d",
+        "src/postprocessing/descriptors/gpu/ptm_kernels.cu": "5a04a648f0d52c34520249d0524b6eacd02176cfd8bb095d2d9dddae6271ce23",
+        "src/postprocessing/descriptors/gpu/ptm/LICENSE": "b9f798871d41ffda918baf33457efd0f19c4053b609b2b39765006355546da0d",
+        "src/postprocessing/descriptors/gpu/ptm/PROVENANCE.json": "512054957c08f09935368c7dfd607f6469ccfe27e0c435cab93e3528d28204c9",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.cuh": "70c8f4ce20a6fac8e124cd487458ab07fc278b153997730915a247230f8278f9",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.h": "e73de89301491ced44e8ce3b9fa2fa3a18fcae73fdbc8883c4e0fec3d8ac8e7f",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_constants.h": "fe1fbb181e609a47ad66540f722744e82971332d98fa262890a892a98c98d760",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.cuh": "7c023fd86113c052ddaea42e267307f05b9b1173fc9237c7cd790e04fa43bdcf",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.h": "cafbc2b336548b1d4d629cc7f5d370fd889409821247c894418675e91b8b2155",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.cuh": "076b8dde98e5f668015f9d4647c03d8edcc07aa2caeb8d34d0629f8f27581dd7",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.h": "fd0606909869bc273e28e2f813e81a2dc286bc17b8d9561b3dd523c27b3ab1d2",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.cuh": "791662c79fb6c2938f2af8e0f038d6ea716de74009ee27a81574348584785133",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.h": "24e9390cec10dfb4ebce9a21db76094e8ef59a435eb63cabfa54c8184d3e54dc",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_initialize_data.h": "b622c2ea5839f671594b4c2f8f16044b0ef96992984b8df66d23a5cda8e03afd",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.cuh": "f217265fcc48e1f224c4ef83ec60fb90c54cd1f7b02a57ce4e02912e380ea5d7",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.h": "4dd803f590e84af144fcc822652085d3dc7b3194f790d8b617ede65ca8d47cbd",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_polar.cuh": "a8386c01fceef228b48f51d6ef86a097b3fee3c723b257ceb8c2289d687d9d6a",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_polar.h": "0fcc2f16e16e9ad45654560520326d5b5698f15fe252d3cd297c2eeb7d48cc35",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.cuh": "70ea9d238572af089a2af8d17d1f10d5d6d4424aa11cb729c91081a5432b6d98",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.h": "e4530299960b975974654bfed45de7c073dca4a515d9ca01dac23ddfef9c5463",
+        "src/postprocessing/descriptors/gpu/ptm/ptm_templates.h": "9735915f778db702b363ab80bfc1affb55dc2b1d85c9dad4204cdc11497d56c2"
+      },
+      "implementation_audit_section": "final_sequence",
+      "lineage": "unchanged CPU chronological tracking"
+    }
+  ]
+}

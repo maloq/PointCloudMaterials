@@ -1,0 +1,41 @@
+{
+  "protocol": "al_nucleus_lineage_v3",
+  "parent_output": "${storage:training_storage}/nuclei_search/al-v100-seven-20261007-extraction",
+  "output": "${storage:training_storage}/nuclei_search/al-v100-seven-20261007-v3",
+  "minimum_shared_atoms": 4,
+  "continuation_fraction": 0.5,
+  "minor_parent_fraction": 0.2,
+  "embryo_atoms": 8,
+  "reset_atoms": 4,
+  "reset_ps": 1.5,
+  "persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "growth_atoms": 128,
+  "thresholds": [
+    8,
+    32,
+    64,
+    128
+  ],
+  "durations_ps": [
+    1.5,
+    3.0
+  ],
+  "prehistory_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "lanes": 1,
+  "workers_per_lane": 8,
+  "time_limit": "06:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "conditions": "Audit metadata only",
+    "relaxation": "Original MD full cells; no quenches or additional relaxed temporal outcomes",
+    "population": "Exactly seven completed original Al V100 prepared-liquid velocity reshoots, identified in source_ids; six melt ancestors. Native 0.10 ps observations after 15 ps unsaved equilibration. FastAl float32 forces and native LAMMPS float64 NPT, verified against launch inputs and executed callback. Other Al data and the 33 birth-focused replacement branches are outside this release.",
+    "geometry": "Full periodic original MD cells; exact source timelines and atom identities",
+    "history": "Every saved full cell at native 0.10 ps; first 15 ps of equilibration unavailable",
+    "motion": "Velocities retained in source archives; structural labels and lineages use positions, box and atom identities only"
+  },
+  "parent_stage": "extraction",
+  "descriptor_threads": 1
+}

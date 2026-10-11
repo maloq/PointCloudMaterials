@@ -1,0 +1,73 @@
+{
+  "protocol": "al-shooting-births-fates-v1",
+  "output": "${storage:training_storage}/nucleus_fates/al-shooting-20261002",
+  "campaigns": [
+    "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+    "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+    "al_meam_position_shooting_70304_400-500K_15ps_4shot_topup_to16_20260904",
+    "al_meam_position_shooting_70304_400-500K_48ps_1shot_local_20260831",
+    "al_meam_position_shooting_70304_400-500K_48ps_2shots_local_followup_20260831",
+    "al_meam_position_shooting_70304_400-500K_48ps_40branches_local_20260901",
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903",
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_protocol_flag_correction",
+    "al_meam_position_shooting_70304_400-500K_48ps_4shot_topup_to16_20260903_prepared_without_legacy_window_spec",
+    "al_meam_position_shooting_70304_400-500K_48ps_8shots_20260830"
+  ],
+  "nested_original": "al_meam_nested_shooting_pilot_70304_400-500K_20260902",
+  "nested_fixed": "al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible",
+  "cadence_ps": 0.3,
+  "chunk_frames": 16,
+  "ptm_rmsd_cutoff": 0.1,
+  "establishment_atoms": 64,
+  "establishment_persistence_ps": 1.5,
+  "lineage": {
+    "minimum_tracked_size": 4,
+    "minimum_shared_atoms": 4,
+    "minimum_overlap_fraction": 0.25,
+    "maximum_missing_frames": 1,
+    "neighbor_cutoff_A": 3.6,
+    "local_birth_radius_A": 8.0,
+    "interface_distance_A": 8.0
+  },
+  "fates": {
+    "minimum_verified_peak_atoms": 8,
+    "primary_minimum_atoms": 8,
+    "primary_persistence_ps": 0.75,
+    "dissolution_followup_ps": 2.25,
+    "growth_minimum_atoms": 128,
+    "growth_factor": 2.0,
+    "growth_persistence_ps": 1.5
+  },
+  "lanes": 8,
+  "workers_per_lane": 8,
+  "time_limit": "12:00:00",
+  "input_contract": {
+    "encoder": "none",
+    "predictor": "none",
+    "geometry": "Original full-cell MD coordinates; all tracked atom identities; no relaxation",
+    "observation_spacing": "Exact 0.30 ps in every included branch; no interpolation",
+    "conditions": "No predictor inputs; campaign, temperature, protocol and source ancestry are audit metadata",
+    "future_information": "Label construction only; candidate eligibility/training are a separate stage",
+    "training_only_teachers": "none"
+  },
+  "excluded_campaigns": [
+    {
+      "campaign": "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+      "reason": "payload_deleted",
+      "retirement_record": "docs/storage/smoke_cleanup_20261002/receipt.json",
+      "retirement_sha256": "def78f6c0607840e0425b5a33c2b9eb915419bc6696eda8aa05d963d94cf9abe"
+    },
+    {
+      "campaign": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+      "reason": "payload_deleted",
+      "retirement_record": "docs/storage/smoke_cleanup_20261002/receipt.json",
+      "retirement_sha256": "def78f6c0607840e0425b5a33c2b9eb915419bc6696eda8aa05d963d94cf9abe"
+    },
+    {
+      "campaign": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+      "reason": "payload_deleted",
+      "retirement_record": "docs/storage/smoke_cleanup_20261002/receipt.json",
+      "retirement_sha256": "def78f6c0607840e0425b5a33c2b9eb915419bc6696eda8aa05d963d94cf9abe"
+    }
+  ]
+}

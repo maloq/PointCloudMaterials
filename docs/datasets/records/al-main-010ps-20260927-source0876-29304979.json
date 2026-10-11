@@ -195,6 +195,191 @@
       "provenance": {}
     },
     {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876/technical/checkpoint.lammpstrj.float16/conversion.json",
+      "relative_path": "technical/checkpoint.lammpstrj.float16/conversion.json",
+      "sha256": "e964d3d31d9e0c3b07584be85a594fcc5fb94fa2c983a0838c6b8ae761a4bc13",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.01256179162266172,
+            "coordinate_count": 210912
+          },
+          "velocities": {
+            "max_abs": 0.0074596405029296875,
+            "rms": 0.0008305932598926194,
+            "coordinate_count": 210912
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876/technical/checkpoint.lammpstrj.float16/manifest.json",
+      "relative_path": "technical/checkpoint.lammpstrj.float16/manifest.json",
+      "sha256": "f4fc6c17c2e2d6621bd9767136ce832f6661a5959f1a00178467dbb75214bf33",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 1,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 1,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              1
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f10669eb6b865dd13b845d8602fb46c30f92a305d7b7a118691c593c69793300",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f7e9c04685631230ee7dccbbc82f81868ea74f56f37551cb77463a04efdc106e",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "108cd6fd0572440c7e080a44776cc58e3c6e34c7af5ce303d8884668c83526a6",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              1,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "fbd4fa1bbb2d1761db048ffb97bac16a6699ba95a0fdcbf069468b83bf5df9e9",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              1,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "60bde9863fbe5737b8867d37335237cd21814e1ebd48884c7fff95b2e01da1a6",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 285000,
+          "last_step": 285000,
+          "step_intervals": []
+        },
+        "content_signature_from_manifest": "84326f6e165b1b909c5b0afc3a3ce6d7dc382bbc560ce48047fb0d6da946cea5",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
       "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876/trajectory_binary_float16/manifest.json",
       "relative_path": "trajectory_binary_float16/manifest.json",
       "sha256": "5d3a542bfdcc8b5bf3d325af6564eaf27c954eb9ae2939d863e92441f1ee6134",

@@ -1,0 +1,7 @@
+{
+  "table": "tables/cohorts.csv",
+  "sha256": "5906c8fb942d826452427b7d4cc1ecd75c268c0fea260d0486a4cb8a90ec7b73",
+  "family": "meam_dense_comparison",
+  "contract": "technical/metric-contracts/meam_dense_comparison.json",
+  "definitions": "tables/metric-definitions/meam_dense_comparison.md"
+}

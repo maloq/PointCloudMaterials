@@ -1,0 +1,1694 @@
+[
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/runner.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/runner.log",
+    "sha256": "80b574577a30234d1807fadc8cb45ca29b9929265cce25c1502aa21eac2ff36d",
+    "bytes": 7179
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/status.json",
+    "sha256": "e53381d3b4575a390195062d2e2e473068e2a699fcce0de0cf2d7a3ae34a875b",
+    "bytes": 308
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/run_record.json",
+    "sha256": "cc0138bb489e708c98cc6c13911aac9d5f7cc93d055b1e61a05db44748623b22",
+    "bytes": 1659
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/config.json",
+    "sha256": "7d29b6343f562c908eaaeaf9380e7ccdce055364ac4fb8cb7810147ff382abd5",
+    "bytes": 3022
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260908T114520.144089Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260908T114520.144089Z/working_tree_status.txt",
+    "sha256": "a1c0505b98eefd07879d8c14714724b4603cfc171a6bbfd67d55f3740178f60a",
+    "bytes": 500
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260908T114520.144089Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260908T114520.144089Z/run_record.json",
+    "sha256": "cc0138bb489e708c98cc6c13911aac9d5f7cc93d055b1e61a05db44748623b22",
+    "bytes": 1659
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260908T114520.144089Z/config_0_ta.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260908T114520.144089Z/config_0_ta.json",
+    "sha256": "7d29b6343f562c908eaaeaf9380e7ccdce055364ac4fb8cb7810147ff382abd5",
+    "bytes": 3022
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260908T114520.144089Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260908T114520.144089Z/environment.json",
+    "sha256": "d9d25211b541e8b77e49ddbd1aa43550d5c14dadc6c1bb3a2276384e2820cc6d",
+    "bytes": 15570
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260907T162249.097702Z/config_0_ta.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260907T162249.097702Z/config_0_ta.json",
+    "sha256": "7d29b6343f562c908eaaeaf9380e7ccdce055364ac4fb8cb7810147ff382abd5",
+    "bytes": 3022
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260907T162249.097702Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260907T162249.097702Z/environment.json",
+    "sha256": "d9d25211b541e8b77e49ddbd1aa43550d5c14dadc6c1bb3a2276384e2820cc6d",
+    "bytes": 15570
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260907T162249.097702Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260907T162249.097702Z/run_record.json",
+    "sha256": "367c71c5c094b2673a7fbee0f3f4c5fc11ff07ff5911332810452bd5855988c6",
+    "bytes": 2479
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/tracking/20260907T162249.097702Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/tracking/20260907T162249.097702Z/working_tree_status.txt",
+    "sha256": "fc58b4b27e5a72107ce28b0caf1b693345f443091d3118a3ebd6f42bb05f73a2",
+    "bytes": 498
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/log.lammps",
+    "sha256": "323f709900eb274b37c44559836f618fda4744d3935a8e014c61194e0cc91009",
+    "bytes": 49919
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/stdout.log",
+    "sha256": "1760bce53272e490ec8e96ceac87f130461d1028b115fea96d2a3fb38e1774cc",
+    "bytes": 48934
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/outcome.json",
+    "sha256": "e15084b148b5b21eb771e70b553f80720b78a927208f48d31b5dfc952e470f94",
+    "bytes": 787
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/metadata.json",
+    "sha256": "7e870ae8b9fa10c4a2a112795ce99fb6cb6778085ee4e08a1d75ec118498ed4d",
+    "bytes": 796
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/binary_conversion.json",
+    "sha256": "3039c6a5cbbe55bd4cf3e4fa1ab0c85e566f28e39b4db25fc3308f552258aacb",
+    "bytes": 1292
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/in.lammps",
+    "sha256": "5e23e857e0274ed9dcd4dae0f58739eca2dec259a10eae2e5bd882b14b69119b",
+    "bytes": 1079
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.60ns/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.60ns/trajectory_binary_float16/manifest.json",
+    "sha256": "f8afb27e7d38f42d2d50fc7837cc894ead01170906f9db24af67ece769577d0a",
+    "bytes": 3390
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/metadata.json",
+    "sha256": "e9f789bd634e7bba82cdf792af46061ed78f74d3b96aedfed106f0d6b9db1eb0",
+    "bytes": 794
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/in.lammps",
+    "sha256": "b417c13151fbec58c4071055b348afad31105590a61e304abee13adbf8ca798e",
+    "bytes": 1078
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/binary_conversion.json",
+    "sha256": "0cc874ded8248cf476d775a8a7df92eb309308eca53e7ce222085207423e4dc7",
+    "bytes": 3133
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/float16_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/float16_conversion.json",
+    "sha256": "b341792ffc38ffbea8df983aaf37c60bc62a558af955c9f7154763cae6b15ec3",
+    "bytes": 1765
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/stdout.log",
+    "sha256": "9170181cc50623b628c2146924fd877fc3ce9eb48544d8379bd78af6fc578040",
+    "bytes": 48924
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/outcome.json",
+    "sha256": "f02ac191fc20743a6b5912f3ac7e4030d9ae74cd336b5f0874c11c8b1101b38b",
+    "bytes": 1026
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/log.lammps",
+    "sha256": "b311b8cc3c9cd3cd783b904ca4d68f7bae88be20ba1320adb2006fe4e571e166",
+    "bytes": 49908
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.7ns/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.7ns/trajectory_binary_float16/manifest.json",
+    "sha256": "3e02c48641a4e59ff390918d88d70627f4e18acaad9a55a7965ac62c7b65bcaf",
+    "bytes": 5894
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/in.lammps",
+    "sha256": "9d9fa9799d72e9d843c3b49901eeb4ebe5ec8b3aac56cf2bd24ca7207d4c3d43",
+    "bytes": 1078
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/outcome.json",
+    "sha256": "5009569aceea655a77a65d4085f335118d35924907251b7478d9d73fc85cee50",
+    "bytes": 785
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/log.lammps",
+    "sha256": "af4c36e8e269ab31086056fc8be94500f3e3a0861085d441d0cc2f82fb1baddb",
+    "bytes": 49881
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/metadata.json",
+    "sha256": "b7acb2c5f4658cba0b00ecacb19f88ee10a44faebbe08f4c8bb7f7f79618ed0c",
+    "bytes": 794
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/stdout.log",
+    "sha256": "32b3bb682d2e52dc536af1587d125ff3b2305a8d753e5fef4e9a57b083c72e7a",
+    "bytes": 48897
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/binary_conversion.json",
+    "sha256": "29abdfbea0a4d52c8c0df4546eb09a1972ed82b7449c436d5a29f0827d199073",
+    "bytes": 3134
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/float16_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/float16_conversion.json",
+    "sha256": "5647145e7c028f3c7b93c799b5cf7983d75180c53e890e7bf946af74b93e8a96",
+    "bytes": 1766
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.9ns/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.9ns/trajectory_binary_float16/manifest.json",
+    "sha256": "2eb7223c2f52169cfbf835f6f195415309f993ed5c9ad8f88e3419733232209e",
+    "bytes": 5895
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/stdout.log",
+    "sha256": "d5ada1de6834b6cd3c9526d870a6e2d8dcbc2a20273ec1619ec0a38aed65d01e",
+    "bytes": 48927
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/outcome.json",
+    "sha256": "6b73b945a439cbd3f7ab9f34271e4fd595b2300ff8163f72a3ca2d62917f1773",
+    "bytes": 785
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/binary_conversion.json",
+    "sha256": "b737e9eb959e60dcc2ac1725edc24904242913ae0fcc648584a8b6d07ae59bab",
+    "bytes": 1290
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/metadata.json",
+    "sha256": "c7b5c274ae5d38a6ca0d4fdff3eaa3f09264ce609287c77e30a64a49ef070c18",
+    "bytes": 794
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/log.lammps",
+    "sha256": "c2c8972537baef4ed45ad483faed5507ff3ae10a0829c349ff47ed614f7d38ea",
+    "bytes": 49911
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/in.lammps",
+    "sha256": "2f4b774408780a0552956e064c8d4bad64ec82574821c1fd13c8285e773d5075",
+    "bytes": 1078
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/3.0ns/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/3.0ns/trajectory_binary_float16/manifest.json",
+    "sha256": "6f1409995dcc1c9b6d037c69ce9c36a35b17fb6c49a66133143d428dd19161f2",
+    "bytes": 3386
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/log.lammps",
+    "sha256": "19e1681c7554afad727c4514116ef966e32dec5edb52200799fe17bf6e418bce",
+    "bytes": 49887
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/outcome.json",
+    "sha256": "7350390ae2eea1ea81f62330ffab7c950245d418c0e51f0f6ff7b75b4374cff4",
+    "bytes": 785
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/in.lammps",
+    "sha256": "c32c7f7c6fa4417e3cbb09a9a8aea7af105838ddfa1573f5564fee959fb0cbd3",
+    "bytes": 1078
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/stdout.log",
+    "sha256": "1e13eb75f8a4e82dc66b028b1af4b4106060d7af54c634aeda436f8203ff46c1",
+    "bytes": 48903
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/metadata.json",
+    "sha256": "5e3037f0f27154bbbff2832664b73bf11f4b3516c65bca72a2135fe0683d1261",
+    "bytes": 794
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/binary_conversion.json",
+    "sha256": "317fdbb1838402aa51a157b4f869253ec2ad88a03cc9ce75d2ffb8ef85ee7498",
+    "bytes": 3133
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/float16_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/float16_conversion.json",
+    "sha256": "942d21e3f0890eb5070c962ac49ada3d6cbc84ec18975f103800b94ee1bd5e9d",
+    "bytes": 1765
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/branches/2.8ns/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/branches/2.8ns/trajectory_binary_float16/manifest.json",
+    "sha256": "52ea325eb16a2832cc8e60a3e7988ad6afae3438d15dc8c63d30649ff469f253",
+    "bytes": 5894
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/resume_history/20260907T095553441896Z/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/resume_history/20260907T095553441896Z/status.json",
+    "sha256": "93371f56d23a27553eeb808492b6a5999f8e59d345dcf928c01c1fad5c7d6c72",
+    "bytes": 252
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/resume_history/20260908T114521699063Z/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/resume_history/20260908T114521699063Z/status.json",
+    "sha256": "03fea42fc67c35720d9210f3ad8f6c716f4af602a42585b496acb3f1a73c9e7e",
+    "bytes": 707
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/resume_history/20260907T162250459273Z/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/resume_history/20260907T162250459273Z/status.json",
+    "sha256": "609b6cdeda260e7b726409aad42a46c9d0f493ad207cd6f5235053a2adad8745",
+    "bytes": 337
+  },
+  {
+    "source": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta/resume_history/20260907T095827632004Z/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/00-Ta/resume_history/20260907T095827632004Z/status.json",
+    "sha256": "e0ff369e8e5cc6c21bbfea6ecd799aa592f474eb8715fd32ef31a02e49c88dec",
+    "bytes": 707
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/config.json",
+    "sha256": "9880ff890f25ef76b0eee4659d0670d6e71bad1c101cb16c0389cedc7f5130ce",
+    "bytes": 3768
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/status.json",
+    "sha256": "b62a7336293cea81b1e421cf068b43cfde3fa0e7081e93871cbab317ac4d3069",
+    "bytes": 297
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/run_record.json",
+    "sha256": "201619c29567c8f6d86e0c9e6d51a7bf269c8292cc66950bddd260956256878c",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/metadata.json",
+    "sha256": "4fd06b374b091426ed07c5fc9822465ce1b6afec5d28689f7396759c54a34110",
+    "bytes": 986
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/log.lammps",
+    "sha256": "4ba10a6678d7408dedc563457033578e6cccb14e1fc944f0852beb753890c909",
+    "bytes": 49895
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/binary_conversion.json",
+    "sha256": "df1a12e71f5980a8e7b11b2dbbfb0917e5b439d13082958d294bc10f10e8c2d6",
+    "bytes": 1311
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/stdout.log",
+    "sha256": "94d093be273b1874c6110a92966f1e1a4e4bdaff6f4df836ae6ed4558101e60f",
+    "bytes": 48927
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/in.lammps",
+    "sha256": "1bf1433f96ba46149c948bd9ee416c2cc5a4b060ce38ebb76117c63f49772861",
+    "bytes": 1062
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/outcome.json",
+    "sha256": "e6d0cf8ac4fda77c3f09d24a9414254f62d23595d5278a16a7518b2d79053384",
+    "bytes": 977
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "09a8955e8d70e6eaa7cef7cd1e80fad928c99efd11196482728249866eccd828",
+    "bytes": 3614
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/metadata.json",
+    "sha256": "61445e13a4d4c18f8909da780002a6ae53cda0e4eb84cc9f21f912852adc750a",
+    "bytes": 985
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/log.lammps",
+    "sha256": "00b3be55a7f91f025a87355604d79bba5d899da2fa85d7920ed6b97c67f594c7",
+    "bytes": 49871
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/binary_conversion.json",
+    "sha256": "4ef0a57553d1d2aea4139d4f213d6ad18e48036a044eefbe22fdc042ab70e435",
+    "bytes": 1311
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/stdout.log",
+    "sha256": "6c0b2589405753b08e94171c8161f4c12dd4dc069760aabeebe29e461e552820",
+    "bytes": 48904
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/in.lammps",
+    "sha256": "18cc0fe25593e47d9473f98283112a37cbdf5aaa07ed82f97d4606f1f4d59b99",
+    "bytes": 1061
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/outcome.json",
+    "sha256": "6a9394d1cb9887236eb2ba39b1c35f6d2327d60841d4dae91771245b517010f4",
+    "bytes": 976
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "23b4705aca8ce79fbad1d4a1a72363f6823afbb53779f75472d41cb13f59e593",
+    "bytes": 3613
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/metadata.json",
+    "sha256": "e9885c1dd92a559b86f7df9596330175ac1ddd483df82d91e1584cb7aacf02dc",
+    "bytes": 986
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/log.lammps",
+    "sha256": "aa3e583b86e7f37ca708a317a6d829a10778da0bad8dbf95244f86828f9f63ac",
+    "bytes": 49871
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/binary_conversion.json",
+    "sha256": "df5a6419ee6d6c16b17d4b4c3cefd72f2a06d09d0b575a55221a9dfa54223366",
+    "bytes": 1310
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/stdout.log",
+    "sha256": "1c15f888a7676f469edca0c3a56b2eee7ee33f3f309b7aceec4b237419240f41",
+    "bytes": 48903
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/in.lammps",
+    "sha256": "53fe500a104440e66e5ce6ce7407af3444a4befc19d1a3c696e8ce5120e1b26c",
+    "bytes": 1062
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/outcome.json",
+    "sha256": "bf6c457afe8b01af2c9e2dd1d329dc40af34c104b11f5c4352b54344151608fb",
+    "bytes": 977
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "2c36f02db47623b81ae829aa065e1f8fb66b78cc7724859ff0d9b05fb3d9c908",
+    "bytes": 3613
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/metadata.json",
+    "sha256": "7ec4d6c18ae715119d55c4a3cc1c0536b99ccd99257f0ab94759ff9344a10bbc",
+    "bytes": 986
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/log.lammps",
+    "sha256": "f70cc15e13d544ce4a0568b5920b12cdbbb1edc2611aeaa0658099b07a620e4c",
+    "bytes": 49894
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/binary_conversion.json",
+    "sha256": "8799fba1b003839571fbc06fe2d995daadf42ac6ef4efde8aa8e7ad28ae7a730",
+    "bytes": 1311
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/stdout.log",
+    "sha256": "0e33944ed754c7e9acb88b9d9b281bb7d8f5d4ad0a846dcb57354367077c7012",
+    "bytes": 48926
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/in.lammps",
+    "sha256": "6b34e584529d0ef813cb40d62e2ee12827b7b526181634e1d26566c6f33f16f9",
+    "bytes": 1062
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/outcome.json",
+    "sha256": "aff73a98b218ff88bda2c1eafe17b21c51806b28f8a58a1daf7e5f8cb22e4b27",
+    "bytes": 977
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "7f3a3cf31df50443e1a64b04cca227a789b54395140b4e1b04b65288b4e3bd4f",
+    "bytes": 3614
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/technical/portable_config.json",
+    "sha256": "a727591aecb2f5fa501b7fc90a1541f44c0bc62792d84e81c5eeb1869dc54fa8",
+    "bytes": 3679
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/technical/launch_config.json",
+    "sha256": "9880ff890f25ef76b0eee4659d0670d6e71bad1c101cb16c0389cedc7f5130ce",
+    "bytes": 3768
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/run_record.json",
+    "sha256": "201619c29567c8f6d86e0c9e6d51a7bf269c8292cc66950bddd260956256878c",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/config_0_launch_config.json",
+    "sha256": "9880ff890f25ef76b0eee4659d0670d6e71bad1c101cb16c0389cedc7f5130ce",
+    "bytes": 3768
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/01-ta-shooting-20260926-parent00/tracking/20260926T115541.030504Z/working_tree_status.txt",
+    "sha256": "eb500a34bcf7b678b94234b1fb0570ef8ce4dc7c6ec0eb91500124ad2d47ed83",
+    "bytes": 166
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/config.json",
+    "sha256": "cbd0cdf8b2c446d7f30092559b24ed0ea46580dbf93877e8df12358d06b70c21",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/status.json",
+    "sha256": "df935798396493b8a0e8553a85f6458a89b149d24833c4178e3b0860ad3d7eda",
+    "bytes": 296
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/run_record.json",
+    "sha256": "99f35aa18f9f43459a02b025c333569237ac751e7a4f464b22b0697f6021164c",
+    "bytes": 1917
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/metadata.json",
+    "sha256": "09078b0bc36bf6253f3cc7ad8e89ef02f7c15dfa194dcba645205c9b10f7bb57",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/log.lammps",
+    "sha256": "cb368a75247d148ed61535c31c86e424bc06029bb46021d268c438966b12a846",
+    "bytes": 49884
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/binary_conversion.json",
+    "sha256": "c0bfc897e6642d3079f11af68ff696c7fc97486a393f9e00a75dec3f51929bc0",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/stdout.log",
+    "sha256": "a25c829f56b98a0aca8db28e7a675a9eaac0ebdb9bb64bb8b4ade8fb90b46450",
+    "bytes": 48919
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/in.lammps",
+    "sha256": "f332c5c4aee5ccbc7cd10dc2a50ca7e8b870178aa11e2441c5c0fd2207f2be7a",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/outcome.json",
+    "sha256": "911c5e051f8233425797b88050bfc4f16f9ec26d62697292a1abb9b86ef3aa48",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "8e1a1bf4b5bbfca6ff73451ecc958c0a8fbb059893e316142b843cd13f117f66",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/metadata.json",
+    "sha256": "b9abe1961bdd40e1c37789a57f4453db0fb192e4c6d62aede9e88423b6a436d6",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/log.lammps",
+    "sha256": "9b7a182e0efabea53ad73f979f7ea39ca1f372ad880ca4fadda851315deba422",
+    "bytes": 49890
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/binary_conversion.json",
+    "sha256": "abee06914dd26ce704c9c79aa69705a81bfd723f205896d35d040928907638ef",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/stdout.log",
+    "sha256": "91155bf3f7aeebd9c291dd4fee376804c2b75049279ac4b89e8cab424d3fc6af",
+    "bytes": 48925
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/in.lammps",
+    "sha256": "16852ee4cc35ccece3884fa319822730cd5e602abcd703c9cab90a0535e1c1d9",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/outcome.json",
+    "sha256": "a103c67e06260ab068237082be12a5b618a8948d8f22a3cc23b20c14e7e77cd5",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "0325ce53a5972de1a527e43492e409417bc0df521dd27360c49b3d58537eaa09",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/metadata.json",
+    "sha256": "78baa46c19cd06df58b1e9b81e757d07ce632a1f277e0bf986828fd5f33958da",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/log.lammps",
+    "sha256": "864c988d2a896c9fe43b17590160932b83683a53dc7d188c1c9d1cbe10275d39",
+    "bytes": 49902
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/binary_conversion.json",
+    "sha256": "6066052eaec4ebf86d49d5865cf147ad6b08ee246a5df3d848eab97b4b9d61ec",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/stdout.log",
+    "sha256": "34a7ab6402650cf5f6d96d3edac3c48d9f02d0f898cb894d4b36415891454047",
+    "bytes": 48937
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/in.lammps",
+    "sha256": "d6117656a3ee1dc3d494d6a40bdd88fde29b06ac1099af19c1c96bd4a541c7d9",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/outcome.json",
+    "sha256": "3235d484026e1f6c7cc6360e36c2c394fb4b3a33631bee5ae0785df9f0e81ef5",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "30a8407e6e7472b9e36c990eed93734ed542b4302cec00171487270c4c9a8bdf",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/metadata.json",
+    "sha256": "0311ec0af4a1a9a2c81ae799bb341215b20e87669eac7f1bcb645fbcb6e57648",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/log.lammps",
+    "sha256": "cf6d862d8716ab46d63fc0fc012d05fbfcae42c17545ee56d083ba3a16917746",
+    "bytes": 49871
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/binary_conversion.json",
+    "sha256": "52663b66a7675118008b11cb508f6f5a32cf5be390e7663f911e9cca4979d30f",
+    "bytes": 1312
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/stdout.log",
+    "sha256": "fffc72840b54d06d6283335b6c09fc0b0206a7f1b0e9b0e93ca0a17875007577",
+    "bytes": 48906
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/in.lammps",
+    "sha256": "1202ffc1fb863a9d8d92cda58796a6a801e3e179fa7c03644d76a6a703333d3a",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/outcome.json",
+    "sha256": "1c23da035b528132470d1b1134dfb33dd62773a113697a91469351aabb365c93",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "19e1b5321288b8ad810a96e257bd74100e9397e2ce486fc87af0801af27b2e89",
+    "bytes": 3611
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/technical/portable_config.json",
+    "sha256": "eae5b8f94614a7ac2792b7ed2ca24a26ed43f5899e05319d6054afcf187aecea",
+    "bytes": 3646
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/technical/launch_config.json",
+    "sha256": "cbd0cdf8b2c446d7f30092559b24ed0ea46580dbf93877e8df12358d06b70c21",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/run_record.json",
+    "sha256": "99f35aa18f9f43459a02b025c333569237ac751e7a4f464b22b0697f6021164c",
+    "bytes": 1917
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/config_0_launch_config.json",
+    "sha256": "cbd0cdf8b2c446d7f30092559b24ed0ea46580dbf93877e8df12358d06b70c21",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/02-ta-shooting-20260926-parent01/tracking/20260926T115542.721993Z/working_tree_status.txt",
+    "sha256": "eb500a34bcf7b678b94234b1fb0570ef8ce4dc7c6ec0eb91500124ad2d47ed83",
+    "bytes": 166
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/config.json",
+    "sha256": "ab58aa70e5a963903a030ba0e0b9e8041b689aed593202ba8d1dbb1484de6690",
+    "bytes": 3745
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/status.json",
+    "sha256": "58be6340dc0633ab77e3ebdb5a3f4b5dedce8c9c145370d95f56767b54231295",
+    "bytes": 297
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/run_record.json",
+    "sha256": "2c7ef7f6d4d5782557ac56454f2b99c758c6963addba4a1503043e950671eba7",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/metadata.json",
+    "sha256": "231cdb0faa15b49733d6819ae276ead61dc5030d7dc2e66d5394655b84d26d25",
+    "bytes": 980
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/log.lammps",
+    "sha256": "059e2687dfa395c4bfcaae8c2fc815731a5d4084f383430d3e68d03f2c665639",
+    "bytes": 49905
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/binary_conversion.json",
+    "sha256": "c8305cb5db787c32cbd130da8f2e7eea4736ed89858445f7eddcb9d0d9ab31ec",
+    "bytes": 1310
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/stdout.log",
+    "sha256": "138e867f7925147bd34b4330028b60467a6eaca2776b3f8f0db921bcfa24a65f",
+    "bytes": 48941
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/in.lammps",
+    "sha256": "142624acaa991b2151ac48d67ed45ed925ff4b826a0d8dec46fbc16c8b172245",
+    "bytes": 1058
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/outcome.json",
+    "sha256": "f211365f4c65eff1bef1df7ee9abce53ba791cf1489ce08896dd1d14f980fbfe",
+    "bytes": 971
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "d0b1e767c30782d90f2e0182026873a3e3a23bcc846edc66e20305b8efa5f8bb",
+    "bytes": 3608
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/metadata.json",
+    "sha256": "7fbb124c0fb537a585acd95c5e23c5671095eafa15aec60e213005d7919fcba4",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/log.lammps",
+    "sha256": "368877f4553786006972a2da221c3364ede9c8b3c81837710042da707ebb498d",
+    "bytes": 49888
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/binary_conversion.json",
+    "sha256": "5b2a36a7562a86c625c0df962562e5537dbbb3503253fd68bcd822dd8e5bfb1f",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/stdout.log",
+    "sha256": "e420b2ede49d7f75047e8a07979bc914f1cc563e33585368dc2481dd0eb494bf",
+    "bytes": 48923
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/in.lammps",
+    "sha256": "07d18426e057dade9fdec0ac2afff2073e6f601f92f044388ea098bbe3ee7fe0",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/outcome.json",
+    "sha256": "fcd9227a4fa4bfc9c2d41ecba90dc365d9fa3019c8f15c3cd5c66c3b840ba8b4",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "0bfd26a4d528cc7a29d5dd1772905fdba8afbceee5a7ad5a8c83953626277534",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/metadata.json",
+    "sha256": "f7fdc7028ece98b6c9863afc8de06661da5b3d1d760f5109d0a20ea63b238f0c",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/log.lammps",
+    "sha256": "5c472f630dd7ff48f4c3a0b144abb60e8f3cd6c7c85ee2343f1871d2c1b257b7",
+    "bytes": 49932
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/binary_conversion.json",
+    "sha256": "2a44bc9faa47e1dc795458da44ac60028e915c81fac473f2d980d66c0190e5cd",
+    "bytes": 1312
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/stdout.log",
+    "sha256": "009ddb451310f4fc77c963d35bf133a09c5daa0e5490b4ed2f9b3b3458d8e3ca",
+    "bytes": 48967
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/in.lammps",
+    "sha256": "e2f638a7295849778f182fa6c558b71742bd759a8907644cb0f52debe6af04eb",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/outcome.json",
+    "sha256": "bcb2625fe2bc8c288530ff37d67c3031c5022d48f2ada62235df587780844027",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "fbcb5be40c4039bcc4c23b1c4edf7e7b2c764a05a1b531f7f735ab7f4bb21851",
+    "bytes": 3611
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/metadata.json",
+    "sha256": "e5f6ed34f6aaa338840e87649119edf1d3851a295c4f903a68f493db7ffb28dd",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/log.lammps",
+    "sha256": "c154ab057f24269119b7dd57c851d1b480edcfc126d0af7884f93ec88320533b",
+    "bytes": 49902
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/binary_conversion.json",
+    "sha256": "803d6f15cf8e667520e0a5f2609df5d77d016c1de95b04ca9d9499f07b8c3914",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/stdout.log",
+    "sha256": "a47d1066d30f94c79cf96d3a34e83f5a1849cd8ea584e1940fd4e13c436fc9a3",
+    "bytes": 48937
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/in.lammps",
+    "sha256": "72901d1b0fb8bf4a6980c4a9f4de7c2ce915eabb0db9a7ce2ff3ff3023d4e036",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/outcome.json",
+    "sha256": "d1429f6a0f50651709b44a3a557c5dbcc006aeebb570f20584bd7bf5662f5b3b",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "dd1f9631b1ba054b30f633c633a2832e8661efecb06a5e98fb916d7f344de3b3",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/technical/portable_config.json",
+    "sha256": "697d9ece1e349cbe39f5595665e60a3e51076198a60415961c6c857a61bd1cfc",
+    "bytes": 3656
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/technical/launch_config.json",
+    "sha256": "ab58aa70e5a963903a030ba0e0b9e8041b689aed593202ba8d1dbb1484de6690",
+    "bytes": 3745
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/run_record.json",
+    "sha256": "2c7ef7f6d4d5782557ac56454f2b99c758c6963addba4a1503043e950671eba7",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/config_0_launch_config.json",
+    "sha256": "ab58aa70e5a963903a030ba0e0b9e8041b689aed593202ba8d1dbb1484de6690",
+    "bytes": 3745
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/03-ta-shooting-20260926-parent02/tracking/20260926T135334.946214Z/working_tree_status.txt",
+    "sha256": "8815ee96cb42f7af93640196b0ef078d6bc083c6ff56d4b750a4e9a267ec2dea",
+    "bytes": 265
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/config.json",
+    "sha256": "b2f8914971b164d31f55ed76f55e0cb5c3f5ee7ffd3100cb0c9a06c8844b144e",
+    "bytes": 3726
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/status.json",
+    "sha256": "df882938ad790efc56449a48e3ab5359dba95caae597cd9a06687e2d9821d677",
+    "bytes": 297
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/run_record.json",
+    "sha256": "bf96583f15bc775eb9599e278992142f6266cd40bcbea3346dc426f69e809446",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/metadata.json",
+    "sha256": "9f57e986c30f7ffa91d6626bfe21173b625da8d08d63f43316d03d9b7862a834",
+    "bytes": 980
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/log.lammps",
+    "sha256": "77e871da9d94dbe7664138068b3786c5c81acf766d938424fda3a4e49d7f439f",
+    "bytes": 49881
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/binary_conversion.json",
+    "sha256": "e35c04fc0651f529a3ac21f0d3f7ed926c01863d809a369f865607647667583a",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/stdout.log",
+    "sha256": "c5ffe57df429fb33e5bbf4153d8b0150b7a6537b19678fa92cf41012236109ef",
+    "bytes": 48917
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/in.lammps",
+    "sha256": "ea077c4541bdf3628fe7d0003c6546272647c6af3873ba5e70c6a0fb1e7b3d7f",
+    "bytes": 1058
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/outcome.json",
+    "sha256": "5f94e3db4c3bce0f9297d7850f88bebe2033462c6ef190d76e9ea3c2626fcf3a",
+    "bytes": 971
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "3a96b7f54bf4d65b38bd07bed2d0d53f0513d17692ec6ad40605eb46d0dc8ea2",
+    "bytes": 3611
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/metadata.json",
+    "sha256": "ac567276a85a1b283b32796d2d7a4b394fbc510a9c676bcbf7bc907afa9eafa1",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/log.lammps",
+    "sha256": "024b8db9973e65515952c2ef4bb8067bb850700e2c697f98917e3c78e3072591",
+    "bytes": 49850
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/binary_conversion.json",
+    "sha256": "14431a87c58debd18bce06d3ff4fa155b527421b6052d602e15cf04872dff1a8",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/stdout.log",
+    "sha256": "27d13fb3174f563d68479855d30a99b99ec332aa1bffc8f85e81400de8454691",
+    "bytes": 48885
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/in.lammps",
+    "sha256": "a879d516bf7a9debca88db2130f108fc3de36e7cce701d41ce87ed29f6711d05",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/outcome.json",
+    "sha256": "7aabc73fbccc5346f7fc60e0e566c608a20b42720e5d27912e21a252fec7fa40",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "fec920a236c66966e5d89c29e5c258842515ee3f6f1c8bd1a5c272d106186816",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/metadata.json",
+    "sha256": "56fc9c6fe2ef27be8086907f4ae583b46cb25001bbff125b2717f82541c83035",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/log.lammps",
+    "sha256": "b0753ecc8bd5c23eec2feb519f85a5bc72f259bde48e18d3f7132d7dcfd2b9c6",
+    "bytes": 49848
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/binary_conversion.json",
+    "sha256": "a7870be13f80219b81faae8ba533dea699a4eebfeea275648c6f4ab76a548326",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/stdout.log",
+    "sha256": "5266ab7c34cf6f40e6ceb93e7e40701f3b9ee2a54b06719bc1feae398b29968a",
+    "bytes": 48883
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/in.lammps",
+    "sha256": "61fafc482f786a46f42fe275b3e1465f050c8bd80da3dc91a0f8b25020335f90",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/outcome.json",
+    "sha256": "d2168d3beef09b3982aad1ab937dfd08e586790ab60e44f9feb727c0382a1747",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "34e97f63e806be48051cfcf82dcc442ad91484c40f5d5281d88971095c4567eb",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/metadata.json",
+    "sha256": "8a365b936109a674a8c8785d8ae09bf5b11742ce7aa637a5d737b7c8df4d8f92",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/log.lammps",
+    "sha256": "b9b91e3714ceeda29cd30d9c4979b3632ae84b67e788517f9de4017e549a9afc",
+    "bytes": 49895
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/binary_conversion.json",
+    "sha256": "b3e6004f990d2e94df0538676437a014465c097654f16d7a54135458f2e54575",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/stdout.log",
+    "sha256": "1bf47131d3bb12cf385d611afef3acfa3bd64ed63a04e9aaecd26b5830f117da",
+    "bytes": 48930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/in.lammps",
+    "sha256": "a0b5d22459346147a777cce3cfae6a4c63f648143d00069f2da223dae29f1d8e",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/outcome.json",
+    "sha256": "da9bd243ddb005bfa6bf733388a3a9ab3590cf041a3ccdfc0dffb812cef5e11d",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "b5b0035e6a837c8587b05ea26d9642175ed2e4b6c19991e5101e00d126a6437f",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/technical/portable_config.json",
+    "sha256": "16ed9fb93be77125ba3be5236f85e8de1e0b51b8b5f98547ae301232cfbf85f5",
+    "bytes": 3637
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/technical/launch_config.json",
+    "sha256": "b2f8914971b164d31f55ed76f55e0cb5c3f5ee7ffd3100cb0c9a06c8844b144e",
+    "bytes": 3726
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/run_record.json",
+    "sha256": "bf96583f15bc775eb9599e278992142f6266cd40bcbea3346dc426f69e809446",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/config_0_launch_config.json",
+    "sha256": "b2f8914971b164d31f55ed76f55e0cb5c3f5ee7ffd3100cb0c9a06c8844b144e",
+    "bytes": 3726
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/04-ta-shooting-20260926-parent03/tracking/20260927T033332.602521Z/working_tree_status.txt",
+    "sha256": "8815ee96cb42f7af93640196b0ef078d6bc083c6ff56d4b750a4e9a267ec2dea",
+    "bytes": 265
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/config.json",
+    "sha256": "aa9916b6b1b3ff4c0b90e2902bccea8e28c97c582b2d39fcb07cc0680381b175",
+    "bytes": 3746
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/status.json",
+    "sha256": "316ce30f31ef8d30d918bd2dd60fd946cb3108bf482d4300289e0675ba6dfc48",
+    "bytes": 297
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/run_record.json",
+    "sha256": "37ade8ab6a2c68becd82d884194f3d4c104329a63d19cd4a7bab0fff7995a8da",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/metadata.json",
+    "sha256": "5edd999f5da32ed4c0e991d1d7aefb9e3bd3dd1c416b2d0c9f9ed2a886f60ea6",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/log.lammps",
+    "sha256": "57d28c73fddb5d6bacf9df3a198e0189b2007551bad83e44094d8c2674d38f9c",
+    "bytes": 49900
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/binary_conversion.json",
+    "sha256": "2629a36717dae5d73283530a2186c05ad083d5b39191b072b0802790f6c381f3",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/stdout.log",
+    "sha256": "aee7ebd4f05637530124d34ccab995b199ed7759406ff8f332ccd6cd666c2edb",
+    "bytes": 48935
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/in.lammps",
+    "sha256": "d00ed5d56d90ed8d67815b720878f7a4251d6a8cedbbd3c0688a9010862fa3ab",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/outcome.json",
+    "sha256": "bc77ff4ac64baf5cfa07e8b389a0cd345723f28399d868eed9d470763ab693fd",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "4e729fd3e3173386cb6bad24bef08d47b452097d82148d4011086e2d9c62e514",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/metadata.json",
+    "sha256": "e951e7d4a44e30b6099bfd7ab6b69877998a66612930714c1db8d572735a980d",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/log.lammps",
+    "sha256": "11556878c84d4a4aaa9533d92a0eb6d008555abf77c9bfecb701e1ea572b7fcc",
+    "bytes": 49923
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/binary_conversion.json",
+    "sha256": "ef304b1e3f07ced182f871bb28201bb2ff58e1bde964eefec459a85493134eba",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/stdout.log",
+    "sha256": "63e465cc0a3af663b9fd7bbb830776d429a4fe3ed9e6f967a5c22776ce3469c2",
+    "bytes": 48958
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/in.lammps",
+    "sha256": "39ccbd51f5b128a9c7f9e3f973a3e29fc7c2cc0d86e8b62be6066265a337a6c1",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/outcome.json",
+    "sha256": "9a95329f12b0723b1f7cb3948fae018f0dacb22ab89eba933152c67868e7a887",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "56a564fddfb072f2f4eedad57c7d1ea1547a5657171e1778f51df630b1b21220",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/metadata.json",
+    "sha256": "ec93c6c5c86e5bbe38fa2a4e113ee0098c157bac007c18712a6ed1cef827fd7a",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/log.lammps",
+    "sha256": "fe371a5468382afe3aa7f47bd6d3544904eb872182d4794eaaedb9844af26f95",
+    "bytes": 49880
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/binary_conversion.json",
+    "sha256": "c1f41d6b844287f033405a45918c522c790cd4e2d10511cc277a4d725c418d87",
+    "bytes": 1312
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/stdout.log",
+    "sha256": "3957af5c2c4446f972a302ab1f303f9985d7cd687ec2412d01f24b088b8e3014",
+    "bytes": 48915
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/in.lammps",
+    "sha256": "e10896b12a7f5ec0f6c308f29a4f4aca8f2ad234397af83fdcca44787347d86c",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/outcome.json",
+    "sha256": "c49f8f28388237a093095bd9150d768b1ab083abc4bd4bec4881fa652604967c",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "4103cd25425fa0bacf11613e065635500d8b2bc73e254133717484eaaa59053e",
+    "bytes": 3611
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/metadata.json",
+    "sha256": "1790f465f428ffe7f1abb728ba210b314909756381109bdb01e935cf9612ffb9",
+    "bytes": 981
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/log.lammps",
+    "sha256": "db69472e5ee041dd7426be3bfe8b5013c7abb38a262e7481f749c4953e3b67cd",
+    "bytes": 49900
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/binary_conversion.json",
+    "sha256": "bb73be889b8e78fbe8612a70f30dd7ee03d46dd54bcce72819645bd45b77c254",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/stdout.log",
+    "sha256": "94e4baa398c6ce81dfd72af85431c40a0f6abf183f626d8ae65360cbf4e8e091",
+    "bytes": 48935
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/in.lammps",
+    "sha256": "e0446ef13d20edc46b1875b1c4d7739c6e36e29e70b8b1ff209208cf2b600fe1",
+    "bytes": 1059
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/outcome.json",
+    "sha256": "73ab77fe45b1fc543aedcefa1d812b338e409373b619f097ff2c74c3449b5d0c",
+    "bytes": 972
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "684716691e7c55370e200ed7e8bc8a19860635106dd868a0118368317105c679",
+    "bytes": 3612
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/technical/portable_config.json",
+    "sha256": "54ed2ef452d457712aa00b76d6b0e8a61a74335edbea6594690d3b8faf4d699e",
+    "bytes": 3657
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/technical/launch_config.json",
+    "sha256": "aa9916b6b1b3ff4c0b90e2902bccea8e28c97c582b2d39fcb07cc0680381b175",
+    "bytes": 3746
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/run_record.json",
+    "sha256": "37ade8ab6a2c68becd82d884194f3d4c104329a63d19cd4a7bab0fff7995a8da",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/config_0_launch_config.json",
+    "sha256": "aa9916b6b1b3ff4c0b90e2902bccea8e28c97c582b2d39fcb07cc0680381b175",
+    "bytes": 3746
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/05-ta-shooting-20260926-parent04/tracking/20260927T100345.210910Z/working_tree_status.txt",
+    "sha256": "8815ee96cb42f7af93640196b0ef078d6bc083c6ff56d4b750a4e9a267ec2dea",
+    "bytes": 265
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/config.json",
+    "sha256": "d260a7ec13c58216e2ce46d1cb1cf9c742754a35f39dd1a5fff501e98e2c8114",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/status.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/status.json",
+    "sha256": "de7c446101c5e369034709f0681e32e78ed17f5c54eca5ddaf7c19597629205c",
+    "bytes": 297
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/run_record.json",
+    "sha256": "2aa4a200bd0ad23ffdf5a9f93df4d4fd1440fac46f70def5f47b5efaa264147b",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/metadata.json",
+    "sha256": "001e7a6fd531c88cf737d83621ce3f61a02e0435682361227781d68f56ecbfc8",
+    "bytes": 983
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/log.lammps",
+    "sha256": "9585d90b5d4e01cccdcb948fa6c7e42b42d0149ea3d38b3b3698bd5cf0dbf10f",
+    "bytes": 49905
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/binary_conversion.json",
+    "sha256": "0ce2b9be137132104fa6a81dfc5ad4050de46a87de01d3f79af53cee02bcfdec",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/stdout.log",
+    "sha256": "8c8c5c721a28ce84bcfb8f88d03bf9764c1cb47033738e97b32caea6bf93b931",
+    "bytes": 48939
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/in.lammps",
+    "sha256": "f511fd5ed1515365b28407b49084e56ca6dd466bffb2de6cb8e70c2aaa4e7b7c",
+    "bytes": 1060
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/outcome.json",
+    "sha256": "e395610c3a4ae4f3729a1865642366bf9889e0ab4d2d130d41f4d5646351cbcd",
+    "bytes": 974
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot02/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot02/trajectory_binary_float16/manifest.json",
+    "sha256": "d831a45fd2cea5343b88bed31c2fa5d80d7e8d9b1e433d2e877080fee8a573e9",
+    "bytes": 3614
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/metadata.json",
+    "sha256": "ca04c14c3058def7454596a046095a5b4b6d5aab883179b8712fbc7697f5a4b1",
+    "bytes": 983
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/log.lammps",
+    "sha256": "ddec7483b22c0d5037bfc0f87e3c2b3be79b170466e71873417dbd3b84e6a954",
+    "bytes": 49866
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/binary_conversion.json",
+    "sha256": "c464b57a975d9c8ff97d654205dcabc554d2f1be2e0056b1695c5d42d185c5bf",
+    "bytes": 1312
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/stdout.log",
+    "sha256": "f7bea5c0f150eccee2b6806b59497be91eeca7fc49afa07a958918a4dd58a398",
+    "bytes": 48900
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/in.lammps",
+    "sha256": "7d1cf38a389fdd5f3005ecc7ec1e8383a4b050480388c4d33893c54391f74a3a",
+    "bytes": 1060
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/outcome.json",
+    "sha256": "d90ee060edc1b6dd4fc3efebc1c6d1d6d5ec5c8d30d0b00d4623f198622eeeee",
+    "bytes": 974
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot03/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot03/trajectory_binary_float16/manifest.json",
+    "sha256": "22a08d90ed827161a760708c7c81879dbf29b705db04c5a039a07996a7cd0eba",
+    "bytes": 3613
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/metadata.json",
+    "sha256": "554fb3800e8d3118a361cdde9508991f69a2229ca99d939eadff1cc3fb064c2c",
+    "bytes": 983
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/log.lammps",
+    "sha256": "b8965412abcbff02b4ced3bba3b7e7101e9298a581563a42905fec3de6d4a1fe",
+    "bytes": 49874
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/binary_conversion.json",
+    "sha256": "1b047f6bfcb64227eb2c1669e5a7b77d240456167f506b0d97e4c3f8ef50a324",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/stdout.log",
+    "sha256": "567427a3e959a5d6c6a2255e61f8bbcc66b6c56b42efafe5bd6371ee141f1cb9",
+    "bytes": 48908
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/in.lammps",
+    "sha256": "7b2b2b522c10047522cc8fab59a90780fe5f2e2f2500fb70815074343d6dfe06",
+    "bytes": 1060
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/outcome.json",
+    "sha256": "60eef6757de58a7528a1e8570bfb19c402b4b86f08e82b44bbb6c9254641f462",
+    "bytes": 974
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot00/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot00/trajectory_binary_float16/manifest.json",
+    "sha256": "8443f8bd226793f72b30dfe6207f307516c97fdb249081d8b00c88e099c4ab25",
+    "bytes": 3614
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/metadata.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/metadata.json",
+    "sha256": "1abc2fd5634a51a4af247a9050eb1326239e307537f96dfa20584206cd71378a",
+    "bytes": 983
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/log.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/log.lammps",
+    "sha256": "5ebf3865122f63bed04fbc697cb8b6346b6b0eca77dbd3553709f5cdced0ee57",
+    "bytes": 49890
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/binary_conversion.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/binary_conversion.json",
+    "sha256": "d7ed6789fb0a70cd6d9fa25c626f390801ea354f9745ee4a10732c4b8f57913a",
+    "bytes": 1313
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/stdout.log",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/stdout.log",
+    "sha256": "d60dde918dc74ed9b2d68d31879eab844b1ed86bb36d4c38a83a18bc04a8eeba",
+    "bytes": 48924
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/in.lammps",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/in.lammps",
+    "sha256": "85a16eadc14826783cb26d3b4b54182529b971a48e40fccc201309fcb792b783",
+    "bytes": 1060
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/outcome.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/outcome.json",
+    "sha256": "8c2f50fb6667dfca494f2db1156cae725ec34a4e7108caec827496c12604c2ef",
+    "bytes": 974
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/branches/shot01/trajectory_binary_float16/manifest.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/branches/shot01/trajectory_binary_float16/manifest.json",
+    "sha256": "105f9c4afd8fd9364b6b59dc8e1ee0f5f1570499d370cf58cc1bc3c17e93be54",
+    "bytes": 3614
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/technical/portable_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/technical/portable_config.json",
+    "sha256": "6bbb073133761c130bb56c82918a1675a72dc3e11964ee974ac3164f4eb89f24",
+    "bytes": 3646
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/technical/machine.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/technical/machine.json",
+    "sha256": "ff0db003c7720efce4d8ae43a56e9a06692aa551a9d9a1a70395567b084ae347",
+    "bytes": 2405
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/technical/launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/technical/launch_config.json",
+    "sha256": "d260a7ec13c58216e2ce46d1cb1cf9c742754a35f39dd1a5fff501e98e2c8114",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/environment.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/environment.json",
+    "sha256": "8b124ddb713a5b5c7350d20891f6bda20ea10a02863ab2800676be238c1a7eb1",
+    "bytes": 16930
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/run_record.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/run_record.json",
+    "sha256": "2aa4a200bd0ad23ffdf5a9f93df4d4fd1440fac46f70def5f47b5efaa264147b",
+    "bytes": 1918
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/config_0_launch_config.json",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/config_0_launch_config.json",
+    "sha256": "d260a7ec13c58216e2ce46d1cb1cf9c742754a35f39dd1a5fff501e98e2c8114",
+    "bytes": 3735
+  },
+  {
+    "source": "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/working_tree_status.txt",
+    "saved": "/home/infres/vmorozov/PointCloudMaterials/docs/storage/ta_simulation_removal_20261003/results/06-ta-shooting-20260926-parent05/tracking/20260927T194750.066014Z/working_tree_status.txt",
+    "sha256": "8815ee96cb42f7af93640196b0ef078d6bc083c6ff56d4b750a4e9a267ec2dea",
+    "bytes": 265
+  }
+]

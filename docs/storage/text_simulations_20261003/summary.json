@@ -1,0 +1,248 @@
+{
+  "checked_utc": "2026-10-03T13:12:41.096996+00:00",
+  "files": 372,
+  "allocated_bytes": 2795096064,
+  "roots": [
+    "/work/PERSO/vmorozov/simulations",
+    "/store/PERSO/vmorozov/simulations",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations",
+    "/work/PERSO/vmorozov/datasets",
+    "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data",
+    "/home/infres/vmorozov/PointCloudMaterials/output",
+    "/store/PERSO/vmorozov/experiments",
+    "/store/PERSO/vmorozov/relaxed_encoder",
+    "/store/PERSO/vmorozov/relaxed_tda",
+    "/store/PERSO/vmorozov/birth_prediction",
+    "/store/PERSO/vmorozov/liquid-predictability",
+    "/home/ids/vmorozov/training-cache",
+    "/store/PERSO/vmorozov/simulation-launches",
+    "/store/PERSO/vmorozov/simulation-work"
+  ],
+  "largest": [
+    {
+      "path": "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/preflight/trajectory.lammpstrj",
+      "bytes": "468860407",
+      "allocated_bytes": "357747200",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z",
+      "classification": "Ta preflight trajectory (binary also retained)",
+      "mtime_utc": "2026-09-04T22:39:04.212309+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.60ns.pos",
+      "bytes": "664366721",
+      "allocated_bytes": "332172288",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:31:18.909247+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.7ns.pos",
+      "bytes": "666816260",
+      "allocated_bytes": "324986880",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:31:19.196249+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.8ns.pos",
+      "bytes": "650491887",
+      "allocated_bytes": "313368064",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:31:17.416234+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/2.9ns.pos",
+      "bytes": "669035197",
+      "allocated_bytes": "308701696",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:31:19.446252+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/3.0ns.pos",
+      "bytes": "653477641",
+      "allocated_bytes": "297199104",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:31:17.751237+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/datasets/Ta/initial_configurations/model_1m.pos",
+      "bytes": "67717285",
+      "allocated_bytes": "33058816",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z ",
+      "classification": "Original Ta snapshots/structures",
+      "mtime_utc": "2026-09-04T22:30:02.296600+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_same_job/boundary.lammpstrj",
+      "bytes": "26162448",
+      "allocated_bytes": "21826048",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id proc x y z vx vy vz",
+      "classification": "Restart-boundary diagnostics",
+      "mtime_utc": "2026-09-05T13:40:37.591470+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_no_sort/boundary.lammpstrj",
+      "bytes": "26162273",
+      "allocated_bytes": "21826048",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id proc x y z vx vy vz",
+      "classification": "Restart-boundary diagnostics",
+      "mtime_utc": "2026-09-05T13:40:39.227454+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/uninterrupted/boundary.lammpstrj",
+      "bytes": "26162578",
+      "allocated_bytes": "21826048",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id proc x y z vx vy vz",
+      "classification": "Restart-boundary diagnostics",
+      "mtime_utc": "2026-09-05T13:40:34.291501+00:00"
+    },
+    {
+      "path": "/work/PERSO/vmorozov/simulations/restart_boundary_audit_20260905/boundary_001/restart_existing/boundary.lammpstrj",
+      "bytes": "26162448",
+      "allocated_bytes": "21826048",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id proc x y z vx vy vz",
+      "classification": "Restart-boundary diagnostics",
+      "mtime_utc": "2026-09-05T13:40:35.991485+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-launches/al-main-half-recovery-20261003/technical/binary-boundary-verification/joined/trajectory.lammpstrj",
+      "bytes": "8684161",
+      "allocated_bytes": "11681792",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z vx vy vz",
+      "classification": "Recovery verification snapshots",
+      "mtime_utc": "2026-10-03T13:04:33.922982+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/runs/al-main-001ps-20261001-source0886/technical/recovery/checkpoint.lammpstrj",
+      "bytes": 8683583,
+      "allocated_bytes": 11681792,
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z vx vy vz",
+      "classification": "Recovery verification snapshots",
+      "mtime_utc": "2026-10-03T13:06:35.233580+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/runs/al-main-010ps-20260927-source0885/technical/recovery/checkpoint.lammpstrj",
+      "bytes": 8683804,
+      "allocated_bytes": 11681792,
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z vx vy vz",
+      "classification": "Recovery verification snapshots",
+      "mtime_utc": "2026-10-03T13:04:51.308198+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/runs/al-main-010ps-20260927-source0884/technical/recovery/checkpoint.lammpstrj",
+      "bytes": 8684161,
+      "allocated_bytes": 11681792,
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z vx vy vz",
+      "classification": "Recovery verification snapshots",
+      "mtime_utc": "2026-10-03T13:04:33.922982+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/runs/al-main-001ps-20261001-source1004/technical/recovery/checkpoint.lammpstrj",
+      "bytes": 8677068,
+      "allocated_bytes": 11657216,
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id type x y z vx vy vz",
+      "classification": "Recovery verification snapshots",
+      "mtime_utc": "2026-10-03T13:07:54.021383+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346/replica_000_bulk_liquid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T23:15:49.055375+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346/replica_000_bulk_solid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T23:15:47.852365+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346/replica_000_solid_liquid_interface/structure.extxyz",
+      "bytes": "8647567",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T23:15:50.768389+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K/replica_000_bulk_liquid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-18T02:49:40.633159+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_bulk_liquid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T22:57:01.589903+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_bulk_solid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T22:57:00.423893+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1/replica_000_solid_liquid_interface/structure.extxyz",
+      "bytes": "8647567",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-17T22:57:03.288918+00:00"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12345_500K/replica_000_bulk_liquid/structure.extxyz",
+      "bytes": "8647570",
+      "allocated_bytes": "11558912",
+      "type": ".extxyz",
+      "columns": "",
+      "classification": "Other simulation snapshots/fixtures",
+      "mtime_utc": "2026-07-18T02:59:58.520333+00:00"
+    },
+    {
+      "path": "/home/infres/vmorozov/PointCloudMaterials/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+      "bytes": "5344487",
+      "allocated_bytes": "2696704",
+      "type": "LAMMPS dump",
+      "columns": "ITEM: ATOMS id fx fy fz",
+      "classification": "Force-only output",
+      "mtime_utc": "2026-09-10T14:06:01.519201+00:00"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+    PID COMMAND
+2971196 /bin/bash
+3038187 codex -c features.code_mode_host=true app-server --listen unix://
+3038228 sshd-session: vmorozov@notty
+3038229 codex app-server proxy
+3039378 /home/infres/vmorozov/.codex/packages/standalone/releases/0.159.2-x86_64-unknown-linux-musl/bin/codex-code-mode-host
+3058724 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -m src.research.crystallization_origin.shooting prepare --config configs/analysis/shooting_births_20261002.json
+3058922 /usr/bin/bash -c srun --jobid=1017946 --overlap -N1 -n1 --time=00:01:00 ps -u vmorozov -o pid,args > /tmp/pcm-smoke-node60-processes.txt
+3058935 srun --jobid=1017946 --overlap -N1 -n1 --time=00:01:00 ps -u vmorozov -o pid,args
+3058936 srun --jobid=1017946 --overlap -N1 -n1 --time=00:01:00 ps -u vmorozov -o pid,args
+3058959 /usr/bin/ps -u vmorozov -o pid,args

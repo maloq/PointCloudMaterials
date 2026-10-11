@@ -1,0 +1,25 @@
+{
+  "root": "/store/PERSO/vmorozov/data",
+  "inventoried_at": "2026-10-07T16:14:58.726367+00:00",
+  "entries": 5998,
+  "kinds": {
+    "directory": 183,
+    "file": 5813,
+    "symlink": 2
+  },
+  "unique_allocated_bytes": 39229997056,
+  "releasable_allocated_bytes": 39229997056,
+  "releasable_GiB": 36.53578186035156,
+  "scope": [
+    "countries",
+    "land_features",
+    "models",
+    "modis",
+    "night_lights",
+    "repos",
+    "saved_features",
+    "saved_features_boost",
+    "wwf_terr_ecos"
+  ],
+  "instructions": []
+}

@@ -1,0 +1,24 @@
+{
+  "dataset_id": "al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/status.json",
+      "relative_path": "status.json",
+      "sha256": "a48d78bd1ead32b6e1f5ae0d36e76eca9f5c4d9daf1a043d61f4b50ac529bb1f",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

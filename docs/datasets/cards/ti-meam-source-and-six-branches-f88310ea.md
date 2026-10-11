@@ -10,9 +10,9 @@ Pure Ti under the Ti component of the Ni/Ti potential, 100,000 atoms, 1250 K. Al
 - Location: `/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti`
 - Present on this machine: True
 - Potentials: Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component
-- Complete binary records with arrays present: 7; these are not independent-source counts.
-- Stored frames: 21647; duplicate-group records: 6
-- Allocated storage, excluding registered nested datasets: 14.018 GiB
+- Complete binary records with arrays present: 190; these are not independent-source counts.
+- Stored frames: 21830; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 14.318 GiB
 - Missing metadata: ensemble
 
 ## Notes and relationships
@@ -33,7 +33,8 @@ Pure Ti under the Ti component of the Ni/Ti potential, 100,000 atoms, 1250 K. Al
     "docs/simulations/ti_ta_crystallization/README.md",
     "${dataset:ti-meam-source-and-six-branches}/config.json"
   ],
-  "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping."
+  "lineage": "Ti descendants share one root source; Ta snapshots are not independent melts. Retain source/parent grouping.",
+  "storage_conversion_note": "2026-10-04: verified float32 binary sidecars for original text snapshots; existing float16 trajectories and float32 inherent arrays unchanged. Input text and native restarts retained. Receipt: docs/storage/ti_duplicates_float32_20261004/complete.json."
 }
 ```
 
@@ -55,18 +56,18 @@ Pure Ti under the Ti component of the Ni/Ti potential, 100,000 atoms, 1250 K. Al
 | atom_count | [100000] |
 | ptm_rmsd_cutoff | [0.17] |
 | branch_semantics | ["Position-conditioned NPT trajectories with fresh Maxwell-Boltzmann velocities; all six share one source lineage; not exact continuations."] |
-| frame_count | [2401, 7241] |
+| frame_count | [1, 2401, 7241] |
 | velocity_seed | [917101, 917103, 917107, 917111, 917117, 917123] |
 | root_lineage | ["/home/ids/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/source"] |
-| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"] |
-| storage_dtype | ["float16"] |
+| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again", "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again"] |
+| storage_dtype | ["float16", "float32"] |
 
 ## Evidence
 
-All 25 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/ti-meam-source-and-six-branches-f88310ea.json).
+All 391 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/ti-meam-source-and-six-branches-f88310ea.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

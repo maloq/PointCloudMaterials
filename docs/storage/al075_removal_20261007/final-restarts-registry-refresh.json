@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-07T18:07:24.305125+00:00",
+  "datasets": [
+    "al_520K_remaining24_20260913T204114Z",
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902",
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903"
+  ],
+  "scope": "User-requested deletion of 150 production final.restart.bin files; all melt checkpoints retained. Live reinspection limited to these three collections.",
+  "receipt": "docs/storage/al075_removal_20261007/final-restarts-receipt.json"
+}

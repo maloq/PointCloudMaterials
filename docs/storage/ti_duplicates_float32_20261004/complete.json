@@ -1,0 +1,12 @@
+{
+  "state": "complete",
+  "converted_files": 200,
+  "retained_text_inputs": true,
+  "production_and_archive_snapshots": 189,
+  "preflight_snapshots": 11,
+  "binary_allocated_bytes_added": 1173741568,
+  "duplicate_allocated_file_bytes_removed": 9086738432,
+  "net_freed_before_audit_bytes": 7912996864,
+  "audit_allocated_file_bytes": 11614720,
+  "net_freed_bytes": 7901382144
+}

@@ -1,0 +1,24 @@
+{
+  "observed_at": "2026-10-07T14:55:45.808829+00:00",
+  "method": "Allocated blocks; no symlink traversal; unique inodes; live non-atomic scan while simulations write",
+  "locations": [
+    {
+      "scope": "snapshot",
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z",
+      "allocated_bytes": 20079509504,
+      "allocated_GiB": 18.70050048828125
+    },
+    {
+      "scope": "search",
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search",
+      "allocated_bytes": 37349867520,
+      "allocated_GiB": 34.78477478027344
+    },
+    {
+      "scope": "recovery",
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003",
+      "allocated_bytes": 52243775488,
+      "allocated_GiB": 48.65580749511719
+    }
+  ]
+}

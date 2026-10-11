@@ -1,0 +1,7 @@
+{
+  "table": "tables/temperatures.csv",
+  "sha256": "e2514eae4a268ca26b6cccbcf777baf7ad9096172466c720bb25389e72cfda1b",
+  "family": "al075_birth_quality",
+  "contract": "technical/metric-contracts/al075_birth_quality.json",
+  "definitions": "tables/metric-definitions/al075_birth_quality.md"
+}

@@ -1,0 +1,77 @@
+{
+  "dataset_id": "ni-latent-sequences-20261010",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/134cb5a3bcd9c50632de94ca34bbfba206c8929bd66f9159ceb164b0d5219dd1/complete.json",
+      "relative_path": "features/entries/134cb5a3bcd9c50632de94ca34bbfba206c8929bd66f9159ceb164b0d5219dd1/complete.json",
+      "sha256": "5f7a39d71dca3b9b84a97f85423d45aee9b28fab0f92fdddfcba0fe773ae52b9",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/634e0a78fba5dbb89a198b567a8a52f877307c7f132684976955c5495a768792/complete.json",
+      "relative_path": "features/entries/634e0a78fba5dbb89a198b567a8a52f877307c7f132684976955c5495a768792/complete.json",
+      "sha256": "50658b46d4025cc4ce71a3da21ae9352c753913093182c894e2f699762c69979",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/8603ae8ec2750cf40f1f27cb9fc1df9c5fdd8c667ed824687d8846f62a25bad8/complete.json",
+      "relative_path": "features/entries/8603ae8ec2750cf40f1f27cb9fc1df9c5fdd8c667ed824687d8846f62a25bad8/complete.json",
+      "sha256": "58011a3653b6f39d2bbbee4c933a4f3527d97d43e36dde1945db73755615825f",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/ae2b379ef5a50a89eca753c38994deed4c9dd9b28cbaafd1a9e136277ebbc5a8/complete.json",
+      "relative_path": "features/entries/ae2b379ef5a50a89eca753c38994deed4c9dd9b28cbaafd1a9e136277ebbc5a8/complete.json",
+      "sha256": "0a519aa73a8017f53f4041cf2645da14a46ad685df8988ae8b80e7ad86a63426",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/e298bf59f41d24681bcf2ddaadfd080158e8190dff24fcae1e9559712543ff8d/complete.json",
+      "relative_path": "features/entries/e298bf59f41d24681bcf2ddaadfd080158e8190dff24fcae1e9559712543ff8d/complete.json",
+      "sha256": "2589aed786919372a51327a1a4c6f9c1c22ce003edd47b4bb6abb813686a4f7a",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-latent-sim/compact-memory-response-20261010-v1/features/entries/f514a3c9ee0c0d9646ed1e644d31ebc505fa2fb88d64bca6e231db075f47c55d/complete.json",
+      "relative_path": "features/entries/f514a3c9ee0c0d9646ed1e644d31ebc505fa2fb88d64bca6e231db075f47c55d/complete.json",
+      "sha256": "418c8c53f343383c0a089f978bae86122a024f1795c7ff93ba4870d7d6e4f964",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

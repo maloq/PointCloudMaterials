@@ -1,5 +1,18 @@
 # Implementations of recorded research protocols
 
+`structural_response/`: broad 12-epoch MACE structural initialization and fixed-teacher derivative/value motion controls; [workflow](../../docs/structural_response.md).
+
+
+`meam_md/`: periodic pure-Al MEAM, compiled GPU forces, matched CPU/GPU BAOAB trajectories and crystallization diagnostics; [workflow](../../docs/simulations/meam_md_16k_20261004.md).
+
+`response_velocity/`: matched Q/QV encoders, fixed initial velocities, long-horizon MEAM responses and all64 static transfer; [workflow](../../docs/simulations/response_velocity_20261004.md).
+
+`response_meam` implements the exact pinned pure-Al MEAM energy in PyTorch and matched simulator-response hardware measurements; [workflow](../../docs/simulations/response_meam_torch_20261004.md).
+
+
+`response_geometry` implements unrelaxed-only future-response targets, simulator-derived embedding distances and matched clustering-space diagnostics; [workflow](../../docs/simulations/response_geometry_20261003.md).
+
+
 `birth_prediction.relaxed` queues full-cell minimization, aligned local input
 export and the retained likelihood-selected readouts; `relaxed_report` compares
 train/test errors and paired source-held-out scores against unrelaxed inputs.
@@ -28,6 +41,8 @@ truncated endpoints; [protocol](../../experiments/birth_prediction_20260930/READ
 and [workflow](../../docs/birth_prediction.md).
 
 New: [packed-data TDA/VCReg pilots](../../docs/rich_tda_objectives.md), with validation-selected full-data fitting.
+
+`spatial_vicreg_bias.response_comparison` restores the preserved MACE/descriptor interactive viewers and adds the validation-selected local80 response encoder, with frozen inference and no retraining; [workflow](../../docs/spatial_vicreg_bias.md).
 
 `spatial_vicreg_bias.mace_checkpoint` evaluates the current validation-selected RH2 MACE state using its frozen training producer, then publishes both Al viewers; [workflow](../../docs/spatial_vicreg_bias.md#current-mace-replacement-rh2-best-checkpoint-2026-09-30).
 

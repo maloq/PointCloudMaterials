@@ -1,0 +1,28 @@
+{
+  "parent": "${storage:training_storage}/structural_response/c3-l3-fast-20261007-v4",
+  "output": "${storage:training_storage}/structural_response/first-appearance-20261007-v1",
+  "cache": "${storage:cache}/structural-response/first-appearance-20261007-v1",
+  "dataset": "al-nuclei-birth-010",
+  "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+  "seed": 20261007,
+  "observation_offsets_ps": [10, 40, 70, 100],
+  "centers_per_window": 128,
+  "ptm_rmsd_cutoff": 0.1,
+  "history_audit_ps": 0.5,
+  "horizons_ps": [0.1, 0.5, 1, 3, 6],
+  "persistence_frames": 3,
+  "persistence_horizons_ps": [3],
+  "workers": 4,
+  "microbatch": 32,
+  "inner_selection_ancestors": 8,
+  "bootstrap_draws": 300,
+  "physical_controls": ["qbar6", "bond_order", "tda", "kinematics"],
+  "readouts": ["catboost"],
+  "fit_threads": 2,
+  "readout": {
+    "linear_C": [0.001, 0.01, 0.1, 1, 10],
+    "catboost": {"iterations": 600, "depth": 4, "learning_rate": 0.04, "l2_leaf_reg": 10},
+    "patience": 75
+  },
+  "scope": "Separate prospective local appearance target, not relabeled established births. All pinned velocity-bearing original-role source views; fixed observation times, uniform centers, original MD only. Present crystal absence defines the risk set; no external-neighborhood screening or eventual-establishment conditioning. Past 0.5 ps is audit-only. Frozen eight motion fits and both epoch-12 spatial starts; diagnostic likelihood-selected readouts stay local. No new encoder training, broad spatial data loading or MD simulation."
+}

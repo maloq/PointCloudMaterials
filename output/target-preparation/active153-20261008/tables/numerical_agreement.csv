@@ -1,0 +1,11 @@
+variant,family,rows,columns,max_absolute,rms_standardized,max_standardized,unequal_values,max_error_feature
+reference,bond_order,936,40,0.0,0.0,0.0,0,bond_order/l2_q
+reference,cna,936,45,0.0,0.0,0.0,0,cna/fixed32_coordination
+reference,geometry,936,99,0.0,0.0,0.0,0,geometry/count
+reference,tda,936,258,0.0,0.0,0.0,0,tda/n32_h0_count
+spatial_safe,bond_order,936,40,0.0,0.0,0.0,0,bond_order/l2_q
+spatial_safe,tda,936,258,5.684341886080802e-14,4.211481180892557e-13,1.7233576517388562e-10,10699,tda/n80_h1_betti2.75
+native_batch,bond_order,936,40,0.0,0.0,0.0,0,bond_order/l2_q
+native_batch,tda,936,258,5.684341886080802e-14,4.211481180892557e-13,1.7233576517388562e-10,10699,tda/n80_h1_betti2.75
+native_selected,bond_order,936,40,0.0,0.0,0.0,0,bond_order/l2_q
+native_selected,tda,936,113,5.684341886080802e-14,5.865888831178227e-13,1.7233576517388562e-10,25,tda/n80_h1_betti2.75

@@ -1,0 +1,837 @@
+{
+  "date": "2026-10-07",
+  "node": "node60",
+  "environment": "pointnet-torch214",
+  "threads": 1,
+  "reference": "Already optimized consolidated implementation; snapshot output/postprocessing/consolidation-20261007/technical/worker-bundle-final",
+  "timing_policy": "Unprofiled, warm filesystem, excludes interpreter startup; median of 3 tracking repeats and 2 counterbalanced preparation repeats. Full-catalogue scan and million-atom extraction have one measurement per implementation.",
+  "tracking": {
+    "al-d8848eb7ee825086": {
+      "reference": 6.887337452964857,
+      "historical_cache": 6.644246934913099,
+      "selective_cache": 3.8968706789892167,
+      "selective_speedup": 1.7674021080810713,
+      "historical_cache_speedup": 1.0365866170286968
+    },
+    "shot-bb4d1463b8780eb6": {
+      "reference": 1.0344467470422387,
+      "historical_cache": 0.842386479023844,
+      "selective_cache": 0.6000510230660439,
+      "selective_speedup": 1.7239313113018118,
+      "historical_cache_speedup": 1.2279954306020602
+    }
+  },
+  "preparation": {
+    "reference": {
+      "prepare": 1.4907487459713593,
+      "registry": 2.3728185979416594,
+      "combined": 3.8635673439130187
+    },
+    "optimized": {
+      "prepare": 0.7138674904126674,
+      "registry": 0.8795631974935532,
+      "combined": 1.5934306879062206
+    }
+  },
+  "tracking_repetitions": [
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "reference",
+      "repeat": 0,
+      "seconds": 8.444452126976103,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "historical_cache",
+      "repeat": 0,
+      "seconds": 6.524164786096662,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "selective_cache",
+      "repeat": 0,
+      "seconds": 3.8968706789892167,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "selective_cache",
+      "repeat": 1,
+      "seconds": 4.021053079981357,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "historical_cache",
+      "repeat": 1,
+      "seconds": 6.644246934913099,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "reference",
+      "repeat": 1,
+      "seconds": 6.887337452964857,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "reference",
+      "repeat": 2,
+      "seconds": 6.861102034104988,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "historical_cache",
+      "repeat": 2,
+      "seconds": 6.697569489013404,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "al-d8848eb7ee825086",
+      "variant": "selective_cache",
+      "repeat": 2,
+      "seconds": 3.3218518840149045,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "reference",
+      "repeat": 0,
+      "seconds": 1.0344467470422387,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "historical_cache",
+      "repeat": 0,
+      "seconds": 0.8073119409382343,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "selective_cache",
+      "repeat": 0,
+      "seconds": 0.6000510230660439,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "selective_cache",
+      "repeat": 1,
+      "seconds": 0.5975431578699499,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "historical_cache",
+      "repeat": 1,
+      "seconds": 0.8462795990053564,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "reference",
+      "repeat": 1,
+      "seconds": 1.0525295429397374,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "reference",
+      "repeat": 2,
+      "seconds": 1.027289920952171,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "historical_cache",
+      "repeat": 2,
+      "seconds": 0.842386479023844,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "source": "shot-bb4d1463b8780eb6",
+      "variant": "selective_cache",
+      "repeat": 2,
+      "seconds": 0.6309129139408469,
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "detector": "ptm",
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "detector": "coherent",
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    },
+    {
+      "detector": "coherent_strict",
+      "equal": {
+        "events.json": true,
+        "interactions.json": true,
+        "trajectory.json": true,
+        "sizes.jsonl.gz": true
+      }
+    }
+  ],
+  "preparation_repetitions": [
+    {
+      "variant": "reference",
+      "repeat": 0,
+      "prepare": 1.607700603082776,
+      "registry": 2.447301445994526,
+      "sources": 29,
+      "chunks": 4851
+    },
+    {
+      "variant": "optimized",
+      "repeat": 0,
+      "prepare": 0.7223175528924912,
+      "registry": 0.9229780330788344,
+      "sources": 29,
+      "chunks": 4851
+    },
+    {
+      "variant": "optimized",
+      "repeat": 1,
+      "prepare": 0.7054174279328436,
+      "registry": 0.8361483619082719,
+      "sources": 29,
+      "chunks": 4851
+    },
+    {
+      "variant": "reference",
+      "repeat": 1,
+      "prepare": 1.3737968888599426,
+      "registry": 2.2983357498887926,
+      "sources": 29,
+      "chunks": 4851
+    }
+  ],
+  "descriptor_frames": [
+    {
+      "frame": 0,
+      "reference_seconds": 2.896862196037546,
+      "optimized_seconds": 2.392882029991597,
+      "equal": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "frame": 1500,
+      "reference_seconds": 1.9548426561523229,
+      "optimized_seconds": 1.9486375427804887,
+      "equal": [
+        true,
+        true,
+        true,
+        true
+      ]
+    },
+    {
+      "frame": 3000,
+      "reference_seconds": 2.0231760169845074,
+      "optimized_seconds": 1.9759337669238448,
+      "equal": [
+        true,
+        true,
+        true,
+        true
+      ]
+    }
+  ],
+  "million_atom_descriptors": {
+    "atoms": 1000000,
+    "frame": 6000,
+    "reference_seconds": 37.33202276704833,
+    "optimized_seconds": 34.55197702301666,
+    "equal": [
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "preparation_equivalence": {
+    "paths": {
+      "count": 219,
+      "equal": true,
+      "reference_seconds": 5.224358567036688,
+      "optimized_seconds": 0.006947082933038473
+    },
+    "references": {
+      "equal": true,
+      "reference_seconds": 3.124019025126472,
+      "optimized_seconds": 0.6454197531566024
+    },
+    "prepare": {
+      "seconds": 2.291633431101218,
+      "equal": {
+        "sources": true,
+        "coverage": true,
+        "jobs": true,
+        "tasks": true,
+        "registry_sha256": true,
+        "excluded_plan_sha256": true
+      },
+      "summary": {
+        "sources": 29,
+        "cadences": {
+          "010": 29,
+          "030": 29
+        },
+        "unique_observed_frames": 77399,
+        "chunks": 4851,
+        "atom_frames": 5441459296,
+        "coverage_states": {
+          "outside_native_010_production_protocol": 36,
+          "outside_production_role": 136,
+          "already_in_prior_release": 75,
+          "production_not_complete": 4,
+          "included": 29
+        },
+        "by_dataset": {
+          "al-main-010ps-20260927-source0910": 1,
+          "al-main-010ps-20260927-source0911": 1,
+          "al-main-010ps-20260927-source0912": 1,
+          "al-main-010ps-20260927-source0913": 1,
+          "al-main-010ps-20260927-source0915": 1,
+          "al-main-010ps-20260927-source0916": 1,
+          "al-main-010ps-20260927-source0917": 1,
+          "al-main-010ps-20260927-source0918": 1,
+          "al-main-010ps-20260927-source0919": 1,
+          "al-main-010ps-20260927-source0920": 1,
+          "al-main-010ps-20260927-source0921": 1,
+          "al-main-010ps-20260927-source0922": 1,
+          "al-main-010ps-20260927-source0923": 1,
+          "al-main-010ps-20260927-source0924": 1,
+          "al-main-010ps-20260927-source0925": 1,
+          "al-main-010ps-20260927-source0926": 1,
+          "al-main-010ps-20260927-source0927": 1,
+          "al-main-010ps-20260927-source0928": 1,
+          "al-main-010ps-20260927-source0929": 1,
+          "al-main-010ps-20260927-source0930": 1,
+          "al-main-010ps-20260927-source0931": 1,
+          "al-main-010ps-20260927-source0932": 1,
+          "al-main-010ps-20260927-source0933": 1,
+          "al-main-010ps-20260927-source0934": 1,
+          "al-main-010ps-20260927-source0935": 1,
+          "al-main-010ps-20260927-source0936": 1,
+          "al-main-010ps-20260927-source0937": 1,
+          "al-main-010ps-20260927-source0938": 1,
+          "al-main-010ps-20260927-source0939": 1
+        },
+        "generated_at": "2026-10-07T20:19:32.685602+00:00"
+      }
+    }
+  },
+  "registry_equivalence": {
+    "seconds": 1.2265348110813648,
+    "equal": {
+      "schema_version": true,
+      "catalog_sha256": true,
+      "datasets": true,
+      "potentials": true,
+      "duplicate_binary_groups": true,
+      "unregistered_directories": true,
+      "remote_holdings": true,
+      "methodology": true
+    }
+  },
+  "full_catalogue_references": {
+    "dataset_ids": 429,
+    "equal": true,
+    "reference_seconds": 27.66710011707619,
+    "optimized_seconds": 0.9937320319004357
+  },
+  "cache_writer_repack": {
+    "frames": [
+      {
+        "frame": 839,
+        "components_equal": true,
+        "raw_ptm_equal": true,
+        "initial_ptm_lazy": true
+      },
+      {
+        "frame": 840,
+        "components_equal": true,
+        "raw_ptm_equal": true,
+        "initial_ptm_lazy": false
+      }
+    ],
+    "receipt": {
+      "identity": "29635b3bdbf837e3c208144301984f920002b3fed628dbc2b27c24b8c0d5d023",
+      "source": "ni-T1100-melt00",
+      "start": 0,
+      "stop": 2,
+      "sha256": "976c3098cc5edbaba23acfaa4d972b423dc2d5fd8750f893cc992fd79a5bb95f",
+      "seconds": 4.5552403659094125,
+      "layout": "detector_arrays_v1",
+      "ptm_producer_sha256": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+      "ptm_execution_sha256": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+      "descriptor_threads": 1,
+      "descriptor_producer_sha256": "5ade2b1b7d2e8b269cefe1d768ee49131e6a1d1054bdc402497ee9e6680eff2d"
+    },
+    "repack_layouts": [
+      "detector_arrays_v1",
+      "historical"
+    ],
+    "resume_copies": 0
+  },
+  "contracts": {
+    "crystallization_origin": {
+      "ok": true
+    },
+    "crystallization_origin_external": {
+      "ok": true
+    },
+    "spatial_approach": {
+      "ok": true
+    },
+    "nucleus_harvest": {
+      "ok": true
+    },
+    "distance_encoder": {
+      "ok": true
+    },
+    "encoder_mechanisms": {
+      "ok": true
+    },
+    "distance_encoder_history": {
+      "ok": true
+    },
+    "distance_encoder_dense_history": {
+      "ok": true
+    },
+    "distance_encoder_dense_external": {
+      "ok": true
+    },
+    "distance_encoder_material_finetune": {
+      "ok": true
+    },
+    "distance_encoder_material_interim": {
+      "ok": true
+    },
+    "crystal_vector": {
+      "ok": true
+    },
+    "crystal_interface": {
+      "ok": true
+    },
+    "crystal_interface_unseen": {
+      "ok": true
+    },
+    "crystal_overfit": {
+      "ok": true
+    },
+    "crystal_feature_dominance": {
+      "ok": true
+    },
+    "crystal_liquid_distance": {
+      "ok": true
+    },
+    "liquid_predictability": {
+      "ok": true
+    },
+    "liquid_descriptors": {
+      "ok": true
+    },
+    "liquid_descriptor_baselines": {
+      "ok": true
+    },
+    "liquid_controls": {
+      "ok": false,
+      "error": "Metric contract validation failed; review code and definitions together:\nliquid_controls: src/research/liquid_predictability/control_relaxation.py: expected 7a3a240ca3e8c3bbc59b3618cbe242f4c8d8f2988b0c0a821205b58ceefd7915, observed c4ce68cd39e26e8787b78faa6e2863b8efd77d638edb6a97e35a488f09a753a2\nliquid_controls: src/simulation/relaxation.py: expected 02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca, observed 933438f2d7c695596ce44a8e8e0d6e0cfc68040e64c212e156d7775f274b4eec"
+    },
+    "spatial_vicreg_bias": {
+      "ok": true
+    },
+    "spatial_vicreg_results": {
+      "ok": true
+    },
+    "interface_cluster_correspondence": {
+      "ok": true
+    },
+    "interface_pacmap": {
+      "ok": true
+    },
+    "dense_md": {
+      "ok": true
+    },
+    "static_interface": {
+      "ok": true
+    },
+    "general_descriptor_comparison": {
+      "ok": true
+    },
+    "birth_prediction": {
+      "ok": true
+    },
+    "birth_prediction_extension": {
+      "ok": true
+    },
+    "birth_prediction_leakage": {
+      "ok": true
+    },
+    "shooting_laws": {
+      "ok": true
+    },
+    "birth_prediction_temporal": {
+      "ok": true
+    },
+    "response_atlas": {
+      "ok": true
+    },
+    "birth_prediction_relaxed": {
+      "ok": false,
+      "error": "Metric contract validation failed; review code and definitions together:\nbirth_prediction_relaxed: src/research/birth_prediction/relaxed_data.py: expected b00d07ecf4159989838117e85e9c75cbf292ab5eee6fef7680375c8dc00f039d, observed c1e58d86a976e727f3377c2b63a4fc7e7ea007d3a6b0429d36facfbdf4b3699f\nbirth_prediction_relaxed: src/simulation/relaxation.py: expected 02ba3d29b2292677cc93fff6103c30cd09e37619cd9b8d77f269cdc07421ddca, observed 933438f2d7c695596ce44a8e8e0d6e0cfc68040e64c212e156d7775f274b4eec\nbirth_prediction_relaxed: src/data/relaxed_targets/worker.py: expected 9a442dd09839d7a149cb849ed2f5b347055e68ac7b88e51079096cc423ddbb5d, observed 5a2534bd3fa5d09bd0b70230d864c86efb33960454aff6f6e62dbef635422be8"
+    },
+    "predictive_baseline": {
+      "ok": true
+    },
+    "predictive_pacmap": {
+      "ok": true
+    },
+    "birth_feature_families": {
+      "ok": true
+    },
+    "birth_merged_test": {
+      "ok": true
+    },
+    "nucleus_fates": {
+      "ok": true
+    },
+    "birth_appearance": {
+      "ok": false,
+      "error": "Metric contract validation failed; review code and definitions together:\nbirth_appearance: src/research/birth_prediction/relaxed_data.py: expected b00d07ecf4159989838117e85e9c75cbf292ab5eee6fef7680375c8dc00f039d, observed c1e58d86a976e727f3377c2b63a4fc7e7ea007d3a6b0429d36facfbdf4b3699f"
+    },
+    "shooting_births": {
+      "ok": true
+    },
+    "ta_births": {
+      "ok": true
+    },
+    "birth_appearance_cv": {
+      "ok": false,
+      "error": "Metric contract validation failed; review code and definitions together:\nbirth_appearance_cv: src/research/birth_prediction/relaxed_data.py: expected b00d07ecf4159989838117e85e9c75cbf292ab5eee6fef7680375c8dc00f039d, observed c1e58d86a976e727f3377c2b63a4fc7e7ea007d3a6b0429d36facfbdf4b3699f"
+    },
+    "birth_shooting_appearance": {
+      "ok": false,
+      "error": "Metric contract validation failed; review code and definitions together:\nbirth_shooting_appearance: src/research/birth_prediction/relaxed_data.py: expected b00d07ecf4159989838117e85e9c75cbf292ab5eee6fef7680375c8dc00f039d, observed c1e58d86a976e727f3377c2b63a4fc7e7ea007d3a6b0429d36facfbdf4b3699f"
+    },
+    "ta_crystal_content": {
+      "ok": true
+    },
+    "ta_event_crops": {
+      "ok": true
+    },
+    "ta_event_crop_windows": {
+      "ok": true
+    },
+    "birth_dense010": {
+      "ok": true
+    },
+    "response_cluster_comparison": {
+      "ok": true
+    },
+    "al_nuclei_search": {
+      "ok": true
+    },
+    "response_velocity": {
+      "ok": true
+    },
+    "meam_md": {
+      "ok": true
+    },
+    "meam_gpu": {
+      "ok": true
+    },
+    "meam_gpu_phase": {
+      "ok": true
+    },
+    "response_birth": {
+      "ok": true
+    },
+    "nucleus_recovery": {
+      "ok": true
+    },
+    "nucleus_controls": {
+      "ok": true
+    },
+    "al_nuclei_lineage": {
+      "ok": true
+    },
+    "nucleus_negative_extension": {
+      "ok": true
+    },
+    "nucleus_continuation_bias": {
+      "ok": true
+    },
+    "nucleus_rate_calibration": {
+      "ok": true
+    },
+    "nucleus_dynamics_ablation": {
+      "ok": true
+    },
+    "response_dense_birth": {
+      "ok": true
+    },
+    "response_birth_pooled": {
+      "ok": true
+    },
+    "continuous_motion": {
+      "ok": true
+    },
+    "continuous_motion_birth": {
+      "ok": true
+    },
+    "embryo_establishment_cohort": {
+      "ok": true
+    },
+    "structural_response": {
+      "ok": true
+    },
+    "nuclei_birth_dataset": {
+      "ok": true
+    },
+    "ni_births": {
+      "ok": true
+    },
+    "motion_birth_attribution": {
+      "ok": true
+    },
+    "motion_first_appearance": {
+      "ok": true
+    },
+    "ni_births_preview": {
+      "ok": true
+    },
+    "nucleus_histories": {
+      "ok": true
+    },
+    "al075_birth_quality": {
+      "ok": true
+    },
+    "ni_birth_histories": {
+      "ok": true
+    }
+  },
+  "scientific_changes": false,
+  "production_caches_rewritten": false,
+  "jobs_submitted_or_changed": false,
+  "caveats": [
+    "Cold overlap compilation costs 0.77 seconds per worker and is excluded from steady tracking timings.",
+    "Selective layout is required for full tracking improvement; old caches gain less.",
+    "Repacking is an upfront read/write cost, measured 28.56 s for the Al source and 0.72 s for shooting.",
+    "Registry and source-plan preparation excludes full trajectory verification and production-log/potential audits.",
+    "Million-atom descriptor improvement is a single matched-frame comparison; small frames show little additional gain.",
+    "Five pre-existing metric contract mismatches in historical relaxation/appearance workflows remain unaccepted."
+  ],
+  "implementation": {
+    "src/project_runtime/paths.py": "dfdb393235e3c80685777f926164752ca842a843c6e8dd37eba0199b267fa5e4",
+    "src/project_runtime/dataset_registry.py": "5923dadbbd6828a4aacf2ffd86aa81c222f596b01ffc9ce0abf191f2160f41e3",
+    "src/postprocessing/membership.py": "0d2711444d204c4fb547b646ba9e04fe096fe62e3908aafcbccfe03db9eef9fe",
+    "src/postprocessing/cache.py": "2d9174d4b6c827c79bbde9ac93730a1f45bdbf13b971df6083353cac046e10f3",
+    "src/postprocessing/extraction.py": "5ade2b1b7d2e8b269cefe1d768ee49131e6a1d1054bdc402497ee9e6680eff2d",
+    "src/postprocessing/descriptors/structure.py": "56d07aa24378c9942cd72035760dbcf826e6bbe6e31112ace60078447cc20f18",
+    "src/postprocessing/lineage.py": "9a037432444d50ffbddde4f8e48bfe523d56ac4eb9391b7e7b5334d5eb5cce03",
+    "src/postprocessing/search.py": "f3ab2ead6cd4d443c370d5c2dcc930a31608ed08f77b200f3d15637d0c62709d",
+    "src/postprocessing/sources.py": "0f7e58c2887e96309929108a40005c321fea162557fca29f3b1d1db9de3a9252",
+    "src/postprocessing/inventory.py": "08c9bd84cee0a0d6f4c9b9c7142ddeed921af3d876037fe02a1d757bfa7e6b9a"
+  },
+  "integration": {
+    "commands": {
+      "inventory": {
+        "returncode": 0,
+        "error": ""
+      },
+      "descriptors": {
+        "returncode": 0,
+        "error": ""
+      },
+      "cache": {
+        "returncode": 0,
+        "error": ""
+      },
+      "search": {
+        "returncode": 0,
+        "error": ""
+      },
+      "dataset": {
+        "returncode": 0,
+        "error": ""
+      },
+      "labels": {
+        "returncode": 0,
+        "error": ""
+      },
+      "histories": {
+        "returncode": 0,
+        "error": ""
+      },
+      "publish": {
+        "returncode": 0,
+        "error": ""
+      },
+      "view": {
+        "returncode": 0,
+        "error": ""
+      },
+      "export": {
+        "returncode": 0,
+        "error": ""
+      },
+      "ni-search": {
+        "returncode": 0,
+        "error": ""
+      },
+      "ni-histories": {
+        "returncode": 0,
+        "error": ""
+      },
+      "ni-preview": {
+        "returncode": 0,
+        "error": ""
+      },
+      "crops": {
+        "returncode": 0,
+        "error": ""
+      },
+      "crop-windows": {
+        "returncode": 0,
+        "error": ""
+      }
+    },
+    "imports": {
+      "count": 94,
+      "failures": []
+    },
+    "publication": {
+      "compatible_searches": 4,
+      "pending": 0,
+      "unknown_implementation_rejected": true,
+      "cadences": {
+        "010": {
+          "established_ptm": 295,
+          "fingerprint": "7720ac6b92886adb29013beb4e28b78e7def6ba16e9a175066b6574a4c27380d"
+        },
+        "030": {
+          "established_ptm": 150,
+          "fingerprint": "7720ac6b92886adb29013beb4e28b78e7def6ba16e9a175066b6574a4c27380d"
+        }
+      }
+    },
+    "frozen_worker": {
+      "returncode": 0,
+      "stdout": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429\n",
+      "stderr": ""
+    }
+  }
+}

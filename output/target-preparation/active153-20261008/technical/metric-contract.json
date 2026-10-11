@@ -1,0 +1,22 @@
+{
+  "family": "spatial_target_preparation",
+  "exported_at": "2026-10-08T12:14:08.545473+00:00",
+  "files": {
+    "configs/data/spatial_active_preparation.json": "54c24205e4b84361c4fa324970dcf14108bd0d0626eb821d023d6c4d6fa5655d",
+    "configs/data/spatial_active_targets.json": "a53af2b3c388324579bfce6564cce817ef1db167e39f1ba86cac94fa615bfa1d",
+    "docs/metrics/spatial_target_preparation.md": "2dc0fc9c9df0fc11fd630e2ece9a90a255f77c7a79dfcfb590827f1b65512c84",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
+    "src/postprocessing/__main__.py": "a42de71be54c5ebbffa70fd44dc629326accc92e225f47d953852c4b83720497",
+    "src/postprocessing/descriptors/alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+    "src/postprocessing/descriptors/alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+    "src/postprocessing/descriptors/rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+    "src/postprocessing/descriptors/selection.py": "099abb41d2a0a301113df151e53dcf3966b9ff9f3805e22322f808c18e597dc2",
+    "src/postprocessing/target_benchmark.py": "c163a8719d8de87f7cf201064cfcf4e6de2fc654f68567d0d9b58725e885e74e",
+    "src/postprocessing/targets.py": "b9e3cca8380a8a0e66cbfdf4726842d563fcf6e352b88a4af8bb2bc319fceaaa",
+    "src/research/liquid_predictability/descriptors.py": "df9301550eb851ccdf0ea3c2ae99a221ca3bfade6974eecff250bdc47f17030d",
+    "src/research/liquid_predictability/rich_multimaterial_data.py": "474549188950e5aa5b41166f09a296a51a2188aef35c5d292da0b64a785d1427",
+    "src/research/liquid_predictability/rich_multimaterial_queue.py": "1720b7013d592a0d64653a89224212720f51af30e4cfa637a931a471acab0887",
+    "src/research/structural_response/data.py": "bd150527cd1800ddafeade3f9424b5c94f57c27fcfcd079dd08d848bc9983935"
+  },
+  "verified": true
+}

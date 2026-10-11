@@ -1,6 +1,7 @@
 """Quantize verified temporal trajectory positions, preserving all other arrays."""
 
 import argparse
+import errno
 import hashlib
 import json
 import os
@@ -132,12 +133,29 @@ def compress(binary_path: Path, *, delete_source=False):
         # Published target is checksum verified and fsynced before retiring originals.
         original_root = source.root
         del frame, positions, source
-        shutil.rmtree(original_root)
+        # A caller may still map the source on NFS. Retire its directory first
+        # so the compatibility path can be installed even while .nfs handles
+        # await the caller closing its mappings. Other deletion errors remain fatal.
+        retired = original_root.with_name(original_root.name + '.retiring')
+        original_root.rename(retired)
+        try:
+            shutil.rmtree(retired)
+        except OSError as error:
+            if error.errno != errno.ENOTEMPTY:
+                raise
+            pending = list(retired.iterdir())
+            if any(not p.is_file() or not p.name.startswith('.nfs') for p in pending):
+                raise
+            report['pending_nfs_retirement'] = {
+                'directory': str(retired),
+                'open_files': [p.name for p in pending],
+                'reason': 'NFS removes these files when the last source mapping closes',
+            }
         original_root.symlink_to(target.name, target_is_directory=True)
-        report['original_deleted'] = True
+        report['original_deleted'] = not retired.exists()
         report_path.write_text(json.dumps(report, indent=2) + '\n')
         if campaign_report_path.exists():
-            updated['original_deleted'] = True
+            updated.update(report)
             campaign_report_path.write_text(
                 json.dumps(updated, indent=2) + '\n'
             )

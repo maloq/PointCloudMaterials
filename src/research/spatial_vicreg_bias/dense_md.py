@@ -14,7 +14,8 @@ from scipy.spatial import cKDTree
 from sklearn.cluster._kmeans import _labels_inertia_threadpool_limit
 
 from src.data.fixed_cohort.protocol import centered, sha, write_json
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from src.research.crystal_vector.interface import interface_mask
 from src.research.spatial_vicreg_bias.data import descriptors
 from .viewer_payload import write_asset

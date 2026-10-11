@@ -1,0 +1,826 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ta appearance candidates:20A radius and requested12ps before/after</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ta appearance candidates:20A radius and requested12ps before/after</h1><p>Eight separate ambiguous appearance crops at0.1ps spacing; requested±12ps around establishment, truncated to available observations.</p><span class="badge">derived</span><p><code>ta-appearance-crops-12ps-20261003</code> · Ta</p><h2>Location and availability</h2><p><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003">/work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003</a></p><p>44 owned files · 0.090 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ta appearance candidates:20A radius and requested12ps before/after&quot;,
+  &quot;materials&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;ta-zhong2014-eam&quot;
+  ],
+  &quot;role&quot;: &quot;visual_review&quot;,
+  &quot;classification&quot;: &quot;derived&quot;,
+  &quot;description&quot;: &quot;Eight separate ambiguous appearance crops at0.1ps spacing; requested\u00b112ps around establishment, truncated to available observations.&quot;,
+  &quot;provenance&quot;: &quot;Checksum-verified temporal subsets of completed ta-nucleus-crops-20261003; src/research/crystallization_origin/event_crop_windows.py&quot;,
+  &quot;ancestry&quot;: &quot;Retains parent hashes and shared archived-Ta preparation; future-selected centers, no predictor split.&quot;,
+  &quot;evidence&quot;: [
+    &quot;configs/analysis/ta_appearance_crops_12ps_20261003.json&quot;,
+    &quot;docs/metrics/ta_event_crop_windows.md&quot;,
+    &quot;${dataset:ta-appearance-crops-12ps-20261003}/technical/complete.json&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Ambiguous weak-link-dependent establishments, not confirmed independent births.&quot;,
+    &quot;None has full\u00b112ps coverage; missing observations are explicit.&quot;,
+    &quot;Existing0.5ps event labels are not refined; intermediate0.1ps PTM is unavailable.&quot;
+  ]
+}</pre><ul><li><a href="../../../configs/analysis/ta_appearance_crops_12ps_20261003.json">configs/analysis/ta_appearance_crops_12ps_20261003.json</a></li><li><a href="../../metrics/ta_event_crop_windows.md">docs/metrics/ta_event_crop_windows.md</a></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/technical/complete.json">${dataset:ta-appearance-crops-12ps-20261003}/technical/complete.json</a></li></ul><p>Dependencies: <a href="ta-nucleus-crops-20261003-4954a75c.html">ta-nucleus-crops-20261003</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Zhong 2014 Ta EAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam">Ta_Zhong2014.lammps.eam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ta-zhong2014-eam&quot;,
+  &quot;name&quot;: &quot;Zhong 2014 Ta EAM&quot;,
+  &quot;family&quot;: &quot;EAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Ta&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/alloy&quot;,
+  &quot;mapping&quot;: &quot;Ta&quot;,
+  &quot;citation&quot;: &quot;Zhong et al., Nature 512, 177\u2013180 (2014)&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:ta_initial_model_1m_24ps_npt_20260905}/manifest.json&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;sha256&quot;: &quot;8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>material</td><td><code>[&quot;Ta&quot;]</code></td></tr><tr><td>parent_id</td><td><code>[&quot;2.7ns&quot;, &quot;2.8ns&quot;, &quot;2.9ns&quot;, &quot;3.0ns&quot;]</code></td></tr><tr><td>velocity_seed</td><td><code>[145515637, 395820186, 47085415, 779428654, 796497251, 852288974, 869939435]</code></td></tr><tr><td>timestep_fs</td><td><code>[2.0]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[10000422]</code></td></tr><tr><td>frame_count</td><td><code>[49]</code></td></tr><tr><td>cadence_ps</td><td><code>[0.5]</code></td></tr><tr><td>lineage</td><td><code>[{&quot;interface_distance_A&quot;: 8.233252184899222, &quot;local_birth_radius_A&quot;: 8.233252184899222, &quot;maximum_missing_frames&quot;: 1, &quot;minimum_overlap_fraction&quot;: 0.25, &quot;minimum_shared_atoms&quot;: 4, &quot;minimum_tracked_size&quot;: 4, &quot;neighbor_cutoff_A&quot;: 3.70496348320465, &quot;thresholds&quot;: [{&quot;name&quot;: &quot;primary&quot;, &quot;persistence_frames&quot;: 4, &quot;persistence_ps&quot;: 1.5, &quot;size&quot;: 64}]}]</code></td></tr><tr><td>radius_A</td><td><code>[20.0]</code></td></tr><tr><td>protocol</td><td><code>[&quot;ta_appearance_review_windows_v1&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 44,
+    &quot;apparent_bytes&quot;: 95945385,
+    &quot;allocated_bytes&quot;: 96470528,
+    &quot;file_extensions&quot;: {
+      &quot;.md&quot;: 4,
+      &quot;.zip&quot;: 1,
+      &quot;.csv&quot;: 1,
+      &quot;.json&quot;: 22,
+      &quot;.npz&quot;: 8,
+      &quot;.gz&quot;: 8
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 18,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            359620,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            359620
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            359620
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            359620
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            206
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            206
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            206
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            206
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            206,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            206,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            206,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            207
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            411239,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            411239
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            411239
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            411239
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            236
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            236
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            236
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            236
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            236,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            236,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            236,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            237
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            245386,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            245386
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            245386
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            245386
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            141
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            141
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            141
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            141
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            141,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            141,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            141,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            142
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            324031,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            324031
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            324031
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            324031
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            186
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            186
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            186
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            186
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            186,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            186,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            186,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            187
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            254052,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            254052
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            254052
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            254052
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            146
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            146
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            146
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            146
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            146,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            146,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            146,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            147
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            334089,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            334089
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            334089
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            334089
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            191
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            191
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            191
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            191
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            191,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            191,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            191,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            192
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            262567,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            262567
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            262567
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            262567
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            151
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            151
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            151
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            151
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            151,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            151,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            151,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            152
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/trajectory.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            279835,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            279835
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;ptm_type&quot;: {
+          &quot;shape&quot;: [
+            279835
+          ],
+          &quot;dtype&quot;: &quot;int8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;tracked_center&quot;: {
+          &quot;shape&quot;: [
+            279835
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;time_ps&quot;: {
+          &quot;shape&quot;: [
+            161
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;relative_time_ps&quot;: {
+          &quot;shape&quot;: [
+            161
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;source_frame&quot;: {
+          &quot;shape&quot;: [
+            161
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;timesteps&quot;: {
+          &quot;shape&quot;: [
+            161
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;center_original_A&quot;: {
+          &quot;shape&quot;: [
+            161,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_low_A&quot;: {
+          &quot;shape&quot;: [
+            161,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;original_box_high_A&quot;: {
+          &quot;shape&quot;: [
+            161,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;offsets&quot;: {
+          &quot;shape&quot;: [
+            162
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (18 records)</summary><p><a href="../records/ta-appearance-crops-12ps-20261003-408c5099.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/complete.json">crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/complete.json</a> · metadata · <code>d3611b0b6c138df1608b47038d2bbf3be3847463458bcfbd54466a5a213ac0f3</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/metadata.json">crops/appearing/ta-shooting-20260926-parent01-shot01__appearing-event-002/metadata.json</a> · metadata · <code>2b4271a37e5b57a8dac94d0fa31dc32129cb0468417cf6811d748788ed7ce57f</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/complete.json">crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/complete.json</a> · metadata · <code>f74161b49a7f7d9ec3878c4dc3e8b18e7fff4a6e02ff12024f4ac7d2fc2f298e</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/metadata.json">crops/appearing/ta-shooting-20260926-parent02-shot01__appearing-event-005/metadata.json</a> · metadata · <code>309388515c817fa18451e986a4e2c8b952527de86bbecbdb7f47466d924f5de1</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/complete.json">crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/complete.json</a> · metadata · <code>ac436ce18e13bfb1301d5ae09799e5e3dbe8cf109d90f266c8133e713ac764cd</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/metadata.json">crops/appearing/ta-shooting-20260926-parent02-shot02__appearing-event-007/metadata.json</a> · metadata · <code>a8e587399e7e81a42c76b60dbd7d22a88ebaad4ba2bc7335ec74a6dddc1400dd</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/complete.json">crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/complete.json</a> · metadata · <code>5e543421681301dcc84efe7a0556f20cb0bd04d92c87d0a16d11a970b9b311cc</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/metadata.json">crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-014/metadata.json</a> · metadata · <code>03f7e81673207279385290fda9be0fe05847358077cc436feffc53cb5e6c0c5a</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/complete.json">crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/complete.json</a> · metadata · <code>498d49c7fc3886ac807f37b93cf15c7edb6cd92283c492f59718d76655501bd2</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/metadata.json">crops/appearing/ta-shooting-20260926-parent03-shot00__appearing-event-015/metadata.json</a> · metadata · <code>81463ba011059bdda676cb8cd9ff21ff80233e37c62f097f812a2643a66fd717</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/complete.json">crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/complete.json</a> · metadata · <code>88c8872e83a7290cac33d36d743b5dced085c66ceea45502246dcaf665054266</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/metadata.json">crops/appearing/ta-shooting-20260926-parent03-shot03__appearing-event-014/metadata.json</a> · metadata · <code>f9c9712b5447e3c3fc5fcc0619a9fd0e5590bdb5347bfd546179d9ab852282e1</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/complete.json">crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/complete.json</a> · metadata · <code>ffd5cf509f8231755f023a4b41013c50b8338e38541e1714032855154a387898</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/metadata.json">crops/appearing/ta-shooting-20260926-parent04-shot00__appearing-event-032/metadata.json</a> · metadata · <code>ca097ebc70f7cd83b88cb1ddac702d08ac0aa7e44df68da497a8ce842412ffdf</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/complete.json">crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/complete.json</a> · metadata · <code>a4ac5934f71d1ad00ee34533ce4904bfa93127d990d496ddc3abbf69fec03af3</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/metadata.json">crops/appearing/ta-shooting-20260926-parent04-shot02__appearing-event-030/metadata.json</a> · metadata · <code>2ddd901afacdc1409ba4f5421102b344607b019d53fbc6423b6108f7860af053</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/technical/complete.json">technical/complete.json</a> · metadata · <code>fad82d3603a76094ec7e1758e376088e78279525f77eb8ede92c08a10d44bdc8</code></li><li><a href="../../../../../../../work/PERSO/vmorozov/analysis/nucleus_crops/ta-appearance-20A-12ps-20261003/technical/plan.json">technical/plan.json</a> · metadata · <code>e719d45d210063d970c86356b8aced264f503238cb7302df6949baf9b0c401e7</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

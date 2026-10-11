@@ -1,0 +1,201 @@
+{
+  "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904": {
+    "root": "simulations",
+    "path": "al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al meam predictive dynamics fixed15 smoke 1parent 16branches float32 20260904",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "fixture",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_meam_predictive_dynamics_fixed15_smoke_1parent_16branches_float32_20260904}"
+      ],
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+    }
+  },
+  "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903": {
+    "root": "simulations",
+    "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al meam predictive dynamics fixed48 smoke 1parent 16branches float32 20260903",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "fixture",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903}"
+      ],
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+    }
+  },
+  "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation": {
+    "root": "simulations",
+    "path": "al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "al meam predictive dynamics fixed48 smoke 1parent 16branches float32 20260903 invalid endpoint descriptor preparation",
+      "materials": [
+        "Al"
+      ],
+      "role": "raw_dynamics",
+      "classification": "fixture",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:al_meam_predictive_dynamics_fixed48_smoke_1parent_16branches_float32_20260903_invalid_endpoint_descriptor_preparation}"
+      ],
+      "potential_ids": [
+        "al-lee2003-meam"
+      ],
+      "lineage": "Siblings share parent/source ancestry; mixed shooting protocols and converted continuations are not independent sources."
+    }
+  },
+  "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z": {
+    "root": "simulations",
+    "path": "superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z",
+    "kind": "simulation",
+    "dependencies": [],
+    "metadata": {
+      "title": "superseded preparation al meam predictive dynamics fixed15 smoke wave979929 20260904T0955Z",
+      "materials": [],
+      "role": "raw_dynamics",
+      "classification": "fixture",
+      "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
+      "evidence": [
+        "${dataset:superseded_preparation_al_meam_predictive_dynamics_fixed15_smoke_wave979929_20260904T0955Z}"
+      ]
+    }
+  },
+  "portability-smoke-forecast": {
+    "root": "archive",
+    "path": "projects/PointCloudMaterials-20260913T174741Z/output/portability/storage-20260913/technical/smoke-cache",
+    "kind": "test_fixture",
+    "dependencies": [],
+    "description": "Synthetic linear embeddings from tests/test_embedding_forecast.py:cache_fixture; environment check, not scientific data.",
+    "metadata": {
+      "title": "portability-smoke-forecast",
+      "materials": [],
+      "role": "administrative",
+      "classification": "fixture",
+      "description": "Registered reference or supporting artifact.",
+      "evidence": [
+        "${dataset:portability-smoke-forecast}"
+      ]
+    }
+  },
+  "portability-ti-smoke-20260913": {
+    "root": "archive",
+    "path": "simulations/portability-ti-smoke-20260913",
+    "kind": "test_fixture",
+    "state": "complete",
+    "dependencies": [
+      "potential-ti-kavousi2019"
+    ],
+    "aliases": [
+      "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/portability-ti-smoke-20260913"
+    ],
+    "description": "128-atom, 20-step pure-Ti integration/storage smoke, not crystallization research data.",
+    "simulation_fixture": true,
+    "metadata": {
+      "title": "portability-ti-smoke-20260913",
+      "materials": [],
+      "role": "administrative",
+      "classification": "fixture",
+      "description": "Registered reference or supporting artifact.",
+      "evidence": [
+        "${dataset:portability-ti-smoke-20260913}"
+      ]
+    }
+  },
+  "mace-causal-implementation-smoke-20260916": {
+    "root": "cache",
+    "path": "mace-causal-implementation-smoke-20260916",
+    "kind": "training_cache",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "mace-causal-implementation-smoke-20260916",
+      "role": "training_cache",
+      "classification": "fixture",
+      "materials": [
+        "Al"
+      ],
+      "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+      "evidence": [
+        "${dataset:mace-causal-implementation-smoke-20260916}"
+      ]
+    }
+  },
+  "mace-causal-physical-smoke-20260916": {
+    "root": "cache",
+    "path": "mace-causal-physical-smoke-20260916",
+    "kind": "training_cache",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "mace-causal-physical-smoke-20260916",
+      "role": "training_cache",
+      "classification": "fixture",
+      "materials": [
+        "Al"
+      ],
+      "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+      "evidence": [
+        "${dataset:mace-causal-physical-smoke-20260916}"
+      ]
+    }
+  },
+  "mace-causal-verified-smoke-20260916": {
+    "root": "cache",
+    "path": "mace-causal-verified-smoke-20260916",
+    "kind": "training_cache",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "mace-causal-verified-smoke-20260916",
+      "role": "training_cache",
+      "classification": "fixture",
+      "materials": [
+        "Al"
+      ],
+      "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+      "evidence": [
+        "${dataset:mace-causal-verified-smoke-20260916}"
+      ]
+    }
+  },
+  "mace-local-motion-smoke-20260916": {
+    "root": "cache",
+    "path": "mace-local-motion-smoke-20260916",
+    "kind": "training_cache",
+    "dependencies": [],
+    "aliases": [],
+    "metadata": {
+      "title": "mace-local-motion-smoke-20260916",
+      "role": "training_cache",
+      "classification": "fixture",
+      "materials": [
+        "Al"
+      ],
+      "description": "Previously unregistered derived data. Inspect schemas, source plans and cache protocol before reuse.",
+      "evidence": [
+        "${dataset:mace-local-motion-smoke-20260916}"
+      ]
+    }
+  }
+}

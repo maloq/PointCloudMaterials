@@ -6,13 +6,13 @@ Frozen five-metal positions-only structural pretraining release: 250,000 trainin
 
 - ID: `structural-neighbors-250k-20260917`
 - Materials: Al, Mg, Ta, Ti, Zr
-- Classification: **derived**; role: training_cache
+- Classification: **retired**; role: provenance_only
 - Location: `/home/ids/vmorozov/training-cache/structural_pretraining/broad-250k-v2-20260917`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM; Mendelev 2008 Al EAM (Al1.eam.fs); Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs); Zhong 2014 Ta EAM; Kavousi 2019 Ni/Ti 2NN-MEAM, pure Ti component
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 16.673 GiB
+- Allocated storage, excluding registered nested datasets: 0.003 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -27,8 +27,8 @@ Frozen five-metal positions-only structural pretraining release: 250,000 trainin
     "Ta",
     "Zr"
   ],
-  "role": "training_cache",
-  "classification": "derived",
+  "role": "provenance_only",
+  "classification": "retired",
   "description": "Frozen five-metal positions-only structural pretraining release: 250,000 training anchor records and 480 Al selection records. Dynamic observations include three causal frames, a separate next-frame target and a nearby-center view. Per-material fixed cutoff normalization, geometry85, and masked instantaneous TDA144. Plan records every native/shooting ancestry, source manifest, target producer, calibrated radius and extraction task.",
   "evidence": [
     "${dataset:structural-neighbors-250k-20260917}/manifest.json",
@@ -47,7 +47,10 @@ Frozen five-metal positions-only structural pretraining release: 250,000 trainin
     "Anchor records and shooting descendants are correlated; counts are not independent sources. Only the native Al cohort provides independent selection/test roles.",
     "No velocities or relaxed-TDA targets. Irregular saved-frame intervals retain their measured physical time offsets.",
     "The immutable plan contains the full native/shooting source lineage inventory beyond the top-level collection dependencies."
-  ]
+  ],
+  "retirement_record": "docs/storage/cache_cleanup_20261002/receipt.json",
+  "storage_status": "Cache arrays deleted at user request on 2026-10-02. Historical scientific description and provenance retained; rebuild before reuse.",
+  "source_availability_note": "One or more raw Ta trajectory dependencies were deleted on 2026-10-03. Historical derived artifacts retain their original scientific definitions; see docs/storage/ta_simulation_removal_20261003/receipt.json."
 }
 ```
 
@@ -69,6 +72,6 @@ All 1013 producer records, their hashes, field paths and current array schemas: 
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

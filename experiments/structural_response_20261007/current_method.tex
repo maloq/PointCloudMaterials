@@ -1,0 +1,501 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=19mm,top=17mm,bottom=18mm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\hypersetup{hidelinks,pdftitle={Learning local structure and motion from simulation},pdfauthor={}}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\paragraph}{0pt}{7pt}{0.6em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\emergencystretch}{1em}
+\clubpenalty=10000
+\widowpenalty=10000
+\newcommand{\R}{\mathbb R}
+\newcommand{\E}{\mathbb E}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\x}{\mathbf x}
+\newcommand{\X}{\mathbf X}
+\newcommand{\z}{\mathbf z}
+\newcommand{\Sim}{\operatorname{Sim}}
+\newcommand{\avgl}[1]{\left\langle #1\right\rangle_{\mathrm{long}}}
+\newcommand{\avgs}[1]{\left\langle #1\right\rangle_{\mathrm{short}}}
+
+\begin{document}
+\begin{center}
+{\LARGE\bfseries Learning local structure and motion from simulation}\\[4pt]
+{\small Current implemented formulation}
+\end{center}
+\vspace{-4pt}
+
+We learn a representation of a central atom and its local neighbourhood from
+present positions and velocities. Training combines three sources of information:
+structural measurements of present configurations, recorded MD futures, and
+short simulated continuations with derivatives with respect to their initial
+conditions. The interatomic potential is fixed. Nucleus-birth labels are used
+only to evaluate the resulting representation.
+
+\section{Starting snapshot, local input, and physical time}
+
+\paragraph{Indices and complete starting state.}
+As in the baseline, $i$ denotes a starting snapshot and $j$ the tracked central
+atom. Snapshot $i$ contains $n_i$ atoms. At observation time $t$, define
+\[
+\begin{aligned}
+\X_i(t)&=(\mathbf r_{i1}(t),\ldots,\mathbf r_{in_i}(t)),\\
+\mathbf V_i(t)&=(\mathbf v_{i1}(t),\ldots,\mathbf v_{in_i}(t)),\\
+\mathcal S_i(t)&=(\X_i(t),\mathbf V_i(t),\mathbf H_i(t)),
+\end{aligned}
+\]
+where $\mathbf H_i(t)$ specifies the periodic cell. This is the physical state
+used to initialize the short continuations. Thermostat settings belong to the
+simulation protocol. Unlike the position-only baseline, the current method
+conditions on the saved velocities rather than resampling them at the start.
+
+\paragraph{Local observation.}
+Let $\mathcal N_{ij}(t)$ contain the centre and its 79 nearest neighbours.
+For $\ell\in\mathcal N_{ij}(t)$, let $\mathbf u_{ij\ell}(t)$ be the minimum-image
+displacement from $j$ to $\ell$, and define the relative velocity
+\[
+\boldsymbol\nu_{ij\ell}(t)=\mathbf v_{i\ell}(t)-\mathbf v_{ij}(t).
+\]
+The geometric and phase-space observations are
+\[
+\x_{ij}(t)=\{\mathbf u_{ij\ell}(t)\}_{\ell\in\mathcal N_{ij}(t)},
+\qquad
+\boldsymbol\chi_{ij}(t)=\bigl(\x_{ij}(t),\boldsymbol\nu_{ij}(t)\bigr).
+\]
+The structural encoder uses positions only, with support restricted to $8$\,\AA{}
+around the centre. Velocities enter through the motion coordinate defined below.
+No temperature, simulation age, absolute time, species identity, or relaxed
+configuration is supplied to the representation or its predictive readouts.
+
+\paragraph{Time notation.}
+The present is the recorded snapshot at physical time $t$. A horizon $\tau>0$
+refers to the physical endpoint $t+\tau$. Recorded observation times are denoted
+$s_k$; a future target is used only when its required time $s_k=t+\tau$ is available.
+The MD integration step $\delta t_{\mathrm{MD}}$ and the saving interval $\Delta t$
+are different quantities. For a trajectory saved every $m$ steps,
+\[
+\Delta t=m\,\delta t_{\mathrm{MD}}.
+\]
+The motion observations use an exact $\Delta t=0.1$\,ps grid; a source with a finer
+native grid contributes its actual matching frames. No intermediate physical
+frames are inferred by interpolation. The short simulator continuations
+use $\delta t_{\mathrm{short}}=1$\,fs. Their step need not equal the integration
+step of the archived MD trajectories.
+
+For the learned dynamics, $\rho\geq0$ denotes elapsed physical time after the
+observation, so the corresponding absolute time is $t+\rho$. Its numerical
+integration step is $h=0.05$\,ps. The scales
+\[
+\delta t_{\mathrm{MD}},\quad \delta t_{\mathrm{short}},\quad
+\Delta t,\quad h,\quad \tau
+\]
+therefore have distinct meanings. Neither the observation time $t$ nor a time
+index is an input to a neural layer; the horizon specifies how long to evolve
+the learned state.
+
+\section{Structural initialization and a fixed structural teacher}
+
+\paragraph{Structural representation.}
+A geometry-only MACE encoder maps the local positions to
+\[
+\z_{ij}(t)=E_\theta(\x_{ij}(t))\in\R^d,\qquad d=128.
+\]
+The current encoder uses correlation order $3$ and maximum angular order $3$.
+It is first trained on a broad collection of unrelaxed neighbourhoods, including
+Al, Mg, Ti and Ta, with fixed material-dependent length normalization applied
+before encoding. Material identity itself is not an encoder input.
+
+\paragraph{Spatial objective.}
+Two slightly perturbed views of the same neighbourhood are mapped to similar
+embeddings. VICReg variance and covariance terms discourage collapse and redundant
+coordinates. A structural head also predicts fixed measurements
+\[
+\boldsymbol\psi(\x)=
+\bigl(\boldsymbol\psi_{\mathrm{BO}}(\x),
+      \boldsymbol\psi_{\mathrm{TDA}}(\x)\bigr)\in\R^{298},
+\]
+consisting of 40 bond-order and 258 topological descriptors. The two descriptor
+families have equal total weight, using normalization fitted on training data.
+The objective is
+\[
+L_{\mathrm{spatial}}
+=25L_{\mathrm{invariance}}+25L_{\mathrm{variance}}
+ +L_{\mathrm{covariance}}+L_{\mathrm{descriptors}}+L_{\mathrm{masked}}.
+\]
+In the first initialization, $L_{\mathrm{masked}}=0$. In the second, a separate
+predictor uses a partially masked neighbourhood to predict the complete-view
+embedding of an exponential-moving-average teacher. The centre and its 12
+nearest neighbours remain visible; other atoms are removed with probability
+$0.2$. This teacher is used during spatial pretraining only.
+
+\paragraph{A fixed reference for motion learning.}
+After 12 spatial epochs, the resulting encoder is denoted $E_0$. Motion training
+starts from its weights, but a separate copy of $E_0$ remains fixed and defines
+all future structural targets. Thus the target representation does not change
+when the trainable encoder changes. The broad spatial collection is not replayed
+during motion training.
+
+\section{A representation of present structure and motion}
+
+\paragraph{Directional motion coordinate.}
+Let $t_*=0.1$\,ps be a fixed scale that gives the motion coordinate the same units
+as the structural embedding. Define
+\begin{equation}
+\boxed{
+\mathbf h_{ij}(t)=
+\begin{pmatrix}\z_{ij}(t)\\ \mathbf w_{ij}(t)\end{pmatrix},
+\qquad
+\mathbf w_{ij}(t)=t_*\,
+D E_\theta(\x_{ij}(t))[\boldsymbol\nu_{ij}(t)]\in\R^{128}.
+}
+\label{eq:motion-input}
+\end{equation}
+Here $D E(\x)[\mathbf v]$ is a directional derivative with respect to the local
+coordinates. It measures how the structural embedding responds to an
+instantaneous ballistic displacement in the observed velocity direction.
+It is not a separate velocity encoder or a full reconstruction of the physical
+state. In particular, it does not encode the surrounding full cell or barostat
+state.
+
+\paragraph{Current numerical approximation.}
+In the joint-encoder variant, the current training evaluates this coordinate as
+\begin{equation}
+\widetilde{\mathbf w}_{ij}(t)=
+\frac{E_\theta(\x_{ij}(t)+\varepsilon_v t_*\boldsymbol\nu_{ij}(t))
+      -E_\theta(\x_{ij}(t)-\varepsilon_v t_*\boldsymbol\nu_{ij}(t))}
+     {2\varepsilon_v},
+\qquad \varepsilon_v=0.01.
+\label{eq:motion-secant}
+\end{equation}
+The dimensionless $\varepsilon_v$ is a differentiation amplitude.
+The shifted point clouds in \eqref{eq:motion-secant} are algebraic probes of the
+encoder, not saved configurations at $t\pm\varepsilon_v t_*$. Neighbour identities
+are held fixed for these probes.
+
+\paragraph{Joint and adapter variants.}
+Joint training updates $E_\theta$. The cheaper adapter variant keeps $E_0$ fixed
+and learns a residual map $G_\eta:\R^{128}\to\R^{128}$, initialized as the identity:
+\[
+\z=G_\eta(\z_0),\qquad
+\mathbf w=D G_\eta(\z_0)[\widetilde{\mathbf w}_0],
+\qquad \z_0=E_0(\x).
+\]
+The base motion coordinate $\widetilde{\mathbf w}_0$ uses
+\eqref{eq:motion-secant} with $E_0$; the adapter derivative is evaluated
+analytically. The adapter can reorganize information in the fixed representation,
+while joint training can also change the underlying geometric features.
+
+\section{Learned stochastic evolution and future measurements}
+
+\paragraph{Autonomous latent dynamics.}
+Starting from $\mathbf h_{ij}(t)$, evolve a stochastic latent state
+\[
+\mathbf H_{ij}(t,\rho)=
+\bigl(\mathbf Z_{ij}(t,\rho),\mathbf W_{ij}(t,\rho)\bigr),
+\qquad \mathbf H_{ij}(t,0)=\mathbf h_{ij}(t).
+\]
+Its continuous-time formulation is
+\begin{equation}
+\begin{aligned}
+d\mathbf Z&=\frac{\mathbf W}{t_*}\,d\rho,\\
+d\mathbf W&=\frac{\mathbf a_\vartheta(\mathbf Z,\mathbf W)}{t_*}\,d\rho
+ +\frac{\operatorname{diag}\mathbf b_\vartheta(\mathbf Z,\mathbf W)}{\sqrt{t_*}}
+ \,d\boldsymbol{\mathcal B}_\rho.
+\end{aligned}
+\label{eq:sde}
+\end{equation}
+Here $\boldsymbol{\mathcal B}_\rho$ is Brownian motion in elapsed time, the learned
+acceleration includes damping, and the diffusion amplitudes are positive and
+bounded. The coefficients depend on the latent state, not explicitly on time.
+The current implementation numerically evolves this model with step $h$; its
+continuous-time formulation does not imply exact dynamics between saved frames.
+
+We use $p=1,\ldots,P$ for independent draws of the learned latent process,
+separate from the physical-continuation index $b$. Training uses $P=4$ and
+future evaluation uses $P=8$.
+
+\paragraph{Two measurements of a recorded future.}
+At each horizon in
+\[
+\mathcal T=\{0.1,\,0.5,\,3,\,12\}\ \mathrm{ps},
+\]
+the neighbourhood is reselected around the same atom $j$ at the actual saved
+time $t+\tau$. It supplies
+\begin{equation}
+\mathbf Y_{ij}(t,\tau)=\phi(\x_{ij}(t+\tau))\in\R^{24},
+\qquad
+\mathbf A_{ij}(t,\tau)=E_0(\x_{ij}(t+\tau))\in\R^{128}.
+\label{eq:long-targets}
+\end{equation}
+The fixed $\phi$ contains 12 smooth radial-density measurements and 12 angular
+power measurements: spherical-harmonic orders $1$--$6$ in two radial shells.
+Its coordinates are standardized using training observations, giving
+$\widetilde{\mathbf Y}_{ij}(t,\tau)$. The second target retains the broader
+structural information learned during pretraining.
+
+These long-horizon examples contain one recorded realization for each starting
+observation, rather than an average over newly generated continuations from that
+same state. The learned distribution is fitted across many local observations.
+Latent particles are model samples, not additional physical MD trajectories.
+
+\paragraph{A predictive distribution.}
+A decoder maps each latent endpoint to a mean and diagonal variance for the 24
+standardized measurements. Writing these outputs as
+$\boldsymbol\mu_{ij}^{(p)}(t,\tau)$ and
+$\boldsymbol\sigma_{ij}^{2,(p)}(t,\tau)$ gives
+\begin{equation}
+\boxed{
+\widehat p(\mathbf y\mid\boldsymbol\chi_{ij}(t);\tau)
+=\frac1P\sum_{p=1}^{P}
+\mathcal N\!\left(\mathbf y;
+\boldsymbol\mu_{ij}^{(p)}(t,\tau),
+\operatorname{diag}\boldsymbol\sigma_{ij}^{2,(p)}(t,\tau)\right).
+}
+\label{eq:mixture}
+\end{equation}
+The mixture predicts uncertainty in the chosen measurements conditional on the
+local input. It does not specify a distribution over complete atomic trajectories.
+
+Let $\avgl{\cdot}$ denote averaging over the long-future training observations.
+The likelihood and structural-anchor losses are
+\begin{align}
+L_{\mathrm{future}}
+&=\avgl{\frac1{|\mathcal T|}\sum_{\tau\in\mathcal T}
+-\frac1{24}\log\widehat p\!\left(
+\widetilde{\mathbf Y}_{ij}(t,\tau)\mid\boldsymbol\chi_{ij}(t);\tau\right)},
+\label{eq:future-loss}\\
+L_{\mathrm{anchor}}
+&=\avgl{\frac1{|\mathcal T|}\sum_{\tau\in\mathcal T}
+\frac1{2d}\norm{\overline{\mathbf Z}_{ij}(t,\tau)-\mathbf A_{ij}(t,\tau)}^2},
+\quad
+\overline{\mathbf Z}_{ij}(t,\tau)=\frac1P\sum_p\mathbf Z_{ij}^{(p)}(t,\tau).
+\label{eq:anchor-loss}
+\end{align}
+The structural mean is therefore supervised as well as the decoded distribution.
+
+\section{Short physical continuations and response supervision}
+
+\paragraph{The physical experiment.}
+From $\mathcal S_i(t)$, run $B=2$ short full-cell continuations to
+$t+\tau_s$, where $\tau_s=0.1$\,ps:
+\[
+\Gamma_{ib}(t:t+\tau_s)
+=\Sim_{\mathrm{short}}\!\left(\mathcal S_i(t),\xi_{ib};t,t+\tau_s\right).
+\]
+Both start with the same saved positions and velocities. Their independent
+$\xi_{ib}$ specify thermostat noise. The simulator uses the fixed Al MEAM
+potential and fixed-box Langevin dynamics integrated by BAOAB, with the source
+thermostat temperature. The rest of the full cell evolves normally; the local
+80-atom input is not simulated as an isolated cluster.
+
+For the short targets, the original neighbour identities $\mathcal N_{ij}(t)$
+are tracked throughout the continuation. Let
+$\x_{ibj}^{\mathrm{fix}}(t,\tau_s)$ denote their centre-relative positions at
+physical time $t+\tau_s$. This differs from the reselected neighbourhood used
+for the recorded long-future targets.
+
+\paragraph{Perturbations of the initial state.}
+Use $r\in\{Q,V\}$ to label a position or velocity perturbation, and let $a$ be
+a dimensionless amplitude. For atoms in the initial local neighbourhood,
+\[
+\begin{aligned}
+\mathbf r_{i\ell}^{(j,r,a)}(t)
+ &=\mathbf r_{i\ell}(t)+a\,\mathbf d^{Q,r}_{ij\ell},\\
+\mathbf v_{i\ell}^{(j,r,a)}(t)
+ &=\mathbf v_{i\ell}(t)+a\,\mathbf d^{V,r}_{ij\ell}.
+\end{aligned}
+\]
+Both directions are zero outside the local neighbourhood. For $r=Q$, only
+$\mathbf d^{Q,Q}$ is nonzero, with root-mean-square vector magnitude
+$0.01$\,\AA. For $r=V$, only $\mathbf d^{V,V}$ is nonzero, with magnitude
+$0.1$\,\AA/ps. Each physical direction has zero mean over its 80 atoms.
+These define the full perturbed state $\mathcal S_i^{(j,r,a)}(t)$ and its
+corresponding local input $\boldsymbol\chi_{ij}^{(r,a)}(t)$.
+
+\paragraph{Fixed-encoder value and derivative targets.}
+For a perturbed continuation, define the structural measurement
+\[
+\mathbf Y^{\mathrm{short},(r,a)}_{ibj}(t,\tau_s)
+=E_0\!\left(\x_{ibj}^{\mathrm{fix}}(t,\tau_s;r,a)\right).
+\]
+The population value and response are
+\[
+\begin{aligned}
+\boldsymbol\mu^{\mathrm{short}}_{ij}(t,\tau_s;r,a)
+ &=\E_{\xi}\!\left[
+ \mathbf Y^{\mathrm{short},(r,a)}_{ibj}(t,\tau_s)\mid\mathcal S_i(t)\right],\\
+\mathbf R^{(r)}_{ij}(t,\tau_s)
+ &=\left.\frac{\partial}{\partial a}
+ \boldsymbol\mu^{\mathrm{short}}_{ij}(t,\tau_s;r,a)\right|_{a=0}.
+\end{aligned}
+\]
+The current physical targets estimate these quantities by
+\begin{align}
+\overline{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s)
+ &=\frac1B\sum_b E_0\!\left(\x_{ibj}^{\mathrm{fix}}(t,\tau_s;0)\right),
+\label{eq:teacher-value}\\
+\overline{\mathbf R}^{(r)}_{ij}(t,\tau_s)
+ &=\frac1B\sum_b
+D E_0\!\left(\x_{ibj}^{\mathrm{fix}}(t,\tau_s;0)\right)
+ \left[\mathbf T^{(r)}_{ibj}(t,\tau_s)\right],
+\label{eq:teacher-response}\\
+\mathbf T^{(r)}_{ibj}(t,\tau_s)
+ &=\left.\frac{\partial}{\partial a}
+ \x_{ibj}^{\mathrm{fix}}(t,\tau_s;r,a)\right|_{a=0}.
+\nonumber
+\end{align}
+Here ``$;0$'' denotes the unperturbed continuation, common to both directions.
+The simulator propagates $\mathbf T^{(r)}$ by differentiating its integration
+steps and forces, holding each realization of thermostat noise fixed.
+Thus the physical teacher uses trajectory derivatives, not differences between
+the sparsely saved $0.1$\,ps frames. The interatomic potential and $E_0$ are not
+optimized by the motion loss. These physical values and derivatives are generated
+once and reused throughout neural training.
+
+\newpage
+\paragraph{The corresponding learned response.}
+The predicted short measurement is the mean latent structural endpoint,
+\[
+\widehat{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s;r,a)
+=\frac1P\sum_p
+\mathbf Z^{(p)}\!\left(t,\tau_s;
+\boldsymbol\chi_{ij}^{(r,a)}(t)\right).
+\]
+The amplitude changes the encoder input; it is not an extra argument supplied
+only to the decoder. The derivative must therefore describe the response of the
+whole learned input-to-future map. Its current numerical estimate is
+\begin{equation}
+\widehat{\mathbf R}^{(r)}_{ij}(t,\tau_s)=
+\frac{\widehat{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s;r,+\varepsilon_r)
+     -\widehat{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s;r,-\varepsilon_r)}
+     {2\varepsilon_r},
+\qquad \varepsilon_r=0.5.
+\label{eq:student-response}
+\end{equation}
+The same latent noise is used on both sides. At these amplitudes, the physical
+input directions correspond to $0.005$\,\AA\ RMS position shifts or
+$0.05$\,\AA/ps RMS velocity shifts. The teacher still represents the derivative
+at $a=0$, while \eqref{eq:student-response} is a finite-difference approximation
+on the neural side. Neither $a$ nor $\varepsilon_r$ denotes elapsed time.
+
+\section{Combined training objective and matched comparisons}
+
+Let $\avgs{\cdot}$ denote averaging over the short-response training observations,
+and write $\|\mathbf v\|_d^2=d^{-1}\|\mathbf v\|^2$. The short losses are
+\begin{align}
+L_{\mathrm{short}}
+ &=\avgs{\frac12\left\|
+ \widehat{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s;0)
+ -\overline{\boldsymbol\mu}^{\mathrm{short}}_{ij}(t,\tau_s)
+ \right\|_d^2},\\
+L_{\mathrm{response}}
+ &=\avgs{\frac14\sum_{r\in\{Q,V\}}
+ \frac{\left\|\widehat{\mathbf R}^{(r)}_{ij}(t,\tau_s)
+                   -\overline{\mathbf R}^{(r)}_{ij}(t,\tau_s)\right\|_d^2}
+ {\max\!\left(\left\|\overline{\mathbf R}^{(r)}_{ij}(t,\tau_s)\right\|_d^2,10^{-6}\right)}}.
+\end{align}
+The normalization gives comparable influence to different response scales.
+The implemented motion objective is
+\begin{equation}
+\boxed{
+L_{\mathrm{motion}}=L_{\mathrm{future}}
+ +0.2L_{\mathrm{anchor}}+0.1L_{\mathrm{short}}
+ +\lambda_R L_{\mathrm{response}},
+\qquad \lambda_R\in\{0,0.1\}.
+}
+\label{eq:total}
+\end{equation}
+The value-only control uses $\lambda_R=0$; it retains velocities, latent stochastic
+dynamics, long-future supervision, and short simulator endpoint supervision.
+Thus it isolates the contribution of derivative targets, rather than comparing
+motion training with spatial pretraining alone.
+
+The two spatial initializations, two adaptation regimes, and two choices of
+$\lambda_R$ give eight matched fits. Each receives 1,600 motion-training updates.
+The data comprise a separate collection of saved position--velocity observations
+and 176 short physical response records, rather than the million-neighbourhood
+spatial-pretraining collection. Their original fitting and held-out roles are
+preserved. Training samples are balanced hierarchically
+over original trajectory ancestors, descendant sources, and local observations;
+the averages above denote this training sampling distribution.
+
+The model is selected by future-descriptor likelihood on an internal subset of
+the original training ancestors. Held-out original ancestors are not used for
+fitting or checkpoint selection. No birth AP, clustering score, or crystal-label
+loss enters \eqref{eq:total}.
+
+\paragraph{What the simulator contributes.}
+Recorded MD supplies targets at the longer physical horizons. The short
+simulator supplies both an endpoint and the sensitivity of that endpoint to
+changes in the present positions and velocities. Gradients train the neural
+representation and latent dynamics against these fixed physical targets;
+there is no new physical simulation inside each optimization update.
+
+The two target sources retain their actual protocols: the short targets are
+fixed-box BAOAB continuations, whereas the recorded long futures are NPT
+trajectories. They also use fixed versus reselected neighbour identities.
+The common latent model is trained against both, but these targets are not
+assumed to be samples from an identical continuation law. Physical derivative
+supervision currently reaches $0.1$\,ps only; the $3$ and $12$\,ps targets contain
+recorded future values, not long-trajectory derivatives.
+
+\section{Evaluation of future prediction and nucleus birth}
+
+\paragraph{Future prediction.}
+On held-out ancestors, evaluate the likelihood of recorded future measurements,
+their mean squared prediction error, and predictive-interval coverage. Compare
+with keeping the present measurements unchanged and with a distribution fitted
+to training futures without the current input. Separately evaluate the short
+endpoint and derivative errors. These distinguish learning future values,
+learning uncertainty, and learning response to perturbations.
+
+\paragraph{Birth prediction as a frozen readout.}
+Let $T_e$ be the catalogue time of birth event $e$, and let $\tau_b>0$ be a
+pre-birth lead. The input time is
+\[
+t_e(\tau_b)=T_e-\tau_b,\qquad t_e(\tau_b)+\tau_b=T_e,
+\qquad \tau_b\in\{1,3,6\}\ \mathrm{ps}.
+\]
+This uses the same distinction between observation time and future horizon as
+the baseline. At $t_e(\tau_b)$, extract the saved positions and velocities around a
+founder atom, together with matched control centres from the same source and
+time. The consolidated birth catalogue supplies the labels. No additional
+neighbourhood crystallinity, component-size, or distance filter is applied.
+Controls exclude catalogued birth-founder identities; they are not guaranteed
+to remain liquid. Availability and deduplication checks retain the same cases
+at all three leads.
+
+With the motion model frozen, compare readouts of
+\[
+\z_{ij}(t_e(\tau_b)),\qquad
+\mathbf h_{ij}(t_e(\tau_b)),\qquad
+\bigl(\widehat{\boldsymbol\mu}^{Y}_{ij}(t_e(\tau_b),\tau_b),
+       \log\widehat{\boldsymbol\sigma}^{2,Y}_{ij}(t_e(\tau_b),\tau_b)\bigr).
+\]
+The last vector contains the mean and marginal variance of the decoded mixture,
+not a new physical continuation. The latent model is evaluated at $\tau_b$ even
+when that lead is not one of its training horizons in $\mathcal T$.
+The readouts use logistic regression and
+boosted trees, fitted to birth labels on the original training ancestors and
+selected by predictive likelihood. Original validation, calibration and test
+ancestors are pooled for final evaluation. AP, AUROC, log loss and Brier score
+are reported with ancestor-level uncertainty estimates and equal total weight
+per physical birth event.
+
+This is a retrospective birth-versus-matched-control assay, not an estimate of
+the population nucleation rate. Its purpose is to test whether the learned
+motion state or predicted future distribution adds information beyond the
+structural representation, and whether derivative supervision improves that
+information relative to otherwise matched value-only training.
+
+\end{document}

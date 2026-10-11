@@ -1,0 +1,26 @@
+{
+  "family": "spatial_target_preparation",
+  "exported_at": "2026-10-08T12:27:27.423205+00:00",
+  "files": {
+    "configs/data/spatial_active_cna_preparation.json": "aef75d48ce03d957f125b9ce7b0164993a7f248f526cb4d5f6bdf8ff7dc48519",
+    "configs/data/spatial_active_cna_targets.json": "138825b5081c25d5aa83e111124c3d18016801b6ee2260b32756c8305f9430d7",
+    "configs/data/spatial_active_preparation.json": "54c24205e4b84361c4fa324970dcf14108bd0d0626eb821d023d6c4d6fa5655d",
+    "configs/data/spatial_active_targets.json": "a53af2b3c388324579bfce6564cce817ef1db167e39f1ba86cac94fa615bfa1d",
+    "docs/metrics/spatial_target_preparation.md": "3233e00e66301940e67e7825db5316ca38f4024ed9b521920ee25bce3e4db6a8",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
+    "src/postprocessing/__main__.py": "a42de71be54c5ebbffa70fd44dc629326accc92e225f47d953852c4b83720497",
+    "src/postprocessing/descriptors/alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+    "src/postprocessing/descriptors/alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+    "src/postprocessing/descriptors/rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+    "src/postprocessing/descriptors/selection.py": "6bf6ad78760587db1fce0d97096f47ad9998bd4b581a6deb2168210a02b139a3",
+    "src/postprocessing/target_benchmark.py": "f0bfa9b5cd450937579b13255471b1bc8ccb41f86076cbe7d5b13a155ff273f8",
+    "src/postprocessing/targets.py": "6768bade7fca579780f1c8dec7d8a2b57bdce03d25660fddfde68ee2e181d6bc",
+    "src/research/liquid_predictability/descriptors.py": "5a19d88c59803cd322d35daf5c71a1ada92d65a07a709e6a330d342be39cc673",
+    "src/research/liquid_predictability/rich_multimaterial_data.py": "3c9e577753f1d8e1a29d8dc42d1bd9a59ee42fe86775d9aa1d8802a0d01b250a",
+    "src/research/liquid_predictability/rich_multimaterial_queue.py": "1720b7013d592a0d64653a89224212720f51af30e4cfa637a931a471acab0887",
+    "src/research/spatial_architecture/model.py": "a7bc4f8cc856b44eddc4243e3a2e2a1b5ab26c2f4eca1d817ba704ccb7790b3b",
+    "src/research/structural_response/data.py": "dcfc78b26777706f628a8e09a0e44decd91041b6c32cbd0c91f10cbc6ee35a2f",
+    "src/research/structural_response/model.py": "74a067fb73ce6b6ca63ea9004ca17f609b5639b30ee0830d9c3eb64ab0593667"
+  },
+  "verified": true
+}

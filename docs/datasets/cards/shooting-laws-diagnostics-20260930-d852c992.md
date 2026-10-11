@@ -35,7 +35,8 @@ Separate CSLD, nested-Al and Ta conditional structural-path assays; no pooled fi
     "docs/shooting_laws.md",
     "${dataset:shooting-laws-diagnostics-20260930}/plan.json"
   ],
-  "lineage": "All siblings retain recorded parent/source ancestry; no inference of independent atoms, shots, or extra melt preparations."
+  "lineage": "All siblings retain recorded parent/source ancestry; no inference of independent atoms, shots, or extra melt preparations.",
+  "source_availability_note": "One or more raw Ta trajectory dependencies were deleted on 2026-10-03. Historical derived artifacts retain their original scientific definitions; see docs/storage/ta_simulation_removal_20261003/receipt.json."
 }
 ```
 
@@ -54,6 +55,6 @@ All 87 producer records, their hashes, field paths and current array schemas: [m
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

@@ -1,0 +1,7 @@
+{
+  "source_launch": "${storage:archive}/simulation-launches/al-main-half-stop-20261001",
+  "launch_id": "al-main-half-recovery-20261003",
+  "execution_root": "${storage:archive}/simulation-work/al-main-half-recovery-20261003",
+  "binary_archive_root": "${storage:archive}/trajectory-archives/al-float16-20261002",
+  "old_scratch_root": "${storage:scratch}"
+}

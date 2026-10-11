@@ -1,0 +1,227 @@
+{
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "cache": "${storage:cache}/rich-descriptors/multimaterial-raw-20260929",
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "data": {
+    "source_kind": "dynamic",
+    "domain": "hot",
+    "target": "442 local rich descriptors",
+    "phase_filter": null,
+    "training_rows": 1056768
+  },
+  "loader": {
+    "packed_cache": "${storage:cache}/rich-descriptors/packed-rh2-20260930/full",
+    "max_open_shards": 128,
+    "prefetch": 2
+  },
+  "prepared_identity": "35e6373ee3e8bdaf29e4fdda51cac8afd553e0f9ac6df7e5494de770fa321a2c",
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "protocol": "structural_response_centered_student_v4",
+  "seed": 20261007,
+  "output": "${storage:training_storage}/structural_response/c3-l3-fast-20261007-v4",
+  "derived_cache": "${storage:cache}/structural-response/c3-l3-bf16-20261007-v1",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 3,
+    "correlation": 3,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "model": {
+    "time_scale_ps": 0.1,
+    "step_ps": 0.05,
+    "hidden": 128,
+    "particles": 4
+  },
+  "horizons_ps": [
+    0.1,
+    0.5,
+    3.0,
+    12.0
+  ],
+  "methods": [
+    "vicreg_descriptors",
+    "masked_teacher"
+  ],
+  "response_arms": [
+    {
+      "name": "derivative_joint",
+      "derivative": true,
+      "frozen": false
+    },
+    {
+      "name": "value_joint",
+      "derivative": false,
+      "frozen": false
+    },
+    {
+      "name": "derivative_adapter",
+      "derivative": true,
+      "frozen": true
+    },
+    {
+      "name": "value_adapter",
+      "derivative": false,
+      "frozen": true
+    }
+  ],
+  "spatial_training": {
+    "updates": 49536,
+    "batch_size": 256,
+    "microbatch": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "warmup": 4128,
+    "selection_every": 1024,
+    "save_every": 64,
+    "ema": 0.01,
+    "epochs": 12,
+    "min_lr": 1e-05
+  },
+  "response_training": {
+    "updates": 1600,
+    "batch_size": 256,
+    "microbatch": 64,
+    "learning_rate": 0.0001,
+    "encoder_lr_scale": 0.1,
+    "weight_decay": 1e-05,
+    "selection_every": 100,
+    "save_every": 25,
+    "short_batch": 4,
+    "short_weight": 0.1,
+    "derivative_weight": 0.1,
+    "long_structural_weight": 0.2,
+    "replay_every": 0,
+    "replay_weight": 0.0
+  },
+  "response_campaign": "${storage:training_storage}/continuous_motion/all010-20261006-v3",
+  "response_identity": "ed50b1245ca6fa93bac6b67b026a8767759adb48b2a323659b1a162675784ddb",
+  "runtime": {
+    "wall_seconds": 86400,
+    "queue_hours": 24,
+    "local_gpus": [
+      "0"
+    ],
+    "partitions": [
+      "RTX6000PRO,H100",
+      "A100",
+      "A40",
+      "L40S"
+    ],
+    "memory_GB": 32,
+    "cpu_threads": 4,
+    "small_microbatch": 128,
+    "motion_memory_GB": 48,
+    "motion_cpu_threads": 8,
+    "small_motion_microbatch": 32,
+    "exclude_nodes": [
+      "node52"
+    ]
+  },
+  "scope": "Eight1600-update motion fits: full MACE joint adaptation or cached MACE plus trainable residual adapter, each with value-only or analytic-MEAM-tangent supervision and two completed12-epoch structural starts. Neural student uses float32 centered differences; physical teacher tangents remain analytic. No broad structural replay. Birth prediction on consolidated010 labels without neighborhood filtering.",
+  "spatial_initialization": {
+    "output": "${storage:training_storage}/structural_response/c3-l3-bf16-20261007-v1",
+    "plan_identity": "21cb0069b69f24e375dab6842cd2d8cdd0f341cf9091aeee0a4bd2a31e03376f",
+    "checkpoints": {
+      "vicreg_descriptors": "7a3f5bff3a9279a9ffaa31cf722f462841446ccb44a568f344acbc5687c6540b",
+      "masked_teacher": "d1360fdcfa08acc4cf59ca288a425e9552aefd9fdeaaf5f5a51f8987d2223246"
+    }
+  },
+  "feature_cache": "${storage:cache}/structural-response/features",
+  "neural_derivative": "centered_student_v1",
+  "birth_evaluation": {
+    "dataset": "al-nuclei-birth-010",
+    "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+    "selection": "established",
+    "detector": "ptm",
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "radius_A": 8.0,
+    "neighborhood_atoms": 80,
+    "require_saved_velocities": true,
+    "eligibility": "Catalogue-established births unchanged; require actual saved Q,V and exact lead availability only",
+    "controls": "1:4 same-source random centers outside the first-member IDs of catalogued established births; no neighborhood/crystallinity screen",
+    "pooled_test_roles": [
+      "selection",
+      "calibration",
+      "test"
+    ],
+    "selector": "NLL within original training ancestors; AP diagnostic only",
+    "embryo_establishment": "Separate present-selected cohort; do not merge with strict pre-birth cases",
+    "neighborhood_filter": false,
+    "cache": "${storage:cache}/structural-response/birth-010-nofilter-20261007-v4",
+    "centers_per_event": 4,
+    "prepare_workers": 4,
+    "inner_selection_ancestors": 4,
+    "bootstrap_draws": 1000,
+    "fit_threads": 2,
+    "readouts": [
+      "linear",
+      "catboost"
+    ],
+    "spaces": [
+      "structural",
+      "structural_motion",
+      "future_law"
+    ],
+    "readout": {
+      "linear_C": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "catboost": {
+        "iterations": 600,
+        "depth": 4,
+        "learning_rate": 0.04,
+        "l2_leaf_reg": 10,
+        "border_count": 64,
+        "task_type": "CPU"
+      },
+      "patience": 75
+    }
+  },
+  "student_difference": {
+    "velocity_epsilon": 0.01,
+    "response_epsilon": 0.5,
+    "precision": "float32",
+    "paired_noise": "identical across both signs"
+  },
+  "fixed_teacher_source": "${storage:training_storage}/structural_response/c3-l3-bf16-20261007-motion-v2"
+}

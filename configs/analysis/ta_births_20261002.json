@@ -1,0 +1,37 @@
+{
+  "protocol": "ta-full-cell-births-fates-v1",
+  "output": "${storage:training_storage}/nucleus_fates/ta-20261002",
+  "legacy_plan": "${storage:analysis}/crystallization_origin/multimaterial-20260926/technical/plan.json",
+  "launch_dataset": "ta-shooting-20260926",
+  "legacy_initial_dataset": "ta_initial_model_1m_24ps_npt_20260905",
+  "legacy_large_dataset": "ta-eam-five-24ps",
+  "potential_sha256": "8908993117f2502ed48bd31b737556719c3f7f11d1e7b7213eb257cd1ca42386",
+  "ancestry_group": "archived-Ta-unknown-common-preparation",
+  "cadence_ps": 0.5,
+  "chunk_frames": 1,
+  "ptm_rmsd_cutoff": 0.1,
+  "fates": {
+    "minimum_verified_peak_atoms": 8,
+    "primary_minimum_atoms": 8,
+    "primary_persistence_ps": 0.75,
+    "dissolution_followup_ps": 2.25,
+    "growth_minimum_atoms": 128,
+    "growth_factor": 2.0,
+    "growth_persistence_ps": 1.5
+  },
+  "lanes": 4,
+  "workers_per_lane": 2,
+  "ptm_threads": 8,
+  "lane_memory": "64G",
+  "time_limit": "24:00:00",
+  "input_contract": {
+    "encoder": "none",
+    "predictor": "none",
+    "geometry": "Original full-cell Ta MD, periodic boxes and exact atom identities; no relaxation",
+    "spatial_support": "Full cell; Ta cutoffs from the frozen20260926 external audit",
+    "observation_spacing": "Exact0.50ps for all30 futures, selected from native0.10ps data; no interpolation",
+    "conditions": "Temperature/protocol/ancestry are audit metadata only; no predictor inputs",
+    "future_information": "Labels only; no predictor histories or new training splits",
+    "training_only_teachers": "none"
+  }
+}

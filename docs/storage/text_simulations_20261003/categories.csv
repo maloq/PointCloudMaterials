@@ -1,0 +1,9 @@
+category,files,allocated_bytes,GB
+Original Ta snapshots/structures,12,1609532928,1.609532928
+Ti source snapshots,182,437889536,0.437889536
+Ta preflight trajectory (binary also retained),1,357747200,0.3577472
+Force-only output,59,148243456,0.148243456
+Other simulation snapshots/fixtures,38,95449088,0.095449088
+Restart-boundary diagnostics,4,87304192,0.087304192
+Recovery verification snapshots,5,58384384,0.058384384
+Other static input structures,71,545280,0.00054528

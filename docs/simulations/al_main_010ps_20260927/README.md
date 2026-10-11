@@ -5,6 +5,8 @@ User-authorized rerun of all **150 main independent Al preparations**, with
 and velocities every **0.1 ps** (6,001 measurement frames including endpoints).
 The existing 0.75 ps trajectories are preserved.
 
+**October 3 recovery:** [native restart and binary-prefix recovery](../al_main_half_stop_20261001/README.md#october-3-quota-recovery) resumes the stopped queue on STORE, retaining its halfway/cap contract.
+
 **Latest queued protocol:** [halfway stopping](../al_main_half_stop_20261001/README.md)
 applies only to 126 unstarted main descendants and the two 0.01-ps additions.
 The 21 completed and three already-running main sources keep this original
@@ -21,7 +23,7 @@ See [submission receipt](submission.json), [input audit](preparation.json),
 [Recipe](../../../configs/simulation/al_main_010ps_20260927.json) ·
 [Producer](../../../src/simulation/campaigns/dense_al.py) ·
 [Original launch status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-20260927/status.json) ·
-[Latest queue status](/store/PERSO/vmorozov/simulation-launches/al-main-half-stop-20261001/status.json) ·
+[Latest queue status](/store/PERSO/vmorozov/simulation-launches/al-main-half-recovery-20261003/status.json) ·
 [Initial continuation status](/store/PERSO/vmorozov/simulation-launches/al-main-010ps-continue-20261001/status.json)
 
 The user-authorized [two-source 0.01-ps addition](../al_main_001ps_20261001/README.md)

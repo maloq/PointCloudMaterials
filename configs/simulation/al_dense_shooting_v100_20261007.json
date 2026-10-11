@@ -1,0 +1,24 @@
+{
+  "campaign_id": "al-dense-shooting-v100-20261007",
+  "source_launch": "${storage:archive}/simulation-launches/al-main-010ps-20260927",
+  "stopping_launch": "${storage:archive}/simulation-launches/al-main-half-stop-20261001",
+  "temperatures_K": [400, 450, 500, 510, 520],
+  "parent_roles_by_temperature": {
+    "400": ["train", "train", "selection", "test"],
+    "450": ["train", "train", "calibration", "test"],
+    "500": ["train", "train", "selection", "test"],
+    "510": ["train", "train", "calibration", "test"],
+    "520": ["train", "train", "train", "test"]
+  },
+  "replicates_per_parent": 2,
+  "selection_seed": 20261007,
+  "workers": 1,
+  "partition": "V100",
+  "walltime": "23:00:00",
+  "walltime_seconds": 82800,
+  "audit_walltime": "01:00:00",
+  "cleanup_reserve_seconds": 1800,
+  "runtime_profile": "gpu_meam_v100",
+  "audit_steps": 100,
+  "audit_temperatures_K": [400, 520]
+}

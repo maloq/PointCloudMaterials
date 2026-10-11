@@ -1,0 +1,72 @@
+{
+  "protocol": "al_cluster_structure_dense_additions_v1",
+  "output": "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-extraction",
+  "cache": "${storage:cache}/nuclei-search/al-dense-additions-20261005",
+  "registry": "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-extraction/technical/inventory/combined-registry.json",
+  "cadences": {
+    "010": 0.1,
+    "030": 0.3
+  },
+  "detectors": [
+    "ptm",
+    "coherent_loose",
+    "coherent",
+    "coherent_strict"
+  ],
+  "ptm_rmsd_cutoff": 0.1,
+  "neighbor_cutoff_A": 3.6,
+  "bond_order": {
+    "l": 6,
+    "thresholds": [
+      [
+        0.65,
+        6
+      ],
+      [
+        0.7,
+        7
+      ],
+      [
+        0.75,
+        8
+      ]
+    ]
+  },
+  "minimum_tracked_atoms": 4,
+  "embryo_atoms": 8,
+  "minimum_shared_atoms": 4,
+  "minimum_overlap_fraction": 0.25,
+  "maximum_link_interval_ps": 1.5,
+  "embryo_persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "establishment_sensitivity_atoms": [
+    32,
+    128
+  ],
+  "establishment_persistence_ps": 1.5,
+  "liquid_return_ps": 1.5,
+  "growth_atoms": 128,
+  "growth_persistence_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "chunk_frames": 16,
+  "workers_per_lane": 4,
+  "extraction_lanes": 12,
+  "analysis_lanes": 4,
+  "time_limit": "1-00:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "geometry": "Full periodic original MD cells; exact source timelines and atom identities",
+    "relaxation": "Existing relaxed views inventoried separately; no independent birth counts or new quenches",
+    "conditions": "Audit metadata only; no model fitted",
+    "selection": "New completed native 0.10 ps production MD only. Exclude nucleus recovery, selected-state restarts, seeded growth controls, matched engine diagnostics, incomplete runs and earlier frozen inputs. Exact 0.10/0.30 ps views retain original melt ancestry.",
+    "criticality": "Operational embryos and establishment; no claim of committor validation",
+    "population": "New completed native 0.10 ps production MD only. Exclude nucleus recovery, selected-state restarts, seeded growth controls, matched engine diagnostics, incomplete runs and earlier frozen inputs. Exact 0.10/0.30 ps views retain original melt ancestry."
+  },
+  "exclude_plan": "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+  "native_cadence_ps": 0.1,
+  "allowed_roles": [
+    "raw_dynamics"
+  ],
+  "required_simulation_state": "complete"
+}

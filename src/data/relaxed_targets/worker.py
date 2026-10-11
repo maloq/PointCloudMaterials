@@ -99,6 +99,10 @@ def verify_archive(directory):
 
 def publish(work, destination):
     """Verify every archived file before allowing the completion receipt."""
+    metadata = work/'metadata.json'
+    if metadata.is_file() and 'index_recipe' in json.loads(metadata.read_text()):
+        from src.data.relaxation_index import recover_native
+        recover_native(work)
     destination.parent.mkdir(parents=True, exist_ok=True)
     temporary = destination.with_name(destination.name + '.partial')
     shutil.copytree(work, temporary, dirs_exist_ok=True)
@@ -110,6 +114,13 @@ def publish(work, destination):
     if destination.exists():
         raise FileExistsError(f'Archive destination already exists: {destination}')
     temporary.rename(destination)
+    # New relaxation producers carry their exact recipe. Register only complete
+    # converted archives; failed attempts remain failure provenance.
+    metadata = destination/'metadata.json'
+    if metadata.is_file() and (destination/'conversion.json').is_file():
+        if 'index_recipe' in json.loads(metadata.read_text()):
+            from src.data.relaxation_inventory import import_archive
+            import_archive(destination)
 
 
 def produce(cfg, source, frame, relaxation, implementation):
@@ -134,6 +145,29 @@ def produce(cfg, source, frame, relaxation, implementation):
         if (directory/'complete.json').exists():
             return checked_receipt(directory)
         started = time.monotonic()
+        from src.data.relaxation_index import patch_lookup
+        hot, _, neighbors = clouds(observed, observed, lengths, centers)
+        request = dict(source_manifest_sha256=source['manifest_sha256'], source_frame=int(frame),
+                       source_timestep=int(trajectory.timesteps[frame]))
+        hit = patch_lookup(request, relaxation, trajectory.atom_ids[centers], trajectory.atom_ids[neighbors])
+        if hit is not None:
+            cold, entry = hit
+            target = directory/'targets.npz'
+            hot_tda = np.stack([persistence_image(p) for p in hot])
+            cold_tda = np.stack([persistence_image(p) for p in cold])
+            if not np.isfinite(hot_tda).all() or not np.isfinite(cold_tda).all():
+                raise ValueError(f'Nonfinite TDA for {source["id"]} frame {frame}')
+            np.savez_compressed(target, center_atom_ids=trajectory.atom_ids[centers],
+                neighbor_atom_ids=trajectory.atom_ids[neighbors], observed_clouds=hot,
+                relaxed_clouds=cold, instantaneous_tda=hot_tda, relaxed_tda=cold_tda)
+            receipt = dict(state='complete', key=key, completed_at=now(), windows=len(centers),
+                targets_sha256=sha256(target), targets=str(target), relaxation_archive=entry['path'],
+                implementation_sha256=implementation, relaxation=entry['metadata'],
+                local_cloud_dtype='float32', target_dtype='float32', seconds=time.monotonic()-started,
+                reuse=dict(index_entry=entry['id']),
+                protocol='Full periodic fixed-cell FIRE; observed nearest-80 identities retained after minimization; raw 144D persistence image.')
+            save(directory/'complete.json', receipt)
+            return receipt
         work_root = Path(cfg['scratch'])/key
         work_root.mkdir(parents=True, exist_ok=True)
         attempts = sorted(work_root.glob('attempt_*'))
@@ -190,6 +224,8 @@ def produce(cfg, source, frame, relaxation, implementation):
             local_cloud_dtype='float32', target_dtype='float32', seconds=time.monotonic()-started,
             protocol='Full periodic fixed-cell FIRE; observed nearest-80 identities retained after minimization; raw 144D persistence image.')
         save(directory/'complete.json', receipt)
+        from src.data.relaxation_inventory import import_cache
+        import_cache(directory/'complete.json', 'tda_targets')
         return receipt
 
 
@@ -197,6 +233,7 @@ def implementation_hashes():
     paths = [Path(__file__), Path(__file__).with_name('plan.py'),
         REPO/'src/simulation/relaxation.py', REPO/'src/analysis/liquid_structure.py',
         REPO/'src/data/conversion/relaxation.py']
+    paths += [REPO/'src/data/relaxation_index.py', REPO/'src/data/relaxation_inventory.py']
     return {str(p.relative_to(REPO)): sha256(p) for p in paths}
 
 

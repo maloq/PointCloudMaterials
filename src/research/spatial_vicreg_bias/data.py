@@ -12,7 +12,8 @@ from scipy.spatial.distance import cdist
 from src.data.fixed_cohort.dataset import read_release
 from src.data.fixed_cohort.protocol import centered, digest, sha, write_json
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from src.research.liquid_predictability.descriptors import _orders, _topology, cna_packet
 
 

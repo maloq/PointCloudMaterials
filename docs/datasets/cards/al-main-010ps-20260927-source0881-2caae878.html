@@ -10,7 +10,7 @@ input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radiu
 .badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
 details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
 @media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
-</style></head><body><main><a href="../index.html">← All datasets</a><h1>al-main-010ps-20260927-source0881</h1><p>Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.</p><span class="badge">research</span><p><code>al-main-010ps-20260927-source0881</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881">/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881</a></p><p>37 owned files · 6.369 GiB allocated · 1 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>al-main-010ps-20260927-source0881</h1><p>Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration.</p><span class="badge">research</span><p><code>al-main-010ps-20260927-source0881</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881">/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881</a></p><p>46 owned files · 6.361 GiB allocated · 2 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
   &quot;materials&quot;: [
     &quot;Al&quot;
   ],
@@ -56,33 +56,94 @@ details{background:white;border:1px solid var(--line);border-radius:7px;padding:
       &quot;sha256_verified&quot;: true
     }
   ]
-}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>protocol</td><td><code>[&quot;al_dense_replay_v1&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[70304]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.002]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;NPT&quot;]</code></td></tr><tr><td>thermostat_ps</td><td><code>[0.3]</code></td></tr><tr><td>barostat_ps</td><td><code>[3.0]</code></td></tr><tr><td>pressure_bar</td><td><code>[0.0]</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;independent_melt_410549883&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;test&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[520.0]</code></td></tr><tr><td>preparation_seed</td><td><code>[410549883]</code></td></tr><tr><td>velocity_seed</td><td><code>[508004026]</code></td></tr><tr><td>frame_count</td><td><code>[6001]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;, &quot;float32&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>protocol</td><td><code>[&quot;al_dense_replay_v1&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Al&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[70304]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.002]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;NPT&quot;]</code></td></tr><tr><td>thermostat_ps</td><td><code>[0.3]</code></td></tr><tr><td>barostat_ps</td><td><code>[3.0]</code></td></tr><tr><td>pressure_bar</td><td><code>[0.0]</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;independent_melt_410549883&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;test&quot;]</code></td></tr><tr><td>temperature_K</td><td><code>[520.0]</code></td></tr><tr><td>preparation_seed</td><td><code>[410549883]</code></td></tr><tr><td>velocity_seed</td><td><code>[508004026]</code></td></tr><tr><td>frame_count</td><td><code>[1, 6001]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;, &quot;float32&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;, &quot;wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
   &quot;observed&quot;: {
-    &quot;files&quot;: 37,
-    &quot;apparent_bytes&quot;: 5113894392,
-    &quot;allocated_bytes&quot;: 6838689792,
+    &quot;files&quot;: 46,
+    &quot;apparent_bytes&quot;: 5106908835,
+    &quot;allocated_bytes&quot;: 6830030848,
     &quot;file_extensions&quot;: {
       &quot;.log&quot;: 6,
       &quot;.bin&quot;: 5,
-      &quot;.json&quot;: 9,
+      &quot;.json&quot;: 12,
       &quot;.lammps&quot;: 5,
       &quot;.data&quot;: 1,
       &quot;.meam&quot;: 2,
-      &quot;.lammpstrj&quot;: 1,
       &quot;.txt&quot;: 1,
-      &quot;.npy&quot;: 7
+      &quot;.npy&quot;: 14
     },
     &quot;producer_state_record_counts&quot;: {
       &quot;dynamics_complete&quot;: 1,
       &quot;complete&quot;: 1
     },
-    &quot;metadata_records&quot;: 4,
-    &quot;binary_trajectory_records&quot;: 1,
-    &quot;available_complete_binary_records&quot;: 1,
-    &quot;stored_frames&quot;: 6001,
+    &quot;metadata_records&quot;: 6,
+    &quot;binary_trajectory_records&quot;: 2,
+    &quot;available_complete_binary_records&quot;: 2,
+    &quot;stored_frames&quot;: 6002,
     &quot;binary_records_in_duplicate_groups&quot;: 0
   },
   &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        70304
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;technical/checkpoint.lammpstrj.float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        1,
+        70304,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
     {
       &quot;path&quot;: &quot;trajectory_binary_float16/atom_ids.npy&quot;,
       &quot;shape&quot;: [
@@ -147,4 +208,4 @@ details{background:white;border:1px solid var(--line);border-radius:7px;padding:
     }
   ],
   &quot;symlinks&quot;: []
-}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (4 records)</summary><p><a href="../records/al-main-010ps-20260927-source0881-2caae878.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/metadata.json">metadata.json</a> · dynamics_complete · <code>b3804bf06fbdab96b0878a2677c0c92e03dc2c69e3f6674d44e0e15ae07e20c2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/outcome.json">outcome.json</a> · complete · <code>6114feb79a6795bbc7cb8345dfa9b2e6b52561fbb5824da24fa479ccd0ac906f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/status.json">status.json</a> · complete · <code>6114feb79a6795bbc7cb8345dfa9b2e6b52561fbb5824da24fa479ccd0ac906f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/trajectory_binary_float16/manifest.json">trajectory_binary_float16/manifest.json</a> · complete · <code>48c5d2c497c13ba3490fda9c4de03bfd126e10079c8b30ad757bc451ed5388a3</code></li></ul></details><p class="muted">Observed 2026-10-02T12:18:52.028981+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (6 records)</summary><p><a href="../records/al-main-010ps-20260927-source0881-2caae878.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/metadata.json">metadata.json</a> · dynamics_complete · <code>b3804bf06fbdab96b0878a2677c0c92e03dc2c69e3f6674d44e0e15ae07e20c2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/outcome.json">outcome.json</a> · complete · <code>6114feb79a6795bbc7cb8345dfa9b2e6b52561fbb5824da24fa479ccd0ac906f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/status.json">status.json</a> · complete · <code>6114feb79a6795bbc7cb8345dfa9b2e6b52561fbb5824da24fa479ccd0ac906f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/technical/checkpoint.lammpstrj.float16/conversion.json">technical/checkpoint.lammpstrj.float16/conversion.json</a> · verified · <code>b7d97ac28f53a29952311bb4cec4a34613d4b913ff990dbf8d21e83c7b0ca52e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/technical/checkpoint.lammpstrj.float16/manifest.json">technical/checkpoint.lammpstrj.float16/manifest.json</a> · complete · <code>6fcd089e8ce97f957099bc255738d2b5594bbbad1c64bbd7ed29c4dfde84b543</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0881/trajectory_binary_float16/manifest.json">trajectory_binary_float16/manifest.json</a> · complete · <code>48c5d2c497c13ba3490fda9c4de03bfd126e10079c8b30ad757bc451ed5388a3</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

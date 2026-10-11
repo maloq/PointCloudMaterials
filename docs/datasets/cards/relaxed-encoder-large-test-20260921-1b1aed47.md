@@ -12,7 +12,7 @@
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.983 GiB
+- Allocated storage, excluding registered nested datasets: 0.949 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -35,7 +35,12 @@
   ],
   "limitations": [
     "Planned 338 distinct local onsets on 30 test sources (27 event-bearing), not 338 independent nucleation events. Timeout exclusions shared across models. Historical source split. CPU/GPU FIRE minima may differ; backend and binary hashes retained."
-  ]
+  ],
+  "storage_status": "User-authorized removal on 2026-10-03 of historical CPU relaxation cells without a pinned executable hash and their indexed clouds.npz copies. Remaining artifacts retain their original definitions; old completion receipts do not imply deleted payloads are available.",
+  "relaxation_cleanup": {
+    "deleted_cloud_files": 1318,
+    "receipt": "docs/storage/relaxation_unverified_removal_20261003/receipt.json"
+  }
 }
 ```
 
@@ -53,6 +58,6 @@ All 3930 producer records, their hashes, field paths and current array schemas: 
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

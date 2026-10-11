@@ -1,6 +1,14 @@
 # Fixed Al64 comparison datasets
 
-The default data contract for **new matched Al encoder comparisons** is
+**Retired raw inputs, October 7:** the original 150 native 0.75-ps production
+trajectories were deleted at user request. This document now describes the
+historical benchmark; its source roles and center identities remain useful for
+ancestry and split inheritance. Existing derived artifacts were retained, but
+raw histories and new context/history exports cannot be rebuilt from this campaign.
+Use the [consolidated 0.10/0.30-ps birth datasets](nuclei_birth.md) for new birth
+experiments. [Removal record](../storage/al075_removal_20261007/README.md).
+
+The historical contract for matched Al encoder comparisons is
 [`al64_v1.json`](../../configs/fixed_cohort/al64_v1.json). The release lives at
 `${storage:cache}/fixed-cohort/al64-v1-20260925`. Running and historical experiments
 retain their original data and input records.

@@ -10,9 +10,9 @@
 - Location: `/store/PERSO/vmorozov/relaxed_encoder/large-test-20260921`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 1440; these are not independent-source counts.
-- Stored frames: 1440; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 3.680 GiB
+- Complete binary records with arrays present: 1479; these are not independent-source counts.
+- Stored frames: 1479; duplicate-group records: 39
+- Allocated storage, excluding registered nested datasets: 3.540 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -35,7 +35,8 @@
   ],
   "limitations": [
     "Planned 338 distinct local onsets on 30 test sources (27 event-bearing), not 338 independent nucleation events. Timeout exclusions shared across models. Historical source split. CPU/GPU FIRE minima may differ; backend and binary hashes retained."
-  ]
+  ],
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -46,16 +47,16 @@
 | atom_count | [70304] |
 | timestep_ps | [0.001] |
 | protocol | ["Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation."] |
-| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"] |
+| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again", "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 | frame_count | [1] |
 | storage_dtype | ["float16"] |
 
 ## Evidence
 
-All 4320 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-large-test-cells-20260921-da73c71b.json).
+All 4398 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-large-test-cells-20260921-da73c71b.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

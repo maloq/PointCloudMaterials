@@ -9,7 +9,7 @@ import numpy as np
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry
+from src.postprocessing.protocols import ancestry
 from .data import SourceFrames, read, plan, load
 from .relaxed_data import cell, checked, INPUT
 

@@ -1,0 +1,5580 @@
+{
+  "dataset_id": "al-million-velocity-replay-20261007",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/status.json",
+      "relative_path": "status.json",
+      "sha256": "2f9d283d5ecc4caed473caa952232925a17a7f7eca7a579b16182b22a2654328",
+      "kind": "metadata",
+      "keys": [
+        "reason",
+        "stage",
+        "state",
+        "updated_at"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/status.json",
+      "relative_path": "segments/000/status.json",
+      "sha256": "dad6121303b275c7b16114a2d835ead7ad901f7fa73519976ab73d779b0cba41",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/000/trajectory_binary_float16/conversion.json",
+      "sha256": "84fbb5dca498edf02a32e53009c10b6a78559afa57f9194f7c07e480cba54f56",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03514055260479385,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078125,
+            "rms": 0.0008332923251521371,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/000/trajectory_binary_float16/manifest.json",
+      "sha256": "ab62389ef54ac858b8cdbe83a7ab998c27baa107ba98f08798886aa844eade90",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "749dacd138c49b64616075d6275a4a507a37e940c538f5cb46226c935d708579",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "42a7fe293c5da7fac8e7618d940abe6213e3c98d35de76a9c5d416baf29d667f",
+            "file": "positions.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "654187dc3d38cab42658409f63a979310039070167beabfca387086877c99a4d",
+            "file": "velocities.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e00b6446f0c9b152b902b05c39a607dff3aac15ab91238610a6a469bc1cf47fd",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "e9b6c899f10e26a9377b6e8f6a6b4f8ab88e8cf842f08ac52235ac2ace6d3055",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 4000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "1fe6811b756121dd552e1911f160ea0eb7ea85101ebe85fbb27740d5cca062fb",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/status.json",
+      "relative_path": "segments/001/status.json",
+      "sha256": "b7fd4754bd0e0bd38842a788b56f581c6c4841c7e07b6b7ef37a96ea7e48fa7e",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/001/trajectory_binary_float16/conversion.json",
+      "sha256": "dda3e776883e14ea1914b960a65e2e2d000b1941cc6feb423fb0a1586e3cf06a",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03498660149138158,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078125,
+            "rms": 0.0007725414519448664,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/001/trajectory_binary_float16/manifest.json",
+      "sha256": "931ed6b6f00b1b1a6c628a8569a9cc728c04eaaf08ce73be265906243bc1c532",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9e058f39fe3fb4ce4847cbb52c4dad9ac01c3ce96eb04d4d97e50a1deacbf2ca",
+            "file": "box_high.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "cb24c0b8b858a23a50f8b05f36b88e0ad4eaec5ad9b0853d30a5e08272faac29",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9a986ebe0455bd8a21290b935cb03dc0418eee890ddd655c2862629a12b295ef",
+            "file": "timesteps.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "e816f36f92beba7af519ea55d772b44ef2337b542820f51de7991093e93a4f4d",
+            "file": "velocities.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "51bee8532cde974e07bc523200769d84e7536b2f9e8cfb01e526c52495ac4654",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 4000,
+          "last_step": 8000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "c9e68540f6f0730d18de1f31a4a3be5d9d5b090f73c23f1a843faa2ffc4ded84",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/status.json",
+      "relative_path": "segments/002/status.json",
+      "sha256": "80cafc3a302bfa987c18db284b53a5888336f0bcd0dd1633020c022c14c52364",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/002/trajectory_binary_float16/conversion.json",
+      "sha256": "819ee665900f017fd7bc7cf9232c6f83b80fe0068a14801be81d32040b09642e",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.0349845567508391,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078125,
+            "rms": 0.00077243404975378,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/002/trajectory_binary_float16/manifest.json",
+      "sha256": "ea3a68b5c3d9dde33363bea31886d5b086b8a47906ab5e3f53522739bee5bebe",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "50a4efbb4fe2e8d6131979aab8c4e1412f8ad849a73a5661dec2fcd83515cfd2",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ed975d7aac199f8008b9b04784d7c214df50dee1e9cd5567645220ac119cbeca",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "d1410d1bc6901371b427881d669d12b1d86ca7b7a2ab91783d32cdddf9778547",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a7012684418eab1653472dee61e59c2e95732c8594baba065138b377db2a64e4",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "f17bd6db3a3d33e9775956c550e12fc6e79471db503544f2c34aa1bf1ec47cd7",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 8000,
+          "last_step": 12000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "2cf19e39447b58ba272abfb3f88c3cadb7c3741d896af90dce6a5da886f1a7b4",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/status.json",
+      "relative_path": "segments/003/status.json",
+      "sha256": "4efaa23e286664bed9f26a02e333a3773e8cc0f3d3d4077daf3c52d3347003b6",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/003/trajectory_binary_float16/conversion.json",
+      "sha256": "418178c5d2eccbb490d3a3b139654686452ef44ce9a0268ba7f089a83a2e2ae9",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03498378916005454,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007725682711735905,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/003/trajectory_binary_float16/manifest.json",
+      "sha256": "4283f12e8c315a61c4fb793625bcdae79133023d48ab0e215111cb8fe9ad3887",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "3ff4ba9e41cd07530b254dc7fd5303864fa01b28fd0f67ec0187a5425864a2e6",
+            "file": "velocities.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "8596aa431fe8f88a1c34ae3374828b6056711db0c34f8ce33622ecd979dff00e",
+            "file": "positions.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "040b33df9ebc0b023faf262ef39bcb4c48b015e27eae24728d257671a2e742df",
+            "file": "box_low.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "4368d74189491a8ec15d243ccd627b07cd1de6c05b84e6936cddd093529a64ab",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f1001b292a1437368d119cc1cd50c6bd724f0f07efbea1d2741031762392a3c0",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 12000,
+          "last_step": 16000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "b84500acd9e87c4d0b58a25715b119584a072a86bc33115b40bbd0a8cbefdea0",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/status.json",
+      "relative_path": "segments/004/status.json",
+      "sha256": "680914c33d8820d84fe4dd661b90845cdb8aa93a29635f03bea9ddd543e7da39",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/004/trajectory_binary_float16/conversion.json",
+      "sha256": "08a78c4c1c238fd30333ff988f8b1d4e35bc7bfd4ba52c6f99a218f70319406a",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497489989327158,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007726164177210968,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/004/trajectory_binary_float16/manifest.json",
+      "sha256": "fdde7d576365b90f19f571899074dde84d04643a9e09865085f2f4a60c92d36e",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "6e3653b0f481ec09468c666da1c0caf009b31dd2e2ca52a91107dbfc9f161ebb",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "258a9ef70ab771f23a995156a80dc9ce73bcc74e4f52a1e76bec12b68e5ab64b",
+            "file": "box_low.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "c9f3bc37b993bb4d66f6c66add40faec3e798b93b93b488a6cc0fd4ef3224c4a",
+            "file": "velocities.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "c204c219fd40b1284e22e865b8430090e0353720cb02ce1025b06b259324ad00",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a76bf200105c6e53a55227699ecd710e4f66d16af3567e94321d975ebcb00627",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 16000,
+          "last_step": 20000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "25e1b92703b51914ce71f33dc3edc879bfbf31e064667ce4f1e8a76438f97d4d",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/status.json",
+      "relative_path": "segments/005/status.json",
+      "sha256": "26a769bd3f90973694fd1f7f560a6151f8b29c86da6acfe9d99f24c7f153842a",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/005/trajectory_binary_float16/conversion.json",
+      "sha256": "761f93818636d44d2b042c2c79de8297b7da1e787e2c8d9df7dccd6766c13391",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034975315648803816,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078067779541015625,
+            "rms": 0.0007725768828713706,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/005/trajectory_binary_float16/manifest.json",
+      "sha256": "66d85c39db2c38f371e8fa7f6a5adab31b4950b409d99622baaa49e11a5dc936",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "2db28b73441fa143b86660f6688d3227ee66506d246a052afebd0754a9738b38",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b1a50ae1638926f95a120d0fc5c9d5a56f1dcedbc2003cd80530745aa70d3420",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "e8a6002d71e834aab84cad9071ae909d8d366cb8c6cb9d7a20e1160554a41d02",
+            "file": "box_low.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "1c98bc7fe800575bd0755149cda886a9da34ebdbec7a0397dd20afb1af9bd6bd",
+            "file": "velocities.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2cb07b8f8244d8e1c22b7b7a53aabeead8f36d627a8d4463cb4e4c005927b56b",
+            "file": "box_high.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 20000,
+          "last_step": 24000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "1d70a34cbe283a105b943dd0148f9af003c522637ecaaad075949e73523eb78d",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/status.json",
+      "relative_path": "segments/006/status.json",
+      "sha256": "296bf00719e9a2dbed269682b65f057d16d4ee1a04f7bd13c60c0369e525bcc9",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/006/trajectory_binary_float16/conversion.json",
+      "sha256": "d86a28511c8f371dcaad704858c81281ad55cc41b14ec01d9840c0337d2db2ca",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034967936741871104,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078125,
+            "rms": 0.0007725774496270091,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/006/trajectory_binary_float16/manifest.json",
+      "sha256": "aebd39f3dac0bcf981a328ee9b9e072844ef955593e3d6f7fc0dfced55444a14",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "9cbf651aafead80012bbbdf321a3207f10b85ea8212a26438f507882f44b5e58",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "0a23aa128e04535a3bc3ef61566cb085af6de80312e8ff0a2e1cd5d5bc2657d9",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9bda8e88be640db61f5d619f40410bb391782e5a2942c7214d1f5afab85aa616",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a71ce7368a1733c5dab715d2b734e683495729442f6efa5c5806416e4c6bf970",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7f8eece1f4c921f86315735373d732b43ea3d60063164913a5363058142184f5",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 24000,
+          "last_step": 28000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "0a2caa7898fd48a33d0239f064168d596f5b5063e9f643fa37d8b8c004a9bc68",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/status.json",
+      "relative_path": "segments/007/status.json",
+      "sha256": "048982053a29ddeaf78802306997772815d2d6be382ed939db0da3e2f665f5fc",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/007/trajectory_binary_float16/conversion.json",
+      "sha256": "d915c5727bcf202118d3b4c02f8964a41e844dad48460b109c9d9aee05d1d04f",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497083419536983,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078125,
+            "rms": 0.0007725102571423976,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/007/trajectory_binary_float16/manifest.json",
+      "sha256": "cf4eb6e17c55b0d5757975c9521bd958fea632713b2bfe7a217b1338865cd2ff",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "f0830e6008e7421e7624c01dcd1a82444d92861a9aec13171edd7448e6359555",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "35b787523c48b732bc1cea4e665177ff86605be574a0caa0e541a1272df6aad3",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "329d2ceb9ae47661edafdab7eacda5311a50f0ba9231dd56f5a4ac6cfafc32d6",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "1932630e1de6f7139e5b05c4d3030417b7bf1f262136856854a506fb7c14e286",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2bd40bab026e6399de32785781a3d9d2ed4f97215d265fc3de374d7184a1e7f1",
+            "file": "box_high.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 28000,
+          "last_step": 32000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "9222cac944f82acb721c02ea13b86fb8ec1f782adbe7e161ce3d219ef19e9964",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/status.json",
+      "relative_path": "segments/008/status.json",
+      "sha256": "6946a133f5bd3f55410f3a890497742e664d6d40d9ce514b35f7c1cf085d9ca8",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/008/trajectory_binary_float16/conversion.json",
+      "sha256": "251fe8f7ab81c55efec134de53e9f3295853e703f989cad9a40eefc936ca837e",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497356721338455,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007725119581096178,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/008/trajectory_binary_float16/manifest.json",
+      "sha256": "de10d02573947b4f80b810ca723fa8a865e48568eaccf69485572355515b6e2f",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "799ccf84838fb74384fc68bc24602432a6bb4ab518a99878125b1cbfdd5743d5",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2dbebe069bafbd4666ab8936c4189b73a45c25cd6a43a23fc8a25f78ffb06873",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "feb1979f0e43f60d8221f3f6350b57fcf36aac1a517725230658be3330da5cd8",
+            "file": "timesteps.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "849992d47cbac6976f4d05a50b59532d898737e3b89b21fb02899ee11c60d482",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "bec397750e1de12aad6feb0366afb4c20d82430da75a6e16e6d2f929263e4930",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 32000,
+          "last_step": 36000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "e6eb713f960ae91a73f02ea81cdedcbc633ea616b82fc996a2ed0bc0e0aab7bd",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/status.json",
+      "relative_path": "segments/009/status.json",
+      "sha256": "e75d48978495cfe434b6af9a1db1de47a8895ca15355bc0ffd5e1790d15b4136",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/009/trajectory_binary_float16/conversion.json",
+      "sha256": "5d459e643315471e0127c691f6de6906477e9c06dbb83872570534e8bcc6cfbb",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497201012734226,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007724469258597804,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/009/trajectory_binary_float16/manifest.json",
+      "sha256": "fd9d51ea21811b675fb98ce02b0ecd928a3dbd9411b9bfdad391e95bca329b70",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "db321be537c459d9af791e1a3f55e35222f1f912bfeb7395858a28b63386cd1b",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d8101234810d33bc3d3aa2f83e7f935e83ff14b999647987ef5f61dbc87b8332",
+            "file": "velocities.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "861d1ea23f71f1239cf9a717527f639bfde151c4d5a1cf78a200be896de27356",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "e5f2ad0eb6e8a6e662263529272bc90fb62fb71572472919180a0f0d2db89320",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "027033bbc1b70fb8f14088297450b8adef37f2b562f229fbc018d69cd282fa63",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 36000,
+          "last_step": 40000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "e856e18b3b249a83b3c189a11e79b32b54d816123cba79b1f90b59ec07e24265",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/status.json",
+      "relative_path": "segments/010/status.json",
+      "sha256": "d7f2b981258f8466f05295bcf8df2addaddd89a6abc9fcc908bfe6a1a9e7d82d",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/010/trajectory_binary_float16/conversion.json",
+      "sha256": "592e1ada474eca758f1728d25c496d3b16f7b2ec174252009324ff1abd04dbdb",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497302396032899,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078067779541015625,
+            "rms": 0.0007724770122664871,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/010/trajectory_binary_float16/manifest.json",
+      "sha256": "4fcdc1eaf81405098a2abbe80d80547be30c37d749ba4f911885e4820c5d6073",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "87aa980eef10e75798c598753cddb005ade91578bdbaaf14e48f2f748d904749",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "cee33d681f1de524c70696627cfb4df11164358e4343ab1463b3eb0e217ee3a1",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "636baa3b57b2f9b417503afaa9b5a066df06fff26b91c686b9d1ba4fab7e195f",
+            "file": "velocities.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "299604e898c2073688d9a3bfa55a049b443ae1fe5b2bb53e09a7a67dc6af5b09",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ef3adf04d33bb310b997d4061423619ed348780c56a08dab5f55532f50095858",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 40000,
+          "last_step": 44000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "c518456c72071f9d35e38f4877e4315d86fb3dd501cf3c14943930d42c435ef4",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/status.json",
+      "relative_path": "segments/011/status.json",
+      "sha256": "41fa629dfae90b761f4df9083de96cd02e7f583f0c3743cd76e3f688f43bb38a",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/011/trajectory_binary_float16/conversion.json",
+      "sha256": "bdda4f065e8790a528bae823efe66ddce5bfce4656c1ce47154e66a545721eea",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497136661919743,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.00780487060546875,
+            "rms": 0.0007724348339275381,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/011/trajectory_binary_float16/manifest.json",
+      "sha256": "b2f71dd440b5f1314e15d752c840d7550dfb8de56e3120a277b289724c9f89ce",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "a60427151ed8e63538118c43d4d12b1bcf134981def858a1b81db3ba248d25e2",
+            "file": "velocities.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "9683e48ac686938446f7599ae5245308c3bac01d2ef0a5946e73b8bf12943991",
+            "file": "timesteps.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "bb99ffdb7200ad7bbcb52ed1f0e94663be57c99b613fc867f61cb1de4769494d",
+            "file": "box_low.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "cae8229bbcc9c2c40af8e7a6d1f75e2d854f39dd7b9827d527e22fa791a75ff3",
+            "file": "box_high.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "e5e5c37bc3cab69f18759af4d93217b26c57329bab5a3392618f53329243d1bf",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 44000,
+          "last_step": 48000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "2ab18583903a31260a1dd97b9b66d54e7da283c01a88d425d7de1c8face934cf",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/status.json",
+      "relative_path": "segments/012/status.json",
+      "sha256": "7aec13018cfa3077b00c355b6301949d60348881ef564b2d5cb5cf63f973a992",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/012/trajectory_binary_float16/conversion.json",
+      "sha256": "c82ecf20dea32bc993b4bea916a06ed8be5704d2a599d77d11b81746d7043625",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034970422256609394,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007725858225534947,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/012/trajectory_binary_float16/manifest.json",
+      "sha256": "0d5ccf73d82baf2f38e3477e031ba24d062753538ae45e51b63de91836049e85",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c7d0459273b70f82631401429eb38d46ee1a3852909043f4ab879a431ea160dd",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "17a7541238e03ab80552943d9bbbc4185aebfde29ab4c3d51d3798fdf0c158e7",
+            "file": "velocities.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "6461e5fbca3c5247476e1cea021b70364e7c52ed81d3677558456a02d84a69e8",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2cf365c8763cebeac735ac07cbdc1443586bdc927e2269577cbc4055d77850e9",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "61d03ab598291758e3959f3f99cc39bb65fc1c898e02bd8e53a23292c43c86ce",
+            "file": "positions.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 48000,
+          "last_step": 52000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "70d0519061dedd029de40cf1f2f93ddeb3812b6e38c09f17d9a561daa0e32af6",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/status.json",
+      "relative_path": "segments/013/status.json",
+      "sha256": "571ae640f258f2e525e121fb5c3016aa697111e3baa020dd657258cafa6f01d7",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/013/trajectory_binary_float16/conversion.json",
+      "sha256": "a746c176f779fff7c4e22f0bedb02370c47497ea524161d25d9dd84d5d6fb762",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497161300839299,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007724628338661712,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/013/trajectory_binary_float16/manifest.json",
+      "sha256": "d295f94d198c63d852303db3018459e02fbae3a1abc3b64a82ef8857ac63d484",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "7f28565398e099d94f1965eabacda797107ce517ffb012bc82a7b2d23e97704e",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "8f8d660c2d920c0b65e2a145630e632557c97e7b4ffb440b533461fc2c2dc97c",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "72bbf2de6027e1a935bd4287a755fc29c9e76db1f955a95b2dd5321af9590ab6",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "8e61f09fd5f2f3610ecf0895de54865ab5ab49a03231246d9c0a13fd672a016b",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "aeffbbfe1b3ebe36fa62fad764b5099ef769c2d70567153eb1af8a2f1063187e",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 52000,
+          "last_step": 56000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "c559c09f0a30c864dec0b22de760d8e74d6b670a2434ae44d9516dc705dd3fa8",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/status.json",
+      "relative_path": "segments/014/status.json",
+      "sha256": "917f057985b146e63866e380189add7d3d123e37802bae0787ceb94bd1cdf3f4",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/014/trajectory_binary_float16/conversion.json",
+      "sha256": "24c091e0dc11d6529fb14352d2802b45d8b67229b7a6e16d29ad50d3154ab0c6",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034966034512126716,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.00780487060546875,
+            "rms": 0.0007725644776788108,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/014/trajectory_binary_float16/manifest.json",
+      "sha256": "ddf0c85c746b224f89d94119515056aa9977160bee9fbe9087ad2d3fc7b64f35",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "4e2cb240139173a7ca5581c51d3f0227691ebc104aeaea31b406d8274d88fef0",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b492cd806892206ce9884a1623a0d720572e0389fa9dd43d73f23d8e23ccb39e",
+            "file": "timesteps.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "57e5362391f8c4d3778beb3b07a34426069691e7e5bac83e9949b87f07415256",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "36dcf40e9dc378999288731fbb197b27284cbffd60921be2c69f3245aff3a2ad",
+            "file": "positions.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "481ead61b71fd4d093647bdc52bbcad2ff37eb12bc8c728d314e239b58769d7c",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 56000,
+          "last_step": 60000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "7d1d29ca32092d8fae1ce20a6d95220719cffd2f565cd51febd01fb5daad2a12",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/status.json",
+      "relative_path": "segments/015/status.json",
+      "sha256": "9c32432e42f3d0bba22ebabb1f123cc2188d75380f849ec18ab11ca5d386d790",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/015/trajectory_binary_float16/conversion.json",
+      "sha256": "bf1cd7cd065885d319ad746e5d11c4f2f90c6e950f3b1a8fc09e292895fddc2c",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034969127115367656,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.007808685302734375,
+            "rms": 0.0007725616769308591,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/015/trajectory_binary_float16/manifest.json",
+      "sha256": "d17a112b8444633e785b01310a9c9a1a56b1fc8de02826a461c78fa8914e7a38",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "57b6bc327a44fda3637c98fe329533c41eb653ff1d6dd9133fbfbd56b7d92b5d",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "030bba780637140e9e32890c9927240c61873be895260ee798339925a8b77aa0",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "80db51d3fe2416821912eccbae7ee0209d54fb8ce54b5f5ba4d4232e5db654ed",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "70801509ccd4ddedfdc2c7af2e99512d28558f9b5cdb28dad1d3a7650fcdaebb",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "882bdbe2ecc8cc9d2b7228bee206ca6cc64bec62a65a0d186a6ae6f13bde6975",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 60000,
+          "last_step": 64000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "51af1918d5eb257f4b2489ef3b89d329f1a22d0b5abff641e9c18647a68f4186",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/status.json",
+      "relative_path": "segments/016/status.json",
+      "sha256": "6f708be3a8ab717a345d4cecada3b7531dbc0b9a6547e4151f4e2e6933c0a521",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/016/trajectory_binary_float16/conversion.json",
+      "sha256": "3244e6f00f3e0a6021bb467d28de0c916df46c29a2f55aa8619977e8379e6785",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034973332552171846,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078067779541015625,
+            "rms": 0.0007724627155831126,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/016/trajectory_binary_float16/manifest.json",
+      "sha256": "5b283a9c79b0f7589566982da8282b10e0afe4969586efca7f8c911577c8c834",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "5318825b2479d55e4b0f90487216418690d726b4b3cd803c52c816a91ed2ef86",
+            "file": "velocities.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "6999fd2bd0baaf70666218cbc35662038100a54e01ff29b42825380f185a8b2a",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "b463f3c15df9be5daeb1e4a7e0237a03051088df24fb85a80fda1dd26fd6e456",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "4be06745262059cb6c356be564bfcc290b730039575b3c534eaeda3939af62ad",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ed23d943d397dd0900eb8f3a585696723fa4622fb6fffc051c3b1639ee75542f",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 64000,
+          "last_step": 68000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "e1fa0b2f23115627f13af532020819bf0b287c35ed9766602e06704061e268c9",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/status.json",
+      "relative_path": "segments/017/status.json",
+      "sha256": "e95b11788f389141b6872bd62c7113d05eef71cce7e4962b7634b654744e35c5",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/017/trajectory_binary_float16/conversion.json",
+      "sha256": "b809c73528ea92760f9732333961eb44165316b9ad632c9153149b0b694f5406",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497034424854883,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0077953338623046875,
+            "rms": 0.0007725500584167115,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/017/trajectory_binary_float16/manifest.json",
+      "sha256": "7cd8cc7714c80ba1d0663eaf822f8eed54436dd6902fb2da09933c9581920d69",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "5f6359eef424f0c87e789dcb2a1b05916ac54d71bc99ce58b747e928e2e71a0d",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "276560032a376e5fd57f2b842334810a71f6d7413330226850c67c9a97f75ce7",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ca1d09c04706535a8d9afaacd14e2d92be543b9b6c23cf3bf4a5dd990d21cee2",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "d5dd279218e83052225d108603086941dae14260de2802559a0c3ae2c4ed8321",
+            "file": "velocities.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "c214dd253684cbaf31a19d803d0c208899eb3f427f332d26e8cae5b9a087db16",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 68000,
+          "last_step": 72000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "5f764b3948aea11baaa547515cb6aaf028106f844b2514368353a6b8df135abd",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/status.json",
+      "relative_path": "segments/018/status.json",
+      "sha256": "4fb98d2dfc5899379423b3d8890aa80809241e964aee6fdb8bad197f92b7aac8",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/018/trajectory_binary_float16/conversion.json",
+      "sha256": "9264f11b04943b82a71ac2b24cf7937b27147aa3318821d2d9e0ec8c4f0c2175",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03496859411565607,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078029632568359375,
+            "rms": 0.0007723863264231686,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/018/trajectory_binary_float16/manifest.json",
+      "sha256": "b809c3c4440f651a6c589ca6ab5b1798b5e26b6600b40c54fe58b783789d0b4a",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "dbcb609b98acef9d63fc387afaa90948dbdc0c8ae1f1882619f340d8efebb258",
+            "file": "timesteps.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "2916797ca4333cfb740c0fdb4e6e08d1683f26d4835659b05e4128fb1f490344",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "e41a63e0768b0ebc36406770036cc76ca6a3e00fa098366ed8e850871d5103b5",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "25ddd4068c57d55d884835e2d6fe0309bbc67d30bd9d452c759565c3fa505c3e",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "67b4dc45d2651c558b07493e70af990e7d29473a4afa497ad29dc4f2b53d5f1b",
+            "file": "velocities.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 72000,
+          "last_step": 76000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "496afdd7723ff02b8bdd3f14a735796695e9abda3d4a3e1627865659810c29a4",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/status.json",
+      "relative_path": "segments/019/status.json",
+      "sha256": "090ea0ecc57f6e4c134207a8b2be4f04c7ef2b9d55865372aa927ed5e23c8404",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/019/trajectory_binary_float16/conversion.json",
+      "sha256": "f70ae256d4179b67e1bca62cfc54765b2cb0913fedf059029bb7eeb5260de82c",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497413425040872,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078067779541015625,
+            "rms": 0.0007725184271163116,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/019/trajectory_binary_float16/manifest.json",
+      "sha256": "ba782eadb60b46b677b871f26a6b27bc3eca20bf86fcf8888497b57ef5293419",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "52cac8a227aff7078ed19f7a6cb29d850805d341f84dbca9934aba2972ce51cd",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "06a9cffb6271a2b059984ab233bec6fb09560a2b8dd1fefb1c4a64d6899ec404",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f6fb1dc2891636db9ae050e1f5f8dc8386e5e6995ec31a5617fc3321bcb10816",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0b25d879458943344068a007021fd74065109a91ff083e008cec997261981c4c",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "93c24177bec0f545a082377af0b5dcd243144ea544841fd3e895e1066c0fdc09",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 76000,
+          "last_step": 80000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "2e7911994a42f47b2d595710b2b8627169fe9de812bc2369130b3a8b0f7dcc6a",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/status.json",
+      "relative_path": "segments/020/status.json",
+      "sha256": "1e06f125766bca94eb602bad4cc1b6a49a94a0a73e57beb0f43eb13d4a165d7e",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/020/trajectory_binary_float16/conversion.json",
+      "sha256": "17a9b3dfb36dad0ebbaeb87834b658ebd277bdeaf3799a51a12468dad7e73e27",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03496978171318089,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007725485832583118,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/020/trajectory_binary_float16/manifest.json",
+      "sha256": "75643d22a202b7c5928255abc34fe5fc2a4d6a40d727aa88a999e35aa9a64dfa",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "9238ee6009b2c24eb06e7ae808cc6ebf9f27e4f5a59b8fb94f1f168e5faec7a3",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "4a8af2f562691a4d0b410b450e1e189e99b4db88e6c9f5e15e2cc02ad169bc7a",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "8e6b688bcb755e1e15401cdc8230ca1d8d9cfcf0f1fc0b277f3f6af9761543c8",
+            "file": "timesteps.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ea8c7353eda602022b53fb60c09a89875abedac9ad4ad80e86a3000ed78fe49c",
+            "file": "velocities.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "0b21f00d7c2b3a76bc1d97137a534b7827d1e33674c7997907f2794ac253e1fd",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 80000,
+          "last_step": 84000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "58e7dca708d7fc9605bd194bf232731afce5064d99ef1b790e6c310f9736dacc",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/status.json",
+      "relative_path": "segments/021/status.json",
+      "sha256": "035edaf01004d1ca4ca7038e36fd82842de1d4b906c2b2ff2fad0aa503887ec2",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/021/trajectory_binary_float16/conversion.json",
+      "sha256": "69c7f308c4b969c4411639158f302fde0b5de0e744a25d6d050e88350f7019da",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03496855728109494,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.007808685302734375,
+            "rms": 0.0007726423996198536,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/021/trajectory_binary_float16/manifest.json",
+      "sha256": "55cea9c59be75e28ce5a25b9479165730b37aa5c5ab476c794173f7509b7b5f2",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "333924466b6eb0cfc5703572f04723725c038a3c4a7e04eab8f44ef9f6768162",
+            "file": "velocities.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "ebb09ed96375b0d7b0d5891c0130706d04231a58e4a2e6e9ab3936903fae512c",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "ad83d4c7c1a12637e85c8dc0d776969e2c1438bd40295ca5ca93bfe8f1d574c7",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "748aa5a29063a00eb234667cf0197adb3de4eb70c5db74673e5709a1020a8074",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "f6834d675ac701739ba026ad6fc1601e13df2bc14df04429a57cb78af772371b",
+            "file": "timesteps.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 84000,
+          "last_step": 88000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "0843e36525b3b6c8ab83337c33fbcead4cf920b4b86d170b722f13ea1b647155",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/status.json",
+      "relative_path": "segments/022/status.json",
+      "sha256": "b651e278d86ec3fb4fb766207a92b8cbcc871844d7d51074c8f208a574aa35dd",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/022/trajectory_binary_float16/conversion.json",
+      "sha256": "a7e25ae78d48b431d00f673800926df73749fa2cd9e2351a5b8a50c86ae797e5",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.0349713923704187,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.00780487060546875,
+            "rms": 0.0007725062210056557,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/022/trajectory_binary_float16/manifest.json",
+      "sha256": "53e4ba47f76d193e6d3ccbfa54260783fd43fb4c469751e487da62987d019ede",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "3a38094ecba2aa9944d2a9cd0232eacf87d41246ea3cf5b5ccb0fef7220d57f4",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "530a3b11cdb399a10ae11ea3393bae776a67df5005efa5f9f51e024128a8a08e",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b27399d138a4c2bf2943758538774dab3f6942ade5896cd1b0a30519acab63ad",
+            "file": "velocities.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "40eb9e51569c96a618c50dc7dba4a7630cbcd281ffd11ba7c11061d812da8874",
+            "file": "box_low.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "53b5d3cadc93536076877e4935df87a5703f92a4d1c7951d0a6cc1ba3570564f",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 88000,
+          "last_step": 92000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "aba9c653d0d5462626f750dc8f4bc5e81f069c25a69a8614b806abe71f8628ca",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/status.json",
+      "relative_path": "segments/023/status.json",
+      "sha256": "0114d38866f463a05e9a6097fee785fb780336b429de8fc569fd48a675b7ffec",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/023/trajectory_binary_float16/conversion.json",
+      "sha256": "7e32dd263469cb4b196c60944ff9775df3b68f40f46f36671d7560da3d3024a4",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034970053653323896,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0007723418746816809,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/023/trajectory_binary_float16/manifest.json",
+      "sha256": "f461ef83d511a2fd9f321ea90c005ff5facc240cfb68003eda7bdbce6324a962",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "48921ff2ad254b80f9043f4ef84d211fadcba6c41b11620f30ea5151388d07a4",
+            "file": "positions.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "5c2bfa08a347101a417c91b8a4c3d9dff9db626eb1bb3ed739b89460b3bc6b0c",
+            "file": "box_low.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "4dc2e73729e24da6f1f6b8c6f53db57c06df0b630348f9423c7e59406a43aa93",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "91d4b99d73fe19a9f0efb2009bec988a5a4de23a9db8dfc3cc694926228f9f94",
+            "file": "velocities.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "ce179d9fe8d707060c37cf4857b5a3681d612297adef018b168a045af1a3f34a",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 92000,
+          "last_step": 96000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "6b1a90551b99e2fb32e1a525f158aacc14492722e9a412ea866c7aabdaafd310",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/status.json",
+      "relative_path": "segments/024/status.json",
+      "sha256": "ec9350ebb26e2707e510da583c09987859cf5ada3695788e42be3c4b198e742f",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/024/trajectory_binary_float16/conversion.json",
+      "sha256": "6e7836ee6553eb1663e8ec3745ee3d4f3972499f370e45c6e877dacc6ee53746",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03497239661291948,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.007808685302734375,
+            "rms": 0.0007724222686793661,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/024/trajectory_binary_float16/manifest.json",
+      "sha256": "6a05cb33ca045bec56bfd40c61a0cf1dec790166af6995cf3759727e4bb222e1",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "3f93e036dbffdb5f08af15f7243226eca7edbddde66ef26757340994c1b4ff60",
+            "file": "positions.npy"
+          },
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3943439c095639285b6d6616882aef68e07f6e813e0150b9be31466c0e318436",
+            "file": "box_high.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "bf1d0dd221d787612849bbdda1cd4a1065091a7e4e79c439522f68912ec51309",
+            "file": "box_low.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "dc5aa5fbc77369c64d60119746f0a59ae24d7f45878fa60216e8029fe18785b0",
+            "file": "timesteps.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "79fd73b64865aa2d8de1dedce5340b9b97d40ee4095c562240bb90d051915e1c",
+            "file": "velocities.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 96000,
+          "last_step": 100000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "9864dbb9192283234d9f6a122f5633add110740763e406487d0272114ee2b4dd",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/status.json",
+      "relative_path": "segments/025/status.json",
+      "sha256": "1df6acb2e161bdcdaa92e3ab358505c3f9488822988411cc85dd798d3dd157a6",
+      "kind": "metadata",
+      "keys": [
+        "completed_at",
+        "end_step",
+        "endpoint",
+        "native_seconds",
+        "seconds",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "accepted",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/025/trajectory_binary_float16/conversion.json",
+      "sha256": "b1782c7f08d43f56d578956f0410378f9cbf84aa042d4cba271e8ad999e5e2ed",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.034968483100311164,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.007808685302734375,
+            "rms": 0.0007725446373834094,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/025/trajectory_binary_float16/manifest.json",
+      "sha256": "6055891fb11af4ee4c5eb83efd648a0a6eab6ee51375bea071c16e3eb6a97de2",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "59a7b9aca4f57e9520f25f83abf39670edad047b34b2b21391cf73901d9ba01f",
+            "file": "box_high.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "00629be34b556f333433a2bae59a3c436b4c602d05b17ee563e89c0ddfe3664d",
+            "file": "timesteps.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a2ad72882e34d482a99775d5cfaa0665caa7a6de5adb54a3f0056ff154d57eee",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7f6a58047da7729152f3ad48234da2dac1fc3b6bc98512ff822bbf5171c9db2b",
+            "file": "velocities.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "7536c9c703f645573f94628894f52d9981dd2ce7fd3a5ed78326ee06d86a0a6c",
+            "file": "positions.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 100000,
+          "last_step": 104000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "2b45b7d27b86214d0ce704923240386b34fe8b5f72f6d4d312c16f10ad2ad6e3",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/status.json",
+      "relative_path": "segments/026/status.json",
+      "sha256": "101411b3b851cc5f413af9ec82cf51f18ace2148ed90db60500ff16571be77fc",
+      "kind": "metadata",
+      "keys": [
+        "end_step",
+        "finished_at",
+        "reason",
+        "segment",
+        "start_step",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/trajectory_binary_float16/conversion.json",
+      "relative_path": "segments/026/trajectory_binary_float16/conversion.json",
+      "sha256": "6c3413aa13cd92ca46018c6a9bd245be7c78d84e4eec518051f2b96b8dab2664",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.125,
+            "rms": 0.03496568710545411,
+            "coordinate_count": 123000000
+          },
+          "velocities": {
+            "max_abs": 0.007808685302734375,
+            "rms": 0.0007726182012072256,
+            "coordinate_count": 123000000
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/trajectory_binary_float16/manifest.json",
+      "relative_path": "segments/026/trajectory_binary_float16/manifest.json",
+      "sha256": "87a6346e39f7194d0e0130191d3645718f39942c845ff8ca13eb3b88e3a312d8",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 1000000,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 41,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 1000000,
+        "frame_count": 41,
+        "arrays": {
+          "box_high": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "82868f944ecc26ac8b8ca552bb2ba5dcdba92385458ebc9fb5186e226c290601",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "785101a8d1d29f558d1f2f4d2f2cbed27b13839e6ee973dae5478842060c1a93",
+            "file": "velocities.npy"
+          },
+          "atom_types": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "1574ffadfcad3245cd83f3552908b258f1a96e142112f95cc2e77c92396da835",
+            "file": "atom_types.npy"
+          },
+          "positions": {
+            "shape": [
+              41,
+              1000000,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "c42346b69e1f6a9e8eb66db3c793a215887d3ce6a03f2337f531aad29df3a89a",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              41
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "8e02fd20270e9363f8e2ff76501b33137e1e8338d1a3ad9eebc3bb7895ae28e1",
+            "file": "timesteps.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              1000000
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "b2b5b1f037a29063a8be8daef40d1b3bb0a872bb2cb2edd8d042f5065097c292",
+            "file": "atom_ids.npy"
+          },
+          "box_low": {
+            "shape": [
+              41,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "3899863810a6e78e46c390da025d2444520e868f935cc45c9ce438b30546f541",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 104000,
+          "last_step": 108000,
+          "step_intervals": [
+            100
+          ]
+        },
+        "content_signature_from_manifest": "a250c934e3df8b40734ae3513ef48171b493b7fe3fe58be0820ed76363e99510",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    }
+  ]
+}

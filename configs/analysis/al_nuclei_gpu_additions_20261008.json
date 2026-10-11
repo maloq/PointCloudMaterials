@@ -1,0 +1,61 @@
+{
+  "input_plans": [
+    "${storage:training_storage}/nuclei_search/al-main-additions-20261008-extraction/technical/plan.json",
+    "${storage:training_storage}/nuclei_search/al-focused-additions-20261008-extraction/technical/plan.json"
+  ],
+  "expected_sources": 78,
+  "search": {
+    "protocol": "al_nucleus_lineage_v3",
+    "parent_output": "${storage:training_storage}/nuclei_search/al-additions-20261008-gpu-extraction",
+    "output": "${storage:training_storage}/nuclei_search/al-additions-20261008-gpu-v3",
+    "minimum_shared_atoms": 4,
+    "continuation_fraction": 0.5,
+    "minor_parent_fraction": 0.2,
+    "embryo_atoms": 8,
+    "reset_atoms": 4,
+    "reset_ps": 1.5,
+    "persistence_ps": 1.5,
+    "establishment_atoms": 64,
+    "growth_atoms": 128,
+    "thresholds": [
+      8,
+      32,
+      64,
+      128
+    ],
+    "durations_ps": [
+      1.5,
+      3.0
+    ],
+    "prehistory_ps": 1.5,
+    "interface_distance_A": 8.0,
+    "lanes": 4,
+    "workers_per_lane": 8,
+    "time_limit": "12:00:00",
+    "input_contract": {
+      "encoder": null,
+      "predictor": null,
+      "conditions": "Audit metadata only",
+      "relaxation": "Original MD full cells; no quenches or additional relaxed temporal outcomes",
+      "population": "78 newly completed Al observations: 45 main-campaign trajectories and 33 birth-focused velocity branches. Full native 0.10 ps, unchanged v3 birth/fate criteria, original ancestry and roles. No prediction filtering.",
+      "geometry": "Full periodic original MD cells; exact source timelines and atom identities",
+      "history": "Every saved native 0.10-ps full cell. Main trajectories omit 15 ps settling; birth-focused branches include initialization and settling. Their stopping rules and censoring remain distinct.",
+      "motion": "Velocities retained in source archives; structural labels and lineages use positions, box and atom identities only"
+    },
+    "parent_stage": "extraction",
+    "descriptor_threads": 1
+  },
+  "cache": "${storage:cache}/nuclei-search/al-additions-20261008-gpu",
+  "dataset_config": "configs/data/nuclei_birth.json",
+  "gpu_lanes": 2,
+  "gpu_partitions": "A100,H100",
+  "gpu_walltime": "12:00:00",
+  "execution": "resident",
+  "ptm_ordering": "voronoi",
+  "prefetch": 2,
+  "compression_workers": 1,
+  "numerical_audit": "docs/postprocessing_gpu_ptm_20261008.json",
+  "numerical_audit_sha256": "97062217e280300e2cf5be0eb1f79be3f519cf76684087c83b1911f1d44e299f",
+  "cuda_home": "/store/PERSO/vmorozov/software/cuda-13.4-meam",
+  "torch_extensions": "${storage:cache}/nuclei-search/al-additions-20261008-gpu/torch-extensions"
+}

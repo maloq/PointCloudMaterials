@@ -1,0 +1,43 @@
+{
+  "dataset_id": "al-main-half-recovery-20261003",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891/status.json",
+      "relative_path": "attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891/status.json",
+      "sha256": "a48d78bd1ead32b6e1f5ae0d36e76eca9f5c4d9daf1a043d61f4b50ac529bb1f",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0892/status.json",
+      "relative_path": "attempts/accidental-stop-20261004/al-main-010ps-20260927-source0892/status.json",
+      "sha256": "3fd58191e8c9a9ed0f0df111589d1d478a8805aabc6cc5caee6f8f3616193a53",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

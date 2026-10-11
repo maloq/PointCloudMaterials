@@ -1,0 +1,7 @@
+{
+  "table": "tables/sources.csv",
+  "sha256": "baa7199bbd94cb3f4bd880e6b5e890411f9fb34949c82571d8e36aaa9e37fff6",
+  "family": "al075_birth_quality",
+  "contract": "technical/metric-contracts/al075_birth_quality.json",
+  "definitions": "tables/metric-definitions/al075_birth_quality.md"
+}

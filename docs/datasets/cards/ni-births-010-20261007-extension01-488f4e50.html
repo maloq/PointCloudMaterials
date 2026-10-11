@@ -1,0 +1,830 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V</h1><p>User-authorized 12-melt extension of the Ni nucleus-birth campaign: same four temperatures and frozen physical protocol, new independent melt seeds and ancestry; six melts per temperature across both collections. No outcome-conditioned selection.</p><span class="badge">planned</span><p><code>ni-births-010-20261007-extension01</code> · Ni</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01">/store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01</a></p><p>1,400 owned files · 30.419 GiB allocated · 12 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V&quot;,
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;planned&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;ni-mendelev2012-eam&quot;
+  ],
+  &quot;description&quot;: &quot;User-authorized 12-melt extension of the Ni nucleus-birth campaign: same four temperatures and frozen physical protocol, new independent melt seeds and ancestry; six melts per temperature across both collections. No outcome-conditioned selection.&quot;,
+  &quot;planned_independent_melts&quot;: 12,
+  &quot;timestep_ps&quot;: 0.001,
+  &quot;sample_interval_ps&quot;: 0.1,
+  &quot;velocity_units&quot;: &quot;angstrom_per_ps&quot;,
+  &quot;staging_location&quot;: &quot;${storage:simulation_runs}/ni-births-010-20261007-extension01&quot;,
+  &quot;evidence&quot;: [
+    &quot;/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-20261007-extension01/technical/plan.json&quot;
+  ],
+  &quot;campaign_extension_of&quot;: &quot;ni-births-010-20261007&quot;,
+  &quot;ancestry&quot;: &quot;New independent full-cell melts; no reused parent configurations or velocities&quot;
+}</pre><ul><li><a href="../../../output/ni_nucleation/campaign-20261007-extension01/technical/plan.json">/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-20261007-extension01/technical/plan.json</a></li></ul><p>Dependencies: <a href="potential-ni-mendelev2012-d697af4e.html">potential-ni-mendelev2012</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev et al. 2012 Ni EAM/FS</summary><ul><li><a href="../../../configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs">Ni1_Mendelev_2012.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ni-mendelev2012-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev et al. 2012 Ni EAM/FS&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;pair_coeff * * Ni1_Mendelev_2012.eam.fs Ni&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al., Philosophical Magazine 92, 4454-4469 (2012)&quot;,
+  &quot;doi&quot;: &quot;10.1080/14786435.2012.712220&quot;,
+  &quot;limitations&quot;: [
+    &quot;Pure-Ni implementation; does not include Ni-Zr alloy interactions.&quot;,
+    &quot;CUDA engineering checks are separate from melting-point or precursor-mechanism validation.&quot;
+  ],
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>temperature_K</td><td><code>[1100, 1200, 1300, 1400]</code></td></tr><tr><td>preparation_seed</td><td><code>[261008513, 261008614, 261008715, 261008816, 261008917, 261009018, 261009119, 261009220, 261009321, 261009422, 261009523, 261009624]</code></td></tr><tr><td>duration_ps</td><td><code>[115.0, 160.0, 480.0, 520.0]</code></td></tr><tr><td>protocol</td><td><code>[&quot;ni_mendelev2012_independent_npt_births_v1&quot;]</code></td></tr><tr><td>material</td><td><code>[&quot;Ni&quot;]</code></td></tr><tr><td>timestep_ps</td><td><code>[0.001]</code></td></tr><tr><td>sample_interval_ps</td><td><code>[0.1]</code></td></tr><tr><td>ensemble</td><td><code>[&quot;isotropic NPT&quot;]</code></td></tr><tr><td>pressure_bar</td><td><code>[0]</code></td></tr><tr><td>atom_count</td><td><code>[32000]</code></td></tr><tr><td>root_lineage</td><td><code>[&quot;ni-T1100-melt03&quot;, &quot;ni-T1100-melt04&quot;, &quot;ni-T1100-melt05&quot;, &quot;ni-T1200-melt03&quot;, &quot;ni-T1200-melt04&quot;, &quot;ni-T1200-melt05&quot;, &quot;ni-T1300-melt03&quot;, &quot;ni-T1300-melt04&quot;, &quot;ni-T1300-melt05&quot;, &quot;ni-T1400-melt03&quot;, &quot;ni-T1400-melt04&quot;, &quot;ni-T1400-melt05&quot;]</code></td></tr><tr><td>split</td><td><code>[&quot;selection&quot;, &quot;test&quot;, &quot;train&quot;]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;positions decode to float32 coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)&quot;]</code></td></tr><tr><td>frame_count</td><td><code>[1151, 1601, 4801, 5201]</code></td></tr><tr><td>measurement_duration_ps</td><td><code>[115.0, 160.0, 480.0, 520.0]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 1400,
+    &quot;apparent_bytes&quot;: 24310966605,
+    &quot;allocated_bytes&quot;: 32661774336,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 85,
+      &quot;.in&quot;: 12,
+      &quot;.log&quot;: 12,
+      &quot;.csv&quot;: 24,
+      &quot;.restart&quot;: 1183,
+      &quot;.npy&quot;: 84
+    },
+    &quot;producer_state_record_counts&quot;: {
+      &quot;complete&quot;: 24
+    },
+    &quot;metadata_records&quot;: 48,
+    &quot;binary_trajectory_records&quot;: 12,
+    &quot;available_complete_binary_records&quot;: 12,
+    &quot;stored_frames&quot;: 54362,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        4801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        4801,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        4801,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        4801
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt03/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        4801,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1601,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1601,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1601,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1601
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt04/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        1601,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        1151,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        1151,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        1151,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        1151
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1100-melt05/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        1151,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt03/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt04/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1200-melt05/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt03/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt04/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1300-melt05/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt03/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt04/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        32000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        5201
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;ni-T1400-melt05/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        5201,
+        32000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/simulation/ni_births_010_20261007_extension01.json">configs/simulation/ni_births_010_20261007_extension01.json</a></li></ul></details><details><summary>Producer evidence (48 records)</summary><p><a href="../records/ni-births-010-20261007-extension01-488f4e50.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/complete.json">ni-T1100-melt03/complete.json</a> · complete · <code>71c6d61de3922609ea1a71100d99f1c12a3e3b6416532d253bf63393b355a9f4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/metadata.json">ni-T1100-melt03/metadata.json</a> · complete · <code>8d1b1c1fe448922b4670a545d368b5241380b3a6e67eb9bcb14f873bd961d07a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/outcome.json">ni-T1100-melt03/outcome.json</a> · complete · <code>71c6d61de3922609ea1a71100d99f1c12a3e3b6416532d253bf63393b355a9f4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt03/trajectory_binary_float16/manifest.json">ni-T1100-melt03/trajectory_binary_float16/manifest.json</a> · complete · <code>1e8aa4458013b03330990135bd5041a9b448da5bcdc43304206f2273df0d30f6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/complete.json">ni-T1100-melt04/complete.json</a> · complete · <code>f230f8b8d64db9dfced09b2619afe53d31dbf71be9fbec547565bb7580590219</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/metadata.json">ni-T1100-melt04/metadata.json</a> · complete · <code>0cae188bbc71656dec036c4c00692a4a5d1736db7774792e3fd34ee0327e8d4d</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/outcome.json">ni-T1100-melt04/outcome.json</a> · complete · <code>f230f8b8d64db9dfced09b2619afe53d31dbf71be9fbec547565bb7580590219</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt04/trajectory_binary_float16/manifest.json">ni-T1100-melt04/trajectory_binary_float16/manifest.json</a> · complete · <code>06e5001a66653c7178ccaf3ce8f580524146bbf7bf5edd42de757be99397b88b</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/complete.json">ni-T1100-melt05/complete.json</a> · complete · <code>bddd88d0dfda1495624488092174c89bea318f0b4702f86a10aca0444958bbc2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/metadata.json">ni-T1100-melt05/metadata.json</a> · complete · <code>6a95249d700d9a35d5069318a1f7c7c82b8e008d3b7335671679ff0ba6fd7c35</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/outcome.json">ni-T1100-melt05/outcome.json</a> · complete · <code>bddd88d0dfda1495624488092174c89bea318f0b4702f86a10aca0444958bbc2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1100-melt05/trajectory_binary_float16/manifest.json">ni-T1100-melt05/trajectory_binary_float16/manifest.json</a> · complete · <code>cf4e3c1dc775365486e27ce3ef982866d728d167b061d069f3a9bdc8288f82c9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/complete.json">ni-T1200-melt03/complete.json</a> · complete · <code>ae87396c3f7dc80da593f8f53f65a5ba4dc6238ab7fd6e27ad0dddc77e31abef</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/metadata.json">ni-T1200-melt03/metadata.json</a> · complete · <code>5885320af7b821465c75a4e7d5f5436f7a83792b0e68f604f603ca76ae9017e4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/outcome.json">ni-T1200-melt03/outcome.json</a> · complete · <code>ae87396c3f7dc80da593f8f53f65a5ba4dc6238ab7fd6e27ad0dddc77e31abef</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt03/trajectory_binary_float16/manifest.json">ni-T1200-melt03/trajectory_binary_float16/manifest.json</a> · complete · <code>d803fdd291ac225016f9eb1b082bcb892cfa3e3fe4932d23427c563166427e10</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/complete.json">ni-T1200-melt04/complete.json</a> · complete · <code>3f3d7961dacfcd91d160bee240ee9fa3ac17d92ff6e8fb7c9e3181cc1e895965</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/metadata.json">ni-T1200-melt04/metadata.json</a> · complete · <code>b61554e834daf30b031523602eeff25ad2674cf74647837eabac2092192c820b</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/outcome.json">ni-T1200-melt04/outcome.json</a> · complete · <code>3f3d7961dacfcd91d160bee240ee9fa3ac17d92ff6e8fb7c9e3181cc1e895965</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt04/trajectory_binary_float16/manifest.json">ni-T1200-melt04/trajectory_binary_float16/manifest.json</a> · complete · <code>97b8b5bd5df8cec88c2ceb5a496c2ac08b61f5b849436fa2450215dce1deec17</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/complete.json">ni-T1200-melt05/complete.json</a> · complete · <code>c39e6064e324653825f6d4317fb29b1e80a565f7c5a5ca2ddda996fb8b3caea5</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/metadata.json">ni-T1200-melt05/metadata.json</a> · complete · <code>490fde3973238bcf792b09a7f7d17b1857ded76092c4c5e69eff90656f3c950d</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/outcome.json">ni-T1200-melt05/outcome.json</a> · complete · <code>c39e6064e324653825f6d4317fb29b1e80a565f7c5a5ca2ddda996fb8b3caea5</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1200-melt05/trajectory_binary_float16/manifest.json">ni-T1200-melt05/trajectory_binary_float16/manifest.json</a> · complete · <code>098d9b40be7b22d1a964d6445ce9b16f59fbc0feb632493a526b4f3a522323ce</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/complete.json">ni-T1300-melt03/complete.json</a> · complete · <code>34ca3eb14d9765fd96f82ad412de32e12c131d2eae58f0974df9930450581768</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/metadata.json">ni-T1300-melt03/metadata.json</a> · complete · <code>3c14e5b95374689944cfc23d677264392508629b98f26561143acee6faa3b594</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/outcome.json">ni-T1300-melt03/outcome.json</a> · complete · <code>34ca3eb14d9765fd96f82ad412de32e12c131d2eae58f0974df9930450581768</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt03/trajectory_binary_float16/manifest.json">ni-T1300-melt03/trajectory_binary_float16/manifest.json</a> · complete · <code>4d555c1baffbd47ee3140130a67ffeb16280046cf7c34c6d3da4ecf9c97dfb0b</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/complete.json">ni-T1300-melt04/complete.json</a> · complete · <code>172f86ccd02053da08dd16b3e462b7fcdb1e19d571825bd6f8dc9f10c0510786</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/metadata.json">ni-T1300-melt04/metadata.json</a> · complete · <code>4fb07fa50a78ff180490f687da8e7ff336d79aeece703b1b35a63c3f2e11f9d5</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/outcome.json">ni-T1300-melt04/outcome.json</a> · complete · <code>172f86ccd02053da08dd16b3e462b7fcdb1e19d571825bd6f8dc9f10c0510786</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt04/trajectory_binary_float16/manifest.json">ni-T1300-melt04/trajectory_binary_float16/manifest.json</a> · complete · <code>236306c8da1cfaefae358179fc163acb4fb0d388e6becd2e80f5a9c55e0b8b21</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/complete.json">ni-T1300-melt05/complete.json</a> · complete · <code>e61f30d1b4341fbbb119d8381407af2b9ba2ef4830fe7650039c1bbc643df284</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/metadata.json">ni-T1300-melt05/metadata.json</a> · complete · <code>4b48d80a147ffa30819f8e62a76c80d40d893182f43ee7a00a0d08ad19899102</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/outcome.json">ni-T1300-melt05/outcome.json</a> · complete · <code>e61f30d1b4341fbbb119d8381407af2b9ba2ef4830fe7650039c1bbc643df284</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1300-melt05/trajectory_binary_float16/manifest.json">ni-T1300-melt05/trajectory_binary_float16/manifest.json</a> · complete · <code>e0adb9f734bfa4a670807e4beff968ca3376aa1b2b0e0b9860cb87e33d6de9b8</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/complete.json">ni-T1400-melt03/complete.json</a> · complete · <code>f51321b6147dac4dc20d53cfe5a740600165551474905d89b91858b31e1091e6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/metadata.json">ni-T1400-melt03/metadata.json</a> · complete · <code>e467c90e2738b8b0e9d6db884378462d3a9f24fbafd82102d1a6bae3aa58a409</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/outcome.json">ni-T1400-melt03/outcome.json</a> · complete · <code>f51321b6147dac4dc20d53cfe5a740600165551474905d89b91858b31e1091e6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt03/trajectory_binary_float16/manifest.json">ni-T1400-melt03/trajectory_binary_float16/manifest.json</a> · complete · <code>624cfdda938a30d7fb5de0335992efc529a3833dda883187847e77fda3a02b42</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/complete.json">ni-T1400-melt04/complete.json</a> · complete · <code>9dce9b644329f0235e9e947f3d594432ae989044e816e669de76d18acf2559c1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/metadata.json">ni-T1400-melt04/metadata.json</a> · complete · <code>ae58cf03ac0535dfacc85033f0b38922ba1c93ed8d5537a41d509f31fe4f77aa</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/outcome.json">ni-T1400-melt04/outcome.json</a> · complete · <code>9dce9b644329f0235e9e947f3d594432ae989044e816e669de76d18acf2559c1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt04/trajectory_binary_float16/manifest.json">ni-T1400-melt04/trajectory_binary_float16/manifest.json</a> · complete · <code>641e0cf0abd698af514a583141809e5d3b93cab2822c66c3abd2c5c3c4776c39</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/complete.json">ni-T1400-melt05/complete.json</a> · complete · <code>a9384b1f48adb5f01c82c52d9d4b790c541c24478cd4cc1fa92bcb931e567838</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/metadata.json">ni-T1400-melt05/metadata.json</a> · complete · <code>eb4776dd4befb84e5a4db5d9e07f942a200d83a2136e665988f47edfed97554c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/outcome.json">ni-T1400-melt05/outcome.json</a> · complete · <code>a9384b1f48adb5f01c82c52d9d4b790c541c24478cd4cc1fa92bcb931e567838</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-births-010-20261007-extension01/ni-T1400-melt05/trajectory_binary_float16/manifest.json">ni-T1400-melt05/trajectory_binary_float16/manifest.json</a> · complete · <code>ff4c5c386e83752781be7b99437eca7864e8afa639b761ee6ca2c2b9b97c5171</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

@@ -1,0 +1,39 @@
+{
+  "state": "complete",
+  "completed_utc": "2026-10-02T13:51:39.054033+00:00",
+  "deleted_payload_files": 131207,
+  "allocated_bytes_released_by_root": {
+    "/store/PERSO/vmorozov/training-cache-archive-20260926/crystallization-transfer-mace-20260919": 78034018304,
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/context-geometry": 52034050048,
+    "/store/PERSO/vmorozov/training-cache-archive-20260925/equivariant-context": 18848841728,
+    "/home/ids/vmorozov/training-cache/neighborhood_jepa": 31575993344,
+    "/home/ids/vmorozov/training-cache/structural_pretraining": 37377884160,
+    "/home/ids/vmorozov/training-cache/distance-encoder": 71680905728
+  },
+  "allocated_bytes_released_total": 289551693312,
+  "method": "Stat-verified unlink of cache NPY/NPZ payloads; hardlinked inodes counted once only when all links were in deletion scope. Not a filesystem quota delta.",
+  "preserved": "All provenance JSON and locks; the reservoir.pt encoder/projection checkpoint; six managed context-feature entries verified unchanged; research outputs, trajectories and relaxation archives untouched.",
+  "retired_dataset_ids": [
+    "structural-neighbors-250k-20260917",
+    "structural-neighbors-287500-full-tda-20260918",
+    "structural-neighbors-dynamic-1018080-20260919",
+    "crystallization-transfer-mace-20260919",
+    "neighborhood-jepa-tracked-six-65536-20260920",
+    "neighborhood-jepa-v2-native-al-20260920",
+    "neighborhood-jepa-native-al-32768-graphs-20260920",
+    "neighborhood-jepa-native-al-32768-v2-20260920",
+    "neighborhood-jepa-native-al-32768-order-20260920",
+    "neighborhood-jepa-native-al-horizons369-20260920",
+    "equivariant-context-prepared-20260925",
+    "distance-encoder-multimaterial-20260926",
+    "distance-encoder-md-history6-evaluation-20260926",
+    "distance-encoder-md-dense6-training-20260926",
+    "distance-encoder-md-dense6-evaluation-20260926",
+    "distance-encoder-md-dense6-075ps-training-20260926",
+    "distance-encoder-md-dense6-075ps-evaluation-20260926",
+    "distance-encoder-md-dense6-075nominal-training-20260926",
+    "distance-encoder-md-dense6-010ps-training-20260926",
+    "distance-encoder-ta-material-eval-20260927"
+  ],
+  "protected_feature_file_count": 18
+}

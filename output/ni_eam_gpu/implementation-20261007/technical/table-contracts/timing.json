@@ -1,0 +1,7 @@
+{
+  "table": "tables/timing.csv",
+  "sha256": "762d1d556185ebe5a37e911ac519e5d7650757017f5cefcf23a772ca61f797a9",
+  "family": "ni_eam_gpu",
+  "contract": "technical/metric-contracts/ni_eam_gpu.json",
+  "definitions": "tables/metric-definitions/ni_eam_gpu.md"
+}

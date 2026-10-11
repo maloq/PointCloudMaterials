@@ -1,0 +1,7 @@
+{
+  "table": "tables/paired_gpu_cpu.csv",
+  "sha256": "07e8e43cdff2afb0430f591b9191c8cc7b11f9a3161de7ac8cfdf825dc547bb6",
+  "family": "meam_dense_comparison",
+  "contract": "technical/metric-contracts/meam_dense_comparison.json",
+  "definitions": "tables/metric-definitions/meam_dense_comparison.md"
+}

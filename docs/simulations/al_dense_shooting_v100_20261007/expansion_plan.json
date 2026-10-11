@@ -1,0 +1,70 @@
+{
+  "parent_launch": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007",
+  "original_worker_job": "1026907",
+  "original_collector_job": "1026908",
+  "retained_indices": [
+    1,
+    33,
+    4,
+    0,
+    39,
+    35,
+    25,
+    19,
+    22,
+    2
+  ],
+  "assignments": [
+    [
+      13,
+      12,
+      8,
+      36,
+      9,
+      5,
+      18,
+      29,
+      34,
+      31
+    ],
+    [
+      6,
+      23,
+      38,
+      11,
+      7,
+      27,
+      26,
+      17,
+      24,
+      10
+    ],
+    [
+      3,
+      20,
+      32,
+      37,
+      28,
+      30,
+      15,
+      21,
+      16,
+      14
+    ]
+  ],
+  "boundary_index": 31,
+  "config": {
+    "parent_launch": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007",
+    "expansion_id": "three-more-v100-20261007",
+    "additional_workers": 3,
+    "retain_original_entries": 10
+  },
+  "driver_sha256": "463cd975863c37ceb113e519e297be480cad6335394c5ac48f15d2a39152ab88",
+  "created_at": "2026-10-07T16:39:15.258600+00:00",
+  "parent_hashes": {
+    "manifest.json": "b3f4960dc7874c859846acc6dc96a9e603401c2b3dfd07bd3d1eacaf4d7fa2e5",
+    "code_sha256.json": "8c64fa79bf71b0bb08560785409e460a9e12fce41897a89a600a506d286f532f",
+    "technical/audit/validation.json": "9fafb7f758e4e6e144cc32ed238a143ed3e057788c2999ce675547b2f20bc606"
+  },
+  "original_exit": "Expected pre-source FileExistsError at reserved boundary; no active MD interrupted"
+}

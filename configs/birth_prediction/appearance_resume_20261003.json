@@ -1,0 +1,9 @@
+{
+  "appearance_output": "${storage:training_storage}/birth_prediction/appearance-transfer-20261002",
+  "recovery_name": "resume-20261003",
+  "parallel_lanes": 8,
+  "isolated_tasks": ["972-392"],
+  "frame_timeout_seconds": 21600,
+  "time_limit": "12:00:00",
+  "seal_job": "1018566"
+}

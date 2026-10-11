@@ -1,0 +1,25 @@
+{
+  "family": "spatial_ni_dataset",
+  "exported_at": "2026-10-08T12:54:26.733684+00:00",
+  "files": {
+    "configs/data/spatial_active_cna_targets.json": "138825b5081c25d5aa83e111124c3d18016801b6ee2260b32756c8305f9430d7",
+    "configs/data/spatial_ni20.json": "78e3f55d43cf7c9f4a15ce6d655575e542379366bdb181aa1d992d5af45aa5f9",
+    "docs/metrics/spatial_ni_dataset.md": "bf55b215291a10fe4985bdd36a03bb4271977f127dd4c989a6931beb11777f4a",
+    "src/data/fixed_cohort/protocol.py": "df0e1ca7afbdb348babe2de8722a464ff6db8c0f735c795d18fc9044bfa7f26c",
+    "src/data/structural_pretraining/native.py": "beeb39201a25de7d08b835cbdf6e2d6d314052448358ce30cb2209559f707b24",
+    "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
+    "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
+    "src/postprocessing/descriptors/alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+    "src/postprocessing/descriptors/alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+    "src/postprocessing/descriptors/rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+    "src/postprocessing/descriptors/selection.py": "6bf6ad78760587db1fce0d97096f47ad9998bd4b581a6deb2168210a02b139a3",
+    "src/postprocessing/spatial_dataset.py": "a979a4b52894fc74f0d35dc6440c36cd6954b08d92b7c35fe07bb113498bf5e3",
+    "src/research/liquid_predictability/descriptors.py": "5a19d88c59803cd322d35daf5c71a1ada92d65a07a709e6a330d342be39cc673",
+    "src/research/liquid_predictability/rich_multimaterial_data.py": "3c9e577753f1d8e1a29d8dc42d1bd9a59ee42fe86775d9aa1d8802a0d01b250a",
+    "src/research/liquid_predictability/rich_packed.py": "e9101f34951239865bb1f2e2f23a16df578359b6f88c7970cb891ead6ea17dee",
+    "src/research/structural_response/data.py": "dcfc78b26777706f628a8e09a0e44decd91041b6c32cbd0c91f10cbc6ee35a2f",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da"
+  },
+  "verified": true
+}

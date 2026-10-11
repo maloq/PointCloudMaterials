@@ -1,0 +1,30 @@
+{
+  "dataset_id": "ni-birth-relaxed-windows-20261008",
+  "output": "${storage:training_storage}/ni_relaxation/birth-windows-20261008",
+  "archive": "${storage:archive}/simulations/ni-birth-relaxed-windows-20261008",
+  "archive_relative": "simulations/ni-birth-relaxed-windows-20261008",
+  "scratch": "${storage:simulation_runs}/ni-birth-relaxed-windows-20261008",
+  "catalogues": [
+    "${storage:training_storage}/nuclei_search/ni-20261007-v1",
+    "${storage:training_storage}/nuclei_search/ni-20261007-extension01-v1",
+    "${storage:training_storage}/nuclei_search/ni-lowT-20261008-gpu-full-v1"
+  ],
+  "potential": "${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "window_anchor": "first_time_ps",
+  "before_ps": 6,
+  "after_ps": 6,
+  "seed": 20261008,
+  "relaxation": {
+    "mass": 58.71,
+    "minimizer": "fire",
+    "timestep_ps": 0.001,
+    "force_tolerance": 0.01,
+    "max_iterations": 20000,
+    "max_evaluations": 100000,
+    "frame_timeout_seconds": 600
+  },
+  "workers": 2,
+  "partitions": "A40,A100,L40S,H100,RTX6000PRO",
+  "walltime": "24:00:00"
+}

@@ -1,0 +1,24 @@
+{
+  "protocol": "frozen_response_nucleus_preappearance_v1",
+  "campaign": "${storage:training_storage}/response_velocity/cuda-meam-500fs-float32-20261004-v2",
+  "campaign_identity": "1bab5d3e0286ec262f343bade31884cc01a1e781f62f21197680ef92dfad9829",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "birth_recipe": "configs/birth_prediction/preappearance_20260930.json",
+  "birth_identity": "7b3046cdebf539d81a9f50b4abb5629f1ddb1b27edd886e0888b7658f9f96dd9",
+  "baseline": "${storage:training_storage}/birth_prediction/temporal-site-20261001",
+  "pool_release": "${storage:training_storage}/al_research/pool-v1/releases/564da0192b84c4bfa6748fa93234c1c562b440d6d0b455e9540e9cf7d82295d8.json",
+  "output": "${storage:training_storage}/response_velocity/cuda-meam-500fs-float32-20261004-v2/analyses/nucleus-birth-v1",
+  "cache": "${storage:cache}/response-birth/cuda-meam-20261004-v1",
+  "feature_cache": "${storage:cache}/context-features",
+  "lanes": 2,
+  "inference_batch_size": 128,
+  "fit_threads": 4,
+  "bootstrap_draws": 2000,
+  "seed": 20260930,
+  "spaces": ["embedding", "prediction_head"],
+  "readouts": ["catboost", "linear"],
+  "observations": [
+    {"name": "current", "kind": "snapshot", "frames": [7]},
+    {"name": "history8", "kind": "history", "frames": [0,1,2,3,4,5,6,7]}
+  ]
+}

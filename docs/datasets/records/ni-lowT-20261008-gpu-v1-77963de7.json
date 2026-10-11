@@ -1,0 +1,77 @@
+{
+  "dataset_id": "ni-lowT-20261008-gpu-v1",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent/complete.json",
+      "relative_path": "technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent/complete.json",
+      "sha256": "82125735592f5e3a39c37fa485674546b28cc8993b11066e57f8329c259c1f15",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_loose/complete.json",
+      "relative_path": "technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_loose/complete.json",
+      "sha256": "45b1834483b280ed50ca988335578f44190ed8a7d4fd9732ed52b19cd51e8552",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_strict/complete.json",
+      "relative_path": "technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_strict/complete.json",
+      "sha256": "e3d71ab9e4018484e00166c4676ebb3b9a20d3d5966714ae6924143ee4abfa10",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/ptm/complete.json",
+      "relative_path": "technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/ptm/complete.json",
+      "sha256": "f60f4d9afe2b82f66d82848fe025c36612d4a43a746272521aa77c78ebec39d1",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

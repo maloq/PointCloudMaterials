@@ -1,0 +1,7 @@
+{
+  "table": "tables/population.csv",
+  "sha256": "0d997051da8c139436c166dfc150265c7385a4bdc7b4a3945bb4a82ae56f02e4",
+  "family": "spatial_ni_dataset",
+  "contract": "technical/metric-contracts/spatial_ni_dataset.json",
+  "definitions": "tables/metric-definitions/spatial_ni_dataset.md"
+}

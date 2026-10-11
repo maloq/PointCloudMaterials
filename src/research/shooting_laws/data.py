@@ -7,8 +7,9 @@ import numpy as np
 from scipy.spatial import cKDTree
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
-from src.research.crystallization_origin.extract import full_labels, frame_geometry
-from src.research.crystallization_origin import ancestry
+from src.postprocessing.descriptors.ptm import full_labels
+from src.postprocessing.io import frame_geometry
+from src.postprocessing.protocols import ancestry
 from src.research.liquid_predictability.descriptors import patch_descriptors
 from .common import read, folder, plan, load_raw, exact_frames
 

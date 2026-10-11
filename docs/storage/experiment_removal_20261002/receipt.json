@@ -1,0 +1,24 @@
+{
+  "completed_utc": "2026-10-02T14:28:29.665231+00:00",
+  "roots": [
+    "/store/PERSO/vmorozov/experiments/embedding_forecast",
+    "/work/PERSO/vmorozov/analysis/encoder_mechanisms",
+    "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/embedding_forecast_20260911",
+    "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias",
+    "/home/infres/vmorozov/PointCloudMaterials/output/crystallization_transfer",
+    "/store/PERSO/vmorozov/experiments/liquid_predictability",
+    "/store/PERSO/vmorozov/experiments/pretrained_mace_spatiotemporal_20260906",
+    "/home/infres/vmorozov/PointCloudMaterials/output/encoder_research",
+    "/work/PERSO/vmorozov/analysis/liquid_predictability",
+    "/work/PERSO/vmorozov/analysis/encoder_context",
+    "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/embedding_forecast",
+    "/home/infres/vmorozov/PointCloudMaterials/output/spatial_vicreg_bias",
+    "/work/PERSO/vmorozov/analysis/structural_static"
+  ],
+  "removed_files_and_symlinks": 146523,
+  "preserved_files": 48774,
+  "preserved_allocated_bytes": 4727547904,
+  "released_file_allocated_bytes": 151844370432,
+  "net_released_file_allocated_bytes": 147116822528,
+  "accounting": "Unique file inodes whose last link was removed; directory blocks excluded. Preserved result file allocation subtracted; audit metadata excluded."
+}

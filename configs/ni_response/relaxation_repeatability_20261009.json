@@ -1,0 +1,12 @@
+{
+  "output": "${storage:training_storage}/ni_relaxation/repeatability-20261009-v1",
+  "parent": "${storage:training_storage}/ni_response/relaxed-esen-original-md-20261009-v1",
+  "scratch": "${storage:simulation_runs}/ni-quench-repeatability-20261009-v1",
+  "archive": "${storage:archive}/simulations/ni-quench-repeatability-20261009-v1",
+  "profiles": {
+    "raw32": {"mode": "raw32", "force_tolerance": 0.01},
+    "canonical32": {"mode": "canonical32", "force_tolerance": 0.01},
+    "canonical32_tight": {"mode": "canonical32", "force_tolerance": 0.001},
+    "canonical64": {"mode": "canonical64", "force_tolerance": 0.01}
+  }
+}

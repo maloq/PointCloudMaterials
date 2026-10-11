@@ -1,0 +1,126 @@
+{
+  "dataset_id": "al-nuclei-birth",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_birth/al/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "78ceb9b53180ca37aada4d2e64f12e6ac3adee534e30da2097770261c9932e90",
+      "kind": "metadata",
+      "keys": [
+        "config",
+        "created_at",
+        "dataset",
+        "files",
+        "fingerprint",
+        "input_contract",
+        "producer",
+        "schema_version",
+        "searches",
+        "summary"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "lineage": [
+          {
+            "value": {
+              "protocol": "al_nucleus_lineage_v3",
+              "minimum_shared_atoms": 4,
+              "continuation_fraction": 0.5,
+              "minor_parent_fraction": 0.2,
+              "embryo_atoms": 8,
+              "reset_atoms": 4,
+              "reset_ps": 1.5,
+              "persistence_ps": 1.5,
+              "establishment_atoms": 64,
+              "growth_atoms": 128,
+              "thresholds": [
+                8,
+                32,
+                64,
+                128
+              ],
+              "durations_ps": [
+                1.5,
+                3.0
+              ],
+              "prehistory_ps": 1.5,
+              "interface_distance_A": 8.0
+            },
+            "first_json_path": "config.lineage",
+            "occurrences": 1
+          },
+          {
+            "value": "unchanged CPU chronological tracking",
+            "first_json_path": "config.accepted_descriptor_backends[0].lineage",
+            "occurrences": 1
+          }
+        ],
+        "protocol": [
+          {
+            "value": "al_nucleus_lineage_v3",
+            "first_json_path": "config.lineage.protocol",
+            "occurrences": 1
+          }
+        ],
+        "ptm_rmsd_cutoff": [
+          {
+            "value": 0.1,
+            "first_json_path": "config.structure.ptm_rmsd_cutoff",
+            "occurrences": 1
+          }
+        ],
+        "cadence_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "summary.counts[0].cadence_ps",
+            "occurrences": 25
+          },
+          {
+            "value": 0.3,
+            "first_json_path": "summary.counts[24].cadence_ps",
+            "occurrences": 25
+          }
+        ],
+        "split": [
+          {
+            "value": "Historical roles unchanged; group by ancestor and review role conflicts before any fit",
+            "first_json_path": "input_contract.split",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_birth/al/status.json",
+      "relative_path": "status.json",
+      "sha256": "e5c38eb7238c8b35f7a69d227d9c9d95267ed4a515c126f7cae4933900652764",
+      "kind": "metadata",
+      "keys": [
+        "fingerprint",
+        "holdings",
+        "observed_at",
+        "pending_searches"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_birth/al/analyses/catalogue/technical/table-contracts/source-eligibility.json",
+      "relative_path": "analyses/catalogue/technical/table-contracts/source-eligibility.json",
+      "sha256": "8c6818888df3b51ecbee1233bc472722b50f374db1f7c29be6d4a201da7b505a",
+      "kind": "metadata",
+      "keys": [
+        "contract",
+        "definitions",
+        "family",
+        "sha256",
+        "table"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

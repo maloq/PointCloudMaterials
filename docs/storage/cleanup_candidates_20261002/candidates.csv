@@ -1,0 +1,8 @@
+partition,path,GB,priority,condition
+STORE,/store/PERSO/vmorozov/training-cache-archive-20260926/crystallization-transfer-mace-20260919,78.046339072,First review,Derived graphs/features from 150 retained Al sources; confirm no downstream use before payload-only retirement.
+SCRATCH,/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/context-geometry,52.038851584,First review,Managed disposable geometry; current lease unlocked; last use 2026-09-26; retain raw/relaxed source cells.
+STORE,/store/PERSO/vmorozov/training-cache-archive-20260925/equivariant-context,18.856820736,Conditional,Old lane cache; still reachable via IDS alias; verify references and rebuild sources.
+IDS,/home/ids/vmorozov/training-cache/neighborhood_jepa,31.587598336,Conditional,"Derived training caches; per-entry ancestry, source availability and use need review."
+IDS,/home/ids/vmorozov/training-cache/structural_pretraining,37.424342528,Conditional,"Derived pretraining caches; do not delete source structures, checkpoints or current dependencies."
+IDS,/home/ids/vmorozov/training-cache/distance-encoder,71.746409984,Conditional,Mostly history caches for distinct cadences; not interchangeable duplicates; rebuild cost and dependencies need review.
+WORK,/work/PERSO/vmorozov/analysis/embedding_forecast,29.45832448,Relocate only,Fits/results dominate; move with checksum verification rather than deleting scientific artifacts.

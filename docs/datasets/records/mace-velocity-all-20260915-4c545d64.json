@@ -68859,6 +68859,194 @@
         "issues": [],
         "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
       }
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-velocity-all-20260915/converted/91ac83a15d9b-selected-source.lammpstrj.float16/conversion.json",
+      "relative_path": "converted/91ac83a15d9b-selected-source.lammpstrj.float16/conversion.json",
+      "sha256": "43dba58edeb15fa7b7e245485a729426b19d4f805f2e0676825cf9e8751cbe11",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 6,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012556160894078155,
+            "coordinate_count": 1265472
+          },
+          "velocities": {
+            "max_abs": 0.007793426513671875,
+            "rms": 0.0008239724424406341,
+            "coordinate_count": 1265472
+          }
+        }
+      }
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/mace-velocity-all-20260915/converted/91ac83a15d9b-selected-source.lammpstrj.float16/manifest.json",
+      "relative_path": "converted/91ac83a15d9b-selected-source.lammpstrj.float16/manifest.json",
+      "sha256": "01f6e3942456d2b76b0816cc616c88da279e201393c452fba2e20af4bc31102b",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 6,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": true,
+        "atom_count": 70304,
+        "frame_count": 6,
+        "arrays": {
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          },
+          "positions": {
+            "shape": [
+              6,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "b4024ed90213cd1799abdc627a911ee8b0e41e93b08bb0070c57b8c396a75ccc",
+            "file": "positions.npy"
+          },
+          "timesteps": {
+            "shape": [
+              6
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "542296004a90e24c7b30aa6a84e2a0f54d7716e8ce56d4e9b2dda16b80df815a",
+            "file": "timesteps.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_high": {
+            "shape": [
+              6,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "49ae2a4656f0d7215d7e114034b6d8d8c8191664b5c9b0b38c6853349d170ed2",
+            "file": "box_high.npy"
+          },
+          "velocities": {
+            "shape": [
+              6,
+              70304,
+              3
+            ],
+            "dtype": "float16",
+            "fortran_order": false,
+            "declared_sha256": "8207fda88059f966cc12a6b4514cb7770b69110eb9778a7208a0288a3ded7e7e",
+            "file": "velocities.npy"
+          },
+          "box_low": {
+            "shape": [
+              6,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "640a25113fafd78c1fe9869de9ae683dd16891db62b2c3afa115ea2caab8d7a1",
+            "file": "box_low.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 82000,
+          "last_step": 232500,
+          "step_intervals": [
+            500,
+            74500
+          ]
+        },
+        "content_signature_from_manifest": "a07b5fb94416849b6ca9564211debe84b565e2f8586335b6b811b71e5f01d9d6",
+        "issues": [],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
     }
   ]
 }

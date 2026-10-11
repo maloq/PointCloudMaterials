@@ -1,0 +1,136 @@
+{
+  "protocol": "local80_velocity_response_cuda_meam_500fs_float32_v2",
+  "seed": 20261004,
+  "output": "${storage:training_storage}/response_velocity/cuda-meam-500fs-float32-20261004-v2",
+  "cache": "${storage:cache}/response-velocity/cuda-meam-500fs-float32-20261004-v2",
+  "simulation_scratch": "${storage:simulation_runs}/response-velocity-cuda-meam-500fs-float32-20261004-v2",
+  "simulation_archive": "${storage:archive}/simulations/response-velocity-cuda-meam-500fs-float32-20261004-v2",
+  "reference": "${storage:training_storage}/response_atlas/local80-training-20261002",
+  "reference_identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+  "geometry_reference": "${storage:training_storage}/response_geometry/unrelaxed-expanded-20261003",
+  "meam_benchmark": "${storage:training_storage}/response_meam/torch-port-20261004",
+  "meam_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  },
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 2,
+    "correlation": 2,
+    "backend": "e3nn",
+    "layout": "mul_ir",
+    "conv_fusion": false
+  },
+  "horizons_fs": [
+    100,
+    500
+  ],
+  "timestep_fs": 1,
+  "friction_fs": 100,
+  "temperature_K": 450,
+  "velocity_fields": 4,
+  "velocity_scale_A_fs": 0.004,
+  "velocity_seed": 191000000,
+  "noise_seed": 201000000,
+  "feature_seed": 202610041,
+  "audit_seed": 202610042,
+  "oracle_batch": 2,
+  "shots": {
+    "train": {
+      "values": 4,
+      "responses": 4
+    },
+    "selection": {
+      "values": 16,
+      "responses": 0
+    },
+    "test": {
+      "values": 16,
+      "responses": 8
+    }
+  },
+  "metric_weight": 0.1,
+  "fit_seeds": [
+    20261004,
+    20261005,
+    20261006
+  ],
+  "arms": [
+    {
+      "name": "q_values",
+      "velocities": false,
+      "response": false
+    },
+    {
+      "name": "q_response",
+      "velocities": false,
+      "response": true
+    },
+    {
+      "name": "qv_values",
+      "velocities": true,
+      "response": false
+    },
+    {
+      "name": "qv_response",
+      "velocities": true,
+      "response": true
+    }
+  ],
+  "training": {
+    "updates": 400,
+    "batch_size": 256,
+    "microbatch": 8,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "gpu_partition": "RTX6000PRO",
+  "clustering": {
+    "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+    "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "viewer": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/heldout-al.json",
+    "viewer_sha256": "1fb5d538baeabce6295fa1803c67b5cfcc4202aebba953b20764145ee032633d",
+    "batch_size": 256,
+    "cluster_seeds": [
+      20260929,
+      20261003,
+      20261004
+    ]
+  },
+  "geometry_reference_identity": "366c55cc62befce14520a9132efd12d1cc7295f472b207323f361582201c7b6f",
+  "teacher_backend": "cuda_meam",
+  "force_dtype": "float32",
+  "gpu_jobs": {
+    "jobs": 2,
+    "gpus_per_job": 1,
+    "cpus_per_job": 4,
+    "memory": "64G"
+  },
+  "parent_counts": [
+    90,
+    15,
+    30
+  ],
+  "prepared_parents_reference": "${storage:training_storage}/response_velocity/initial-velocity-20261004-periodic-v4",
+  "fast_meam_reference": "${storage:training_storage}/meam_gpu/blackwell-20261004",
+  "fast_meam_receipts": {
+    "analyses/response-v2/technical/complete.json": "525aa56cd0e9153d2f3716fbc3aa4de57e6910c427591d40d4b423a5ce287032",
+    "analyses/fast-response-comparison-v1/technical/complete.json": "75be39bb29191e876d20ebf2691a22635e8a1cf38096d6af9c0898ac027030da",
+    "analyses/fast-response-comparison-v1/technical/metric-contracts/meam_gpu_response_speed.json": "e3deca7d7ba1db539d9df980e0e0df856599a683b94899c0c5fdc6f537688eca"
+  },
+  "runtime_authorization": "User 2026-10-04 explicitly allows experiments longer than 2\u20133 h; prediction horizon capped at 0.5 ps; current chat jobs only.",
+  "prepared_parents_sha256": "726aff5a72f11bf913add489f8ddbcaac1cb7c90478c59937f0ff5538b5e93e4",
+  "state_dtype": "float32",
+  "precision_authorization": "User 2026-10-04: use float32 states. Positions, velocities, momenta, tangent propagation, thermostat noise and response observables use float32; unchanged MEAM backend retains float64 scalar total-energy reduction."
+}

@@ -1,0 +1,367 @@
+{
+  "status": "planning_only_not_submitted",
+  "protocol": "ni-expanded-motion-overnight-20261011-proposed-v1",
+  "created_unix": 1791676407.5442214,
+  "question": "Does more outcome-blind local training data, causal attention, and longer autonomous likelihood training make physical-response matching useful?",
+  "inputs": {
+    "source_plan": {
+      "path": "/store/PERSO/vmorozov/experiments/ni_latent_sim/regimes3x-20261010-v2/technical/plan.json",
+      "sha256": "41fcdc550c4aa012e65908c7904e44b026a9ab62279a1f7fa785fd2af9ca8aae"
+    },
+    "teacher_plan": {
+      "path": "/store/PERSO/vmorozov/experiments/ni_latent_sim/dense-path-response-20261011-v1/technical/plan.json",
+      "sha256": "eccc814b0ac027180aa8c54872e342e0ae8316b2e8e103f4b3e1995aa72eadd9"
+    },
+    "spatial_encoder": "Existing frozen unrelaxed Small eSEN; geometry plus actual velocity response features; no spatial retraining",
+    "native_cadence_ps": 0.1,
+    "history_ps": [
+      -0.3,
+      -0.2,
+      -0.1,
+      0
+    ],
+    "future_ps": 6,
+    "center": "Same central atom ID across all64 observations; nearest80 neighbors may change",
+    "predictor": "280-feature native observations compressed to16 dimensions; ordered4-slot history; no temperature, simulation age, physical timestamp, material or species covariates"
+  },
+  "cohort": {
+    "existing_training_rows": 3840,
+    "new_training_target": 32768,
+    "nested_small_training_target": 4096,
+    "sampling": "16 fitting ancestors x16 spread anchor times x128 seeded central atoms; nested small control keeps16 of the same128 centers per anchor. Eligibility uses input/timeline availability and duplicate identity only, with starts in the established production stage. Selection is independent of future phase or birth outcomes. Exclude exact duplicates of existing training rows. Retain all3840 old fitting rows as a common auxiliary pool, sampled in64of256 batch slots; the new outcome-blind pool fills192 slots in both small and large comparisons. This keeps scarce advancing-front examples represented identically across data-size conditions.",
+    "roles": {
+      "fitting_ancestors": 16,
+      "selection_ancestors": 4,
+      "heldout_ancestors": 40
+    },
+    "selection": "Retain original960 selection rows and the same fixed256-row likelihood selector across all conditions",
+    "heldout": "Retain original9600 held-out rows, original/liquid-persistent/front strata, and all pooled Ni birth roles; never add neighborhood filtering",
+    "source_count_limitation": "These are more local windows from existing sources, not additional independent melts or nuclei.",
+    "timeline_audit": "All60 actual native timelines checked at0.1ps; velocities.npy present in all80 trajectory parts. The shortest fitting source supports16 distinct6ps candidate windows after20ps.",
+    "new_release": "Freeze exact source/frame/central-atom manifests and cache hashes before training; do not train silently reduced data.",
+    "retain_existing_training_rows": 3840,
+    "total_unique_training_target": 36608,
+    "nested_small_total_training_target": 7936
+  },
+  "physical_teacher": {
+    "training_current": 80,
+    "training_additional_target": 256,
+    "training_total_target": 336,
+    "selection_groups": 20,
+    "heldout_groups": 200,
+    "shots": 2,
+    "horizon_ps": 0.1,
+    "save_fs": [
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100
+    ],
+    "simulator": "Original full-cell Ni Mendelev2012 EAM/FS GPU continuation, fixed-box BAOAB; separate protocol from saved NPT long futures",
+    "precision": "Float64 MD states, integration, momenta, tangents and noise; float32 forces",
+    "directions": "Original initial-position and initial-velocity perturbation conventions; all response treatments use identical physical teacher streams",
+    "value_control": "Uses the same physical paths and loss weights, with only the derivative loss removed",
+    "replay": "Historical cross-device endpoint replay is diagnostic only"
+  },
+  "models": [
+    {
+      "name": "small_mlp_values",
+      "transition": "mlp",
+      "response_loss": false,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 4000,
+          "autonomous_horizon_ps": 1
+        }
+      ],
+      "approximate_pair_gpu_hours": 0.4444444444444444,
+      "new_training_rows": 4096,
+      "total_unique_training_rows": 7936
+    },
+    {
+      "name": "large_mlp_values",
+      "transition": "mlp",
+      "response_loss": false,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 4000,
+          "autonomous_horizon_ps": 1
+        }
+      ],
+      "approximate_pair_gpu_hours": 0.4444444444444444,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    },
+    {
+      "name": "large_mlp_response",
+      "transition": "mlp",
+      "response_loss": true,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 4000,
+          "autonomous_horizon_ps": 1
+        }
+      ],
+      "approximate_pair_gpu_hours": 0.4444444444444444,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    },
+    {
+      "name": "large_transformer_values",
+      "transition": "transformer",
+      "response_loss": false,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 4000,
+          "autonomous_horizon_ps": 1
+        }
+      ],
+      "approximate_pair_gpu_hours": 1.7777777777777777,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    },
+    {
+      "name": "large_transformer_response",
+      "transition": "transformer",
+      "response_loss": true,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 4000,
+          "autonomous_horizon_ps": 1
+        }
+      ],
+      "approximate_pair_gpu_hours": 1.7777777777777777,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    },
+    {
+      "name": "large_transformer_long_values",
+      "transition": "transformer",
+      "response_loss": false,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 2000,
+          "autonomous_horizon_ps": 1
+        },
+        {
+          "updates": 1000,
+          "autonomous_horizon_ps": 3
+        },
+        {
+          "updates": 1000,
+          "autonomous_horizon_ps": 6
+        }
+      ],
+      "approximate_pair_gpu_hours": 4.888888888888889,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    },
+    {
+      "name": "large_transformer_long_response",
+      "transition": "transformer",
+      "response_loss": true,
+      "seeds": [
+        20261013,
+        20261014
+      ],
+      "updates": 4000,
+      "phases": [
+        {
+          "updates": 2000,
+          "autonomous_horizon_ps": 1
+        },
+        {
+          "updates": 1000,
+          "autonomous_horizon_ps": 3
+        },
+        {
+          "updates": 1000,
+          "autonomous_horizon_ps": 6
+        }
+      ],
+      "approximate_pair_gpu_hours": 4.888888888888889,
+      "new_training_rows": 32768,
+      "total_unique_training_rows": 36608
+    }
+  ],
+  "training": {
+    "batch_size": 256,
+    "microbatch": 256,
+    "lr_max": 0.001,
+    "warmup_updates": 200,
+    "scheduler": "Cosine over all4000 updates; no restart at curriculum boundaries",
+    "neural_step_fs": 5,
+    "particles": 4,
+    "dimension": 16,
+    "transformer": {
+      "layers": 2,
+      "width": 64,
+      "heads": 4,
+      "feedforward": 192
+    },
+    "precision": "BF16 long recurrence; float32 response secants and predictive scores",
+    "selection": "Same held-out-from-fitting selection ancestors and common native-future NLL at0.1/0.5/1/3/6ps; never AP",
+    "long_training": "Full autonomous rollout and gradient through its1/3/6ps horizon; activation checkpointing or documented microbatch accumulation if required, not silent truncation",
+    "wandb": "Online teshbek/PointCloudMaterials, stable resumable IDs",
+    "batch_composition": {
+      "new_outcome_blind_rows": 192,
+      "common_original_training_pool_rows": 64
+    }
+  },
+  "evaluation": {
+    "neural_particles": 32,
+    "futures_ps": [
+      0.1,
+      0.5,
+      1,
+      3,
+      6
+    ],
+    "forecasts": [
+      "NLL",
+      "energy score",
+      "standardized MSE",
+      "coverage",
+      "spread",
+      "nonfinite/exploding-particle rates"
+    ],
+    "physical": [
+      "all20 teacher-time errors",
+      "separate position/velocity response powers and relative errors",
+      "persistence and zero-response controls"
+    ],
+    "births": [
+      "first crystalline appearance using original Ni definitions and eligibility",
+      "persistent32-atom nuclei",
+      "persistent64-atom nuclei (default)"
+    ],
+    "birth_leads_ps": [
+      1,
+      3,
+      6
+    ],
+    "birth_metrics": [
+      "AP (diagnostic only)",
+      "AUROC",
+      "NLL",
+      "Brier"
+    ],
+    "representation_controls": [
+      "frozen structural features",
+      "same raw structure-and-velocity history",
+      "learned motion codes"
+    ],
+    "uncertainty": "Ancestor-bootstrap intervals and paired seed differences; local rows are not independent nuclei"
+  },
+  "budget": {
+    "gpus": 2,
+    "estimated_pair_training_gpu_hours": 14.666666666666668,
+    "wall_hours": {
+      "preparation": [
+        1.5,
+        3
+      ],
+      "training": [
+        7,
+        8.5
+      ],
+      "evaluation_reporting": [
+        0.5,
+        1
+      ],
+      "total_target": [
+        10,
+        12
+      ]
+    },
+    "basis": {
+      "mlp_observed_seconds_per_update": [
+        0.14,
+        0.23
+      ],
+      "transformer_1ps_seconds_per_update": 0.79,
+      "transformer_benchmark": {
+        "path": "/store/PERSO/vmorozov/experiments/ni_latent_sim/transformer-path-response-20261011-v1/technical/transformer-probe.json",
+        "sha256": "0f10f367b520f671d42fb90e211daa59aeda7aca48a616bed3a5fb82cb738f6c"
+      },
+      "previous_feature_encoding": "9600 added sequences took approximately48minutes on two GPUs; new32,768-row feature preparation extrapolates to about2.7hours before chunk-reuse improvements",
+      "long_transformer": "1/3/6ps costs extrapolated linearly from the200-fine-step benchmark, not yet measured"
+    },
+    "scheduling": "Complete current receipt-owned pilots; build and seal data; run first seeds of matched controls/response pairs, then replications. Save evaluations after every fit. Both lanes draw independent ready tasks.",
+    "continuation": "Current allocation1033621 ends2026-10-11 11:44:15 CEST. Plan one continuation GPU allocation with2workers using compatible types as alternatives; resume checkpoints if necessary, rather than shortening fixed fits.",
+    "no_padding": "If measured execution is faster, advance predeclared reserve experiments; do not idle or repeat completed fits to consume walltime"
+  },
+  "reserves": [
+    {
+      "priority": 1,
+      "experiment": "Transformer physical supervision extended from0.1 to0.5ps",
+      "design": "Matched values-only/response arms, same new full-cell initial states and independent held-out teachers; sparse later teacher observations avoid changing loss mass merely by adding frames"
+    },
+    {
+      "priority": 2,
+      "experiment": "Larger latent memory",
+      "design": "16-versus64-dimensional transformer code, paired seeds; unchanged native history, losses and evaluation"
+    },
+    {
+      "priority": 3,
+      "experiment": "Longer observed history",
+      "design": "4-versus16 native observations (0.3versus1.5ps past); only if identical centers/rows have exact added history. No interpolation or model-specific held-out row dropping"
+    }
+  ],
+  "implementation_remaining": [
+    "New outcome-blind training manifests and sharded encoder cache",
+    "Additional fitting-only physical teacher jobs",
+    "Generalize horizon handling to3ps and curriculum phases; make scheduler settings actual config inputs",
+    "Common multi-horizon likelihood selection",
+    "Recurrent activation-memory benchmark on a free GPU",
+    "Extend first-appearance probe to exact motion history",
+    "Global dependency queue and allocation continuation; current supervisor alone does not provide this"
+  ],
+  "reliability": "Checkpoint and optimizer/RNG recovery, bounded retries, independent evaluation/report stages, explicit partial-model status, immutable original metrics and separate recovery exports. No change to active scientific settings."
+}

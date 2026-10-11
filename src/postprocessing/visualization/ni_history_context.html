@@ -1,0 +1,147 @@
+<div id="ni-nucleus-history">
+  <h3>Ni nucleus formation and earlier history</h3>
+  <div class="viz-controls">
+    <label class="form-label">Example
+      <select class="form-select" id="nih-example"></select>
+    </label>
+    <button class="btn" id="nih-play" type="button" disabled>Play</button>
+  </div>
+  <div id="nih-interval" class="text-small tabular-nums"></div>
+  <canvas id="nih-atoms" role="img" aria-label="Saved Ni atom positions, including earlier liquid and unclassified environments. Drag to rotate.">Ni atom movie.</canvas>
+  <div class="viz-row text-small" aria-label="Atom classifications">
+    <span><span class="nih-swatch nih-fcc"></span>FCC</span>
+    <span><span class="nih-swatch nih-hcp"></span>HCP</span>
+    <span><span class="nih-swatch nih-bcc"></span>BCC</span>
+    <span><span class="nih-swatch nih-other"></span>Other / unclassified</span>
+    <span>Outline: linked precursor or family</span>
+  </div>
+  <label class="form-label" for="nih-frame">Saved time <output id="nih-time" class="tabular-nums"></output></label>
+  <input class="form-range" type="range" id="nih-frame" min="0" value="0" step="1" disabled>
+  <label class="form-label" for="nih-opacity">Grey-atom visibility <output id="nih-opacity-value" class="tabular-nums">60%</output></label>
+  <input class="form-range" type="range" id="nih-opacity" min="0" max="100" value="60" step="5">
+  <div id="nih-values" class="text-small tabular-nums"></div>
+  <div class="text-small text-muted">14 Å crop · every saved 0.1 ps frame · all crystalline atoms · grey context sampled outside the cluster envelope</div>
+  <div id="nih-error" role="alert"></div>
+  <div id="nih-announcement" class="sr-only" aria-live="polite"></div>
+</div>
+<style>
+#ni-nucleus-history #nih-atoms {width:100%;height:410px;display:block;touch-action:none;cursor:grab}
+#ni-nucleus-history #nih-atoms:active {cursor:grabbing}
+#ni-nucleus-history .nih-swatch {display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+#ni-nucleus-history .nih-fcc {background:var(--viz-series-1)}
+#ni-nucleus-history .nih-hcp {background:var(--viz-series-2)}
+#ni-nucleus-history .nih-bcc {background:var(--viz-series-3)}
+#ni-nucleus-history .nih-other {background:var(--muted-foreground)}
+#ni-nucleus-history #nih-values {margin-top:8px;margin-bottom:8px}
+#ni-nucleus-history #nih-interval {margin-top:8px}
+</style>
+<script id="nih-data" type="application/json">__NI_HISTORY_DATA__</script>
+<script>
+(async () => {
+  const root=document.getElementById('ni-nucleus-history');
+  const find=id=>root.querySelector('#'+id);
+  try {
+    const data=JSON.parse(document.getElementById('nih-data').textContent);
+    const canvas=find('nih-atoms'),slider=find('nih-frame'),select=find('nih-example'),play=find('nih-play'),opacitySlider=find('nih-opacity');
+    let which=0,index=0,az=.45,el=.3,opacity=.6,playing=false,pointer=null,last=0,request=0,lastSaved=null;
+    const decoded=new Map();
+    data.cases.forEach((d,i)=>{const option=document.createElement('option');option.value=i;option.textContent=d.label;select.appendChild(option);});
+    async function loadCase(i) {
+      if(decoded.has(i))return decoded.get(i);
+      const d=data.cases[i];
+      const bytes=Uint8Array.from(atob(d.encoded),c=>c.charCodeAt(0));
+      const reader=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip')).getReader();
+      const chunks=[];let size=0;
+      while(true){const item=await reader.read();if(item.done)break;chunks.push(item.value);size+=item.value.length;}
+      const raw=new Uint8Array(size);let offset=0;
+      for(const chunk of chunks){raw.set(chunk,offset);offset+=chunk.length;}
+      const view=new DataView(raw.buffer),frames=[];offset=0;
+      for(const meta of d.frames){
+        const n=meta[3],atoms=[];
+        for(let j=0;j<n;j++){
+          const flags=view.getUint8(offset+6*n+j);
+          atoms.push([view.getInt16(offset+2*j,true)/data.coordinate_scale,
+            view.getInt16(offset+2*n+2*j,true)/data.coordinate_scale,
+            view.getInt16(offset+4*n+2*j,true)/data.coordinate_scale,flags&7,Boolean(flags&8)]);
+        }
+        frames.push(atoms);offset+=7*n;
+      }
+      if(offset!==size)throw new Error('Embedded atom data have an inconsistent length.');
+      decoded.set(i,frames);return frames;
+    }
+    function restore(state){
+      const s=state&&state.privateContent;if(!s||s.version!==2)return;
+      which=Number.isInteger(s.which)?Math.max(0,Math.min(data.cases.length-1,s.which)):0;
+      index=Number.isInteger(s.index)?Math.max(0,Math.min(data.cases[which].frames.length-1,s.index)):0;
+      az=Number.isFinite(s.az)?s.az:.45;el=Number.isFinite(s.el)?s.el:.3;
+      opacity=Number.isFinite(s.opacity)?Math.max(0,Math.min(1,s.opacity)):.6;playing=false;
+    }
+    function save(){
+      lastSaved=JSON.stringify([which,index,az,el,opacity]);
+      if(window.openai&&window.openai.setWidgetState)window.openai.setWidgetState({
+        modelContent:{birth_event_id:data.cases[which].birth_event_id,time_ps:data.cases[which].frames[index][0],grey_opacity:opacity,view:'full saved pre-birth history'},
+        privateContent:{version:2,which,index,az,el,opacity}}).catch(()=>{});
+    }
+    function color(name){const probe=document.createElement('span');probe.style.color='var('+name+')';root.appendChild(probe);const value=getComputedStyle(probe).color;probe.remove();return value;}
+    function draw(){
+      if(!decoded.has(which))return;
+      const d=data.cases[which],f=d.frames[index],atoms=decoded.get(which)[index];
+      const rect=canvas.getBoundingClientRect(),w=rect.width,h=rect.height,ratio=devicePixelRatio||1;
+      if(!w)return;
+      canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);
+      const g=canvas.getContext('2d');g.scale(ratio,ratio);g.clearRect(0,0,w,h);
+      const palette=[color('--muted-foreground'),color('--viz-series-1'),color('--viz-series-2'),color('--viz-series-3')],rim=color('--foreground');
+      const scale=Math.min(w,h)/32;
+      const points=atoms.map(a=>{
+        const x=a[0]*Math.cos(az)+a[2]*Math.sin(az),z=-a[0]*Math.sin(az)+a[2]*Math.cos(az);
+        return {x:w/2+x*scale,y:h/2-(a[1]*Math.cos(el)-z*Math.sin(el))*scale,
+          z:a[1]*Math.sin(el)+z*Math.cos(el),type:a[3],member:a[4]};
+      }).sort((a,b)=>a.z-b.z);
+      for(const a of points){
+        if(!a.type&&opacity===0&&!a.member)continue;
+        g.globalAlpha=a.type||a.member?1:opacity;g.beginPath();g.arc(a.x,a.y,a.type?3.6:2.7,0,2*Math.PI);
+        g.fillStyle=palette[a.type];g.fill();if(a.member){g.strokeStyle=rim;g.lineWidth=.8;g.stroke();}
+      }
+      g.globalAlpha=1;select.value=which;slider.max=d.frames.length-1;slider.value=index;
+      play.textContent=playing?'Pause':'Play';opacitySlider.value=Math.round(opacity*100);
+      find('nih-opacity-value').textContent=Math.round(opacity*100)+'%';
+      const relative=f[0]-d.onset;
+      find('nih-time').textContent=f[0].toFixed(1)+' ps · '+(relative<-.00001?(-relative).toFixed(1)+' ps before tracked embryo':relative.toFixed(1)+' ps after tracked embryo');
+      find('nih-interval').textContent=d.frames[0][0].toFixed(1)+'–'+d.frames.at(-1)[0].toFixed(1)+' ps · embryo '+d.onset.toFixed(1)+' ps · confirmation '+d.confirmation.toFixed(1)+' ps';
+      find('nih-values').textContent='Tracked atoms: '+f[4]+' visible / '+f[1]+' total · grey atoms shown: '+f[5]+' · local crystal: '+(100*f[2]).toFixed(1)+'%';
+    }
+    function announce(){find('nih-announcement').textContent=data.cases[which].label+', '+find('nih-time').textContent;}
+    async function showCase(){
+      const serial=++request;playing=false;play.disabled=true;slider.disabled=true;select.value=which;
+      await loadCase(which);if(serial!==request)return;
+      play.disabled=false;slider.disabled=false;draw();
+    }
+    restore(window.openai&&window.openai.widgetState);await showCase();
+    select.onchange=async()=>{which=Number(select.value);index=0;try{await showCase();save();announce();}catch(e){find('nih-error').textContent=e.message;}};
+    slider.oninput=()=>{index=Number(slider.value);playing=false;draw();};slider.onchange=()=>{save();announce();};
+    opacitySlider.oninput=()=>{opacity=Number(opacitySlider.value)/100;draw();};opacitySlider.onchange=save;
+    play.onclick=()=>{if(!playing&&index===data.cases[which].frames.length-1)index=0;playing=!playing;last=performance.now();draw();save();};
+    canvas.onpointerdown=e=>{pointer=[e.clientX,e.clientY];canvas.setPointerCapture(e.pointerId);};
+    canvas.onpointermove=e=>{if(!pointer)return;az+=(e.clientX-pointer[0])*.009;el+=(e.clientY-pointer[1])*.009;pointer=[e.clientX,e.clientY];draw();};
+    canvas.onpointerup=()=>{pointer=null;save();};canvas.onpointercancel=()=>pointer=null;
+    const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+    function animate(t){
+      if(!root.isConnected)return;
+      if(playing&&t-last>(reduced.matches?400:140)){
+        last=t;if(index<data.cases[which].frames.length-1)index++;else{playing=false;save();}draw();
+      }
+      requestAnimationFrame(animate);
+    }
+    new ResizeObserver(draw).observe(canvas);
+    new MutationObserver(draw).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+    window.addEventListener('openai:set_globals',async e=>{
+      const state=e.detail&&e.detail.globals&&e.detail.globals.widgetState,s=state&&state.privateContent;
+      if(!s||s.version!==2)return;
+      const key=JSON.stringify([s.which,s.index,s.az,s.el,s.opacity]);
+      if(key===lastSaved||key===JSON.stringify([which,index,az,el,opacity]))return;
+      restore(state);try{await showCase();}catch(error){find('nih-error').textContent=error.message;}
+    });
+    requestAnimationFrame(animate);
+  }catch(error){find('nih-error').textContent='The atom movie could not load: '+error.message;}
+})();
+</script>

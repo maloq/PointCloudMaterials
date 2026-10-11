@@ -6,8 +6,8 @@ import numpy as np
 from scipy.spatial import cKDTree
 from src.data.fixed_cohort.protocol import sha, write_json
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry
-from src.research.crystallization_origin.extract import raw_source
+from src.postprocessing.protocols import ancestry
+from src.postprocessing.protocols.extract import raw_source
 from src.research.structured_context.geometry import representatives, stencil
 from src.research.spatial_approach.data import observations
 from .common import study

@@ -1,0 +1,21 @@
+{
+  "dataset_id": "al-main-001ps-20261001-source1004-stopped-20261003",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/al-main-001ps-20261001-source1004-stopped-20261003/status.json",
+      "relative_path": "status.json",
+      "sha256": "70e91ebd6262ca55db4da630b651502bcc88f71648378b5337b41ad3f87fd3bd",
+      "kind": "metadata",
+      "keys": [
+        "binary_prefix_recovery",
+        "finished_at",
+        "previous_status",
+        "reason",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

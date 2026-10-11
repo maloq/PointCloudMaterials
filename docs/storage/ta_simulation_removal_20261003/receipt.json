@@ -1,0 +1,34 @@
+{
+  "state": "complete",
+  "completed_utc": "2026-10-03T14:28:18.197449+00:00",
+  "deleted_roots": [
+    "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04",
+    "/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05"
+  ],
+  "deleted_aliases": [
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent00",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent01",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent02",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent03",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent04",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/ta-shooting-20260926-parent05"
+  ],
+  "deleted_production_trajectories": 29,
+  "deleted_files_and_symlinks": 598,
+  "preserved_result_files": 282,
+  "preserved_result_allocated_bytes": 4614144,
+  "released_file_allocated_bytes": 579222976000,
+  "net_released_file_allocated_bytes": 579218361856,
+  "protected_roots": [
+    "/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905",
+    "/work/PERSO/vmorozov/datasets/Ta"
+  ],
+  "protected_file_count": 56,
+  "protected_stat_verification": "passed",
+  "accounting": "Unique file inodes whose final links were deleted; preserved report/provenance allocations subtracted, directory blocks excluded."
+}

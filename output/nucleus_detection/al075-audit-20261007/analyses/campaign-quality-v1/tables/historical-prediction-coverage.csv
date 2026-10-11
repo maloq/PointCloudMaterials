@@ -1,0 +1,5 @@
+role,rows,positives,distinct_births,sources,required_births
+train,965,193,59,49,10
+selection,115,23,8,7,3
+calibration,195,39,13,10,3
+test,200,40,15,11,5

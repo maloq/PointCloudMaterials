@@ -1,0 +1,182 @@
+[
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/box_high.npy",
+    "sha256": "e5525c1ee992ce3ce71926188f34c28580d472b8184388ffc9468cc8043613b7"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/box_low.npy",
+    "sha256": "2cc4c1cba6af5d65fce2c0e7af6649ebce0b51310ea94f52c2a734c067b378dc"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/positions.npy",
+    "sha256": "9e934f01ad2c62a2a31a5f233cd7c6c551648aa7e77ed26e5dd27b84aa4e969d"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000000000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000000000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/box_high.npy",
+    "sha256": "84503480dcacd806bd8500f8eb052fca2b3e9b647d1dcedb1f7a577dfd0ac6e1"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/box_low.npy",
+    "sha256": "cfa68a7b00e20239b2ab22922e536087d23289aff116434c92babab221393efe"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/positions.npy",
+    "sha256": "a2d85f6b920758dc179a3f30ee40fd29aac641205a2d939216b8c31ebcfb5be0"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000008000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000008000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/box_high.npy",
+    "sha256": "31ec1126e28240777093b205f39b0961c1124f251f9b8b27a4b0a0d859409bcb"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/box_low.npy",
+    "sha256": "d8486c361d49e735692c06b66ab7c4483aeb428cea95f8d7215df55e29fafb35"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/positions.npy",
+    "sha256": "1c777640d64729fdbfa8aff75f3b6ed4ef8e8c3b791fc0267bad21ea7dfb1bc1"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000032000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000032000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/box_high.npy",
+    "sha256": "e1292dac5d5d4a72f8ef29fbcd859378c175915df2bfa420c4be1e5a0a38d1b6"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/box_low.npy",
+    "sha256": "58cc06d0b76c82a0b954109bd6e9a6d23ea15f584b0ce47f32104578757b47f0"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/positions.npy",
+    "sha256": "2d1f8685f9766a91e54fc4935242af6fee526056fd31d4fac518ba33840fcdc5"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000040000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000040000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/box_high.npy",
+    "sha256": "2f9b24ea372114950b53b28a65f8497677c7f19de4eb9d6e59c0e100708a3265"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/box_low.npy",
+    "sha256": "056f9d819145b683bd122d81c222034c0abc940c80f09a8b2f5a3174bec8e1ef"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/positions.npy",
+    "sha256": "59a45d74d6b2ad09ead38bc353c415b8152f5013d47572db50a36a427d30669e"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000056000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000056000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/atom_ids.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/atom_ids.npy",
+    "sha256": "650f5d75e5624bd34f3650ea821dcc73c1a4bf41d63c9accd1fb2cd9bd6b1e4c"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/atom_types.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/atom_types.npy",
+    "sha256": "30c481a891c1621b17c8be5b7149a0ef33cbc3a06ab79494dc6b1b7557175074"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/box_high.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/box_high.npy",
+    "sha256": "9b2c5cab4d87c2b001eeb5ac377316a6ffbe8633a1f4b0b953879bdc75565605"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/box_low.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/box_low.npy",
+    "sha256": "4ec67b71d741d55fe0993753cb4ccaba576e3c4d563aa84a81d56a22544d6eb0"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/positions.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/positions.npy",
+    "sha256": "0482ef91cb9ef47f373c0170c6bd7ab758b153e84a866eee1a18d1c3783af11d"
+  },
+  {
+    "deleted": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti_early_slurm/branches/parent_000192000/trajectory_binary_float16/timesteps.npy",
+    "retained": "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ti/branches/parent_000192000/trajectory_binary_float16/timesteps.npy",
+    "sha256": "f105ece88e8a98718ee310a4f6a9560aaa1b464afe8783bc3e71561587e8b1a3"
+  }
+]

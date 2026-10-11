@@ -36,7 +36,8 @@ Frozen inventory of3062 existing quenched cells,150 independent Al sources. Orig
   ],
   "limitations": [
     "Preparing features; inspect source receipts. Archived full-cell float16 precision; four-cell feature comparison median cosine0.999105, relative RMS0.063568. Not equivalent to precise local-cloud extraction. Irregular frozen origin availability; compare matched controls."
-  ]
+  ],
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -51,6 +52,6 @@ All 150 producer records, their hashes, field paths and current array schemas: [
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

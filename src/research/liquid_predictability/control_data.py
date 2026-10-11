@@ -141,8 +141,9 @@ def paired_source(c, sid, pool):
     """Track hot patch/neighbor IDs through a verified existing full-cell quench."""
     from src.data.trajectories.shooting import ShootingBinaryTrajectory
     from src.project_runtime.paths import dataset_path
-    from src.research.crystallization_origin.extract import frame_geometry, full_labels
-    from src.research.crystallization_origin.ancestry import components
+    from src.postprocessing.io import frame_geometry
+    from src.postprocessing.descriptors.ptm import full_labels
+    from src.postprocessing.protocols.ancestry import components
     from src.research.crystal_vector.data import context_atoms
     from src.research.structured_context.reuse import archived_positions
     plan = config(resolve_path(c['output'])/'technical/data-plan.json')

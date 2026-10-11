@@ -161,6 +161,660 @@
       "provenance": {}
     },
     {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/trajectory.lammpstrj.float16/conversion.json",
+      "relative_path": "temperature_510K/replicas/replica_000_velocity_35831/trajectory.lammpstrj.float16/conversion.json",
+      "sha256": "dfd5c58c60edef3522ba9d92f10646a69f660c65ec22e6f1c4f712f06178542b",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.012597410554665995,
+            "coordinate_count": 126758112
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/trajectory.lammpstrj.float16/manifest.json",
+      "relative_path": "temperature_510K/replicas/replica_000_velocity_35831/trajectory.lammpstrj.float16/manifest.json",
+      "sha256": "aea91c0926d64f1201e845c1fc08e05f05049fd3dc225a514c6c261552a5f807",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 70304,
+        "frame_count": 601,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a10c5cd232b2f1dcddee7c07685f1e21eae39b58605ce47b0184ce038f01b52d",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "288a34ad9a61c0d0850fee4f462e46e7f6be807047e23d5870fb7a53123bcfe1",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "0024a79afc29db5e648d401929df41934f916a8e33730602b4b7741bc7313d02",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 7500,
+          "last_step": 307500,
+          "step_intervals": [
+            500
+          ]
+        },
+        "content_signature_from_manifest": "4118fa169ecd6bdce2ee302a773bba632c172ef4cd9aaabc097ef1462cbb7642",
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/trajectory.lammpstrj.float16/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/conversion.json",
+      "relative_path": "temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/conversion.json",
+      "sha256": "b5db1ef1b7ac7cd8f831c5b086742f6265cbc3694eb4dd7a2a275de8b5dcddde",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0008235240059537516,
+            "coordinate_count": 126758112
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/manifest.json",
+      "relative_path": "temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/manifest.json",
+      "sha256": "8867a6e98eda406385d22e750a6cdbd80b70f8d75f925885e3b2f7220d0d03ae",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 70304,
+        "frame_count": 601,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a10c5cd232b2f1dcddee7c07685f1e21eae39b58605ce47b0184ce038f01b52d",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "288a34ad9a61c0d0850fee4f462e46e7f6be807047e23d5870fb7a53123bcfe1",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "0024a79afc29db5e648d401929df41934f916a8e33730602b4b7741bc7313d02",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 7500,
+          "last_step": 307500,
+          "step_intervals": [
+            500
+          ]
+        },
+        "content_signature_from_manifest": "56ef9dffa74138c77f748135e09107df910c2062cb20751c3b69bafd4dc202b4",
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/velocities.npy",
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_000_velocity_35831/velocities.lammpstrj.float16/positions.npy",
+          "Missing required fields: ['positions', 'velocities']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/trajectory.lammpstrj.float16/conversion.json",
+      "relative_path": "temperature_510K/replicas/replica_001_velocity_35839/trajectory.lammpstrj.float16/conversion.json",
+      "sha256": "5e543961bd1bbfcb93bbf6c46c2f0ba91960fc0f61910a0ad59b33a4f5b9ebc9",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.01257440884039374,
+            "coordinate_count": 126758112
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/trajectory.lammpstrj.float16/manifest.json",
+      "relative_path": "temperature_510K/replicas/replica_001_velocity_35839/trajectory.lammpstrj.float16/manifest.json",
+      "sha256": "b644a8beb2816c132c2474ce776609c28f1204abb17869defdbbbcfdfe099d65",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 70304,
+        "frame_count": 601,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a10c5cd232b2f1dcddee7c07685f1e21eae39b58605ce47b0184ce038f01b52d",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "83dceee7846d0588be316d5b13256b86987a78b6a7597790dd6f01b40c772855",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "949d30103f89c09198853ca0b08165c983244023f2ded9d54cda75181fbdb3ca",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 7500,
+          "last_step": 307500,
+          "step_intervals": [
+            500
+          ]
+        },
+        "content_signature_from_manifest": "72a9b2df0fb613ca262c5f0ea55f415eea251e11953683b4055f0d9dd51f3ec6",
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/trajectory.lammpstrj.float16/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/conversion.json",
+      "relative_path": "temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/conversion.json",
+      "sha256": "2030deddafa99e1c5f1eb8bb08d98bffefef176240dab0a22257afc6b7fe469d",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "velocities": {
+            "max_abs": 0.0078105926513671875,
+            "rms": 0.0008232466194338957,
+            "coordinate_count": 126758112
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/manifest.json",
+      "relative_path": "temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/manifest.json",
+      "sha256": "786bfed37cb8f7925cfd3e7453a58e39fcf3a8ef48121d1819923ac519a1a8a7",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 70304,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 601,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.shooting_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 70304,
+        "frame_count": 601,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              601
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "a10c5cd232b2f1dcddee7c07685f1e21eae39b58605ce47b0184ce038f01b52d",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "83dceee7846d0588be316d5b13256b86987a78b6a7597790dd6f01b40c772855",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "5a102c87ab6de9e0a7d45231d59537ecc8b45940512d6629d6a8f9f0a8f6b784",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              601,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "949d30103f89c09198853ca0b08165c983244023f2ded9d54cda75181fbdb3ca",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              70304
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "93373d52b5dbb45dd62300ce87dc94be3d2986bfc4c99fce34ad8db24dc9cda6",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 7500,
+          "last_step": 307500,
+          "step_intervals": [
+            500
+          ]
+        },
+        "content_signature_from_manifest": "a159957e6dcab929e59226d2e9f873c913fea091d0fb5799185e6f3cebc07a58",
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/velocities.npy",
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_510K/replicas/replica_001_velocity_35839/velocities.lammpstrj.float16/positions.npy",
+          "Missing required fields: ['positions', 'velocities']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
       "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830/temperature_520K/manifest.json",
       "relative_path": "temperature_520K/manifest.json",
       "sha256": "969cacfe5c8e095126722fde71755e8ec7343bbfc3521919bf7d32dd2f6fb35b",

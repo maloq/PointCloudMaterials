@@ -1,0 +1,104 @@
+{
+  "protocol": "continuous_motion_local80_all010_1600_v3",
+  "seed": 20261006,
+  "output": "${storage:training_storage}/continuous_motion/all010-20261006-v3",
+  "cache": "${storage:cache}/continuous-motion/all010-20261006-v2",
+  "simulation_scratch": "${storage:simulation_runs}/continuous-motion-all010-20261006-v2",
+  "simulation_archive": "${storage:archive}/simulations/continuous-motion-all010-20261006-v2",
+  "source_plan": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/all010-birth-v2/technical/plan.json",
+  "source_identity": "658e23330e8b49b6cc2170daed845d5bab2d426927508306a34f34208ef241f6",
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 2,
+    "correlation": 2,
+    "backend": "e3nn",
+    "layout": "mul_ir",
+    "conv_fusion": false
+  },
+  "meam_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  },
+  "horizons_ps": [
+    0.1,
+    0.5,
+    3.0,
+    12.0
+  ],
+  "anchor_fractions": [
+    0.15,
+    0.65
+  ],
+  "inner_selection_fraction": 0.15,
+  "model": {
+    "time_scale_ps": 0.1,
+    "step_ps": 0.05,
+    "hidden": 128,
+    "particles": 4
+  },
+  "teacher": {
+    "timestep_fs": 1,
+    "friction_fs": 1000,
+    "save_fs": [
+      10,
+      20,
+      50,
+      100
+    ],
+    "training_fs": [
+      100
+    ],
+    "shots": 2,
+    "position_direction_rms_A": 0.01,
+    "velocity_direction_rms_A_ps": 0.1,
+    "force_dtype": "float32",
+    "state_dtype": "float64"
+  },
+  "arms": [
+    "discrete",
+    "continuous",
+    "derivative"
+  ],
+  "fit_seeds": [
+    20261006,
+    20261007,
+    20261008
+  ],
+  "training": {
+    "updates": 1600,
+    "batch_size": 256,
+    "microbatch": 256,
+    "learning_rate": 0.0001,
+    "weight_decay": 1e-05,
+    "selection_every": 10,
+    "selection_rows": 256,
+    "short_batch": 4,
+    "short_weight": 0.1,
+    "derivative_weight": 0.1,
+    "noncollapse_weight": 0.02
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "local_gpus": [
+    "0",
+    "1"
+  ],
+  "wall_seconds": 86400,
+  "compiler_cache": "${storage:cache}/response-velocity/native500-f64-20261006-v1/compiler",
+  "cuda_root_key": "gpu_meam_portable_cuda_root",
+  "scope": "User-authorized1600-update continuation, three seeds and three matched arms. Reuses v2 observations and MEAM shots; requests four extra GPUs;24h operational window allowed after original16h cap was relaxed.",
+  "handoff_after_current_allocation": true,
+  "reuse_campaign": "${storage:training_storage}/continuous_motion/all010-20261006-v2",
+  "resume_campaign": "${storage:training_storage}/continuous_motion/all010-20261006-v2",
+  "reuse_plan_identity": "ed50b1245ca6fa93bac6b67b026a8767759adb48b2a323659b1a162675784ddb",
+  "additional_gpu_jobs": 2,
+  "gpu_partition": "RTX6000PRO,H100"
+}

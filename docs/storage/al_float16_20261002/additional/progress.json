@@ -1,0 +1,11 @@
+{
+  "state": "complete",
+  "total": 121,
+  "finished": 121,
+  "completed": 121,
+  "failed": 0,
+  "deferred": 0,
+  "deleted_allocated_bytes": 11353071616,
+  "binary_allocated_bytes": 2357477376,
+  "updated_utc": "2026-10-02T13:39:00.960307+00:00"
+}

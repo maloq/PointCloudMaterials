@@ -34,6 +34,26 @@ python -m src.research.birth_prediction.appearance submit \
 
 Output: `${storage:training_storage}/birth_prediction/appearance-transfer-20261002/`.
 
+## Nested-CV extension, October 2
+
+The user requested CV because only six eligible stronger failed events were in
+the fixed held-out population. Add a separate five-outer/five-inner ancestry
+protocol over all eligible historical source roles. It evaluates all18 stronger
+events once out of source and preserves the fixed-test study above. Source and
+ancestor grouping keep every history, center and matched control together.
+
+Refit both original-birth and combined-appearance models within each outer fold;
+reusing the old global original-birth model would expose some outer-held-out
+sources. The same folds, single seed, current/eight-frame observations and
+original/relaxed descriptor inputs support all four requested comparisons.
+Inner NLL selects hyperparameters and scaling uses only the fitting subset.
+Export pooled outer predictions, train/test errors and paired ancestor intervals.
+This remains exploratory after prior inspection of these data; CV does not
+increase the number of independent physical events.
+
+[CV definitions](../../docs/metrics/birth_appearance_cv.md) ·
+[CV configuration](../../configs/birth_prediction/appearance_cv_20261002.json).
+
 Input eligibility retained 133 failed events (18 strong): 76 train-source events
 (12 strong) and 57 merged-test events (six strong). Combined sample support is
 2,245 training rows and 1,425 held-out rows, each retaining the 1:4 case/control

@@ -1,0 +1,59 @@
+{
+  "checked_at": "2026-10-07T18:39:11.032421+00:00",
+  "state": "three_workers_in_production_fourth_waiting_gpu_quota",
+  "workers": [
+    {
+      "lane": 0,
+      "job": "1027669",
+      "startup_state": "passed",
+      "verified_frames": 61,
+      "audit": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/dependency-repair-01/technical/execution-audit-0/audit.json",
+      "audit_sha256": "c578cafc4fa3812bfb9f60e155f9cfa58ecd78de75a4906a743614cc4d235805",
+      "production_source": "al-birth-focused-v100-20261007-source1008-shot01",
+      "production_status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T18:38:11.939107+00:00",
+        "slurm_job_id": "1027669",
+        "host": "node10",
+        "run_id": "al-birth-focused-v100-20261007-source1008-shot01"
+      }
+    },
+    {
+      "lane": 1,
+      "job": "1027670",
+      "startup_state": "passed",
+      "verified_frames": 61,
+      "audit": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/dependency-repair-01/technical/execution-audit-1/audit.json",
+      "audit_sha256": "cdcf82ed3d9b19548ba2ab3f4ff3d5ae5d7c4f6755cdeafe18dd19e041da941c",
+      "production_source": "al-birth-focused-v100-20261007-source0983-shot00",
+      "production_status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T18:38:09.765598+00:00",
+        "slurm_job_id": "1027670",
+        "host": "node10",
+        "run_id": "al-birth-focused-v100-20261007-source0983-shot00"
+      }
+    },
+    {
+      "lane": 2,
+      "job": "1027671",
+      "startup_state": "passed",
+      "verified_frames": 61,
+      "audit": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/dependency-repair-01/technical/execution-audit-2/audit.json",
+      "audit_sha256": "cdbb6df74e5a711b1b8ea60b022982ea972d9e31a03a0cfe6797bdd5d9a859d5",
+      "production_source": "al-birth-focused-v100-20261007-source0908-shot01",
+      "production_status": {
+        "state": "running",
+        "phase": "dynamics",
+        "started_at": "2026-10-07T18:38:04.374163+00:00",
+        "slurm_job_id": "1027671",
+        "host": "node42",
+        "run_id": "al-birth-focused-v100-20261007-source0908-shot01"
+      }
+    }
+  ],
+  "queued_worker": "1027672",
+  "collector": "1027673"
+}

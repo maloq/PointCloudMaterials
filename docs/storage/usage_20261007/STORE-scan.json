@@ -1,0 +1,11 @@
+{
+  "method": "Parallel lstat/scandir: allocated st_blocks*512, same filesystem, no symlink traversal, hard links deduplicated by device/inode",
+  "threads": 12,
+  "seconds": 61.35519766807556,
+  "counts": {
+    "directories": 100392,
+    "files_or_symlinks": 610174
+  },
+  "errors": [],
+  "bytes": 1428746125312
+}

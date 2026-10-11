@@ -1,0 +1,31 @@
+{
+  "state": "verified",
+  "source_path": "/home/ids/vmorozov/training-cache/mace-velocity-all-20260915/converted/91ac83a15d9b-selected-source.lammpstrj",
+  "source_sha256": "fc8d80a3ec1a47b73565ec9786495cfd3832535fd7448b56b0bf3b94388bb565",
+  "source_signature": [
+    45,
+    178413338,
+    31812252,
+    1789481249589750759
+  ],
+  "source_allocated_bytes": 25503744,
+  "has_velocities": true,
+  "frame_count": 6,
+  "first_timestep": 82000,
+  "last_timestep": 232500,
+  "quantization": {
+    "positions": {
+      "max_abs": 0.03125,
+      "rms": 0.012556160894078155,
+      "coordinate_count": 1265472
+    },
+    "velocities": {
+      "max_abs": 0.007793426513671875,
+      "rms": 0.0008239724424406341,
+      "coordinate_count": 1265472
+    }
+  },
+  "incomplete_tail": null,
+  "source_deleted": true,
+  "completed_utc": "2026-10-02T13:34:04.738509+00:00"
+}

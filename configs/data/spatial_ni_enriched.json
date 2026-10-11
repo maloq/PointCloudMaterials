@@ -1,0 +1,47 @@
+{
+  "descriptors": {
+    "families": [
+      "bond_order",
+      "cna",
+      "tda"
+    ],
+    "alpha_backend": "native",
+    "alpha_precision": "safe",
+    "selection": {
+      "path": "configs/data/spatial_active_cna_targets.json",
+      "sha256": "138825b5081c25d5aa83e111124c3d18016801b6ee2260b32756c8305f9430d7"
+    }
+  },
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "workers": 16,
+  "cpu_node": "nodecpu04",
+  "protocol": "spatial-ni-crystal-interface-merged-evaluation-v1",
+  "dataset_id": "spatial-training-ni20",
+  "parent_cache": "${storage:cache}/spatial-pretraining/ni20-20261008-r2",
+  "parent_packed": "${storage:cache}/spatial-pretraining/ni20-20261008-r2/packed",
+  "parent_identity": "994d6e8e7e4225509cc9460ef8b01c940b9560fe3306f18b8c0fad8165e890fb",
+  "parent_prepared_identity": "e830847334cf10d2772fab37697a2390c441aaaa0339dfdb2637ee46125dad2c",
+  "cache": "${storage:cache}/spatial-pretraining/ni-enriched-eval-20261008",
+  "output": "${storage:output}/spatial-dataset/ni-enriched-eval-20261008",
+  "additional_ni_fraction": 0.2,
+  "frames_per_source": 16,
+  "seed": 202610081,
+  "phase": {
+    "ptm_rmsd_cutoff": 0.1,
+    "screen_global_fraction": 0.1,
+    "support_radius": 8.0,
+    "crystal_min_fraction": 0.8,
+    "liquid_max_fraction": 0.05,
+    "interface_min_fraction": 0.2,
+    "interface_distance": 8.0
+  },
+  "metric_family": "spatial_ni_enrichment",
+  "evaluation_role": "evaluation",
+  "phase_reference": "${storage:cache}/spatial-pretraining/ni-enriched-20261008",
+  "phase_reference_identity": "1f961020df8091755a733242cf6d80849b1cca5ec0752fced0fd0bc33a83ae09",
+  "phase_reference_code": "${storage:output}/spatial-dataset/ni-enriched-20261008/technical/code/src/postprocessing/spatial_enrichment.py"
+}

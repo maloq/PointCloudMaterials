@@ -38,7 +38,47 @@ def restart_positions(trajectory, frame, path, expected_sha256):
     return table[:, 2:]
 
 
-def relax_frame(trajectory, frame, directory, settings):
+def _write_input(trajectory, frame, directory, settings):
+    low=trajectory.box_low[frame].astype(np.float64)
+    high=trajectory.box_high[frame].astype(np.float64)
+    positions=(restart_positions(trajectory,frame,settings['restart_dump'],settings['restart_sha256'])
+               if 'restart_dump' in settings else trajectory.positions[frame].astype(np.float64))
+    positions=np.mod(positions-low,high-low)+low
+    path=directory/'input.data'
+    with path.open('w') as handle:
+        # The input key describes geometry, independent of experiment/frame labels.
+        handle.write(f'Complete periodic cell\n\n{len(positions)} atoms\n1 atom types\n\n')
+        for i,axis in enumerate('xyz'):
+            handle.write(f'{low[i]:.17g} {high[i]:.17g} {axis}lo {axis}hi\n')
+        handle.write('\nAtoms # atomic\n\n')
+        np.savetxt(handle,np.column_stack((trajectory.atom_ids,trajectory.atom_types,positions)),
+                   fmt=['%d','%d','%.17g','%.17g','%.17g'])
+    return low, high, path
+
+
+def relax_frame(trajectory, frame, directory, settings, *, reuse=True, runner=None):
+    """Compute once per exact input/recipe; benchmark callers explicitly opt out."""
+    frame = int(frame)
+    if not reuse:
+        return _relax_frame(trajectory, frame, directory, settings, runner=runner)
+    from src.data import relaxation_index as index
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    if (directory/'metadata.json').exists():
+        raise FileExistsError(f'Relaxation already exists: {directory}')
+    _, _, path = _write_input(trajectory, frame, directory, settings)
+    spec = index.recipe(settings)
+    key = index.identity(dict(input_sha256=sha256(path)), spec)
+    with index.lock('cell-' + key):
+        hit = index.full_cell(key)
+        if hit is not None:
+            return index.materialize_cell(hit, trajectory, frame, directory, settings)
+        result = _relax_frame(trajectory, frame, directory, settings, index_recipe=spec, runner=runner)
+        index.publish_cell(directory, spec)
+        return result
+
+
+def _relax_frame(trajectory, frame, directory, settings, *, index_recipe=None, runner=None):
     # Existing CG experiments retain their original minimization protocol.
     minimizer = settings.get('minimizer', 'cg')
     if minimizer not in ('cg', 'fire'):
@@ -49,19 +89,7 @@ def relax_frame(trajectory, frame, directory, settings):
     directory=Path(directory);directory.mkdir(parents=True,exist_ok=True)
     if (directory/'metadata.json').exists():
         raise FileExistsError(f'Relaxation already exists: {directory}')
-    low=trajectory.box_low[frame].astype(np.float64)
-    high=trajectory.box_high[frame].astype(np.float64)
-    positions=(restart_positions(trajectory,frame,settings['restart_dump'],settings['restart_sha256'])
-               if 'restart_dump' in settings else trajectory.positions[frame].astype(np.float64))
-    positions=np.mod(positions-low,high-low)+low
-    path=directory/'input.data'
-    with path.open('w') as handle:
-        handle.write(f'Complete periodic frame {frame}\n\n{len(positions)} atoms\n1 atom types\n\n')
-        for i,axis in enumerate('xyz'):
-            handle.write(f'{low[i]:.17g} {high[i]:.17g} {axis}lo {axis}hi\n')
-        handle.write('\nAtoms # atomic\n\n')
-        np.savetxt(handle,np.column_stack((trajectory.atom_ids,trajectory.atom_types,positions)),
-                   fmt=['%d','%d','%.17g','%.17g','%.17g'])
+    low, high, path = _write_input(trajectory, frame, directory, settings)
     commands='\n'.join(settings['pair_commands'])
     text=f'''units metal
 atom_style atomic
@@ -82,14 +110,18 @@ print "RELAXED_FORCE ${{final_force}}"
 print "RELAXED_ENERGY ${{final_energy}}"
 reset_timestep {int(trajectory.timesteps[frame])}
 write_dump all custom relaxed.dump id type x y z modify sort id format line "%d %d %.17g %.17g %.17g"
+{'write_restart relaxed.restart' if index_recipe is not None else ''}
 print "RELAXATION_COMPLETE"
 '''
     (directory/'in.lammps').write_text(text)
     started=time.monotonic()
     command=[*settings['lammps_command'],'-in','in.lammps','-log','log.lammps']
-    with (directory/'stdout.log').open('w') as log:
-        subprocess.run(command,cwd=directory,stdout=log,stderr=subprocess.STDOUT,
-                       stdin=subprocess.DEVNULL,check=True,timeout=settings['frame_timeout_seconds'])
+    if runner is None:
+        with (directory/'stdout.log').open('w') as log:
+            subprocess.run(command,cwd=directory,stdout=log,stderr=subprocess.STDOUT,
+                           stdin=subprocess.DEVNULL,check=True,timeout=settings['frame_timeout_seconds'])
+    else:
+        runner(directory, settings)
     lines=(directory/'log.lammps').read_text().splitlines()
     force=float(next(line.split()[1] for line in reversed(lines) if line.startswith('RELAXED_FORCE ')))
     energy=float(next(line.split()[1] for line in reversed(lines) if line.startswith('RELAXED_ENERGY ')))
@@ -102,5 +134,7 @@ print "RELAXATION_COMPLETE"
         fmax_eV_per_A=force,energy_eV=energy,seconds=time.monotonic()-started,settings=settings,
         potential_checksums={p:sha256(p) for p in settings['potential_files']},
         protocol='Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation.')
+    if index_recipe is not None:
+        result['index_recipe'] = index_recipe
     write_json(directory/'metadata.json',result)
     return result

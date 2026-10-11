@@ -1,5 +1,11 @@
 # Failed crystal embryos and the fate of established births
 
+[Ta extension](TA.md): all30 existing full-cell Ta futures, with the same fate
+definitions and the recorded Ta spatial/cadence protocol.
+
+[Al shooting extension](SHOOTING.md): full-cell search of additional shooting
+futures, with parent-present embryos and nested continuations distinguished.
+
 Question: how many smaller crystalline episodes disappear before our 64-atom,
 three-frame establishment criterion, and do the established births later grow
 or dissolve?

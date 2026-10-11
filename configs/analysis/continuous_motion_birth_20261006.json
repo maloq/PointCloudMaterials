@@ -1,0 +1,75 @@
+{
+  "protocol": "continuous_motion_birth_136_pooled_v1",
+  "campaign": "${storage:training_storage}/continuous_motion/all010-20261006-v3",
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "releases": [
+    "${storage:training_storage}/nuclei_search/al-all-20261005-v3",
+    "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-v3",
+    "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-v3"
+  ],
+  "output": "${storage:training_storage}/continuous_motion/all010-20261006-v3/analyses/birth-136-v1",
+  "cache": "${storage:cache}/continuous-motion/birth-136-20261006-v1",
+  "feature_cache": "${storage:cache}/context-features",
+  "seed": 20261006,
+  "leads_ps": [
+    1.0,
+    3.0,
+    6.0
+  ],
+  "radius_A": 8.0,
+  "control_followup_ps": 6.0,
+  "centers_per_event": 4,
+  "negative_candidates": 1024,
+  "minimum_events": {
+    "train": 5,
+    "selection": 0,
+    "calibration": 0,
+    "test": 0
+  },
+  "prepare_workers": 4,
+  "inference_batch_size": 64,
+  "fit_threads": 2,
+  "bootstrap_draws": 2000,
+  "spaces": [
+    "structural",
+    "structural_motion",
+    "future_law"
+  ],
+  "readouts": [
+    "catboost",
+    "linear"
+  ],
+  "readout": {
+    "linear_C": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "catboost": {
+      "iterations": 1000,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "GPU",
+      "devices": "0",
+      "gpu_ram_part": 0.8,
+      "boosting_type": "Plain",
+      "bootstrap_type": "Bayesian",
+      "bagging_temperature": 1
+    },
+    "patience": 100
+  },
+  "wall_seconds": 7200,
+  "population": "all_010_with_saved_velocities",
+  "source_plan": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/all010-birth-v2/technical/plan.json",
+  "source_identity": "658e23330e8b49b6cc2170daed845d5bab2d426927508306a34f34208ef241f6",
+  "training_plan_identity": "ed50b1245ca6fa93bac6b67b026a8767759adb48b2a323659b1a162675784ddb",
+  "training_cache": "${storage:cache}/continuous-motion/all010-20261006-v2",
+  "minimum_test_events": 3,
+  "inner_selection_ancestors": 4,
+  "gpu": 1
+}

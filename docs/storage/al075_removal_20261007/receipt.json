@@ -1,0 +1,69 @@
+{
+  "state": "deleted",
+  "started_at": "2026-10-07T18:00:27.811482+00:00",
+  "completed_at": "2026-10-07T18:00:30.877288+00:00",
+  "scope": "Only the original 150 native-0.75-ps Al production trajectory arrays. Keep starts/restarts, manifests, results and finer trajectories.",
+  "trajectories_deleted": 150,
+  "files_deleted": 1050,
+  "allocated_bytes_released": 106970357760,
+  "apparent_bytes_deleted": 101494833600,
+  "by_dataset": {
+    "al_520K_remaining24_20260913T204114Z": {
+      "files": 168,
+      "apparent_bytes": 16239173376,
+      "allocated_bytes": 21725233152
+    },
+    "al_meam_independent_sources_70304_400-500K_30perT_float16_20260902": {
+      "files": 630,
+      "apparent_bytes": 60896900160,
+      "allocated_bytes": 60889374720
+    },
+    "al_meam_independent_sources_70304_510-520K_30perT_float16_20260903": {
+      "files": 252,
+      "apparent_bytes": 24358760064,
+      "allocated_bytes": 24355749888
+    }
+  },
+  "protected_files_verified_unchanged": 900,
+  "dependency_checks": {
+    "consolidated_birth_sources_checked": 971,
+    "consolidated_reference_intersections": 0,
+    "active_birth_history_sources_checked": 110,
+    "active_birth_history_intersections": 0,
+    "v100_inputs": [
+      {
+        "campaign": "al-dense-shooting-v100-20261007",
+        "prepared_sources": 40,
+        "input_hashes_verified": true
+      },
+      {
+        "campaign": "al-birth-focused-v100-20261007",
+        "prepared_sources": 33,
+        "input_hashes_verified": true
+      }
+    ]
+  },
+  "birth_manifests": {
+    "010": {
+      "dataset": "al-nuclei-birth-010",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+      "cadence": "010",
+      "cadence_ps": 0.1,
+      "database": "../../catalogue.sqlite",
+      "default_detector": "ptm",
+      "default_selection": "established"
+    },
+    "030": {
+      "dataset": "al-nuclei-birth-030",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+      "cadence": "030",
+      "cadence_ps": 0.3,
+      "database": "../../catalogue.sqlite",
+      "default_detector": "ptm",
+      "default_selection": "established"
+    }
+  },
+  "jobs_modified": [],
+  "plan_sha256": "9c953fb1fc0b3c75a0818484f8dee8a2c56dbfbbd7b918e0b7ca09703111c195",
+  "files_inventory_sha256": "a8bf0dd7fbce3747cac51639f68e56f08d234b33afabb8bf4322bdfed16a655e"
+}

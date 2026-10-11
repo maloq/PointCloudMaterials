@@ -102,7 +102,7 @@ def run(config,backend,binary,*,first_case_only=False):
                 progress(root,backend,state='running',case=case['name'],variant=variant,repeat=repeat)
                 started=time.monotonic()
                 try:
-                    meta=relax_frame(absolute,frame,work,cfg)
+                    meta=relax_frame(absolute,frame,work,cfg,reuse=False)
                     pos,_=read_relaxed(work)
                     _,clouds,_=paired_clouds(hot,pos-low,box,queries)
                     receipt.parent.mkdir(exist_ok=True)

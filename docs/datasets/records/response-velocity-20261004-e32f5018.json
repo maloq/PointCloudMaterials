@@ -1,0 +1,80 @@
+{
+  "dataset_id": "response-velocity-20261004",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-velocity-20261004-periodic-v4/parent000-velocity0/complete.json",
+      "relative_path": "parent000-velocity0/complete.json",
+      "sha256": "2928e94aef1ee523d530d06d2ab4d44d88428d51f67897d7a1e946a93520a08f",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "seconds",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-velocity-20261004-periodic-v4/parent000-velocity1/complete.json",
+      "relative_path": "parent000-velocity1/complete.json",
+      "sha256": "d84c8ad8752bc15459064122827c5d9b0cb24d00de77c5194374482c7b11c9a5",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "seconds",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-velocity-20261004-periodic-v4/parent000-velocity2/complete.json",
+      "relative_path": "parent000-velocity2/complete.json",
+      "sha256": "b9f4a03f897ec0d4931532f057682d47054c50b2360ae6c50546e933ff060a6a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "seconds",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-velocity-20261004-periodic-v4/parent000-velocity3/complete.json",
+      "relative_path": "parent000-velocity3/complete.json",
+      "sha256": "7577480bbc13bec62efbb21e4d0c0d8cec6d6d6a8298d21e7fe0c4f2d7be803f",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "seconds",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/simulations/response-velocity-20261004-periodic-v4/parent001-velocity0/complete.json",
+      "relative_path": "parent001-velocity0/complete.json",
+      "sha256": "30b1336e682e227c9b4e1b6d185830024d1dba7c49a8ba6773f66ffaaf6a2d90",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "seconds",
+        "sha256",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

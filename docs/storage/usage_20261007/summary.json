@@ -1,0 +1,334 @@
+{
+  "observed_at_Paris": "2026-10-07T15:57:07.461049+02:00",
+  "scope": "Five user roots on this cluster; includes code, environments and personal files; excludes remote H200 storage",
+  "method": "Allocated file/directory blocks; same filesystem only; no symlink traversal; hard links counted once per filesystem. GNU du except STORE parallel lstat scan. Live non-atomic inventory; active writers/publication can change totals.",
+  "quota": "quota -v -u vmorozov returned no personal quota records; shared free space is not a personal allowance",
+  "total_bytes": 2179433791488,
+  "total_TiB": 1.9821834862232208,
+  "total_TB": 2.179433791488,
+  "locations": [
+    {
+      "location": "WORK",
+      "path": "/work/PERSO/vmorozov",
+      "allocated_bytes": 347530121728,
+      "allocated_GiB": 323.6626477241516,
+      "filesystem_capacity_bytes": 549755813888,
+      "filesystem_available_bytes": 202194812928,
+      "filesystem_available_GiB": 188.30859375,
+      "availability_scope": "user-specific WORK/SCRATCH export",
+      "scan_completed_utc": "2026-10-07T13:43:15.909801+00:00",
+      "direct_children": [
+        {
+          "path": "/work/PERSO/vmorozov/simulations",
+          "allocated_GiB": 282.15793800354004
+        },
+        {
+          "path": "/work/PERSO/vmorozov/analysis",
+          "allocated_GiB": 21.244350910186768
+        },
+        {
+          "path": "/work/PERSO/vmorozov/datasets",
+          "allocated_GiB": 20.26034450531006
+        }
+      ]
+    },
+    {
+      "location": "STORE",
+      "path": "/store/PERSO/vmorozov",
+      "allocated_bytes": 1428746125312,
+      "allocated_GiB": 1330.623519897461,
+      "filesystem_capacity_bytes": 32985348833280,
+      "filesystem_available_bytes": 18960219635712,
+      "filesystem_available_GiB": 17658.08056640625,
+      "availability_scope": "shared filesystem; personal quota not reported",
+      "scan_completed_utc": "2026-10-07T13:53:53.626570+00:00",
+      "direct_children": [
+        {
+          "path": "/store/PERSO/vmorozov/simulations",
+          "allocated_GiB": 938.1327133178711
+        },
+        {
+          "path": "/store/PERSO/vmorozov/simulation-work",
+          "allocated_GiB": 99.4666976928711
+        },
+        {
+          "path": "/store/PERSO/vmorozov/experiments",
+          "allocated_GiB": 95.51426696777344
+        },
+        {
+          "path": "/store/PERSO/vmorozov/trajectory-archives",
+          "allocated_GiB": 68.37263488769531
+        },
+        {
+          "path": "/store/PERSO/vmorozov/projects",
+          "allocated_GiB": 55.89752197265625
+        },
+        {
+          "path": "/store/PERSO/vmorozov/data",
+          "allocated_GiB": 36.53578186035156
+        },
+        {
+          "path": "/store/PERSO/vmorozov/relaxed_encoder",
+          "allocated_GiB": 6.6463775634765625
+        },
+        {
+          "path": "/store/PERSO/vmorozov/simulation-launches",
+          "allocated_GiB": 6.222740173339844
+        },
+        {
+          "path": "/store/PERSO/vmorozov/analysis",
+          "allocated_GiB": 5.644432067871094
+        },
+        {
+          "path": "/store/PERSO/vmorozov/birth_prediction",
+          "allocated_GiB": 5.3209228515625
+        },
+        {
+          "path": "/store/PERSO/vmorozov/liquid-predictability",
+          "allocated_GiB": 4.292045593261719
+        },
+        {
+          "path": "/store/PERSO/vmorozov/software",
+          "allocated_GiB": 2.6678695678710938
+        },
+        {
+          "path": "/store/PERSO/vmorozov/models",
+          "allocated_GiB": 1.9254226684570312
+        },
+        {
+          "path": "/store/PERSO/vmorozov/relaxed_tda",
+          "allocated_GiB": 1.8870086669921875
+        },
+        {
+          "path": "/store/PERSO/vmorozov/relaxation-index",
+          "allocated_GiB": 1.6085968017578125
+        },
+        {
+          "path": "/store/PERSO/vmorozov/hardware_benchmark",
+          "allocated_GiB": 0.4266357421875
+        },
+        {
+          "path": "/store/PERSO/vmorozov/training-cache-archive-20260926",
+          "allocated_GiB": 0.0378570556640625
+        },
+        {
+          "path": "/store/PERSO/vmorozov/training-cache-archive-20260925",
+          "allocated_GiB": 0.02396392822265625
+        }
+      ]
+    },
+    {
+      "location": "SCRATCH",
+      "path": "/scratch/PERSO/vmorozov",
+      "allocated_bytes": 127073143296,
+      "allocated_GiB": 118.34608697891235,
+      "filesystem_capacity_bytes": 549755813888,
+      "filesystem_available_bytes": 422262603776,
+      "filesystem_available_GiB": 393.2626953125,
+      "availability_scope": "user-specific WORK/SCRATCH export",
+      "scan_completed_utc": "2026-10-07T13:56:10.241292+00:00",
+      "direct_children": [
+        {
+          "path": "/scratch/PERSO/vmorozov/PointCloudMaterials",
+          "allocated_GiB": 118.3460865020752
+        }
+      ]
+    },
+    {
+      "location": "IDS",
+      "path": "/home/ids/vmorozov",
+      "allocated_bytes": 211571773952,
+      "allocated_GiB": 197.04156923294067,
+      "filesystem_capacity_bytes": 120933762203648,
+      "filesystem_available_bytes": 42634949165056,
+      "filesystem_available_GiB": 39706.890625,
+      "availability_scope": "shared filesystem; personal quota not reported",
+      "scan_completed_utc": "2026-10-07T13:44:02.374717+00:00",
+      "direct_children": [
+        {
+          "path": "/home/ids/vmorozov/training-cache",
+          "allocated_GiB": 196.02371883392334
+        },
+        {
+          "path": "/home/ids/vmorozov/software",
+          "allocated_GiB": 0.986238956451416
+        },
+        {
+          "path": "/home/ids/vmorozov/.local",
+          "allocated_GiB": 0.03145456314086914
+        },
+        {
+          "path": "/home/ids/vmorozov/.triton",
+          "allocated_GiB": 5.91278076171875e-05
+        },
+        {
+          "path": "/home/ids/vmorozov/.ssh",
+          "allocated_GiB": 3.9577484130859375e-05
+        },
+        {
+          "path": "/home/ids/vmorozov/.config",
+          "allocated_GiB": 9.5367431640625e-06
+        },
+        {
+          "path": "/home/ids/vmorozov/.nv",
+          "allocated_GiB": 8.106231689453125e-06
+        },
+        {
+          "path": "/home/ids/vmorozov/.conda",
+          "allocated_GiB": 9.5367431640625e-07
+        }
+      ]
+    },
+    {
+      "location": "HOME",
+      "path": "/home/infres/vmorozov",
+      "allocated_bytes": 64512627200,
+      "allocated_GiB": 60.08206605911255,
+      "filesystem_capacity_bytes": 91884072468480,
+      "filesystem_available_bytes": 29884063678464,
+      "filesystem_available_GiB": 27831.703125,
+      "availability_scope": "shared filesystem; personal quota not reported",
+      "scan_completed_utc": "2026-10-07T13:43:42.580753+00:00",
+      "direct_children": [
+        {
+          "path": "/home/infres/vmorozov/PointCloudMaterials",
+          "allocated_GiB": 29.666044235229492
+        },
+        {
+          "path": "/home/infres/vmorozov/miniconda3",
+          "allocated_GiB": 16.292240142822266
+        },
+        {
+          "path": "/home/infres/vmorozov/.cache",
+          "allocated_GiB": 3.208287239074707
+        },
+        {
+          "path": "/home/infres/vmorozov/.codex",
+          "allocated_GiB": 3.100411891937256
+        },
+        {
+          "path": "/home/infres/vmorozov/.vscode-server",
+          "allocated_GiB": 2.096487522125244
+        },
+        {
+          "path": "/home/infres/vmorozov/codex-repair-backups",
+          "allocated_GiB": 1.6788139343261719
+        },
+        {
+          "path": "/home/infres/vmorozov/tools",
+          "allocated_GiB": 0.9526104927062988
+        },
+        {
+          "path": "/home/infres/vmorozov/causal-mace-h200-20260916",
+          "allocated_GiB": 0.8906474113464355
+        },
+        {
+          "path": "/home/infres/vmorozov/causal-mace-runtime-20260916",
+          "allocated_GiB": 0.8888869285583496
+        },
+        {
+          "path": "/home/infres/vmorozov/PointCloudMaterials-causal-runtime",
+          "allocated_GiB": 0.6275978088378906
+        },
+        {
+          "path": "/home/infres/vmorozov/.antigravity-server",
+          "allocated_GiB": 0.20969438552856445
+        },
+        {
+          "path": "/home/infres/vmorozov/.antigravity-ide-server",
+          "allocated_GiB": 0.16240358352661133
+        },
+        {
+          "path": "/home/infres/vmorozov/.local",
+          "allocated_GiB": 0.14839506149291992
+        },
+        {
+          "path": "/home/infres/vmorozov/.triton",
+          "allocated_GiB": 0.062003135681152344
+        },
+        {
+          "path": "/home/infres/vmorozov/.venvs",
+          "allocated_GiB": 0.021956443786621094
+        },
+        {
+          "path": "/home/infres/vmorozov/.gemini",
+          "allocated_GiB": 0.01792144775390625
+        },
+        {
+          "path": "/home/infres/vmorozov/.nv",
+          "allocated_GiB": 0.007447242736816406
+        },
+        {
+          "path": "/home/infres/vmorozov/.torchmetrics",
+          "allocated_GiB": 0.0033931732177734375
+        },
+        {
+          "path": "/home/infres/vmorozov/.ipython",
+          "allocated_GiB": 0.0019068717956542969
+        },
+        {
+          "path": "/home/infres/vmorozov/.copilot",
+          "allocated_GiB": 0.00029277801513671875
+        },
+        {
+          "path": "/home/infres/vmorozov/.config",
+          "allocated_GiB": 0.00028514862060546875
+        },
+        {
+          "path": "/home/infres/vmorozov/.dotnet",
+          "allocated_GiB": 0.00023746490478515625
+        },
+        {
+          "path": "/home/infres/vmorozov/.ssh",
+          "allocated_GiB": 6.389617919921875e-05
+        },
+        {
+          "path": "/home/infres/vmorozov/Documents",
+          "allocated_GiB": 1.52587890625e-05
+        },
+        {
+          "path": "/home/infres/vmorozov/.claude",
+          "allocated_GiB": 1.9073486328125e-06
+        },
+        {
+          "path": "/home/infres/vmorozov/data",
+          "allocated_GiB": 1.430511474609375e-06
+        },
+        {
+          "path": "/home/infres/vmorozov/.conda",
+          "allocated_GiB": 1.430511474609375e-06
+        },
+        {
+          "path": "/home/infres/vmorozov/.tmp",
+          "allocated_GiB": 1.430511474609375e-06
+        },
+        {
+          "path": "/home/infres/vmorozov/.jupyter",
+          "allocated_GiB": 9.5367431640625e-07
+        }
+      ]
+    }
+  ],
+  "dedicated_cache_GiB": 212.85423707962036,
+  "dedicated_cache_scope": [
+    "/home/ids/vmorozov/training-cache",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache",
+    "/store/PERSO/vmorozov/training-cache-archive-20260925",
+    "/store/PERSO/vmorozov/training-cache-archive-20260926"
+  ],
+  "simulation_and_trajectory_directories_GiB": 1482.4523077011108,
+  "simulation_scope": [
+    "/work/PERSO/vmorozov/simulations",
+    "/store/PERSO/vmorozov/simulations",
+    "/store/PERSO/vmorozov/simulation-work",
+    "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations",
+    "/store/PERSO/vmorozov/trajectory-archives"
+  ],
+  "million_atom_replay_planned_payload": {
+    "final_GB": 56.812,
+    "approx_final_GiB": 52.910298109054565,
+    "interpretation": "Q/V arrays and native endpoints; filesystem overhead excluded; consolidation temporarily duplicates Q/V arrays before verified chunk cleanup"
+  },
+  "scan_errors": [],
+  "actions": "Read-only size inventory; no data, jobs or cache policies changed"
+}

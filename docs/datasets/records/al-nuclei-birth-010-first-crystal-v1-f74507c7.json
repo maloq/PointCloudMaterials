@@ -1,0 +1,55 @@
+{
+  "dataset_id": "al-nuclei-birth-010-first-crystal-v1",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_birth/al/additional_labels/first-crystal-010-v1/manifest.json",
+      "relative_path": "manifest.json",
+      "sha256": "7a364b6de7f7667d3d979d9f802878211a25d94f196b2282fab98167fdcc872b",
+      "kind": "metadata",
+      "keys": [
+        "binding",
+        "cadence",
+        "cadence_ps",
+        "counts",
+        "dataset",
+        "event_id",
+        "files",
+        "fingerprint",
+        "horizons_ps",
+        "missing",
+        "name",
+        "observation_key",
+        "parent_dataset",
+        "parent_fingerprint",
+        "schema_version",
+        "state",
+        "targets",
+        "updated_at"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "cadence_ps": [
+          {
+            "value": 0.1,
+            "first_json_path": "cadence_ps",
+            "occurrences": 1
+          }
+        ],
+        "horizons_ps": [
+          {
+            "value": [
+              0.1,
+              0.5,
+              1,
+              3,
+              6
+            ],
+            "first_json_path": "horizons_ps",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    }
+  ]
+}

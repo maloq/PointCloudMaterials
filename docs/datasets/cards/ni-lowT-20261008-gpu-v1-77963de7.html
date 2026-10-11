@@ -1,0 +1,89 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ni low-temperature GPU nucleus-birth search</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ni low-temperature GPU nucleus-birth search</h1><p>GPU resident/voronoi descriptors on every native 0.10 ps frame, followed by unchanged CPU nucleus lineage tracking. Same 36 independent sources and original roles; separate numerical-producer provenance.</p><span class="badge">superseded_planned</span><p><code>ni-lowT-20261008-gpu-v1</code> · Ni</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1">/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1</a></p><p>50 owned files · 0.006 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ni low-temperature GPU nucleus-birth search&quot;,
+  &quot;role&quot;: &quot;derived_analysis&quot;,
+  &quot;classification&quot;: &quot;superseded_planned&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;ni-mendelev2012-eam&quot;
+  ],
+  &quot;description&quot;: &quot;GPU resident/voronoi descriptors on every native 0.10 ps frame, followed by unchanged CPU nucleus lineage tracking. Same 36 independent sources and original roles; separate numerical-producer provenance.&quot;,
+  &quot;source_campaign_identity&quot;: &quot;ec82cb7932b179f693809805cc45ee69501ff3b24069f18d0ef86ceb3597ef03&quot;,
+  &quot;planned_independent_melts&quot;: 36,
+  &quot;native_cadence_ps&quot;: 0.1,
+  &quot;descriptor_backend&quot;: &quot;gpu-extract/resident/voronoi&quot;,
+  &quot;ancestry&quot;: &quot;Exactly the parent campaign sources and roles; no new simulations, resplitting or extra independent samples&quot;,
+  &quot;cache&quot;: &quot;${storage:cache}/nuclei-search/ni-lowT-20261008-gpu-v1&quot;,
+  &quot;evidence&quot;: [
+    &quot;/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/preparation.json&quot;,
+    &quot;docs/simulations/ni_births_lowT_010_20261008.md&quot;,
+    &quot;/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/launch.json&quot;,
+    &quot;/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/queue-verification.json&quot;
+  ],
+  &quot;launch_jobs&quot;: {
+    &quot;extract&quot;: &quot;1028535&quot;,
+    &quot;track&quot;: &quot;1028536&quot;
+  },
+  &quot;superseded_cpu_job&quot;: &quot;1028476&quot;,
+  &quot;superseded_by&quot;: &quot;ni-lowT-20261008-gpu-400ps-v1&quot;,
+  &quot;replacement_receipt&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-400ps-01/replacement.json&quot;
+}</pre><ul><li><a href="../../../output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/preparation.json">/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/preparation.json</a></li><li><a href="../../simulations/ni_births_lowT_010_20261008.md">docs/simulations/ni_births_lowT_010_20261008.md</a></li><li><a href="../../../output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/launch.json">/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/launch.json</a></li><li><a href="../../../output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/queue-verification.json">/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-01/queue-verification.json</a></li></ul><p>Dependencies: <a href="ni-births-lowT-010-20261008-716c9ef3.html">ni-births-lowT-010-20261008</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev et al. 2012 Ni EAM/FS</summary><ul><li><a href="../../../configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs">Ni1_Mendelev_2012.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ni-mendelev2012-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev et al. 2012 Ni EAM/FS&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;pair_coeff * * Ni1_Mendelev_2012.eam.fs Ni&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al., Philosophical Magazine 92, 4454-4469 (2012)&quot;,
+  &quot;doi&quot;: &quot;10.1080/14786435.2012.712220&quot;,
+  &quot;limitations&quot;: [
+    &quot;Pure-Ni implementation; does not include Ni-Zr alloy interactions.&quot;,
+    &quot;CUDA engineering checks are separate from melting-point or precursor-mechanism validation.&quot;
+  ],
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 50,
+    &quot;apparent_bytes&quot;: 2350992,
+    &quot;allocated_bytes&quot;: 6406144,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 42,
+      &quot;.gz&quot;: 4,
+      &quot;.lock&quot;: 4
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 4,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/analysis/ni_lowT_gpu_search_20261008.json">configs/analysis/ni_lowT_gpu_search_20261008.json</a></li></ul></details><details><summary>Producer evidence (4 records)</summary><p><a href="../records/ni-lowT-20261008-gpu-v1-77963de7.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent/complete.json">technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent/complete.json</a> · metadata · <code>82125735592f5e3a39c37fa485674546b28cc8993b11066e57f8329c259c1f15</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_loose/complete.json">technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_loose/complete.json</a> · metadata · <code>45b1834483b280ed50ca988335578f44190ed8a7d4fd9732ed52b19cd51e8552</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_strict/complete.json">technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/coherent_strict/complete.json</a> · metadata · <code>e3d71ab9e4018484e00166c4676ebb3b9a20d3d5966714ae6924143ee4abfa10</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-v1/technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/ptm/complete.json">technical/diagnostics/gpu-lineage-compatibility/technical/sources/ni-T1200-melt00/010/ptm/complete.json</a> · metadata · <code>f60f4d9afe2b82f66d82848fe025c36612d4a43a746272521aa77c78ebec39d1</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

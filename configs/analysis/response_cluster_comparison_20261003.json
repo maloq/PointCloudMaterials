@@ -1,0 +1,415 @@
+{
+  "protocol": "local_response_interactive_comparison_v1",
+  "output": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003",
+  "viewer_root": "${storage:repo}/output/spatial_vicreg_bias",
+  "viewer_archive": "${storage:repo}/docs/storage/experiment_removal_20261002/results/11-spatial_vicreg_bias",
+  "checkpoint": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/technical/checkpoint.pt",
+  "checkpoint_sha256": "5d69ca906d188b4e88796ec679d969a18889f232f2e136660cd350ced05b5e79",
+  "producer": "${storage:training_storage}/response_atlas/local80-followup-20261003/technical/code",
+  "training_config": {
+    "protocol": "local_al80_mlip_response_v1",
+    "seed": 20261002,
+    "output": "${storage:training_storage}/response_atlas/local80-training-20261002",
+    "cache": "${storage:cache}/response-atlas/local80-training-20261002",
+    "simulation_scratch": "${storage:simulation_runs}/local80-response-20261002",
+    "simulation_archive": "${storage:archive}/simulations/local80-response-20261002",
+    "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "sampling": {
+      "frames": [
+        64,
+        320,
+        656
+      ],
+      "center_stride": 17,
+      "selection": "one center per source, rank-based, no outcomes; all non-calibration sources retain roles"
+    },
+    "oracle": {
+      "potential": "${dataset:potentials}/mace-mpa-0-medium.model",
+      "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "temperature_K": 450.0,
+      "timestep_fs": 1.0,
+      "friction_time_fs": 100.0,
+      "feature_cutoff_A": 5.5,
+      "path_coordinate_scale": 0.1,
+      "horizons_steps": [
+        20,
+        100
+      ],
+      "feature_seed": 20261002,
+      "skin_A": 0.6,
+      "maximum_batch": 4,
+      "batch_atom_budget": 4096,
+      "dtype": "float32",
+      "backend": "cueq",
+      "boundary": "open moving environment; no artificial PBC"
+    },
+    "halo": {
+      "candidates_A": [
+        18,
+        24,
+        30
+      ],
+      "reference_A": 36,
+      "gate_parent_indices": [
+        0,
+        1,
+        2,
+        45
+      ],
+      "gate_shots": 2,
+      "value_rms_tolerance": 0.0001,
+      "response_relative_tolerance": 0.05,
+      "fd_epsilon_A": [
+        0.03,
+        0.01
+      ],
+      "fd_relative_tolerance": 0.02
+    },
+    "branch_seed_base": 81000000,
+    "value_shots": 32,
+    "response_shots": 8,
+    "fit_seeds": [
+      20261002,
+      20261003,
+      20261004
+    ],
+    "arms": [
+      "values8",
+      "responses8",
+      "values32",
+      "values8_time"
+    ],
+    "encoder": {
+      "channels": 128,
+      "code_dim": 128,
+      "cutoff": 5.0,
+      "num_interactions": 2,
+      "max_ell": 2,
+      "correlation": 2,
+      "backend": "e3nn",
+      "layout": "mul_ir",
+      "conv_fusion": false
+    },
+    "training": {
+      "batch_size": 256,
+      "microbatch": 8,
+      "epochs": 200,
+      "patience": 40,
+      "compute_control_max_epochs": 6000,
+      "encoder_lr": 0.0001,
+      "head_lr": 0.0005,
+      "weight_decay": 1e-05,
+      "gradient_clip": 10.0,
+      "response_weight": 1.0,
+      "value_scale_floor": 0.0001,
+      "response_scale_floor": 0.001,
+      "deviation": "90 training queries form one actual90-parent optimizer batch below configured256; microbatch8 explicitly bounds third-order response-gradient memory; all arms use the same accumulation"
+    },
+    "wandb": {
+      "entity": "teshbek",
+      "project": "PointCloudMaterials",
+      "mode": "online"
+    },
+    "bootstrap_draws": 2000,
+    "lanes": 2,
+    "gpu_partition": "RTX6000PRO,L40S",
+    "time_limit": "24:00:00"
+  },
+  "inference_dependencies": {
+    "src/research/local_response/model.py": "2d68116d61e0a3124de08b6d23886903fadabf9795897c90cdcee502e907cc5a",
+    "src/research/local_response/queue.py": "a687611f552a5799f3a286b1bac12afdf7ea971f0bbab0f4dd6facac0bd6feb7",
+    "src/research/local_response/oracle.py": "67bbeca27af60a00e3bb166a055822f1cda178f09785a8f55c6bad628878b110",
+    "src/research/local_response/data.py": "7d84cb9a5365f0112458486a9161bf50bbc810c3a1dab9704c9e271e884dae10",
+    "src/research/local_response/collection.py": "fd763a1d87b35afba44341dd4526e67b9190518e59c9ef4dd646be61ca89d064",
+    "src/research/local_response/train.py": "cbb4ed01c1bab2d3bb941e7d6604ade9dc150a5ecafd5c2035a5926990f0b034",
+    "src/research/local_response/gates.py": "41c88c71c73346c8ccd0748509318ace4a35a6c2dcec3be082473acf02312d51",
+    "src/research/local_response/common.py": "b3a41dd3cf6085da8fe73671ece23adf3a8790367900d43c89b6a3c4f926551a",
+    "src/research/local_response/__init__.py": "c12de759c5d9a4b520eba9f6ace1403a18d9cf28ade856c128e1d936f8d82b5c",
+    "src/research/local_response/evaluate.py": "f9ccaccfa311a734603a09b6d0879d1ce8f406b51d574cb74272a2ff2ad06045",
+    "src/research/response_performance/oracle.py": "4c0ecda5b4c7bfebd749813e74dcd43dfbc5a7febb5322c91ca4be942b133761",
+    "src/research/response_performance/collection.py": "405adf8fad1137aeeca969bf5669aee20969bc2d79fca5673386711545c6ba1c",
+    "src/research/response_training/model.py": "4365d270636750eea350b1413cfed52934cdfa3a0acc033784cefcc8dc6028fc",
+    "src/research/supervised_onset/model.py": "2d854851b3c031c0cb063fdf8d29ad46f599d6c376295a1e739a00e6ccf06e70",
+    "src/models/encoders/spatial_mace.py": "692223dd71032584f478c95ff700cb7d486e49bf12a5fa750e0d617f06b013c8",
+    "src/models/encoders/mace_backend.py": "7f410cde1db6d363f347d3d245cce59e9d9aadc68f8d629804d9efa6864b94fb",
+    "src/research/local_response_followup/queue.py": "9ef3f46f180f7679b7d284da83b9d727541c90b2767c19f9c593baec0cac9c00",
+    "src/research/local_response_followup/forward.py": "05141a24d13c06382d3474c03dff9f288ebd654090bbf6ec114fccca6bc264b3",
+    "src/research/local_response_followup/train.py": "e2d298fc6a2c7f071f885c7c52af925018e5f3b387a9477afae4f1f725d35b6b",
+    "src/research/local_response_followup/common.py": "6c27d03a2a6a519bd2302ddc8fc0d5dc8708e627faf8a4e46fc8c7e2b0406504",
+    "src/research/local_response_followup/__init__.py": "f4cab68c323f11d347dc08f108981e528807bda43051726c4d3de85d61c1cb77",
+    "src/research/local_response_followup/evaluate.py": "3d2928da4a547aed09ff4d356f49bb9e59f4a377c554f2851b13ab6744899fd4"
+  },
+  "batch_size": 128,
+  "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "static_data": "${storage:datasets}/Al/inherent_configurations_off",
+  "input_record": {
+    "encoder_inputs": {
+      "spatial_support": "nearest80, center-relative, radius8A",
+      "edge_cutoff_A": 5,
+      "halo": null,
+      "history": 0,
+      "motion": false,
+      "conditions": [],
+      "relaxation": false,
+      "atom_channel": "one constant channel",
+      "center_indicator": true,
+      "fixed_length_normalization": "Al multiplier1",
+      "channels": 128,
+      "exported_embedding": 128
+    },
+    "predictor_inputs": {
+      "embedding": "z128",
+      "conditions": [],
+      "history": 0,
+      "head": "128 SiLU to256 normalized future Fourier features"
+    },
+    "training_only_teacher": {
+      "potential": "MACE-MPA-0 medium; changed from parent MEAM physics",
+      "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+      "conditions": {
+        "potential": "${dataset:potentials}/mace-mpa-0-medium.model",
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
+        "temperature_K": 450.0,
+        "timestep_fs": 1.0,
+        "friction_time_fs": 100.0,
+        "feature_cutoff_A": 5.5,
+        "path_coordinate_scale": 0.1,
+        "horizons_steps": [
+          20,
+          100
+        ],
+        "feature_seed": 20261002,
+        "skin_A": 0.6,
+        "maximum_batch": 4,
+        "batch_atom_budget": 4096,
+        "dtype": "float32",
+        "backend": "cueq",
+        "boundary": "open moving environment; no artificial PBC"
+      },
+      "support": "open moving spherical environment; radius chosen only by training-source convergence gate",
+      "boundary": "all included atoms move; no frozen shell; not exact full-cell dynamics",
+      "responses": "two initial local80 displacements; center fixed, exterior initially zero; tangents evolve everywhere"
+    },
+    "evaluation": {
+      "fixed_release_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+      "track": "new source-held-out response-query pilot; not the all64 crystallization-window benchmark",
+      "downstream_track": "all64 required for a subsequent crystallization comparison",
+      "population": "one outcome-independent fixed64 center per non-calibration source; identical queries for every arm"
+    },
+    "interpretation": "fixed-initial-environment responses are regularization under partial observation, not a local sufficiency guarantee",
+    "training_deviation": "90 training queries form one actual90-parent optimizer batch below configured256; microbatch8 explicitly bounds third-order response-gradient memory; all arms use the same accumulation",
+    "followup": {
+      "reference_identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+      "training_inputs": "Exactly the original90/15/30 local80 tensors and original training normalizers",
+      "changed": "Response weight/schedule and fixed400-update optimization budget only",
+      "finite_forward": "Train-only fixed-identity local displacements; surrounding atoms move; no teacher conditions enter predictors",
+      "evaluation": "All30 original held-out sources retained; reused exploratory cohort, not a newly untouched test set"
+    }
+  },
+  "model": {
+    "id": "Response-local80-w1-seed20261002-update250-encoder",
+    "title": "Response MACE128 \u00b7 weight 1 \u00b7 update 250",
+    "epoch": 250,
+    "seed": 20261002,
+    "response_weight": 1.0,
+    "selection_nll": 0.9949387311935425,
+    "selector": "minimum validation feature Gaussian NLL among 12 completed response-weight/schedule fits; no test or plot selection"
+  },
+  "pacmap": {
+    "version": "0.9.1",
+    "n_neighbors": 20,
+    "MN_ratio": 0.5,
+    "FP_ratio": 2.0,
+    "num_iters": [
+      100,
+      100,
+      250
+    ],
+    "apply_pca": false,
+    "random_state": 20260929,
+    "knn_backend": "faiss"
+  },
+  "datasets": {
+    "matched": {
+      "reference": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/analyses/matched",
+      "publication": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/analyses/matched"
+    },
+    "static": {
+      "reference": "${storage:repo}/output/spatial_vicreg_bias/mace-rh2-best-20260930/analyses/static",
+      "publication": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/analyses/static"
+    }
+  },
+  "patch_sha256": {
+    "matched": {
+      "908-0": "c348cf61e4226c236c77591d67a3331d81e1a23e47f39771c4dc66151d8c34b2",
+      "908-64": "5d9325bd98abd33f228aa2db97d833499c185d32473d595782ab635eb283b882",
+      "908-128": "f826a5149d53fa58ea7cfba2eaccea136f96b5ffc630ec0c7cc8dde5426bd4b5",
+      "908-192": "e742b46522db46203fe4e017d67ab33b8da1d57b9c70428b5fbf872257f94197",
+      "908-256": "22f2eca65a5ff1ed6fb88259e6ca284b3f6586efcb86f68f11f4a5acc245ea08",
+      "908-320": "85240ad3c77c6f23db206f2726cb03e9c6681293ef87d92b7edbb6d4a50e80f1",
+      "908-384": "57d627ab21d609700681bdc898902daa7060710aa0068d5a994c37bf1cfebb37",
+      "908-448": "05fbb037cacfe249348c5f895f44beb438ff8ac60b9e84c5ece51290438749e6",
+      "908-512": "f39a25272562a743898401723fac661dab939257cd31d6c8f3eebcd7f9cf9cd7",
+      "908-576": "f2b162f02c52703aafb3b3ee5cf75acece302bf2cbfd1a9f9694fe542843e990",
+      "908-640": "b57ac7ea4950b30331c00ddc011471b72fbfabe84a5f76ba2c9a22fc5c04950a",
+      "908-704": "a8db50b5c71d4908697eb60d171471f2d8065f3163bb7431c0ce3691cfd3c27b",
+      "908-768": "4e7cef02385d4f1db9e49b744299ac6ac140a87e81cafe00ad179a8b4c86a495"
+    },
+    "static": {
+      "166ps": "666648a6933caf439b1bfa817a7e10b9c7c70d7919c1c8f50c3f3b47154970e2",
+      "170ps": "3fdaa3478ab63c6b131870bd3ca742669942c2d2c2d3bf689b26bdc00af308c4",
+      "174ps": "d389da5bd192ac9bfecf9e7a5222271cf6fc3a1d3c53a19484c8c05310499615",
+      "175ps": "2f99dbb800cb7e524d46512cfa734fe7b367281a5937348a8473ef194e414472",
+      "177ps": "47c6ea0b0a441113cdceb5c5be16f6f5ba1f08c7f20d398e32f5eb28bd7ba025",
+      "240ps": "4dc77d173e8b71fdde7a6c2b3ee4c9bfc34ee60e8806b606573a193c0d345967"
+    }
+  },
+  "static_sources": {
+    "166ps": {
+      "frame": 166,
+      "rows": 117649,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/166ps.npy",
+      "source_sha256": "2b810ecf35c723de33ff96298c1a760b6482edc571485d3cf7cc9c3e933fb7fd",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-166ps.npz",
+      "grid_sha256": "cd64d951029d6808b026ffaf25262e37525360ec1d1d02d28453577ea660b8f9",
+      "physical_sha256": "8f34e9b17da6434e3d6a08e7206f42301266b5ba3105901e19f9b6c12bd5d0f4",
+      "targets_sha256": "4e7693cb0701a698651d12e5c53e2c83d00622c99cf8af24bb9ac0474bbd71f6",
+      "patches_sha256": "666648a6933caf439b1bfa817a7e10b9c7c70d7919c1c8f50c3f3b47154970e2",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 751,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 391.4729737183079
+    },
+    "170ps": {
+      "frame": 170,
+      "rows": 117649,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/170ps.npy",
+      "source_sha256": "007bb0330654d357bf272914f62ee193c8159cf88f501853f1cb698b4926f0b1",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-170ps.npz",
+      "grid_sha256": "eb80a684e6f9cc22526badff3458a8fc65aa883c5f29e971b1af07de9187a01d",
+      "physical_sha256": "7a82f9b12b2bd6d472413c2bc5064b11017dabae26885f135b1a3a7108f9ba29",
+      "targets_sha256": "118129bf5cf601479d0e87fc65b64fb60f9a298d53912714e45b94bcb66cf07b",
+      "patches_sha256": "3fdaa3478ab63c6b131870bd3ca742669942c2d2c2d3bf689b26bdc00af308c4",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 6848,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 570.8096510828473
+    },
+    "174ps": {
+      "frame": 174,
+      "rows": 110592,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/174ps.npy",
+      "source_sha256": "a3027e2b22620382244fba8ff01c0abc3e352c032da5c2a9d8eed1a6c0acecb4",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-174ps.npz",
+      "grid_sha256": "1631819b669cc4de6a4278490c1e2db4e9b8c0916f32d0cd3155cffe2cba360b",
+      "physical_sha256": "5ba4ab77d434783ff6330614e515ef3c633ded2d4206e853294d2a8244e328fd",
+      "targets_sha256": "122a4d9eb2c74fcccd84860a33e7d6fd38a0a836c2c8a1e4dc9aabcab0a04322",
+      "patches_sha256": "d389da5bd192ac9bfecf9e7a5222271cf6fc3a1d3c53a19484c8c05310499615",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 23957,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 301.31782003096305
+    },
+    "175ps": {
+      "frame": 175,
+      "rows": 110592,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/175ps.npy",
+      "source_sha256": "dea6ad3bdfcf945b3197894c2fccfd48ed631a2e54684eb90a9e63c398693490",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-175ps.npz",
+      "grid_sha256": "0974d66f9cc4ae756d2277246914d3c6cf346048dd1abf2d895589c6bfd756d2",
+      "physical_sha256": "f91c285d391c5fec32014b35d287facbceb3d140dc5f143fb7512ba14384f0d6",
+      "targets_sha256": "f22cf312af73e107fd8585ffd6c526c9cf007277bb5f8b1fe1063ef73ec57120",
+      "patches_sha256": "2f99dbb800cb7e524d46512cfa734fe7b367281a5937348a8473ef194e414472",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 31670,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 360.9970443909988
+    },
+    "177ps": {
+      "frame": 177,
+      "rows": 110592,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/177ps.npy",
+      "source_sha256": "9dcd4fbbb0fbc964b7d0e2dba5ace5e1c6bf1b46baa697acd6f742e24492deb3",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-177ps.npz",
+      "grid_sha256": "446b702cf9e7a47213d271d59bcca89647f5cf72ad3e72ab9e1d02ad00149134",
+      "physical_sha256": "16d1a29e8342dde54e18e9a85a7f49ab3e06b40d72117251e20050224356c745",
+      "targets_sha256": "5067619c1a4387c2abceab6a2ba75c2c9d4e74d172481e63404650cb7f926ebf",
+      "patches_sha256": "47c6ea0b0a441113cdceb5c5be16f6f5ba1f08c7f20d398e32f5eb28bd7ba025",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 54545,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 371.49540984397754
+    },
+    "240ps": {
+      "frame": 240,
+      "rows": 117649,
+      "context_atoms": 1048576,
+      "source": "/work/PERSO/vmorozov/datasets/Al/inherent_configurations_off/240ps.npy",
+      "source_sha256": "56d5113cf97bb157c60e19360f1be2b405531ec75d06eee952582304afe0871a",
+      "grid": "/work/PERSO/vmorozov/analysis/structural_static/cd-mace128-epoch12-al-20260926/analyses/order-v1/data/population-240ps.npz",
+      "grid_sha256": "0309924e7f70964679108291f0034631e58ea0fed705a36e2e12795575762f77",
+      "physical_sha256": "8dcc38952962b9c1dcdacc99acb0ea51bc7d52a3ebca17e60a3e3a576fbf6f65",
+      "targets_sha256": "3f6fa089206976cbb780e8971cf2cc936c95348adacce6fa38869a8571152eb5",
+      "patches_sha256": "4dc77d173e8b71fdde7a6c2b3ee4c9bfc34ee60e8806b606573a193c0d345967",
+      "descriptor_models": {
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-tda-k7-descriptor-model.npz": "5370a5c41c0ae20e96c7fa813d99cd73f501fb2b4bfd4a97be672608a3bb74de",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-bond_order-k7-descriptor-model.npz": "efc39eaccbe36814ae62ba83904cbb234c39d22a64745563c6ba74530f0eb96b",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-cna-k7-descriptor-model.npz": "564a72dc477303d7b80e6cba62e1b154c66ace681301458d2f1e62bd826831ef",
+        "/work/PERSO/vmorozov/analysis/spatial_vicreg_bias/matched-al64-20260929/analyses/interface-correspondence-v1/data/interface12-joint-k7-descriptor-model.npz": "55c2b2c922e7f02b7d9734f908fcad7ba34b9627c2cd6b38c436256c6f416d44"
+      },
+      "neural_training": false,
+      "periodic": false,
+      "relaxation": "inherent configurations, already relaxed",
+      "interface_boundary_atoms": 67747,
+      "implementation_sha256": "5a90edec4ee41cbaabb7e490695066c98c7d6dc6986db7e26b1d11e42118dadb",
+      "seconds": 587.6467332211323
+    }
+  }
+}

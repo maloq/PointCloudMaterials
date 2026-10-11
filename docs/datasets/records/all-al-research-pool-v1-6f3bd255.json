@@ -1,0 +1,41 @@
+{
+  "dataset_id": "all-al-research-pool-v1",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/al_research/pool-v1/status.json",
+      "relative_path": "status.json",
+      "sha256": "5a6cad770a91f82870ec87d7ca8ac54a3ca34a9f069b754e728b7d48452fce2b",
+      "kind": "metadata",
+      "keys": [
+        "checked_at",
+        "dense_simulations",
+        "overall",
+        "studies",
+        "user_jobs"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/al_research/pool-v1/technical/dense-refresh/code/config.json",
+      "relative_path": "technical/dense-refresh/code/config.json",
+      "sha256": "6e02246a2604076350ed87efd74578512382cff03d4de1f293dcd94e1680973d",
+      "kind": "metadata",
+      "keys": [
+        "appearance_config",
+        "cache",
+        "dense_config",
+        "output",
+        "protocols",
+        "schema_version",
+        "shooting_config",
+        "simulation_launch",
+        "studies"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

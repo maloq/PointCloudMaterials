@@ -1,5 +1,10 @@
 # Multimaterial MACE256 descriptor run: correlation 3, angular order 3
 
+New target calculation uses the [optimized spatial target preparation](target_preparation.md)
+with the original safe-alpha definition. Existing sealed descriptor caches are
+reused without recalculation. The spatial-only 298-column option is a new cache
+declaration; historical 442-column runs keep their actual inputs and transforms.
+
 The next study is the [packed-data VCReg/TDA pilot comparison](rich_tda_objectives.md):
 seven matched 10% pilots followed by a validation-selected full-data fit.
 The stopped RH2 artifacts and their frozen producer remain unchanged.

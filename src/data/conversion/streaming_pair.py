@@ -38,6 +38,34 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
     identity = None; kinds = None
     pending = {name:[] for name in reference_hash}
     written = 0
+    recovery = metadata.get('binary_prefix_recovery')
+    prefix = None
+    if recovery is not None:
+        prefix = ShootingBinaryTrajectory.load(recovery['binary_path'])
+        prefix.verify_checksums()
+        restart = recovery['restart_step']
+        if sha256(prefix.root/'manifest.json') != recovery['manifest_sha256']:
+            raise ValueError('Recovery prefix manifest changed')
+        prefix_count = steps.index(restart)
+        if not np.array_equal(prefix.timesteps[:prefix_count], steps[:prefix_count]):
+            raise ValueError('Recovery prefix does not cover the exact retained timeline')
+        if prefix.atom_count != atoms or prefix.positions.dtype != np.float16:
+            raise ValueError('Wrong recovery prefix atom count or precision')
+
+    def input_frames():
+        if prefix is not None:
+            from src.data.shooting import ShootingFrame
+            for index in range(prefix_count):
+                # Retain the previously verified encoded values, including boundary
+                # rounding. Do not reconstruct a fictitious full-precision prefix.
+                yield ShootingFrame(timestep=int(prefix.timesteps[index]),
+                    atom_ids=prefix.atom_ids, atom_types=prefix.atom_types,
+                    positions=prefix.positions[index].astype(np.float32),
+                    velocities=prefix.velocities[index].astype(np.float32),
+                    box_low=prefix.box_low[index], box_high=prefix.box_high[index])
+        tail_steps = steps[prefix_count:] if prefix is not None else steps
+        yield from iter_lammps_shooting_frames_for_conversion(
+            source, timesteps=tail_steps, atom_count=atoms, exact_timeline=True)
 
     def flush_chunk():
         nonlocal written
@@ -62,8 +90,10 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
             if name == 'positions':
                 lengths = highs[written:written+n]-lows[written:written+n]
                 delta -= lengths[:,None,:]*np.rint(delta/lengths[:,None,:])
+            if prefix is not None:
+                delta = delta[max(0, min(n, prefix_count-written)):]
             error = errors[name]
-            error['max_abs'] = max(error['max_abs'],float(np.abs(delta).max()))
+            error['max_abs'] = max(error['max_abs'],float(np.abs(delta).max(initial=0)))
             error['square_sum'] += float(np.square(delta).sum())
             error['coordinate_count'] += delta.size
             items.clear()
@@ -77,8 +107,7 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
             handles[name] = handle
             npformat.write_array_header_2_0(handle,dict(descr=np.dtype('float16').str,
                                                        fortran_order=False,shape=shape))
-        for index, frame in enumerate(iter_lammps_shooting_frames_for_conversion(
-                source,timesteps=steps,atom_count=atoms,exact_timeline=True)):
+        for index, frame in enumerate(input_frames()):
             if identity is None:
                 identity=frame.atom_ids.copy(); kinds=frame.atom_types.copy()
             if not np.array_equal(frame.atom_ids,identity) or not np.array_equal(frame.atom_types,kinds):
@@ -125,6 +154,13 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
     stat = source.stat()
     provenance=dict(protocol=metadata['protocol'],root_lineage=metadata['root_lineage'],split=metadata['split'],
                     source_sha256=metadata['source_sha256'],timestep_ps=metadata['timestep_ps'])
+    if 'execution_backend' in metadata:
+        provenance.update(execution_backend=metadata['execution_backend'], execution=metadata['execution'])
+    if prefix is not None:
+        provenance['binary_prefix_recovery'] = recovery
+        provenance['prefix_quantization'] = prefix.manifest['provenance']['quantization']
+        provenance['prefix_quantization_scope'] = 'Original archived partial trajectory, including any discarded post-checkpoint observations; not recomputed for the retained subset.'
+        provenance['precision_reference'] = 'Retained prefix float16 values unchanged; new tail verified against native float32 consumer values. Prefix quantization is inherited separately.'
     manifest=dict(format=FORMAT_NAME,schema_version=SCHEMA_VERSION,state='complete',created_at=now(),
         storage_dtype='float16',atom_count=atoms,frame_count=frames,first_timestep=steps[0],last_timestep=steps[-1],
         coordinate_convention='positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)',
@@ -142,6 +178,12 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
         float32_reference_retained=False,float32_semantic_sha256=manifest['source']['semantic_float32_sha256'],
         precision_reference='Every float16 rounding value verified against the established float32 consumer in bounded chunks; native restarts retained',
         conversion_protocol='streaming_paired_float16_v1',chunk_frames=chunk_frames)
+    if prefix is not None:
+        report.update(binary_prefix_recovery=recovery,
+            inherited_prefix_quantization=prefix.manifest['provenance']['quantization'],
+            inherited_prefix_quantization_scope=provenance['prefix_quantization_scope'],
+            precision_reference=provenance['precision_reference'],
+            quantization_scope='New tail; retained prefix has zero additional rounding. Original prefix errors are inherited separately.')
     write_json(root/'paired_conversion.json',report)
     if delete_source:
         source.unlink(); report['source_deleted']=True

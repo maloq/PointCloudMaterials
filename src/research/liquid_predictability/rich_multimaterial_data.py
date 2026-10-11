@@ -1,6 +1,7 @@
 """Raw multi-material patch descriptors, immutable ancestry and bounded streaming."""
 from collections import Counter, OrderedDict
 from concurrent.futures import ProcessPoolExecutor
+from functools import lru_cache
 import json
 from pathlib import Path
 import time
@@ -13,7 +14,20 @@ from src.data.structural_pretraining.native_dataset import NativeStructuralDatas
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.artifacts import implementation_hashes
 from .data import config
-from .descriptors import patch_descriptors
+from .descriptors import patch_descriptors, patch_descriptor_batch, descriptor_options
+
+
+def descriptor_implementation():
+    from src.postprocessing.descriptors import rich,alpha3d,selection
+    return {p.name:sha(p) for p in (Path(__file__),Path(__file__).with_name('descriptors.py'),Path(rich.__file__),
+                                  Path(alpha3d.__file__),Path(alpha3d.__file__).with_suffix('.cpp'),Path(selection.__file__))}
+
+
+@lru_cache(maxsize=8)
+def _planned_descriptor(root):
+    # Plans are immutable; read the large source inventory only once per worker.
+    p=config(root/'plan.json')
+    return {key:p[key] for key in ('identity','columns','implementation','descriptors')}
 
 
 def plan(c):
@@ -48,16 +62,19 @@ def plan(c):
     counts=Counter()
     for t in tasks:counts[t['role']+'/'+t['material']]+=t['rows']
     sample=np.load(resolve_path(tasks[0]['input']),mmap_mode='r')[0]*tasks[0]['factor']
-    values,names=patch_descriptors(sample)
-    if len(values)!=442:raise ValueError('Expected original 442 local rich descriptors')
+    options=descriptor_options(c)
+    values,names=patch_descriptors(sample,**options)
+    expected=len(options['selected_columns']) if 'selected_columns' in options else {2:298,3:343,4:442}[len(options['families'])]
+    if len(values)!=expected:raise ValueError(f'Expected {expected} local rich descriptors')
     columns=[dict(name=n,family=n.split('/')[0]) for n in names]
     binding=dict(protocol=c['protocol'],source_manifest_sha256=sha(source_root/'manifest.json'),
         structural_identity=spec['identity'],normalization=spec['normalization'],fixed_identity=fixed['identity'],
         fixed_population_sha256=fm['population_sha256'],
-        implementation={p.name:sha(p) for p in (Path(__file__),Path(__file__).with_name('descriptors.py'))},
+        implementation=descriptor_implementation(),descriptors=dict(options,families=list(options['families'])),
         execution=implementation_hashes('src/experiment_runner/preparation.py',
                                         'src/experiment_runner/artifacts.py'),
         tasks=tasks,columns=columns,counts=dict(counts),sampling='all raw dynamic observed rows; no phase labels')
+    if 'selection' in c.get('descriptors',{}):binding['target_selection']=c['descriptors']['selection']
     binding['identity']=digest(binding)
     root=resolve_path(c['cache']);root.mkdir(parents=True,exist_ok=True)
     target=root/'plan.json'
@@ -70,6 +87,12 @@ def prepare_task(args):
     from src.experiment_runner.preparation import PreparationShard
     c,identity,columns,task=args;root=resolve_path(c['cache'])/'shards'/task['id'];root.mkdir(parents=True,exist_ok=True)
     shard = PreparationShard(root, identity)
+    planned=_planned_descriptor(resolve_path(c['cache']))
+    options=descriptor_options(c)
+    if (planned['identity']!=identity or planned['columns']!=columns
+        or planned['implementation']!=descriptor_implementation()
+        or planned['descriptors']!=dict(options,families=list(options['families']))):
+        raise ValueError('Descriptor producer/options changed; use a new cache plan, not a mixed partial release')
     if shard.verified(task=task) is not None:
         return dict(task=task['id'],rows=task['rows'],reused=True)
     path=resolve_path(task['input'])
@@ -86,18 +109,24 @@ def prepare_task(args):
     for begin in range(start,len(index),c['preparation']['checkpoint_rows']):
         stop=min(begin+c['preparation']['checkpoint_rows'],len(index))
         x=np.asarray(raw[index[begin:stop]],np.float32)*np.float32(task['factor'])
-        for j,points in enumerate(x):
-            try:value,current=patch_descriptors(points)
-            except Exception as e:raise RuntimeError(f'Descriptor failure: {task["id"]}, input row {index[begin+j]}, {task["material"]}') from e
-            if current!=names:raise ValueError('Descriptor columns changed')
-            features[begin+j]=value
+        try:value,current=patch_descriptor_batch(x,**options)
+        except Exception as e:
+            raise RuntimeError(f'Descriptor failure: {task["id"]}, selected rows [{begin}:{stop}], '
+                               f'input rows {index[begin:stop].tolist()}, {task["material"]}') from e
+        if current!=names:raise ValueError('Descriptor columns changed')
+        features[begin:stop]=value
         positions[begin:stop]=x;positions.flush();features.flush()
         shard.progress(rows_done=stop)
     a=np.asarray(features,dtype=np.float64)
     np.savez(root/'moments.npz',total=a.sum(0),second=(a*a).sum(0))
     del a,features,positions,raw
+    native={}
+    if options['alpha_backend']=='native':
+        from src.postprocessing.descriptors.alpha3d import extension
+        receipt=Path(extension().build_receipt)
+        native=dict(native_build=str(receipt),native_build_sha256=sha(receipt))
     saved = shard.complete(('positions.npy', 'features.npy', 'moments.npz'),
-                           task=task, seconds=time.monotonic()-started)
+                           task=task, seconds=time.monotonic()-started,**native)
     return dict(task=task['id'],rows=len(index),seconds=saved['seconds'])
 
 
@@ -105,6 +134,7 @@ def prepare(c,lane):
     root=resolve_path(c['cache']);p=config(root/'plan.json')
     tasks=sorted(p['tasks'],key=lambda t:(-t['rows'],t['id']))[lane::c['preparation']['lanes']]
     # One shard per process task; each process caches the CNA JIT and Wigner coefficients.
+    if not 0<=lane<c['preparation']['lanes']:raise ValueError(f'Invalid preparation lane {lane}')
     with ProcessPoolExecutor(max_workers=c['preparation']['workers']) as pool:
         done=rows=0
         for value in pool.map(prepare_task,((c,p['identity'],p['columns'],t) for t in tasks)):
@@ -151,10 +181,10 @@ class CachedPatches:
         self.max_open=c['loader']['max_open_shards'];self._open=OrderedDict();self._verified=set()
         self.loss_weight=np.zeros(len(self.mean),np.float32)
         families=np.asarray([v['family'] for v in self.columns])
-        for f in ('geometry','bond_order','cna','tda'):
+        for f in np.unique(families):
             mask=(families==f)&self.active
             if not mask.any():raise ValueError(f'No varying {f} targets')
-            self.loss_weight[mask]=1/(4*mask.sum())
+            self.loss_weight[mask]=1/(len(np.unique(families))*mask.sum())
 
     def __len__(self):return int(self.ends[-1])
 
@@ -178,10 +208,10 @@ class CachedPatches:
         std=np.sqrt(np.maximum(second/len(self)-(total/len(self))**2,0))
         self.scale=std.clip(1e-4).astype(np.float32);self.active=std>=1e-4
         self.loss_weight.fill(0);families=np.array([v['family'] for v in self.columns])
-        for f in ('geometry','bond_order','cna','tda'):
+        for f in np.unique(families):
             mask=(families==f)&self.active
             if not mask.any():raise ValueError(f'No varying subset targets in {f}')
-            self.loss_weight[mask]=1/(4*mask.sum())
+            self.loss_weight[mask]=1/(len(np.unique(families))*mask.sum())
 
     def use_transform(self,training):
         self.mean=training.mean.copy();self.scale=training.scale.copy()

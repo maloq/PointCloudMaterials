@@ -1,0 +1,21 @@
+{
+  "state": "complete",
+  "completed_utc": "2026-10-02T13:55:23.892533+00:00",
+  "authorization": "User explicitly requested removal after reviewing contents including checkpoints and evaluation arrays.",
+  "deleted_root": "/work/PERSO/vmorozov/analysis/embedding_forecast",
+  "allocated_bytes_before": 29458324480,
+  "deleted_files": 7723,
+  "run_directories": [
+    "context-space-mixture-20260913",
+    "context-space-mixture-interim-replicated-20260913",
+    "context-space-mixture-interim-seed1-20260913",
+    "context-space-mixture-interim-two-seed-20260913",
+    "context-space-mixture-short-history-20260913",
+    "spatial-attention-20260914",
+    "spatial-context-analysis-20260914",
+    "spatial-context-scale-20260913",
+    "structure-embedding-paths-20260913",
+    "structure-embedding-paths-umap-20260913"
+  ],
+  "scope": "Entire reviewed WORK embedding_forecast result collection, including models, evaluations, local caches and generated reports. Experiment documentation outside the collection remains."
+}

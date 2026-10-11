@@ -1,0 +1,25 @@
+{
+  "state": "complete",
+  "completed_at": "2026-10-07T16:16:07.798538+00:00",
+  "authorization": "User: You can delete geospatial data too",
+  "root": "/store/PERSO/vmorozov/data",
+  "deleted_entries": 5998,
+  "deleted_files": 5815,
+  "removed_categories": [
+    "countries",
+    "land_features",
+    "models",
+    "modis",
+    "night_lights",
+    "repos",
+    "saved_features",
+    "saved_features_boost",
+    "wwf_terr_ecos"
+  ],
+  "released_allocated_bytes": 39229997056,
+  "released_GiB": 36.53578186035156,
+  "accounting": "Unique allocated blocks, final hard links removed, directories included; audit files excluded",
+  "verification": "All file identities unchanged at preflight; only listed entries unlinked; symlink targets not traversed; entire authorized root verified absent",
+  "inventory_sha256": "43d13dfcc28735dd38eda044d9f50252da65dbdbe091158715be6af56ea94298",
+  "scope_note": "Only /store/PERSO/vmorozov/data; no simulation, training, scientific result, checkpoint or job outside this geospatial root changed"
+}

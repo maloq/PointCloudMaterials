@@ -1,0 +1,6 @@
+Filesystem                                       Type  Size  Used Avail Use% Mounted on
+nodessd01.enst.fr:/zdata/work/vmorozov           nfs4  512G  324G  189G  64% /work/PERSO/vmorozov
+isilon-a12-nfs.enst.fr:/ifs/store                nfs    30T   13T   18T  43% /store
+nodenvme02.enst.fr:/zdata/scratch/PERSO/vmorozov nfs4  512G  119G  394G  24% /scratch/PERSO/vmorozov
+nodenvme01.enst.fr:/data01/users                 nfs   110T   72T   39T  65% /home/ids
+ssd.enst.fr:/data/ir800                          nfs    84T   57T   28T  68% /home/infres

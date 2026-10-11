@@ -1,0 +1,8 @@
+{
+  "transfer": "${storage:archive}/simulation-launches/al-dense-gpu-20261004/hardware-transfer-20261004/attempt-v2",
+  "source_ids": [914, 974],
+  "partitions": ["A100", "L40S", "A40"],
+  "walltime": "06:00:00",
+  "replaces_collector": "1020937",
+  "compiler_cache": "${storage:scratch}/software/al-dense-gpu-transfer-20261004"
+}

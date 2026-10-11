@@ -1,0 +1,13 @@
+{
+  "reviewed_at": "2026-10-08T10:08:29.774268+00:00",
+  "scope": "Numerical-validation reuse after analysis import relocation only",
+  "file": "src/simulation/campaigns/ni_births/md.py",
+  "validated_source": "output/ni_nucleation/campaign-20261007-extension01/technical/code/src/simulation/campaigns/ni_births/md.py",
+  "validated_sha256": "22a6f61488201cd01ac0636d18fa2243e802aff83236d6c1e410664ef08a45b0",
+  "compatible_sha256": "e778e992a28096724aa8ab7f4d989523810b93537b38f67f1866461ea99e8e4d",
+  "changed_functions": [
+    "audit"
+  ],
+  "conclusion": "All module-level code and every production function are AST-identical. The audit function is AST-identical after replacing exactly two analysis imports. Force, integration, conversion and publication implementations are unchanged. Production reuse never executes audit(). No new numerical execution is needed.",
+  "diff": "--- output/ni_nucleation/campaign-20261007-extension01/technical/code/src/simulation/campaigns/ni_births/md.py\n+++ src/simulation/campaigns/ni_births/md.py\n@@ -111,8 +111,8 @@\n                 convert_chunk(path,folder/'audit-binary')\n                 b=ShootingBinaryTrajectory.load(folder/'audit-binary')\n                 if not np.array_equal(b.velocities,np.stack([v0,v1]).astype(np.float16)):raise ValueError('Saved velocities differ')\n-                from src.research.crystallization_origin.search_clusters import structure\n-                from .search import extraction_config\n+                from src.postprocessing.descriptors.structure import structure\n+                from src.postprocessing.protocols.ni import extraction_config\n                 lengths=b.box_high[-1].astype(float)-b.box_low[-1].astype(float)\n                 clusters,counts,_=structure(np.mod(b.positions[-1].astype(float),lengths),lengths,extraction_config(c))\n                 write_json(folder/'structure-audit.json',dict(detectors=4,shape=list(clusters.shape),solid_counts=counts.tolist()))\n"
+}

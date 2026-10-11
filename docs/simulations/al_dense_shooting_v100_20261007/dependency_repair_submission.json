@@ -1,0 +1,38 @@
+{
+  "state": "submitted",
+  "workers": [
+    {
+      "lane": 0,
+      "job": "1027669",
+      "predecessor": "1026907_0",
+      "deadline_utc": "2026-10-08T11:02:14+00:00",
+      "sources": 6
+    },
+    {
+      "lane": 1,
+      "job": "1027670",
+      "predecessor": "1027414_0",
+      "deadline_utc": "2026-10-08T15:39:16+00:00",
+      "sources": 9
+    },
+    {
+      "lane": 2,
+      "job": "1027671",
+      "predecessor": "1027414_1",
+      "deadline_utc": "2026-10-08T15:39:16+00:00",
+      "sources": 9
+    },
+    {
+      "lane": 3,
+      "job": "1027672",
+      "predecessor": "1027414_2",
+      "deadline_utc": "2026-10-08T15:39:16+00:00",
+      "sources": 9
+    }
+  ],
+  "replaces_submission": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/submission.json",
+  "created_at": "2026-10-07T18:34:22.379478+00:00",
+  "budget": "Original per-lane absolute deadlines, no extension",
+  "collect_job": "1027673",
+  "submitted_at": "2026-10-07T18:34:22.463679+00:00"
+}

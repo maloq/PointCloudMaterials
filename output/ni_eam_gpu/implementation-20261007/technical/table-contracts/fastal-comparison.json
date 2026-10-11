@@ -1,0 +1,7 @@
+{
+  "table": "tables/fastal-comparison.csv",
+  "sha256": "a31777c43e475333ffcafd41d88fddd186a9ce9e77e5b6f2bd235cab113e369a",
+  "family": "ni_eam_gpu",
+  "contract": "technical/metric-contracts/ni_eam_gpu.json",
+  "definitions": "tables/metric-definitions/ni_eam_gpu.md"
+}

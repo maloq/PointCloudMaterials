@@ -1,0 +1,1313 @@
+{
+  "config_sha256": "2f4da50bea673af5b2659893e69daddd73c4d1cec64fca487a2569d3243d82c8",
+  "host": "node04",
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "cpu_affinity": [
+    0,
+    1,
+    32,
+    33
+  ],
+  "cpu_threads": 4,
+  "torch": "2.14.0+cu130",
+  "freud": "3.4.0",
+  "cuda": "13.0",
+  "extension_startup_seconds": 0.9335175435990095,
+  "timing_policy": "Synchronized wall time, warm filesystem/JIT, alternating order, allocation and transfers included. Full-frame totals separately include read, CPU PTM and NPZ compression. No production checksum scan, tracking or shared-filesystem writes included.",
+  "implementation": {
+    "src/postprocessing/gpu_benchmark.py": "3b2c2e39f1b294670567b4fb1d113318f84e0c6ab33dc72fbf3c6765c947a740",
+    "src/postprocessing/descriptors/structure.py": "56d07aa24378c9942cd72035760dbcf826e6bbe6e31112ace60078447cc20f18",
+    "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+    "src/postprocessing/descriptors/gpu/__init__.py": "f24859b3d3dc1b55d65070a4a39ba90aa7c9764b46fe23e3a0810bdbf549e8c0",
+    "src/postprocessing/descriptors/gpu/kernels.cu": "36b508c67c11bac4bbc79664cadb1b1b0347e0317d231b25c710421ebf86af55"
+  },
+  "cases": [
+    {
+      "name": "Al-70304-0",
+      "source_id": "al-0d15aca10492ad58",
+      "input_identity": "04ea4ea4e9ebb1545f53a1906e90ae2cd5ae3361fdc55291b48745a66a458ae9",
+      "frame": 0,
+      "atoms": 70304,
+      "read_seconds": 0.025789559818804264,
+      "initial_ptm_seconds": 1.1635642470791936,
+      "solid_counts": [
+        37,
+        942,
+        164,
+        21
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": false,
+          "histogram_l1": 4,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.086162567138672e-07,
+          "correlation_max_abs": 1.043081283569336e-06,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": false
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.5919189536944032
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.5733873401768506
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.004818071611225605
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.3471689159050584,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.2825523000210524,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.7403091201558709,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.004786373116075993
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.5528731420636177
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.5927605773322284
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.7441367818973958,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.2705332469195127,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.3252401486970484,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.5941777611151338
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.5464526922442019
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.004854320082813501
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.3446348570287228,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.296567302197218,
+          "compressed_bytes": 5185
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.7389444140717387,
+          "compressed_bytes": 5185
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 0.5927605773322284,
+        "after_ptm/4/freud": 0.5528731420636177,
+        "after_ptm/4/cuda": 0.004818071611225605,
+        "full_frame/4/cpu": 1.3446348570287228,
+        "full_frame/4/freud": 1.2825523000210524,
+        "full_frame/4/cuda": 0.7403091201558709
+      },
+      "peak_cuda_allocated_bytes": 77876224
+    },
+    {
+      "name": "Al-70304-3000",
+      "source_id": "al-0d15aca10492ad58",
+      "input_identity": "04ea4ea4e9ebb1545f53a1906e90ae2cd5ae3361fdc55291b48745a66a458ae9",
+      "frame": 3000,
+      "atoms": 70304,
+      "read_seconds": 0.02769902814179659,
+      "initial_ptm_seconds": 0.7083192388527095,
+      "solid_counts": [
+        60272,
+        68865,
+        67876,
+        66294
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.384185791015625e-07,
+          "correlation_max_abs": 6.854534149169922e-07,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.6867515840567648
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.5939968349412084
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.029253697022795677
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.409391252323985,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.3199786418117583,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.761419054120779,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.027536064852029085
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.6047158208675683
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.6853672908619046
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.7591884899884462,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.3192558190785348,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.4058255460113287,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.6704262499697506
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.5978890769183636
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.0269921338185668
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 1.4158220910467207,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 1.3265498117543757,
+          "compressed_bytes": 41956
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.7629859670996666,
+          "compressed_bytes": 41956
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 0.6853672908619046,
+        "after_ptm/4/freud": 0.5978890769183636,
+        "after_ptm/4/cuda": 0.027536064852029085,
+        "full_frame/4/cpu": 1.409391252323985,
+        "full_frame/4/freud": 1.3199786418117583,
+        "full_frame/4/cuda": 0.761419054120779
+      },
+      "peak_cuda_allocated_bytes": 76838400
+    },
+    {
+      "name": "Al-1000000-3125",
+      "source_id": "external-al-million-continuous",
+      "input_identity": "f218ec48f1026efa7e76fcaa778333a16c42e0b95024e89c31b6589cf05b4687",
+      "frame": 3125,
+      "atoms": 1000000,
+      "read_seconds": 0.47128554293885827,
+      "initial_ptm_seconds": 12.838053227867931,
+      "solid_counts": [
+        1081,
+        15013,
+        2745,
+        495
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": false,
+          "histogram_l1": 16,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.384185791015625e-07,
+          "correlation_max_abs": 1.1101365089416504e-06,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": false
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 10.498864406719804
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.390132107306272
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.04545881599187851
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 23.155549061950296,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 21.941596247721463,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 12.746694622095674,
+          "compressed_bytes": 56065
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.049826137255877256
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.196797922253609
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 10.113669926766306
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 12.677032354753464,
+          "compressed_bytes": 56065
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 21.949395360890776,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 23.070984289050102,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 10.422532798256725
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.562550535891205
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.048032041639089584
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 23.3153108288534,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 22.258228204213083,
+          "compressed_bytes": 56066
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 12.572807771153748,
+          "compressed_bytes": 56065
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 10.422532798256725,
+        "after_ptm/4/freud": 9.390132107306272,
+        "after_ptm/4/cuda": 0.048032041639089584,
+        "full_frame/4/cpu": 23.155549061950296,
+        "full_frame/4/freud": 21.949395360890776,
+        "full_frame/4/cuda": 12.677032354753464
+      },
+      "peak_cuda_allocated_bytes": 1071892992
+    },
+    {
+      "name": "Al-1000000-6000",
+      "source_id": "external-al-million-continuous",
+      "input_identity": "f218ec48f1026efa7e76fcaa778333a16c42e0b95024e89c31b6589cf05b4687",
+      "frame": 6000,
+      "atoms": 1000000,
+      "read_seconds": 0.31797401420772076,
+      "initial_ptm_seconds": 12.402591874357313,
+      "solid_counts": [
+        827608,
+        966450,
+        947161,
+        919816
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": false,
+          "histogram_l1": 8,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.384185791015625e-07,
+          "correlation_max_abs": 8.940696716308594e-07,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": false
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 12.016425739973783
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.980286009144038
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.16614542482420802
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 24.55201012874022,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 22.50764875393361,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 12.97977550374344,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.1593821900896728
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.701655320823193
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 11.880981313996017
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 13.113771695178002,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 22.55985188158229,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 24.374631504993886,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 11.995989847928286
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 9.955473391339183
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.14894134690985084
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 24.59441580576822,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 22.581716921646148,
+          "compressed_bytes": 638272
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 13.100146239157766,
+          "compressed_bytes": 638272
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 11.995989847928286,
+        "after_ptm/4/freud": 9.955473391339183,
+        "after_ptm/4/cuda": 0.1593821900896728,
+        "full_frame/4/cpu": 24.55201012874022,
+        "full_frame/4/freud": 22.55985188158229,
+        "full_frame/4/cuda": 13.100146239157766
+      },
+      "peak_cuda_allocated_bytes": 1071892992
+    },
+    {
+      "name": "Ni-32000-0",
+      "source_id": "ni-T1200-melt00",
+      "input_identity": "d3026e3d6b0ce270665a991160e01649d5636cd40cbd67a503e0d94ef8593acf",
+      "frame": 0,
+      "atoms": 32000,
+      "read_seconds": 0.23222491703927517,
+      "initial_ptm_seconds": 0.3008628571406007,
+      "solid_counts": [
+        0,
+        29,
+        3,
+        0
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": false,
+          "histogram_l1": 4,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.086162567138672e-07,
+          "correlation_max_abs": 7.897615432739258e-07,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": false
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2632682640105486
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.24644038872793317
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.0035173827782273293
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.5673858262598515,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5497640371322632,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.30788359604775906,
+          "compressed_bytes": 2459
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.0035967896692454815
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.24369784584268928
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2609565299935639
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.30847536586225033,
+          "compressed_bytes": 2459
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5462350030429661,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.5683106840588152,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2614185777492821
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.24876010697335005
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.0034857941791415215
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.5634858720004559,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5435539036989212,
+          "compressed_bytes": 2460
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.3071544929407537,
+          "compressed_bytes": 2459
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 0.2614185777492821,
+        "after_ptm/4/freud": 0.24644038872793317,
+        "after_ptm/4/cuda": 0.0035173827782273293,
+        "full_frame/4/cpu": 0.5673858262598515,
+        "full_frame/4/freud": 0.5462350030429661,
+        "full_frame/4/cuda": 0.30788359604775906
+      },
+      "peak_cuda_allocated_bytes": 34618368
+    },
+    {
+      "name": "Ni-32000-3000",
+      "source_id": "ni-T1200-melt00",
+      "input_identity": "d3026e3d6b0ce270665a991160e01649d5636cd40cbd67a503e0d94ef8593acf",
+      "frame": 3000,
+      "atoms": 32000,
+      "read_seconds": 0.007780108600854874,
+      "initial_ptm_seconds": 0.3234871872700751,
+      "solid_counts": [
+        4,
+        472,
+        83,
+        11
+      ],
+      "agreement": {
+        "freud": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 0.0,
+          "correlation_max_abs": 0.0,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        },
+        "cuda": {
+          "component_atom_differences": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "counts_equal": true,
+          "histogram_equal": true,
+          "histogram_l1": 0,
+          "solid_atom_differences": [
+            0,
+            0,
+            0
+          ],
+          "neighbors_equal": true,
+          "q6_max_abs": 2.384185791015625e-07,
+          "correlation_max_abs": 7.152557373046875e-07,
+          "bond_decision_differences": [
+            0,
+            0,
+            0
+          ],
+          "scientific_arrays_exact": true
+        }
+      },
+      "timings": [
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2814698200672865
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.26831965474411845
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.003660718910396099
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.608168379869312,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5997827057726681,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 0,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.33129970729351044,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.003614393062889576
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.2682743617333472
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2860561269335449
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.33242860436439514,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5959669188596308,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 1,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.6161045208573341,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cpu",
+          "seconds": 0.2815607492811978
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "freud",
+          "seconds": 0.263920184224844
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "after_ptm",
+          "backend": "cuda",
+          "seconds": 0.0035862699151039124
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cpu",
+          "seconds": 0.617881269659847,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "freud",
+          "seconds": 0.5925781051628292,
+          "compressed_bytes": 3649
+        },
+        {
+          "threads": 4,
+          "repeat": 2,
+          "stage": "full_frame",
+          "backend": "cuda",
+          "seconds": 0.331663372926414,
+          "compressed_bytes": 3649
+        }
+      ],
+      "median_seconds": {
+        "after_ptm/4/cpu": 0.2815607492811978,
+        "after_ptm/4/freud": 0.2682743617333472,
+        "after_ptm/4/cuda": 0.003614393062889576,
+        "full_frame/4/cpu": 0.6161045208573341,
+        "full_frame/4/freud": 0.5959669188596308,
+        "full_frame/4/cuda": 0.331663372926414
+      },
+      "peak_cuda_allocated_bytes": 34618368
+    }
+  ],
+  "completed": true,
+  "date": "2026-10-08",
+  "raw_results_sha256": "ab0563a31fb355cc0c4d93d1499e35fe35912e2c7d66231e85d3476e174fd30a",
+  "cpu_model": "AMD EPYC 7302",
+  "allocated_logical_cpus": 4,
+  "allocated_physical_cores": 2,
+  "driver": "595.84",
+  "adoption": "Experimental only; no production queues changed. GPU harmonic histograms differ near bin boundaries.",
+  "benchmark_job": 1027981
+}

@@ -12,7 +12,8 @@ from src.data.fixed_cohort.dataset import read_release
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.experiment_runner.metric_docs import write_metric_rows
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry, extract
+from src.postprocessing.protocols import ancestry
+from src.postprocessing.protocols import extract
 
 ROLES = ('train', 'selection', 'calibration', 'test')
 

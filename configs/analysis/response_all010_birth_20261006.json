@@ -1,0 +1,73 @@
+{
+  "protocol": "all010_velocity_observed_v3_response_birth_v2",
+  "campaign": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1",
+  "campaign_identity": "9885c9e1aa3f2b9fbbb09337d1e6e9977ba752b83f216130f749a61d443618ed",
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "releases": [
+    "${storage:training_storage}/nuclei_search/al-all-20261005-v3",
+    "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-v3",
+    "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-v3"
+  ],
+  "output": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/all010-birth-v2",
+  "cache": "${storage:cache}/response-birth/all010-v3-20261006-v2",
+  "feature_cache": "${storage:cache}/context-features",
+  "seed": 20261006,
+  "leads_ps": [
+    0.1,
+    0.5,
+    1.0
+  ],
+  "radius_A": 8.0,
+  "control_followup_ps": 6.0,
+  "centers_per_event": 4,
+  "negative_candidates": 1024,
+  "minimum_events": {
+    "train": 5,
+    "selection": 2,
+    "calibration": 2,
+    "test": 3
+  },
+  "lanes": 2,
+  "prepare_workers": 4,
+  "inference_batch_size": 128,
+  "fit_threads": 2,
+  "bootstrap_draws": 2000,
+  "spaces": [
+    "embedding",
+    "prediction_head"
+  ],
+  "readouts": [
+    "catboost",
+    "linear"
+  ],
+  "readout": {
+    "linear_C": [
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "catboost": {
+      "iterations": 1000,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "GPU",
+      "devices": "0",
+      "gpu_ram_part": 0.8,
+      "boosting_type": "Plain",
+      "bootstrap_type": "Bayesian",
+      "bagging_temperature": 1
+    },
+    "patience": 100
+  },
+  "wall_seconds": 32400,
+  "population": "all_010_with_saved_velocities",
+  "reuse_prepared": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/dense010-birth-v1",
+  "deadline_reference": "${storage:training_storage}/response_velocity/native500-f64-20261006-v1/analyses/dense010-birth-v1/technical/launch.json",
+  "metric_namespace": "all010_birth_v2",
+  "tracking_evaluation": "all010-lineage-birth-v2"
+}

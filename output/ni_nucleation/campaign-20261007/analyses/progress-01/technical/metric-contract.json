@@ -1,0 +1,15 @@
+{
+  "family": "ni_births_preview",
+  "exported_at": "2026-10-07T16:52:04.326700+00:00",
+  "files": {
+    "docs/metrics/ni_births_preview.md": "30c5a49393f9b03bded3826d21ab9850bc3955d68d9d29c99a4120802137ae1b",
+    "src/simulation/campaigns/ni_births/preview.py": "210d9c6136f24fa78201f4fca76ce49ad6cc332f21b301676cfcba4f3fe1a6b2",
+    "src/research/crystallization_origin/extract.py": "1f4563b7af2901715f79e0460cd34b4a2a107c46eaa5a18a275c18daeb235429",
+    "src/research/crystallization_origin/search_clusters.py": "9399ec9221c197936b90c94922282bc795ca7859db45a1d82501747cb95a962b",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+    "configs/simulation/ni_births_010_20261007.json": "32425207f1ad51b87e4403e812e3a801cf9b66e363c39a0684a64d3b895bc74a",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
+    "src/experiment_runner/artifacts.py": "63ab4e5fbbe956d767b9f15b56a2bfaedcc988c55426998a26674cf0bda5e290"
+  },
+  "verified": true
+}

@@ -12,7 +12,7 @@ Inspect current producer records and array headers; historical directory labels 
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 9.993 GiB
+- Allocated storage, excluding registered nested datasets: 0.015 GiB
 - Missing metadata: ensemble
 
 ## Notes and relationships
@@ -28,6 +28,14 @@ Inspect current producer records and array headers; historical directory labels 
   "description": "Inspect current producer records and array headers; historical directory labels and planned counts are not proof of completion.",
   "evidence": [
     "${dataset:al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830}"
+  ],
+  "storage_cleanup": {
+    "date": "2026-10-07",
+    "payload_files_removed": 15,
+    "receipt": "docs/storage/store_cleanup_20261007/payload-cleanup-receipt.json"
+  },
+  "limitations": [
+    "2026-10-07 user-authorized archive cleanup: binary payloads >=1 MiB in this old repository snapshot were deleted. Reports, figures, tables, code and provenance remain; historical producer completion does not imply payload availability."
   ]
 }
 ```
@@ -43,13 +51,16 @@ Inspect current producer records and array headers; historical directory labels 
 | temperature_K | [510.0, 520.0, 530.0, 540.0] |
 | equilibration_duration_ps | [15.0] |
 | sample_interval_ps | [1.0] |
+| frame_count | [601] |
+| storage_dtype | ["float16"] |
+| coordinate_convention | ["wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 
 ## Evidence
 
-All 10 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_2026083-b901d570.json).
+All 18 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_2026083-b901d570.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

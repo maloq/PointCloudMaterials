@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "archives": [
+    {
+      "id": "ni-birth-windows-20261008",
+      "path": "${storage:archive}/simulations/ni-birth-relaxed-windows-20261008/cells"
+    },
+    {
+      "id": "birth-temporal",
+      "path": "${storage:archive}/birth_prediction/relaxed-temporal-20261001/cells",
+      "plan": "${storage:training_storage}/birth_prediction/relaxed-temporal-20261001/technical/relaxation-plan.json"
+    },
+    {
+      "id": "birth-appearance",
+      "path": "${storage:archive}/birth_prediction/appearance-transients-relaxed-20261002/cells",
+      "plan": "${storage:training_storage}/birth_prediction/appearance-transfer-20261002/technical/relaxation-plan.json"
+    },
+    {
+      "id": "relaxed-tda",
+      "path": "${storage:archive}/relaxed_tda/al-expanded-20260917/frames",
+      "implementation": "output/relaxed_tda/al-expanded-20260917/technical/implementation.json"
+    },
+    {
+      "id": "encoder-pilot-20260920",
+      "path": "${storage:archive}/relaxed_encoder/pilot-20260920/cells"
+    },
+    {
+      "id": "encoder-expanded-20260921",
+      "path": "${storage:archive}/relaxed_encoder/expanded-20260921/cells"
+    },
+    {
+      "id": "encoder-large-test-20260921",
+      "path": "${storage:archive}/relaxed_encoder/large-test-20260921/cells"
+    },
+    {
+      "id": "liquid-full",
+      "path": "${storage:archive}/liquid-predictability/full-relaxation-20260928/cells",
+      "plan": "docs/storage/experiment_removal_20261002/results/08-liquid_predictability/full-relaxation-20260928/technical/plan.json"
+    },
+    {
+      "id": "shared",
+      "path": "${storage:archive}/relaxation-index/v1/patches"
+    }
+  ],
+  "patch_caches": [
+    {
+      "id": "tda-neighborhoods",
+      "path": "${storage:cache}/relaxed_tda/al-expanded-20260917/frames",
+      "layout": "tda_targets"
+    },
+    {
+      "id": "encoder-neighborhoods-pilot-20260920",
+      "path": "${storage:cache}/relaxed_encoder/pilot-20260920/cells",
+      "layout": "paired_clouds"
+    },
+    {
+      "id": "encoder-neighborhoods-expanded-20260921",
+      "path": "${storage:cache}/relaxed_encoder/expanded-20260921/cells",
+      "layout": "paired_clouds"
+    },
+    {
+      "id": "encoder-neighborhoods-large-test-20260921",
+      "path": "${storage:cache}/relaxed_encoder/large-test-20260921/cells",
+      "layout": "paired_clouds"
+    }
+  ]
+}

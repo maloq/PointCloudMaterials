@@ -12,7 +12,8 @@ from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.data.relaxed_targets.worker import AbsolutePositions, clouds, publish, verify_archive
 from src.data.conversion.relaxation import convert, read_relaxed
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from src.simulation.relaxation import relax_frame
 from .data import load, read
 from .extension import base
@@ -108,7 +109,7 @@ def checked(p, task):
     return done
 
 
-def cell(p, task):
+def cell(p, task, *, frame_timeout_seconds=None):
     c = p['config']
     folder = resolve_path(c['cache']) / 'cells' / task['id']
     folder.mkdir(parents=True, exist_ok=True)
@@ -122,12 +123,39 @@ def cell(p, task):
     patches = np.array([v['patch'] for v in task['patches']], np.int64)
     centers = np.searchsorted(raw.atom_ids, atoms)
     np.testing.assert_array_equal(raw.atom_ids[centers], atoms)
+    # Rebind saved physical patches to this experiment's indices; never reuse row IDs.
+    from src.data.relaxation_index import patch_lookup
+    from scipy.spatial import cKDTree
+    _, neighbors = cKDTree(observed, boxsize=lengths).query(observed[centers], k=80)
+    request = dict(source_manifest_sha256=source['manifest_sha256'], source_frame=frame,
+                   source_timestep=int(raw.timesteps[frame]))
+    hit = patch_lookup(request, settings(p), atoms, raw.atom_ids[neighbors])
+    if hit is not None:
+        cold, entry = hit
+        # Recheck the requesting cohort's observed geometry before accepting an alias.
+        hot = observed[neighbors] - observed[centers, None]
+        hot -= lengths * np.rint(hot / lengths)
+        original = np.load(Path(p['ancestor_cache'])/'positions.npy', mmap_mode='r')[patches]
+        np.testing.assert_allclose(hot.astype(np.float32), original, rtol=0, atol=1e-6)
+        np.savez_compressed(folder/'patches.npz', indices=patches, positions=cold,
+                            neighbor_atom_ids=raw.atom_ids[neighbors], center_atom_ids=atoms)
+        meta = entry['metadata']
+        done = dict(identity=p['identity'], task=task, archive=entry['path'],
+            patches_sha256=sha(folder/'patches.npz'), fmax_eV_per_A=meta['fmax_eV_per_A'],
+            seconds=0., local_clouds_saved=True, relaxation_metadata_sha256=entry['metadata_sha256'],
+            reuse=dict(index_entry=entry['id'], original_seconds=meta['seconds']))
+        write_json(folder/'complete.json', done)
+        return done
     work_root = resolve_path(c['scratch']) / 'cells' / task['id']
     archive = resolve_path(c['archive']) / 'cells' / task['id']
     if not archive.exists():
         attempts = sorted(work_root.glob('attempt-*'))
         work = attempts[-1] if attempts else work_root / 'attempt-000'
         params = settings(p)
+        if frame_timeout_seconds is not None:
+            if frame_timeout_seconds < params['frame_timeout_seconds']:
+                raise ValueError('Recovery timeout cannot shorten the frozen execution allowance')
+            params['frame_timeout_seconds'] = frame_timeout_seconds
         if not (work / 'metadata.json').exists():
             # Keep stopped minimizations and restart their full-precision dump.
             if attempts:
@@ -167,6 +195,11 @@ def cell(p, task):
     done = dict(identity=p['identity'], task=task, archive=str(archive),
         patches_sha256=sha(folder / 'patches.npz'), fmax_eV_per_A=meta['fmax_eV_per_A'], seconds=meta['seconds'],
         local_clouds_saved=True, relaxation_metadata_sha256=sha(archive / 'metadata.json'))
+    if frame_timeout_seconds is not None:
+        done['execution_recovery'] = dict(producer_sha256=sha(Path(__file__)),
+            plan_producer_sha256=p['cell_producer'],
+            requested_timeout_seconds=frame_timeout_seconds,
+            executed_timeout_seconds=meta['settings']['frame_timeout_seconds'])
     write_json(folder / 'complete.json', done)
     # All successful state is now verified on STORE and IDS.
     if work_root.exists():

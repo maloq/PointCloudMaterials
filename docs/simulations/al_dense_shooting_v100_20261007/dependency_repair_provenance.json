@@ -1,0 +1,23 @@
+{
+  "state": "prepared",
+  "original_launch": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007",
+  "authorization": "Current chat: user requested fixing V100 shooting after the missing-module failure",
+  "original_manifest_sha256": "2f310c9166cd6bf40101896c825c146d69576a4234a1facc5d403d40b727abb0",
+  "original_submission_sha256": "4d42549c2ea91a16bd6fafd4b6a5ac6f60f919ff6194615965451d90a7568945",
+  "original_code_inventory_sha256": "bd6a653e4fd198d21d3d6b9a815ffcfdfedd9885aeb256c0cfd77d7b419c56c5",
+  "failure_logs": {
+    "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/worker-0-1027531.log": "646d7b4352e71cfaee3803de14211e9648245dab1575472fe87ffe4f06a50382",
+    "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/worker-1-1027532.log": "646d7b4352e71cfaee3803de14211e9648245dab1575472fe87ffe4f06a50382",
+    "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/worker-2-1027533.log": "646d7b4352e71cfaee3803de14211e9648245dab1575472fe87ffe4f06a50382",
+    "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/worker-3-1027534.log": "646d7b4352e71cfaee3803de14211e9648245dab1575472fe87ffe4f06a50382"
+  },
+  "added_files": {
+    "src/simulation/campaigns/dense_al_shooting_expand.py": "463cd975863c37ceb113e519e297be480cad6335394c5ac48f15d2a39152ab88"
+  },
+  "unchanged_existing_files": 1779,
+  "changed_existing_files": [],
+  "protocol": "Identical sources, seeds, inputs, force/integrator, observation/stopping and absolute deadlines",
+  "created_at": "2026-10-07T18:34:18.213117+00:00",
+  "submission": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/dependency-repair-01/submission.json",
+  "entrypoint_check": "/store/PERSO/vmorozov/simulation-launches/al-birth-focused-v100-20261007/technical/dependency-repair-01/technical/entrypoint-check.json"
+}

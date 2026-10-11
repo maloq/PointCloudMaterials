@@ -10,9 +10,9 @@ Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration
 - Location: `/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0876-failed`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 0; these are not independent-source counts.
-- Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 62.528 GiB
+- Complete binary records with arrays present: 1; these are not independent-source counts.
+- Stored frames: 5785; duplicate-group records: 1
+- Allocated storage, excluding registered nested datasets: 6.115 GiB
 - Missing metadata: temperature_K, timestep_fs, ensemble
 
 ## Notes and relationships
@@ -41,13 +41,17 @@ Exact 0.1 ps sampled descendant of retained Al prepared liquid; 2 fs integration
 
 | Field | Values |
 | --- | --- |
+| frame_count | [5785] |
+| storage_dtype | ["float16"] |
+| atom_count | [70304] |
+| coordinate_convention | ["wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 
 ## Evidence
 
-All 1 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al-main-010ps-20260927-source0876-failed-7e16e48e.json).
+All 3 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al-main-010ps-20260927-source0876-failed-7e16e48e.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

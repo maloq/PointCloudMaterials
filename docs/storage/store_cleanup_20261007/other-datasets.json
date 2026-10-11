@@ -1,0 +1,47 @@
+[
+  {
+    "path": "/store/PERSO/vmorozov/data/countries",
+    "allocated_bytes": 2105344,
+    "GiB": 0.00196075439453125
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/land_features",
+    "allocated_bytes": 8862556160,
+    "GiB": 8.253898620605469
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/models",
+    "allocated_bytes": 510877696,
+    "GiB": 0.47579193115234375
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/modis",
+    "allocated_bytes": 11357519872,
+    "GiB": 10.5775146484375
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/night_lights",
+    "allocated_bytes": 2306588672,
+    "GiB": 2.1481781005859375
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/repos",
+    "allocated_bytes": 107233280,
+    "GiB": 0.0998687744140625
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/saved_features",
+    "allocated_bytes": 3219660800,
+    "GiB": 2.9985427856445312
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/saved_features_boost",
+    "allocated_bytes": 12763815936,
+    "GiB": 11.887229919433594
+  },
+  {
+    "path": "/store/PERSO/vmorozov/data/wwf_terr_ecos",
+    "allocated_bytes": 99606528,
+    "GiB": 0.09276580810546875
+  }
+]

@@ -21,7 +21,8 @@ from sklearn.metrics import adjusted_mutual_info_score, adjusted_rand_score
 
 from src.experiment_runner.metric_docs import write_metric_table, check_metric_docs
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from src.research.crystal_vector.interface import interface_mask
 from src.research.structural_state.common import sha, write_json
 from .data import load

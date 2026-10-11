@@ -1,0 +1,9 @@
+path,allocated_bytes,GB,partition
+/work/PERSO/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905,1982057472,1.982057472,WORK
+/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/Ta,85300382720,85.30038272,WORK
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent00,9921773568,9.921773568,STORE
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent01,96801619968,96.801619968,STORE
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent02,96800145408,96.800145408,STORE
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent03,96801275904,96.801275904,STORE
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent04,96799531008,96.799531008,STORE
+/store/PERSO/vmorozov/simulations/ta-shooting-20260926-parent05,96801030144,96.801030144,STORE

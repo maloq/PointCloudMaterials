@@ -1,0 +1,56 @@
+{
+  "state": "passed",
+  "scope": "Native CPU execution of the new initial observation, monitor, endpoint and Q/V conversion; not a new force audit or scientific sample",
+  "conversion": {
+    "state": "complete",
+    "protocol": "al_birth_focused_010ps_v1",
+    "source_sha256": "5e1dd5e7e8f24edac695f1673af8face4f169845c0d1ff5496ae502fb1cfa937",
+    "source_deleted": true,
+    "frame_count": 3,
+    "atom_count": 70304,
+    "float16_manifest_sha256": "80a222dbfbb5ba8aed08d951c6a6bbc30c6d89f92ca427789e2378edbccea00f",
+    "quantization": {
+      "positions": {
+        "max_abs": 0.03125,
+        "rms": 0.01287595494839597,
+        "coordinate_count": 632736,
+        "units": "angstrom",
+        "periodic_minimum_image": true
+      },
+      "velocities": {
+        "max_abs": 0.00775909423828125,
+        "rms": 0.0010053618944102156,
+        "coordinate_count": 632736,
+        "units": "angstrom_per_ps",
+        "periodic_minimum_image": false
+      }
+    },
+    "float32_reference_retained": false,
+    "float32_semantic_sha256": {
+      "positions": "fc933dd91979da80cafc64de64f8d40926d462cf1c1533ee8aa515b95c49ca82",
+      "velocities": "bf0502ee7c73efd17cf58ad740e05109fbf3db6c4494284d0bb20d7ceacd3be9"
+    },
+    "precision_reference": "Every float16 rounding value verified against the established float32 consumer in bounded chunks; native restarts retained",
+    "conversion_protocol": "streaming_paired_float16_v1",
+    "chunk_frames": 32,
+    "termination": {
+      "protocol": "al_birth_focused_010ps_v1",
+      "reason": "duration_cap",
+      "trigger": null,
+      "final_step": 100,
+      "measurement_ps": 0.2,
+      "maximum_measurement_steps": 100,
+      "recorded_from_initialization": true,
+      "retained_followup_ps": 0.0,
+      "followup_truncated": false,
+      "birth_label_status": "not_searched",
+      "unresolved_fates": "right_censored",
+      "recorded_at": "2026-10-07T17:40:28.382864+00:00",
+      "state": "dynamics_complete",
+      "final_crystal_fraction": 1.4223941738734638e-05,
+      "final_largest_crystal_cluster": 1,
+      "final_snapshot_sha256": "018f6b741de84e3b1dc9f3aad7280b01b0ec44d3030d2ab4d6a24ea6c5383875"
+    }
+  },
+  "code_inventory_sha256": "bd6a653e4fd198d21d3d6b9a815ffcfdfedd9885aeb256c0cfd77d7b419c56c5"
+}

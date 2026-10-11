@@ -15,7 +15,9 @@ from src.data.fixed_cohort.protocol import centered, digest, sha, write_json
 from src.data.structural_pretraining.prepare import source_arrays, chart
 from src.data.trajectories.lammps import TemporalLAMMPSBinaryTrajectory
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry, external_data, external_audit
+from src.postprocessing.protocols import ancestry
+from src.postprocessing.protocols import external_data
+from src.postprocessing.protocols import external_audit
 from .dense_history import DenseHistoryDataset
 
 

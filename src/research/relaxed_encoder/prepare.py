@@ -228,7 +228,10 @@ def produce(plan,task,ranks,recovery=None,*,accelerator=None):
     # Preserve centered float32 clouds before the mandated full-cell conversion.
     convert(work,delete_source=True,local_cloud_dtype='float32')
     if not archive.exists():publish(work,archive)
-    save_json(receipt,result);return result
+    save_json(receipt,result)
+    from src.data.relaxation_inventory import import_cache
+    import_cache(receipt,'paired_clouds')
+    return result
 
 
 def graph_arrays(clouds,scale):

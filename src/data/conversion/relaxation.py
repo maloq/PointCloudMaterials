@@ -17,7 +17,7 @@ def read_relaxed(directory):
     path = directory / 'relaxed.dump'
     with path.open() as handle:
         header = TemporalLAMMPSDumpDataset._read_frame_header(
-            handle, source_path=path
+            handle, source_path=path, box_dtype=np.float64
         )
         table = np.loadtxt(handle, max_rows=metadata['atom_count'])
         if handle.read().strip():

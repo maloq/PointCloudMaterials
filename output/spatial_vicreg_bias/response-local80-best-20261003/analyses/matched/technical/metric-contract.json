@@ -1,0 +1,19 @@
+{
+  "family": "response_cluster_comparison",
+  "exported_at": "2026-10-03T15:59:35.487596+00:00",
+  "files": {
+    "docs/metrics/response_cluster_comparison.md": "e9fb8f3000569856ff1d55eb6b0c13b8dbf8a941a27fe70b60c11e98de99faa1",
+    "src/research/spatial_vicreg_bias/response_comparison.py": "92199634aea0225fe26cd9332a130ed80bfd3e41a5d104052d15455c779749b3",
+    "src/research/spatial_vicreg_bias/response_infer.py": "a3617675c7e3681e4dd2b3c401dac36197efb43a01d1355693765cc5c36eec1d",
+    "src/research/spatial_vicreg_bias/viewer_recovery.py": "87fabc1621ec0135853a04618a990ab12cad2db6109777273f66d3ba43d656d4",
+    "src/research/spatial_vicreg_bias/comparison_layout.py": "ffb064f7cf7ac6c3c7f2e242ea97fe67129957dd450ccd7837fc23b5a3df8fd4",
+    "src/research/spatial_vicreg_bias/mace_publication.py": "65fa4f87db13dc2b0dd514573dfcb9a3a7770d2d719df739053d7ae9852818d0",
+    "src/research/spatial_vicreg_bias/cluster_matching.py": "ad6ac681f93b111770472ea89874a3a781bde3b9fefa4066e7d3637b5d82b906",
+    "src/research/spatial_vicreg_bias/sample_lattice.py": "2881691ff28b134e1c5581be23d2e61982d5bc8df3f26ba6cae6870157cb1cdd",
+    "src/research/spatial_vicreg_bias/cluster_comparison.js": "9a35160ac189cf89c0adff9825d74d47d9012bd1f600367d88871addcc95a71d",
+    "src/research/spatial_vicreg_bias/cluster_comparison.html": "aae856c7017a1d998b4b829db8f510671bb1f8c0df3adb4f444e4f6d0dc807ef",
+    "src/research/spatial_vicreg_bias/viewer_payload.py": "a54311b03dbef8c704d5abf15b82411278b6eca555c7010305404a77f6e4c4ba",
+    "configs/analysis/response_cluster_comparison_20261003.json": "50c2786a2ff8f7d1ba810eda993919c9b8ea3e0f39d0fadb080a989c6cd026ff"
+  },
+  "verified": true
+}

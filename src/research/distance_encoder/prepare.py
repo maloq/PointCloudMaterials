@@ -14,8 +14,10 @@ from src.data.fixed_cohort.dataset import read_release
 from src.data.fixed_cohort.protocol import digest, sha, write_json
 from src.data.structural_pretraining.native_dataset import material_factors
 from src.project_runtime.paths import resolve_path
-from src.research.crystallization_origin import ancestry, external_data
-from src.research.crystallization_origin.extract import raw_source, frame_geometry
+from src.postprocessing.protocols import ancestry
+from src.postprocessing.protocols import external_data
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 
 
 def plan(config_path):

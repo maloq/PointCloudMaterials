@@ -1,0 +1,20 @@
+{
+  "state": "complete",
+  "finished_at": "2026-10-07T14:52:47.878827+00:00",
+  "files": [
+    {
+      "workspace": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0891/trajectory.lammpstrj",
+      "archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "action": "replace_verified_duplicate_with_archive_symlink",
+      "released_allocated_bytes": 29879066624
+    },
+    {
+      "workspace": "/store/PERSO/vmorozov/simulation-work/al-main-half-recovery-20261003/attempts/accidental-stop-20261004/al-main-010ps-20260927-source0892/trajectory.lammpstrj",
+      "archive": "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003/trajectory.lammpstrj",
+      "action": "replace_verified_duplicate_with_archive_symlink",
+      "released_allocated_bytes": 44854190080
+    }
+  ],
+  "total_released_allocated_bytes": 74733256704,
+  "verification": "Full byte-for-byte cmp; unchanged signatures before atomic replacement; archive originals retained"
+}

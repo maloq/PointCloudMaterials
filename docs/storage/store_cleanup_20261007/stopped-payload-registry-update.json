@@ -1,0 +1,9 @@
+{
+  "state": "complete",
+  "observed_at": "2026-10-07T16:13:49.231328+00:00",
+  "dataset_ids": [
+    "al-main-010ps-20260927-source0891-failed-al-main-half-recovery-20261003",
+    "al-main-010ps-20260927-source0892-failed-al-main-half-recovery-20261003"
+  ],
+  "scope": "Reinspected both changed folders and regenerated browser/cards/CSV using existing registry renderer; other entries preserve prior full scan"
+}

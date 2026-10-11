@@ -1,0 +1,154 @@
+{
+  "protocol": "ni-compact-stochastic-simulator-20261010-v1",
+  "seed": 20261010,
+  "parent": "/store/PERSO/vmorozov/experiments/ni_response/unrelaxed-esen-20261009-v1",
+  "parent_plan_sha256": "27ebcfc231695c89fb376629413562f4ddf3479fd8029900f4a78fd81c94aacd",
+  "output": "${storage:training_storage}/ni_latent_sim/compact-memory-response-20261010-v1",
+  "cache": "${storage:cache}/ni-latent-sim/compact-memory-response-20261010-v1",
+  "simulation_archive": "${storage:archive}/simulations/ni-latent-lifting-20261010-v1",
+  "simulation_scratch": "${storage:simulation_runs}/ni-latent-lifting-20261010-v1",
+  "centers_per_anchor": 16,
+  "encoder_microbatch": 64,
+  "arms": [
+    {
+      "name": "d16-h1-value-s20261010",
+      "dimension": 16,
+      "history": 1,
+      "response": false,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h1-response-s20261010",
+      "dimension": 16,
+      "history": 1,
+      "response": true,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-value-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h4-response-s20261010",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "seed": 20261010
+    },
+    {
+      "name": "d64-h1-value-s20261010",
+      "dimension": 64,
+      "history": 1,
+      "response": false,
+      "seed": 20261010
+    },
+    {
+      "name": "d64-h1-response-s20261010",
+      "dimension": 64,
+      "history": 1,
+      "response": true,
+      "seed": 20261010
+    },
+    {
+      "name": "d64-h4-value-s20261010",
+      "dimension": 64,
+      "history": 4,
+      "response": false,
+      "seed": 20261010
+    },
+    {
+      "name": "d64-h4-response-s20261010",
+      "dimension": 64,
+      "history": 4,
+      "response": true,
+      "seed": 20261010
+    },
+    {
+      "name": "d16-h1-value-s20261011",
+      "dimension": 16,
+      "history": 1,
+      "response": false,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h1-response-s20261011",
+      "dimension": 16,
+      "history": 1,
+      "response": true,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-value-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": false,
+      "seed": 20261011
+    },
+    {
+      "name": "d16-h4-response-s20261011",
+      "dimension": 16,
+      "history": 4,
+      "response": true,
+      "seed": 20261011
+    },
+    {
+      "name": "d64-h1-value-s20261011",
+      "dimension": 64,
+      "history": 1,
+      "response": false,
+      "seed": 20261011
+    },
+    {
+      "name": "d64-h1-response-s20261011",
+      "dimension": 64,
+      "history": 1,
+      "response": true,
+      "seed": 20261011
+    },
+    {
+      "name": "d64-h4-value-s20261011",
+      "dimension": 64,
+      "history": 4,
+      "response": false,
+      "seed": 20261011
+    },
+    {
+      "name": "d64-h4-response-s20261011",
+      "dimension": 64,
+      "history": 4,
+      "response": true,
+      "seed": 20261011
+    }
+  ],
+  "training": {
+    "updates": 3200,
+    "batch_size": 256,
+    "microbatch": 256,
+    "lr": 0.001,
+    "warmup": 200,
+    "precision": "BF16 long recurrence; float32 short-response secants and scores"
+  },
+  "evaluation": {
+    "particles": 32
+  },
+  "lifting": {
+    "queries": 8,
+    "shots": 2,
+    "horizons_ps": [
+      0.1,
+      0.5
+    ]
+  },
+  "runtime": {
+    "hours": 8.5,
+    "gpus": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  }
+}

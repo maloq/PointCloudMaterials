@@ -1,0 +1,13 @@
+{
+  "state": "submitted",
+  "original_worker_job": "1026907",
+  "original_collector_job": "1026908",
+  "expansion": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007/technical/three-more-v100-20261007",
+  "created_at": "2026-10-07T16:39:15.282154+00:00",
+  "worker_job": "1027414",
+  "collect_job": "1027415",
+  "additional_workers": 3,
+  "additional_branches": 30,
+  "retained_original_entries": 10,
+  "submitted_at": "2026-10-07T16:39:15.318036+00:00"
+}

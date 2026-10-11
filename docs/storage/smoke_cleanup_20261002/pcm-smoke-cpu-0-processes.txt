@@ -1,0 +1,79 @@
+    PID COMMAND
+ 840413 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.research.birth_prediction.appearance group --config /store/PERSO/vmorozov/experiments/birth_prediction/appearance-transfer-20261002/technical/code/config.json --worker-stage relax --workers-per-group 4
+ 840499 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.research.birth_prediction.appearance relax --config /store/PERSO/vmorozov/experiments/birth_prediction/appearance-transfer-20261002/technical/code/config.json --index 0
+ 840503 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.research.birth_prediction.appearance relax --config /store/PERSO/vmorozov/experiments/birth_prediction/appearance-transfer-20261002/technical/code/config.json --index 1
+ 840508 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.research.birth_prediction.appearance relax --config /store/PERSO/vmorozov/experiments/birth_prediction/appearance-transfer-20261002/technical/code/config.json --index 2
+ 840519 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/python -u -m src.research.birth_prediction.appearance relax --config /store/PERSO/vmorozov/experiments/birth_prediction/appearance-transfer-20261002/technical/code/config.json --index 3
+ 857432 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/mpiexec -n 16 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857433 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/hydra_pmi_proxy --control-port nodecpu03:36571 --rmk slurm --launcher fork --demux poll --pgid 0 --retries 10 --usize -2 --pmi-port 0 --gpus-per-proc -2 --gpu-subdevs-per-proc -2 --proxy-id 0
+ 857435 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857437 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857438 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857439 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857440 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857441 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857442 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857444 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857445 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857446 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857447 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857448 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857449 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857450 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857451 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 857453 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862617 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/mpiexec -n 16 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862618 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/hydra_pmi_proxy --control-port nodecpu03:37649 --rmk slurm --launcher fork --demux poll --pgid 0 --retries 10 --usize -2 --pmi-port 0 --gpus-per-proc -2 --gpu-subdevs-per-proc -2 --proxy-id 0
+ 862619 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862620 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862621 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862622 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862623 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862624 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862625 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862626 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862627 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862628 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862629 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862630 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862631 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862632 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862633 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862634 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862782 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/mpiexec -n 16 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862783 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/hydra_pmi_proxy --control-port nodecpu03:42921 --rmk slurm --launcher fork --demux poll --pgid 0 --retries 10 --usize -2 --pmi-port 0 --gpus-per-proc -2 --gpu-subdevs-per-proc -2 --proxy-id 0
+ 862784 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862785 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862786 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862787 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862788 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862789 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862790 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862791 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862792 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862793 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862794 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862795 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862796 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862797 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862798 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 862799 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864948 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/mpiexec -n 16 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864949 /home/infres/vmorozov/miniconda3/envs/pointnet-torch214/bin/hydra_pmi_proxy --control-port nodecpu03:33527 --rmk slurm --launcher fork --demux poll --pgid 0 --retries 10 --usize -2 --pmi-port 0 --gpus-per-proc -2 --gpu-subdevs-per-proc -2 --proxy-id 0
+ 864950 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864951 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864952 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864953 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864954 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864955 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864956 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864957 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864958 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864959 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864960 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864961 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864962 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864963 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864964 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 864965 /home/ids/vmorozov/training-cache/../software/lammps-2Sep2026/cpu/lmp -in in.lammps -log log.lammps
+ 870245 /usr/bin/ps -u vmorozov -o pid,args

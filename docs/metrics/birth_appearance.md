@@ -1,5 +1,11 @@
 # Appearance prediction with established and failed embryos
 
+October3 execution recovery may extend the per-cell wall-time allowance from
+two to six hours. Scientific quench settings, force convergence, input frames,
+labels and cohort identity are unchanged. Newly completed cells record actual
+timeout and recovery producer hashes; completed cells are reused after checksum
+verification. Historical exports retain their own frozen producer contracts.
+
 Producers: `birth_prediction/{appearance_data,appearance,appearance_analysis}.py`,
 with the shared NLL-selected readout fitter in `merged_fit.py`. No encoder is
 trained. Descriptor controls and frozen-predictor evaluation stay local, without

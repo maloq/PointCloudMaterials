@@ -6,13 +6,13 @@ Derived current/next local order targets and unlabeled fixed random geometric fe
 
 - ID: `neighborhood-jepa-native-al-32768-order-20260920`
 - Materials: Al
-- Classification: **research**; role: training_cache
+- Classification: **retired**; role: provenance_only
 - Location: `/home/ids/vmorozov/training-cache/neighborhood_jepa/native-al-32768-order-20260920`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.020 GiB
+- Allocated storage, excluding registered nested datasets: 0.000 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -23,8 +23,8 @@ Derived current/next local order targets and unlabeled fixed random geometric fe
   "materials": [
     "Al"
   ],
-  "role": "training_cache",
-  "classification": "research",
+  "role": "provenance_only",
+  "classification": "retired",
   "description": "Derived current/next local order targets and unlabeled fixed random geometric features on the existing 32768 training / 480 development anchor release; 90/15 independent Lee-MEAM lineages, 0.75 ps lag. No new simulations.",
   "potential_ids": [
     "al-lee2003-meam"
@@ -44,7 +44,9 @@ Derived current/next local order targets and unlabeled fixed random geometric fe
   "evidence": [
     "${dataset:neighborhood-jepa-native-al-32768-order-20260920}/manifest.json",
     "${dataset:neighborhood-jepa-native-al-32768-order-20260920}/reservoir.json"
-  ]
+  ],
+  "retirement_record": "docs/storage/cache_cleanup_20261002/receipt.json",
+  "storage_status": "Cache arrays deleted at user request on 2026-10-02. Historical scientific description and provenance retained; rebuild before reuse."
 }
 ```
 
@@ -61,6 +63,6 @@ All 1 producer records, their hashes, field paths and current array schemas: [me
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

@@ -1,0 +1,6 @@
+{
+  "pid": 3063859,
+  "started_utc": "2026-10-02T13:31:46.915097+00:00",
+  "workers": 2,
+  "reason": "Scratch outputs redirected to STORE after quota error; original healthy STORE workers retained"
+}

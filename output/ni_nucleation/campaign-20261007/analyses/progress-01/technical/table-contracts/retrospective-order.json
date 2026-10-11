@@ -1,0 +1,7 @@
+{
+  "table": "tables/retrospective-order.csv",
+  "sha256": "c24436c23edeff0f03cfb2ca67989d53c59fd0ca13252421cc1279eb59410360",
+  "family": "ni_births_preview",
+  "contract": "technical/metric-contracts/ni_births_preview.json",
+  "definitions": "tables/metric-definitions/ni_births_preview.md"
+}

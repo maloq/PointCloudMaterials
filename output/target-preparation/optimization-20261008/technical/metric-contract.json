@@ -1,0 +1,17 @@
+{
+  "family": "spatial_target_preparation",
+  "exported_at": "2026-10-08T11:13:13.439580+00:00",
+  "files": {
+    "src/research/liquid_predictability/descriptors.py": "b666ff18fdcaf6a13130a5d7c2273dbc4cc41b051323e83f672ad98711dd3c7f",
+    "src/research/liquid_predictability/rich_multimaterial_data.py": "6ac7ecaf0f54b5164d5186b049618a19b7cc7311a295227aa80e05ed173de9c2",
+    "src/research/liquid_predictability/rich_multimaterial_queue.py": "1720b7013d592a0d64653a89224212720f51af30e4cfa637a931a471acab0887",
+    "src/research/structural_response/data.py": "4dfce394b5f809bd8efd2ba0214cf2de06ead768c19dfa995f9454fcf3ffd885",
+    "src/postprocessing/__main__.py": "a42de71be54c5ebbffa70fd44dc629326accc92e225f47d953852c4b83720497",
+    "src/postprocessing/descriptors/rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+    "src/postprocessing/targets.py": "a4381beef3b9d37f8a54cc6d67c278d990762d35987bc3e928108d5f5cb8e7f6",
+    "src/postprocessing/target_benchmark.py": "52a302fdb5745cc2e0da71f52aba1435c75a7aaadba9bf958f5680f97fdd2937",
+    "docs/metrics/spatial_target_preparation.md": "3e32b85563825a37440c7b0abbf1885f99fe8b3e6b83054d71d89ee25448db32",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69"
+  },
+  "verified": true
+}

@@ -1,0 +1,32 @@
+{
+  "protocol": "matched_periodic_meam_16k_200ps_v1",
+  "output": "${storage:training_storage}/meam_md/al16k-450K-200ps-20261004",
+  "simulation_scratch": "${storage:simulation_runs}/meam-md-al16k-450K-200ps-20261004",
+  "simulation_archive": "${storage:archive}/simulations/meam-md-al16k-450K-200ps-20261004",
+  "meam_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  },
+  "repetitions": [16, 16, 16],
+  "atoms": 16384,
+  "lattice_constant_A": 4.0446507884,
+  "mass_amu": 26.9815385,
+  "melt_temperature_K": 1325.0,
+  "melt_ps": 50.0,
+  "melt_seed": 26100417,
+  "cool_equilibration_ps": 5.0,
+  "temperature_K": 450.0,
+  "timestep_fs": 1.0,
+  "duration_ps": 200.0,
+  "friction_fs": 100.0,
+  "velocity_seed": 26100423,
+  "noise_seed": 26100429,
+  "sample_ps": 0.1,
+  "checkpoint_ps": 1.0,
+  "structure_ps": 1.0,
+  "ptm_rmsd_cutoff": 0.1,
+  "cluster_cutoff_A": 3.5,
+  "cpu_ranks": 8,
+  "gpu_dtype": "float64",
+  "comparison": "Same initial liquid positions/box, freshly sampled velocities, and NumPy PCG64 noise. External BAOAB for both engines; original CPU LAMMPS provides forces, PyTorch provides GPU forces. Fixed-volume NVT after shared NPT liquid preparation."
+}

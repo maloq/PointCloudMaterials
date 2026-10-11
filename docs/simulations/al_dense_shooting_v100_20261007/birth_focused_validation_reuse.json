@@ -1,0 +1,18 @@
+{
+  "state": "passed",
+  "source": "/store/PERSO/vmorozov/simulation-launches/al-dense-shooting-v100-20261007/technical/audit/validation.json",
+  "source_sha256": "9fafb7f758e4e6e144cc32ed238a143ed3e057788c2999ce675547b2f20bc606",
+  "seconds_per_step": 0.015108259515836836,
+  "unchanged_original_files": 1774,
+  "changed_original_files": [
+    "src/data/conversion/cli.py",
+    "src/simulation/campaigns/dense_al.py"
+  ],
+  "added_files": [
+    "src/data/conversion/dense_al_birth.py",
+    "src/simulation/campaigns/dense_al_birth_queue.py",
+    "src/simulation/campaigns/dense_al_birth_stop.py"
+  ],
+  "scope": "Unchanged force, virial and native-NPT adapter. New observation/stopping/conversion path requires per-lane execution audit.",
+  "code_inventory_sha256": "bd6a653e4fd198d21d3d6b9a815ffcfdfedd9885aeb256c0cfd77d7b419c56c5"
+}

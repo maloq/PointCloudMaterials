@@ -1,0 +1,6 @@
+{
+  "campaign_config": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261008/technical/code/config.json",
+  "campaign_plan_sha256": "c7a85ad7ceab6e43691782ac35774b85bd65fbacf95683f285915fa408804a66",
+  "hold_cap_ps": 400,
+  "launch": "output/ni_nucleation/campaign-lowT-20261008/technical/hard-stop-400ps"
+}

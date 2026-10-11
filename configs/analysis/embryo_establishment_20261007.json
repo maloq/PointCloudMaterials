@@ -1,0 +1,15 @@
+{
+  "protocol": "present_embryo_establishment_136_v1",
+  "source_plan": "${storage:training_storage}/continuous_motion/all010-20261006-v3/analyses/birth-136-v1/technical/plan.json",
+  "source_identity": "2cdd43007415f9b8c6259da7b4fe54244014707a8fda4774c1a283dccf601fa4",
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "output": "${storage:training_storage}/continuous_motion/embryo-establishment-20261007-v1",
+  "cache": "${storage:cache}/continuous-motion/embryo-establishment-20261007-v1",
+  "observation_spacing_ps": 1.0,
+  "horizons_ps": [1.0, 3.0, 6.0],
+  "persistence_ps": 1.5,
+  "radius_A": 8.0,
+  "workers": 8,
+  "wall_seconds": 5400
+}

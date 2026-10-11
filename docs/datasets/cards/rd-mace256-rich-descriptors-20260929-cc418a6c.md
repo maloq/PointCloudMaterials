@@ -6,13 +6,13 @@ Geometry-only MACE256, three interactions and 256-D patch/context states; same 3
 
 - ID: `rd-mace256-rich-descriptors-20260929`
 - Materials: Al
-- Classification: **research**; role: trained_encoder
+- Classification: **retired**; role: provenance_only
 - Location: `/work/PERSO/vmorozov/analysis/liquid_predictability/rd-mace256-l3-z256-20260929`
-- Present on this machine: True
+- Present on this machine: False
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 0; these are not independent-source counts.
 - Stored frames: 0; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 0.551 GiB
+- Allocated storage, excluding registered nested datasets: 0.000 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -26,8 +26,8 @@ Geometry-only MACE256, three interactions and 256-D patch/context states; same 3
   "potential_ids": [
     "al-lee2003-meam"
   ],
-  "role": "trained_encoder",
-  "classification": "research",
+  "role": "provenance_only",
+  "classification": "retired",
   "description": "Geometry-only MACE256, three interactions and 256-D patch/context states; same 3536 rich targets. All 183596 raw train contexts, immutable source splits. Large measured batch; 0.004 five-epoch warmup/cosine LR. No relaxation or physical distance supervision.",
   "provenance": "src/research/liquid_predictability/rich_encoder.py; sealed existing raw descriptor/geometry caches reused read-only.",
   "ancestry": "Existing fixed-Al64 melt-source roles; 88 eligible train sources, 15 selection, 15 calibration, 28 test. Added atoms are correlated within sources.",
@@ -40,7 +40,10 @@ Geometry-only MACE256, three interactions and 256-D patch/context states; same 3
     "Combined width/depth/state-size/batch/LR/duration intervention does not isolate their effects.",
     "One training seed; prior test-source reuse.",
     "Descriptor reconstruction is not itself evidence of crystal-distance information."
-  ]
+  ],
+  "retirement_record": "docs/storage/experiment_removal_20261002/receipt.json",
+  "retirement_note": "Experiment folder deleted at user request on 2026-10-02. Reports, tables, plots and text provenance preserved under docs/storage/experiment_removal_20261002/results; mapping and checksums in preserved.json.",
+  "relaxation_source_availability_note": "Some historical relaxed-cell/neighborhood inputs were deleted at user request on 2026-10-03; retained downstream artifacts are unchanged. See docs/storage/relaxation_unverified_removal_20261003/receipt.json."
 }
 ```
 
@@ -48,16 +51,13 @@ Geometry-only MACE256, three interactions and 256-D patch/context states; same 3
 
 | Field | Values |
 | --- | --- |
-| radius | [8.0] |
-| protocol | ["rich_descriptor_mace_full_epochs_v1"] |
-| seed | [20260929] |
 
 ## Evidence
 
-All 1 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/rd-mace256-rich-descriptors-20260929-cc418a6c.json).
+All 0 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/rd-mace256-rich-descriptors-20260929-cc418a6c.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

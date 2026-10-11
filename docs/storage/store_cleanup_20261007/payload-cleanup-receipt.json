@@ -1,0 +1,13 @@
+{
+  "state": "complete",
+  "finished_at": "2026-10-07T14:49:25.657166+00:00",
+  "deleted_files": 13691,
+  "preserved_files_checked": 84154,
+  "released_allocated_bytes": {
+    "search": 20036313088,
+    "snapshot": 38470934528
+  },
+  "total_released_allocated_bytes": 58507247616,
+  "rules": "Only inventoried regular payload files; symlinks not traversed; current birth labels, figures, tables, reports, code and native parent simulations retained",
+  "accounting": "Unique file inodes whose final link was removed; directory blocks excluded"
+}

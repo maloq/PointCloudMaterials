@@ -18,7 +18,8 @@ from src.research.spatial_distance.train import distance_metrics
 from src.research.spatial_distance.confidence import first_alarm
 from src.research.supervised_onset.tracking import update_training_summary
 from src.research.encoder_context.geometry import physical_targets
-from src.research.crystallization_origin.extract import raw_source,frame_geometry
+from src.postprocessing.protocols.extract import raw_source
+from src.postprocessing.io import frame_geometry
 from .data import ResidentContexts,context_atoms
 from .model import JointCrystalVector,objective
 from .train import compile_model

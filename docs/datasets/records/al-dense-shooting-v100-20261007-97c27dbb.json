@@ -1,0 +1,519 @@
+{
+  "dataset_id": "al-dense-shooting-v100-20261007",
+  "records": [
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0860-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0860-shot00/status.json",
+      "sha256": "6d60573323959382d8cae81f1a9ab6e8ba1421b4317ef3e0e3f70f55cf12bb13",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0860-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0860-shot01/status.json",
+      "sha256": "e26ff302710ab41bb4cf155e461057dd402d3f42950e4bbbafc1d457c356dd14",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0866-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0866-shot00/status.json",
+      "sha256": "1f2790c23f752d7e38bda3794ba545b70d262f39fdc66176f279f2586848789d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0866-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0866-shot01/status.json",
+      "sha256": "6d40589fc65e29363e9f30895fb29e48415dd09bce2f732a926dfdcbf070f047",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0871-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0871-shot00/status.json",
+      "sha256": "7c8c65ca0d816320d5ac6f37c13f4beed8c20cf1e766174d38363f6a3345e13f",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0871-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0871-shot01/status.json",
+      "sha256": "f764cfe293e3dcd665fb28b66f5445cbcbccf4a1181ab1d9a4accbf400872e3c",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0887-shot00.failed-monitor-attempt/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0887-shot00.failed-monitor-attempt/status.json",
+      "sha256": "74f54c195c7881b50de406ffffebd752d7a3204c5a418c4a44b98998fd6e1241",
+      "kind": "metadata",
+      "keys": [
+        "error",
+        "finished_at",
+        "host",
+        "phase",
+        "run_id",
+        "slurm_job_id",
+        "started_at",
+        "state"
+      ],
+      "recorded_state": "failed",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0887-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0887-shot01/status.json",
+      "sha256": "df943b7af39e0a3125395fb920a06d8651496582658368691e1f4a3384464c2d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0897-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0897-shot01/status.json",
+      "sha256": "68e20b49c510e7e48566e08a829e106eae930bf7c948bfc5bcd18a9735052766",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0902-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0902-shot00/status.json",
+      "sha256": "31f32219247647ccbe83cc91d3548fab352105faaaf36b1ca77ad8e56720f2a2",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0902-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0902-shot01/status.json",
+      "sha256": "78c7ac0ee40b55094c589419a85ada26488791b325ffeb438f60dbffb79a7d7d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0908-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0908-shot01/status.json",
+      "sha256": "0a23797ea3fbf3ae63477e7c89e44fc3d31b882187a6fbeb4fe560a13a7c7415",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0925-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0925-shot00/status.json",
+      "sha256": "c40812640cd44c0d89dfe8f2cccea5e58feeffe95908692dc56accfc122ac51d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0925-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0925-shot01/status.json",
+      "sha256": "48d827b28b3ad03a484c94c72044144b546c5bb1752162b54a6683750e7bbedd",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0926-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0926-shot01/status.json",
+      "sha256": "9d7b28c60731beb4b63ccf1317bc488d3de1d0a651eb06c6f5f9ae58224ea10d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0933-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0933-shot01/status.json",
+      "sha256": "4934dc16250adae8c72d40d9c57dff0f79acd9f90a67479c5ace127cc33167ea",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0938-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0938-shot00/status.json",
+      "sha256": "39ce9326b7f5123259b4eede35b1f3e0630880f4720a113aa1905d8fc08e13e6",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0938-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0938-shot01/status.json",
+      "sha256": "38c0083967a241f0fb595889e77c65d36cc4899adb6fbebff66051656dd0aeb6",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0953-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0953-shot00/status.json",
+      "sha256": "bc0f239c0154f06156b89db47b2ba5d34bdd5b8a70d7012fcb47ecb1d354bc00",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0953-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0953-shot01/status.json",
+      "sha256": "cbe75b689bc193940723c9a23d55608154bf2d73dc123f47a7d38f6bfaf3555d",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0957-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0957-shot00/status.json",
+      "sha256": "d8d5728bdd9a56f85224291a6f754c7efda1b205dba4423cba3040926f9eb3a3",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0957-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0957-shot01/status.json",
+      "sha256": "61aeaa87990b33e1e88838f1e1e772b76db9f3ee3de8cd1c78b0829f04e6b2b0",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0965-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0965-shot00/status.json",
+      "sha256": "2af911b37e6876de1c2ebe5e87f12e3b7fd25fccff04cbef4797b2b6039fad88",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0965-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0965-shot01/status.json",
+      "sha256": "487a62757ade26b27cab490c8034fe18565d0b31da8b4adb9acfe484c324fefa",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0971-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0971-shot00/status.json",
+      "sha256": "17a93f8a9d9dc42f452859194cb5ecb3d78d2cad961c764662c7e0cea94708c9",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0971-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0971-shot01/status.json",
+      "sha256": "5d1884aa98ad2a301628e20220ff4cbb67f5b254e6dd72414c2b5eefe2804de4",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0983-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0983-shot00/status.json",
+      "sha256": "98859e71e17b9956d708c8b4c52d13e97b103c534eadb563581170b2b7de62bd",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0983-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0983-shot01/status.json",
+      "sha256": "0ea356587a8dc5f51d9613eee2de6ecfafe8ca04be797ca65eb035627043732c",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0993-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0993-shot00/status.json",
+      "sha256": "d251bf7a3913e443f9b39d04684654f406fc977b761b2ef09302df4ef0936f39",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source0993-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source0993-shot01/status.json",
+      "sha256": "084f1b2591716ca8372c90e6ae828cf4d0f05780fbd51bd5d5352a8651787e73",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1001-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source1001-shot00/status.json",
+      "sha256": "2729e014678cb13781034a7ab138f82a363bb3707571deec8fabfda13105676a",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1001-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source1001-shot01/status.json",
+      "sha256": "79481e55fe9e17de6e37d32f85a53a0d6ee709e9a6cb56f4689b9ade32de43ed",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1008-shot00/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source1008-shot00/status.json",
+      "sha256": "e2396c842e38a73d788ea606920d0ac6dcca49189e811bf7fbeb376d0a2aefa6",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al-dense-shooting-v100-20261007/runs/al-dense-shooting-v100-20261007-source1008-shot01/status.json",
+      "relative_path": "runs/al-dense-shooting-v100-20261007-source1008-shot01/status.json",
+      "sha256": "c3599a2b8156c007cee2c793de0229dd1c576843eb47bc924d8c55052f1adbd4",
+      "kind": "metadata",
+      "keys": [
+        "new_launch",
+        "original_run_id",
+        "reserved_at",
+        "state"
+      ],
+      "recorded_state": "birth_focus_transferred",
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

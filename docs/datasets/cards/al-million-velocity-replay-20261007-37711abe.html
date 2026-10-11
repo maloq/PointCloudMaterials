@@ -1,0 +1,1760 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Al million-atom 400 ps velocity recovery</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Al million-atom 400 ps velocity recovery</h1><p>Checkpoint-anchored replay; consumers must require complete status and fidelity gates.</p><span class="badge">building</span><span class="badge warning">3 metadata gaps</span><p><code>al-million-velocity-replay-20261007</code> · Al</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007">/store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007</a></p><p>490 owned files · 19.926 GiB allocated · 27 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Al million-atom 400 ps velocity recovery&quot;,
+  &quot;materials&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;al-lee2003-meam&quot;
+  ],
+  &quot;role&quot;: &quot;raw_dynamics&quot;,
+  &quot;classification&quot;: &quot;building&quot;,
+  &quot;lineage&quot;: {
+    &quot;parent_dataset&quot;: &quot;al_meam_1m_450K_400ps_with_melt_20260913T205405Z&quot;,
+    &quot;independent_ancestors_added&quot;: 0,
+    &quot;role&quot;: &quot;train; same million-atom parent used in structural training&quot;
+  },
+  &quot;observation_ps&quot;: 0.1,
+  &quot;description&quot;: &quot;Checkpoint-anchored replay; consumers must require complete status and fidelity gates.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${dataset:al-million-velocity-replay-20261007}/status.json&quot;,
+    &quot;${dataset:al-million-velocity-replay-20261007}/replay_manifest.json&quot;
+  ]
+}</pre><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/status.json">${dataset:al-million-velocity-replay-20261007}/status.json</a></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/replay_manifest.json">${dataset:al-million-velocity-replay-20261007}/replay_manifest.json</a></li></ul><p>Dependencies: <a href="al_meam_1m_450K_400ps_with_melt_20260913T205405Z-6e7a1cc8.html">al_meam_1m_450K_400ps_with_melt_20260913T205405Z</a>, <a href="potentials-1f2cb720.html">potentials</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Lee–Shim–Baskes 2003 Al 2NN-MEAM</summary><ul><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam">Lee2003_Al.library.meam</a> · hash verified</li><li><a href="../../../../../../../work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam">Lee2003_Al.meam</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;al-lee2003-meam&quot;,
+  &quot;name&quot;: &quot;Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM&quot;,
+  &quot;family&quot;: &quot;MEAM&quot;,
+  &quot;elements&quot;: [
+    &quot;Al&quot;
+  ],
+  &quot;pair_style&quot;: &quot;meam&quot;,
+  &quot;mapping&quot;: &quot;Al&quot;,
+  &quot;citation&quot;: &quot;Lee, Shim and Baskes (2003); generating-potential identity recorded in campaign manifests&quot;,
+  &quot;evidence&quot;: [
+    &quot;docs/simulations/inventory_20260913.md&quot;
+  ],
+  &quot;license&quot;: &quot;Not recorded here; consult the original distribution before redistribution.&quot;,
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.library.meam&quot;,
+      &quot;sha256&quot;: &quot;f72f19b5185e6da9c4e4c26029346b9210296b289ba791178dee1e923281835e&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.library.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    },
+    {
+      &quot;path&quot;: &quot;${dataset:potentials}/Lee2003_Al.meam&quot;,
+      &quot;sha256&quot;: &quot;b1ba33a29d8884692aeb4a1f0c78df51146f6f68d281121135dfca3207506e6a&quot;,
+      &quot;location&quot;: &quot;/work/PERSO/vmorozov/datasets/potentials/Lee2003_Al.meam&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>temperature_K, timestep_fs, ensemble</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table><tr><td>frame_count</td><td><code>[41]</code></td></tr><tr><td>storage_dtype</td><td><code>[&quot;float16&quot;]</code></td></tr><tr><td>atom_count</td><td><code>[1000000]</code></td></tr><tr><td>coordinate_convention</td><td><code>[&quot;wrapped float32 consumer coordinates relative to box_low; decode stored coordinates to float32 and wrap again&quot;]</code></td></tr></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 490,
+    &quot;apparent_bytes&quot;: 15985251548,
+    &quot;allocated_bytes&quot;: 21395668992,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 193,
+      &quot;.bin&quot;: 27,
+      &quot;.lammps&quot;: 54,
+      &quot;.log&quot;: 27,
+      &quot;.npy&quot;: 189
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 82,
+    &quot;binary_trajectory_records&quot;: 27,
+    &quot;available_complete_binary_records&quot;: 27,
+    &quot;stored_frames&quot;: 1107,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/000/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/001/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/002/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/003/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/004/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/005/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/006/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/007/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/008/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/009/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/010/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/011/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/012/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/013/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/014/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/015/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/016/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/017/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/018/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/019/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/020/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/021/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/022/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/023/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/024/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/025/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/atom_ids.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/atom_types.npy&quot;,
+      &quot;shape&quot;: [
+        1000000
+      ],
+      &quot;dtype&quot;: &quot;int32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/box_high.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/box_low.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float32&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/positions.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/timesteps.npy&quot;,
+      &quot;shape&quot;: [
+        41
+      ],
+      &quot;dtype&quot;: &quot;int64&quot;,
+      &quot;fortran_order&quot;: false
+    },
+    {
+      &quot;path&quot;: &quot;segments/026/trajectory_binary_float16/velocities.npy&quot;,
+      &quot;shape&quot;: [
+        41,
+        1000000,
+        3
+      ],
+      &quot;dtype&quot;: &quot;float16&quot;,
+      &quot;fortran_order&quot;: false
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (1)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul><li><a href="../../../configs/simulation/al_million_velocity_replay_20261007.json">configs/simulation/al_million_velocity_replay_20261007.json</a></li></ul></details><details><summary>Producer evidence (82 records)</summary><p><a href="../records/al-million-velocity-replay-20261007-37711abe.json">Complete structured metadata with field paths and current binary schemas</a></p><ul><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/status.json">status.json</a> · failed · <code>2f9d283d5ecc4caed473caa952232925a17a7f7eca7a579b16182b22a2654328</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/status.json">segments/000/status.json</a> · accepted · <code>dad6121303b275c7b16114a2d835ead7ad901f7fa73519976ab73d779b0cba41</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/trajectory_binary_float16/conversion.json">segments/000/trajectory_binary_float16/conversion.json</a> · verified · <code>84fbb5dca498edf02a32e53009c10b6a78559afa57f9194f7c07e480cba54f56</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/000/trajectory_binary_float16/manifest.json">segments/000/trajectory_binary_float16/manifest.json</a> · complete · <code>ab62389ef54ac858b8cdbe83a7ab998c27baa107ba98f08798886aa844eade90</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/status.json">segments/001/status.json</a> · accepted · <code>b7fd4754bd0e0bd38842a788b56f581c6c4841c7e07b6b7ef37a96ea7e48fa7e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/trajectory_binary_float16/conversion.json">segments/001/trajectory_binary_float16/conversion.json</a> · verified · <code>dda3e776883e14ea1914b960a65e2e2d000b1941cc6feb423fb0a1586e3cf06a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/001/trajectory_binary_float16/manifest.json">segments/001/trajectory_binary_float16/manifest.json</a> · complete · <code>931ed6b6f00b1b1a6c628a8569a9cc728c04eaaf08ce73be265906243bc1c532</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/status.json">segments/002/status.json</a> · accepted · <code>80cafc3a302bfa987c18db284b53a5888336f0bcd0dd1633020c022c14c52364</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/trajectory_binary_float16/conversion.json">segments/002/trajectory_binary_float16/conversion.json</a> · verified · <code>819ee665900f017fd7bc7cf9232c6f83b80fe0068a14801be81d32040b09642e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/002/trajectory_binary_float16/manifest.json">segments/002/trajectory_binary_float16/manifest.json</a> · complete · <code>ea3a68b5c3d9dde33363bea31886d5b086b8a47906ab5e3f53522739bee5bebe</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/status.json">segments/003/status.json</a> · accepted · <code>4efaa23e286664bed9f26a02e333a3773e8cc0f3d3d4077daf3c52d3347003b6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/trajectory_binary_float16/conversion.json">segments/003/trajectory_binary_float16/conversion.json</a> · verified · <code>418178c5d2eccbb490d3a3b139654686452ef44ce9a0268ba7f089a83a2e2ae9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/003/trajectory_binary_float16/manifest.json">segments/003/trajectory_binary_float16/manifest.json</a> · complete · <code>4283f12e8c315a61c4fb793625bcdae79133023d48ab0e215111cb8fe9ad3887</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/status.json">segments/004/status.json</a> · accepted · <code>680914c33d8820d84fe4dd661b90845cdb8aa93a29635f03bea9ddd543e7da39</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/trajectory_binary_float16/conversion.json">segments/004/trajectory_binary_float16/conversion.json</a> · verified · <code>08a78c4c1c238fd30333ff988f8b1d4e35bc7bfd4ba52c6f99a218f70319406a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/004/trajectory_binary_float16/manifest.json">segments/004/trajectory_binary_float16/manifest.json</a> · complete · <code>fdde7d576365b90f19f571899074dde84d04643a9e09865085f2f4a60c92d36e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/status.json">segments/005/status.json</a> · accepted · <code>26a769bd3f90973694fd1f7f560a6151f8b29c86da6acfe9d99f24c7f153842a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/trajectory_binary_float16/conversion.json">segments/005/trajectory_binary_float16/conversion.json</a> · verified · <code>761f93818636d44d2b042c2c79de8297b7da1e787e2c8d9df7dccd6766c13391</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/005/trajectory_binary_float16/manifest.json">segments/005/trajectory_binary_float16/manifest.json</a> · complete · <code>66d85c39db2c38f371e8fa7f6a5adab31b4950b409d99622baaa49e11a5dc936</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/status.json">segments/006/status.json</a> · accepted · <code>296bf00719e9a2dbed269682b65f057d16d4ee1a04f7bd13c60c0369e525bcc9</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/trajectory_binary_float16/conversion.json">segments/006/trajectory_binary_float16/conversion.json</a> · verified · <code>d86a28511c8f371dcaad704858c81281ad55cc41b14ec01d9840c0337d2db2ca</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/006/trajectory_binary_float16/manifest.json">segments/006/trajectory_binary_float16/manifest.json</a> · complete · <code>aebd39f3dac0bcf981a328ee9b9e072844ef955593e3d6f7fc0dfced55444a14</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/status.json">segments/007/status.json</a> · accepted · <code>048982053a29ddeaf78802306997772815d2d6be382ed939db0da3e2f665f5fc</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/trajectory_binary_float16/conversion.json">segments/007/trajectory_binary_float16/conversion.json</a> · verified · <code>d915c5727bcf202118d3b4c02f8964a41e844dad48460b109c9d9aee05d1d04f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/007/trajectory_binary_float16/manifest.json">segments/007/trajectory_binary_float16/manifest.json</a> · complete · <code>cf4eb6e17c55b0d5757975c9521bd958fea632713b2bfe7a217b1338865cd2ff</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/status.json">segments/008/status.json</a> · accepted · <code>6946a133f5bd3f55410f3a890497742e664d6d40d9ce514b35f7c1cf085d9ca8</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/trajectory_binary_float16/conversion.json">segments/008/trajectory_binary_float16/conversion.json</a> · verified · <code>251fe8f7ab81c55efec134de53e9f3295853e703f989cad9a40eefc936ca837e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/008/trajectory_binary_float16/manifest.json">segments/008/trajectory_binary_float16/manifest.json</a> · complete · <code>de10d02573947b4f80b810ca723fa8a865e48568eaccf69485572355515b6e2f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/status.json">segments/009/status.json</a> · accepted · <code>e75d48978495cfe434b6af9a1db1de47a8895ca15355bc0ffd5e1790d15b4136</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/trajectory_binary_float16/conversion.json">segments/009/trajectory_binary_float16/conversion.json</a> · verified · <code>5d459e643315471e0127c691f6de6906477e9c06dbb83872570534e8bcc6cfbb</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/009/trajectory_binary_float16/manifest.json">segments/009/trajectory_binary_float16/manifest.json</a> · complete · <code>fd9d51ea21811b675fb98ce02b0ecd928a3dbd9411b9bfdad391e95bca329b70</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/status.json">segments/010/status.json</a> · accepted · <code>d7f2b981258f8466f05295bcf8df2addaddd89a6abc9fcc908bfe6a1a9e7d82d</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/trajectory_binary_float16/conversion.json">segments/010/trajectory_binary_float16/conversion.json</a> · verified · <code>592e1ada474eca758f1728d25c496d3b16f7b2ec174252009324ff1abd04dbdb</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/010/trajectory_binary_float16/manifest.json">segments/010/trajectory_binary_float16/manifest.json</a> · complete · <code>4fcdc1eaf81405098a2abbe80d80547be30c37d749ba4f911885e4820c5d6073</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/status.json">segments/011/status.json</a> · accepted · <code>41fa629dfae90b761f4df9083de96cd02e7f583f0c3743cd76e3f688f43bb38a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/trajectory_binary_float16/conversion.json">segments/011/trajectory_binary_float16/conversion.json</a> · verified · <code>bdda4f065e8790a528bae823efe66ddce5bfce4656c1ce47154e66a545721eea</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/011/trajectory_binary_float16/manifest.json">segments/011/trajectory_binary_float16/manifest.json</a> · complete · <code>b2f71dd440b5f1314e15d752c840d7550dfb8de56e3120a277b289724c9f89ce</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/status.json">segments/012/status.json</a> · accepted · <code>7aec13018cfa3077b00c355b6301949d60348881ef564b2d5cb5cf63f973a992</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/trajectory_binary_float16/conversion.json">segments/012/trajectory_binary_float16/conversion.json</a> · verified · <code>c82ecf20dea32bc993b4bea916a06ed8be5704d2a599d77d11b81746d7043625</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/012/trajectory_binary_float16/manifest.json">segments/012/trajectory_binary_float16/manifest.json</a> · complete · <code>0d5ccf73d82baf2f38e3477e031ba24d062753538ae45e51b63de91836049e85</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/status.json">segments/013/status.json</a> · accepted · <code>571ae640f258f2e525e121fb5c3016aa697111e3baa020dd657258cafa6f01d7</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/trajectory_binary_float16/conversion.json">segments/013/trajectory_binary_float16/conversion.json</a> · verified · <code>a746c176f779fff7c4e22f0bedb02370c47497ea524161d25d9dd84d5d6fb762</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/013/trajectory_binary_float16/manifest.json">segments/013/trajectory_binary_float16/manifest.json</a> · complete · <code>d295f94d198c63d852303db3018459e02fbae3a1abc3b64a82ef8857ac63d484</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/status.json">segments/014/status.json</a> · accepted · <code>917f057985b146e63866e380189add7d3d123e37802bae0787ceb94bd1cdf3f4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/trajectory_binary_float16/conversion.json">segments/014/trajectory_binary_float16/conversion.json</a> · verified · <code>24c091e0dc11d6529fb14352d2802b45d8b67229b7a6e16d29ad50d3154ab0c6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/014/trajectory_binary_float16/manifest.json">segments/014/trajectory_binary_float16/manifest.json</a> · complete · <code>ddf0c85c746b224f89d94119515056aa9977160bee9fbe9087ad2d3fc7b64f35</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/status.json">segments/015/status.json</a> · accepted · <code>9c32432e42f3d0bba22ebabb1f123cc2188d75380f849ec18ab11ca5d386d790</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/trajectory_binary_float16/conversion.json">segments/015/trajectory_binary_float16/conversion.json</a> · verified · <code>bf1cd7cd065885d319ad746e5d11c4f2f90c6e950f3b1a8fc09e292895fddc2c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/015/trajectory_binary_float16/manifest.json">segments/015/trajectory_binary_float16/manifest.json</a> · complete · <code>d17a112b8444633e785b01310a9c9a1a56b1fc8de02826a461c78fa8914e7a38</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/status.json">segments/016/status.json</a> · accepted · <code>6f708be3a8ab717a345d4cecada3b7531dbc0b9a6547e4151f4e2e6933c0a521</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/trajectory_binary_float16/conversion.json">segments/016/trajectory_binary_float16/conversion.json</a> · verified · <code>3244e6f00f3e0a6021bb467d28de0c916df46c29a2f55aa8619977e8379e6785</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/016/trajectory_binary_float16/manifest.json">segments/016/trajectory_binary_float16/manifest.json</a> · complete · <code>5b283a9c79b0f7589566982da8282b10e0afe4969586efca7f8c911577c8c834</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/status.json">segments/017/status.json</a> · accepted · <code>e95b11788f389141b6872bd62c7113d05eef71cce7e4962b7634b654744e35c5</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/trajectory_binary_float16/conversion.json">segments/017/trajectory_binary_float16/conversion.json</a> · verified · <code>b809c73528ea92760f9732333961eb44165316b9ad632c9153149b0b694f5406</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/017/trajectory_binary_float16/manifest.json">segments/017/trajectory_binary_float16/manifest.json</a> · complete · <code>7cd8cc7714c80ba1d0663eaf822f8eed54436dd6902fb2da09933c9581920d69</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/status.json">segments/018/status.json</a> · accepted · <code>4fb98d2dfc5899379423b3d8890aa80809241e964aee6fdb8bad197f92b7aac8</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/trajectory_binary_float16/conversion.json">segments/018/trajectory_binary_float16/conversion.json</a> · verified · <code>9264f11b04943b82a71ac2b24cf7937b27147aa3318821d2d9e0ec8c4f0c2175</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/018/trajectory_binary_float16/manifest.json">segments/018/trajectory_binary_float16/manifest.json</a> · complete · <code>b809c3c4440f651a6c589ca6ab5b1798b5e26b6600b40c54fe58b783789d0b4a</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/status.json">segments/019/status.json</a> · accepted · <code>090ea0ecc57f6e4c134207a8b2be4f04c7ef2b9d55865372aa927ed5e23c8404</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/trajectory_binary_float16/conversion.json">segments/019/trajectory_binary_float16/conversion.json</a> · verified · <code>f70ae256d4179b67e1bca62cfc54765b2cb0913fedf059029bb7eeb5260de82c</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/019/trajectory_binary_float16/manifest.json">segments/019/trajectory_binary_float16/manifest.json</a> · complete · <code>ba782eadb60b46b677b871f26a6b27bc3eca20bf86fcf8888497b57ef5293419</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/status.json">segments/020/status.json</a> · accepted · <code>1e06f125766bca94eb602bad4cc1b6a49a94a0a73e57beb0f43eb13d4a165d7e</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/trajectory_binary_float16/conversion.json">segments/020/trajectory_binary_float16/conversion.json</a> · verified · <code>17a9b3dfb36dad0ebbaeb87834b658ebd277bdeaf3799a51a12468dad7e73e27</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/020/trajectory_binary_float16/manifest.json">segments/020/trajectory_binary_float16/manifest.json</a> · complete · <code>75643d22a202b7c5928255abc34fe5fc2a4d6a40d727aa88a999e35aa9a64dfa</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/status.json">segments/021/status.json</a> · accepted · <code>035edaf01004d1ca4ca7038e36fd82842de1d4b906c2b2ff2fad0aa503887ec2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/trajectory_binary_float16/conversion.json">segments/021/trajectory_binary_float16/conversion.json</a> · verified · <code>69c7f308c4b969c4411639158f302fde0b5de0e744a25d6d050e88350f7019da</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/021/trajectory_binary_float16/manifest.json">segments/021/trajectory_binary_float16/manifest.json</a> · complete · <code>55cea9c59be75e28ce5a25b9479165730b37aa5c5ab476c794173f7509b7b5f2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/status.json">segments/022/status.json</a> · accepted · <code>b651e278d86ec3fb4fb766207a92b8cbcc871844d7d51074c8f208a574aa35dd</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/trajectory_binary_float16/conversion.json">segments/022/trajectory_binary_float16/conversion.json</a> · verified · <code>a7e25ae78d48b431d00f673800926df73749fa2cd9e2351a5b8a50c86ae797e5</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/022/trajectory_binary_float16/manifest.json">segments/022/trajectory_binary_float16/manifest.json</a> · complete · <code>53e4ba47f76d193e6d3ccbfa54260783fd43fb4c469751e487da62987d019ede</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/status.json">segments/023/status.json</a> · accepted · <code>0114d38866f463a05e9a6097fee785fb780336b429de8fc569fd48a675b7ffec</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/trajectory_binary_float16/conversion.json">segments/023/trajectory_binary_float16/conversion.json</a> · verified · <code>7e32dd263469cb4b196c60944ff9775df3b68f40f46f36671d7560da3d3024a4</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/023/trajectory_binary_float16/manifest.json">segments/023/trajectory_binary_float16/manifest.json</a> · complete · <code>f461ef83d511a2fd9f321ea90c005ff5facc240cfb68003eda7bdbce6324a962</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/status.json">segments/024/status.json</a> · accepted · <code>ec9350ebb26e2707e510da583c09987859cf5ada3695788e42be3c4b198e742f</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/trajectory_binary_float16/conversion.json">segments/024/trajectory_binary_float16/conversion.json</a> · verified · <code>6e7836ee6553eb1663e8ec3745ee3d4f3972499f370e45c6e877dacc6ee53746</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/024/trajectory_binary_float16/manifest.json">segments/024/trajectory_binary_float16/manifest.json</a> · complete · <code>6a05cb33ca045bec56bfd40c61a0cf1dec790166af6995cf3759727e4bb222e1</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/status.json">segments/025/status.json</a> · accepted · <code>1df6acb2e161bdcdaa92e3ab358505c3f9488822988411cc85dd798d3dd157a6</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/trajectory_binary_float16/conversion.json">segments/025/trajectory_binary_float16/conversion.json</a> · verified · <code>b1782c7f08d43f56d578956f0410378f9cbf84aa042d4cba271e8ad999e5e2ed</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/025/trajectory_binary_float16/manifest.json">segments/025/trajectory_binary_float16/manifest.json</a> · complete · <code>6055891fb11af4ee4c5eb83efd648a0a6eab6ee51375bea071c16e3eb6a97de2</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/status.json">segments/026/status.json</a> · failed · <code>101411b3b851cc5f413af9ec82cf51f18ace2148ed90db60500ff16571be77fc</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/trajectory_binary_float16/conversion.json">segments/026/trajectory_binary_float16/conversion.json</a> · verified · <code>6c3413aa13cd92ca46018c6a9bd245be7c78d84e4eec518051f2b96b8dab2664</code></li><li><a href="../../../../../../../store/PERSO/vmorozov/simulations/al-million-velocity-replay-20261007/segments/026/trajectory_binary_float16/manifest.json">segments/026/trajectory_binary_float16/manifest.json</a> · complete · <code>87a6346e39f7194d0e0130191d3645718f39942c845ff8ca13eb3b88e3a312d8</code></li></ul></details><p class="muted">Observed 2026-10-11T00:11:05.385980+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

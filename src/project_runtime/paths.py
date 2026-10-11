@@ -4,6 +4,8 @@ import json
 import os
 from pathlib import Path
 import re
+from contextlib import contextmanager
+from contextvars import ContextVar
 
 import yaml
 
@@ -71,34 +73,69 @@ def dataset_path(identifier):
     return storage_path(entry['root']) / entry['path']
 
 
-def _tokens(text):
-    return TOKENS.sub(lambda match: str(storage_path(match[2]) if match[1] == 'storage'
-                                      else dataset_path(match[2])), text)
+class _PathSnapshot:
+    """One consistent machine/catalogue read for a resolution operation."""
+
+    def __init__(self):
+        settings = machine()
+        self.roots = settings['roots']
+        filename = Path(settings['catalog'])
+        filename = filename if filename.is_absolute() else REPO / filename
+        value = json.loads(filename.read_text()) if filename.is_file() else None
+        if value is not None and value['schema_version'] != 1:
+            raise ValueError(f'Unsupported dataset catalog schema: {filename}')
+        self.entries = value['datasets'] if value is not None else {}
+        aliases = dict(settings['legacy_paths'])
+        for identifier, entry in self.entries.items():
+            for alias in entry.get('aliases', []):
+                aliases[alias] = '${dataset:' + identifier + '}'
+        self.aliases = sorted(aliases.items(), key=lambda item: -len(item[0]))
+
+    def tokens(self, text):
+        def replace(match):
+            kind, key = match.groups()
+            if kind == 'storage':
+                return self.roots[key]
+            entry = self.entries[key]
+            return str(Path(self.roots[entry['root']]) / entry['path'])
+        return TOKENS.sub(replace, text)
+
+    def resolve(self, text):
+        text = self.tokens(text)
+        for prefix, base in [('datasets', Path(self.roots['datasets'])),
+                             ('output', Path(self.roots['output'])),
+                             *[(name, REPO / name) for name in ('experiments', 'configs', 'src', 'scripts')]]:
+            if text.startswith(prefix + '/'):
+                text = str(base / text[len(prefix)+1:])
+                break
+        for old, target in self.aliases:
+            if text == old:
+                text = self.tokens(target).rstrip('/')
+            elif old.rstrip('/') + '/' in text:
+                text = text.replace(old.rstrip('/') + '/', self.tokens(target).rstrip('/') + '/')
+        return text
+
+
+_path_snapshot = ContextVar('path_snapshot', default=None)
+
+
+@contextmanager
+def path_snapshot():
+    """Reuse paths during one preparation operation, then observe future changes.
+
+    Nesting shares the caller's snapshot. No process-global persistent cache is
+    installed, so subsequent operations read the current machine and catalogue.
+    """
+    token = _path_snapshot.set(_path_snapshot.get() or _PathSnapshot())
+    try:
+        yield
+    finally:
+        _path_snapshot.reset(token)
 
 
 def resolve_text(text):
     """Expand explicit tokens and the finite legacy roots declared by this machine."""
-    text = _tokens(text)
-    for prefix, base in [('datasets', storage_path('datasets')), ('output', storage_path('output')),
-                         ('experiments', REPO / 'experiments'), ('configs', REPO / 'configs'),
-                         ('src', REPO / 'src'), ('scripts', REPO / 'scripts')]:
-        if text.startswith(prefix + '/'):
-            text = str(base / text[len(prefix)+1:])
-            break
-    aliases = dict(machine()['legacy_paths'])
-    catalog_file = Path(machine()['catalog'])
-    catalog_file = catalog_file if catalog_file.is_absolute() else REPO / catalog_file
-    if catalog_file.is_file():
-        for identifier, entry in catalog().items():
-            for alias in entry.get('aliases', []):
-                aliases[alias] = '${dataset:' + identifier + '}'
-    for old, target in sorted(aliases.items(), key=lambda item: -len(item[0])):
-        target = _tokens(target).rstrip('/')
-        if text == old:
-            text = target
-        else:
-            text = text.replace(old.rstrip('/') + '/', target + '/')
-    return text
+    return (_path_snapshot.get() or _PathSnapshot()).resolve(text)
 
 
 def resolve_path(value):

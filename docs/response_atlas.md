@@ -311,3 +311,5 @@ helpers collect only; the existing coordinator still owns the nine sequential fi
 The [scientific protocol](../experiments/response_atlas_20261001/ATOMISTIC_TRAINING.md)
 and [metric definitions](metrics/response_training.md) explain the full observation,
 synthetic ancestry, fresh test streams, short horizons and cost-comparison limits.
+
+October3: [response-weight and finite-displacement follow-up](simulations/local_response_followup_20261003.md) fixes400 updates per fit and measures actual larger-disturbance forwards.

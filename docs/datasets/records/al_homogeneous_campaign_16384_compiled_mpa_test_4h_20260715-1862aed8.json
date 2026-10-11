@@ -68,6 +68,170 @@
       "provenance": {}
     },
     {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj.float16/conversion.json",
+      "relative_path": "accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj.float16/conversion.json",
+      "sha256": "ab47e592bd1b77dbad7d26fd7d591f5de7c94220ba5e8515213a77e47a7ef45f",
+      "kind": "metadata",
+      "keys": [
+        "completed_utc",
+        "first_timestep",
+        "frame_count",
+        "has_velocities",
+        "incomplete_tail",
+        "last_timestep",
+        "quantization",
+        "source_allocated_bytes",
+        "source_deleted",
+        "source_path",
+        "source_sha256",
+        "source_signature",
+        "state"
+      ],
+      "recorded_state": "verified",
+      "facts": {
+        "frame_count": [
+          {
+            "value": 184,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {
+        "quantization": {
+          "positions": {
+            "max_abs": 0.03125,
+            "rms": 0.007421060690267382,
+            "coordinate_count": 9043968
+          }
+        }
+      }
+    },
+    {
+      "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj.float16/manifest.json",
+      "relative_path": "accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj.float16/manifest.json",
+      "sha256": "d8535125f9eee0aa7923e6a08a9eddbad5deb084de4296dd04a57bcfc996373c",
+      "kind": "trajectory",
+      "keys": [
+        "arrays",
+        "atom_columns",
+        "atom_count",
+        "coordinate_convention",
+        "first_timestep",
+        "format",
+        "frame_count",
+        "last_timestep",
+        "provenance",
+        "schema_version",
+        "source",
+        "state",
+        "storage_dtype",
+        "velocity_units"
+      ],
+      "recorded_state": "complete",
+      "facts": {
+        "storage_dtype": [
+          {
+            "value": "float16",
+            "first_json_path": "storage_dtype",
+            "occurrences": 1
+          }
+        ],
+        "atom_count": [
+          {
+            "value": 16384,
+            "first_json_path": "atom_count",
+            "occurrences": 1
+          }
+        ],
+        "frame_count": [
+          {
+            "value": 184,
+            "first_json_path": "frame_count",
+            "occurrences": 1
+          }
+        ],
+        "coordinate_convention": [
+          {
+            "value": "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again",
+            "first_json_path": "coordinate_convention",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {},
+      "trajectory": {
+        "format": "pointcloudmaterials.temporal_lammps_trajectory",
+        "recorded_state": "complete",
+        "usable_binary": false,
+        "atom_count": 16384,
+        "frame_count": 184,
+        "arrays": {
+          "timesteps": {
+            "shape": [
+              184
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "5609a77d42a915ad148c7b657731585bc6aff3dc5d371fb23867ac3b16307ad9",
+            "file": "timesteps.npy"
+          },
+          "box_high": {
+            "shape": [
+              184,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "a9f0297b01c89c48cd4afdd510324c1caa50c0ef4114e515d0f5e7ad46e7fab4",
+            "file": "box_high.npy"
+          },
+          "atom_types": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int32",
+            "fortran_order": false,
+            "declared_sha256": "4da8245cddf92719e653adc1bc9754c48e864f1640ba6c9143149feb6c994f6b",
+            "file": "atom_types.npy"
+          },
+          "box_low": {
+            "shape": [
+              184,
+              3
+            ],
+            "dtype": "float32",
+            "fortran_order": false,
+            "declared_sha256": "8e7b9d1bcc26c42f6cc92f9222c9922ee30ecd2ad97cbbb633cf6ef8569f103a",
+            "file": "box_low.npy"
+          },
+          "atom_ids": {
+            "shape": [
+              16384
+            ],
+            "dtype": "int64",
+            "fortran_order": false,
+            "declared_sha256": "214fdbb069291f13c243dd1e3b0a54fd16f6e3eb39cfbcafec170026bee462bb",
+            "file": "atom_ids.npy"
+          }
+        },
+        "timeline": {
+          "first_step": 0,
+          "last_step": 182800,
+          "step_intervals": [
+            800,
+            1000
+          ]
+        },
+        "content_signature_from_manifest": "0e97ca40bed5e4146a8fc1eb6dfd9faf05a2ed9e258d1d7d15e282f8b76c083a",
+        "issues": [
+          "Missing array: /store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/accepted_measurement_trajectory.lammpstrj.float16/positions.npy",
+          "Missing required fields: ['positions']"
+        ],
+        "verification": "Array existence and NPY headers checked; large array checksums are producer-declared, not rehashed."
+      }
+    },
+    {
       "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715/accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache/manifest.json",
       "relative_path": "accepted_endpoints/replica_000/step_000000187800/analysis_inputs/temporal/cache/manifest.json",
       "sha256": "f1840f6e4f7db0fca5a32c7c0d8e93556b57acb2e89295b8a5b3d74dc371b14e",

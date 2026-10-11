@@ -76,6 +76,16 @@ def cell(plan,task):
        potential_files=plan['potential_files'],pair_commands=['pair_style meam',f'pair_coeff * * {plan["potential_files"][0]} Al {plan["potential_files"][1]} Al'])
     for p,h in zip(plan['potential_files'],c['potential_sha256']):
         if sha(Path(p))!=h:raise ValueError('Potential changed after submission')
+    reused_entry=None
+    if not archive.exists():
+        from src.data.relaxation_index import cell_lookup
+        request=dict(source_manifest_sha256=source['manifest_sha256'],source_frame=frame,
+                     source_timestep=int(raw.timesteps[frame]))
+        hit=cell_lookup(request,settings,precision='archived_float16_cell')
+        if hit is not None:
+            # This workflow already declares global float16 archival replay.
+            archive=Path(hit['path'])
+            reused_entry=hit['id']
     if not archive.exists():
         if not (work/'metadata.json').exists():
             absolute=SimpleNamespace(**vars(raw),atom_count=raw.atom_count);absolute.positions=AbsolutePositions(raw)
@@ -92,9 +102,11 @@ def cell(plan,task):
         if not (work/'conversion.json').exists():convert(work,delete_source=True,local_cloud_dtype='none')
         publish(work,archive)
     verify_archive(archive);meta=config(archive/'metadata.json')
-    write_json(receipt,dict(identity=plan['identity'],task=task,archive=str(archive),relaxation=meta,
+    record=dict(identity=plan['identity'],task=task,archive=str(archive),relaxation=meta,
         metadata_sha256=sha(archive/'metadata.json'),conversion_sha256=sha(archive/'conversion.json'),
-        local_clouds_saved=False,coordinate_protocol='verified global float16; later centered float32 extraction'))
+        local_clouds_saved=False,coordinate_protocol='verified global float16; later centered float32 extraction')
+    if reused_entry is not None:record['reuse']=dict(index_entry=reused_entry)
+    write_json(receipt,record)
 
 
 def worker(c,index):

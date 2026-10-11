@@ -1,0 +1,24 @@
+{
+  "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+  "verified": true,
+  "upstream": true,
+  "upstream_tasks": 4372,
+  "upstream_files": 17488,
+  "protected_files_verified": 17488,
+  "hash_method": "Producer sha() SHA-256 for every recorded upstream file, eight parallel readers",
+  "sample_event_reads": [
+    {
+      "cadence": "010",
+      "event_id": "3af09e9b51e6341e66f1e0510a066b8d0afe90c3d04a0f6dc024760bc98129eb:255:0",
+      "source_id": "04ea4ea4e9ebb1545f53a1906e90ae2cd5ae3361fdc55291b48745a66a458ae9",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9"
+    },
+    {
+      "cadence": "030",
+      "event_id": "643551ceab3cc821f6321d5aa58a1b10a8a3e022a3c430ee69988430de9dc038:63:0",
+      "source_id": "036f5f8ea87be8f3f844d4c13e60c0f53eddeb90c8a876077159bc3823c9a12f",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9"
+    }
+  ],
+  "elapsed_seconds": 49.441379961092025
+}

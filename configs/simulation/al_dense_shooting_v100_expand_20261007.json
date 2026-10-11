@@ -1,0 +1,6 @@
+{
+  "parent_launch": "${storage:archive}/simulation-launches/al-dense-shooting-v100-20261007",
+  "expansion_id": "three-more-v100-20261007",
+  "additional_workers": 3,
+  "retain_original_entries": 10
+}

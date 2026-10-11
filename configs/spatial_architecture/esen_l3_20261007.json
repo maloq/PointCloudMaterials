@@ -1,0 +1,105 @@
+{
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "cache": "${storage:cache}/rich-descriptors/multimaterial-raw-20260929",
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "data": {
+    "source_kind": "dynamic",
+    "domain": "hot",
+    "target": "442 local rich descriptors",
+    "phase_filter": null,
+    "training_rows": 1056768
+  },
+  "loader": {
+    "packed_cache": "${storage:cache}/rich-descriptors/packed-rh2-20260930/full",
+    "max_open_shards": 128,
+    "prefetch": 2
+  },
+  "prepared_identity": "35e6373ee3e8bdaf29e4fdda51cac8afd553e0f9ac6df7e5494de770fa321a2c",
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "protocol": "spatial_esen_mace_matched_12epoch_v1",
+  "seed": 20261007,
+  "output": "${storage:training_storage}/spatial_architecture/esen-l3-20261007-v1",
+  "derived_cache": "${storage:cache}/structural-response/c3-l3-bf16-20261007-v1",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "radius": 8.0,
+    "num_interactions": 2,
+    "max_ell": 3,
+    "max_m": 3,
+    "radial_basis": 32,
+    "hidden_channels": 16,
+    "edge_channels": 32,
+    "norm_type": "layer_norm_sh"
+  },
+  "methods": [
+    "vicreg_descriptors"
+  ],
+  "spatial_training": {
+    "updates": 49536,
+    "batch_size": 256,
+    "microbatch": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "warmup": 4128,
+    "selection_every": 1024,
+    "save_every": 64,
+    "ema": 0.01,
+    "epochs": 12,
+    "min_lr": 1e-05
+  },
+  "runtime": {
+    "partition": "RTX6000PRO",
+    "queue_hours": 24,
+    "memory_GB": 32,
+    "cpu_threads": 4
+  },
+  "scope": "Matched spatial architecture and 12-epoch speed comparison; same data, losses, global batch/microbatch, shuffle, schedule and selection policy. One seed. No new motion training, birth filtering or simulations. Completed historical MACE retained; fresh MACE reference supplies instrumented equal-epoch timing.",
+  "reference_encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 3,
+    "correlation": 3,
+    "backend": "cueq",
+    "layout": "ir_mul",
+    "conv_fusion": true
+  },
+  "architectures": [
+    "esen",
+    "mace"
+  ],
+  "baseline_reference": {
+    "output": "${storage:training_storage}/structural_response/c3-l3-bf16-20261007-v1",
+    "checkpoint_sha256": "7a3f5bff3a9279a9ffaa31cf722f462841446ccb44a568f344acbc5687c6540b"
+  }
+}

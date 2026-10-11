@@ -1,0 +1,59 @@
+{
+  "observed_utc": "2026-10-02T13:42:29.625430+00:00",
+  "action": "read-only audit; no new deletion",
+  "first_review_GB": 130.085190656,
+  "conditional_GB": 159.615171584,
+  "candidates": [
+    {
+      "partition": "STORE",
+      "path": "/store/PERSO/vmorozov/training-cache-archive-20260926/crystallization-transfer-mace-20260919",
+      "GB": 78.046339072,
+      "priority": "First review",
+      "condition": "Derived graphs/features from 150 retained Al sources; confirm no downstream use before payload-only retirement."
+    },
+    {
+      "partition": "SCRATCH",
+      "path": "/scratch/PERSO/vmorozov/PointCloudMaterials/training-cache/context-geometry",
+      "GB": 52.038851584,
+      "priority": "First review",
+      "condition": "Managed disposable geometry; current lease unlocked; last use 2026-09-26; retain raw/relaxed source cells."
+    },
+    {
+      "partition": "STORE",
+      "path": "/store/PERSO/vmorozov/training-cache-archive-20260925/equivariant-context",
+      "GB": 18.856820736,
+      "priority": "Conditional",
+      "condition": "Old lane cache; still reachable via IDS alias; verify references and rebuild sources."
+    },
+    {
+      "partition": "IDS",
+      "path": "/home/ids/vmorozov/training-cache/neighborhood_jepa",
+      "GB": 31.587598336,
+      "priority": "Conditional",
+      "condition": "Derived training caches; per-entry ancestry, source availability and use need review."
+    },
+    {
+      "partition": "IDS",
+      "path": "/home/ids/vmorozov/training-cache/structural_pretraining",
+      "GB": 37.424342528,
+      "priority": "Conditional",
+      "condition": "Derived pretraining caches; do not delete source structures, checkpoints or current dependencies."
+    },
+    {
+      "partition": "IDS",
+      "path": "/home/ids/vmorozov/training-cache/distance-encoder",
+      "GB": 71.746409984,
+      "priority": "Conditional",
+      "condition": "Mostly history caches for distinct cadences; not interchangeable duplicates; rebuild cost and dependencies need review."
+    },
+    {
+      "partition": "WORK",
+      "path": "/work/PERSO/vmorozov/analysis/embedding_forecast",
+      "GB": 29.45832448,
+      "priority": "Relocate only",
+      "condition": "Fits/results dominate; move with checksum verification rather than deleting scientific artifacts."
+    }
+  ],
+  "protected": "Six managed context-feature entries, active leases, simulation originals awaiting verification, scientific checkpoints/predictions/metrics, native restarts and relaxed structures.",
+  "scope": "Candidate directory sizes are upper bounds for payload retirement, not certified safe-to-delete totals. Al conversion is separately authorized and continues."
+}

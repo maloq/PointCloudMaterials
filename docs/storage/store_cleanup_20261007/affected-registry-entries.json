@@ -1,0 +1,152 @@
+[
+  {
+    "dataset": ".al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12345_500K.generation-2b3c58f003ec",
+    "files_removed": 3,
+    "bytes": 34033381
+  },
+  {
+    "dataset": ".al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_liquid_source_70304_mpa_seed12346_500K.generation-6d03498342ff",
+    "files_removed": 3,
+    "bytes": 34033381
+  },
+  {
+    "dataset": ".al_phase_context_70304x1.generation-5016671fb856",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1.generation-5016671fb856",
+    "files_removed": 6,
+    "bytes": 90287709
+  },
+  {
+    "dataset": ".al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/.al_phase_context_70304x1_seed_12346.generation-559b40e8ef01",
+    "files_removed": 6,
+    "bytes": 90287709
+  },
+  {
+    "dataset": "al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_110ps_multiseed_20260717",
+    "files_removed": 4,
+    "bytes": 36856105
+  },
+  {
+    "dataset": "al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_16384_compiled_mpa_test_4h_20260715",
+    "files_removed": 11,
+    "bytes": 242733142
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12345_seed35803_20260718",
+    "files_removed": 9,
+    "bytes": 314735139
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_110ps_source12346_seed35831_20260718",
+    "files_removed": 6,
+    "bytes": 162292053
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12345_seed35803_20260720",
+    "files_removed": 11,
+    "bytes": 531137822
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_130ps_source12346_seed35831_20260720",
+    "files_removed": 11,
+    "bytes": 531137826
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12345_seed35803_20260724",
+    "files_removed": 9,
+    "bytes": 1047118821
+  },
+  {
+    "dataset": "al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_campaign_70304_mpa_bf16_130ps_source12346_seed35831_20260724",
+    "files_removed": 9,
+    "bytes": 1047118820
+  },
+  {
+    "dataset": "al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_lammps_eam_70304_110ps_4seeds_20260826",
+    "files_removed": 17,
+    "bytes": 777261131
+  },
+  {
+    "dataset": "al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_homogeneous_unseeded_2nn_meam_70304_4temps_510-540K_600ps_1ps_positions_velocities_6seeds_20260830",
+    "files_removed": 15,
+    "bytes": 2503106605
+  },
+  {
+    "dataset": "al_liquid_source_70304_mpa_seed12345_500K",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12345_500K",
+    "files_removed": 3,
+    "bytes": 38602566
+  },
+  {
+    "dataset": "al_liquid_source_70304_mpa_seed12346_500K",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_liquid_source_70304_mpa_seed12346_500K",
+    "files_removed": 3,
+    "bytes": 38602566
+  },
+  {
+    "dataset": "al_phase_context_70304x1",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1",
+    "files_removed": 9,
+    "bytes": 115807695
+  },
+  {
+    "dataset": "al_phase_context_70304x1_seed_12346",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/al_phase_context_70304x1_seed_12346",
+    "files_removed": 9,
+    "bytes": 115807695
+  },
+  {
+    "dataset": "polycrystalline_balanced_geometries",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries",
+    "files_removed": 2,
+    "bytes": 52363233
+  },
+  {
+    "dataset": "polycrystalline_balanced_geometries_v2",
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/synthetic_data/polycrystalline_balanced_geometries_v2",
+    "files_removed": 2,
+    "bytes": 50258207
+  },
+  {
+    "dataset": "al-all-cadences-nuclei-search-20261003",
+    "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-all-20261003-v2",
+    "files_removed": 8913,
+    "bytes": 9745551567
+  },
+  {
+    "dataset": "al-all-cadences-nuclei-lineage-20261005",
+    "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-all-20261005-v3",
+    "files_removed": 2866,
+    "bytes": 3310987326
+  },
+  {
+    "dataset": "al-nuclei-dense-additions-20261005",
+    "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-dense-additions-20261005-v3",
+    "files_removed": 1,
+    "bytes": 469900725
+  },
+  {
+    "dataset": "al-nuclei-dense-additions-20261006",
+    "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-dense-additions-20261006-v3",
+    "files_removed": 1,
+    "bytes": 276072057
+  },
+  {
+    "dataset": "al-nuclei-dense-additions-20261007",
+    "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-dense-additions-20261007-v3",
+    "files_removed": 1,
+    "bytes": 135942287
+  }
+]

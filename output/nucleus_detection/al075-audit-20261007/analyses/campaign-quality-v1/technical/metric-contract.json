@@ -1,0 +1,9 @@
+{
+  "family": "al075_birth_quality",
+  "exported_at": "2026-10-07T17:52:54.387878+00:00",
+  "files": {
+    "docs/metrics/al075_birth_quality.md": "6b7d7bc10feba37b10120c50374b604f658f9df1e1110880793b1f3badaa7eb9",
+    "src/research/crystallization_origin/cadence_audit.py": "af45841f36d47038bf42b63ff3ebf9c2656cd7179768659bcbb44216d0d02193"
+  },
+  "verified": true
+}

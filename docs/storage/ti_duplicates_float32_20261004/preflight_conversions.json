@@ -1,0 +1,13 @@
+[
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ti/liquid.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/Ti_crystal/crystal.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow/melt/liquid.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/melt/liquid.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_0.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_100.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_200.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_300.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_400.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_500.lammpstrj",
+  "/work/PERSO/vmorozov/simulations/ti_ta_crystallization_20260907/preflight/workflow_v2/source/snapshot_600.lammpstrj"
+]

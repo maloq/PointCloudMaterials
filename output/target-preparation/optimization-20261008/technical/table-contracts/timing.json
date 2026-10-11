@@ -1,0 +1,7 @@
+{
+  "table": "tables/timing.csv",
+  "sha256": "d5df954b7f795359b6ce57c094ed67a9f22d5cd604c93a92f86e41ff862c4850",
+  "family": "spatial_target_preparation",
+  "contract": "technical/metric-contracts/spatial_target_preparation.json",
+  "definitions": "tables/metric-definitions/spatial_target_preparation.md"
+}

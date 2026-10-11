@@ -1,5 +1,10 @@
 # Ta position shooting, 2026-09-26
 
+**Raw data removed October 3:** all 24 shooting futures were deleted at user
+request, along with five earlier large-cell trajectories. The earlier million-atom
+baseline and original snapshots remain. This document preserves the historical
+protocol; see [the cleanup receipt](../storage/ta_simulation_removal_20261003/receipt.json).
+
 Submitted 2026-09-26 at 11:55 UTC: Slurm array **1009563**, dependent preservation
 job **1009564**. Completion is not yet established; consult the durable receipts
 and per-parent outcomes below.

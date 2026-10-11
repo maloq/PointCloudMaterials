@@ -10,9 +10,9 @@
 - Location: `/store/PERSO/vmorozov/relaxed_encoder/expanded-20260921`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
-- Complete binary records with arrays present: 2460; these are not independent-source counts.
-- Stored frames: 2460; duplicate-group records: 114
-- Allocated storage, excluding registered nested datasets: 6.366 GiB
+- Complete binary records with arrays present: 1048; these are not independent-source counts.
+- Stored frames: 1048; duplicate-group records: 74
+- Allocated storage, excluding registered nested datasets: 2.787 GiB
 - Missing metadata: None in the core fields
 
 ## Notes and relationships
@@ -37,7 +37,12 @@
   "limitations": [
     "Preparing; consult per-cell completion receipts. One seed. Reused historical source split, no test-source encoder fitting. Full-cell quenching includes external context. Raw MD coordinates inherit float16 storage; relaxed local clouds saved float32 before full-cell conversion. Training-only target-domain normalization.",
     "Timeouts are excluded consistently across matched training pairs/readout windows; technical/skipped and training/assay release receipts record omissions. Other failures remain fatal."
-  ]
+  ],
+  "storage_status": "User-authorized removal on 2026-10-03 of historical CPU relaxation cells without a pinned executable hash and their indexed clouds.npz copies. Remaining artifacts retain their original definitions; old completion receipts do not imply deleted payloads are available.",
+  "relaxation_cleanup": {
+    "deleted_full_cells": 1486,
+    "receipt": "docs/storage/relaxation_unverified_removal_20261003/receipt.json"
+  }
 }
 ```
 
@@ -48,16 +53,16 @@
 | atom_count | [70304] |
 | timestep_ps | [0.001] |
 | protocol | ["Full periodic cell, fixed box, generating potential; infinity-norm force convergence, no isolated-patch relaxation."] |
-| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again"] |
+| coordinate_convention | ["positions are wrapped Cartesian coordinates in angstrom relative to box_low in [0, box_high-box_low) before storage quantization; decode to float32 and wrap again", "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 | frame_count | [1] |
 | storage_dtype | ["float16"] |
 
 ## Evidence
 
-All 7380 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
+All 3070 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/relaxed-encoder-expanded-cells-20260921-2ccf75a7.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

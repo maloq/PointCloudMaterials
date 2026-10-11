@@ -1,0 +1,11 @@
+role,material,rows
+train,Al,593617
+train,Mg,44369
+train,Ti,57284
+train,Ta,361498
+selection,Al,192960
+calibration,Al,16848
+test,Al,45291
+train,Ni,264192
+selection,Ni,4096
+test,Ni,4096

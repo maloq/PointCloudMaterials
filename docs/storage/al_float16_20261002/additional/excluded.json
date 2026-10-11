@@ -1,0 +1,297 @@
+[
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/relaxation_recovery_benchmark/force_equivalence/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_backend/gpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_backend/cpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T400_optimization_melt387039544_velocity90935429/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_034_T450_optimization_melt147978527_velocity388842215/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_005_T510_optimization_melt603302271_velocity45594483/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T400_optimization_melt378118914_velocity845282558/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T510_optimization_melt661426236_velocity201750649/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_004_T510_optimization_melt564513410_velocity693065731/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_033_T450_optimization_melt134462729_velocity225335578/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_003_T400_optimization_melt750494487_velocity85653941/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Lee2003_MEAM/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/Al1_EAM_FS_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/Lee2003_MEAM_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/available_mixed/potential_audit/deeper_analysis/forces/source_035_T450_optimization_melt700628451_velocity337737036/Al1_EAM_FS/hot_forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/relaxation_equivalence/gpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  },
+  {
+    "path": "/store/PERSO/vmorozov/projects/PointCloudMaterials-20260913T174741Z/output/mace_al_denoising_20260910/relaxation_equivalence/cpu/forces.dump",
+    "reason": "not a supported position/velocity trajectory",
+    "columns": "ITEM: ATOMS id fx fy fz"
+  }
+]

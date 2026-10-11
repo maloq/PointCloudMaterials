@@ -53,3 +53,48 @@ mean conditioned only on an80-atom patch.
 
 Definitions: [metric contract](../../docs/metrics/local_response.md).
 Execution: [workflow](../../docs/simulations/local_response_20261002.md).
+
+## Completed results, October3
+
+All135 queries and twelve fits completed; final evaluation finished05:50 Paris.
+The24A moving environment passed the declared training-source convergence gate.
+All twelve saved checkpoint/prediction hashes, full135-row prediction coverage,
+finite predictions/responses and final online W&B summary receipts were verified.
+
+Across30 held-out sources and three training seeds, full256-coordinate
+noise-corrected MSE was:
+
+| Treatment | Future-feature MSE | Response MSE |
+| --- | ---: | ---: |
+| Constant prior |0.50789849 |0.77681604 |
+| values8 |0.27437001 |0.39338080 |
+| responses8 |0.32415905 |0.43542142 |
+| values32 |0.27039761 |0.38981217 |
+| values8_time |0.27436061 |0.39338069 |
+
+Response supervision increased average future-feature error18.15% and response
+error10.69% relative to values8. Paired source-bootstrap95% intervals for these
+absolute differences were respectively[0.02522438,0.07971184] and
+[0.01983959,0.06640868]. These intervals condition on the three fitted seeds;
+they do not include training-seed or training-source resampling uncertainty.
+At20fs the response-error difference was inconclusive; the joint20+100fs
+features showed the clearer deterioration.
+
+Seed dependence is substantial. Response fits selected epochs12,200,12 for
+seeds20261002/3/4. The middle seed improved future-feature error23.70% and
+response error28.72% versus its matched values8 fit; the other two were worse.
+Thus the result is an unstable treatment with worse average performance in this
+pilot, not evidence that local response learning can never work. The complete
+trained nonlinear predictor was evaluated throughout. Extra value-only training
+time did not improve its validation-selected result; all three time controls
+reached their measured budgets.
+
+The next informative control would reuse the existing label bank to examine
+response-loss weight and delayed response supervision, selecting only on the
+declared validation likelihood. This is a proposal, not an additional launched
+experiment. The present results remain short-time MACE-teacher feature prediction,
+not an evaluation of original MEAM crystallization at3/6ps.
+
+The completed [disturbance and hyperparameter audit](DISTURBANCE_AUDIT.md)
+quantifies physical perturbations, feature sensitivities, label noise and
+parameter-gradient competition at the frozen checkpoints. It launches no new fits.

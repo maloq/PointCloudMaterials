@@ -1,0 +1,106 @@
+{
+  "fixed_dataset": {
+    "root": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+    "identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "track": "all64"
+  },
+  "cache": "${storage:cache}/rich-descriptors/multimaterial-raw-20260929",
+  "structural_dataset": {
+    "root": "${storage:scratch}/training-cache/structural-pretraining/multimaterial-256-20260925",
+    "identity": "0d605bdbde89f27ee40135292633325a8ffa52ba3fede61542545a4d8b7441a3",
+    "normalization": {
+      "protocol": "fixed_material_cutoff_al_reference_v1",
+      "catalog_sha256": "9843ef97869feda393f174990db8123a958b7ea99aee7eeccfefa3b7ed995684",
+      "scales_A": {
+        "Mg": 10.148997617371739,
+        "Al": 9.121389139452193,
+        "Ti": 9.309864688636168,
+        "Zr": 10.353008987883314,
+        "Ta": 9.38733713271385
+      },
+      "reference_scale_A": 9.121389139452193,
+      "model_inputs": [
+        "normalized coordinates"
+      ],
+      "material_metadata": "used only for fixed length normalization and audit; never an encoder/head input"
+    }
+  },
+  "data": {
+    "source_kind": "dynamic",
+    "domain": "hot",
+    "target": "442 local rich descriptors",
+    "phase_filter": null,
+    "training_rows": 1056768
+  },
+  "loader": {
+    "packed_cache": "${storage:cache}/rich-descriptors/packed-rh2-20260930/full",
+    "max_open_shards": 128,
+    "prefetch": 2
+  },
+  "prepared_identity": "35e6373ee3e8bdaf29e4fdda51cac8afd553e0f9ac6df7e5494de770fa321a2c",
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "protocol": "spatial_tensornet_c128_2layer_12epoch_20261008_v1",
+  "seed": 20261007,
+  "output": "${storage:training_storage}/spatial_architecture/tensornet-20261008-v1",
+  "derived_cache": "${storage:cache}/structural-response/c3-l3-bf16-20261007-v1",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "radius": 8.0,
+    "num_interactions": 2,
+    "radial_basis": 32
+  },
+  "methods": [
+    "vicreg_descriptors"
+  ],
+  "spatial_training": {
+    "updates": 49536,
+    "batch_size": 256,
+    "microbatch": 256,
+    "learning_rate": 0.001,
+    "weight_decay": 1e-05,
+    "warmup": 4128,
+    "selection_every": 1024,
+    "save_every": 64,
+    "ema": 0.01,
+    "epochs": 12,
+    "min_lr": 1e-05
+  },
+  "runtime": {
+    "partition": "RTX6000PRO",
+    "queue_hours": 24,
+    "memory_GB": 32,
+    "cpu_threads": 4
+  },
+  "scope": "Geometry-only TensorNet C128, two O(3) tensor interaction layers, embedding128, 32 fixed exponential-normal radial functions, 5 A edge cutoff and 8 A local80 support. Same 1,056,768 spatial rows, VICReg/bond-order/TDA, batch256, seed and 12-epoch schedule as MACE. Replaces the unstarted eSEN-3.2M job at user request. No material/species/charge inputs.",
+  "architectures": [
+    "tensornet"
+  ],
+  "baseline_reference": {
+    "output": "${storage:training_storage}/structural_response/c3-l3-bf16-20261007-v1",
+    "checkpoint_sha256": "7a3f5bff3a9279a9ffaa31cf722f462841446ccb44a568f344acbc5687c6540b"
+  },
+  "execution_variants": {
+    "tensornet": "compiled-direct"
+  },
+  "preset_provenance": {
+    "name": "TorchMD-Net TensorNet adapted for geometry-only local spatial pretraining",
+    "paper": "https://arxiv.org/abs/2306.06482",
+    "repository": "https://github.com/torchmd/torchmd-net",
+    "upstream_revision": "7e22a231f34a855f894daaeb218c8b393068f846",
+    "upstream_tag": "v2.4.11",
+    "adaptations": [
+      "single learned constant atom channel plus center flag, no species or charge inputs",
+      "nearest80 graph with original TensorNet self edges, 5 A cutoff and 8 A support; ordinary PyTorch distances",
+      "FP32 norm reductions during BF16 neural matmul",
+      "128-dimensional center-plus-tapered-mean local export instead of energy/force heads",
+      "existing spatial data, VICReg/bond-order/TDA objective and 12-epoch LR0.001 warmup/cosine schedule"
+    ],
+    "pretrained_weights": false
+  }
+}

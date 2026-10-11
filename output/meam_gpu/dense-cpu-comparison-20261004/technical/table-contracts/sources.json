@@ -1,0 +1,7 @@
+{
+  "table": "tables/sources.csv",
+  "sha256": "b8bfb1623dce4da5f8e75b4c07f091664b7b021a5983f2784fa559844d6fea1f",
+  "family": "meam_dense_comparison",
+  "contract": "technical/metric-contracts/meam_dense_comparison.json",
+  "definitions": "tables/metric-definitions/meam_dense_comparison.md"
+}

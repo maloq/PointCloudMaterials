@@ -1,0 +1,28 @@
+{
+  "family": "spatial_ni_enrichment",
+  "exported_at": "2026-10-08T14:03:29.670834+00:00",
+  "files": {
+    "configs/data/spatial_active_cna_targets.json": "138825b5081c25d5aa83e111124c3d18016801b6ee2260b32756c8305f9430d7",
+    "src/data/fixed_cohort/protocol.py": "df0e1ca7afbdb348babe2de8722a464ff6db8c0f735c795d18fc9044bfa7f26c",
+    "src/data/structural_pretraining/native.py": "beeb39201a25de7d08b835cbdf6e2d6d314052448358ce30cb2209559f707b24",
+    "src/data/structural_pretraining/prepare.py": "a7036f30aa759db1c8f89ec618c7914437a5ce568aa00da242ad76e3c6a81e4d",
+    "src/experiment_runner/metric_docs.py": "4fdd1a10578eeb7b36a499e5c7e0fad1c02c3ca475c5f2feef280568e0a87b69",
+    "src/experiment_runner/preparation.py": "11b5a2900ce630cb4b0382a67df5af4926eed211fd735095cf5bab56eaedbf32",
+    "src/postprocessing/descriptors/alpha3d.cpp": "b027819d1645eee7d8fb59db2b6baa62f6af090aa9a325877d1129d81797c73c",
+    "src/postprocessing/descriptors/alpha3d.py": "d84dd9004aafe6e22137e0c6b01b9f661d988f1cfc7677d259efef47b6bd81bd",
+    "src/postprocessing/descriptors/rich.py": "4345af619f7e4e48606c35e48c6e40756f820c24a061c66b6a02a6c909aa4848",
+    "src/postprocessing/descriptors/selection.py": "6bf6ad78760587db1fce0d97096f47ad9998bd4b581a6deb2168210a02b139a3",
+    "src/postprocessing/spatial_dataset.py": "60d08f2d82e0476dc9c7c53d1bef1640eb89b27cbdd89caa5490d7bd2ebd6949",
+    "src/research/liquid_predictability/descriptors.py": "5a19d88c59803cd322d35daf5c71a1ada92d65a07a709e6a330d342be39cc673",
+    "src/research/liquid_predictability/rich_multimaterial_data.py": "3c9e577753f1d8e1a29d8dc42d1bd9a59ee42fe86775d9aa1d8802a0d01b250a",
+    "src/research/liquid_predictability/rich_packed.py": "e9101f34951239865bb1f2e2f23a16df578359b6f88c7970cb891ead6ea17dee",
+    "src/research/structural_response/data.py": "dcfc78b26777706f628a8e09a0e44decd91041b6c32cbd0c91f10cbc6ee35a2f",
+    "src/data/trajectories/shooting.py": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+    "configs/data/spatial_ni_enriched.json": "56e042b44f6338c0142dc6368e8dba1c736ca986490d4a501eff68aeb4f21e9d",
+    "docs/metrics/spatial_ni_enrichment.md": "65e789ab82e3face4e857a54907a02c0c74d299a97a30f54c5aa5582fc313e5c",
+    "src/postprocessing/spatial_enrichment.py": "20235fbebe0f1628aaec375346e9bea2304a89dec71641de33c3ef3869a302e7",
+    "src/postprocessing/descriptors/ptm.py": "578bdc1d64849d4cda928943058638ace5e88faa6e26a94a18ea70d679b0a30e",
+    "src/experiment_runner/execution.py": "567a81224b2b7614a3dc250ee0dc89d64b87f631722adae7f43be638198992dc"
+  },
+  "verified": true
+}

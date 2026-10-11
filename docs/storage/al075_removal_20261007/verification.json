@@ -1,0 +1,32 @@
+{
+  "verified_at": "2026-10-07T18:02:58.173736+00:00",
+  "deleted_files_absent": 1050,
+  "protected_files_unchanged": 900,
+  "birth_catalogue_integrity": {
+    "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+    "verified": true,
+    "upstream": false
+  },
+  "cadence_reads": [
+    {
+      "cadence": "010",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+      "sample_event_id": "3af09e9b51e6341e66f1e0510a066b8d0afe90c3d04a0f6dc024760bc98129eb:255:0",
+      "event_shard_hash_verified": true,
+      "source_parts": [
+        "/store/PERSO/vmorozov/simulations/al-main-010ps-20260927-source0864/trajectory_binary_float16"
+      ]
+    },
+    {
+      "cadence": "030",
+      "fingerprint": "ebb3c0ea03a86db3ce86ced6a4e12251743d6d2e4a134f7344a4d6e9a67f51b9",
+      "sample_event_id": "643551ceab3cc821f6321d5aa58a1b10a8a3e022a3c430ee69988430de9dc038:63:0",
+      "event_shard_hash_verified": true,
+      "source_parts": [
+        "/work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902/branches/branch_0118_parent_029_T500_cluster00063_transition_candidate_momentum_01_noise_00/trajectory_binary_float32",
+        "/work/PERSO/vmorozov/simulations/al_meam_nested_shooting_pilot_70304_400-500K_20260902_fixed24ps_float16_compatible/branches/branch_0118_parent_029_T500_cluster00063_transition_candidate_momentum_01_noise_00/trajectory_binary_float16"
+      ]
+    }
+  ],
+  "upstream_scope": "Sample event shards verified in both cadences; full catalogue integrity and published-file hashes verified. No exhaustive upstream label rehash was needed for this disjoint removal."
+}

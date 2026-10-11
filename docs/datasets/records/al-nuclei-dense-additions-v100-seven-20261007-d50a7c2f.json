@@ -1,0 +1,638 @@
+{
+  "dataset_id": "al-nuclei-dense-additions-v100-seven-20261007",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/analyses/catalogue-v3/technical/table-contracts/source-results.json",
+      "relative_path": "analyses/catalogue-v3/technical/table-contracts/source-results.json",
+      "sha256": "80ccdaa78c0678f1a78b3ca1e617680c02eb962d5e19c5756f0ead2d5fa1bdf8",
+      "kind": "metadata",
+      "keys": [
+        "contract",
+        "definitions",
+        "family",
+        "sha256",
+        "table"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/complete.json",
+      "relative_path": "technical/complete.json",
+      "sha256": "95f214e2ca8a0aaba7a9e432763cdae2c0d7144dfff1026bd87710367a5f8878",
+      "kind": "metadata",
+      "keys": [
+        "events",
+        "finished_at",
+        "identity",
+        "jobs"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/plan.json",
+      "relative_path": "technical/plan.json",
+      "sha256": "6e41dc15daa5d52f274b5ec5f37908f6a7d865f10a80fa566dbf2c8bcb16d212",
+      "kind": "metadata",
+      "keys": [
+        "cadence_source_records",
+        "config",
+        "identity",
+        "jobs",
+        "parent_identity",
+        "parent_plan_sha256",
+        "population_policy",
+        "prepared_at",
+        "producer_files",
+        "source_records"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_nucleus_lineage_v3",
+            "first_json_path": "config.protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/code/config.json",
+      "relative_path": "technical/code/config.json",
+      "sha256": "c02f8bedf25321813182a19da731e2b7fc7377f1488cd86648f0841245ed556b",
+      "kind": "metadata",
+      "keys": [
+        "continuation_fraction",
+        "descriptor_threads",
+        "durations_ps",
+        "embryo_atoms",
+        "establishment_atoms",
+        "growth_atoms",
+        "input_contract",
+        "interface_distance_A",
+        "lanes",
+        "minimum_shared_atoms",
+        "minor_parent_fraction",
+        "output",
+        "parent_output",
+        "parent_stage",
+        "persistence_ps",
+        "prehistory_ps",
+        "protocol",
+        "reset_atoms",
+        "reset_ps",
+        "thresholds",
+        "time_limit",
+        "workers_per_lane"
+      ],
+      "recorded_state": null,
+      "facts": {
+        "protocol": [
+          {
+            "value": "al_nucleus_lineage_v3",
+            "first_json_path": "protocol",
+            "occurrences": 1
+          }
+        ]
+      },
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-148ad92a2637a628/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-148ad92a2637a628/010/coherent/complete.json",
+      "sha256": "ccb37feebe7602f2170ac840881fc4fdd1bee3fa3bf0c653b7ed7f2a6860f089",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-148ad92a2637a628/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-148ad92a2637a628/010/coherent_loose/complete.json",
+      "sha256": "eb3ebf9a5af1f29dc827f7dca48ea73fb8f80afddcf7cee534e39e268a611693",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-148ad92a2637a628/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-148ad92a2637a628/010/coherent_strict/complete.json",
+      "sha256": "cc9661d3617fc62584302163cc7ade202892f4c7a5821b0b473a0eb20c033203",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-148ad92a2637a628/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-148ad92a2637a628/010/ptm/complete.json",
+      "sha256": "c59c691eb8f923a13bff01f64f6ffb6039ca4b8b6e9efa21c340cedc8e45129e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-34b1335e0e118f77/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-34b1335e0e118f77/010/coherent/complete.json",
+      "sha256": "31d7fb792d145e343961b145d0852daaf3ee14d783b459f5da9a62ffeed95088",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-34b1335e0e118f77/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-34b1335e0e118f77/010/coherent_loose/complete.json",
+      "sha256": "a8b3d46fe750e97fb147009d2311284a0a1c256b8d2231cbf542fe24301e9202",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-34b1335e0e118f77/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-34b1335e0e118f77/010/coherent_strict/complete.json",
+      "sha256": "5e860956accef4635392b38cca23d8efcecb08885a0a0219c1920b7653407f8c",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-34b1335e0e118f77/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-34b1335e0e118f77/010/ptm/complete.json",
+      "sha256": "bd528319ad2dc4fea22e9c02495edb573ae0d8af60fb280cdd5c31d8e99a1372",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-475018529cfd05e9/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-475018529cfd05e9/010/coherent/complete.json",
+      "sha256": "b165ca652c0cbc9f4cb21339f54bfd1744a90d3915bb9c69cd88958397b674a0",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-475018529cfd05e9/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-475018529cfd05e9/010/coherent_loose/complete.json",
+      "sha256": "abc01b12c4a19cb096b414b836d0fe2df962034fbcb58b90e23c21ac2d8a4695",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-475018529cfd05e9/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-475018529cfd05e9/010/coherent_strict/complete.json",
+      "sha256": "308acebadda0a94b30d5e7f381672e51efc6d74ec5bb7fb0549552fba1c1458f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-475018529cfd05e9/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-475018529cfd05e9/010/ptm/complete.json",
+      "sha256": "e42fbcc69d10ff378d7b57cdd43d7ba8323f2eb5f2508c243d9d02c8eddb6050",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-4f1da1031ccff3d2/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-4f1da1031ccff3d2/010/coherent/complete.json",
+      "sha256": "1bd3dea8f7dac4b22cc960cbc9a780efd890a81d01f9087cf3ce0370cf4d4ebe",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-4f1da1031ccff3d2/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-4f1da1031ccff3d2/010/coherent_loose/complete.json",
+      "sha256": "1d21fa130eeb3051ba7ded192ff655bfbad231c7c752eee889d0ac9da4e3c2e6",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-4f1da1031ccff3d2/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-4f1da1031ccff3d2/010/coherent_strict/complete.json",
+      "sha256": "717940df599ca8d295c83c248a504098b31841078ca0d8ca7d91004b78836e33",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-4f1da1031ccff3d2/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-4f1da1031ccff3d2/010/ptm/complete.json",
+      "sha256": "d2d1ff034f646f6f9283dab0e6ca3ec85bb84a3f58e7b82aeb736da94b64c43f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-96a728e9c8fe4659/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-96a728e9c8fe4659/010/coherent/complete.json",
+      "sha256": "26b2ecf759b149ed8edb0d435266cc1e93d8d03f7f5932c72c53d38e04760d42",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-96a728e9c8fe4659/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-96a728e9c8fe4659/010/coherent_loose/complete.json",
+      "sha256": "716741ebe7269172673690a224ea3c18ec69736e726dc34381ee7970d48ed06e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-96a728e9c8fe4659/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-96a728e9c8fe4659/010/coherent_strict/complete.json",
+      "sha256": "d5bbb823fdee5b2fd3d440cc5c2cb0b22106230dfe6f06ac533df1f9e3255d16",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-96a728e9c8fe4659/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-96a728e9c8fe4659/010/ptm/complete.json",
+      "sha256": "027e0cb434a19049c20ded99273ee4d58207eee36a6ac6a304b446091b7119a3",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-9a48e02c6f6f424b/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-9a48e02c6f6f424b/010/coherent/complete.json",
+      "sha256": "f7f3311aa6d28eeb4084d7eb4dfef85e261ea681b5c68e5e62e62af2bc36c831",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-9a48e02c6f6f424b/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-9a48e02c6f6f424b/010/coherent_loose/complete.json",
+      "sha256": "691ce25a37c508b9da3bb9c095191c8358e8698e9ebacf83d55b2fb06440835f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-9a48e02c6f6f424b/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-9a48e02c6f6f424b/010/coherent_strict/complete.json",
+      "sha256": "0ae1336eb1b817ba691c9c4be92e8edda5d3ea84e64c25d8c2e6dd7d13ca4ca8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-9a48e02c6f6f424b/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-9a48e02c6f6f424b/010/ptm/complete.json",
+      "sha256": "695763ea5b5e22c30c5811baefaa9f4b59fd372af368f4372f79a78cba9d827f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-a3f179856226a447/010/coherent/complete.json",
+      "relative_path": "technical/sources/al-a3f179856226a447/010/coherent/complete.json",
+      "sha256": "ab33fe065f5755b91cea8076a35ab72da716af5d0ad881f76fdb08c1d9860dff",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-a3f179856226a447/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/al-a3f179856226a447/010/coherent_loose/complete.json",
+      "sha256": "26cf33818bba9f961a369cbf2992b7891180794b101fcdacee74a7d66099675e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-a3f179856226a447/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/al-a3f179856226a447/010/coherent_strict/complete.json",
+      "sha256": "3790882a782d9712588487b3ab63ee7b4a92fe9a3475d0c0adb0337c61f4d6a0",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/al-v100-seven-20261007-v3/technical/sources/al-a3f179856226a447/010/ptm/complete.json",
+      "relative_path": "technical/sources/al-a3f179856226a447/010/ptm/complete.json",
+      "sha256": "69bc8d3fc56ec2a5fc110a9737bb62ca7664e94c1d613cddd4e0cd5a6f42ad28",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "lane",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

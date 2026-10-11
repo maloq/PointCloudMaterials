@@ -1,8 +1,66 @@
 # Working rules
 
-- Do not create or maintain a `tests/` directory or write new automated tests
-  (user instruction, 2026-09-25), unless the user explicitly requests them again.
-  Do not move deleted tests elsewhere or add test-suite dependencies to launchers.
+- Autonomous experiment queues (user instruction, 2026-10-11): submit a concrete
+  detached training queue and verify actual training/checkpoint progress before
+  relying on any scheduled chat review. A review may steer follow-up work, but
+  its absence, failure or thread lock must never prevent the baseline queue
+  from running. Keep bounded checkpoint recovery, independent evaluations and
+  visible failure receipts; proceed to other independent fits after a failure.
+
+- Nucleus dataset cadence (user instruction, 2026-10-07):
+  `al-nuclei-birth-030` means uniformly saved native 0.30-ps data only, excluding
+  subsampled finer histories and mixed-cadence raw prefixes. Check actual saved
+  timestep arrays, not only source metadata. The existing exact 0.10-ps view
+  retains its explicit finer-native sources. Pre-birth crystalline tails are
+  history annotations of existing events, not extra births or revised onset labels.
+  See docs/datasets/nuclei_birth.md.
+
+- Retired Al data (user instruction, 2026-10-07): the original 150 native
+  0.75-ps Al production histories have been deleted. Do not select or regenerate
+  this retired campaign for new experiments. Keep its source IDs, split ancestry,
+  prepared liquids, native melt restarts and historical results. Production
+  `final.restart.bin` files were also deleted at user request; preserve the
+  `melt_final.restart.bin` files for possible future use. New birth studies
+  use the consolidated 0.10/0.30-ps protocols separately; the old Al64 contract
+  remains an ancestry/split reference, not an available raw-history benchmark.
+  See docs/storage/al075_removal_20261007/README.md.
+
+- GPU scheduling (user clarification, 2026-10-07): compatible GPU types are
+  alternatives, not a requirement to occupy each type. Prefer a combined
+  partition list per required worker instead of duplicate A100/A40/L40S
+  reservations. Preserve the actual settings of running experiments.
+
+- Motion/birth data (user instruction, 2026-10-07): use the consolidated
+  `al-nuclei-birth-010` dataset for new nucleus-birth prediction, pinning its
+  fingerprint and retaining source ancestry and original roles. The broad
+  1,056,768-row structural collection is for spatial pretraining only; do not
+  load it or use structural replay from it during new motion training. Reuse
+  completed spatial checkpoints and the separate saved-position/velocity motion
+  cohort. Preserve historical recipes and their true data use.
+  New birth prediction on this consolidated catalogue must not add neighborhood
+  crystallinity/component/distance filtering (user clarification,2026-10-07).
+  Keep only actual input availability, exact observation offsets, ancestry and
+  duplicate-identity checks; preserve the catalogue's birth definitions.
+
+- Job ownership (user instruction, 2026-10-04): stop or change only jobs started
+  in the current chat. A request to stop experiments does not authorize stopping
+  simulations or jobs from other chats. Establish ownership from this chat's
+  launch receipts before acting; shared Unix ownership is not sufficient.
+
+- Al scope (user instruction, 2026-10-03): an unspecified request about Al means
+  ALL Al data and related experiments, including older trajectories, shooting,
+  dense 0.1/0.01 ps descendants, million-atom data and relaxed views. Use the
+  shared Al overview/data pool instead of silently selecting one study. Report
+  completed, running, queued and not-yet-analyzed portions explicitly. Never
+  declare the Al work complete based only on one finished sub-study. Keep native
+  cadences, targets, ancestry and historical releases explicit when combining
+  records; one pool does not authorize interpolated histories or duplicated
+  independent-sample counts. See docs/al_research_pool.md.
+
+- Do not write new unit tests unless explicitly requested (user clarification,
+  2026-10-11). Add only integration or end-to-end tests when needed, using the
+  existing workflows. Do not create or maintain a `tests/` directory, move deleted
+  tests elsewhere, or add test-suite dependencies to launchers.
 
 - Research objective (user instruction, 2026-09-25): study information useful for
   crystallization prediction, not maximum AP. Never introduce AP-specific losses,
@@ -31,6 +89,11 @@
   do not relabel them as condition-free. See docs/encoder_research/prediction_context.md.
 
 - Use conda `pointnet-torch214`
+- GPU MEAM response integration uses float64 for new runs (user instruction,
+  2026-10-06), with float64 states, momenta, tangents, noise and observables;
+  GPU MEAM force arithmetic remains float32. Preserve the earlier 2026-10-04
+  float32-state experiments and their true precision records. The backend's
+  float64 scalar energy reduction is recorded separately.
 - For the fixed Al256 MACE simulator-response case at 20/100 fs, use the
   float32 cuEquivariance/GPU-graph/batch4 profile in
   `configs/simulation/response_atlas_fast_default.json` by default (user instruction,
@@ -73,6 +136,13 @@
 - Research correctness comes first: fail loudly with useful context. Trace values
   to their repository producer; use its actual types, shapes and fields. Avoid
   silent fallbacks, generic compatibility code and unnecessary defensive checks.
+- Internal data comes from this repository's own producers (user instruction,
+  2026-10-11). Inspect those producers and their callers before changing consumers;
+  use the established contract directly instead of adding speculative `if`,
+  `assert`, type/shape checks or fallback fields. Remove duplicate checks already
+  guaranteed upstream. Keep checks for actual runtime uncertainty and scientific
+  requirements such as cadence, ancestry, identity and numerical validity.
+  Favor short, readable code and shared implementations over repeated branches.
 - Read [scripts/README.md](scripts/README.md) before adding a command there. Reuse existing
   workflows and config/CLI arguments for run variations. Keep entry points thin;
   implementation belongs in `src/`. Preserve distinct scientific protocols.
@@ -108,6 +178,14 @@
   uses only train ancestors; selection is validation, calibration/test are excluded.
 
 # Preservation and cleanup
+
+- Reuse the shared relaxation index before scheduling new quenches (user request,
+  2026-10-03). Use `src.data.relaxation_index.ensure_patches` for exact local
+  observations, or the indexed `relax_frame` for a native full cell. Record the
+  reused entry and preserve each experiment's ancestry, rows and precision.
+  Global float16 cells do not replace pre-quantization float32 neighborhoods.
+  See `docs/data_storage.md#unified-relaxation-index`; refresh historical
+  producers with `python scripts/project.py relaxations scan`.
 
 - Keep the six most recently used generated encoder feature caches across GPU
   lanes (user instruction, 2026-09-25). Protect active leases; evict only

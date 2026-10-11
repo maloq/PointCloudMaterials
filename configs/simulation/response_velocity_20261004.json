@@ -1,0 +1,134 @@
+{
+  "protocol": "local80_velocity_response_meam_periodic_v4",
+  "seed": 20261004,
+  "output": "${storage:training_storage}/response_velocity/initial-velocity-20261004-periodic-v4",
+  "cache": "${storage:cache}/response-velocity/initial-velocity-20261004-periodic-v4",
+  "simulation_scratch": "${storage:simulation_runs}/response-velocity-20261004-periodic-v4",
+  "simulation_archive": "${storage:archive}/simulations/response-velocity-20261004-periodic-v4",
+  "reference": "${storage:training_storage}/response_atlas/local80-training-20261002",
+  "reference_identity": "852f2b168521b5a2ea567aadb7f5a4f4ef826fe52b2c2dc7a9936cae6198c029",
+  "geometry_reference": "${storage:training_storage}/response_geometry/unrelaxed-expanded-20261003",
+  "meam_benchmark": "${storage:training_storage}/response_meam/torch-port-20261004",
+  "meam_files": {
+    "library": "${dataset:potentials}/Lee2003_Al.library.meam",
+    "parameters": "${dataset:potentials}/Lee2003_Al.meam"
+  },
+  "fixed_release": "${storage:cache}/fixed-cohort/al64-v1-20260925",
+  "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+  "encoder": {
+    "channels": 128,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "num_interactions": 2,
+    "max_ell": 2,
+    "correlation": 2,
+    "backend": "e3nn",
+    "layout": "mul_ir",
+    "conv_fusion": false
+  },
+  "horizons_fs": [
+    100,
+    500,
+    1000
+  ],
+  "timestep_fs": 1,
+  "friction_fs": 100,
+  "temperature_K": 450,
+  "velocity_fields": 4,
+  "velocity_scale_A_fs": 0.004,
+  "velocity_seed": 191000000,
+  "noise_seed": 201000000,
+  "feature_seed": 202610041,
+  "audit_seed": 202610042,
+  "oracle_batch": 2,
+  "gate_parents": [
+    0,
+    1,
+    2,
+    45
+  ],
+  "fd_epsilons": [
+    0.001,
+    0.0001
+  ],
+  "fd_tolerance": 0.02,
+  "halo_value_tolerance": 0.0001,
+  "halo_response_tolerance": 0.05,
+  "shots": {
+    "train": {
+      "values": 4,
+      "responses": 4
+    },
+    "selection": {
+      "values": 16,
+      "responses": 0
+    },
+    "test": {
+      "values": 16,
+      "responses": 8
+    }
+  },
+  "metric_weight": 0.1,
+  "fit_seeds": [
+    20261004,
+    20261005,
+    20261006
+  ],
+  "arms": [
+    {
+      "name": "q_values",
+      "velocities": false,
+      "response": false
+    },
+    {
+      "name": "q_response",
+      "velocities": false,
+      "response": true
+    },
+    {
+      "name": "qv_values",
+      "velocities": true,
+      "response": false
+    },
+    {
+      "name": "qv_response",
+      "velocities": true,
+      "response": true
+    }
+  ],
+  "training": {
+    "updates": 400,
+    "batch_size": 256,
+    "microbatch": 8,
+    "encoder_lr": 0.0001,
+    "head_lr": 0.0005,
+    "weight_decay": 1e-05
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "gpu_partition": "RTX6000PRO,L40S",
+  "clustering": {
+    "assay": "${storage:cache}/spatial-vicreg-bias/al64-v1-20260929/assay",
+    "fixed_identity": "e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d",
+    "viewer": "${storage:repo}/output/spatial_vicreg_bias/response-local80-best-20261003/heldout-al.json",
+    "viewer_sha256": "1fb5d538baeabce6295fa1803c67b5cfcc4202aebba953b20764145ee032633d",
+    "batch_size": 256,
+    "cluster_seeds": [
+      20260929,
+      20261003,
+      20261004
+    ]
+  },
+  "geometry_reference_identity": "366c55cc62befce14520a9132efd12d1cc7295f472b207323f361582201c7b6f",
+  "open_reference": "/store/PERSO/vmorozov/experiments/response_velocity/initial-velocity-20261004-v2",
+  "open_reference_binding_sha256": "671b1b8602ae2268f5c60482d0123ebda8820db022ee12d0a390b64df1a27fd4",
+  "open_reference_queries": {
+    "0": "a3a8550b35b5c48ba2afb9bb12436ae901fae23d3ccfc5fb82736a1726026d6b",
+    "1": "2b69506aad0bfb044476b0e1e6b766ab47190ad1737a1ba3c7c246518ba2c9cd",
+    "2": "345c0aed899a6d22e2190ec856fa3b428d9f6943d3379038b52d2f10e2a3cbf8",
+    "45": "b31c3dd0117a9352b8a6641050b03046d9651ade02f751c718a322220a2fcb4a"
+  }
+}

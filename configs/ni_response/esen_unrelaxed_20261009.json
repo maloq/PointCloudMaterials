@@ -1,0 +1,174 @@
+{
+  "model": {
+    "time_scale_ps": 0.1,
+    "step_ps": 0.05,
+    "hidden": 128,
+    "particles": 4
+  },
+  "horizons_ps": [
+    0.1,
+    0.5,
+    3.0,
+    12.0
+  ],
+  "response_training": {
+    "updates": 1600,
+    "batch_size": 256,
+    "microbatch": 64,
+    "learning_rate": 0.0001,
+    "encoder_lr_scale": 0.1,
+    "weight_decay": 1e-05,
+    "selection_every": 100,
+    "save_every": 25,
+    "short_batch": 4,
+    "short_weight": 0.1,
+    "derivative_weight": 0.1,
+    "long_structural_weight": 0.2,
+    "replay_every": 0,
+    "replay_weight": 0.0
+  },
+  "student_difference": {
+    "velocity_epsilon": 0.01,
+    "response_epsilon": 0.5,
+    "precision": "float32",
+    "paired_noise": "identical across both signs"
+  },
+  "neural_derivative": "centered_student_v1",
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "derivative_joint",
+      "derivative": true,
+      "frozen": false
+    },
+    {
+      "name": "value_joint",
+      "derivative": false,
+      "frozen": false
+    },
+    {
+      "name": "derivative_adapter",
+      "derivative": true,
+      "frozen": true
+    },
+    {
+      "name": "value_adapter",
+      "derivative": false,
+      "frozen": true
+    }
+  ],
+  "protocol": "ni-unrelaxed-esen-response-20261009-v1",
+  "seed": 20261009,
+  "encoder": {
+    "channels": 64,
+    "code_dim": 128,
+    "cutoff": 5.0,
+    "radius": 8.0,
+    "num_interactions": 2,
+    "max_ell": 3,
+    "max_m": 2,
+    "radial_basis": 32,
+    "hidden_channels": 32,
+    "edge_channels": 32,
+    "norm_type": "layer_norm_sh"
+  },
+  "checkpoint": "/store/PERSO/vmorozov/experiments/spatial_architecture/esen-small-ni-20261008-v1/analyses/esen/technical/final.pt",
+  "checkpoint_sha256": "4e4439d46a97a69faaebeefaa5a06605dbb624035bafeb781934937449604952",
+  "spatial_manifest": "/home/ids/vmorozov/training-cache/spatial-pretraining/ni-enriched-eval-20261008/manifest.json",
+  "spatial_manifest_sha256": "faef83ed0968f570ca1de66bc9c033f69e5229bdab33c32329d58b4e627d8e9c",
+  "length_factor": 1.1085850758932345,
+  "output": "${storage:training_storage}/ni_response/unrelaxed-esen-20261009-v1",
+  "cache": "${storage:cache}/ni-response/unrelaxed-esen-20261009-v1",
+  "simulation_archive": "${storage:training_storage}/ni_response/unrelaxed-esen-20261009-v1/technical/physical-bank",
+  "simulation_scratch": "${storage:scratch}/ni-response/unrelaxed-esen-20261009-v1",
+  "potential_file": "${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "centers_per_source": 64,
+  "anchor_fractions": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0
+  ],
+  "hold_start_ps": 20.0,
+  "inner_selection_ancestors": 4,
+  "centers_per_event": 4,
+  "appearance_horizons_ps": [
+    0.1,
+    0.5,
+    1.0,
+    3.0,
+    6.0
+  ],
+  "birth_leads_ps": [
+    1.0,
+    3.0,
+    6.0
+  ],
+  "catalogues": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-20261007-v1",
+      "sha256": "0e4712a84941e11548bbf2957ab2be7e44a1cd80b8acfa1ca956bba2c8af647b"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-20261007-extension01-v1",
+      "sha256": "e5057c2978849bbd526362a842ac8cc9f38fd7b85dee845865cc8b8aebbff30b"
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261008-gpu-full-v1",
+      "sha256": "7b8ca670264f3823a8c99b26723fb52f7e1af6c6c4a5a1580cec2f26e3b53b7b"
+    }
+  ],
+  "teacher": {
+    "state_dtype": "float64",
+    "force_dtype": "float32",
+    "position_direction_rms_A": 0.01,
+    "velocity_direction_rms_A_ps": 0.1,
+    "shots": 2,
+    "timestep_fs": 1,
+    "friction_fs": 1000,
+    "save_fs": [
+      100
+    ]
+  },
+  "evaluation": {
+    "readout": {
+      "linear_C": [
+        0.001,
+        0.01,
+        0.1,
+        1.0,
+        10.0
+      ],
+      "catboost": {
+        "iterations": 600,
+        "depth": 4,
+        "learning_rate": 0.04,
+        "l2_leaf_reg": 10,
+        "border_count": 64,
+        "task_type": "CPU"
+      },
+      "patience": 75
+    },
+    "fit_threads": 2,
+    "bootstrap_draws": 1000,
+    "spaces": [
+      "structural",
+      "motion",
+      "structural_motion"
+    ]
+  },
+  "runtime": {
+    "partitions": "RTX6000PRO,H100,A100,L40S,A40",
+    "hours": 24,
+    "workers": 2,
+    "memory_GB": 48,
+    "cpu_threads": 4,
+    "microbatch": 32
+  }
+}

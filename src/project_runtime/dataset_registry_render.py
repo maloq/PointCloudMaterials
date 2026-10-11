@@ -142,11 +142,12 @@ controls.forEach(x=>x.addEventListener('input',filter));filter();
     potential_md = ['# Interaction potentials and model files', '', '[All datasets](README.md) · [Browsable potential catalog](potentials.html)', '',
         'Supported potential elements are distinct from the species actually present in a simulation. File availability alone does not establish use.']
     for potential in registry['potentials']:
+        mapping = potential.get('mapping', 'Element-to-type mapping not recorded')
         users = [d for d in registry['datasets'] if potential['id'] in d['potential_ids']]
         links = ', '.join(f'<a href="cards/{d["slug"]}.html">{esc(d["title"])}</a>' for d in users) or 'No dataset match established'
         file_links = ''.join(f'<li><a href="{url(f["location"],output)}">{esc(Path(f["location"]).name)}</a> · {"hash verified" if f["sha256_verified"] else "unavailable"}<br><code>{esc(f["sha256"])}</code></li>' for f in potential['files'])
-        potential_body += f'<h2 id="{esc(potential["id"])}">{esc(potential["name"])}</h2><p>{esc(potential["family"])} · supported elements: {esc(", ".join(potential["elements"]) or "not catalogued")}</p><p>{esc(potential["citation"] or "Citation not recorded")}</p><p>{esc(potential["mapping"])}</p><ul>{file_links}</ul><details><summary>Recorded metadata and provenance</summary><pre>{esc(json.dumps(potential,indent=2))}</pre></details><p>Dataset references: {links}</p>'
-        potential_md.extend(['',f'## {potential["name"]}', '', f'- ID: `{potential["id"]}`',f'- Family: {potential["family"]}',f'- Mapping: {potential["mapping"]}',f'- Citation: {potential["citation"] or "Not recorded"}'])
+        potential_body += f'<h2 id="{esc(potential["id"])}">{esc(potential["name"])}</h2><p>{esc(potential["family"])} · supported elements: {esc(", ".join(potential["elements"]) or "not catalogued")}</p><p>{esc(potential["citation"] or "Citation not recorded")}</p><p>{esc(mapping)}</p><ul>{file_links}</ul><details><summary>Recorded metadata and provenance</summary><pre>{esc(json.dumps(potential,indent=2))}</pre></details><p>Dataset references: {links}</p>'
+        potential_md.extend(['',f'## {potential["name"]}', '', f'- ID: `{potential["id"]}`',f'- Family: {potential["family"]}',f'- Mapping: {mapping}',f'- Citation: {potential["citation"] or "Not recorded"}'])
         for item in potential['files']:
             potential_md.append(f'- [{Path(item["location"]).name}]({url(item["location"],output)}): `{item["sha256"]}`; '+('hash verified' if item['sha256_verified'] else 'unavailable here'))
         potential_md.extend(['','Dataset references: '+(', '.join(f'[{d["title"]}](cards/{d["slug"]}.md)' for d in users) or 'No match established')])

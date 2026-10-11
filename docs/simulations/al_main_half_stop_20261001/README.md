@@ -131,3 +131,49 @@ python -m src.simulation.campaigns.dense_al prepare-half-stop \
 
 The command refuses to overwrite an existing launch or change started sources.
 A changed availability capture needs review; preserve immutable preparations.
+
+## October 3 quota recovery
+
+The October 2 wave stopped on SCRATCH quota exhaustion; the controller could
+not write its failure records, leaving stale running/submitted states. The
+October 2 offline conversion subsequently verified and removed all planned Al
+text exports, retaining observation prefixes on STORE and native restarts.
+
+The recovery recipe `configs/simulation/al_main_half_recovery_20261003.json`
+creates a new execution manifest from this frozen queue. It references the 24
+completed main trajectories, recovers four stopped trajectories and schedules
+124 unstarted descendants. Exact source IDs, ancestor roles, physical inputs,
+monitoring criterion, prediction tail and temperature-specific caps are retained.
+The two supplemental trajectories remain exact 0.01 ps observations.
+
+Execution temporarily uses STORE `simulation-work/al-main-half-recovery-20261003`
+because four simultaneous raw dumps exhausted SCRATCH. Completed and stopped
+runs still publish under canonical STORE simulation IDs with verified copies.
+The previous stopped attempts and their native state are archived separately;
+no original simulation completion or ancestry is relabeled.
+
+Recovery selects the latest native restart covered by the verified binary
+observations and monitoring history: source 884 at 285 ps, 885 at 150 ps,
+0.01-ps source 886 at 225 ps, and 0.01-ps source 1004 at 240 ps. Source 886's
+240-ps restart is newer than its complete saved observations and is excluded.
+Native NPT fix state, IDs/types, float32 boxes and exact float16 rounding of
+positions/velocities are checked at the boundary, both during preparation and
+at production startup. Quantized positions are never used to integrate MD.
+
+The export retains old encoded observations strictly before the checkpoint and
+adds the native checkpoint/new tail at the same cadence. It verifies prefix
+checksums, every new rounding value, the complete joined timeline and exact
+identity arrays. Prefix precision statistics retain their original scope;
+new-tail quantization is calculated separately. A local verification on six
+real full-cell frames checked the boundary and all joined arrays, without a new
+simulation or online training run.
+
+Use conda `pointnet-torch214`:
+
+```bash
+python -m src.simulation.campaigns.dense_al_half_recovery prepare --config configs/simulation/al_main_half_recovery_20261003.json
+python -m src.simulation.campaigns.dense_al submit --launch /store/PERSO/vmorozov/simulation-launches/al-main-half-recovery-20261003
+```
+
+Preparation and submission refuse existing attempts. Live status, preparation,
+checksums and per-wave Slurm receipts are under that new launch directory.

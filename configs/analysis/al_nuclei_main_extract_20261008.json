@@ -1,0 +1,132 @@
+{
+  "protocol": "al_cluster_structure_additions_20261008_v1",
+  "output": "${storage:training_storage}/nuclei_search/al-main-additions-20261008-extraction",
+  "cache": "${storage:cache}/nuclei-search/al-main-additions-20261008-extraction",
+  "registry": "${storage:training_storage}/nuclei_search/al-main-additions-20261008-extraction/technical/inventory/registry.json",
+  "cadences": {
+    "010": 0.1
+  },
+  "detectors": [
+    "ptm",
+    "coherent_loose",
+    "coherent",
+    "coherent_strict"
+  ],
+  "ptm_rmsd_cutoff": 0.1,
+  "neighbor_cutoff_A": 3.6,
+  "bond_order": {
+    "l": 6,
+    "thresholds": [
+      [
+        0.65,
+        6
+      ],
+      [
+        0.7,
+        7
+      ],
+      [
+        0.75,
+        8
+      ]
+    ]
+  },
+  "minimum_tracked_atoms": 4,
+  "embryo_atoms": 8,
+  "minimum_shared_atoms": 4,
+  "minimum_overlap_fraction": 0.25,
+  "maximum_link_interval_ps": 1.5,
+  "embryo_persistence_ps": 1.5,
+  "establishment_atoms": 64,
+  "establishment_sensitivity_atoms": [
+    32,
+    128
+  ],
+  "establishment_persistence_ps": 1.5,
+  "liquid_return_ps": 1.5,
+  "growth_atoms": 128,
+  "growth_persistence_ps": 1.5,
+  "interface_distance_A": 8.0,
+  "chunk_frames": 16,
+  "workers_per_lane": 8,
+  "extraction_lanes": 4,
+  "analysis_lanes": 1,
+  "time_limit": "06:00:00",
+  "input_contract": {
+    "encoder": null,
+    "predictor": null,
+    "geometry": "Full periodic original MD cells; exact source timelines and atom identities",
+    "relaxation": "Existing relaxed views inventoried separately; no independent birth counts or new quenches",
+    "conditions": "Audit metadata only; no model fitted",
+    "selection": "45 newly completed main Al trajectories at native 0.10 ps; original ancestry and roles retained. No new MD, outcome filtering or interpolation.",
+    "criticality": "Operational embryos and establishment; no claim of committor validation",
+    "population": "45 newly completed main Al trajectories at native 0.10 ps; original ancestry and roles retained. No new MD, outcome filtering or interpolation.",
+    "motion": "Velocities retained in source archives; structural labels and lineages use positions, box and atom identities only",
+    "history": "All saved production observations; initial 15 ps equilibration was not recorded"
+  },
+  "exclude_plan": "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+  "native_cadence_ps": 0.1,
+  "allowed_roles": [
+    "raw_dynamics"
+  ],
+  "required_simulation_state": "complete",
+  "production_inventory": {
+    "potential_id": "al-lee2003-meam",
+    "producer_protocol": "al_dense_half_stop_010ps_v1",
+    "previous_plans": [
+      "${storage:training_storage}/nuclei_search/al-all-20261003-v2/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261005-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261006-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-dense-additions-20261007-extraction/technical/plan.json",
+      "${storage:training_storage}/nuclei_search/al-v100-seven-20261007-extraction/technical/plan.json"
+    ],
+    "source_ids": [
+      "al-main-010ps-20260927-source0962",
+      "al-main-010ps-20260927-source0964",
+      "al-main-010ps-20260927-source0965",
+      "al-main-010ps-20260927-source0966",
+      "al-main-010ps-20260927-source0967",
+      "al-main-010ps-20260927-source0968",
+      "al-main-010ps-20260927-source0969",
+      "al-main-010ps-20260927-source0970",
+      "al-main-010ps-20260927-source0971",
+      "al-main-010ps-20260927-source0972",
+      "al-main-010ps-20260927-source0973",
+      "al-main-010ps-20260927-source0975",
+      "al-main-010ps-20260927-source0976",
+      "al-main-010ps-20260927-source0977",
+      "al-main-010ps-20260927-source0978",
+      "al-main-010ps-20260927-source0979",
+      "al-main-010ps-20260927-source0980",
+      "al-main-010ps-20260927-source0981",
+      "al-main-010ps-20260927-source0982",
+      "al-main-010ps-20260927-source0983",
+      "al-main-010ps-20260927-source0984",
+      "al-main-010ps-20260927-source0985",
+      "al-main-010ps-20260927-source0986",
+      "al-main-010ps-20260927-source0987",
+      "al-main-010ps-20260927-source0988",
+      "al-main-010ps-20260927-source0989",
+      "al-main-010ps-20260927-source0990",
+      "al-main-010ps-20260927-source0991",
+      "al-main-010ps-20260927-source0992",
+      "al-main-010ps-20260927-source0993",
+      "al-main-010ps-20260927-source0994",
+      "al-main-010ps-20260927-source0995",
+      "al-main-010ps-20260927-source0996",
+      "al-main-010ps-20260927-source0997",
+      "al-main-010ps-20260927-source0998",
+      "al-main-010ps-20260927-source0999",
+      "al-main-010ps-20260927-source1000",
+      "al-main-010ps-20260927-source1001",
+      "al-main-010ps-20260927-source1002",
+      "al-main-010ps-20260927-source1003",
+      "al-main-010ps-20260927-source1004",
+      "al-main-010ps-20260927-source1006",
+      "al-main-010ps-20260927-source1007",
+      "al-main-010ps-20260927-source1008",
+      "al-main-010ps-20260927-source1009"
+    ]
+  },
+  "descriptor_threads": 1
+}

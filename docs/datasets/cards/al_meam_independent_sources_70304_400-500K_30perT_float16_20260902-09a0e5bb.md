@@ -2,17 +2,17 @@
 
 [All datasets](../README.md) · [Browsable card](al_meam_independent_sources_70304_400-500K_30perT_float16_20260902-09a0e5bb.html) · [Full metadata](../records/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902-09a0e5bb.json)
 
-Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.
+Original native 0.75 ps Al production arrays deleted at user request on 2026-10-07. Prepared liquids, native melt restarts, manifests, logs and analysis results remain. Not available for new trajectory experiments; descendants retain original ancestry and roles. Remaining binary records are single-frame preparation QC, not production histories. Production final.restart.bin files were subsequently deleted; melt_final.restart.bin files are retained.
 
 - ID: `al_meam_independent_sources_70304_400-500K_30perT_float16_20260902`
 - Materials: Al
-- Classification: **research**; role: raw_dynamics
+- Classification: **retired**; role: provenance_only
 - Location: `/work/PERSO/vmorozov/simulations/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902`
 - Present on this machine: True
 - Potentials: Lee–Shim–Baskes 2003 Al 2NN-MEAM
 - Complete binary records with arrays present: 90; these are not independent-source counts.
-- Stored frames: 72090; duplicate-group records: 0
-- Allocated storage, excluding registered nested datasets: 58.304 GiB
+- Stored frames: 90; duplicate-group records: 0
+- Allocated storage, excluding registered nested datasets: 1.101 GiB
 - Missing metadata: ensemble
 
 ## Notes and relationships
@@ -23,15 +23,20 @@ Independently melted Al histories. Current outcomes, not planned counts, establi
   "materials": [
     "Al"
   ],
-  "role": "raw_dynamics",
-  "classification": "research",
-  "description": "Independently melted Al histories. Current outcomes, not planned counts, establish available runs. Source and descendants retain the declared split.",
+  "role": "provenance_only",
+  "classification": "retired",
+  "description": "Original native 0.75 ps Al production arrays deleted at user request on 2026-10-07. Prepared liquids, native melt restarts, manifests, logs and analysis results remain. Not available for new trajectory experiments; descendants retain original ancestry and roles. Remaining binary records are single-frame preparation QC, not production histories. Production final.restart.bin files were subsequently deleted; melt_final.restart.bin files are retained.",
   "evidence": [
-    "${dataset:al_meam_independent_sources_70304_400-500K_30perT_float16_20260902}/manifest.json"
+    "${dataset:al_meam_independent_sources_70304_400-500K_30perT_float16_20260902}/manifest.json",
+    "docs/storage/al075_removal_20261007/receipt.json",
+    "docs/storage/al075_removal_20261007/final-restarts-receipt.json"
   ],
   "potential_ids": [
     "al-lee2003-meam"
-  ]
+  ],
+  "retirement_record": "docs/storage/al075_removal_20261007/receipt.json",
+  "retired_at": "2026-10-07T18:00:30.877288+00:00",
+  "production_restart_removal_record": "docs/storage/al075_removal_20261007/final-restarts-receipt.json"
 }
 ```
 
@@ -55,16 +60,16 @@ Independently melted Al histories. Current outcomes, not planned counts, establi
 | split_unit | ["source run and every screened parent and future descended from it"] |
 | structural_independence | ["Every source has its own 300 ps full-box melt trajectory from a unique preparation seed before its independently seeded undercooling history."] |
 | temperatures_K | [[400.0, 450.0, 500.0]] |
-| frame_count | [801] |
+| frame_count | [1, 801] |
 | storage_dtype | ["float16"] |
-| coordinate_convention | ["positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)"] |
+| coordinate_convention | ["positions are wrapped float32 consumer coordinates relative to box_low in the half-open periodic interval [0, box_high-box_low)", "wrapped float32 consumer coordinates relative to box_low; decode float16 to float32 and wrap again"] |
 
 ## Evidence
 
-All 364 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902-09a0e5bb.json).
+All 544 producer records, their hashes, field paths and current array schemas: [metadata JSON](../records/al_meam_independent_sources_70304_400-500K_30perT_float16_20260902-09a0e5bb.json).
 
 Sources remain at their original locations. Referenced configs/code do not prove actual training use.
 
-Observed 2026-10-02T12:18:52.028981+00:00.
+Observed 2026-10-11T00:11:05.385980+00:00.
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.

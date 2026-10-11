@@ -1,5 +1,61 @@
 # Project documentation
 
+- [Compact Ni latent simulator](ni_latent_sim.md): compression, memory, simulator responses and empirical full-cell lifting.
+
+- [Ni quench repeatability](ni_relaxation_repeatability.md): force-order and minimizer-sensitivity diagnostics on matched full cells.
+- [Relaxed Ni response comparison](ni_relaxed_response.md): original dynamics with quenched observations and matched birth labels.
+
+- [Ni unrelaxed eSEN response](ni_response.md): simulator derivatives, saved futures and separate appearance/32/64-atom prediction tasks.
+
+- [Spatial encoder comparisons](spatial_esen.md): common data, architecture-appropriate widths,
+  12-epoch fitting and measured training speed against MACE.
+  Includes the [MACE angular2/correlation2 ablation](spatial_esen.md#mace-angular2correlation2-ablation-october-8).
+  The [TensorNet replacement](spatial_esen.md#tensornet-replacement-october-8)
+  follows MACE with the same 12-epoch spatial training schedule; the unstarted
+  eSEN-3.2M submission is preserved as superseded.
+
+- [Post-simulation analysis module](postprocessing.md): shared descriptors,
+  nuclei searches, datasets, precursor histories and visualization, with one CLI.
+
+- [Nuclei search performance](nuclei_search_performance.md): measured acceleration,
+  exact-output checks, and cooperative tail workers.
+
+- [GPU structural extraction](postprocessing_gpu.md): CUDA PTM, bounded streaming and GPU/CPU timing
+  and numerical comparisons, with production-adoption limits.
+
+- [Spatial target preparation](target_preparation.md): native batched rich TDA,
+  bond-order and CNA targets, compact 198-column caches, timing and numerical agreement.
+
+- [Spatial training with 20% Ni](datasets/spatial_ni20.md): 1,320,960 fitting
+  neighborhoods, original ancestry splits, Ni normalization and 198 target columns.
+  The [crystal/interface extension](datasets/spatial_ni_enriched.md) adds 52,838
+  targeted Ni observations, giving 1,373,798 training neighborhoods.
+
+- [Four Ni birth visualizations](ni_birth_visualizations.md): confirmed examples
+  from saved 0.1 ps trajectories, precursor histories, property plots and GIFs.
+
+- [Continuous motion from sparse Al snapshots](continuous_motion.md): matched
+  fixed-step, continuous and MEAM derivative-supervised latent dynamics.
+
+- [Revised Al embryo birth and fate search](al_nuclei_lineage.md): reuse frame
+  classifications and separate origin, growth, coalescence and dissolution.
+
+- [All Al cluster birth searches at separate exact cadences](al_nuclei_search.md)
+
+- [Unified relaxed-data index and compute-only-missing API](data_storage.md#unified-relaxation-index)
+
+- [All Al data pool and selectable appearance/fate cohorts](al_research_pool.md)
+
+- [Six frame appearance prediction from native dense Al trajectories](birth_dense010.md)
+
+- [Ta nucleus event movies and local trajectories](ta_nucleus_crops.md)
+
+- [Al shooting appearance transfer and nucleus fate prediction](al_shooting_prediction.md)
+
+- [Ta full-cell birth and dissolution search](ta_births.md)
+
+- [Al shooting full-cell birth and dissolution search](shooting_births.md)
+
 - [Local shooting predictive baseline: jointly trained MACE128 and fixed future statistics](predictive_baseline.md)
 
 - [Code cleanup review and prioritized implementation backlog, 2026-09-29](code_cleanup_review_20260929.md)
