@@ -1,0 +1,45 @@
+{
+  "protocol": "ni-methods-followup-20261011-v1",
+  "seed": 2026101107,
+  "output": "${storage:training_storage}/ni_latent_sim/methods-followup-20261011-v1",
+  "source_run": "/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1",
+  "source_plan_sha256": "1c5f6af4cdf1dc203d70a4bdaf49343618f86bd121d6ab8fff9140286ba1fd3b",
+  "models": [
+    "transformer_6ps_path_values-d16-h4-s20261013",
+    "transformer_6ps_path_response-d16-h4-s20261013",
+    "transformer_6ps_path_values-d16-h4-s20261014",
+    "transformer_6ps_path_response-d16-h4-s20261014",
+    "transformer_1ps_path_values-d16-h4-s20261014"
+  ],
+  "reference_audit": {
+    "path": "/store/PERSO/vmorozov/experiments/ni_latent_sim/methods-diagnostics-20261011-v1",
+    "plan_sha256": "d6efef1eccac64a5f2af89af1ec5ae2ba1bbe069aa38338ff0f2d4ad74d0c34b"
+  },
+  "regimes": ["original", "liquid_liquid", "growing_front"],
+  "rows_per_ancestor_regime": 2,
+  "panel_policy": "Exactly the first audit's214rows and40ancestors, normalization, particle streams and native future offsets.",
+  "particles": [4, 8, 16, 32, 64, 128],
+  "outer_keys": [2026101101, 2026101102, 2026101103],
+  "batch_size": 4,
+  "cpu_threads": 4,
+  "path_workers": 2,
+  "partitions": "A100,A40,L40S,RTX6000PRO",
+  "stages": ["paths", "predictability"],
+  "probe": {
+    "penalties": [0.0001, 0.001, 0.01, 0.1, 1.0, 10.0],
+    "state_lengths": [0.5, 2.0],
+    "data": "All300 existing physical anchors;80fit/20selection/200test, with16/4/40 ancestors.",
+    "representations": "raw280, five follow-up compact16 encoders, three original-audit compact16 encoders",
+    "readouts": "Directional linear ridge and a state-conditioned product kernel; both exactly linear in the perturbation query",
+    "target": "Unchanged128 geometry-response coordinates at5..100fs; t0 is an additional separately reported control",
+    "selection": "Original selection sources only; fixed-training-variance Gaussian NLL averaged across the20future outputs",
+    "tracking": "Local frozen diagnostic readouts; no scientific neural training or W&B run"
+  },
+  "comparison": {
+    "response_effect": "Four6ps transformer checkpoints: values/response by two independent training seeds; all4000updates,batch256",
+    "horizon_effect": "Compare1ps and6ps path-values seed20261014; same transformer,4000updates,batch256; bothselected at1000updates by originalNLL",
+    "excluded": "Other1ps arms changed batch size and are not included in the matched horizon comparison",
+    "prior_MLP": "Historical cross-architecture reference only; not a pure horizon intervention",
+    "scope": "Negative frozen-probe results do not establish an information bound; only80physical fitting anchors are available. Two directions do not establish a general response-rank obstruction."
+  }
+}

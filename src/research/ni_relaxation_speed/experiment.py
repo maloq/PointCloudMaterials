@@ -159,6 +159,7 @@ def submit(c):
         directories=['src', 'configs', 'docs/metrics'], files=[(REPO/'machine.local.yaml', 'machine.local.yaml')])
     dependencies = out/'dependencies'
     env = dict(PYTHONPATH=str(dependencies)+':'+str(bundle.root), PCM_PROJECT_ROOT=str(REPO),
+        TORCH_EXTENSIONS_DIR=str(out/'cuda-extensions'), PYTHONFAULTHANDLER='1',
         UCX_TLS='self,sm,tcp', OMP_NUM_THREADS='2', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1',
         OVITO_THREAD_COUNT='1', TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD='1', CUDA_HOME=c['cuda_home'],
         PATH=str(Path(sys.executable).parent)+':'+c['cuda_home']+'/bin:/usr/local/bin:/usr/bin:/bin')

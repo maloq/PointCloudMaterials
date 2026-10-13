@@ -37,7 +37,7 @@
         "/work/PERSO/vmorozov/datasets/Al50Ni50"
       ],
       "metadata": {
-        "title": "Al–Ni alloy static structures",
+        "title": "Al\u2013Ni alloy static structures",
         "materials": [
           "Al",
           "Ni"
@@ -248,7 +248,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · stopped 100,000-atom crystallization source",
+        "title": "Al \u00b7 stopped 100,000-atom crystallization source",
         "materials": [
           "Al"
         ],
@@ -266,7 +266,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · independent melts, 400–500 K",
+        "title": "Al \u00b7 independent melts, 400\u2013500 K",
         "materials": [
           "Al"
         ],
@@ -293,7 +293,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · independent melts, 510–520 K",
+        "title": "Al \u00b7 independent melts, 510\u2013520 K",
         "materials": [
           "Al"
         ],
@@ -338,7 +338,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · event-stopped nested shooting",
+        "title": "Al \u00b7 event-stopped nested shooting",
         "materials": [
           "Al"
         ],
@@ -360,7 +360,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · fixed-24 ps nested continuations",
+        "title": "Al \u00b7 fixed-24 ps nested continuations",
         "materials": [
           "Al"
         ],
@@ -382,7 +382,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · accepted 15 ps shooting top-up",
+        "title": "Al \u00b7 accepted 15 ps shooting top-up",
         "materials": [
           "Al"
         ],
@@ -404,7 +404,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · 48 ps shooting, one-shot supplement",
+        "title": "Al \u00b7 48 ps shooting, one-shot supplement",
         "materials": [
           "Al"
         ],
@@ -426,7 +426,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · 48 ps shooting, two-shot supplement",
+        "title": "Al \u00b7 48 ps shooting, two-shot supplement",
         "materials": [
           "Al"
         ],
@@ -448,7 +448,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · 48 ps shooting, 40-branch supplement",
+        "title": "Al \u00b7 48 ps shooting, 40-branch supplement",
         "materials": [
           "Al"
         ],
@@ -470,7 +470,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · partially completed 48 ps top-up",
+        "title": "Al \u00b7 partially completed 48 ps top-up",
         "materials": [
           "Al"
         ],
@@ -536,7 +536,7 @@
       "kind": "simulation",
       "dependencies": [],
       "metadata": {
-        "title": "Al · original 48 ps shooting, eight shots per parent",
+        "title": "Al \u00b7 original 48 ps shooting, eight shots per parent",
         "materials": [
           "Al"
         ],
@@ -820,7 +820,7 @@
       "kind": "cache",
       "dependencies": [],
       "metadata": {
-        "title": "Al/Mg/Ta/Ti · mixed relaxed-MACE training views",
+        "title": "Al/Mg/Ta/Ti \u00b7 mixed relaxed-MACE training views",
         "materials": [
           "Al",
           "Mg",
@@ -847,7 +847,7 @@
       "kind": "cache",
       "dependencies": [],
       "metadata": {
-        "title": "Al · earlier relaxed-MEAM training views",
+        "title": "Al \u00b7 earlier relaxed-MEAM training views",
         "materials": [
           "Al"
         ],
@@ -1616,7 +1616,7 @@
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_520K_remaining24_20260913T204114Z"
       ],
       "metadata": {
-        "title": "Al · completed 520 K source extension",
+        "title": "Al \u00b7 completed 520 K source extension",
         "materials": [
           "Al"
         ],
@@ -1648,7 +1648,7 @@
         "/scratch/PERSO/vmorozov/PointCloudMaterials/simulations/al_meam_1m_450K_400ps_with_melt_20260913T205405Z"
       ],
       "metadata": {
-        "title": "Al · million-atom source and melt history",
+        "title": "Al \u00b7 million-atom source and melt history",
         "materials": [
           "Al"
         ],
@@ -1668,7 +1668,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al · causal-MACE physical training cache",
+        "title": "Al \u00b7 causal-MACE physical training cache",
         "materials": [
           "Al"
         ],
@@ -1691,7 +1691,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al · predictive-memory partial-observation cache",
+        "title": "Al \u00b7 predictive-memory partial-observation cache",
         "materials": [
           "Al"
         ],
@@ -2112,7 +2112,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al · full-timeline physical descriptors",
+        "title": "Al \u00b7 full-timeline physical descriptors",
         "role": "training_cache",
         "classification": "derived",
         "materials": [
@@ -2134,7 +2134,7 @@
       "dependencies": [],
       "aliases": [],
       "metadata": {
-        "title": "Al · instantaneous TDA readout targets",
+        "title": "Al \u00b7 instantaneous TDA readout targets",
         "role": "training_targets",
         "classification": "derived",
         "materials": [
@@ -2651,7 +2651,7 @@
         ],
         "role": "provenance_only",
         "classification": "retired",
-        "description": "Existing 150 independent 70304-atom Al runs at 400–520 K; 16 outcome-independent tracked centers, 3 ps origins, fixed 90/15/15/30 lineage split. Local MACE graphs and native scalar/tensor features at sparse historical times and seven geometric context centers. Cached verified PTM labels from the local-predictability assay. No simulations generated.",
+        "description": "Existing 150 independent 70304-atom Al runs at 400\u2013520 K; 16 outcome-independent tracked centers, 3 ps origins, fixed 90/15/15/30 lineage split. Local MACE graphs and native scalar/tensor features at sparse historical times and seven geometric context centers. Cached verified PTM labels from the local-predictability assay. No simulations generated.",
         "potential_ids": [
           "al-lee2003-meam"
         ],
@@ -6938,7 +6938,7 @@
           "mace-mpa-0-medium",
           "al-lee2003-meam"
         ],
-        "description": "384 perturbed100fs MACE forwards and16 central AD trajectories, observed20/100fs; four train parents, two directions, both signs, two noise seeds,24/36A environments and collective displacement norms0.03–3A. Saves feature changes and scalar physical diagnostics; no trajectory-position arrays.",
+        "description": "384 perturbed100fs MACE forwards and16 central AD trajectories, observed20/100fs; four train parents, two directions, both signs, two noise seeds,24/36A environments and collective displacement norms0.03\u20133A. Saves feature changes and scalar physical diagnostics; no trajectory-position arrays.",
         "ancestry": "Parents0,1,2,45 from local80-response-20261002; fixed Al64 e148b7ec215ba5e6d86fc57d21dac266bbd501f1e91320968266b5dbaeb8f44d. Training ancestors only; no new independent MD roots.",
         "provenance": "Original parent geometry, atom identities and original train-gate noise streams; MACE SHA25675428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638. Float32 cuEquivariance BAOAB1fs; original full-cell float64 RNG before gather.",
         "evidence": [
@@ -7002,7 +7002,7 @@
         ],
         "role": "visual_review",
         "classification": "derived",
-        "description": "Eight separate ambiguous appearance crops at0.1ps spacing; requested±12ps around establishment, truncated to available observations.",
+        "description": "Eight separate ambiguous appearance crops at0.1ps spacing; requested\u00b112ps around establishment, truncated to available observations.",
         "provenance": "Checksum-verified temporal subsets of completed ta-nucleus-crops-20261003; src/research/crystallization_origin/event_crop_windows.py",
         "ancestry": "Retains parent hashes and shared archived-Ta preparation; future-selected centers, no predictor split.",
         "evidence": [
@@ -7012,7 +7012,7 @@
         ],
         "limitations": [
           "Ambiguous weak-link-dependent establishments, not confirmed independent births.",
-          "None has full±12ps coverage; missing observations are explicit.",
+          "None has full\u00b112ps coverage; missing observations are explicit.",
           "Existing0.5ps event labels are not refined; intermediate0.1ps PTM is unavailable."
         ]
       }
@@ -7816,7 +7816,7 @@
           "No NPT density, melting point, independent-melt nucleation rate or new trained encoder is established.",
           "Float16 position observations; native float64 checkpoints preserve precision for divergence.",
           "Earlier interface preparation included5ps450K cooling, became99.84% crystalline, and failed the starting-interface gate; archived as interface-preparation-failed-v1.",
-          "Both1325K interface preparations are hot-crystal controls, not proven liquids (mobile MSD0.219A²); verified2500K preparation has mobile MSD101.75A² and0% crystalline mobile atoms."
+          "Both1325K interface preparations are hot-crystal controls, not proven liquids (mobile MSD0.219A\u00b2); verified2500K preparation has mobile MSD101.75A\u00b2 and0% crystalline mobile atoms."
         ]
       }
     },
@@ -8628,7 +8628,7 @@
         ],
         "role": "restart_calibration",
         "classification": "research",
-        "description": "64 original ancestors, one present 8–63 atom embryo state each, selected without future outcomes. Source-temperature NPT plus two source-temperature BAOAB continuations, 192 twelve-ps runs; common float16 future classification. No new independent MD preparation ancestry.",
+        "description": "64 original ancestors, one present 8\u201363 atom embryo state each, selected without future outcomes. Source-temperature NPT plus two source-temperature BAOAB continuations, 192 twelve-ps runs; common float16 future classification. No new independent MD preparation ancestry.",
         "provenance": {
           "recipe": "configs/simulation/nucleus_rate_calibration_20261005.json",
           "plan": "${dataset:al-nucleus-rate-calibration-20261005}/plan.json"
@@ -11176,7 +11176,7 @@
         "potential_ids": [
           "al-lee2003-meam"
         ],
-        "description": "Separate current 8–63 atom embryo cohort at fixed 1 ps landmarks, with common 1/3/6 ps root-establishment labels. All 92 pinned saved-velocity views; four historical views retain unknown potentials. The October 7 search of 22 additional sources is pending and requires a later release.",
+        "description": "Separate current 8\u201363 atom embryo cohort at fixed 1 ps landmarks, with common 1/3/6 ps root-establishment labels. All 92 pinned saved-velocity views; four historical views retain unknown potentials. The October 7 search of 22 additional sources is pending and requires a later release.",
         "provenance": "src.research.continuous_motion.embryo_cohort; checksum-bound v3 PTM families and archived same-frame nearest80 Q/V. Native velocity units A/ps; no new MD, relaxation or interpolation.",
         "lineage": "Original fixed Al64 melt ancestry and roles retained. Exact full-state family and observation aliases deduplicate archived copies. Repeated landmarks and embryo families are not independent melt ancestors.",
         "evidence": [
@@ -16159,6 +16159,37 @@
         ]
       }
     },
+    "ni-relaxation-tolerance005-20261011": {
+      "root": "archive",
+      "path": "simulations/ni-relaxation-tolerance005-20261011-v1",
+      "kind": "derived",
+      "dependencies": [
+        "ni-response-esen-relaxed-20261009",
+        "ni-quench-repeatability-20261009"
+      ],
+      "metadata": {
+        "title": "Ni matched 0.01/0.03/0.05 force-tolerance diagnostic",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "role": "numerical_diagnostic",
+        "classification": "research",
+        "description": "Sorted native FIRE at three force-component tolerances on the same twelve full32000-atom inputs from six sources as the speed pilot. All settings timed on one GPU, with float64 minimizer states and float32 forces; original identities, ancestry and boxes retained.",
+        "evidence": [
+          "${storage:training_storage}/ni_relaxation/tolerance005-20261011-v1/technical/plan.json",
+          "configs/simulation/ni_relaxation_tolerance005_20261011.json",
+          "docs/simulations/ni_relaxation_speed_20261011.md"
+        ],
+        "limitations": [
+          "Numerical repeats of the previous inputs, not new independent MD samples.",
+          "Contains a convergence-stress source; not a population sample.",
+          "Diagnostic minima do not replace historical training targets."
+        ]
+      }
+    },
     "ni-relaxation-speed-20261011": {
       "root": "archive",
       "path": "simulations/ni-relaxation-speed-20261011-v1",
@@ -16188,6 +16219,287 @@
           "Diagnostic minima do not replace historical training targets."
         ]
       }
+    },
+    "ni-direct-measurements-20261011": {
+      "root": "cache",
+      "path": "measurement-sim/direct-20261011-v1",
+      "kind": "derived",
+      "dependencies": [
+        "ni-latent-sequences-regimes3x-20261010",
+        "ni-dense-path-response-20261011"
+      ],
+      "metadata": {
+        "title": "Ni direct BO/TDA/density/velocity motion measurements",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "role": "motion_training_and_evaluation",
+        "classification": "research",
+        "description": "14400 fixed-central-atom native 0.1-ps sequences through 6 ps, with 244 direct measurements and no learned encoder. Original 60 ancestors and 3840/960/9600 roles retained. Also remeasures 300 archived 100-fs physical response anchors with observations every 5 fs.",
+        "evidence": [
+          "configs/ni_latent_sim/direct_measurements_20261011.json",
+          "docs/measurement_sim.md",
+          "docs/metrics/measurement_sim.md"
+        ],
+        "limitations": [
+          "No new independent MD; parent liquid/front selection is outcome-enriched.",
+          "Analytic output derivatives apply to 91 smooth channels; BO/TDA have value supervision and actual input secants.",
+          "Physical teachers use fixed-box BAOAB and fixed80 identities; native paths are NPT with reselected neighbors.",
+          "No eSEN outputs, broad spatial collection or temperature/time covariates."
+        ]
+      }
+    },
+    "ni-births-lowT-010-20261012": {
+      "root": "archive",
+      "path": "simulations/ni-births-lowT-010-20261012",
+      "kind": "simulation",
+      "dependencies": [
+        "potential-ni-mendelev2012"
+      ],
+      "metadata": {
+        "title": "Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V",
+        "role": "raw_dynamics",
+        "classification": "complete",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "description": "User requested 30 additional independent Ni crystallization runs on GPU, October 12. Five new 2300 K melts each at 950/1000/1050/1100/1125/1150 K, replicates 12-16, fresh preparation seeds and full-cell ancestry. Preserve the latest 400 ps hold cap (420 ps including cooling), early half-crystalline-plus-10-ps stop, original NPT protocol, native 0.10 ps positions and velocities, and birth definitions. Temperature schedule, seeds and roles are fixed before outcomes; no inherited melt states or outcome-conditioned source selection. No-birth histories are valid censored observations. Historical 60 sources and existing training/evaluation contracts remain separate and unchanged.",
+        "planned_independent_melts": 30,
+        "timestep_ps": 0.001,
+        "sample_interval_ps": 0.1,
+        "velocity_units": "angstrom_per_ps",
+        "staging_location": "${storage:simulation_runs}/ni-births-lowT-010-20261012",
+        "evidence": [
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/plan.json",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/launch.json",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/preflight.json",
+          "docs/simulations/ni_births_lowT_010_20261012.md"
+        ],
+        "ancestry": "30 new independent full-cell melts; source IDs and preparation seeds disjoint from all 60 prior Ni sources",
+        "source_campaign_identity": "5d4a689eb39d938a4d171c81ea5a3592ebf6c9f36ba7c3c7b16bbab64e5d1353",
+        "launch_jobs": {
+          "worker-00": "1034766",
+          "worker-01": "1034767",
+          "worker-02": "1034768",
+          "worker-03": "1034769",
+          "worker-04": "1034770",
+          "worker-05": "1034771",
+          "analyse": "1034772"
+        },
+        "primary_birth_analysis": "ni-lowT-20261012-gpu-full-v1",
+        "simulation_hold_cap_ps": 400,
+        "replicate_range": [
+          12,
+          16
+        ],
+        "role_counts": {
+          "train": 12,
+          "selection": 6,
+          "test": 12
+        },
+        "completed_independent_melts": 30,
+        "frames": 73780,
+        "summed_production_duration_ps": 7375.0,
+        "completed_at_local": "2026-10-12T04:37:09+02:00",
+        "termination_counts": {
+          "half_crystalline_plus_10ps": 24,
+          "maximum_duration": 6
+        }
+      }
+    },
+    "ni-lowT-20261012-gpu-full-v1": {
+      "root": "training_storage",
+      "path": "nuclei_search/ni-lowT-20261012-gpu-full-v1",
+      "kind": "analysis",
+      "dependencies": [
+        "ni-births-lowT-010-20261012"
+      ],
+      "metadata": {
+        "title": "Additional 30 Ni melts: GPU birth search over full saved histories",
+        "role": "derived_analysis",
+        "classification": "queued",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "description": "GPU resident/voronoi extraction, then unchanged CPU lineage search on all completed native 0.10 ps Q/V sources. No-birth histories remain valid censored observations; incomplete sources stay explicit. Primary PTM establishment is 64 atoms for 1.5 ps, with 8/32/128-atom thresholds also retained.",
+        "source_campaign_identity": "5d4a689eb39d938a4d171c81ea5a3592ebf6c9f36ba7c3c7b16bbab64e5d1353",
+        "planned_independent_melts": 30,
+        "native_cadence_ps": 0.1,
+        "descriptor_backend": "gpu-extract/resident/voronoi",
+        "ancestry": "Same 30 independent parent sources and prespecified train/selection/test roles; no extra independent samples",
+        "cache": "${storage:cache}/nuclei-search/ni-lowT-20261012-gpu-full-v1",
+        "analysis_extent": "full_saved_trajectory",
+        "simulation_hold_cap_ps": 400,
+        "launch_jobs": {
+          "extract": "1035586",
+          "track": "1035587"
+        },
+        "evidence": [
+          "configs/analysis/ni_lowT_gpu_search_20261012.json",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search/launch.json",
+          "docs/simulations/ni_births_lowT_010_20261012.md",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search-recovery-01/recovery.json",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search-recovery-01/launch.json",
+          "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search-recovery-01/preflight.json"
+        ],
+        "execution_recovery": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search-recovery-01/recovery.json",
+        "initial_extraction_failure": "Missing inherited numerical audit file in frozen bundle; failed before extraction",
+        "completed_sources_available": 30
+      }
+    },
+    "ni-density-rates-response-20261013": {
+      "root": "archive",
+      "path": "simulations/ni-density-rates-20261013-v1",
+      "kind": "simulation",
+      "dependencies": [
+        "potential-ni-mendelev2012",
+        "ni-births-lowT-010-20261012",
+        "ni-dense-path-response-20261011"
+      ],
+      "metadata": {
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "classification": "preparing",
+        "ancestry": "90 existing independent Ni melts;28 train and62 pooled test; original source roles preserved in plan",
+        "source_plan_identity": "07b8b005cf8ce53c0f139d3ea653a6d9899cc7b25ad2fcdd5d46dccfbd3ab38f",
+        "evidence": [
+          "configs/ni_latent_sim/density_rates_20261013.json",
+          "docs/measurement_sim.md",
+          "/store/PERSO/vmorozov/experiments/measurement_sim/density-rates-20261013-v1/technical/plan.json"
+        ],
+        "title": "Ni expanded100-fs physical teachers for density-rate conditioning",
+        "role": "physical_response",
+        "planned_new_anchors": 451,
+        "reused_anchors": 300,
+        "description": "Full-cell fixed-box FastNi BAOAB, actual Q/V, f64 integration/tangents/noise and f32 forces;1-fs physical steps and5-fs local80 recording. Only new anchors stored here; reuse prior bank by checksum."
+      }
+    },
+    "ni-density-rates-measurements-20261013": {
+      "root": "cache",
+      "path": "measurement-sim/density-rates-20261013-v1",
+      "kind": "cache",
+      "dependencies": [
+        "ni-direct-measurements-20261011",
+        "ni-density-rates-response-20261013"
+      ],
+      "metadata": {
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "classification": "preparing",
+        "ancestry": "90 existing independent Ni melts;28 train and62 pooled test; original source roles preserved in plan",
+        "source_plan_identity": "07b8b005cf8ce53c0f139d3ea653a6d9899cc7b25ad2fcdd5d46dccfbd3ab38f",
+        "evidence": [
+          "configs/ni_latent_sim/density_rates_20261013.json",
+          "docs/measurement_sim.md",
+          "/store/PERSO/vmorozov/experiments/measurement_sim/density-rates-20261013-v1/technical/plan.json"
+        ],
+        "title": "Direct244 Ni trajectories with74 initial density rates",
+        "role": "motion_training_cache",
+        "planned_anchors": 751,
+        "description": "Outcome-blind physical bank expansion; train banks80/16,320/16 and320/28. The320 banks match temperature composition;310 test anchors cover every nontraining source. Fixed244 targets, D_x density[V]74 input ablation; no structural replay or test tuning."
+      }
+    },
+    "ni-phase-nve-20261013": {
+      "root": "archive",
+      "path": "simulations/ni-phase-nve-20261013-v2",
+      "kind": "simulation",
+      "dependencies": [
+        "potential-ni-mendelev2012",
+        "ni-density-rates-response-20261013"
+      ],
+      "metadata": {
+        "title": "Dense deterministic Ni phase-space and tangent teachers",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "classification": "complete",
+        "role": "physical_response",
+        "planned_anchors": 630,
+        "ancestry": "320 train anchors/28 original train ancestors;310 pooled test anchors/62 nontraining ancestors; original roles retained",
+        "description": "New full-cell fixed-box NVE from original saved Q,V;1fs Verlet;f64 states/tangents andf32 forces. Fixed80 atom IDs recorded every5fs to100fs. Reuses outcome-blind anchor plan, not the BAOAB paths; no exact historical NPT replay.",
+        "evidence": [
+          "configs/ni_latent_sim/phase_space_20261013.json",
+          "docs/ni_phase_sim.md"
+        ],
+        "completed_anchors": 630
+      }
+    },
+    "ni-phase-birth-probes-20261013": {
+      "root": "cache",
+      "path": "ni-phase-births/90sources-20261013-v1",
+      "kind": "derived",
+      "dependencies": [
+        "ni-response-esen-20261009",
+        "ni-births-lowT-010-20261012",
+        "ni-phase-nve-20261013"
+      ],
+      "metadata": {
+        "title": "Matched phase-model Ni nucleus readout observations",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "classification": "complete",
+        "ancestry": "Same ninety Ni sources as phase model; 28 declared train, 62 test; raw catalogue and phase-parent roles retained",
+        "description": "Original32/64-atom,1.5ps persistent liquid-origin roots at exact1/3/6ps leads. Reuses60-source rows and adds30 completed sources; no new neighborhood filter. Contains207/123 roots total; test135/81 roots from42/38 ancestors respectively; no missing leads.",
+        "evidence": [
+          "configs/ni_latent_sim/phase_births_20261013.json",
+          "docs/ni_phase_sim.md"
+        ],
+        "rows": 19800,
+        "unique_states": 19652
+      }
+    },
+    "ni-phase-history-native4-20261013": {
+      "root": "cache",
+      "path": "ni-phase-history/native4-20261013-v1",
+      "kind": "derived",
+      "dependencies": [
+        "ni-phase-nve-20261013",
+        "ni-phase-birth-probes-20261013"
+      ],
+      "metadata": {
+        "title": "Native four-frame Ni phase-model histories",
+        "materials": [
+          "Ni"
+        ],
+        "potential_ids": [
+          "ni-mendelev2012-eam"
+        ],
+        "classification": "complete",
+        "role": "motion_training_and_evaluation",
+        "ancestry": "Same ninety Ni sources;28 declared train,62 test;original roles retained",
+        "description": "Exact native Q,V observations at -0.3/-0.2/-0.1/0ps; same current80 atom IDs and central atom throughout.630 unchanged physical teachers;19652 unique birth observations/19800 assay rows.No new MD,no additional independent sources.",
+        "evidence": [
+          "configs/ni_latent_sim/phase_history_20261013.json",
+          "docs/ni_phase_sim.md"
+        ],
+        "physical_anchors": 630,
+        "unique_birth_states": 19652,
+        "birth_rows": 19800
+      }
     }
   },
   "registry_discovery_roots": [
@@ -16200,7 +16512,7 @@
   ],
   "potential_registry": {
     "al-lee2003-meam": {
-      "name": "Lee–Shim–Baskes 2003 Al 2NN-MEAM",
+      "name": "Lee\u2013Shim\u2013Baskes 2003 Al 2NN-MEAM",
       "family": "MEAM",
       "elements": [
         "Al"
@@ -16256,7 +16568,7 @@
       ],
       "pair_style": "eam/alloy",
       "mapping": "Ta",
-      "citation": "Zhong et al., Nature 512, 177–180 (2014)",
+      "citation": "Zhong et al., Nature 512, 177\u2013180 (2014)",
       "files": [
         {
           "path": "${dataset:potential-ta-zhong2014}/Ta_Zhong2014.lammps.eam",
@@ -16289,7 +16601,7 @@
       "license": "Not recorded here; consult the original distribution before redistribution."
     },
     "mg-wilson2016-eam": {
-      "name": "Wilson–Mendelev 2016 Mg EAM (Mg1.eam.fs)",
+      "name": "Wilson\u2013Mendelev 2016 Mg EAM (Mg1.eam.fs)",
       "family": "EAM/FS",
       "elements": [
         "Mg"

@@ -1,5 +1,19 @@
 # Configuration index
 
+- [Ni phase-space prediction](ni_latent_sim/phase_space_20261013.json):12 fixed-budget direct/latent/derivative fits on dense deterministic Ni paths; [workflow](../docs/ni_phase_sim.md).
+
+Ni density-rate and source expansion: [`ni_latent_sim/density_rates_20261013.json`](ni_latent_sim/density_rates_20261013.json).
+Train/test only,80/320-state physical banks, optional instantaneous density rates,
+matched derivative supervision and1/5-fs neural steps. [Workflow](../docs/measurement_sim.md#density-rates-source-expansion-and-smaller-steps--october-13).
+
+Thirty additional Ni melts: [`simulation/ni_births_lowT_010_20261012.json`](simulation/ni_births_lowT_010_20261012.json),
+with dependent GPU birth search [`analysis/ni_lowT_gpu_search_20261012.json`](analysis/ni_lowT_gpu_search_20261012.json).
+[Protocol and launch](../docs/simulations/ni_births_lowT_010_20261012.md).
+
+Ni six-ps and response-predictability follow-up: [`ni_latent_sim/methods_followup_20261011.json`](ni_latent_sim/methods_followup_20261011.json). Five frozen path audits plus raw/compact response readouts; [workflow](../docs/ni_motion_diagnostics.md#six-ps-and-response-observation-follow-up).
+
+Ni methods diagnostics: [`ni_latent_sim/methods_diagnostics_20261011.json`](ni_latent_sim/methods_diagnostics_20261011.json). Frozen full-path, shot-response and common-history audits; [workflow](../docs/ni_motion_diagnostics.md).
+
 Ni RTX equal-example continuation: [`ni_latent_sim/batch1024_20261011.json`](ni_latent_sim/batch1024_20261011.json). Benchmark-backed batch1,024/teacher64 for unfinished local1-ps fits; preserve sampled examples and example-based scheduling, record fewer optimizer updates. [Execution](../docs/ni_latent_sim.md#rtx-batch-1024-continuation-october-11).
 
 
@@ -689,3 +703,18 @@ It preserves old descriptor/RH2 results and the fixed Al64 observation identitie
 [workflow](../docs/spatial_vicreg_bias.md#october-3-response-encoder-addition).
 
 - `simulation/ni_relaxation_speed_20261011.json`: bounded matched Ni minimizer speed and structural-fidelity pilot; see `docs/simulations/ni_relaxation_speed_20261011.md`.
+- `simulation/ni_relaxation_tolerance005_20261011.json`: matched 0.01/0.03/0.05 eV/angstrom follow-up on the same twelve cells; uses the same benchmark workflow.
+- `simulation/ni_relaxation_default.json`: user-selected 0.05 eV/angstrom default settings for new Ni relaxation recipes; historical recipes keep their recorded tolerances.
+
+- `ni_latent_sim/direct_measurements_20261011.json`: direct Ni measurement-space stochastic trajectories; matched marginal, connected-path and simulator-response objectives. See [workflow](../docs/measurement_sim.md).
+
+Ni overnight memory and matched physical response: [`ni_latent_sim/measurements_overnight_20261012.json`](ni_latent_sim/measurements_overnight_20261012.json). Fifteen scientific fits, full existing motion/teacher cohorts,78 response readouts and3 history readouts; [workflow](../docs/measurement_sim.md#overnight-memory-and-matched-response-study).
+
+Ni phase-model birth evaluation: `ni_latent_sim/phase_births_20261013.json`;
+all ninety Ni ancestors, frozen nonlinear probes at 1/3/6 ps and 32/64-atom
+persistent nuclei. See [workflow](../docs/ni_phase_sim.md#nucleus-readout-follow-up).
+
+Ni encoder/decoder attention: `ni_latent_sim/phase_history_20261013.json`;
+21 matched fixed-budget fits with one/four native Q,V observations and automatic
+physical/nucleus evaluation. `phase_history_preflight_20261013.json` is the local
+real-data benchmark only. See [workflow](../docs/ni_phase_sim.md#history-attention-workflow).

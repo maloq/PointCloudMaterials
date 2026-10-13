@@ -1,5 +1,11 @@
 # Implementations of recorded research protocols
 
+- `ni_phase_sim`: fixed-identity Q,V prediction and latent tangent transport; [workflow](../../docs/ni_phase_sim.md).
+
+`measurement_sim.rate_campaign`: direct Ni measurements with optional initial
+density rates,80/320-state source-diversity controls,1/5-fs neural steps and
+train/test-only fixed-budget fits; [workflow](../../docs/measurement_sim.md).
+
 `structural_response/`: broad 12-epoch MACE structural initialization and fixed-teacher derivative/value motion controls; [workflow](../../docs/structural_response.md).
 
 

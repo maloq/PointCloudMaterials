@@ -1,0 +1,29 @@
+{
+  "protocol": "ni-methods-diagnostics-20261011-v1",
+  "seed": 2026101107,
+  "output": "${storage:training_storage}/ni_latent_sim/methods-diagnostics-20261011-v1",
+  "source_run": "/store/PERSO/vmorozov/experiments/ni_latent_sim/dense-path-response-20261011-v1",
+  "source_plan_sha256": "eccc814b0ac027180aa8c54872e342e0ae8316b2e8e103f4b3e1995aa72eadd9",
+  "models": [
+    "fs5-d16-h4-endpoint_response-s20261011",
+    "fs5-d16-h4-path_values-s20261011",
+    "fs5-d16-h4-path_response-s20261011"
+  ],
+  "regimes": ["original", "liquid_liquid", "growing_front"],
+  "rows_per_ancestor_regime": 2,
+  "panel_policy": "Two rows from each existing ancestor/regime stratum: 214 rows, 40 ancestors; record the 13 absent growing-front strata explicitly.",
+  "particles": [4, 8, 16, 32, 64, 128],
+  "outer_keys": [2026101101, 2026101102, 2026101103],
+  "response_epsilons": [0.5, 0.25, 0.125],
+  "history_penalties": [0.001, 0.1, 10.0],
+  "batch_size": 4,
+  "cpu_threads": 4,
+  "partitions": "A100,A40,L40S,RTX6000PRO",
+  "followups": {
+    "E1": "Censoring and source-outcome ledger requires full catalogue lineage join; not inferred from this selected local-sequence panel.",
+    "E5": "Factor relaxed/original input against a fixed physical target after the matched relaxed checkpoint completes.",
+    "E6": "Global-versus-liquid partitions reuse fixed train-fit normalization and multiple-clusters-per-group metrics.",
+    "E7": "Repeat encoder/head seeds only after a representation effect survives frozen-history and path controls.",
+    "E8_E9": "New physical acquisition or modified scientific training follows a specific diagnosed discrepancy; not automatically triggered by AP."
+  }
+}

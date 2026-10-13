@@ -1,5 +1,12 @@
 # Two encoder-training branches
 
+**Split default, 13 October 2026:** new runs have only train and test. Preserve
+training ancestry; all former selection/validation/calibration roles become test.
+Use fixed, declared training/checkpoint rules without test-based selection or a
+new inner split. References below to selection sources or validation describe
+the historical branch implementations; the distinction between supervised and
+label-free objectives still applies.
+
 We now keep two scientific questions separate. These are experiment branches,
 with separate recipes, output roots and table labels; they do not require separate
 Git branches.

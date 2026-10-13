@@ -1,5 +1,8 @@
 # Why predictive density loses the older spatial structure map
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](encoder_research/evidence.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 The user's preferred GeoFrame model is a better reference for the desired static
 structural field than the GeoFrame control used in the twelve-hour campaign.
 Calling predictive density the strongest overall replacement was too broad:

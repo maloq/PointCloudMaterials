@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-10-11T00:11:05.385980+00:00
+Observed: 2026-10-11T23:09:08.376791+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -416,6 +416,7 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-010-20261007-extension01-488f4e50.md) | Ni | planned | yes | 12 | Mendelev et al. 2012 Ni EAM/FS |
 | [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-lowT-010-20261008-716c9ef3.md) | Ni | running | yes | 98 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni100-fs paths with5-fs analytic response observations](cards/ni-dense-path-response-20261011-5003b20d.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni direct BO/TDA/density/velocity motion measurements](cards/ni-direct-measurements-20261011-b3469d2e.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni empirical decoder physical continuations](cards/ni-latent-lifting-20261010-3828dfaa.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni exact0.1ps compact latent simulator sequences](cards/ni-latent-sequences-20261010-b66f68c2.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni fixed-atom motion sequences: original, liquid persistence and advancing fronts](cards/ni-latent-sequences-regimes3x-20261010-86fef16a.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
@@ -423,6 +424,8 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Ni low-temperature GPU birth search, all saved history](cards/ni-lowT-20261008-gpu-full-v1-8dc0c735.md) | Ni | queued | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni low-temperature GPU nucleus-birth search](cards/ni-lowT-20261008-gpu-v1-77963de7.md) | Ni | superseded_planned | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni full-cell quench repeatability and input-sensitivity diagnostics](cards/ni-quench-repeatability-20261009-0e4acda7.md) | Ni | research | yes | 89 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni matched minimizer speed and structural fidelity pilot](cards/ni-relaxation-speed-20261011-aa1399ae.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni matched 0.01/0.03/0.05 force-tolerance diagnostic](cards/ni-relaxation-tolerance005-20261011-fad364cf.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Unrelaxed Ni eSEN motion and threshold-birth assays](cards/ni-response-esen-20261009-f63e9f86.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Matched relaxed Ni encoder observations of original MD](cards/ni-response-esen-relaxed-20261009-78113947.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [nonshooting float32 migration 20260901](cards/nonshooting_float32_migration_20260901-88986f1b.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
@@ -502,4 +505,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-93 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+98 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

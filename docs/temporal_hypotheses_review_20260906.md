@@ -1,5 +1,8 @@
 # Temporal encoder campaign review — September 6, 2026
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](encoder_research/methods.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Predictive density embeddings are the strongest current compromise between
 smoothness, structural information and future prediction. Proper temporal MACE
 training now gives useful improvements, including a clear gain over its previous

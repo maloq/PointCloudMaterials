@@ -1,5 +1,8 @@
 # Can a compact stochastic state preserve Ni future distributions?
 
+[October 11 methods diagnostics](METHODS_DIAGNOSTICS.md) audits connected paths,
+shot-resolved response losses and longer observed histories on frozen models.
+
 The first experiment separates three hypotheses: compression to16 versus64
 coordinates; memory of1 versus4 observations; and future-value learning versus
 future values plus simulator responses. Each of the eight arms has two seeds

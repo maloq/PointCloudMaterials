@@ -1,0 +1,23 @@
+{
+  "analysis_id": "ni-lowT-20261012-gpu-full-v1",
+  "launch": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/gpu-search",
+  "campaign_config": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-lowT-20261012/technical/code/config.json",
+  "campaign_plan_sha256": "2cf88b4db915550e90c34ff32008f2087c4f26cfe45d68399cdb193ace17e4ca",
+  "analysis": "${storage:training_storage}/nuclei_search/ni-lowT-20261012-gpu-full-v1",
+  "cache": "${storage:cache}/nuclei-search/ni-lowT-20261012-gpu-full-v1",
+  "numerical_audit": "docs/postprocessing_gpu_ni_reader_review_20261012.json",
+  "numerical_audit_sha256": "b2401d8fdf5ed1aae87a2f0056fb5ad616c235381745bcbe519d64bcfeb96093",
+  "execution": "resident",
+  "ptm_ordering": "voronoi",
+  "prefetch": 2,
+  "compression_workers": 1,
+  "gpu_partitions": "A100,H100",
+  "gpu_cpus": 4,
+  "gpu_memory": "32G",
+  "gpu_walltime": "10:00:00",
+  "tracking_workers": 12,
+  "tracking_memory": "64G",
+  "tracking_walltime": "24:00:00",
+  "analysis_extent": "full_saved_trajectory",
+  "simulation_hold_cap_ps": 400
+}

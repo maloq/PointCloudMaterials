@@ -1,5 +1,8 @@
 # Prior work on spatial crystal proximity and nucleation precursors
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](literature.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Literature search: 26 September 2026. Related local evidence:
 [fixed-snapshot protocol](../../experiments/spatial_approach_20260926/README.md)
 and [completed analysis](../../experiments/spatial_approach_20260926/RESULTS.md).

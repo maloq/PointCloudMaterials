@@ -1,0 +1,17 @@
+{
+  "output": "${storage:training_storage}/ni_relaxation/tolerance005-20261011-v1",
+  "scratch": "${storage:simulation_runs}/ni-relaxation-tolerance005-20261011-v1",
+  "archive": "${storage:archive}/simulations/ni-relaxation-tolerance005-20261011-v1",
+  "parent": "${storage:training_storage}/ni_response/relaxed-esen-original-md-20261009-v1",
+  "repeatability": "${storage:training_storage}/ni_relaxation/repeatability-20261009-v1",
+  "seed": 20261011,
+  "cuda_home": "${storage:archive}/software/cuda-13.4-meam",
+  "ase_case_limit_seconds": 60,
+  "hard_process_limit_seconds": 240,
+  "partitions": "RTX6000PRO,H100,A100,L40S,A40",
+  "profiles": [
+    {"name": "sorted_fire", "engine": "native", "tolerance": 0.01},
+    {"name": "loose_fire", "engine": "native", "tolerance": 0.03},
+    {"name": "looser_fire", "engine": "native", "tolerance": 0.05}
+  ]
+}

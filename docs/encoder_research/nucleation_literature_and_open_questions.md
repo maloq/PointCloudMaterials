@@ -1,5 +1,8 @@
 # Nucleation and prestructured liquid: literature, open questions and evidence ledger
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](literature.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Created and literature checked: **26 September 2026**. Status: research synthesis
 and proposed validation; no new experiment or changed label definition.
 

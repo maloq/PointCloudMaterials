@@ -1,34 +1,18 @@
 # PointCloudMaterials
 
-[**Dataset registry**](DATASETS.md) · [Experiment & simulation dashboard](output/registry/index.html) ·
-[Ideas backlog](experiments/ideas.json) · [Run organization guide](docs/output_registry.md)
+Research tools for structural representations, atomistic dynamics and crystallization prediction from point-cloud observations.
 
-[Encoder research handbook](docs/encoder_research/README.md): model history,
-training objectives, evaluation methods, searchable results and analysis guides.
+| Start with | Purpose |
+| --- | --- |
+| [Research guide](docs/encoder_research/README.md) | Evidence, methods, open hypotheses and the next experiments |
+| [Documentation](docs/README.md) | Setup, execution, analysis and reference contracts |
+| [Dataset registry](DATASETS.md) | Available collections, exact protocols, provenance and source roles |
+| [Scientific studies](experiments/README.md) | Questions and detailed source protocols, grouped by topic |
+| [Results system](docs/research_results_system.md) | Recorded experiments, simulations, analysis artifacts and the generated local dashboard |
 
-Maintained commands are indexed in [scripts/README.md](scripts/README.md).
-Research-specific recipes live in [experiments/](experiments/README.md).
-See [current research and retained checkpoints](docs/research_retention.md),
-[archived research on STORE](docs/archived_research.md),
-[data storage](docs/data_storage.md), and [the simulation catalog](docs/simulations/README.md).
-Use the [trajectory conversion tool](docs/trajectory_conversion.md) for format changes.
+The [evidence summary](docs/encoder_research/evidence.md) is the main reading path through past work. The [methods update](docs/encoder_research/methods.md), [experiment plan](docs/encoder_research/experiment_plan.md) and [literature review](docs/encoder_research/literature.md) separate measured findings from proposed remedies. Older reports remain accessible in the [archive/source index](docs/archive/README.md).
 
-The [temporal MACE encoder](docs/mace_temporal_encoder.md) combines physical
-snapshot histories with learned temporal attention and exports one anchor embedding.
-The [encoder, TDA and relaxation review](docs/encoder_tda_relaxation_problems_20260910.md)
-collects confirmed problems, implemented corrections, unresolved questions and
-the evidence needed for the next experiments.
-
-The [embedding-trajectory forecast experiment](experiments/embedding_forecast_20260911/README.md)
-predicts three future time-bin means or every future embedding through 9 ps from
-causal histories using direct or autoregressive decoding, with frozen MACE
-targets, source-separated evaluation and
-optional joint path uncertainty. Methods live in `src/training_methods/embedding_forecast/`.
-
-The frozen-encoder temporal predictive-representation prototype is documented in
-[docs/temporal_vamp.md](docs/temporal_vamp.md). Its reference configuration uses the
-current pretrained `GeoFrameTransformer` and fits a linear VAMP/kinetic map on
-tracked-atom temporal pairs.
+Maintained commands are indexed in [scripts/README.md](scripts/README.md). Research recipes live in [experiments](experiments/README.md); simulation campaigns, storage and data conversion have their [operating guides](docs/README.md).
 
 ## Installation
 

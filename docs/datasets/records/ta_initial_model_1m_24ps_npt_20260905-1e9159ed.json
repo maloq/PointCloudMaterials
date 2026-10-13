@@ -132,7 +132,6 @@
         ]
       },
       "provenance": {
-        "protocol_source": "https://arxiv.org/html/2109.06797",
         "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
         "potential": {
           "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
@@ -141,7 +140,8 @@
           "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
           "source_page": "https://sites.google.com/site/eampotentials/ta",
           "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
-        }
+        },
+        "protocol_source": "https://arxiv.org/html/2109.06797"
       }
     },
     {
@@ -332,7 +332,6 @@
         ]
       },
       "provenance": {
-        "protocol_source": "https://arxiv.org/html/2109.06797",
         "scientific_scope": "One new position-conditioned trajectory; source velocities and Nose-Hoover state absent. Not an exact restart.",
         "potential": {
           "file": "/home/ids/vmorozov/simulations/ta_initial_model_1m_24ps_npt_20260905/potential/Ta_Zhong2014.lammps.eam",
@@ -341,7 +340,8 @@
           "citation": "Zhong, Wang, Sheng, Zhang, Mao, Nature 512, 177-180 (2014)",
           "source_page": "https://sites.google.com/site/eampotentials/ta",
           "download_url": "https://drive.google.com/uc?export=download&id=12tx8zFlLY6p_do6h8R8XHjc2vN1Z7sIL"
-        }
+        },
+        "protocol_source": "https://arxiv.org/html/2109.06797"
       }
     },
     {

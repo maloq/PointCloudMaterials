@@ -1,0 +1,34 @@
+{
+  "reviewed_at": "2026-10-11T22:44:53.546848+00:00",
+  "scope": "Ni validation reuse after internal trajectory-reader simplification; no force or integration changes",
+  "file": "src/data/trajectories/shooting.py",
+  "validated_source": "output/ni_nucleation/campaign-20261007-extension01/technical/code/src/data/trajectories/shooting.py",
+  "validated_sha256": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+  "compatible_sha256": "4269b4faeda3f513029690a9545f27fab82256cddd42756c27a8a5ea90a956c0",
+  "unchanged_top_level_functions": [
+    "_array_sha256",
+    "_array_description",
+    "convert_shooting_trajectory",
+    "compose_shooting_binary_trajectories",
+    "binary_directory_sizes"
+  ],
+  "changed_reader_behavior": "Repository-produced manifest fields now accessed directly; duplicate malformed-input checks removed; shared JSON object reader replaces local copy. Required format/state/shape/dtype/array hash checks remain.",
+  "integration": {
+    "source": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-20261007-extension01/technical/audit/gpu/audit-composed",
+    "manifest_sha256": "2748e1182144507cf619cad04f94e10cec4a8e71db5aa4c6abb91c1477fc4336",
+    "frames": 2,
+    "atoms": 32000,
+    "arrays_equal": [
+      "positions",
+      "velocities",
+      "timesteps",
+      "box_low",
+      "box_high",
+      "atom_ids",
+      "atom_types"
+    ],
+    "checksums_equal": true
+  },
+  "conclusion": "For the established producer contract, old and current readers return identical arrays and checksums. All top-level trajectory writers, composition functions and array hashing functions are AST-identical. Reuse the existing numerical force/NPT audit; no new MD validation needed.",
+  "diff": "--- output/ni_nucleation/campaign-20261007-extension01/technical/code/src/data/trajectories/shooting.py\n+++ src/data/trajectories/shooting.py\n@@ -12,6 +12,7 @@\n \n import numpy as np\n from numpy.lib.format import open_memmap\n+from src.experiment_runner.artifacts import read_json_object as _load_json_object\n from src.project_runtime.paths import resolve_path\n \n from src.data.shooting import (\n@@ -36,21 +37,6 @@\n }\n \n \n-def _load_json_object(path: Path) -> dict[str, Any]:\n-    if not path.is_file():\n-        raise FileNotFoundError(\n-            f\"Required shooting-binary manifest is missing: {path}\"\n-        )\n-    with path.open(\"r\", encoding=\"utf-8\") as handle:\n-        value = json.load(handle)\n-    if not isinstance(value, dict):\n-        raise TypeError(\n-            f\"Expected a JSON object in shooting-binary manifest {path}, \"\n-            f\"got {type(value).__name__}.\"\n-        )\n-    return value\n-\n-\n def _array_sha256(values: np.ndarray) -> str:\n     digest = hashlib.sha256()\n     if values.ndim <= 1:\n@@ -90,39 +76,29 @@\n     def load(cls, path: str | Path) -> \"ShootingBinaryTrajectory\":\n         root = resolve_path(path).resolve()\n         manifest = _load_json_object(root / \"manifest.json\")\n-        if manifest.get(\"format\") != FORMAT_NAME:\n+        if manifest[\"format\"] != FORMAT_NAME:\n             raise ValueError(\n                 \"Unsupported shooting-binary format in\"\n                 f\" {root / 'manifest.json'}: expected={FORMAT_NAME!r},\"\n-                f\" observed={manifest.get('format')!r}.\"\n-            )\n-        if int(manifest.get(\"schema_version\", -1)) != SCHEMA_VERSION:\n+                f\" observed={manifest['format']!r}.\"\n+            )\n+        if manifest[\"schema_version\"] != SCHEMA_VERSION:\n             raise ValueError(\n                 \"Unsupported shooting-binary schema in\"\n                 f\" {root / 'manifest.json'}: expected={SCHEMA_VERSION},\"\n-                f\" observed={manifest.get('schema_version')!r}.\"\n-            )\n-        if manifest.get(\"state\") != \"complete\":\n+                f\" observed={manifest['schema_version']!r}.\"\n+            )\n+        if manifest[\"state\"] != \"complete\":\n             raise RuntimeError(\n                 f\"Shooting-binary trajectory is not complete: root={root}, \"\n-                f\"state={manifest.get('state')!r}.\"\n+                f\"state={manifest['state']!r}.\"\n             )\n \n         arrays: dict[str, np.ndarray] = {}\n-        descriptions = manifest.get(\"arrays\")\n-        if not isinstance(descriptions, dict):\n-            raise TypeError(\n-                \"Shooting-binary manifest arrays must be a JSON object:\"\n-                f\" {root / 'manifest.json'}.\"\n-            )\n+        descriptions = manifest[\"arrays\"]\n         for name, default_filename in _ARRAY_FILES.items():\n-            description = descriptions.get(name)\n-            if not isinstance(description, dict):\n-                raise KeyError(\n-                    \"Shooting-binary manifest is missing array description\"\n-                    f\" {name!r}: {root / 'manifest.json'}.\"\n-                )\n-            filename = description.get(\"file\")\n+            description = descriptions[name]\n+            filename = description[\"file\"]\n             if filename != default_filename:\n                 raise ValueError(\n                     f\"Unexpected file for shooting-binary array {name!r}:\"\n@@ -130,15 +106,9 @@\n                     f\" root={root}.\"\n                 )\n             array_path = root / filename\n-            if not array_path.is_file():\n-                raise FileNotFoundError(\n-                    f\"Shooting-binary array {name!r} is missing: {array_path}\"\n-                )\n             values = np.load(array_path, mmap_mode=\"r\", allow_pickle=False)\n-            expected_shape = tuple(\n-                int(value) for value in description[\"shape\"]\n-            )\n-            expected_dtype = np.dtype(str(description[\"dtype\"]))\n+            expected_shape = tuple(description[\"shape\"])\n+            expected_dtype = np.dtype(description[\"dtype\"])\n             if (\n                 values.shape != expected_shape\n                 or values.dtype != expected_dtype\n@@ -314,12 +284,7 @@\n \n         observed: dict[str, str] = {}\n         for name in _ARRAY_FILES:\n-            expected = str(self.manifest[\"arrays\"][name].get(\"sha256\", \"\"))\n-            if len(expected) != 64:\n-                raise RuntimeError(\n-                    \"Shooting-binary manifest has no valid SHA-256 for array\"\n-                    f\" {name!r}: {self.root / 'manifest.json'}.\"\n-                )\n+            expected = self.manifest[\"arrays\"][name][\"sha256\"]\n             observed[name] = _array_sha256(getattr(self, name))\n             if observed[name] != expected:\n                 raise RuntimeError(\n"
+}

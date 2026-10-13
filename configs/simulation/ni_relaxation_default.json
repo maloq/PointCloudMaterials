@@ -1,0 +1,13 @@
+{
+  "potential": "${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "relaxation": {
+    "mass": 58.71,
+    "minimizer": "fire",
+    "timestep_ps": 0.001,
+    "force_tolerance": 0.05,
+    "max_iterations": 20000,
+    "max_evaluations": 100000,
+    "frame_timeout_seconds": 600
+  }
+}

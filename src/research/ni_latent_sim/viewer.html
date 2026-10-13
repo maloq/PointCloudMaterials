@@ -1,0 +1,254 @@
+<div id="ni-prediction-viewer">
+  <style>
+    #ni-prediction-viewer { position:relative; color:var(--foreground); }
+    #ni-prediction-viewer .chart { width:100%; min-width:0; margin:12px 0; }
+    #ni-prediction-viewer .chart svg { display:block; width:100%; overflow:visible; }
+    #ni-prediction-viewer svg text { fill:var(--foreground); font-size:12px; font-weight:400; }
+    #ni-prediction-viewer .axis path, #ni-prediction-viewer .axis line { stroke:var(--border); }
+    #ni-prediction-viewer .grid line { stroke:var(--border); stroke-opacity:.45; }
+    #ni-prediction-viewer .grid path { display:none; }
+    #ni-prediction-viewer .legend { display:flex; flex-wrap:wrap; gap:8px 18px; margin:10px 0; }
+    #ni-prediction-viewer .series-toggle { color:var(--foreground); background:transparent; border:0; border-radius:0; padding:4px 0; font:inherit; font-weight:400; display:inline-flex; align-items:center; gap:7px; }
+    #ni-prediction-viewer .series-toggle[aria-pressed="false"] { opacity:.45; }
+    #ni-prediction-viewer .swatch { display:inline-block; width:20px; height:0; border-top:2px solid currentColor; }
+    #ni-prediction-viewer .series-values .swatch { color:var(--viz-series-1); border-top-style:dashed; }
+    #ni-prediction-viewer .series-response .swatch { color:var(--viz-series-2); }
+    #ni-prediction-viewer .series-persistence .swatch { color:var(--muted-foreground); border-top-style:dotted; }
+    #ni-prediction-viewer .meta { margin:8px 0; overflow-wrap:anywhere; }
+    #ni-prediction-viewer .forecast-detail { min-height:1.5em; }
+    #ni-prediction-viewer .tooltip { position:absolute; pointer-events:none; z-index:5; background:var(--popover); color:var(--popover-foreground); max-width:260px; }
+    #ni-prediction-viewer .tooltip div { display:flex; justify-content:space-between; gap:16px; }
+    #ni-prediction-viewer .birth-outcomes { display:flex; flex-wrap:wrap; gap:18px; margin:12px 0; }
+    #ni-prediction-viewer .birth-outcomes span { display:inline-flex; align-items:center; gap:6px; }
+    #ni-prediction-viewer .birth-dot { color:var(--viz-series-3); }
+    #ni-prediction-viewer .caption { margin:6px 0; }
+    #ni-prediction-viewer .controls-gap { margin-top:12px; }
+    #ni-prediction-viewer [hidden] { display:none !important; }
+  </style>
+  <h2>Ni: predicted futures and saved MD</h2>
+  <div class="viz-controls">
+    <label class="form-label">Prediction view
+      <select class="form-select" data-control="view"><option value="trajectory">Structural trajectories</option><option value="birth">Nucleus-birth probabilities</option></select>
+    </label>
+    <label class="form-label">Training seed
+      <select class="form-select" data-control="seed"><option value="20261013">20261013</option><option value="20261014">20261014</option></select>
+    </label>
+  </div>
+  <section data-panel="trajectory" aria-label="Autonomous structural forecasts">
+    <div class="viz-controls controls-gap">
+      <label class="form-label">Held-out local trajectory
+        <select class="form-select" data-control="case"></select>
+      </label>
+      <label class="form-label">Structural quantity
+        <select class="form-select" data-control="feature"><option value="0">Angular order, l = 6</option><option value="1">Radial density</option><option value="2">Embedding, PC1</option></select>
+      </label>
+      <label class="form-label">Time window
+        <select class="form-select" data-control="window"><option value="6">History + 6 ps forecast</option><option value="0.1">First 100 fs</option></select>
+      </label>
+    </div>
+    <div class="meta text-small text-muted" data-role="case-meta"></div>
+    <div class="legend" aria-label="Visible trajectory series">
+      <button type="button" class="series-toggle series-md cursor-interaction" aria-pressed="true" data-series="md"><span class="swatch"></span>Saved MD</button>
+      <button type="button" class="series-toggle series-values cursor-interaction" aria-pressed="true" data-series="values"><span class="swatch"></span>Values only</button>
+      <button type="button" class="series-toggle series-response cursor-interaction" aria-pressed="true" data-series="response"><span class="swatch"></span>+ Physical responses</button>
+      <button type="button" class="series-toggle series-persistence cursor-interaction" aria-pressed="true" data-series="persistence"><span class="swatch"></span>Keep initial state</button>
+    </div>
+    <div class="text-small text-muted caption">Lines: forecast means · faint curves: 2 neural paths · bands: pointwise 90% predictive intervals from 32 neural samples</div>
+    <div class="chart" data-chart="forecast"></div>
+    <div class="text-small text-muted forecast-detail" data-role="forecast-detail" aria-live="polite">MD markers are saved observations; lines between them are visual guides.</div>
+    <div class="chart" data-chart="error"></div>
+    <div class="text-small text-muted caption">1-ps-trained models · autonomous rollout · fixed central atom · no future MD inputs</div>
+  </section>
+  <section data-panel="birth" aria-label="Held-out birth probabilities" hidden>
+    <div class="viz-controls controls-gap">
+      <label class="form-label">Established nucleus size
+        <select class="form-select" data-control="size"><option value="64">64 atoms (default)</option><option value="32">32 atoms</option></select>
+      </label>
+      <label class="form-label">Prediction lead
+        <select class="form-select" data-control="lead"><option value="1">1 ps</option><option value="3" selected>3 ps</option><option value="6">6 ps</option></select>
+      </label>
+    </div>
+    <div class="birth-outcomes text-small"><span><span class="birth-dot">●</span>Saved future: nucleus birth</span><span>× Saved future: no birth</span></div>
+    <div class="text-small text-muted" data-role="birth-meta"></div>
+    <div class="chart" data-chart="birth"></div>
+    <label class="form-label">Inspect held-out input <span class="tabular-nums" data-role="birth-number"></span>
+      <input class="form-range" type="range" min="0" value="0" step="1" data-control="birth-case" aria-label="Held-out birth prediction input">
+    </label>
+    <div class="text-small forecast-detail" data-role="birth-detail" aria-live="polite"></div>
+    <div class="legend" aria-label="Calibration series">
+      <button type="button" class="series-toggle series-values cursor-interaction" aria-pressed="true" data-series="values"><span class="swatch"></span>Values only</button>
+      <button type="button" class="series-toggle series-response cursor-interaction" aria-pressed="true" data-series="response"><span class="swatch"></span>+ Physical responses</button>
+    </div>
+    <div class="chart" data-chart="calibration"></div>
+    <div class="text-small text-muted caption">Recorded frozen-embedding probes · descriptive probability bins · equal-example training budgets, different batch/update histories</div>
+  </section>
+  <div class="tooltip" role="tooltip" hidden></div>
+  <script type="application/json" id="ni-prediction-data">"__PREDICTION_DATA__"</script>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<script>
+(() => {
+  const root = document.getElementById('ni-prediction-viewer');
+  const D = JSON.parse(document.getElementById('ni-prediction-data').textContent);
+  const q = s => root.querySelector(s);
+  const control = name => q('[data-control="'+name+'"]');
+  const plot = name => q('[data-chart="'+name+'"]');
+  const tooltip = q('.tooltip');
+  const colors = {md:'var(--foreground)', values:'var(--viz-series-1)', response:'var(--viz-series-2)', persistence:'var(--muted-foreground)'};
+  const names = {md:'Saved MD', values:'Values only', response:'+ Responses', persistence:'Keep initial'};
+  const regimes = {growing_front:'Growing front',liquid_liquid:'Liquid–liquid',original:'Original cohort'};
+  let state = {view:'trajectory', seed:20261013, case:0, feature:0, window:6, size:64, lead:3, birthCase:0, visible:{md:true,values:true,response:true,persistence:true}};
+  const defaults = structuredClone(state);
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let animate = false;
+  D.cases.forEach((c,i) => {const op=document.createElement('option');op.value=i;op.textContent=regimes[c.regime]+' · '+(i%4+1)+' · atom '+c.center;control('case').append(op);});
+  function applySaved(saved) {
+    const s=saved?.privateContent?.selection;
+    if (!s || s.version!==1) return;
+    const next={...defaults,...s,visible:{...defaults.visible,...s.visible}};
+    if (!D.seeds.includes(+next.seed) || !D.cases[+next.case] || !D.births[next.size+'-'+next.lead]) return;
+    state=next;
+  }
+  applySaved(window.openai?.widgetState);
+  function remember() {
+    window.openai?.setWidgetState?.({modelContent:{view:state.view,trainingSeed:state.seed,trajectoryId:D.cases[state.case].id,feature:D.features[state.feature].title,timeWindowPs:state.window,nucleusAtoms:state.size,leadPs:state.lead},privateContent:{selection:{...state,version:1}}})?.catch(()=>{});
+  }
+  function sync() {
+    for (const name of ['view','seed','case','feature','window','size','lead']) control(name).value=state[name];
+    for (const button of root.querySelectorAll('[data-series]')) button.setAttribute('aria-pressed',String(state.visible[button.dataset.series]));
+    q('[data-panel="trajectory"]').hidden=state.view!=='trajectory';q('[data-panel="birth"]').hidden=state.view!=='birth';
+  }
+  function hideTip(){tooltip.hidden=true;root.querySelectorAll('[data-chart-hover-guide],[data-chart-hover-marker]').forEach(e=>e.setAttribute('visibility','hidden'));}
+  function showTip(event,title,items) {
+    tooltip.replaceChildren();const top=document.createElement('strong');top.textContent=title;tooltip.append(top);
+    for(const [name,value] of items){const row=document.createElement('div'),a=document.createElement('span'),b=document.createElement('span');a.textContent=name;b.textContent=value;b.className='tabular-nums';row.append(a,b);tooltip.append(row);}
+    tooltip.hidden=false;const r=root.getBoundingClientRect(),w=tooltip.getBoundingClientRect().width,h=tooltip.getBoundingClientRect().height;
+    tooltip.style.left=Math.max(0,Math.min(event.clientX-r.left+12,r.width-w-4))+'px';
+    tooltip.style.top=Math.max(0,Math.min(event.clientY-r.top-h-12,r.height-h))+'px';
+  }
+  const fmt = x => Math.abs(x)>=100 ? d3.format('.3~g')(x) : Math.abs(x)>0&&Math.abs(x)<.001 ? d3.format('.2e')(x) : d3.format('.3~f')(x);
+  function domain(values, zero=false) {
+    const [a,b]=d3.extent(values.filter(Number.isFinite));const span=b-a||Math.max(Math.abs(a)*.2,.1);
+    return [zero?Math.min(0,a-span*.08):a-span*.08,b+span*.12];
+  }
+  function frame(name, title, xLabel, yLabel, xDomain, yDomain, height=290, probability=false) {
+    const container=plot(name), width=Math.max(280,container.getBoundingClientRect().width);
+    const m={left:72,right:18,top:36,bottom:58};const iw=width-m.left-m.right,ih=height-m.top-m.bottom;
+    const svg=d3.select(container).selectAll('svg').data([null]).join('svg').attr('class','ni-chart').attr('role','img').attr('aria-label',title+'. '+xLabel+' versus '+yLabel).attr('viewBox',`0 0 ${width} ${height}`).attr('height',height);
+    svg.selectAll('title').data([title]).join('title').text(title);
+    const shortTitle={forecast:['Angular order (l = 6)','Radial density','Embedding, PC1'][state.feature],error:'Structural forecast error',birth:state.size+' atoms · '+state.lead+' ps',calibration:'Probability calibration'}[name];
+    svg.selectAll('.plot-heading').data([title]).join('text').attr('class','plot-heading').attr('x',m.left).attr('y',18).text(width<500?shortTitle:title);
+    const x=d3.scaleLinear().domain(xDomain).range([m.left+3,width-m.right-3]);
+    const y=d3.scaleLinear().domain(yDomain).range([height-m.bottom-3,m.top+3]);
+    const clipId='ni-clip-'+name;
+    const defs=svg.selectAll('defs').data([null]).join('defs');defs.selectAll('clipPath').data([null]).join('clipPath').attr('id',clipId).selectAll('rect').data([null]).join('rect').attr('x',m.left).attr('y',m.top).attr('width',iw).attr('height',ih);
+    svg.selectAll('rect[data-chart-frame]').data([null]).join('rect').attr('data-chart-frame','').attr('x',m.left).attr('y',m.top).attr('width',iw).attr('height',ih).attr('fill','none').attr('stroke','var(--border)');
+    svg.selectAll('g.grid').data([null]).join('g').attr('class','grid').attr('transform',`translate(${m.left},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-iw).tickFormat(''));
+    const tickFormat=probability?d3.format('.0%'):fmt;
+    svg.selectAll('g.x-axis').data([null]).join('g').attr('class','x-axis axis').attr('transform',`translate(0,${height-m.bottom})`).call(d3.axisBottom(x).ticks(width<400?3:6).tickFormat(tickFormat));
+    svg.selectAll('g.y-axis').data([null]).join('g').attr('class','y-axis axis').attr('transform',`translate(${m.left},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(tickFormat));
+    const labels=[{axis:'x',label:xLabel},{axis:'y',label:yLabel}];
+    svg.selectAll('text.axis-title').data(labels,d=>d.axis).join('text').attr('class','axis-title').attr('data-axis',d=>d.axis).attr('text-anchor','middle').attr('transform',d=>d.axis==='y'?`translate(16,${m.top+ih/2}) rotate(-90)`:`translate(${m.left+iw/2},${height-10})`).text(d=>d.label);
+    const marks=svg.selectAll('g.marks').data([null]).join('g').attr('class','marks').attr('clip-path',`url(#${clipId})`);
+    return {svg,marks,x,y,width,height,m,iw,ih};
+  }
+  function resample(points,n=81) {
+    if(!points.length)return [];
+    const indices=d3.range(n).map(i=>i*(points.length-1)/(n-1));
+    return indices.map(t=>{const j=Math.floor(t),k=Math.min(j+1,points.length-1),a=t-j;return [points[j][0]*(1-a)+points[k][0]*a,points[j][1]*(1-a)+points[k][1]*a];});
+  }
+  function linePath(selection,points) {
+    const next=resample(points), node=selection.node(), old=node.__points;
+    selection.interrupt();node.__points=next;
+    if(animate&&!reduced&&old?.length===next.length){const interp=d3.interpolateArray(old,next);selection.transition().duration(240).attrTween('d',()=>t=>d3.line()(interp(t))).on('end',()=>selection.attr('d',d3.line()(points)));}
+    else selection.attr('d',d3.line()(points));
+  }
+  function curves(f, series, observations=false) {
+    const paths=f.marks.selectAll('path.mean').data(series,d=>d.key).join('path').attr('class','mean').attr('fill','none').attr('stroke',d=>colors[d.key]).attr('stroke-width',d=>d.key==='response'?2.4:1.8).attr('stroke-dasharray',d=>d.key==='values'?'6 3':d.key==='persistence'?'2 4':null);
+    paths.each(function(d){linePath(d3.select(this),d.points.map(p=>[f.x(p.x),f.y(p.y)]));});
+    const points=observations?series.filter(d=>d.key==='md').flatMap(d=>d.points):[];
+    f.marks.selectAll('circle.observation').data(points).join('circle').attr('class','observation').attr('r',2.6).attr('cx',d=>f.x(d.x)).attr('cy',d=>f.y(d.y)).attr('fill','var(--foreground)');
+  }
+  function tidyLabels(f){
+    for(const cls of ['x-axis','y-axis']){
+      const ticks=[...f.svg.node().querySelectorAll('.'+cls+' .tick text')];let previous=null;
+      for(const el of ticks){el.style.visibility='visible';const box=el.getBoundingClientRect();if(previous&&((cls==='x-axis'&&box.left<previous.right+4)||(cls==='y-axis'&&box.bottom>previous.top-4))){el.style.visibility='hidden';}else previous=box;}
+    }
+  }
+  function crossSeries(f,series,timeUnit='ps') {
+    const guide=f.svg.selectAll('[data-chart-hover-guide]').data([null]).join('line').attr('data-chart-hover-guide','').attr('stroke','var(--muted-foreground)').attr('y1',f.m.top).attr('y2',f.height-f.m.bottom).attr('visibility','hidden');
+    const markers=f.svg.selectAll('[data-chart-hover-marker]').data(series,d=>d.key).join('circle').attr('data-chart-hover-marker','').attr('r',3.5).attr('fill',d=>colors[d.key]).attr('visibility','hidden');
+    function valueAt(points,x){if(x<points[0].x||x>points[points.length-1].x)return null;const i=d3.bisector(d=>d.x).center(points,x);let a=points[i],b=a;if(a.x<x)b=points[Math.min(i+1,points.length-1)];else a=points[Math.max(0,i-1)];return a.x===b.x?a.y:a.y+(b.y-a.y)*(x-a.x)/(b.x-a.x);}
+    const hit=f.svg.selectAll('rect[data-chart-hover-overlay]').data([null]).join('rect').attr('data-chart-hit','').attr('data-chart-hover-overlay','cross-series').attr('x',f.m.left).attr('y',f.m.top).attr('width',f.iw).attr('height',f.ih).attr('fill','transparent');
+    function show(event){const [px]=d3.pointer(event,f.svg.node()),t=f.x.invert(px),rows=[];guide.attr('x1',px).attr('x2',px).attr('visibility','visible');markers.each(function(d){const v=valueAt(d.points,t);d3.select(this).attr('visibility',v===null?'hidden':'visible').attr('cx',px).attr('cy',v===null?0:f.y(v));if(v!==null)rows.push([names[d.key],fmt(v)]);});showTip(event,fmt(t)+' '+timeUnit,rows);}
+    hit.on('pointermove',event=>{if(event.pointerType!=='touch')show(event);}).on('click',show).on('pointerleave',hideTip);
+  }
+  function forecast(){
+    const c=D.cases[state.case],feature=state.feature,short=state.window<1,limit=state.window,xmin=short?0:-.3;
+    q('[data-role="case-meta"]').textContent=regimes[c.regime]+' · central atom '+c.center+' · held-out source '+c.source;
+    const series=[];
+    const truth=D.observed_times.map((t,i)=>({x:t,y:c.truth[i][feature]})).filter(p=>p.x>=xmin-1e-8&&p.x<=limit+1e-8);
+    if(state.visible.md)series.push({key:'md',points:truth});
+    const modelKeys=['values','response'].filter(k=>state.visible[k]);
+    const indices=D.times.map((t,i)=>({t,i})).filter(p=>p.t<=limit+1e-8);
+    const bands=modelKeys.map(key=>{const p=c.predictions[key+'-'+state.seed];return {key,points:indices.map(({t,i})=>({x:t,lo:p.lo[i][feature],hi:p.hi[i][feature]}))};});
+    for(const key of modelKeys){const p=c.predictions[key+'-'+state.seed];series.push({key,points:indices.map(({t,i})=>({x:t,y:p.mean[i][feature]}))});}
+    if(state.visible.persistence)series.push({key:'persistence',points:[{x:0,y:c.truth[3][feature]},{x:limit,y:c.truth[3][feature]}]});
+    const all=series.flatMap(s=>s.points.map(p=>p.y)).concat(bands.flatMap(b=>b.points.flatMap(p=>[p.lo,p.hi])));
+    if(!all.length)all.push(...truth.map(p=>p.y));
+    const f=frame('forecast',D.features[feature].title,'Time from input (ps)',D.features[feature].unit,d3.extent([xmin,limit]),domain(all));
+    f.marks.selectAll('rect.history').data(short?[]:[null]).join('rect').attr('class','history').attr('x',f.x(xmin)).attr('y',f.m.top).attr('width',f.x(0)-f.x(xmin)).attr('height',f.ih).attr('fill','var(--muted)').attr('opacity',.55).lower();
+    f.marks.selectAll('path.band').data(bands,d=>d.key).join('path').attr('class','band').attr('fill',d=>colors[d.key]).attr('opacity',.1).attr('d',d=>d3.area().x(p=>f.x(p.x)).y0(p=>f.y(p.lo)).y1(p=>f.y(p.hi))(d.points));
+    const samples=modelKeys.flatMap(key=>c.predictions[key+'-'+state.seed].paths.map((path,j)=>({key,id:key+j,points:indices.map(({t,i})=>({x:t,y:path[i][feature]}))})));
+    f.marks.selectAll('path.sample').data(samples,d=>d.id).join('path').attr('class','sample').attr('fill','none').attr('stroke',d=>colors[d.key]).attr('opacity',.25).attr('stroke-width',1).each(function(d){linePath(d3.select(this),d.points.map(p=>[f.x(p.x),f.y(p.y)]));});
+    curves(f,series,true);
+    const refs=short?[0]:[0,1];
+    f.marks.selectAll('line.boundary').data(refs).join('line').attr('class','boundary').attr('x1',d=>f.x(d)).attr('x2',d=>f.x(d)).attr('y1',f.m.top).attr('y2',f.height-f.m.bottom).attr('stroke','var(--muted-foreground)').attr('stroke-width',1).attr('stroke-dasharray','3 4').attr('opacity',.6);
+    f.marks.selectAll('text.boundary-label').data(short?[]:[1]).join('text').attr('class','boundary-label').attr('x',d=>f.x(d)+5).attr('y',f.m.top+14).text('Training horizon');
+    crossSeries(f,series);tidyLabels(f);
+    const errorSeries=modelKeys.map(key=>({key,points:D.native_times.map((x,i)=>({x,y:c.predictions[key+'-'+state.seed].error[i]})).filter(p=>p.x<=limit+1e-8)}));
+    const e=frame('error','Error across all 128 structural features','Time from input (ps)','Normalized MSE',d3.extent([0,limit]),domain(errorSeries.flatMap(s=>s.points.map(p=>p.y)).concat([0]),true),230);
+    curves(e,errorSeries);crossSeries(e,errorSeries);tidyLabels(e);
+    q('[data-role="forecast-detail"]').textContent=short?'MD at 0 and 100 fs only · neural outputs every 5 fs · forecast at 0 shows decoder reconstruction.':'MD markers every 0.1 ps · history at −0.3, −0.2, −0.1 and 0 ps · shaded forecast bands include decoder noise.';
+  }
+  function currentBirth(){return D.births[state.size+'-'+state.lead];}
+  function selectedBirth(){
+    const b=currentBirth();state.birthCase=Math.max(0,Math.min(state.birthCase,b.rows.length-1));
+    const a=b.columns.indexOf('values-'+state.seed),z=b.columns.indexOf('response-'+state.seed),r=b.rows[state.birthCase];
+    control('birth-case').max=b.rows.length-1;control('birth-case').value=state.birthCase;
+    q('[data-role="birth-number"]').textContent=(state.birthCase+1)+' / '+b.rows.length;
+    q('[data-role="birth-detail"]').textContent=(r[1]?'Birth':'No birth')+' · input '+r[0]+' · values '+d3.format('.1%')(r[a])+' · responses '+d3.format('.1%')(r[z])+' · ancestor '+(r[3]+1);
+    const svg=d3.select(plot('birth')).select('svg'), f=svg.node()?.__frame;
+    if(f)svg.select('g.marks').selectAll('circle.selection').data([r]).join('circle').attr('class','selection').attr('cx',d=>f.x(d[a])).attr('cy',d=>f.y(d[z])).attr('r',7).attr('fill','none').attr('stroke','var(--foreground)').attr('stroke-width',1.7);
+  }
+  function births(){
+    const b=currentBirth(),ai=b.columns.indexOf('values-'+state.seed),bi=b.columns.indexOf('response-'+state.seed);
+    const positives=b.rows.filter(r=>r[1]).length;
+    q('[data-role="birth-meta"]').textContent=b.rows.length+' held-out inputs · '+b.ancestors.length+' ancestors · '+positives+' positive rows · diagonal = equal probability';
+    const f=frame('birth',state.size+'-atom nucleus birth, '+state.lead+'-ps lead','Values-only probability','Response-model probability',[0,1],[0,1],350,true);
+    f.svg.node().__frame=f;
+    f.marks.selectAll('line.diagonal').data([null]).join('line').attr('class','diagonal').attr('x1',f.x(0)).attr('x2',f.x(1)).attr('y1',f.y(0)).attr('y2',f.y(1)).attr('stroke','var(--muted-foreground)').attr('stroke-dasharray','4 4').attr('opacity',.7);
+    const symbol=d3.symbol().type(d3.symbolTimes).size(15);
+    f.marks.selectAll('path.negative').data(b.rows.filter(r=>!r[1])).join('path').attr('class','negative').attr('d',symbol).attr('transform',d=>`translate(${f.x(d[ai])},${f.y(d[bi])})`).attr('fill','none').attr('stroke','var(--muted-foreground)').attr('stroke-width',1).attr('opacity',.4);
+    f.marks.selectAll('circle.positive').data(b.rows.filter(r=>r[1])).join('circle').attr('class','positive').attr('cx',d=>f.x(d[ai])).attr('cy',d=>f.y(d[bi])).attr('r',3).attr('fill','var(--viz-series-3)').attr('opacity',.6);
+    const tree=d3.Delaunay.from(b.rows,r=>f.x(r[ai]),r=>f.y(r[bi]));
+    const hit=f.svg.selectAll('rect[data-chart-hit]').data([null]).join('rect').attr('data-chart-hit','').attr('x',f.m.left).attr('y',f.m.top).attr('width',f.iw).attr('height',f.ih).attr('fill','transparent');
+    function nearest(event,select){const [x,y]=d3.pointer(event,f.svg.node());const i=tree.find(x,y),r=b.rows[i];showTip(event,r[1]?'Saved future: birth':'Saved future: no birth',[['Values only',d3.format('.1%')(r[ai])],['+ Responses',d3.format('.1%')(r[bi])],['Input',r[0]]]);if(select){state.birthCase=i;selectedBirth();remember();}}
+    hit.on('pointermove',e=>{if(e.pointerType!=='touch')nearest(e,false);}).on('click',e=>nearest(e,true)).on('pointerleave',hideTip);
+    selectedBirth();tidyLabels(f);
+    const series=['values','response'].filter(key=>state.visible[key]).map(key=>{const col=b.columns.indexOf(key+'-'+state.seed),points=[];for(let j=0;j<10;j++){const subset=b.rows.filter(r=>Math.min(9,Math.floor(r[col]*10))===j);if(!subset.length)continue;const weight=d3.sum(subset,r=>r[2]);points.push({x:d3.sum(subset,r=>r[col]*r[2])/weight,y:d3.sum(subset,r=>r[1]*r[2])/weight,count:subset.length});}return {key,points};});
+    const cal=frame('calibration','Do predicted probabilities match observed frequencies?','Mean predicted probability','Observed birth frequency',[0,1],[0,1],270,true);
+    cal.marks.selectAll('line.diagonal').data([null]).join('line').attr('class','diagonal').attr('x1',cal.x(0)).attr('x2',cal.x(1)).attr('y1',cal.y(0)).attr('y2',cal.y(1)).attr('stroke','var(--muted-foreground)').attr('stroke-dasharray','4 4');
+    curves(cal,series);
+    cal.marks.selectAll('circle.bin').data(series.flatMap(s=>s.points.map(p=>({...p,key:s.key})))).join('circle').attr('class','bin').attr('cx',d=>cal.x(d.x)).attr('cy',d=>cal.y(d.y)).attr('r',3.5).attr('fill',d=>colors[d.key]);
+    crossSeries(cal,series,'probability');tidyLabels(cal);
+  }
+  function draw(){sync();hideTip();if(state.view==='trajectory')forecast();else births();animate=true;}
+  for(const name of ['view','seed','case','feature','window','size','lead'])control(name).addEventListener('change',()=>{state[name]=name==='view'?control(name).value:+control(name).value;draw();remember();});
+  control('birth-case').addEventListener('input',()=>{state.birthCase=+control('birth-case').value;selectedBirth();remember();});
+  for(const button of root.querySelectorAll('[data-series]'))button.addEventListener('click',()=>{const key=button.dataset.series;state.visible[key]=!state.visible[key];draw();remember();});
+  let previousWidth=0;new ResizeObserver(entries=>{const width=entries[0].contentRect.width;if(Math.abs(width-previousWidth)>1){previousWidth=width;draw();}}).observe(root);
+  window.addEventListener('openai:set_globals',event=>{if(event.detail?.globals?.widgetState){applySaved(event.detail.globals.widgetState);draw();}});
+  draw();
+})();
+</script>

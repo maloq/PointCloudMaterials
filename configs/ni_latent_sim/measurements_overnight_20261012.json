@@ -1,0 +1,246 @@
+{
+  "protocol": "ni-measurements-overnight-20261012-v1",
+  "seed": 20261017,
+  "source_run": "/store/PERSO/vmorozov/experiments/measurement_sim/direct-20261011-v1",
+  "source_plan_sha256": "91812d6d7ab012b1a24221cf9b40d90ccdb8105389097b7c242f39adcc2ca5d8",
+  "output": "${storage:training_storage}/measurement_sim/overnight-20261012-v1",
+  "model": {
+    "dimension": 244,
+    "history": 4,
+    "step_fs": 5,
+    "width": 64,
+    "heads": 4,
+    "layers": 2,
+    "feedforward": 192
+  },
+  "training": {
+    "native_updates": 2400,
+    "physical_updates": 4000,
+    "batch_size": 256,
+    "microbatch": 256,
+    "physical_batch": 64,
+    "particles": 4,
+    "lr": 0.001,
+    "warmup": 150,
+    "save_every": 50,
+    "selection_every": 200,
+    "horizons_steps": [
+      10,
+      30,
+      50
+    ],
+    "horizon_probabilities": [
+      0.5,
+      0.25,
+      0.25
+    ],
+    "likelihood_bandwidth": 0.25,
+    "path_weight": 1.0,
+    "increment_weight": 0.5,
+    "correlation_weight": 0.25,
+    "response_weight": 1.0,
+    "response_epsilon": 0.25
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 32,
+    "selection_rows": 128,
+    "selection_particles": 8,
+    "outer_keys": [
+      2026101701,
+      2026101702,
+      2026101703
+    ]
+  },
+  "assays": {
+    "penalties": [
+      0.0001,
+      0.001,
+      0.01,
+      0.1,
+      1.0,
+      10.0
+    ],
+    "state_lengths": [
+      0.5,
+      2.0
+    ],
+    "source_counts": [
+      4,
+      8,
+      12,
+      16
+    ],
+    "source_order_seeds": [
+      2026101701,
+      2026101702,
+      2026101703
+    ],
+    "within_source_counts": [
+      1,
+      2,
+      3,
+      5
+    ],
+    "history_lengths": [
+      4,
+      14
+    ],
+    "history_offsets": [
+      1,
+      5,
+      10,
+      30,
+      50
+    ]
+  },
+  "runtime": {
+    "hours": 12,
+    "continuation_hours": 10,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S",
+    "gpus": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "history4-s20261017",
+      "treatment": "history4",
+      "task": "native",
+      "history": 4,
+      "summary": false,
+      "response": false,
+      "seed": 20261017
+    },
+    {
+      "name": "history14-s20261017",
+      "treatment": "history14",
+      "task": "native",
+      "history": 14,
+      "summary": false,
+      "response": false,
+      "seed": 20261017
+    },
+    {
+      "name": "physical_values-s20261017",
+      "treatment": "physical_values",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": false,
+      "seed": 20261017
+    },
+    {
+      "name": "physical_response-s20261017",
+      "treatment": "physical_response",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": true,
+      "seed": 20261017
+    },
+    {
+      "name": "history_summary-s20261017",
+      "treatment": "history_summary",
+      "task": "native",
+      "history": 14,
+      "summary": true,
+      "response": false,
+      "seed": 20261017
+    },
+    {
+      "name": "history4-s20261018",
+      "treatment": "history4",
+      "task": "native",
+      "history": 4,
+      "summary": false,
+      "response": false,
+      "seed": 20261018
+    },
+    {
+      "name": "history14-s20261018",
+      "treatment": "history14",
+      "task": "native",
+      "history": 14,
+      "summary": false,
+      "response": false,
+      "seed": 20261018
+    },
+    {
+      "name": "physical_values-s20261018",
+      "treatment": "physical_values",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": false,
+      "seed": 20261018
+    },
+    {
+      "name": "physical_response-s20261018",
+      "treatment": "physical_response",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": true,
+      "seed": 20261018
+    },
+    {
+      "name": "history_summary-s20261018",
+      "treatment": "history_summary",
+      "task": "native",
+      "history": 14,
+      "summary": true,
+      "response": false,
+      "seed": 20261018
+    },
+    {
+      "name": "history4-s20261019",
+      "treatment": "history4",
+      "task": "native",
+      "history": 4,
+      "summary": false,
+      "response": false,
+      "seed": 20261019
+    },
+    {
+      "name": "history14-s20261019",
+      "treatment": "history14",
+      "task": "native",
+      "history": 14,
+      "summary": false,
+      "response": false,
+      "seed": 20261019
+    },
+    {
+      "name": "physical_values-s20261019",
+      "treatment": "physical_values",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": false,
+      "seed": 20261019
+    },
+    {
+      "name": "physical_response-s20261019",
+      "treatment": "physical_response",
+      "task": "physical",
+      "history": 1,
+      "summary": false,
+      "response": true,
+      "seed": 20261019
+    },
+    {
+      "name": "history_summary-s20261019",
+      "treatment": "history_summary",
+      "task": "native",
+      "history": 14,
+      "summary": true,
+      "response": false,
+      "seed": 20261019
+    }
+  ]
+}

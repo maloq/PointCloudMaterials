@@ -43,6 +43,12 @@
       "compatible_sha256": "e778e992a28096724aa8ab7f4d989523810b93537b38f67f1866461ea99e8e4d",
       "review": "docs/metrics/ni_validation_import_review_20261008.json",
       "review_sha256": "9255434f96c46d348a113907af6e5ca3c9814fc1bad7c38bb35fb88199646486"
+    },
+    "src/data/trajectories/shooting.py": {
+      "validated_sha256": "73680bf58671435a6b75ee844cb3dae5f0b6e3fe4396c733466f5625737f24da",
+      "compatible_sha256": "4269b4faeda3f513029690a9545f27fab82256cddd42756c27a8a5ea90a956c0",
+      "review": "docs/metrics/ni_validation_reader_review_20261012.json",
+      "review_sha256": "18830733b3e89d4bd538933943b9cd143a18c65ee91dc162f9b59d5d28e8061e"
     }
   }
 }

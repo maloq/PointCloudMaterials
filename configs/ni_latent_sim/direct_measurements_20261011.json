@@ -1,0 +1,109 @@
+{
+  "protocol": "ni-direct-measurements-20261011-v1",
+  "seed": 20261015,
+  "source_run": "/store/PERSO/vmorozov/experiments/ni_latent_sim/regimes3x-20261010-v2",
+  "source_plan_sha256": "41fcdc550c4aa012e65908c7904e44b026a9ab62279a1f7fa785fd2af9ca8aae",
+  "source_parent": "/store/PERSO/vmorozov/experiments/ni_response/unrelaxed-esen-20261009-v1",
+  "physical_run": "/store/PERSO/vmorozov/experiments/ni_latent_sim/dense-path-response-20261011-v1",
+  "physical_archive": "${storage:archive}/simulations/ni-dense-path-response-20261011-v1",
+  "output": "${storage:training_storage}/measurement_sim/direct-20261011-v1",
+  "cache": "${storage:cache}/measurement-sim/direct-20261011-v1",
+  "structural_columns": "configs/data/spatial_active_cna_targets.json",
+  "length_factor": 1.1085850758932345,
+  "model": {
+    "dimension": 244,
+    "history": 4,
+    "step_fs": 5,
+    "width": 64,
+    "heads": 4,
+    "layers": 2,
+    "feedforward": 192
+  },
+  "training": {
+    "updates": 1600,
+    "batch_size": 256,
+    "particles": 4,
+    "teacher_batch": 16,
+    "lr": 0.001,
+    "warmup": 100,
+    "save_every": 50,
+    "selection_every": 100,
+    "horizons_steps": [
+      10,
+      30,
+      60
+    ],
+    "horizon_probabilities": [
+      0.5,
+      0.25,
+      0.25
+    ],
+    "likelihood_bandwidth": 0.25,
+    "path_weight": 1.0,
+    "increment_weight": 0.5,
+    "correlation_weight": 0.25,
+    "teacher_weight": 0.2,
+    "response_weight": 1.0,
+    "response_epsilon": 0.25
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 64,
+    "selection_rows": 128
+  },
+  "runtime": {
+    "hours": 16,
+    "gpus": 2,
+    "preparation_workers": 12,
+    "max_attempts": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "connected_response-s20261015",
+      "treatment": "connected_response",
+      "seed": 20261015,
+      "connected": true,
+      "response": true
+    },
+    {
+      "name": "connected_response-s20261016",
+      "treatment": "connected_response",
+      "seed": 20261016,
+      "connected": true,
+      "response": true
+    },
+    {
+      "name": "connected-s20261015",
+      "treatment": "connected",
+      "seed": 20261015,
+      "connected": true,
+      "response": false
+    },
+    {
+      "name": "connected-s20261016",
+      "treatment": "connected",
+      "seed": 20261016,
+      "connected": true,
+      "response": false
+    },
+    {
+      "name": "marginal-s20261015",
+      "treatment": "marginal",
+      "seed": 20261015,
+      "connected": false,
+      "response": false
+    },
+    {
+      "name": "marginal-s20261016",
+      "treatment": "marginal",
+      "seed": 20261016,
+      "connected": false,
+      "response": false
+    }
+  ]
+}

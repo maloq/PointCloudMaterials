@@ -1,0 +1,2135 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ni matched 0.01/0.03/0.05 force-tolerance diagnostic</title><style>
+:root{color-scheme:light;--ink:#172b3b;--muted:#526678;--line:#d9e2ea;--blue:#165c9b}
+*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:var(--ink);font:15px/1.55 system-ui,sans-serif}
+main{max-width:1500px;margin:auto;padding:28px 32px}h1{font-size:32px;letter-spacing:-.8px;margin:5px 0 12px}
+h2{font-size:21px;margin-top:30px}a{color:var(--blue);overflow-wrap:anywhere}p{max-width:100ch}
+.muted{color:var(--muted)}.stats{display:flex;gap:16px;flex-wrap:wrap;margin:24px 0}.stat{background:white;border:1px solid var(--line);padding:12px 20px;border-radius:8px;min-width:150px}.stat strong{display:block;font-size:27px}
+.filters{position:sticky;top:0;background:#f5f7faf5;padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;z-index:2}
+input,select{padding:10px;border:1px solid #bdcbd7;background:white;border-radius:6px;font:inherit}input{flex:1;min-width:260px}
+.table-wrap{overflow:auto;background:white;border:1px solid var(--line);border-radius:8px}table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:12px 14px;border-bottom:1px solid var(--line)}th{font-size:12px;text-transform:uppercase;color:var(--muted);letter-spacing:.5px}td small{display:block;color:var(--muted);margin-top:4px;max-width:480px}
+.badge{display:inline-block;padding:2px 8px;border-radius:12px;background:#eaf0f6;font-size:12px;margin:2px}.warning{background:#fff1d3;color:#775005}.bad{background:#ffe7e6;color:#842927}.good{background:#e3f3ed;color:#175844}
+details{background:white;border:1px solid var(--line);border-radius:7px;padding:12px 16px;margin:12px 0}summary{cursor:pointer;font-weight:600}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f3f7;padding:14px;font-size:12px;max-height:500px;overflow:auto}code{font-size:12px;overflow-wrap:anywhere}li{margin:5px 0}[hidden]{display:none!important}
+@media(max-width:700px){main{padding:16px}h1{font-size:25px}td,th{padding:9px}.filters{position:static}}
+</style></head><body><main><a href="../index.html">← All datasets</a><h1>Ni matched 0.01/0.03/0.05 force-tolerance diagnostic</h1><p>Sorted native FIRE at three force-component tolerances on the same twelve full32000-atom inputs from six sources as the speed pilot. All settings timed on one GPU, with float64 minimizer states and float32 forces; original identities, ancestry and boxes retained.</p><span class="badge">research</span><p><code>ni-relaxation-tolerance005-20261011</code> · Ni</p><h2>Location and availability</h2><p><a href="../../../../../../../store/PERSO/vmorozov/simulations/ni-relaxation-tolerance005-20261011-v1">/store/PERSO/vmorozov/simulations/ni-relaxation-tolerance005-20261011-v1</a></p><p>345 owned files · 0.224 GiB allocated · 0 available complete binary records. Counts are not independent trajectories; nested registered datasets are excluded from parent storage.</p><h2>Use and provenance</h2><pre>{
+  &quot;title&quot;: &quot;Ni matched 0.01/0.03/0.05 force-tolerance diagnostic&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;potential_ids&quot;: [
+    &quot;ni-mendelev2012-eam&quot;
+  ],
+  &quot;role&quot;: &quot;numerical_diagnostic&quot;,
+  &quot;classification&quot;: &quot;research&quot;,
+  &quot;description&quot;: &quot;Sorted native FIRE at three force-component tolerances on the same twelve full32000-atom inputs from six sources as the speed pilot. All settings timed on one GPU, with float64 minimizer states and float32 forces; original identities, ancestry and boxes retained.&quot;,
+  &quot;evidence&quot;: [
+    &quot;${storage:training_storage}/ni_relaxation/tolerance005-20261011-v1/technical/plan.json&quot;,
+    &quot;configs/simulation/ni_relaxation_tolerance005_20261011.json&quot;,
+    &quot;docs/simulations/ni_relaxation_speed_20261011.md&quot;
+  ],
+  &quot;limitations&quot;: [
+    &quot;Numerical repeats of the previous inputs, not new independent MD samples.&quot;,
+    &quot;Contains a convergence-stress source; not a population sample.&quot;,
+    &quot;Diagnostic minima do not replace historical training targets.&quot;
+  ]
+}</pre><ul><li><a href="../../../%24%7Bstorage%3Atraining_storage%7D/ni_relaxation/tolerance005-20261011-v1/technical/plan.json">${storage:training_storage}/ni_relaxation/tolerance005-20261011-v1/technical/plan.json</a> (missing here)</li><li><a href="../../../configs/simulation/ni_relaxation_tolerance005_20261011.json">configs/simulation/ni_relaxation_tolerance005_20261011.json</a></li><li><a href="../../simulations/ni_relaxation_speed_20261011.md">docs/simulations/ni_relaxation_speed_20261011.md</a></li></ul><p>Dependencies: <a href="ni-response-esen-relaxed-20261009-78113947.html">ni-response-esen-relaxed-20261009</a>, <a href="ni-quench-repeatability-20261009-0e4acda7.html">ni-quench-repeatability-20261009</a><br>Nested datasets: None recorded<br>Same resolved location: None recorded</p><h2>Generating potentials</h2><details><summary>Mendelev et al. 2012 Ni EAM/FS</summary><ul><li><a href="../../../configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs">Ni1_Mendelev_2012.eam.fs</a> · hash verified</li></ul><pre>{
+  &quot;id&quot;: &quot;ni-mendelev2012-eam&quot;,
+  &quot;name&quot;: &quot;Mendelev et al. 2012 Ni EAM/FS&quot;,
+  &quot;materials&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;pair_style&quot;: &quot;eam/fs&quot;,
+  &quot;mapping&quot;: &quot;pair_coeff * * Ni1_Mendelev_2012.eam.fs Ni&quot;,
+  &quot;citation&quot;: &quot;Mendelev et al., Philosophical Magazine 92, 4454-4469 (2012)&quot;,
+  &quot;doi&quot;: &quot;10.1080/14786435.2012.712220&quot;,
+  &quot;limitations&quot;: [
+    &quot;Pure-Ni implementation; does not include Ni-Zr alloy interactions.&quot;,
+    &quot;CUDA engineering checks are separate from melting-point or precursor-mechanism validation.&quot;
+  ],
+  &quot;family&quot;: &quot;EAM/FS&quot;,
+  &quot;elements&quot;: [
+    &quot;Ni&quot;
+  ],
+  &quot;files&quot;: [
+    {
+      &quot;path&quot;: &quot;${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;sha256&quot;: &quot;acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df&quot;,
+      &quot;location&quot;: &quot;/home/infres/vmorozov/PointCloudMaterials/configs/simulation/potentials/ni_mendelev2012/Ni1_Mendelev_2012.eam.fs&quot;,
+      &quot;available&quot;: true,
+      &quot;sha256_verified&quot;: true
+    }
+  ]
+}</pre></details><h2>Missing metadata and integrity</h2><p>None in the core fields</p><pre>[]</pre><h2>Recorded scientific metadata</h2><p>Values retain their producer meaning; planned settings, source conditions and current arrays may describe different stages. Consult the linked record for its JSON field path.</p><div class="table-wrap"><table></table></div><details><summary>Array schemas, file inventory and symlinks</summary><pre>{
+  &quot;observed&quot;: {
+    &quot;files&quot;: 345,
+    &quot;apparent_bytes&quot;: 166718362,
+    &quot;allocated_bytes&quot;: 240246784,
+    &quot;file_extensions&quot;: {
+      &quot;.json&quot;: 117,
+      &quot;.lammps&quot;: 76,
+      &quot;.data&quot;: 38,
+      &quot;.npz&quot;: 76,
+      &quot;.dump&quot;: 38
+    },
+    &quot;producer_state_record_counts&quot;: {},
+    &quot;metadata_records&quot;: 0,
+    &quot;binary_trajectory_records&quot;: 0,
+    &quot;available_complete_binary_records&quot;: 0,
+    &quot;stored_frames&quot;: 0,
+    &quot;binary_records_in_duplicate_groups&quot;: 0
+  },
+  &quot;loose_arrays&quot;: [
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;00-98da5a4c359a786179ea-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;01-98da5a4c359a786179ea-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;02-af08d7ee3556733d548a-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;03-af08d7ee3556733d548a-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;04-d4dcd577c93e0eefa716-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;05-d4dcd577c93e0eefa716-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;06-6b24aabb8af4349c3cc3-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;07-6b24aabb8af4349c3cc3-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;08-47cc82c30c7a9a776c38-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;09-47cc82c30c7a9a776c38-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;10-41743c27c0e6084b062f-initial/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/looser_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/looser_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/sorted_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;11-41743c27c0e6084b062f-endpoint/sorted_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;execution-attempt1/endpoints/00-98da5a4c359a786179ea-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;execution-attempt1/endpoints/00-98da5a4c359a786179ea-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;execution-attempt1/failures/00-98da5a4c359a786179ea-initial/loose_fire/minimizer-checkpoint.npz&quot;,
+      &quot;members&quot;: {
+        &quot;positions&quot;: {
+          &quot;shape&quot;: [
+            32000,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;box&quot;: {
+          &quot;shape&quot;: [
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;atom_ids&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;int64&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    },
+    {
+      &quot;path&quot;: &quot;execution-attempt1/failures/00-98da5a4c359a786179ea-initial/loose_fire/observables.npz&quot;,
+      &quot;members&quot;: {
+        &quot;labels&quot;: {
+          &quot;shape&quot;: [
+            32000
+          ],
+          &quot;dtype&quot;: &quot;uint8&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;patch&quot;: {
+          &quot;shape&quot;: [
+            80,
+            3
+          ],
+          &quot;dtype&quot;: &quot;float64&quot;,
+          &quot;fortran_order&quot;: false
+        },
+        &quot;embedding&quot;: {
+          &quot;shape&quot;: [
+            128
+          ],
+          &quot;dtype&quot;: &quot;float32&quot;,
+          &quot;fortran_order&quot;: false
+        }
+      }
+    }
+  ],
+  &quot;symlinks&quot;: []
+}</pre></details><details><summary>Referenced by maintained configs/code (0)</summary><p>A reference establishes discoverability, not that a training job consumed the dataset.</p><ul></ul></details><details><summary>Producer evidence (0 records)</summary><p><a href="../records/ni-relaxation-tolerance005-20261011-fad364cf.json">Complete structured metadata with field paths and current binary schemas</a></p><ul></ul></details><p class="muted">Observed 2026-10-11T23:09:08.376791+00:00. Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.</p></main></body></html>

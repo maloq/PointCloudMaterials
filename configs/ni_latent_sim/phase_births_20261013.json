@@ -1,0 +1,39 @@
+{
+  "protocol": "ni-phase-births-90sources-20261013-v1",
+  "seed": 20261023,
+  "phase_run": "/store/PERSO/vmorozov/experiments/ni_phase_sim/dense-20261013-v2",
+  "phase_plan_sha256": "fe23c185ac115e6f265ee189c2ff24b097fee43216a9a9a6414a6eb10171cd0c",
+  "original_config": "/home/infres/vmorozov/PointCloudMaterials/configs/ni_response/esen_unrelaxed_20261009.json",
+  "original_births_sha256": "63cca3e5e9b543f9ed223ae79788d2d9d91a31f8a5fcb168ccd592dd132a76fc",
+  "output": "${storage:training_storage}/ni_phase_births/90sources-20261013-v1",
+  "cache": "${storage:cache}/ni-phase-births/90sources-20261013-v1",
+  "tasks": [
+    "nucleus32",
+    "nucleus64"
+  ],
+  "leads_ps": [
+    1.0,
+    3.0,
+    6.0
+  ],
+  "model_seeds": [
+    20261023,
+    20261024,
+    20261025
+  ],
+  "batch_size": 128,
+  "threads": 4,
+  "fit_workers": 4,
+  "fit_threads": 2,
+  "bootstrap": 1000,
+  "probe": {
+    "iterations": 600,
+    "depth": 4,
+    "learning_rate": 0.04,
+    "l2_leaf_reg": 10,
+    "border_count": 64,
+    "task_type": "CPU"
+  },
+  "additional_catalogue": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1",
+  "additional_plan_sha256": "ea8c9694245dd2c08ff0221f1a0157b84219957d2d97e35367a46e2a55708aec"
+}

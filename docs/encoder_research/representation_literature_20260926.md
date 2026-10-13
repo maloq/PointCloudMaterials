@@ -1,5 +1,8 @@
 # Learning local structural and dynamical representations: literature review
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](literature.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Date: 26 September 2026. Scope: the representation problem behind our Al/Ta/Zr
 encoder experiments, including relevant ideas outside atomistic materials.
 This is a research synthesis and proposed direction, not an implemented protocol.

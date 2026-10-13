@@ -176,3 +176,20 @@ metadata. The move introduces no new independent source or new numerical audit.
 The full-history search preserves its source/cache identities; an explicit
 producer handoff receipt replaces allocation dependencies without waiting on the
 old allocation, which hosts the active user session and no longer runs MD.
+
+October 12 validation reuse adds the reviewed repository trajectory-reader
+simplification. The existing two-frame, 32,000-atom publication assay loads
+identical arrays and checksums with the validated and current readers; all
+top-level trajectory writers and composition functions are AST-identical.
+`ni_validation_reader_review_20261012.json` binds the exact old/new hashes and
+the review. Physical integration, observation quantization, detector definitions
+and lineage calculations are unchanged. New exports record this provenance;
+historical exported contracts retain their original files.
+
+New GPU-search bundles copy every file named by the Ni metric contract, in
+addition to the selected numerical audit. This includes the original GPU audit
+outside `docs/metrics/`, which must remain available when its inherited evidence
+is reused. This packaging correction changes no descriptor, lineage or metric
+calculation. An October 12 analysis recovery uses an unchanged copy of its
+original source bundle plus the missing file at the originally recorded hash;
+the failed bundle and log remain preserved.

@@ -225,11 +225,12 @@ def submit(settings):
     from src.simulation.campaigns.ni_births.allocation import job_state
     if any(job_state(job) != 'PENDING' for job in old_jobs):
         raise ValueError('Replace only receipt-owned pending Ni search jobs')
-    check_metric_docs(family='ni_births')
+    contract = check_metric_docs(family='ni_births')['ni_births']
     write_json(launch/'previous-dispatch.json', dispatch)
     code = ExecutionBundle.freeze(REPO, launch/'code', settings,
         directories=('src','configs','scripts','docs/metrics'),
-        files=((resolve_path(settings['numerical_audit']),settings['numerical_audit']),))
+        files=tuple((REPO/name,name) for name in contract['files']) +
+              ((resolve_path(settings['numerical_audit']),settings['numerical_audit']),))
     host = machine(); host['catalog'] = str(code.root/'configs/datasets.json'); write_json(launch/'machine.json',host)
     cuda = host['execution']['gpu_meam_portable_cuda_root']
     environment = dict(PCM_PROJECT_ROOT=str(REPO),PCM_MACHINE_CONFIG=str(launch/'machine.json'),

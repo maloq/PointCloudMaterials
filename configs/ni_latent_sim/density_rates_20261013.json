@@ -1,0 +1,392 @@
+{
+  "protocol": "ni-density-rates-20261013-v1",
+  "seed": 20261020,
+  "physical_plan": "/store/PERSO/vmorozov/experiments/ni_latent_sim/dense-path-response-20261011-v1/technical/plan.json",
+  "new_sources_plan": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/plans.json",
+  "measurement_plan": "/store/PERSO/vmorozov/experiments/measurement_sim/direct-20261011-v1/technical/plan.json",
+  "output": "${storage:training_storage}/measurement_sim/density-rates-20261013-v1",
+  "cache": "${storage:cache}/measurement-sim/density-rates-20261013-v1",
+  "simulation_archive": "${storage:archive}/simulations/ni-density-rates-20261013-v1",
+  "simulation_scratch": "${storage:simulation_runs}/ni-density-rates-20261013-v1",
+  "reuse_archive": "${storage:archive}/simulations/ni-dense-path-response-20261011-v1",
+  "reuse_measurements": "${storage:cache}/measurement-sim/direct-20261011-v1/physical",
+  "length_factor": 1.1085850758932345,
+  "teacher": {
+    "state_dtype": "float64",
+    "force_dtype": "float32",
+    "position_direction_rms_A": 0.01,
+    "velocity_direction_rms_A_ps": 0.1,
+    "shots": 2,
+    "timestep_fs": 1,
+    "friction_fs": 1000,
+    "save_fs": [
+      5,
+      10,
+      15,
+      20,
+      25,
+      30,
+      35,
+      40,
+      45,
+      50,
+      55,
+      60,
+      65,
+      70,
+      75,
+      80,
+      85,
+      90,
+      95,
+      100
+    ]
+  },
+  "potential_file": "${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "model": {
+    "width": 64,
+    "heads": 4,
+    "layers": 2,
+    "feedforward": 192
+  },
+  "split": {
+    "policy": "train-test-only",
+    "nontrain": "test",
+    "inner_split": false,
+    "checkpoint": "fixed_final"
+  },
+  "training": {
+    "lr": 0.001,
+    "warmup": 150,
+    "save_every": 50,
+    "particles": 4,
+    "likelihood_bandwidth": 0.25,
+    "path_weight": 1.0,
+    "increment_weight": 0.5,
+    "correlation_weight": 0.25,
+    "response_weight": 1.0,
+    "response_epsilon": 0.25,
+    "updates": 1600,
+    "batch_size": 64,
+    "microbatch": 64
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 16,
+    "outer_keys": [
+      2026102001,
+      2026102002,
+      2026102003
+    ]
+  },
+  "assays": {
+    "penalty": 0.01,
+    "state_length": 2.0
+  },
+  "runtime": {
+    "hours": 16,
+    "continuations": 2,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S",
+    "gpus": 2
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "base80-rates0-response0-h5-s20261020",
+      "bank": "base80",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "base80-rates0-response1-h5-s20261020",
+      "bank": "base80",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "same320-rates0-response0-h5-s20261020",
+      "bank": "same320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "same320-rates0-response1-h5-s20261020",
+      "bank": "same320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates0-response0-h5-s20261020",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates0-response1-h5-s20261020",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates1-response0-h5-s20261020",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates1-response1-h5-s20261020",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates0-response0-h1-s20261020",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates0-response1-h1-s20261020",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates1-response0-h1-s20261020",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261020
+    },
+    {
+      "name": "diverse320-rates1-response1-h1-s20261020",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261020
+    },
+    {
+      "name": "base80-rates0-response0-h5-s20261021",
+      "bank": "base80",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "base80-rates0-response1-h5-s20261021",
+      "bank": "base80",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "same320-rates0-response0-h5-s20261021",
+      "bank": "same320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "same320-rates0-response1-h5-s20261021",
+      "bank": "same320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates0-response0-h5-s20261021",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates0-response1-h5-s20261021",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates1-response0-h5-s20261021",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates1-response1-h5-s20261021",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates0-response0-h1-s20261021",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates0-response1-h1-s20261021",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates1-response0-h1-s20261021",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261021
+    },
+    {
+      "name": "diverse320-rates1-response1-h1-s20261021",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261021
+    },
+    {
+      "name": "base80-rates0-response0-h5-s20261022",
+      "bank": "base80",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "base80-rates0-response1-h5-s20261022",
+      "bank": "base80",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "same320-rates0-response0-h5-s20261022",
+      "bank": "same320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "same320-rates0-response1-h5-s20261022",
+      "bank": "same320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates0-response0-h5-s20261022",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates0-response1-h5-s20261022",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates1-response0-h5-s20261022",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates1-response1-h5-s20261022",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 5,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates0-response0-h1-s20261022",
+      "bank": "diverse320",
+      "rates": false,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates0-response1-h1-s20261022",
+      "bank": "diverse320",
+      "rates": false,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates1-response0-h1-s20261022",
+      "bank": "diverse320",
+      "rates": true,
+      "response": false,
+      "step_fs": 1,
+      "seed": 20261022
+    },
+    {
+      "name": "diverse320-rates1-response1-h1-s20261022",
+      "bank": "diverse320",
+      "rates": true,
+      "response": true,
+      "step_fs": 1,
+      "seed": 20261022
+    }
+  ],
+  "physical_plan_sha256": "eccc814b0ac027180aa8c54872e342e0ae8316b2e8e103f4b3e1995aa72eadd9",
+  "new_sources_plan_sha256": "ea8c9694245dd2c08ff0221f1a0157b84219957d2d97e35367a46e2a55708aec",
+  "measurement_plan_sha256": "91812d6d7ab012b1a24221cf9b40d90ccdb8105389097b7c242f39adcc2ca5d8"
+}

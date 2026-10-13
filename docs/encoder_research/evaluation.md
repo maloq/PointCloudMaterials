@@ -28,6 +28,12 @@ explanation, especially for historical results.
 
 ## Observations, targets and splits
 
+**Default for new experiments, 13 October 2026:** use train/test only. Preserve
+declared training ancestry and map every other role to test, retaining the old
+role as provenance. Do not carve a new selection/calibration set from train.
+Predeclare budgets, hyperparameters and checkpoint rules; test is evaluation
+only. The multi-split descriptions below document historical protocols.
+
 Record positions versus positions+velocities; number/timing of historical frames;
 tracked atom IDs; cutoff/taper/halo; potential/material/temperature; observed
 versus relaxed geometry; coordinate precision; and whether relaxation used the

@@ -1,0 +1,50 @@
+{
+  "kind": "reviewed_numerical_evidence_reuse",
+  "reviewed_at": "2026-10-11T22:47:18.426971+00:00",
+  "new_GPU_numerical_execution": false,
+  "source_audit": {
+    "path": "docs/postprocessing_gpu_ptm_20261008.json",
+    "sha256": "97062217e280300e2cf5be0eb1f79be3f519cf76684087c83b1911f1d44e299f"
+  },
+  "review": {
+    "file": "src/postprocessing/io.py",
+    "validated_sha256": "0ee56b4a8711ddfc735623ed79131f7ea0c4da87ea252a2e575fd17c4a9e9716",
+    "compatible_sha256": "de55ac0a1443728b18589408f45015cccf524e4f752b885e6ca1d2730a3407b5",
+    "conclusion": "Only the internal trajectory access helper changed: duplicate checks already guaranteed by the producer were removed. Array loading and periodic coordinate arithmetic are unchanged for valid repository inputs. Old and current accessors return identical arrays and frame geometries on the existing two-frame 32000-atom publication assay. All GPU descriptor kernels, ordering and extraction calculations retain the reviewed hashes.",
+    "checked_trajectory": "/home/infres/vmorozov/PointCloudMaterials/output/ni_nucleation/campaign-20261007-extension01/technical/audit/gpu/audit-composed",
+    "checked_manifest_sha256": "2748e1182144507cf619cad04f94e10cec4a8e71db5aa4c6abb91c1477fc4336",
+    "frames": 2,
+    "atoms": 32000,
+    "diff": "--- output/ni_nucleation/campaign-lowT-20261008/technical/gpu-search-full-handoff-01/code/src/postprocessing/io.py\n+++ src/postprocessing/io.py\n@@ -1,10 +1,13 @@\n-\"\"\"Checksum-bound, memory-mapped trajectory access for post-simulation work.\"\"\"\n+\"\"\"Checksum-bound access to trajectories validated by repository converters.\"\"\"\n from functools import lru_cache\n+import json\n from pathlib import Path\n-import json\n+\n import numpy as np\n+\n from src.experiment_runner.artifacts import file_hash\n from src.project_runtime.paths import resolve_path\n+\n \n def read(path):\n     return json.loads(Path(path).read_text())\n@@ -19,13 +22,10 @@\n     if manifest['state'] != 'complete' or manifest['format'] not in (\n             'pointcloudmaterials.shooting_trajectory', 'pointcloudmaterials.temporal_lammps_trajectory'):\n         raise ValueError(f'Unsupported or incomplete trajectory: {path}')\n-    result = {}\n-    for name in ('positions', 'atom_ids', 'atom_types', 'timesteps', 'box_low', 'box_high'):\n-        spec = manifest['arrays'][name]\n-        value = np.load(path / spec['file'], mmap_mode='r', allow_pickle=False)\n-        if list(value.shape) != spec['shape'] or value.dtype.name != spec['dtype']:\n-            raise ValueError(f'Changed {name} schema: {path}')\n-        result[name] = value\n+    result = {\n+        name: np.load(path / manifest['arrays'][name]['file'], mmap_mode='r', allow_pickle=False)\n+        for name in ('positions', 'atom_ids', 'atom_types', 'timesteps', 'box_low', 'box_high')\n+    }\n     if np.any(result['atom_types'] != 1):\n         raise ValueError(f'Pure-element source contains unexpected atom types: {path}')\n     return result\n@@ -37,15 +37,10 @@\n     a = arrays(part['path'], part['manifest_sha256'])\n     box = a['box_high'][raw_frame].astype(float) - a['box_low'][raw_frame].astype(float)\n     points = np.mod(a['positions'][raw_frame].astype(float), box)\n-    if np.any(box <= 0) or not np.isfinite(points).all():\n-        raise ValueError(f'Invalid frame geometry: {source[\"id\"]}/{frame}')\n     return points, box\n \n \n def frame_geometry(raw, frame):\n     box = raw.box_high[frame].astype(float) - raw.box_low[frame].astype(float)\n     points = np.mod(raw.positions[frame].astype(float), box)\n-    if not np.isfinite(points).all() or np.any(box <= 0):\n-        raise ValueError(f'Invalid periodic geometry: {raw.root}, frame {frame}')\n     return points, box\n-\n"
+  },
+  "final_sequence": {
+    "implementation": {
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/gpu_extract.py": "e4e1b0394ec5fe1f963a1d7d297902182ff6383dba3a74d894c75a9339e1b29c",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/io.py": "de55ac0a1443728b18589408f45015cccf524e4f752b885e6ca1d2730a3407b5",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/__init__.py": "f373d44bcd996e0cae483a8ad6f0781032f0363141d42e6b04cae052c4ae25a7",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/kernels.cu": "eded67fd0dd0db957eb67d879ab2e2d87e6b880cb4758ebe0ad3373529e6a7db",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm.py": "d118308eaf257d96c6db84677677c5f9f976aac6b0246864ab60aa44be65f77d",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm_kernels.cu": "5a04a648f0d52c34520249d0524b6eacd02176cfd8bb095d2d9dddae6271ce23",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/LICENSE": "b9f798871d41ffda918baf33457efd0f19c4053b609b2b39765006355546da0d",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/PROVENANCE.json": "512054957c08f09935368c7dfd607f6469ccfe27e0c435cab93e3528d28204c9",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.cuh": "70c8f4ce20a6fac8e124cd487458ab07fc278b153997730915a247230f8278f9",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_canonical_coloured.h": "e73de89301491ced44e8ce3b9fa2fa3a18fcae73fdbc8883c4e0fec3d8ac8e7f",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_constants.h": "fe1fbb181e609a47ad66540f722744e82971332d98fa262890a892a98c98d760",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.cuh": "7c023fd86113c052ddaea42e267307f05b9b1173fc9237c7cd790e04fa43bdcf",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_convex_hull_incremental.h": "cafbc2b336548b1d4d629cc7f5d370fd889409821247c894418675e91b8b2155",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.cuh": "076b8dde98e5f668015f9d4647c03d8edcc07aa2caeb8d34d0629f8f27581dd7",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_graph_data.h": "fd0606909869bc273e28e2f813e81a2dc286bc17b8d9561b3dd523c27b3ab1d2",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.cuh": "791662c79fb6c2938f2af8e0f038d6ea716de74009ee27a81574348584785133",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_graph_tools.h": "24e9390cec10dfb4ebce9a21db76094e8ef59a435eb63cabfa54c8184d3e54dc",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_initialize_data.h": "b622c2ea5839f671594b4c2f8f16044b0ef96992984b8df66d23a5cda8e03afd",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.cuh": "f217265fcc48e1f224c4ef83ec60fb90c54cd1f7b02a57ce4e02912e380ea5d7",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_normalize_vertices.h": "4dd803f590e84af144fcc822652085d3dc7b3194f790d8b617ede65ca8d47cbd",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_polar.cuh": "a8386c01fceef228b48f51d6ef86a097b3fee3c723b257ceb8c2289d687d9d6a",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_polar.h": "0fcc2f16e16e9ad45654560520326d5b5698f15fe252d3cd297c2eeb7d48cc35",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.cuh": "70ea9d238572af089a2af8d17d1f10d5d6d4424aa11cb729c91081a5432b6d98",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_structure_matcher.h": "e4530299960b975974654bfed45de7c073dca4a515d9ca01dac23ddfef9c5463",
+      "/home/infres/vmorozov/PointCloudMaterials/src/postprocessing/descriptors/gpu/ptm/ptm_templates.h": "9735915f778db702b363ab80bfc1affb55dc2b1d85c9dad4204cdc11497d56c2"
+    },
+    "numerical_results": "Inherited unchanged from source_audit; no new GPU benchmark or numerical validation executed"
+  }
+}

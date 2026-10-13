@@ -1,5 +1,22 @@
 # Working rules
 
+- Dataset split default (user instruction, 2026-10-13): new experiments use only
+  train and test. Preserve the declared training ancestry; map every former
+  selection/validation/calibration/evaluation role to test, without carving out
+  a new inner selection set. Fit transforms on train only. Freeze training
+  budgets, hyperparameters and checkpoint rules before test evaluation; do not
+  use test scores for selection, calibration or early stopping. Keep original
+  roles as provenance and preserve historical/running recipes and results.
+  This default supersedes older multi-split guidance for new experiments.
+
+- Ni relaxation default (user instruction, 2026-10-11): use a maximum absolute
+  force-component tolerance of 0.05 eV/Angstrom for new Ni relaxations. Start
+  new recipes from `configs/simulation/ni_relaxation_default.json` and record
+  the explicit settings in each frozen plan. Keep float64 minimizer states and
+  float32 GPU force arithmetic. Historical/running recipes and declared
+  tolerance comparisons retain their own values; do not relabel cached minima
+  or change existing training targets to the new tolerance.
+
 - Autonomous experiment queues (user instruction, 2026-10-11): submit a concrete
   detached training queue and verify actual training/checkpoint progress before
   relying on any scheduled chat review. A review may steer follow-up work, but

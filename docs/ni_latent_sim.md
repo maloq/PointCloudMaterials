@@ -1,5 +1,53 @@
 # First compressed Ni simulator experiments
 
+## Fixed structural/velocity measurement prototype, October 11
+
+`src/research/ni_latent_sim/measurements.py` implements the proposed 17 fixed
+velocity outputs directly from physical Q,V: three shell averages each of signed
+radial speed, squared radial speed and squared tangential speed; instantaneous
+rates of four smooth bond-order powers (l=2,4,6,8); and local dilation, squared
+shear, squared rotation and non-affine residual velocity power. These targets
+do not use eSEN or learned parameters. They are a prototype, not a revision of
+the targets of any recorded scientific fit.
+
+The input contract is `[batch, atoms, 6]`, central atom first, Angstrom and
+Angstrom/ps, consistent periodic images. Both Q and V are centred on that atom.
+The producer must supply every atom within 5.5 Angstrom; an arbitrary nearest80
+cap without sufficient outer support does not establish smoothness. The radial
+windows are centred at 2.5/3.5/4.5 Angstrom with width0.45, multiplied by the
+existing C2 cutoff. The affine fit uses a fixed1e-4 Angstrom-squared ridge.
+Bond-power rates are forward-mode directional derivatives at fixed membership
+and fixed instantaneous box. A full NPT time derivative additionally requires
+the box-motion contribution consistent with the stored velocity convention.
+There is no explicit temperature, simulation age or observation-time input.
+
+The original 198-column panel contains40 BO,45 CNA and113 TDA values. A proposed
+continuous replacement for CNA reuses `SmoothDensity.power` with four radial
+channels and l=0..6: four radial moments plus70 angular power components. This
+is a smooth density power spectrum related to SOAP, not an exact SOAP/CNA
+implementation or a crystal-template classifier. Its speed alone does not
+establish predictive quality. Original hard-neighbor BO statistics and discrete
+TDA components still require separate treatment for derivative supervision.
+
+Reproduce the local numerical/throughput benchmark in pointnet-torch214:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1 python -m src.hardware_benchmark.ni_measurements \
+  --parent /store/PERSO/vmorozov/experiments/ni_response/unrelaxed-esen-20261009-v1 \
+  --output output/ni_latent_sim/measurement-prototype-20261011-v1 --compile
+```
+
+The benchmark reuses1024 existing training-role Ni neighborhoods, undoing their
+recorded material length factor to recover native units. It records source
+hashes, columns, physical input hashes, precision, compile/setup costs and raw
+timings in `technical/results.json`. No training, W&B run or MD continuation is
+created. On RTX PRO6000 Blackwell, warmed compiled FP32 timings were0.683ms per
+1024 neighborhoods for all17 velocity outputs and0.326ms for density74. Eager
+times were5.389ms and0.577ms respectively. Data loading, TDA, MD and neural
+training are excluded. The velocity audit checked FP32 against FP64, rigid
+rotation/translation and uniform velocity boost invariance, and agreement of
+the bond-power rates with centred numerical derivatives on real Ni patches.
+
 ## Additional GPUs, October 11
 
 `configs/ni_latent_sim/scale_overnight_20261011.json` requests four additional
@@ -379,3 +427,51 @@ repair and revised implementation hashes remain in `publication-repair.json`.
 The detached status publisher reconciles the recovered stage only after all
 independent evaluation stages have completed. No data-identity or finite-value
 checks were disabled. The optional six-hour review now points to this execution.
+
+
+## Prediction viewer, October 11
+
+`src/research/ni_latent_sim/viewer.py` exports held-out trajectory forecasts from
+a specified frozen implementation and the stored birth-probe probabilities. Run
+the file directly with conda `pointnet-torch214`, `TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1`,
+an idle CUDA device, and `--bundle`, `--output`, `--fragment`. `--stage export`
+performs inference; `--stage render` rebuilds the view from the existing JSON
+without rerunning predictions. The sibling `viewer.html` is the maintained inline
+template. No model is fitted or selected, and no W&B run is created.
+
+The current four completed1-ps models are compared on12 examples: four fixed-hash
+rows from distinct held-out ancestors within each existing growing-front,
+liquid–liquid and original regime. All follow one central atom through time.
+Example choice does not depend on model errors. Thirty-two stochastic neural
+paths yield particle means and pointwise5–95% predictive bands including the
+diagonal decoder noise. These are model distributions, not independent MD
+continuations or confidence intervals on a measured physical outcome law.
+The frozen validation-NLL checkpoints and common initial random streams are
+recorded. Exact5-fs neural outputs are shown for the first100fs, then every100fs
+to6ps; MD observations remain at their native100fs cadence, with visual guide
+segments only. The predicted decoder output at time0 is shown explicitly.
+
+Quantities: the producer's inner-shell l=6 angular power (not conventional PTM
+or crystalline fraction), radial bin5 weighted density, and PC1 of the frozen
+128-dimensional structural feature vector. PCA is fitted only on training-row
+present structures and explains3.67% of their standardized feature variance.
+The second plot shows128-feature normalized MSE at the saved observation times.
+No atomic-coordinate decoder or reconstructed atom movie is implied.
+
+The birth view shows all980 held-out64-atom rows or1600 held-out32-atom rows at
+1/3/6ps lead for either seed. Every model is aligned by exact stored row identity,
+ancestry, event, pair, label and weight before export. Clicking a probability
+comparison point or moving its input selector shows both models' probabilities
+and the recorded binary outcome. Descriptive calibration curves use ten fixed
+probability bins and the original event weights. Official metrics are retained
+unchanged; rendering rounds trajectory values to4decimals and probabilities
+to5decimals. Preserve the models' different batch/update histories when comparing.
+
+Canonical artifact:
+`/store/PERSO/vmorozov/experiments/ni_latent_sim/autonomous-overnight-20261011-v1/analyses/prediction-viewer-v1/`.
+`plots/ni-predictions.html` is the inline fragment; `technical/` contains its
+source, data, full checksums, input/checkpoint provenance and browser review.
+
+## Direct-measurement successor (October 11)
+
+The new [measurement-space workflow](measurement_sim.md) removes the learned spatial encoder, latent compression and observation decoder. It reuses the fixed-atom native sequences and physical response bank with direct BO/TDA/density/velocity values, connected trajectory losses and paired held-out sensitivity controls. Existing latent runs retain their original definitions.

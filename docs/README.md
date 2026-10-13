@@ -1,148 +1,40 @@
-# Project documentation
+# Documentation
 
-- [Compact Ni latent simulator](ni_latent_sim.md): compression, memory, simulator responses and empirical full-cell lifting.
+- [Ni phase-space prediction](ni_phase_sim.md):detached12-hour dense trajectory/latent-tangent queue.
 
-- [Ni quench repeatability](ni_relaxation_repeatability.md): force-order and minimizer-sensitivity diagnostics on matched full cells.
-- [Relaxed Ni response comparison](ni_relaxed_response.md): original dynamics with quenched observations and matched birth labels.
+Start with the [research guide](encoder_research/README.md) for scientific findings and the next experiments. Use the task guides below for execution, data and reference contracts.
 
-- [Ni unrelaxed eSEN response](ni_response.md): simulator derivatives, saved futures and separate appearance/32/64-atom prediction tasks.
+## Working with the project
 
-- [Spatial encoder comparisons](spatial_esen.md): common data, architecture-appropriate widths,
-  12-epoch fitting and measured training speed against MACE.
-  Includes the [MACE angular2/correlation2 ablation](spatial_esen.md#mace-angular2correlation2-ablation-october-8).
-  The [TensorNet replacement](spatial_esen.md#tensornet-replacement-october-8)
-  follows MACE with the same 12-epoch spatial training schedule; the unstarted
-  eSEN-3.2M submission is preserved as superseded.
+| Task | Start here |
+| --- | --- |
+| Install or move to another machine | [Portable setup](portability.md) · [Environments](../environments/README.md) |
+| Train, resume or evaluate | [Workflows](workflows.md) · [Maintained commands](../scripts/README.md) · [Recipes](../configs/README.md) |
+| Analyze saved observations | [Analysis and visualization](analysis_visualization.md) · [Postprocessing](postprocessing.md) |
+| Find or publish existing results | [Results system](research_results_system.md) · [Result layout](research_layout.md) |
+| Locate data or reuse relaxation | [Dataset registry](../DATASETS.md) · [Storage and relaxation index](data_storage.md) |
+| Inspect simulation protocols and records | [Simulation catalogue](simulations/README.md) |
+| Inspect current Ni dynamics work | [Completed methods diagnostics](ni_motion_diagnostics.md) · [Direct measurement-space simulator](measurement_sim.md) |
 
-- [Post-simulation analysis module](postprocessing.md): shared descriptors,
-  nuclei searches, datasets, precursor histories and visualization, with one CLI.
+## Research reading path
 
-- [Nuclei search performance](nuclei_search_performance.md): measured acceleration,
-  exact-output checks, and cooperative tail workers.
+| Page | What it answers |
+| --- | --- |
+| [Evidence summary](encoder_research/evidence.md) | What has been measured, what did not work, and which conclusions remain limited |
+| [Methods and open hypotheses](encoder_research/methods.md) | How to distinguish and address H1–H8 and S1–S6 |
+| [Experiment plan](encoder_research/experiment_plan.md) | What to evaluate first and which results justify further fitting or physical data |
+| [Literature and related implementations](encoder_research/literature.md) | What primary research and inspected code contribute, with transfer limits |
+| [Research principles](encoder_research/principles.md) | Shared observation, population, input and evidence rules |
 
-- [GPU structural extraction](postprocessing_gpu.md): CUDA PTM, bounded streaming and GPU/CPU timing
-  and numerical comparisons, with production-adoption limits.
+## Exact references
 
-- [Spatial target preparation](target_preparation.md): native batched rich TDA,
-  bond-order and CNA targets, compact 198-column caches, timing and numerical agreement.
+[Dataset guide](../DATASETS.md) · [Dataset catalogue](datasets/README.md) · [Metric definitions](metrics/) · [Scientific implementation](../src/research/README.md) · [Working rules](../AGENTS.md)
 
-- [Spatial training with 20% Ni](datasets/spatial_ni20.md): 1,320,960 fitting
-  neighborhoods, original ancestry splits, Ni normalization and 198 target columns.
-  The [crystal/interface extension](datasets/spatial_ni_enriched.md) adds 52,838
-  targeted Ni observations, giving 1,373,798 training neighborhoods.
+The [all-Al overview](al_research_pool.md) records the broad data scope. The [birth catalogue](datasets/nuclei_birth.md) defines distinct native cadence protocols. Availability is determined by current registry and producer receipts; historical source IDs do not establish that raw trajectories are retained.
 
-- [Four Ni birth visualizations](ni_birth_visualizations.md): confirmed examples
-  from saved 0.1 ps trajectories, precursor histories, property plots and GIFs.
+<details>
+<summary>Detailed study reports, earlier theory and operational history</summary>
 
-- [Continuous motion from sparse Al snapshots](continuous_motion.md): matched
-  fixed-step, continuous and MEAM derivative-supervised latent dynamics.
+The [archive and source index](archive/README.md) routes the original reports through topic summaries. Existing paths, frozen result exports and exact metric contracts remain the evidence record. Dated execution reports retain their observation cutoffs.
 
-- [Revised Al embryo birth and fate search](al_nuclei_lineage.md): reuse frame
-  classifications and separate origin, growth, coalescence and dissolution.
-
-- [All Al cluster birth searches at separate exact cadences](al_nuclei_search.md)
-
-- [Unified relaxed-data index and compute-only-missing API](data_storage.md#unified-relaxation-index)
-
-- [All Al data pool and selectable appearance/fate cohorts](al_research_pool.md)
-
-- [Six frame appearance prediction from native dense Al trajectories](birth_dense010.md)
-
-- [Ta nucleus event movies and local trajectories](ta_nucleus_crops.md)
-
-- [Al shooting appearance transfer and nucleus fate prediction](al_shooting_prediction.md)
-
-- [Ta full-cell birth and dissolution search](ta_births.md)
-
-- [Al shooting full-cell birth and dissolution search](shooting_births.md)
-
-- [Local shooting predictive baseline: jointly trained MACE128 and fixed future statistics](predictive_baseline.md)
-
-- [Code cleanup review and prioritized implementation backlog, 2026-09-29](code_cleanup_review_20260929.md)
-- [Implemented shared execution and artifact methods](code_cleanup_implementation.md)
-
-- [Multimaterial MACE256 local descriptors: normalized residual head, 60 epochs](rich_multimaterial_encoder.md)
-
-[RD-MACE256-L3-Z256](rich_descriptor_encoder.md): larger/deeper MACE learns all rich descriptors over 60 complete raw-data passes.
-
-[Liquid sensitivity and paired relaxation](liquid_controls.md): generated-label controls, rich-feature MACE learning and original/relaxed label comparisons.
-
-
-[Rich liquid descriptor controls](liquid_descriptors.md): TDA, bond order, CNA, geometry, gradient boosting and MLP.
-
-
-- [Liquid structure predictability](liquid_predictability.md): detached CPU/GPU study, physical profiles, fixed-source comparisons and practical-effect bounds.
-
-- [Joint MACE distance encoder](distance_encoder.md): large multi-material training, early spatial detection loss, detached execution and context-predictor follow-up. [Trainable MD history](distance_encoder_history.md) adds tracked-atom history and a repeated-current control.
-
-- [Research results system and commands](research_results_system.md): grouped historical galleries, explicit result records, evidence verification and catalogue refresh.
-
-- [Local-order figures over saved clusters](analysis_visualization.md#local-order-figures): sparse representatives, highlighted PTM matches, and population/multiple-sample diagnostics in the existing cluster style.
-
-- [Latest native MACE quality evaluation](encoder_quality.md): static liquid/interface structure, geometric and noise controls, matched predictive readouts and information add-back.
-
-- [Research results system: audit and proposal](research_results_system_proposal.md): analysis bundles, structured galleries, explicit experiment identities and a staged migration of existing evidence.
-
-- [GeoFrame checkpoint evolution and Ta/Zr structured-liquid regions](geoframe_evolution.md)
-
-- [Encoder research handbook](encoder_research/README.md): GeoFrame-to-current training methods, evaluation protocols, searchable results database, analysis tools and workflow improvements.
-
-- [Synthetic storage, LAMMPS CPU and GPU hardware benchmarks](hardware_benchmark.md)
-
-- [Causal native MACE: atom-level geometry, motion and history](mace_causal.md)
-
-- [Research glossary: terms specific to our local-state methods and comparisons](research_glossary.md)
-- [Discarded frozen-state smoothness experiment](mace_local_smooth.md)
-- [Current research and retained checkpoints](research_retention.md)
-- [Archived research on STORE](archived_research.md)
-- [Discarded frozen-encoder maps: scope and preserved artifacts](discarded_frozen_encoder_maps.md)
-- [Active configs, analysis templates and retired recipes](../configs/README.md)
-- [Data storage](data_storage.md) and [portable setup](portability.md)
-- [Encoder-only transfer selection](encoder_transfer.md)
-- [Simulations, collection catalog and run records](simulations/README.md)
-- [Research/result layout and metric definitions](research_layout.md)
-- [Run registry and retention commands](output_registry.md)
-- [Maintained workflow details](workflows.md)
-- [Shared-pretraining W&B metric layout](shared_pretraining_logging.md)
-- [Current local structural GATr and MACE](shared_pretraining_local_structure_20260918.md)
-- [Historical temporal-only backtracking continuation](shared_pretraining_temporal_backtracking_20260918.md)
-- [Five-epoch mixed MACE with equivariant bond-order supervision](shared_pretraining_mace_bond_order_20260918.md)
-- [Source refactor scope and validation](src_refactor.md)
-
-Scientific experiment records belong in [experiments/](../experiments/README.md).
-Operational changes, simulation campaigns and dataset inventories belong in this
-`docs/` tree; they are not new experiments.
-- [Discarded frozen-map consecutive-motion experiment](mace_local_motion.md)
-
-- [Native MACE data-amount study](mace_data_amount.md): actual encoder training across independent-source counts on the allocated H100.
-
-- [H200 causal MACE experiment and portable handoff](mace_causal_h200.md)
-
-- [Causal MACE GPU execution and expanded-data handoff](mace_causal_runtime.md).
-
-- [Expanded-data MACE on both node61 GPUs](shared_pretraining_mace_expanded_dual_20260919.md): immutable dynamic sampling, complete TDA, global two-GPU replay and detached dependency.
-
-- [Two-GPU MACE pipeline optimization](shared_pretraining_mace_dual_optimization_20260919.md): process prefetch and verified checkpoint continuation.
-
-- [Expanded MACE crystallization transfer execution](crystallization_transfer_20260919.md).
-- [Literature-guided frozen-MACE forecast queue](crystallization_followup.md).
-
-[Structural-path crystallization queue](crystallization_paths_20260919.md): detached local state trajectory forecasts and future-center cache.
-
-- [Historical neighborhood JEPA execution](neighborhood_jepa_20260920.md): retained data and encoder readers; conditional training is retired.
-
-- [Historical neighborhood JEPA v2 execution](neighborhood_jepa_v2.md)
-
-- [Historical neighborhood JEPA regularization](neighborhood_jepa_regularization.md): encoder export controls remain; conditional training is retired.
-
-- [Liquid geometry diagnostic workflow](liquid_geometry.md): frozen inputs, CPU metric experiments and native GPU checkpoint inference.
-
-- [Historical structural-state studies](structural_state.md): shared geometry and physical diagnostics remain; reconstruction training is retired.
-
-- [Broad encoder snapshot screen](encoder_screen.md): queue, cached analyses, and native input contracts.
-
-[Historical encoder parameter search](encoder_parameter_search.md): recorded28-fit campaign and retained saved-result analysis. The mixed reconstruction training queue is retired.
-
-- [Paired MACE + Epi](mace_epi.md): submit/resume the matched24-pass encoder comparison and native structural/future analysis.
-
-- [Architecture retirement, 2026-09-30](architecture_retirement.md): removed trainers, retained dependencies, historical source preservation and metric contracts.
+</details>

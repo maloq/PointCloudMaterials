@@ -1,5 +1,8 @@
 # Nuclei and prestructured liquid: methods and current limits
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](literature.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Literature and implementation review, 26 September 2026. No label definitions,
 running simulations or historical results changed by this review.
 

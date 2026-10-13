@@ -1,5 +1,8 @@
 # GeoFrame v3: literature review and architecture proposal
 
+> **Reading guide — 11 October 2026:** This earlier review is retained in full as a source record. Start with the [maintained synthesis](encoder_research/literature.md) for the current interpretation, transfer limits and proposed follow-up. The observations and proposals below retain their original status.
+
+
 Configuration note (2026-09-13): the older recipes named below are preserved in
 the [verified config archive](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/). Restore their full dependency tree
 in a historical checkout to reproduce those commands. See the

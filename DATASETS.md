@@ -1,5 +1,38 @@
 # Datasets: start here
 
+**Ni phase-model birth readouts (October 13):** `ni-phase-birth-probes-20261013`
+reuses the original sixty-source nucleus assay and adds the completed thirty-source
+October 12 catalogue. Exact 1/3/6 ps leads, persistent 32/64-atom nuclei, and
+the phase models' 28-train/62-test ancestry. [Workflow](docs/ni_phase_sim.md#nucleus-readout-follow-up).
+
+**Dense Ni phase-space teachers (October13, complete):** `ni-phase-nve-20261013` contains630 deterministic100-fs full-cell continuations for direct Q,V and latent-tangent learning, with fixed80 atom identities every5fs. Train320/28 sources; test310/62, preserving the pooled split. [Workflow](docs/ni_phase_sim.md).
+
+
+**Ni density rates and physical-source expansion (October13, preparing):**
+`ni-density-rates-measurements-20261013` reuses300 physical anchors and adds451,
+with original244 future measurements plus74 initial density-rate features.
+`ni-density-rates-response-20261013` stores the new100-fs full-cell continuations.
+Training banks are80/16,320/16 and320/28 states/sources;310 test anchors cover all
+62 nontraining sources. New experiments default to train/test only, preserving
+all original roles as provenance. [Workflow](docs/measurement_sim.md#density-rates-source-expansion-and-smaller-steps--october-13).
+
+**Thirty additional Ni melts (October 12, simulations complete):**
+`ni-births-lowT-010-20261012` adds five fresh 32,000-atom sources at each of
+950/1000/1050/1100/1125/1150 K. All 30 sources completed, with 73,780 frames and
+7.375 ns summed production history. New source IDs and seeds
+are disjoint from the previous 60 sources, with 12 train / 6 selection / 12 test
+roles fixed in advance. Positions and velocities are saved every 0.10 ps;
+holds are capped at 400 ps, with the existing crystallinity stop.
+`ni-lowT-20261012-gpu-full-v1` is the GPU descriptor and CPU lineage search,
+requeued after a missing frozen audit file stopped the initial extraction;
+new birth counts are not yet available. [Protocol and current job receipts](docs/simulations/ni_births_lowT_010_20261012.md).
+
+**Direct Ni measurements (October 11):** `ni-direct-measurements-20261011`
+contains 14,400 existing fixed-atom sequences remeasured as BO40/TDA113/density74/velocity17,
+plus 300 dense physical-response anchors. No learned encoder or new MD; ancestry, roles
+and native cadences are retained. See [workflow](docs/measurement_sim.md).
+
+
 **Dense Ni response paths (October11, complete):**
 `ni-dense-path-response-20261011` retains physical local80 values and tangents
 every5fs through100fs from the original300 anchors and60 Ni sources. It reuses
@@ -396,3 +429,9 @@ Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent sh
 **Planned fast Al256 response collection:** `response-atlas-al256-training-fast-20261002` registers the new float32/cuEquivariance default, with the same 56 generating geometries as October1 and separate stochastic streams. This is a registered recipe, not a completed collection or new independent ancestry; see [the workflow](docs/response_atlas.md#default-for-new-al256-response-runs).
 
 Birth-centred history supplement: `al-nuclei-birth-010-histories-v1` is collecting 295 original established-birth records, with precursor tails and appearance-observation links. It does not add nucleus events. See [definitions and access](docs/datasets/nuclei_birth_histories.md).
+
+**Ni phase-model observed histories:** `ni-phase-history-native4-20261013` adds
+exact native Q,V at -0.3/-0.2/-0.1/0 ps to all630 existing phase teachers and
+19652 unique nucleus inputs. Same current80 atom IDs and28 train/62 test source
+ancestors; no additional MD or independent trajectories. See
+[history workflow](docs/ni_phase_sim.md#history-attention-workflow).

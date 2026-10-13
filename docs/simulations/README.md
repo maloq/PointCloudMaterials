@@ -1,5 +1,15 @@
 # Simulations and datasets
 
+- [Dense deterministic Ni response observations](ni_phase_nve_20261013.md):630 full-cell100fs continuations for atomic Q,V and latent tangent prediction.
+
+[Thirty additional Ni crystallization runs](ni_births_lowT_010_20261012.md):
+30 fresh 32,000-atom melts over the existing six low-temperature settings,
+six A40 workers, a 400-ps hold cap, and dependent GPU birth extraction.
+
+New Ni relaxations default to a maximum force-component tolerance of
+**0.05 eV/angstrom**; use the [current settings preset](../../configs/simulation/ni_relaxation_default.json).
+Historical campaigns keep their recorded tolerances.
+
 [Ni birth-window GPU relaxation](ni_birth_relaxation_20261008.md): full periodic
 fixed-box FIRE for native 0.10 ps windows from -6 to +6 ps around all 70 currently
 catalogued established liquid-origin Ni births; shared native-state cache,

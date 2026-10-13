@@ -1,5 +1,20 @@
 # Simulation recipes
 
+[`ni_births_lowT_010_20261012.json`](ni_births_lowT_010_20261012.json):
+30 additional independent Ni melts, five each at 950/1000/1050/1100/1125/1150 K,
+six GPU workers, native 0.10 ps Q/V and a 400-ps target-temperature hold cap;
+[protocol, launch and dependent GPU birth search](../../docs/simulations/ni_births_lowT_010_20261012.md).
+
+[`ni_relaxation_default.json`](ni_relaxation_default.json): current settings
+preset for new Ni relaxations (user decision, October 11): fixed-cell FIRE,
+maximum absolute force component 0.05 eV/angstrom, float64 minimizer states
+and float32 GPU forces. Copy its explicit `relaxation` settings into a new
+campaign's `relaxation` or response experiment's `quench_settings` before
+freezing the plan. This is a settings preset, not a campaign launch config.
+Historical dated recipes retain their original tolerances. The shared index
+includes the tolerance in recipe identity, so cached minima retain their
+actual settings. [Decision and comparison](../../docs/simulations/ni_relaxation_speed_20261011.md).
+
 [`ni_birth_relaxation_20261008.json`](ni_birth_relaxation_20261008.json):
 full-cell FastNi GPU/FIRE relaxation of -6 to +6 ps established-birth windows,
 native 0.10 ps observations, two GPU workers and indexed native restarts;

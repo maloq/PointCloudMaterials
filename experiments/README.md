@@ -1,223 +1,40 @@
-# Current research
+# Scientific research
 
-- [Continuous motion between sparse Al observations](continuous_motion_20261006/README.md):
-  real-velocity latent dynamics, short simulator derivatives and0.1–12ps futures.
+- [Dense Ni phase-space and tangent prediction](ni_phase_sim_20261013/README.md): direct atomic dynamics versus learned latent evolution and physical/latent derivative supervision.
 
-- [Predictive baseline follow-up with MM-TDA-BLOCK-DIRECT-FULL](predictive_baseline_20261001/FOLLOWUP.md): matched nonlinear heads, moment/Fourier supervision and positive variance.
+Use the [evidence summary](../docs/encoder_research/evidence.md) to understand the accumulated findings, [methods](../docs/encoder_research/methods.md) to interpret the outstanding questions, and the [experiment plan](../docs/encoder_research/experiment_plan.md) to choose the next discriminating work.
 
-- [Value-only predictive representations from repeated Al shooting](predictive_baseline_20261001/README.md): three trainable MACE128 seeds, 274 fixed future features, frozen controls and source-paired uncertainty.
+**Review date:** 11 October 2026. A dated directory names a study; it does not certify that every proposed arm completed or that its data remain available.
 
-[Relaxed versus MD birth histories](birth_prediction_20260930/RELAXED.md):
-matched full-cell quenches, frozen encoders and explicit train/test predictive errors.
+## Research questions and source protocols
 
-- [Response-atlas feasibility: shooting precision, known-law mechanisms and full-cell MACE responses](response_atlas_20261001/README.md).
+| Question | Consolidated evidence | Detailed entry points |
+| --- | --- | --- |
+| What do motif benchmarks and early theory establish? | [Motifs and theory](../docs/encoder_research/evidence.md#motif-and-theory) | [Manuscript](../paper/main.tex) · [GeoFrame evolution](geoframe_evolution_20260923/README.md) |
+| What structure does an exported representation retain? | [Representations](../docs/encoder_research/evidence.md#representations) | [Encoder quality](encoder_quality_20260926/RESULTS.md) · [Mechanism study](encoder_mechanisms_20260926/COMPLETED-RESULTS.md) |
+| What do history and surrounding observations add? | [Memory and context](../docs/encoder_research/evidence.md#memory-and-context) | [Early embedding forecasts](embedding_forecast_20260911/README.md) · [Predictive memory](predictive_memory_20260917/README.md) |
+| Does alignment or clustering remove useful liquid structure? | [Alignment and partitions](../docs/encoder_research/evidence.md#alignment-and-partitions) | [Spatial VICReg](spatial_vicreg_bias_20260929/RESULTS.md) · [Liquid predictability](liquid_predictability_20260928/README.md) |
+| Are we predicting arrival, local birth, persistence or fate? | [Birth and fate](../docs/encoder_research/evidence.md#birth-and-fate) | [Birth-history study](birth_prediction_20260930/README.md) · [Structural response / appearance](structural_response_20261007/README.md) · [Canonical birth contract](../docs/datasets/nuclei_birth.md) |
+| What physical information does response supervision add? | [Simulator response](../docs/encoder_research/evidence.md#simulator-response) | [Response atlas](response_atlas_20261001/README.md) · [Local response](local_response_20261003/README.md) · [Continuous motion](continuous_motion_20261006/README.md) |
+| How well do Ni compressed models describe future observations? | [Nickel dynamics](../docs/encoder_research/evidence.md#nickel-dynamics) | [Ni response](ni_response_20261009/README.md) · [Ni latent simulator](ni_latent_sim_20261010/README.md) |
 
+## Next work
 
-[Physical distributions of shooting futures](shooting_laws_20260930/README.md):
-matched frozen readouts on 480 Al futures, proper likelihood and split-shot
-reliability; separate thermostat, nested-Al and Ta diagnostics.
+The [E0–E9 plan](../docs/encoder_research/experiment_plan.md) begins with data/metric contracts, population accounting and frozen-model diagnostics. Model/loss updates and new physical shots depend on those findings. Proposed work remains distinct from completed evidence.
 
-[Completed spatial VICReg mechanism study](spatial_vicreg_bias_20260929/RESULTS.md):
-nine 24-pass fits separate spatial contraction from global clustering failure.
-Continuous liquid-structure readouts improve while K=7 cluster information
-disappears; all-phase descriptor associations are largely reproducible by
-classical phase-field controls.
+The bounded [Ni E0/E2/E3/E4 stage](ni_latent_sim_20261010/METHODS_DIAGNOSTICS.md) is now complete. Read its [findings and remaining questions](../docs/encoder_research/evidence.md#ni-methods-diagnostics) before selecting a training remedy; E1 and the other stages are not implied complete.
 
-[Rich structural descriptor baseline](liquid_predictability_20260928/DESCRIPTORS.md): fixed geometry features and validation-selected distance distributions.
+New birth studies use the consolidated 0.10-ps protocol; the native 0.30-ps protocol is separate. Historical Al64/source ancestry and retained historical results do not imply availability of the deleted original 0.75-ps production histories. Consult [DATASETS.md](../DATASETS.md) before choosing inputs.
 
+## Reproduction and result publication
 
-[Liquid structure predictability](liquid_predictability_20260928/README.md): proper
-distance scores, physical profiles, frozen/joint MACE, source learning curves and
-a crystal-visible positive control on the fixed Al64 cohort.
+[Maintained commands](../scripts/README.md) · [Scientific implementation](../src/research/README.md) · [Results system](../docs/research_results_system.md) · [Calculation contracts](../docs/metrics/) · [Research principles](../docs/encoder_research/principles.md)
 
-[Liquid-only external-crystal localization](crystal_interface_20260928/LIQUID_DISTANCE.md):
-joint encoder/context VCReg training from uncrystallized observations; absent
-crystals evaluated separately, with original-row and constant-distance controls.
+Keep questions, protocols, findings and reproduction configurations here. Operational procedures and storage records belong in [docs](../docs/README.md); simulation campaigns and inventories have their [own catalogue](../docs/simulations/README.md).
 
-[Interface-model feature dominance](crystal_interface_20260928/FEATURE_DOMINANCE.md):
-strong phase-related directions, frozen-predictor ablations and held-out readouts.
+<details>
+<summary>Full study history and earlier reports</summary>
 
-[Interface-invisible adaptation](crystal_interface_20260928/UNSEEN.md) retains
-VCReg and expands the existing trajectories; [previous-run overfitting and feature audit](crystal_interface_20260928/OVERFITTING.md).
+Use the [archive/source index](../docs/archive/README.md) or [generated study catalogue](../docs/encoder_research/studies.md). Original source paths and exported result definitions remain intact. Earlier negative results and superseded unrun proposals retain their different statuses.
 
-[Crystal-interface localization](crystal_interface_20260928/README.md): distance
-and direction to the edge from both crystal interior and liquid, with a separate
-uniform held-out interior track and matched VCReg/control treatments.
-
-[Joint spatial crystal localization](crystal_vector_20260928/README.md): shared
-equivariant MACE and vector context, current distance/direction, VCReg, and
-independent random batches on fixed Al64 sources; supersedes fixed distance quotas.
-
-[Six-observation MD histories](distance_encoder_20260926/DENSE_HISTORY.md): nominal 0.75-ps all-data (actual 0.75/0.70) and exact 0.10-ps ancestry-transfer experiments; jointly train encoder and distance predictor.
-
-[MD history for crystal-front distance](distance_encoder_20260926/HISTORY.md): same tracked atom at -6/-3/0 ps; encoder and predictor fine-tuned together; matched repeated-current control.
-
-[Encoder mechanisms: matched execution queue](encoder_mechanisms_20260926/README.md)
-audits completed positive/negative evidence, then isolates geometric-reference
-retention, paired alignment, supervised adaptation and regional birth information.
-Proposal only; no training submitted by this review.
-
-[Joint distance encoder](distance_encoder_20260926/README.md): 12.75M dynamic
-Al/Mg/Ti/Ta neighborhoods, trainable MACE and distance head, early spatial
-likelihood and distributed batch 4096; followed by vector/harmonic readouts.
-
-[Continuous crystal distance](spatial_distance_20260926/README.md): direct distance
-likelihood, uniform spatial-center augmentation and a visibility-only control;
-[fixed-confidence results](spatial_distance_20260926/CONFIDENCE_RESULTS.md).
-
-[Spatial approach to a crystal](spatial_approach_20260926/README.md): five matched
-fixed-snapshot distance predictors and warning-distance scans with visibility
-and far-path controls; observed geometry only, likelihood selection.
-
-[Pre-appearance birth prediction](birth_prediction_20260930/README.md): rich TDA,
-bond-order and geometry boosting, frozen rich/VICReg MACE and linear controls,
-with matched liquid histories ending zero/one/two/three frames earlier.
-
-[Crystallization origin](crystallization_origin_20260925/README.md): full-cell
-ancestry audit separating operational establishment, existing-crystal arrival,
-new external crystals and unresolved events; fixed Al64 counts at 3/6 ps.
-[Completed results](crystallization_origin_20260925/RESULTS.md): 150 fixed sources
-and 26 external records; 98.5% arrival attribution and sparse birth coverage.
-
-[Encoder training with directional context](encoder_context_epochs_20260925/README.md): scratch, physical pretraining, VICReg and Epi with a variance floor; observed/relaxed supervised fine-tuning and both chosen predictors, with at least twelve complete epochs and full evaluation.
-
-[Spatial context on fixed Al64](equivariant_context_al64_20260925/README.md): matched ten-fit repeat on 64 centers, immutable source/sample roles, predictive-likelihood selection and compact online metrics.
-
-[Equivariant spatial context, 25 September](equivariant_context_20260925/README.md): all ten fits completed. Directional context improves AP3 in several matched comparisons; relaxed tensor attention also improves event NLL against its symmetric control. One seed; see paired source intervals and interpretation limits.
-
-Current predictive-information protocol: [supervised likelihood, no AP tuning](supervised_information_20260925/README.md).
-
-[Supervised capacity: small/500k/1M/2M](supervised_capacity_20260925/README.md) compares eight geometry-only onset fits with one seed.
-
-[Supervised onset AP3/AP6](supervised_onset_20260924/README.md) starts the separate
-crystallization-supervised branch: larger existing paired cohort, six encoder
-variants and validation-only promotion under one8.5-hour GPU budget.
-
-For the cross-study history, measurement guide and searchable results, start with
-the [encoder research handbook](../docs/encoder_research/README.md).
-
-Only scientific questions, protocols, findings and reproduction configurations
-belong here. Simulation campaigns and inventories are in [docs/simulations](../docs/simulations/README.md);
-storage, portability and maintenance are in [docs](../docs/data_storage.md).
-
-The [September 11–13 retention review](../docs/research_retention.md) lists retained
-results and necessary checkpoints. [Older research and outputs are on STORE](../docs/archived_research.md).
-The dated folder name is the start date; older experiments below support current research.
-
-| Research | Current evidence / purpose |
-| --- | --- |
-| [Local states within a spatial hierarchy](spatial_hierarchy_20260924/README.md) | Four one-seed controls: local hierarchy, late surrounding context, early 12/16 Å context; fixed 8 Å focal targets. |
-| [Predictive, noise-aware encoders](robust_onset_20260924/README.md) | Eight one-seed controls: onset gradients, full-cohort AP ranking, present relaxed teachers, normalized perturbations, and multiscale tensor pooling. |
-| [AP-focused encoders and temporal dimensions](encoder_ap_20260924/README.md) | Proposed frozen-head/ranking/input/fine-tuning sequence; completed stability and state/movement spectra on 19 existing representations. |
-| [GeoFrame convergence, interfaces and structured liquid](geoframe_evolution_20260923/README.md) | [Completed 35-pass review](../output/geoframe_evolution/epoch34-review-20260923/RESULTS.md): liquid-order readout improves in encoder but declines in projector; interface/fault resolution improves; Ta/Zr candidates and conditional future assays. |
-| [Distance/future encoder factorial](structural_state_future_20260923/README.md) | Eight new encoders: two seeds, common geometry/current labels, distance and future residual losses; liquid retention, future transfer and matched onset tests. |
-| [Repaired structural-state screen](structural_state_20260923/README.md) | Four matched reruns with fitting-only calibration, direct pooled features, fixed distance scales and actual training-head audits; same existing source cohort, one seed. |
-| [Fixed structural-state screen](structural_state_20260922/README.md) | Four one-seed native MACE fits: observed/relaxed geometry, fixed relaxed teacher and physical distance supervision; matched retention, future-order and onset evaluations. |
-| [Literature-guided crystallization forecast follow-up](crystallization_followup_20260922/README.md) | Twelve matched frozen-MACE tests of original/relaxed inputs, actual-time changes, dense recent observations and short-horizon objectives; [primary literature](crystallization_followup_20260922/LITERATURE.md). |
-| [Encoder training after BCR: literature and next experiments](encoder_training_literature_20260922/README.md) | Proposed four-fit screen: isolated structural reconstruction, fixed relaxed targets and physical relation supervision; primary literature, existing negative controls and decision criteria. No training launched. |
-| [Latest MACE/GATr conditional information](gatr_conditional_information_20260918/LOCAL_LAST622.md) | Completed update-622 comparison: MACE retains substantial angular information; GATr remains mostly radial and is 24% smoother; no useful added onset prediction in the tested readouts. |
-| [Latest local MACE and GATr static Al](shared_pretraining_20260918/STATIC_AL_LOCAL.md) | Final step-622 local bond-order encoders; matched six snapshots and seven-cluster analysis, with native trained local support. |
-| [GATr information beyond radial structure](gatr_conditional_information_20260918/README.md) | Frozen z128: source-held-out bond/angular and prospective readouts, radial-only and duplicate-input controls, 609 strictly matched spatial pairs; little extra angular information and no robust extra forecasting benefit. |
-| [GATr internal directional embeddings](gatr_equivariant_20260918/README.md) | Frozen v6 geometric streams on A100/node07: directional turns, cage correction, phase-conditioned spatial order, rotation controls and readout interventions; interactive 3D explorer. |
-| [Encoder and descriptor trajectory stability](trajectory_stability_20260918/README.md) | Latest selected MACE/GATr versus instantaneous TDA, SOAP and local structural descriptors; matched full Al trajectories, training-reference normalization and source bootstrap. |
-| [Twelve-epoch shared and causal pretraining](shared_pretraining_20260918/README.md) | **Paused after optimization failure.** Batch-512/LR-0.02 fits developed saturated heads and collapse; [diagnosis and retained information](../output/shared_pretraining/diagnosis-20260918/RESULTS.md). |
-| [Shared structural pretraining](structural_pretraining_20260917/README.md) | Three implemented five-metal fits: MACE/GATr neighbor VICReg and three-frame GATr temporal JEPA/SIGReg, with physical/instantaneous-TDA anchors. Fixed material cutoffs; 250,000 training records, one seed; launched detached on H100/RTX6000. |
-| [Newest GATr v6 static Al](shared_pretraining_20260918/STATIC_AL.md) | Selected Al-only v6 checkpoint; same six snapshots, interior grid and seven-cluster static analysis. |
-| [Active mixed GATr static Al](shared_pretraining_20260918/STATIC_AL_BACKTRACKING.md) | Frozen latest update 400 from the temporal-backtracking continuation; matched six-snapshot static analysis. |
-| [Newest MACE v6 static Al](shared_pretraining_20260918/STATIC_AL_MACE.md) | Selected Al-only v6 MACE checkpoint on the same six snapshots, interior grid and analysis settings as GATr. |
-| [GATr–VICReg static Al](structural_pretraining_20260917/STATIC_AL.md) | Selected RTX6000 checkpoint, native full-neighborhood z128, six standard Al snapshots and the full seven-cluster static workflow. |
-| [Backbone TDA retention](local_predictability_20260917/TDA.md) | Frozen physical MACE/GATr snapshot states; matched linear/nonlinear instantaneous topology readouts, one seed |
-| [Native backbone v2](local_predictability_20260917/BACKBONE_V2.md) | Fresh gated MACE/cuEquivariance versus axial GATr snapshot screen; all-state physical targets; one seed |
-| [Local predictability](local_predictability_20260917/README.md) | Completed local descriptor, native onset and observability studies; [all available results](../output/local_predictability/research-summary-20260917/RESULTS.md), including physical/TDA screens; H200 training reported complete, validation nearly tied, test comparisons pending |
-| [Predictive memory](predictive_memory_20260917/README.md) | Completed H100/H200 pilot; objective follow-up stopped after 10/16 fits. [Latest update](../output/predictive_memory/research-summary-20260917-stopped/RESULTS.md) and [consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
-| [Causal native MACE](mace_causal_20260916/README.md) | Completed short/long-budget studies and H200 width comparison; small conditional history benefit. [Consolidated results](../output/predictive_memory/research-summary-20260917/RESULTS.md) |
-| [Direct local-state smoothness](mace_local_smooth_20260915/README.md) | **Discarded** frozen-map approach; first sweep failed the retention gate; capacity fits retained without an established final evaluation |
-| [Frozen local-group states](mace_local_state_20260915/README.md) | **Discarded** approach; [completed comparison](mace_local_state_20260915/RESULTS.md): learned physical distance improves smoothness/group information but loses instantaneous topology; tested density discovery does not resolve liquid states |
-| [MACE liquid-cluster diagnosis](mace_context_clusters_20260915/README.md) | Matched GeoFrame V2 comparison, eight saved-feature ablations, physical readouts, and a [literature review](mace_context_clusters_20260915/LITERATURE_REVIEW.md) on coherent liquid representations |
-| [Static Al/Zr joint MACE](mace_context_static_20260915/README.md) | Full standard static analysis with exact shared inner/center checkpoint weights and complete message context; Zr geometry transfer |
-| [VICReg / TDA ridge audit](mace_tda_ridge_audit_20260914/README.md) | Fresh six-checkpoint inference, independent ridge reproduction, supervision checks, projector-versus-encoder comparison, frozen MLIP/random controls, and direct embedding geometry |
-| [Forecast MACE diagnostics](mace_encoder_diagnostics_20260914/README.md) | Exact target encoder: invariance, geometry/membership changes, storage precision, physical time dependence, siblings and source-held-out TDA readouts |
-| [Embedding forecast](embedding_forecast_20260911/README.md) | Direct versus autoregressive trajectories, completed pilot and enlarged fits; exact continuation and target-encoder provenance |
-| [Observed history](forecast_context_20260913/README.md) | [24 completed fits](forecast_context_20260913/RESULTS.md), matched 0–24 ps history comparison |
-| [Local crystallization](forecast_crystallization_20260913/README.md) | [Completed physical assay](forecast_crystallization_20260913/RESULTS.md), transition/timing readouts and [next questions](forecast_crystallization_20260913/NEXT_EXPERIMENTS.md) |
-| [Spatial context and mixtures](forecast_spatial_mixture_20260913/README.md) | [Completed results](forecast_spatial_mixture_20260913/SPATIAL_CONTEXT_RESULTS.md): 12 ps history / 32 neighbors gives 56.86% transition F1; original, short-history and larger-context sweeps completed |
-| [Learned spatial attention](forecast_spatial_attention_20260914/README.md) | Individual neighbor embeddings and relative geometry; matched 32-center attention versus mean pooling at 3/12 ps |
-| [Relaxed MACE / VICReg](mace_vicreg_relaxed_20260910/README.md) | [September 11 comparison](mace_vicreg_relaxed_20260910/RESULTS_20260911.md); supplies the frozen target encoder for every forecast |
-| [Full-data MACE / VICReg](mace_vicreg_full_20260910/README.md) | September 11 analysis and retained full-data reference checkpoint |
-| [Al topology denoising](mace_al_denoising_20260910/README.md) | Older dependency: selected independent sources, relaxation targets, frozen MACE model and controlled denoising results |
-
-The [ideas backlog](ideas.json) retains research questions. The file-backed
-[run dashboard](../output/registry/index.html) indexes results; its root settings
-live in [configs/experiment_registry.json](../configs/experiment_registry.json).
-See [registry documentation](../docs/output_registry.md) and [result conventions](../docs/research_layout.md).
-Scientific implementation is in [src/research](../src/research/README.md) and the
-maintained [training/analysis commands](../scripts/README.md).
-
-- [Complete context and center-node MACE pilot](mace_context_20260914/README.md): controlled membership crossings, held-out TDA readouts and matched VICReg continuation.
-- [Recovering local structure in continuous MACE embeddings](mace_context_recovery_20260914/README.md): nonlinear readouts, combined center/inner features and matched training with physical supervision.
-# Local coordinate/velocity state
-
-[mace_velocity_20260915](mace_velocity_20260915/README.md) preserves the smooth
-MACE structural representation and learns separate activity and directed-motion
-channels from measured velocities, with an explicit coordinates-only ablation.
-Both variants completed; structural stability remains near the original teacher.
-The [smooth-manifold literature review](mace_velocity_20260915/LITERATURE_REVIEW_SMOOTH_MANIFOLD.md)
-proposes direct temporal objectives, local motion constraints, and short observed
-history while testing preservation of bond order and instantaneous topology.
-
-[Consecutive local-state motion](mace_local_motion_20260916/README.md): **Discarded** frozen-map approach. All 44 fits and evaluation completed; none passed the information gate or joint 0.10 jump requirement. Results retained.
-
-- [Native encoder training-data amount](mace_data_amount_20260916/README.md): matched-update independent-source learning curves with motion constraints.
-
-- [Expanded MACE crystallization transfer](crystallization_transfer_20260919/README.md): frozen, fine-tuned, scratch and tensor-context onset queue on 362,400 candidate windows.
-
-- [Recent local encoder and crystallization report](../output/crystallization_transfer/recent-report-20260919/README.md): pretraining recipe/provenance, context/data scaling, corrected encoder screens and completed trajectory refinements; [pending final update](crystallization_transfer_20260919/REPORT_UPDATE.md).
-
-- [Equivariant neighborhood JEPA](neighborhood_jepa_20260920/README.md): independently encoded local MACE snapshots trained by structured neighbor/time prediction, SIGReg and fixed physical/TDA anchors.
-
-- [Causal geometry-anchored neighborhood JEPA v2](neighborhood_jepa_v2_20260920/README.md)
-
-- [Neighborhood JEPA regularizer/order comparison](neighborhood_jepa_regularization_20260920/README.md): SIGReg, VICReg and EpiJEPA-inspired geometric regularization.
-
-- [Multi-horizon JEPA embedding prediction](neighborhood_jepa_multihorizon_20260920/README.md): tracked future local states at 3, 6 and 9 ps.
-
-- [Frozen short-horizon information diagnostic](crystallization_information_20260920/README.md): feature add-backs and decoding, up to12ps.
-
-- [Relaxed inputs and targets MACE pilot](relaxed_encoder_20260920/README.md): paired hot/hot, hot/cold, cold/cold and <=12ps onset readouts.
-
-- [Overnight encoder information and trajectory context](context_night_20260921/README.md): local order/angular preservation, wider shells/history, and fixed-target trajectory forecasts.
-
-- [Expanded relaxed-input/target and rank study](relaxed_encoder_expanded_20260921/README.md): larger source-held-out paired dataset, conditional SIGReg/VICReg, frozen onset probes.
-- [Larger fixed-grid crystallization test](relaxed_encoder_large_test_20260921/README.md): 338 planned distinct local test onsets, historical encoder comparisons and whole-source uncertainty.
-
-- [BCR-v1: bottleneck-conditioned reconstruction](bcr_v1_20260921/README.md): implementation, mechanism controls and correctness tests.
-
-- [Independent-root BCR G1 pilot](bcr_g1_20260921/README.md): useful conditioning, matched controls and frozen liquid probes.
-
-- [Symmetric structured MACE/GATr context](structured_context_20260921/README.md): 25 spatial query slots, alternating spatial/causal temporal attention, eight frozen-encoder forecast fits.
-
-- [BCR conditioning and relaxed-structure audit](bcr_followup_20260922/README.md): frozen checkpoint interventions, pooled/exported residual probes, archived paired relaxation transfer, matched fresh decoders.
-
-- [Liquid representation plot audit and training diagnosis](../output/representation_audit/liquid-structure-20260922/RESULTS.md):66 published UMAPs, provenance correction, conditional liquid measurements and proposed native-encoder ablation.
-
-- [Liquid geometry versus crystallization prediction](liquid_geometry_20260922/README.md): ten frozen encoders, metric interventions, latest paired forecasts and native early/late checkpoint diagnosis.
-
-- [Broad native snapshot screen, September23](encoder_screen_20260923/README.md): interface/liquid resolution and conditional crystallization metrics on fixed cohorts.
-
-[Encoder parameter search](encoder_parameters_20260923/README.md): matched GeoFrame projector/covariance/FactorVAE/VISReg and MACE learning-rate/distance interventions with two seeds.
-
-- [Paired MACE + Epi, September23](mace_paired_epi_20260923/README.md): direct temporal alignment, VICReg control and Epi/variance-floor treatments, two seeds,24 full passes.
-
-## Latest onset prediction direction
-
-[3 ps primary onset experiments](onset_ap3_20260924/README.md): saved 3/6/12 ps
-re-evaluation, event coverage, and a staged existing-data experiment proposal.
-
-- [Latest native MACE quality comparison](encoder_quality_20260926/README.md): eight frozen encoders, liquid/interface diagnostics and matched predictive-information controls.
-- [Birth-history truncation and readout CV](birth_prediction_20260930/TRUNCATION_CV.md):
-  retain one through eight crystal-free frames, grouped cross-validation and
-  uncertainty for descriptor/frozen-MACE readouts.
-
-Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
-
-- [Local80 response weights and finite disturbances](local_response_20261003/README.md):15 fixed400-update fits and384 larger-displacement forwards.
+</details>

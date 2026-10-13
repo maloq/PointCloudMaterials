@@ -1,0 +1,305 @@
+{
+  "protocol": "ni-phase-history-attention-20261013-v1",
+  "seed": 20261023,
+  "output": "${storage:training_storage}/ni_phase_history/preflight-20261013-v1",
+  "cache": "${storage:cache}/ni-phase-history/native4-20261013-v1",
+  "model": {
+    "channels": 8,
+    "width": 64
+  },
+  "training": {
+    "updates": 8000,
+    "batch_size": 256,
+    "microbatch": 128,
+    "lr": 0.001,
+    "warmup": 400,
+    "save_every": 50,
+    "unroll_steps": [
+      1,
+      4,
+      10,
+      20
+    ],
+    "unroll_probabilities": [
+      0.2,
+      0.2,
+      0.3,
+      0.3
+    ],
+    "loss_weights": {
+      "path": 1.0,
+      "kinematic": 0.1,
+      "reconstruction": 1.0,
+      "latent_value": 0.1,
+      "physical_response": 1.0,
+      "latent_response": 0.1
+    }
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "bootstrap": 1000
+  },
+  "runtime": {
+    "hours": 12,
+    "workers": 4,
+    "max_attempts": 2,
+    "max_continuations": 1,
+    "partitions": "RTX6000PRO,A100,A40,L40S"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "attn4-full-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023
+    },
+    {
+      "name": "attn4-values-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261023
+    },
+    {
+      "name": "classic-full-s20261023",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023
+    },
+    {
+      "name": "classic-values-s20261023",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261023
+    },
+    {
+      "name": "attn1-full-s20261023",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023
+    },
+    {
+      "name": "attn1-values-s20261023",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261023
+    },
+    {
+      "name": "attn4-physical-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": false,
+      "seed": 20261023
+    },
+    {
+      "name": "attn4-full-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024
+    },
+    {
+      "name": "attn4-values-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261024
+    },
+    {
+      "name": "classic-full-s20261024",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024
+    },
+    {
+      "name": "classic-values-s20261024",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261024
+    },
+    {
+      "name": "attn1-full-s20261024",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024
+    },
+    {
+      "name": "attn1-values-s20261024",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261024
+    },
+    {
+      "name": "attn4-physical-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": false,
+      "seed": 20261024
+    },
+    {
+      "name": "attn4-full-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025
+    },
+    {
+      "name": "attn4-values-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261025
+    },
+    {
+      "name": "classic-full-s20261025",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025
+    },
+    {
+      "name": "classic-values-s20261025",
+      "architecture": "classic",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261025
+    },
+    {
+      "name": "attn1-full-s20261025",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025
+    },
+    {
+      "name": "attn1-values-s20261025",
+      "architecture": "attention",
+      "history_frames": 1,
+      "response": false,
+      "latent_response": false,
+      "seed": 20261025
+    },
+    {
+      "name": "attn4-physical-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": false,
+      "seed": 20261025
+    }
+  ],
+  "length_factor": 1.1085850758932345,
+  "split": {
+    "policy": "train-test-only",
+    "selection": false,
+    "checkpoint": "fixed_final_8000",
+    "original_roles_retained": true
+  },
+  "phase_run": "/store/PERSO/vmorozov/experiments/ni_phase_sim/dense-20261013-v2",
+  "phase_plan_sha256": "fe23c185ac115e6f265ee189c2ff24b097fee43216a9a9a6414a6eb10171cd0c",
+  "phase_archive": "/store/PERSO/vmorozov/simulations/ni-phase-nve-20261013-v2",
+  "birth_run": "/store/PERSO/vmorozov/experiments/ni_phase_births/90sources-20261013-v1",
+  "birth_plan_sha256": "8ef9abfc99f7a72275b96d0dec702f3a32fa34161c410f9fb45b06ec82514596",
+  "model_seeds": [
+    20261023,
+    20261024,
+    20261025
+  ],
+  "birth_probe": {
+    "seed": 20261023,
+    "tasks": [
+      "nucleus32",
+      "nucleus64"
+    ],
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "model_seeds": [
+      20261023,
+      20261024,
+      20261025
+    ],
+    "batch_size": 128,
+    "threads": 2,
+    "fit_workers": 2,
+    "fit_threads": 2,
+    "bootstrap": 1000,
+    "probe": {
+      "iterations": 600,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "CPU"
+    }
+  },
+  "comparisons": [
+    [
+      "attn4-full",
+      "attn4-values"
+    ],
+    [
+      "attn4-physical",
+      "attn4-values"
+    ],
+    [
+      "attn4-full",
+      "attn4-physical"
+    ],
+    [
+      "attn4-full",
+      "attn1-full"
+    ],
+    [
+      "attn4-values",
+      "attn1-values"
+    ],
+    [
+      "attn1-full",
+      "classic-full"
+    ],
+    [
+      "attn1-values",
+      "classic-values"
+    ],
+    [
+      "attn4-full",
+      "classic-full"
+    ]
+  ]
+}

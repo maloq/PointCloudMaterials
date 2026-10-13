@@ -17,6 +17,12 @@ iterations), and all case processes have a240-second absolute cap. PyAMG5.3.0
 is installed in the run directory, not the shared environment. Failed or timed
 out cases remain reported; later independent cases still execute.
 
+The separately requested tolerance005 follow-up uses the same twelve inputs
+and sorted native FIRE at0.01,0.03 and0.05eV/angstrom. All three settings are
+timed anew on one GPU, so speed ratios do not mix hardware from separate jobs.
+It uses these same metric definitions and no ASE profiles. These repeats are
+numerical timing controls, not additional independent source observations.
+
 All optimizers use float64 coordinates and the same original float32 GPU force
 kernels with float64 scalar energy reduction. Sorted neighbors stabilize force
 summation order except in the explicitly unsorted control. ASE convergence is
