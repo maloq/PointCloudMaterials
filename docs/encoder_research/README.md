@@ -1,5 +1,9 @@
 # Research guide
 
+The [Ni validation follow-up](../../experiments/ni_latent_validation_20261018/README.md)
+adds source expansion, longer budgets, scalar-support trajectories and native
+temporal-objective tests to the October 18 comparison.
+
 - [Dense atomic Q,V and latent tangent experiment](../../experiments/ni_phase_sim_20261013/README.md): October13,12 fixed-budget fits on new100fs full-cell Ni NVE paths;320 train and310 pooled test anchors.
 
 The project studies what local geometric representations retain about structure, physical response and future crystallization. Read the evidence before choosing a model change, and keep the observation, target population and evaluation protocol explicit.
@@ -14,6 +18,8 @@ The project studies what local geometric representations retain about structure,
 | How should we resolve the outstanding hypotheses? | [Methods and open hypotheses](methods.md) |
 | What experiments come next, and when should a branch stop? | [Experiment plan](experiment_plan.md) |
 | What does related research actually support? | [Literature and inspected implementations](literature.md) |
+| Which recent methods fit the current Ni latent simulator? | [October 18 primary-source review and shortlist](latent_simulation_literature_20261018.md) |
+| How are those methods being tested? | [October 18 frozen Ni trajectory comparison](../../experiments/ni_latent_flow_20261018/README.md) |
 | Which comparison and input rules apply? | [Research principles](principles.md) |
 
 The evidence summary distinguishes motif benchmarks, representation retention, memory, alignment/partition behavior, birth/fate targets, simulator response and Ni dynamics. The methods page keeps the H1–H8/S1–S6 identifiers; the plan maps them to E0–E9. These identifiers connect definitions and decisions, rather than creating a separate report for each question.

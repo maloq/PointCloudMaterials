@@ -1,0 +1,2182 @@
+{
+  "dataset_id": "ni-lowT-20261012-gpu-full-v1",
+  "records": [
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/complete.json",
+      "relative_path": "technical/complete.json",
+      "sha256": "6d07dfef0cbf06d149a21d1a34ed0bc82c6ce7cd3501a179fa07f431bfb6d1d1",
+      "kind": "metadata",
+      "keys": [
+        "ancestry",
+        "completed_sources",
+        "established_ptm_liquid_births",
+        "event_records",
+        "planned_sources",
+        "state"
+      ],
+      "recorded_state": "complete",
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt12/010/coherent/complete.json",
+      "sha256": "723695b771f6bfd10ce082b79f458f2dbdf51a0a834e0cb9d5935cc4859aa33a",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt12/010/coherent_loose/complete.json",
+      "sha256": "20f054a2ea64bb347ad3c28a6e463c4a7dbbcc5aafe5003301e8d05a3bf58730",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt12/010/coherent_strict/complete.json",
+      "sha256": "435f620dfc46c124b2e15f5a0de2269eb5529de2ac84b6febe9856d8cff2c843",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt12/010/ptm/complete.json",
+      "sha256": "1c2451562940c0a02431e7a1718d051762475243bdbafa020987bee9a0892ac7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt13/010/coherent/complete.json",
+      "sha256": "8d15b613b78ab9828ff684e0255ebc195e4f50811059fd6a056634256b4f621a",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt13/010/coherent_loose/complete.json",
+      "sha256": "808498d3e505ee0f27a67d7354ae51510a102b597124278c83c0beb28ed3fed1",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt13/010/coherent_strict/complete.json",
+      "sha256": "f971845595b87572ce19a7b629a5127cce102c3665be56b29ad7abc453874498",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt13/010/ptm/complete.json",
+      "sha256": "710a9ec4cf238a9135326f20b65dff51084901079723bc96f53efe4a576bc8db",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt14/010/coherent/complete.json",
+      "sha256": "f02e478db91f6531b00f6d946c138c3d8944c83c3372576b3f1d9030f4e958b7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt14/010/coherent_loose/complete.json",
+      "sha256": "1517a80c03be2c9c126b79392c28b2d65d14d5c54965474da36d788cc4fcaf8c",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt14/010/coherent_strict/complete.json",
+      "sha256": "814ec8ae4a7ced22f46d4743ef8055fcaf95b21cabafaff41d9ff4e7260f053d",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt14/010/ptm/complete.json",
+      "sha256": "116499500bc8befe0a4053f8ede0f0b3ce089c15c26b1e9c30c537cb047376d2",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt15/010/coherent/complete.json",
+      "sha256": "aebee7d577dda04819afd71816c7e5a6170143683af4f5cf99eec7917dc7bf21",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt15/010/coherent_loose/complete.json",
+      "sha256": "11bfd8c3275a42d4080e7d54f161b491edbdfdc0f187db9d7b47a47261885260",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt15/010/coherent_strict/complete.json",
+      "sha256": "d54239226ab64f6aa27a6060a62c9ff92f4df848cdb259cb87c130c4d1edab14",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt15/010/ptm/complete.json",
+      "sha256": "fd5f63dfa2f828d72b8c7d0f9917c12ae8abe7703911f92eddcd5455722d309c",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt16/010/coherent/complete.json",
+      "sha256": "8ae9a3b1e1eaf7d1f26ebfb2aabf8b73ac6fcade792327252736952f410a7451",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt16/010/coherent_loose/complete.json",
+      "sha256": "42d31b02457a827678a1d425cfc9440db82a0c3aa7cc0fe0d43d78dd457b2b0a",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt16/010/coherent_strict/complete.json",
+      "sha256": "9b7c7f7dbbc096cf5cdc94b45e54c5a5380dc53e86b423adf03fafb6ec37afe2",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1000-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1000-melt16/010/ptm/complete.json",
+      "sha256": "809c62db077c1df41269272be9d337241e7b332a388ddd6b4f15c84832529467",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt12/010/coherent/complete.json",
+      "sha256": "c1109f41c4c2c938455d7ca5006d71c9d1752d650f75cd0e1abccb61069b7c89",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt12/010/coherent_loose/complete.json",
+      "sha256": "8594ac6a8b6b343570d182614c1653fd4922d862d4323794ef73e8ea3e0dff6d",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt12/010/coherent_strict/complete.json",
+      "sha256": "b5463736e048e4a17e6c079897a0659af7497160f2a6a614c02d25d7a837b521",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt12/010/ptm/complete.json",
+      "sha256": "2f7e8956c57c9807f9f83bc5a58aefb508a9d29020e19198ceaf51c45880cc9e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt13/010/coherent/complete.json",
+      "sha256": "637932bacc21877c5a715819d23f7b64aca2b0b227046d64aa3082a4cc275f14",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt13/010/coherent_loose/complete.json",
+      "sha256": "ce3cf6ab6a6cd10258852fde9c99e661cc3739ff28012369534884678227265b",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt13/010/coherent_strict/complete.json",
+      "sha256": "8c3e4c15e329e874a9a76f513b8e4e7419497d77d381a1e83051367e68e742a5",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt13/010/ptm/complete.json",
+      "sha256": "7d6354427c7b9234ab01e3e3f6c9ccc043830c99157ccbb696cad34f97e32faa",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt14/010/coherent/complete.json",
+      "sha256": "6aa9436c4faaa601888c8362abf56c46d70fa504248108f0e7c9c11fde1a0061",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt14/010/coherent_loose/complete.json",
+      "sha256": "b5fb6ae684828faeb1f72861d26f59bab8122f3a7f1da07e009e6ed5b4c42af6",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt14/010/coherent_strict/complete.json",
+      "sha256": "7af6322685e0e64b88cfad95964427989858375bd1a209d2b79e0221bbc54b20",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt14/010/ptm/complete.json",
+      "sha256": "2db5e1fbc1b1c8114771e548a11918362e174ab69fb431f2fe97ca4da2fcf80b",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt15/010/coherent/complete.json",
+      "sha256": "b6c63e214c8ef678807000e24ca7721f853512ce79f1929e6cdf3953200ad162",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt15/010/coherent_loose/complete.json",
+      "sha256": "1ca9c6bc4becc039977758cca12a6011bfdfb4b13938dbcb1ed0857a9af95734",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt15/010/coherent_strict/complete.json",
+      "sha256": "4136c1dcb1ad57c98638bfc5eca1de9382ce7f57a34d8a887f246e1856167d24",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt15/010/ptm/complete.json",
+      "sha256": "24651c453a8d8dea17ec9b5993bd35308768be7749d89f4d7839427f93e9d243",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt16/010/coherent/complete.json",
+      "sha256": "1a69adf61ffc72d6bb83fbc117d3e2340e52c0eb2166e62e85a1591b4ba604a8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt16/010/coherent_loose/complete.json",
+      "sha256": "421acf2032d6352b75dad632c3e5c336a5b4178f2c539d732bcc50280fe6ddd7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt16/010/coherent_strict/complete.json",
+      "sha256": "cd871ea00f6f6f40c8389ee647faeee1aed9d6da0699eb777a5b0d0c93da3ee7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1050-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1050-melt16/010/ptm/complete.json",
+      "sha256": "2cf4fbb74626c3739ed70370cc7a0a5bb1c4f1f9cf85a98651df4d7d7cae19df",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt12/010/coherent/complete.json",
+      "sha256": "b35f68e3cfca39362b70ffcf562149621073274db9be934bfa5c34642084f059",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt12/010/coherent_loose/complete.json",
+      "sha256": "1f67b547bd62897e777b2d0a9e3379e894faed1466fc7a3efbf13ab8606211f2",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt12/010/coherent_strict/complete.json",
+      "sha256": "94862f3c001bdc9473b50dba16dc2e3e6c370a0b442c6ec92b2ba24421d832fe",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt12/010/ptm/complete.json",
+      "sha256": "e74167bcba716ea2190c6292c2dae250a031dee4773cfa1e1bf831932ee66e84",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt13/010/coherent/complete.json",
+      "sha256": "c72575775c293de1a7698ac44328b5c69c575454537273e2606b1f1d63fbb248",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt13/010/coherent_loose/complete.json",
+      "sha256": "08247af50237c888de77230c5812851166aaec368f37bc612a117fc98a5424fd",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt13/010/coherent_strict/complete.json",
+      "sha256": "9ddaa9aa1f783af252635e51d725fd060a0ade00d8f165ba34baa34dd7c2a516",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt13/010/ptm/complete.json",
+      "sha256": "eca43ac6db982e17adbed893b1826619d5f5bad1eabdb964dd8da8890432acdc",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt14/010/coherent/complete.json",
+      "sha256": "3e569dfdbc60c59a77cce3bfde08185a47ea72fc06dbd2fbf5e5ecd6c6b328fb",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt14/010/coherent_loose/complete.json",
+      "sha256": "3f55c452d79f6e77229de0cf21a6e0eecd6b87f90833ba293ac1a3be38c28402",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt14/010/coherent_strict/complete.json",
+      "sha256": "1ba82dc512ea29cc7f86f8a9b5241b5161fc76efafe7e4c3e31f04857691de12",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt14/010/ptm/complete.json",
+      "sha256": "6a9f62a5df9521b3edc53b147e80acc06c394abed5b5758baa776c58793e0a0d",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt15/010/coherent/complete.json",
+      "sha256": "cab50a094b83c79a6989023428066e264861fec42177762aa6bb0f92cbaa6b05",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt15/010/coherent_loose/complete.json",
+      "sha256": "6369282fdbe1c9a547a3fec265604fe3f7367fb5105e5bd3b59ba302f901702b",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt15/010/coherent_strict/complete.json",
+      "sha256": "9cc6f74731de1296e078a6ce54881b0929ac72595c935e86632e25c3936881fa",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt15/010/ptm/complete.json",
+      "sha256": "6d3c1611e00fa446d869396955f63e3809f309fe2a6e1b5779f5e37ecd12e9e8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt16/010/coherent/complete.json",
+      "sha256": "cb951c7c28ac017c36983fe605fda2322aabb4b1f8ff7fddf970a2e1bcd2cbd8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt16/010/coherent_loose/complete.json",
+      "sha256": "afdb9b1fff4c4a4641735ab623ec932b418d97568f77d0da1a1a7e2dc4410c9a",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt16/010/coherent_strict/complete.json",
+      "sha256": "a394f79789df66f7e326ed74c01cc6ced5df9656734d20a2ad28387c6e6b58d3",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1100-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1100-melt16/010/ptm/complete.json",
+      "sha256": "995c7a6400ababeb1c3a1b0fc5ec20d2d34a2689fbd738aaa366dc571e990d11",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt12/010/coherent/complete.json",
+      "sha256": "68ad0b250ad22304f5671293122feaf29ee45cbcdcb3123ea51ae91e4b809759",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt12/010/coherent_loose/complete.json",
+      "sha256": "6662bc3aa7498056f84e9ab6258fc0178130fa7b600b56a759cfe405af80c72d",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt12/010/coherent_strict/complete.json",
+      "sha256": "951c255eca9f32f36e2cdee19a2948fd4ba93c9443a37de5846d6442a650b5e7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt12/010/ptm/complete.json",
+      "sha256": "e3d8bdaff2f78beda4241acc73fffc4d83ac22b1d5ec4e8f63694586af561aa2",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt13/010/coherent/complete.json",
+      "sha256": "60dc9069a33aab82e049ab292c9fa5395d4bf54e8bfbdf671dd7785b5af42bd6",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt13/010/coherent_loose/complete.json",
+      "sha256": "bd1b45c4fe88a48d5c60a692c6b9b5b560dd4d0efb64c1c1b27b647845b126ee",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt13/010/coherent_strict/complete.json",
+      "sha256": "d274ff54f7eaa86a08f9249d3904be0ef728ddd9e85ea4797cc6b2ad6d9c8984",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt13/010/ptm/complete.json",
+      "sha256": "72f18f293ce03477b68fd51ef7d92464547bb5bef3e11ba7ec540eb832ad3734",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt14/010/coherent/complete.json",
+      "sha256": "f68c17df2c2475048b176d3d558eb0530511c5b17a7f0d083bd7c7fb7ed73b8f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt14/010/coherent_loose/complete.json",
+      "sha256": "2782dc4fd5d5f542428bc63a7ef3a0d60302b7f0cd2c086025b88e9ebc5e5e44",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt14/010/coherent_strict/complete.json",
+      "sha256": "1da6a78f9f49ac9b1d1f8f7bd225030743bc26f80e5535f97e8d3a085ba644f4",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt14/010/ptm/complete.json",
+      "sha256": "0fb4fa6370a4658c973c0cbbaf6b77fab43e6b7d3a353fcecd58833cb7d6aba4",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt15/010/coherent/complete.json",
+      "sha256": "000786adb87409cad85952b276f1b9f0df7b247a8bca901ee5ba24085147ee64",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt15/010/coherent_loose/complete.json",
+      "sha256": "e1cf526c296616f111ec01b93f117deb21e1f9d8550671184bf212ff8d96c93b",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt15/010/coherent_strict/complete.json",
+      "sha256": "f403301a1fd4073ffb2dc7586dfe74b9b43b5adaec4c60c1a179a6632d4538fb",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt15/010/ptm/complete.json",
+      "sha256": "5040d25b7d0204721ec56ee2a2c4ac1b5d965cfe5b82c27fe3526d77d41c632e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt16/010/coherent/complete.json",
+      "sha256": "0b37e3b9d27799e32c0b03af0d9436146572beb7139b4a6ab2295b346f5b59bf",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt16/010/coherent_loose/complete.json",
+      "sha256": "2310d45a310ff9b8ef959f17995cec4e4185b4e704976fb73059083ad90a761f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt16/010/coherent_strict/complete.json",
+      "sha256": "b49573156af6e66e80c97175c694205f8b7fede683d5ece43f9f10f1b3ab49de",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1125-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1125-melt16/010/ptm/complete.json",
+      "sha256": "f1a17e2256076d8e9416032360e996a7a6d0cea56439f02b69ab1b93d79ad2a3",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt12/010/coherent/complete.json",
+      "sha256": "ea7a5fb0764067636318c71af6c8e036fecb2e3a75f12bc9b2aba57f1fe98f65",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt12/010/coherent_loose/complete.json",
+      "sha256": "996b59f199024572427513d3da165abbd442c864335da410b82747e225078257",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt12/010/coherent_strict/complete.json",
+      "sha256": "21a01fc5833e8a44f86ae6aa5d2993d3e369a9007249380d5206554957871276",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt12/010/ptm/complete.json",
+      "sha256": "6c13c56403ada8357d29bb57089a66c7de1af9d4235ea43b7c8cc0a8e8f0c0ba",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt13/010/coherent/complete.json",
+      "sha256": "1ae1392d0962ccd56591bf7f73bb718caca548b888f5fe33fd174048fe1a27c4",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt13/010/coherent_loose/complete.json",
+      "sha256": "62d544c888498850f2bfa05d9aecd00d9c1dff37264aea217d93bb465d13c529",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt13/010/coherent_strict/complete.json",
+      "sha256": "2f79e121b38c0b94431248ed13cc8d2a12f31b77a2581555eceeb5bd4cce3283",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt13/010/ptm/complete.json",
+      "sha256": "24c158b7fdac67297ffe3d427f6938914b5bf1e82a2ab952c939c937da4432ee",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt14/010/coherent/complete.json",
+      "sha256": "0a9313cc9c70778cf71e68db7bfa139f84030b9141a2cef97e484aa18bb8be54",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt14/010/coherent_loose/complete.json",
+      "sha256": "0a9f3a1a0852e2070824c54b8cec5420ff15a6025f4e1c77c53e545e53487bdf",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt14/010/coherent_strict/complete.json",
+      "sha256": "046866fe58f9ae5eeda87ad676df442f166e86a96c575cbc6296ae562c777655",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt14/010/ptm/complete.json",
+      "sha256": "9d8feeda9c623ea57d9016bd9de115eaa2dcc7d9010d017c5bb6663c2cf301f4",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt15/010/coherent/complete.json",
+      "sha256": "26c78018f465372fcb7ef8a725b8862591737d07da66eebe5318ffdeecf21176",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt15/010/coherent_loose/complete.json",
+      "sha256": "da962fa229628f2eac54fe1c9608ad2ae37ff3e556662dec6b7bd0e71477262f",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt15/010/coherent_strict/complete.json",
+      "sha256": "e45f4a9e90f483d807c23db9367e6794dd6be5dc9fcaf0d244cc916c855ba1ea",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt15/010/ptm/complete.json",
+      "sha256": "85292b7f650836930219b602129c523a8b006b8a7503ad9cf04ced6a471bfef0",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt16/010/coherent/complete.json",
+      "sha256": "adc1386860fe1c3883855b72eb952124aca4fd176b15377b7313742b1bf1e51e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt16/010/coherent_loose/complete.json",
+      "sha256": "593010aba0c7d230d61f55cbc86e97bf3ae88df0fb10f80963a7ebbf45fe2a75",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt16/010/coherent_strict/complete.json",
+      "sha256": "ec9560fff56d53299b96c7356eccf58ef30812a6a027e6b68d038950df010b05",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T1150-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T1150-melt16/010/ptm/complete.json",
+      "sha256": "8f597c932bc9ee8237a08934276e0f970d4b7e9cb68e044622dc005f8051de80",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt12/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt12/010/coherent/complete.json",
+      "sha256": "055866d55b07519dd24151b3994b7655caa0852efae97902028ab4deabfc1015",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt12/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt12/010/coherent_loose/complete.json",
+      "sha256": "aba45313e36c915fb059ce8b88de58c571ff156c7c937d785552cd5f51d6d374",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt12/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt12/010/coherent_strict/complete.json",
+      "sha256": "a5bea220873f37bfcfa1451eaad16f13dda626d3b3b9659166fa8550ac3b837b",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt12/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt12/010/ptm/complete.json",
+      "sha256": "ab7563cde967d80f89578287d8296fc582455de7466b1080bd84e6f7b26cebc9",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt13/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt13/010/coherent/complete.json",
+      "sha256": "23831adcadd724e0e3772be604c502791aeda4c1cc33fa059fedca7576f1ffdc",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt13/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt13/010/coherent_loose/complete.json",
+      "sha256": "27c899978bebfa7210c5d17997310ca09760539053d0d48cb9f67948759ccae8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt13/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt13/010/coherent_strict/complete.json",
+      "sha256": "9ece6784af2a0e8def106c154a2f7877adc14efa10e8c247494794a116f5b553",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt13/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt13/010/ptm/complete.json",
+      "sha256": "04ff6aa8c3b85fbe9c8d4dd2c529ec67c6d3e5dc2f5798055c9e85c490214c02",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt14/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt14/010/coherent/complete.json",
+      "sha256": "f2aa2279775de893f6acdc61ec9dd7066ecc65dd9704f87c617372a1d307dba7",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt14/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt14/010/coherent_loose/complete.json",
+      "sha256": "8a3dc1ae8e85d939f13475b6cf53eeb1ce92679b12e8b571197210983d784699",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt14/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt14/010/coherent_strict/complete.json",
+      "sha256": "0c474ffe8c7809f9a45f17500cde187c8041276dc83b4fccdadaf15810b97004",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt14/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt14/010/ptm/complete.json",
+      "sha256": "e46e0c24151bc37f5c32ce3aa45f57e7bda67bc94ff23c4cc34cc57d30988a8c",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt15/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt15/010/coherent/complete.json",
+      "sha256": "4d75e5311e825722ed375a54f456585f6e77312c87610b1f6f7e6d23645f33be",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt15/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt15/010/coherent_loose/complete.json",
+      "sha256": "bb533c6230bd93ab7061ee67fb6757415a627434061359a82c31945263fcd5f8",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt15/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt15/010/coherent_strict/complete.json",
+      "sha256": "0e34c3339333473ce5ff6151837bad86f4eb81f05a3232bab94d628887975d70",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt15/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt15/010/ptm/complete.json",
+      "sha256": "bd9dbe06f22c62fa9977b7db4dff2367216023a2f5218a9682ecfbaae31ba7f6",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt16/010/coherent/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt16/010/coherent/complete.json",
+      "sha256": "c5b9ae2362bdf0a6569a89ef460754944ea0fbab4807924cbc1c62fd228e2c0e",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt16/010/coherent_loose/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt16/010/coherent_loose/complete.json",
+      "sha256": "3ba7e04e6b497f1676ad2403e55b42e142f2cd522a9141a20412553679180763",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt16/010/coherent_strict/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt16/010/coherent_strict/complete.json",
+      "sha256": "ede142f03cf0f495f281e7a8320bda4a0998ff481ad5354666ed82894daf3303",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/store/PERSO/vmorozov/experiments/nuclei_search/ni-lowT-20261012-gpu-full-v1/technical/sources/ni-T950-melt16/010/ptm/complete.json",
+      "relative_path": "technical/sources/ni-T950-melt16/010/ptm/complete.json",
+      "sha256": "7060c07ae2a27794032dc2928656ecad669d08001c4e8031a8e035e11fd7ba11",
+      "kind": "metadata",
+      "keys": [
+        "cadence",
+        "counts",
+        "detector",
+        "files",
+        "identity",
+        "seconds",
+        "source"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

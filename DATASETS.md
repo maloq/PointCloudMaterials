@@ -1,5 +1,37 @@
 # Datasets: start here
 
+**Ni observed-history/context extension (October19, collecting):** `ni-ordering-histories-20261019` retains21,600native windows and19,800birth-assay rows, extends observed history to1.2ps at0.1ps, and adds12A regional features. Same central atom; nearest80 is reselected at every observed frame for native and birth inputs. Training ancestry28/test62 unchanged. [Workflow](docs/ni_ordering_flow.md).
+
+**Ni native source expansion (October 18, complete):**
+`ni-native-expansion-20261018` measures 7,200 additional fixed-central-atom
+windows from the existing thirty October 12 histories: 240 windows per source,
+four observations through the present and sixty future observations at exact
+0.1 ps spacing. Anchor times and atom IDs are selected without future or phase
+labels. The source roles remain 12 train / 18 test; this creates no new MD.
+The matched original-window comparison uses 80 windows per training source:
+1,280 windows / 16 original sources versus 2,240 / 28 original plus additional
+sources. All 4,320 additional test windows remain available alongside the
+10,560 existing native test windows. Normalization reuses the original sixteen
+training sources unchanged. The added heldout sources appeared in earlier birth
+assays; they are not a previously untouched benchmark. Completion and checksums:
+`${storage:training_storage}/ni_latent_flow/validation-20261018-v2/technical/expansion-complete.json`.
+
+**Ni spatial context (October 15, preparing):** `ni-spatial-context-20261015`
+adds 87 regional density/motion measurements at 8/12/20 Angstrom to the existing
+14,400 native windows and 19,800-row birth assay. The deduplicated extraction
+covers 87 existing sources, 52,578 source frames and 999,971 center observations.
+No new MD, independent sources or birth filtering; train-only transforms and
+original ancestry are retained. [Workflow and completion receipts](docs/ni_spatial_scales.md).
+
+**Ni kinetic-latent measurements and annotations (October 15):**
+`ni-kinetic-measurements-20261015` reuses all 14,400 native fixed-central-atom
+measurement windows through 6 ps, with train-only affine/asinh normalization.
+Train: 3,840 windows / 16 ancestors; pooled test: 10,560 / 44. Exact full-cell
+PTM-derived center labels, local fractions and tracked component sizes are a
+separate resumable annotation stage. The existing 19,800-row 90-source nucleus
+assay remains separate. No new raw MD or independent sources are created.
+[Workflow and provenance](docs/ni_kinetic_latent.md).
+
 **Ni phase-model birth readouts (October 13):** `ni-phase-birth-probes-20261013`
 reuses the original sixty-source nucleus assay and adds the completed thirty-source
 October 12 catalogue. Exact 1/3/6 ps leads, persistent 32/64-atom nuclei, and
@@ -435,3 +467,9 @@ exact native Q,V at -0.3/-0.2/-0.1/0 ps to all630 existing phase teachers and
 19652 unique nucleus inputs. Same current80 atom IDs and28 train/62 test source
 ancestors; no additional MD or independent trajectories. See
 [history workflow](docs/ni_phase_sim.md#history-attention-workflow).
+
+**Ni dense measured targets:** `ni-phase-measurements-20261014` derives 244
+measurements and 91 smooth measurement responses at all 21 saved times of the
+same 630 physical teachers. Values/JVPs use float64; no new MD or independent
+ancestors. Complete before training, with checksummed cache and training-only
+normalizers. See [workflow](docs/ni_phase_sim.md#measurement-supervision-workflow).

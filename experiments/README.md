@@ -1,5 +1,9 @@
 # Scientific research
 
+- [Ni trajectory validation](ni_latent_validation_20261018/README.md): longer fixed budgets, 16/28-source contrasts, physically constrained measurements and native SelfTICA/FMRC diagnostics.
+
+- [Ni latent trajectory methods](ni_latent_flow_20261018/README.md): LaM-SLidE trajectory core, SelfTICA/FMRC temporal representations and explicitly labeled memory/robustness adaptations.
+
 - [Dense Ni phase-space and tangent prediction](ni_phase_sim_20261013/README.md): direct atomic dynamics versus learned latent evolution and physical/latent derivative supervision.
 
 Use the [evidence summary](../docs/encoder_research/evidence.md) to understand the accumulated findings, [methods](../docs/encoder_research/methods.md) to interpret the outstanding questions, and the [experiment plan](../docs/encoder_research/experiment_plan.md) to choose the next discriminating work.
@@ -38,3 +42,5 @@ Keep questions, protocols, findings and reproduction configurations here. Operat
 Use the [archive/source index](../docs/archive/README.md) or [generated study catalogue](../docs/encoder_research/studies.md). Original source paths and exported result definitions remain intact. Earlier negative results and superseded unrun proposals retain their different statuses.
 
 </details>
+
+- [Ni history/context and dense-response comparisons](ni_ordering_flow_20261019/README.md).

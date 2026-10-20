@@ -10,8 +10,9 @@ from .data import root, read, load, normalization, digest, write_json, atomic_sa
 from .model import PhaseProcess
 
 
-def objective(model, initial, target, direction, response, norm, arm, c):
-    length=target.shape[1]; prediction=model(initial,length)
+def objective(model, initial, target, direction, response, norm, arm, c, *, prediction=None):
+    length=target.shape[1]
+    if prediction is None: prediction=model(initial,length)
     residual=(prediction-target).reshape(len(initial),length,80,2,3)
     scaled=residual/norm['path_scale'][:length][None,:,None,:,None]
     scores={'path':scaled.square().mean()}

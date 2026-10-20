@@ -1,0 +1,552 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[margin=19mm,top=17mm,bottom=18mm]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\hypersetup{hidelinks,pdftitle={Learning local structure and motion from simulation},pdfauthor={}}
+\titleformat{\section}{\large\bfseries}{}{0pt}{}
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+\titlespacing*{\paragraph}{0pt}{7pt}{0.6em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlength{\abovedisplayskip}{6pt}
+\setlength{\belowdisplayskip}{6pt}
+\setlength{\emergencystretch}{1em}
+\clubpenalty=10000
+\widowpenalty=10000
+\newcommand{\R}{\mathbb R}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\avg}[1]{\left\langle #1\right\rangle}
+\newcommand{\x}{\mathbf x}
+\newcommand{\X}{\mathbf X}
+\newcommand{\Pp}{\mathbf P}
+\newcommand{\z}{\mathbf z}
+\newcommand{\Z}{\mathbf Z}
+\newcommand{\cstate}{\mathbf c}
+\newcommand{\Y}{\mathbf Y}
+\newcommand{\Sim}{\operatorname{Sim}}
+
+\begin{document}
+\begin{center}
+{\LARGE\bfseries Learning local structure and motion from simulation}
+\end{center}
+\vspace{-4pt}
+
+We formulate a local model of structure and motion with an evolving memory.
+Observed positions and velocities initialize a representation of a central
+atom and its neighbourhood, together with a summary of the observed past.
+The representation and memory evolve jointly and yield predictions of local
+atomic states and structural measurements. Molecular dynamics under a fixed
+interatomic potential supplies future trajectories and their responses to
+small initial-state perturbations for joint training.
+
+\section{Starting snapshots and physical time}
+
+\paragraph{Indices.}
+The dataset contains $N$ starting snapshots. Snapshot $i$ contains $n_i$ atoms
+and is observed at physical time $t_i$. We use
+\[
+\begin{aligned}
+i&=1,\ldots,N &&\text{starting snapshot},\\
+b&&&\text{MD continuation from that snapshot},\\
+j&=1,\ldots,n_i &&\text{central atom}.
+\end{aligned}
+\]
+The index $i$ identifies a dataset example; its associated time is $t_i$.
+Different examples may come from different source MD trajectories.
+
+\paragraph{Saved observations and prediction times.}
+Let $\delta t$ be the numerical integration step of MD. If observations are
+saved every $m$ integration steps, their spacing is $\Delta t=m\delta t$.
+Within one uniformly saved source trajectory, let $t_{\mathrm{start}}$ be its
+first saved time and $\operatorname{frame}(i)$ the integer index of snapshot $i$.
+Then
+\[
+t_i=t_{\mathrm{start}}+\operatorname{frame}(i)\,\Delta t.
+\]
+A prediction starts at $t_i$. Let $h$ be the time advanced by one learned
+step, $K$ the number of steps, and $\tau_{\max}=Kh$ the total prediction horizon.
+We use $\tau\in[0,\tau_{\max}]$ for elapsed time after the starting snapshot.
+Step $k$ corresponds to elapsed time $\tau_k$ and physical time $s_{ik}$:
+\[
+\boxed{\tau_k=kh,\qquad s_{ik}=t_i+\tau_k,\qquad k=0,\ldots,K.}
+\]
+The physical continuation saves observations at the times $s_{ik}$.
+For example, $\delta t=1\,\mathrm{fs}$, $h=5\,\mathrm{fs}$ and $K=20$
+give a $0.1\,\mathrm{ps}$ prediction, with preceding history sampled at
+$\Delta t=0.1\,\mathrm{ps}$.
+
+\paragraph{Complete starting state.}
+At physical time $s$, atom $\ell$ has position $\mathbf r_{i\ell}(s)$ and
+velocity $\mathbf v_{i\ell}(s)$. Its mass is $m_\ell$, and its momentum is
+$\mathbf p_{i\ell}(s)=m_\ell\mathbf v_{i\ell}(s)$. The complete positions
+and momenta are
+\[
+\X_i(s)=\bigl(\mathbf r_{i1}(s),\ldots,\mathbf r_{in_i}(s)\bigr),
+\qquad
+\Pp_i(s)=\bigl(\mathbf p_{i1}(s),\ldots,\mathbf p_{in_i}(s)\bigr).
+\]
+The pair $(\X_i(t_i),\Pp_i(t_i))$, together with the periodic cell, initializes
+the physical continuation.
+
+\section{Local state and observed history}
+
+\paragraph{Tracked neighbourhood.}
+Let $\mathcal N_{ij}$ be the atoms selected around centre $j$ at time $t_i$,
+including the centre. Their identities and ordering are retained throughout
+the observed history and predicted future.
+For each $\ell\in\mathcal N_{ij}$, define the relative position and velocity
+in the nonperiodic case by
+\[
+\mathbf q_{ij\ell}(s)=\mathbf r_{i\ell}(s)-\mathbf r_{ij}(s),
+\qquad
+\mathbf w_{ij\ell}(s)=\mathbf v_{i\ell}(s)-\mathbf v_{ij}(s).
+\]
+When a displacement crosses the simulation box boundary, we account for the
+periodic boundary conditions.
+Collect these vectors in the arrays
+$\x_{ij}(s)=(\mathbf q_{ij\ell}(s))_{\ell\in\mathcal N_{ij}}$ and
+$\mathbf w_{ij}(s)=(\mathbf w_{ij\ell}(s))_{\ell\in\mathcal N_{ij}}$.
+The local atomic state is
+\[
+\boxed{S_{ij}(s)=\bigl(\x_{ij}(s),\mathbf w_{ij}(s)\bigr).}
+\]
+
+\paragraph{Observed history.}
+Let $L$ be the number of available observations, including the present.
+We write $C_{ij}$ for the preceding history:
+\[
+C_{ij}=\bigl(S_{ij}(t_i-(L-1)\Delta t),\ldots,S_{ij}(t_i-\Delta t)\bigr).
+\]
+The present state is written separately as $S_{ij,0}=S_{ij}(t_i)$.
+For four observations, the model therefore receives the states at
+$t_i-3\Delta t$, $t_i-2\Delta t$, $t_i-\Delta t$ and $t_i$.
+The input consists of these ordered local positions and velocities.
+The times specify which observations are supplied and which future is predicted.
+
+\section{Physical continuations and measurements}
+
+\paragraph{Hamiltonian dynamics.}
+Let $U(\X)$ be the energy of the complete configuration under the fixed
+interatomic potential. With momenta $\Pp=(\mathbf p_1,\ldots,\mathbf p_{n_i})$,
+the Hamiltonian is
+\[
+\boxed{H(\X,\Pp)=U(\X)+\sum_{\ell=1}^{n_i}
+\frac{\norm{\mathbf p_\ell}^2}{2m_\ell}.}
+\]
+The short teacher trajectory evolves in the starting periodic cell, held fixed
+throughout the continuation. Its equations of motion are
+\[
+\frac{d\mathbf r_\ell}{ds}=\frac{\partial H}{\partial\mathbf p_\ell}
+=\frac{\mathbf p_\ell}{m_\ell},
+\qquad
+\frac{d\mathbf p_\ell}{ds}=-\frac{\partial H}{\partial\mathbf r_\ell}.
+\]
+The simulator integrates these equations for the complete system:
+\[
+\Gamma_{ib}(t_i:t_i+\tau_{\max})
+=\Sim\!\left(\X_i(t_i),\Pp_i(t_i);\tau_{\max}\right).
+\]
+With fixed initial positions, momenta and cell, this continuation is
+deterministic. The teacher supplies one such continuation per starting state.
+Interactions with surrounding atoms contribute to the evolution of the local
+neighbourhood.
+
+\paragraph{Local future measurements.}
+From continuation $b$, extract the local state at each prediction time:
+\[
+S_{ibj,k}=S_{ibj}(s_{ik})
+=\bigl(\x_{ibj}(s_{ik}),\mathbf w_{ibj}(s_{ik})\bigr).
+\]
+Let $\phi_{\mathrm{str}}$ compute structural measurements from local positions,
+and let $\phi_{\mathrm{vel}}$ compute motion measurements from local positions
+and relative velocities. Their concatenation defines a fixed measurement map
+$\phi$ with $M$ outputs:
+\[
+\boxed{
+\Y_{ibj,k}=\phi(S_{ibj,k})
+=\begin{pmatrix}
+\phi_{\mathrm{str}}(\x_{ibj}(s_{ik}))\\
+\phi_{\mathrm{vel}}(\x_{ibj}(s_{ik}),\mathbf w_{ibj}(s_{ik}))
+\end{pmatrix}\in\R^M.
+}
+\]
+Structural measurements include bond order, topological descriptors and smooth
+local density descriptors. Motion measurements include relative-velocity
+moments, local flow and instantaneous rates of change of bond order.
+The sequence $(\Y_{ibj,0},\ldots,\Y_{ibj,K})$ describes how these properties
+change along one physical continuation.
+
+\section{Local dynamics and memory}
+
+\paragraph{Eliminating the surrounding degrees of freedom.}
+The local state $S$ retains a subset of the complete atomic configuration.
+Atoms outside the neighbourhood influence its motion and are themselves
+affected by it. Eliminating these degrees of freedom produces dependence on
+the local past. Choose a probability distribution over complete initial
+states and use conditional averaging over states with the same local
+observation. For fixed $i,b,j$, write $S(\tau)=S_{ibj}(t_i+\tau)$.
+Let $A(S)$ be the conditional average of the instantaneous local rate of
+change, $K_{\mathrm{mem}}$ the memory function, and $\eta_{ibj}(\tau)$ the
+contribution from the unresolved initial state. The Mori--Zwanzig identity
+then has the form~\cite{lin2021,gupta2025}
+\[
+\boxed{
+\frac{dS(\tau)}{d\tau}
+=A(S(\tau))
++\int_0^\tau K_{\mathrm{mem}}\bigl(\tau-\tau',S(\tau')\bigr)\,d\tau'
++\eta_{ibj}(\tau).
+}
+\]
+Here $\tau'$ is an earlier elapsed time. The memory function describes
+delayed coupling through the omitted degrees of freedom. It may depend
+nonlinearly on the past local state. The unresolved contribution depends on
+the complete initial condition; its statistical description generally has
+temporal correlations. The averaging distribution and projection determine
+all three terms.
+
+\paragraph{Information in the observed past.}
+The history $C_{ij}$ provides information about the surroundings through
+their previous effects on the neighbourhood. A finite observed history
+constrains the hidden starting conditions. We approximate the predictable
+evolution with a learned memory state initialized from this history.
+The deterministic model below leaves the remaining distribution of
+unresolved forcing unspecified. Its value losses fit local trajectories
+under the distribution of physical training states.
+
+\section{Proposed learned evolution with memory}
+
+\paragraph{Initial representation.}
+Let $E=(E_z,E_c)$ be an encoder with two outputs. The vector $\z$ contains
+features of the tracked atoms, and $\cstate$ contains $d_c$ memory components.
+The combined learned state is $\Z=(\z,\cstate)$. Its initial value is
+\[
+\boxed{
+\Z_{ij,0}=E(S_{ij,0},C_{ij})
+=\bigl(E_z(S_{ij,0},C_{ij}),E_c(S_{ij,0},C_{ij})\bigr).
+}
+\]
+Attention combines current atomic features with the ordered observations in
+$C_{ij}$. The observed history remains fixed during prediction; the memory
+$\cstate$ evolves with the predicted trajectory.
+
+\paragraph{Continuous evolution.}
+Let $f(\z,\cstate)$ be a learned rate of change of $\z$, and let $g_r(\z)$
+write information into memory component $r$, for $r=1,\ldots,d_c$.
+Let $\lambda_r>0$ be its learned decay rate, with units of inverse time.
+We use the coupled equations
+\[
+\boxed{
+\frac{d\z_{ij}}{d\tau}=f(\z_{ij},\cstate_{ij}),
+\qquad
+\frac{dc_{ij,r}}{d\tau}=-\lambda_r c_{ij,r}+g_r(\z_{ij}).
+}
+\]
+The second equation implies
+\[
+c_{ij,r}(\tau)
+=e^{-\lambda_r\tau}c_{ij,r}(0)
++\int_0^\tau e^{-\lambda_r(\tau-\tau')}
+g_r(\z_{ij}(\tau'))\,d\tau'.
+\]
+Each component therefore summarizes earlier states over a characteristic
+duration $1/\lambda_r$. This finite-memory construction follows the
+auxiliary-state approach used in iLED~\cite{menier2025}. The functions
+$f$ and $g$ provide learned nonlinear coupling between the state and its
+memory. Decay rates are shared across vector components that rotate together.
+
+Let $G_h$ denote numerical integration of the coupled equations over a
+duration $h$. At the prediction times,
+\[
+\boxed{
+\Z_{ij,k}=(\z_{ij}(\tau_k),\cstate_{ij}(\tau_k)),
+\qquad
+\Z_{ij,k+1}=G_h(\Z_{ij,k}).
+}
+\]
+The evolution is autonomous: $f$ and $g$ receive the learned state.
+Physical timestamps organize the observations and evaluation times.
+
+\paragraph{Atomic and measurement decoders.}
+Let $D$ decode a latent state into local positions and velocities, using the
+observed history. Predictions are anchored at the actual initial state:
+\[
+\boxed{
+\widehat S_{ij,k}=S_{ij,0}
++D(\z_{ij,k},C_{ij})-D(\z_{ij,0},C_{ij}).
+}
+\]
+Thus $\widehat S_{ij,0}=S_{ij,0}$. Write
+$\widehat S_{ij,k}=(\widehat\x_{ij,k},\widehat{\mathbf w}_{ij,k})$
+for its position and velocity components.
+
+Let $F$ be a second decoder that predicts the measurement vector directly
+from the latent state:
+\[
+\widehat\Y_{ij,k}=F(\z_{ij,k}).
+\]
+Its present output is fitted to the measured present state, and its future
+outputs are fitted to the simulated measurement sequence. The measurement
+targets supervise the learned representation. Rotating the atomic input
+rotates vector features and predicted atomic vectors; the scalar measurement
+outputs remain invariant.
+
+\paragraph{Trajectory and measurement losses.}
+For a vector of errors $\mathbf e$ and a positive diagonal weight matrix $W$,
+define $\norm{\mathbf e}_W^2=\mathbf e^{\mathsf T}W\mathbf e$.
+Matrices $W_S$ and $W_Y$ set the component scales for atomic states and
+measurements, using training statistics and fixed group weights. Angle brackets
+denote an average over training examples and the sampled time indices, with
+their specified weights. The value losses are
+\[
+\begin{aligned}
+L_{\mathrm{state}}&=
+\avg{\norm{\widehat S_{ij,k}-S_{ibj,k}}_{W_S}^2}_{k\geq1},\\
+L_{\mathrm{meas}}&=
+\avg{\norm{\widehat\Y_{ij,k}-\Y_{ibj,k}}_{W_Y}^2}_{k\geq0}.
+\end{aligned}
+\]
+To train the changes along the same connected trajectory, compare consecutive
+measurement increments:
+\[
+L_{\mathrm{inc}}=
+\avg{\norm{
+(\widehat\Y_{ij,k+1}-\widehat\Y_{ij,k})
+-(\Y_{ibj,k+1}-\Y_{ibj,k})}_{W_Y}^2}.
+\]
+Each pair of consecutive targets belongs to the same starting state,
+continuation and central atom.
+
+\paragraph{State consistency.}
+Reconstruction fits $D(E_z(S_{ibj,k},C_{ij}),C_{ij})$ to
+$S_{ibj,k}$.
+Kinematic consistency fits the predicted displacement between steps to the
+integrated relative velocity:
+\[
+\widehat\x_{ij,k+1}-\widehat\x_{ij,k}
+\simeq\frac h2\bigl(\widehat{\mathbf w}_{ij,k+1}
++\widehat{\mathbf w}_{ij,k}\bigr).
+\]
+Let $L_{\mathrm{cons}}$ collect the weighted squared reconstruction and
+kinematic errors. Latent-state consistency will also contribute to this loss.
+
+\section{Learning the response to initial perturbations}
+
+\paragraph{Perturbed physical states.}
+Choose position and momentum directions $\mathbf d^X_{ij}$ and
+$\mathbf d^P_{ij}$ for the complete system, with zero entries outside the
+selected neighbourhood. Their entries have units of position and momentum.
+For a dimensionless amplitude $a$, the perturbed initial state is
+\[
+\X_i^{(j,a)}(t_i)=\X_i(t_i)+a\mathbf d^X_{ij},
+\qquad
+\Pp_i^{(j,a)}(t_i)=\Pp_i(t_i)+a\mathbf d^P_{ij}.
+\]
+A position query sets $\mathbf d^P_{ij}=0$; a velocity query changes momenta
+according to the chosen velocity direction and atomic masses.
+The simulator propagates these initial changes through the complete system.
+Let $S_{ibj,k}^{(a)}$ be the resulting local state. Its response is
+\[
+\mathbf u_{ibj,k}
+=\left.\frac{\partial S_{ibj,k}^{(a)}}{\partial a}\right|_{a=0}.
+\]
+This vector gives the change in local positions and velocities per unit
+perturbation amplitude at time $s_{ik}$. Differentiating the numerical
+integration steps propagates this response to every saved point along the
+short trajectory. Atom identities and local periodic-image choices are fixed
+for the derivative calculation.
+
+\paragraph{Response of measurements.}
+Let $\phi_{\mathrm{sm}}$ contain the differentiable density and velocity
+measurements. For a differentiable function $f$, its Jacobian $J_f$ maps a
+small input change to the corresponding first-order output change.
+The physical response of these measurements is
+\[
+\boxed{
+\mathbf R_{ibj,k}
+=\left.\frac{\partial\phi_{\mathrm{sm}}(S_{ibj,k}^{(a)})}{\partial a}\right|_{a=0}
+=J_{\phi_{\mathrm{sm}}}(S_{ibj,k})\,\mathbf u_{ibj,k}.
+}
+\]
+Bond-order and topological measurements enter through the value losses.
+
+\paragraph{Response of the learned trajectory.}
+Apply the same initial local perturbation to the neural prediction, keeping
+the observed past $C_{ij}$ fixed. Both outputs of $E$ are evaluated on the
+perturbed present state, so the perturbation may change the initial memory.
+Let $\Z_{ij,k}^{(a)}=(\z_{ij,k}^{(a)},\cstate_{ij,k}^{(a)})$ and
+$\widehat S_{ij,k}^{(a)}$ be the resulting latent and decoded trajectories,
+including the perturbed initial state in the anchoring formula.
+Let $F_{\mathrm{sm}}$ select the density and velocity outputs of $F$. The
+predicted responses are
+\[
+\widehat{\mathbf u}_{ij,k}
+=\left.\frac{\partial\widehat S_{ij,k}^{(a)}}{\partial a}\right|_{a=0},
+\qquad
+\widehat{\mathbf R}_{ij,k}
+=\left.\frac{\partial F_{\mathrm{sm}}(\z_{ij,k}^{(a)})}{\partial a}\right|_{a=0}.
+\]
+Let $W_u$ and $W_R$ scale the atomic and measurement response errors using
+response magnitudes measured on training trajectories. The response losses are
+\[
+L_{\mathrm{atomic\,resp}}
+=\avg{\norm{\widehat{\mathbf u}_{ij,k}-\mathbf u_{ibj,k}}_{W_u}^2},
+\qquad
+L_{\mathrm{measured\,resp}}
+=\avg{\norm{\widehat{\mathbf R}_{ij,k}-\mathbf R_{ibj,k}}_{W_R}^2}.
+\]
+The averages include sampled perturbation directions and future steps. These
+losses match the direction and magnitude of the physical response throughout
+the predicted trajectory. Differentiation passes through the coupled state
+and memory dynamics at every learned step.
+
+\paragraph{Transport of response in latent space.}
+The physical continuation defines a teacher trajectory in the learned
+coordinates. For elapsed time $\tau$, define
+\[
+\z^{\mathrm{enc}}_{ibj}(\tau)
+=E_z(S_{ibj}(t_i+\tau),C_{ij}).
+\]
+Its memory $\cstate^{\mathrm{enc}}_{ibj}(\tau)$ is driven by this entire
+encoded physical trajectory:
+\[
+\frac{dc^{\mathrm{enc}}_{ibj,r}}{d\tau}
+=-\lambda_r c^{\mathrm{enc}}_{ibj,r}
++g_r(\z^{\mathrm{enc}}_{ibj}),
+\qquad
+\cstate^{\mathrm{enc}}_{ibj}(0)=E_c(S_{ij,0},C_{ij}).
+\]
+Thus $\Z^{\mathrm{enc}}_{ibj,k}
+=(\z^{\mathrm{enc}}_{ibj}(\tau_k),\cstate^{\mathrm{enc}}_{ibj}(\tau_k))$
+contains an encoded physical state and a memory accumulated along its
+continuation. This construction also applies to each perturbed teacher.
+Write $\mathbf e^z_{ibj}(\tau)$ and $\mathbf e^c_{ibj}(\tau)$ for the
+derivatives of its state and memory with respect to the initial perturbation
+amplitude. Their sampled values form the combined tangent
+\[
+\mathbf e_{ibj,k}
+=\left.\frac{\partial\Z^{\mathrm{enc},(a)}_{ibj,k}}
+{\partial a}\right|_{a=0}
+=\bigl(\mathbf e^z_{ibj,k},\mathbf e^c_{ibj,k}\bigr).
+\]
+The state component is
+$\mathbf e^z_{ibj,k}=J_{E_z}(S_{ibj,k};C_{ij})\mathbf u_{ibj,k}$.
+The Jacobian differentiates the current-state argument with the history
+fixed. The memory component propagates the responses of all preceding
+teacher states:
+\[
+\frac{de^c_{ibj,r}}{d\tau}
+=-\lambda_r e^c_{ibj,r}
++J_{g_r}(\z^{\mathrm{enc}}_{ibj})\mathbf e^z_{ibj},
+\qquad
+\mathbf e^c_{ibj}(0)=J_{E_c}(S_{ij,0};C_{ij})\mathbf u_{ibj,0}.
+\]
+These tangent functions follow the same physical continuation. Learned
+parameters are held fixed when differentiating with respect to $a$.
+
+Let $J_{G_h}$ differentiate the learned step with respect to its combined
+input state. Consistency of values and responses requires
+\[
+\boxed{\begin{aligned}
+G_h(\Z^{\mathrm{enc}}_{ibj,k})
+&\simeq\Z^{\mathrm{enc}}_{ibj,k+1},\\
+J_{G_h}(\Z^{\mathrm{enc}}_{ibj,k})\,\mathbf e_{ibj,k}
+&\simeq\mathbf e_{ibj,k+1}.
+\end{aligned}}
+\]
+The first residual contributes to $L_{\mathrm{cons}}$, using training-based
+scales for the state and memory components. The second compares a response
+advanced by the learned dynamics with the response of the encoded physical
+continuation, including its accumulated memory.
+Let $W_T$ scale latent response errors by the mean squared magnitude of the
+encoded physical response. The transport loss is
+\[
+L_{\mathrm{transport}}
+=\avg{\norm{
+J_{G_h}(\Z^{\mathrm{enc}}_{ibj,k})\mathbf e_{ibj,k}
+-\mathbf e_{ibj,k+1}}_{W_T}^2}.
+\]
+The scale is held fixed during each gradient calculation. Sampled transitions
+apply this constraint across the physical continuation.
+
+\newpage
+\section{Joint training and use of the representation}
+
+Let $\lambda_Y$, $\lambda_{\mathrm{inc}}$, $\lambda_u$, $\lambda_R$,
+$\lambda_T$ and $\lambda_C$ be nonnegative weights that set the contributions
+of the measurement, increment, response, transport and consistency losses.
+The joint training objective is
+\[
+\boxed{\begin{aligned}
+L={}&L_{\mathrm{state}}
++\lambda_Y L_{\mathrm{meas}}
++\lambda_{\mathrm{inc}}L_{\mathrm{inc}}
++\lambda_C L_{\mathrm{cons}}\\
+&+\lambda_u L_{\mathrm{atomic\,resp}}
++\lambda_R L_{\mathrm{measured\,resp}}
++\lambda_T L_{\mathrm{transport}}.
+\end{aligned}}
+\]
+The parameters of $E$, $f$, $g$, $D$, $F$ and the positive decay rates
+$\lambda_r$ are optimized together. The potential and measurement functions
+remain fixed. The physical simulator generates training targets; prediction
+advances the learned state and memory and applies the decoders. Derivative
+supervision constrains the response over the simulated teacher horizon.
+Learning longer memory effects requires physical observations over the
+corresponding durations.
+
+After training, the learned model can be frozen. A readout is a separate
+predictive model fitted to features of its initial combined state or predicted
+state and memory trajectory. Rotation-invariant summaries provide local features for
+tasks such as nucleus formation. Comparing these readouts with readouts of
+the directly measured input history assesses the predictive information
+provided by the learned dynamics. Source trajectories define the training
+and test groups, and normalization is fitted on training data. Training
+budgets and checkpoint rules are fixed before test evaluation.
+
+Trajectory evaluation includes atomic and measurement errors, connected
+increments and temporal correlations. Response errors are compared with the
+error of predicting zero response. A matched model without an explicit memory
+state provides a control for the contribution of $\cstate$. State-dependent
+memory models for molecular dynamics~\cite{ge2024} and memory-augmented neural
+operators~\cite{buitrago2025} motivate testing these temporal properties.
+
+\begin{thebibliography}{9}
+\bibitem{lin2021}
+Y.~T. Lin, Y. Tian, M. Anghel, and D. Livescu.
+\emph{Data-driven learning for the Mori--Zwanzig formalism:
+A generalization of the Koopman learning framework}.
+SIAM Journal on Applied Dynamical Systems, 2021.
+\href{https://doi.org/10.1137/21M1401759}{doi:10.1137/21M1401759}.
+
+\bibitem{gupta2025}
+P. Gupta, P.~J. Schmid, D. Sipp, T. Sayadi, and G. Rigas.
+\emph{Mori--Zwanzig latent space Koopman closure for nonlinear autoencoder}.
+Proceedings of the Royal Society A, 2025.
+\href{https://doi.org/10.1098/rspa.2024.0259}{doi:10.1098/rspa.2024.0259}.
+
+\bibitem{menier2025}
+E. Menier, S. Kaltenbach, M. Yagoubi, M. Schoenauer, and P. Koumoutsakos.
+\emph{Interpretable learning of effective dynamics for multiscale systems}.
+Proceedings of the Royal Society A, 2025.
+\href{https://doi.org/10.1098/rspa.2024.0167}{doi:10.1098/rspa.2024.0167}.
+
+\bibitem{ge2024}
+P. Ge, Z. Zhang, and H. Lei.
+\emph{Data-driven learning of the generalized Langevin equation with
+state-dependent memory}.
+Physical Review Letters, 133:077301, 2024.
+\href{https://doi.org/10.1103/PhysRevLett.133.077301}{doi:10.1103/PhysRevLett.133.077301}.
+
+\bibitem{buitrago2025}
+R. Buitrago Ruiz, T. Marwah, A. Gu, and A. Risteski.
+\emph{On the benefits of memory for modeling time-dependent PDEs}.
+International Conference on Learning Representations, 2025.
+\href{https://openreview.net/forum?id=o9kqa5K3tB}{OpenReview}.
+\end{thebibliography}
+
+\end{document}

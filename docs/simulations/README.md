@@ -198,3 +198,5 @@ Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent sh
 - [Continuation bias and birth-rate calibration](nucleus_continuation_bias_20261005.md): paired historical audit and present-selected, matched-temperature embryo continuations.
 
 - [Ni relaxation optimizer speed audit, October 11](ni_relaxation_speed_20261011.md): matched GPU FIRE/ABC-FIRE and ASE preconditioning benchmarks.
+
+- [Ni ordering physical branching pilot](ni_ordering_branches_20261019.md):24origins,16small velocity branches plus controls,6ps NPT.

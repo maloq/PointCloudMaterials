@@ -2,6 +2,7 @@
 import argparse
 import fcntl
 import os
+import signal
 from pathlib import Path
 import subprocess
 import sys
@@ -43,8 +44,9 @@ def launch(c):
     print(receipt, flush=True)
 
 
-def stage(c, bundle, lane, deadline, arm, name, marker):
-    folder = root(c)/'analyses'/arm['name']/'technical'; folder.mkdir(parents=True, exist_ok=True)
+def stage(c, bundle, lane, deadline, arm, name, marker, *, module=MODULE, hard_deadline=False, folder=None):
+    folder = root(c)/'analyses'/arm['name']/'technical' if folder is None else Path(folder)
+    folder.mkdir(parents=True, exist_ok=True)
     if (folder/marker).exists() or (folder/(name+'-failed.json')).exists():
         return None
     with (folder/'worker.lock').open('a') as lock:
@@ -56,15 +58,26 @@ def stage(c, bundle, lane, deadline, arm, name, marker):
             return None
         torch.cuda.empty_cache()
         for attempt in range(c['runtime']['max_attempts']):
-            command = [sys.executable, '-u', '-m', MODULE, name, '--config', str(bundle.config_path),
+            command = [sys.executable, '-u', '-m', module, name, '--config', str(bundle.config_path),
                        '--name', arm['name'], '--deadline', str(deadline)]
             log = folder/f'{name}-{time.time_ns()}.log'
             with log.open('a') as stream:
-                process = subprocess.Popen(command, stdout=stream, stderr=subprocess.STDOUT)
+                process = subprocess.Popen(command, stdout=stream, stderr=subprocess.STDOUT,
+                                           start_new_session=hard_deadline)
                 record = dict(stage=name, arm=arm['name'], lane=lane, pid=process.pid, attempt=attempt+1,
                               log=str(log), command=command, started=time.time())
                 write_json(root(c)/'technical'/f'lane-{lane}.json', record)
-                code = process.wait()
+                try:
+                    code = process.wait(timeout=max(1, deadline-time.time()) if hard_deadline else None)
+                except subprocess.TimeoutExpired:
+                    # This process group belongs to this stage, never another campaign.
+                    os.killpg(process.pid, signal.SIGTERM)
+                    try:
+                        process.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(process.pid, signal.SIGKILL); process.wait()
+                    code = 75
+                    record['hard_deadline_reached'] = True
             record.update(exit_code=code, finished=time.time())
             write_json(folder/f'{name}-attempt-{time.time_ns()}.json', record)
             if code == 75:

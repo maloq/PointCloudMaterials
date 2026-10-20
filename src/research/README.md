@@ -1,6 +1,14 @@
 # Implementations of recorded research protocols
 
-- `ni_phase_sim`: fixed-identity Q,V prediction and latent tangent transport; [workflow](../../docs/ni_phase_sim.md).
+- `ni_latent_flow` validation workflow: native objective/readout diagnostics, saved Ni history expansion and constrained measurement trajectories; [workflow](../../docs/ni_latent_validation.md).
+
+- `ni_latent_flow`: native Ni joint trajectory generation, exact SelfTICA/FMRC objectives, matched memory controls and independent path/nucleus diagnostics; [workflow](../../docs/ni_latent_flow.md).
+
+- `ni_spatial_scales`: shared native Ni kinetic training with complete-ball 8/12/20-Angstrom density/motion context, matched local control and source-paired information/generation/nucleus evaluations; [workflow](../../docs/ni_spatial_scales.md).
+
+- `ni_kinetic_latent`: measured Ni state compression, nonreversible lagged objectives, common stochastic latent propagation, liquid-order retention and separate nucleus readouts; [workflow](../../docs/ni_kinetic_latent.md).
+
+- `ni_phase_sim`: fixed-identity Q,V prediction, latent tangent transport and measured-state supervision; [workflow](../../docs/ni_phase_sim.md).
 
 `measurement_sim.rate_campaign`: direct Ni measurements with optional initial
 density rates,80/320-state source-diversity controls,1/5-fs neural steps and
@@ -232,3 +240,5 @@ see [results](../../output/structural_state/repaired-review-20260923/README.md).
 `encoder_quality/` evaluates frozen current native MACE on fixed liquid/interface, geometry/noise, temporal and likelihood-readout controls; [protocol](../../experiments/encoder_quality_20260926/README.md).
 
 Response-atlas follow-up (2026-10-01): stronger toy controls and fixed-parent shot precision; see `experiments/response_atlas_20261001/FOLLOWUP.md` and `docs/response_atlas.md`.
+
+- `ni_ordering_flow`: joint measured trajectories with observed-history/context ablations and dense Ni response supervision.

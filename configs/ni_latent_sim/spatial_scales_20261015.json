@@ -1,0 +1,196 @@
+{
+  "protocol": "ni-spatial-scales-20261015-v1",
+  "seed": 20261025,
+  "model_seeds": [
+    20261025,
+    20261026,
+    20261027
+  ],
+  "output": "${storage:training_storage}/ni_spatial_scales/radius-20261015-v1",
+  "cache": "${storage:cache}/ni-spatial-scales/radius-20261015-v1",
+  "model": {
+    "latent": 32,
+    "width": 256,
+    "mixtures": 8,
+    "history": 4
+  },
+  "representation": {
+    "lags": [
+      5,
+      10
+    ],
+    "ridge": 0.001,
+    "beta": 0.001
+  },
+  "training": {
+    "repr_epochs": 12,
+    "decoder_epochs": 12,
+    "dynamics_epochs": 12,
+    "batch_size": 1024,
+    "microbatch": 1024,
+    "lr": 0.001,
+    "warmup_epochs": 1,
+    "save_every": 100
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 64,
+    "per_source_regime": 4,
+    "bootstrap": 1000
+  },
+  "runtime": {
+    "hours": 12,
+    "workers": 4,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "local-s20261025",
+      "kind": "hybrid",
+      "scale": "local",
+      "seed": 20261025
+    },
+    {
+      "name": "r8-s20261025",
+      "kind": "hybrid",
+      "scale": "r8",
+      "seed": 20261025
+    },
+    {
+      "name": "r12-s20261025",
+      "kind": "hybrid",
+      "scale": "r12",
+      "seed": 20261025
+    },
+    {
+      "name": "r20-s20261025",
+      "kind": "hybrid",
+      "scale": "r20",
+      "seed": 20261025
+    },
+    {
+      "name": "local-s20261026",
+      "kind": "hybrid",
+      "scale": "local",
+      "seed": 20261026
+    },
+    {
+      "name": "r8-s20261026",
+      "kind": "hybrid",
+      "scale": "r8",
+      "seed": 20261026
+    },
+    {
+      "name": "r12-s20261026",
+      "kind": "hybrid",
+      "scale": "r12",
+      "seed": 20261026
+    },
+    {
+      "name": "r20-s20261026",
+      "kind": "hybrid",
+      "scale": "r20",
+      "seed": 20261026
+    },
+    {
+      "name": "local-s20261027",
+      "kind": "hybrid",
+      "scale": "local",
+      "seed": 20261027
+    },
+    {
+      "name": "r8-s20261027",
+      "kind": "hybrid",
+      "scale": "r8",
+      "seed": 20261027
+    },
+    {
+      "name": "r12-s20261027",
+      "kind": "hybrid",
+      "scale": "r12",
+      "seed": 20261027
+    },
+    {
+      "name": "r20-s20261027",
+      "kind": "hybrid",
+      "scale": "r20",
+      "seed": 20261027
+    }
+  ],
+  "birth_probe": {
+    "seed": 20261025,
+    "tasks": [
+      "nucleus32",
+      "nucleus64"
+    ],
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "batch_size": 512,
+    "threads": 2,
+    "fit_workers": 2,
+    "fit_threads": 2,
+    "bootstrap": 1000,
+    "probe": {
+      "iterations": 600,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "CPU"
+    }
+  },
+  "comparisons": [
+    [
+      "r8",
+      "local"
+    ],
+    [
+      "r12",
+      "local"
+    ],
+    [
+      "r20",
+      "local"
+    ]
+  ],
+  "split": {
+    "policy": "train-test-only",
+    "original_roles_retained": true,
+    "checkpoint": "fixed_final_epochs",
+    "selection": false
+  },
+  "scope": {
+    "native": "fixed central atom; existing nearest80 local244 plus full observed periodic ball at declared radius; no cap on context atoms",
+    "birth": "all existing assay rows; learned encoder uses present input only; original fixed-membership local history in explicit controls",
+    "teacher": "existing native NPT 0.1ps; no new simulations",
+    "conditions": "no temperature, absolute time, age, box, species, PTM/crystal/birth labels supplied as model features",
+    "generative": "central local measurements through6ps; all context information afterinitialobservation is carried by autonomous latent state; no savedfuturecontext",
+    "comparison": "fixed central244targets and shared331inputarchitecture; localcontrol appends87zeros; scaleschangeonlyobservedregion"
+  },
+  "base_run": "${storage:training_storage}/ni_kinetic_latent/native-20261015-v1",
+  "base_plan_sha256": "ec26712af4b0113bea6c4b5dd95df0bc6baf200b33e251951bea29e8d03094be",
+  "context": {
+    "radii_A": [
+      8.0,
+      12.0,
+      20.0
+    ],
+    "shell_fractions": [
+      0.35,
+      0.6,
+      0.85
+    ],
+    "shell_width_fraction": 0.1,
+    "batch_size": 32,
+    "checkpoint_every_frames": 64
+  }
+}

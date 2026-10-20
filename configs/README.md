@@ -1,5 +1,13 @@
 # Configuration index
 
+- [Ni trajectory validation](ni_latent_sim/validation_20261018.json): 42 fixed-budget fits, 21 native-objective reference audits, expanded 90-source data and explicit support/conditioning controls; [protocol](../experiments/ni_latent_validation_20261018/README.md).
+
+- [Ni latent trajectory methods](ni_latent_sim/flow_20261018.json): 17 treatments × three seeds, 3,200-update predictors, 12-epoch temporal encoders/decoders, native 0.1-ps trajectories through 6 ps; [protocol](../experiments/ni_latent_flow_20261018/README.md).
+
+- [Ni spatial-scale comparison](ni_latent_sim/spatial_scales_20261015.json): local80 versus 8/12/20-Angstrom observed context, identical 331-input hybrid models and central244 targets, three seeds and 12 epochs per representation/decoder/dynamics stage; [workflow](../docs/ni_spatial_scales.md).
+
+- [Ni kinetic latent states and local generation](ni_latent_sim/kinetic_latent_20261015.json): six methods × three seeds, native 0.1 ps measurements through 6 ps, 12-epoch representation/decoder/dynamics stages and independent full-cell nucleus readouts; [workflow](../docs/ni_kinetic_latent.md).
+
 - [Ni phase-space prediction](ni_latent_sim/phase_space_20261013.json):12 fixed-budget direct/latent/derivative fits on dense deterministic Ni paths; [workflow](../docs/ni_phase_sim.md).
 
 Ni density-rate and source expansion: [`ni_latent_sim/density_rates_20261013.json`](ni_latent_sim/density_rates_20261013.json).
@@ -681,6 +689,12 @@ compares GPU neighbor construction, cuEquivariance, replica batching, precision
 and finite differences against archived float64 responses; [workflow](../docs/response_atlas.md#october-2-oracle-acceleration-benchmark).
 # Motion data revision
 
+Ni measurement-supervised latent trajectories:
+`ni_latent_sim/phase_measurements_20261014.json` fixes twelve 8,000-update fits
+and frozen representation diagnostics under one absolute 12-hour queue cap.
+`phase_measurements_preflight_20261014.json` is local integration/benchmark only.
+See [workflow](../docs/ni_phase_sim.md#measurement-supervision-workflow).
+
 `structural_response/motion_fast_20261007_v4.json` reuses completed spatial
 checkpoints, disables broad spatial replay and compares centered-difference
 joint motion learning with cached-backbone adapters. Eight1600-update fits;
@@ -718,3 +732,5 @@ Ni encoder/decoder attention: `ni_latent_sim/phase_history_20261013.json`;
 21 matched fixed-budget fits with one/four native Q,V observations and automatic
 physical/nucleus evaluation. `phase_history_preflight_20261013.json` is the local
 real-data benchmark only. See [workflow](../docs/ni_phase_sim.md#history-attention-workflow).
+
+- `ni_latent_sim/ordering_20261019.json`: nine-hour matched Ni history/context queue.

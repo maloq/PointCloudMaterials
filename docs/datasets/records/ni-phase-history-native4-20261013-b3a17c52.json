@@ -1,0 +1,92 @@
+{
+  "dataset_id": "ni-phase-history-native4-20261013",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/complete.json",
+      "relative_path": "complete.json",
+      "sha256": "7f475fdcd63e439df18d467c6f2ec04e7a2444644794d318188d96c0a14c6d18",
+      "kind": "metadata",
+      "keys": [
+        "birth_states",
+        "files",
+        "identity",
+        "physical"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/12d7341cbb2c00a856229ede723c0a5582635d3f0a9a26a14ed2ab907128833e/complete.json",
+      "relative_path": "features/entries/12d7341cbb2c00a856229ede723c0a5582635d3f0a9a26a14ed2ab907128833e/complete.json",
+      "sha256": "a702efff2525b038648fa17f4decdaf76acb22a1aca544d626a6a106cf972412",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/2b5e5b4acadbe11a9aef890ea00e297015c725cd3308e1e4fc1f2803c7e9cc5a/complete.json",
+      "relative_path": "features/entries/2b5e5b4acadbe11a9aef890ea00e297015c725cd3308e1e4fc1f2803c7e9cc5a/complete.json",
+      "sha256": "dd9a019a4bc165e56ddcb0e0cfd661436703183bcec0577fc895a223ff45839c",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/b314568f18816ec2a70fe16c6553edaa1ec85b1ed436069b230c45c2f8d4fd58/complete.json",
+      "relative_path": "features/entries/b314568f18816ec2a70fe16c6553edaa1ec85b1ed436069b230c45c2f8d4fd58/complete.json",
+      "sha256": "1695f965fba4da5a0560e6dc375dbb6b9015169373a42c9f0a895629cab79700",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/c2fd2951a6f36bf069a53fcb412050cc03cd1faa13bb31ca47c6a35cda48e6d4/complete.json",
+      "relative_path": "features/entries/c2fd2951a6f36bf069a53fcb412050cc03cd1faa13bb31ca47c6a35cda48e6d4/complete.json",
+      "sha256": "e3cade9026504a81d2a92d4166468dcee1be8a5c635d47c1b68870c234f74ec1",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/cd6395ea7811e34f32d4ffac507f8ff05d26c6a6ec489a7b6ad394773280411b/complete.json",
+      "relative_path": "features/entries/cd6395ea7811e34f32d4ffac507f8ff05d26c6a6ec489a7b6ad394773280411b/complete.json",
+      "sha256": "ff42f31d63a2f823380c42da3bc8d7d7b08b85c4dd57fec770926242dc04145a",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-phase-history/native4-20261013-v1/features/entries/d2c758c4567b129f4c1714a7fa6d9e7ca30664dfd53c131a1eb097b1759db778/complete.json",
+      "relative_path": "features/entries/d2c758c4567b129f4c1714a7fa6d9e7ca30664dfd53c131a1eb097b1759db778/complete.json",
+      "sha256": "42de509efca743ada0895746c1fd468cbf2c5d6a71471c44efcc07a58ccf3f70",
+      "kind": "metadata",
+      "keys": [
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

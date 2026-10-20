@@ -70,11 +70,11 @@
         ]
       },
       "provenance": {
-        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638",
         "scientific_scope": {
           "supported_claim": "A reusable pressure- and temperature-equilibrated bulk-liquid starting configuration for independent homogeneous-crystallization replicas under the exactly recorded Hamiltonian and preparation protocol.",
           "unsupported_claim": "An equilibrium melting point, a nucleation rate, or any solid-liquid interface property. This liquid-only producer deliberately performs no interface preparation."
-        }
+        },
+        "potential_sha256": "75428afe3a1d7d8062e19bcaabd5c433623cabf308242ec9fb493e38604fb638"
       }
     },
     {

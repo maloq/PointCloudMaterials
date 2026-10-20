@@ -19,20 +19,20 @@ from .model import ballistic
 from .births import invariant, fit_spaces, measured
 
 
-def fitted(c, arm):
+def fitted(c, arm, *, model_factory=HistoryProcess):
     folder = root(c)/'analyses'/arm['name']/'technical'
     if sha(folder/'final.pt') != read(folder/'complete.json')['checkpoint_sha256']:
         raise ValueError('Changed final history checkpoint')
     saved = torch.load(folder/'final.pt', map_location='cuda', weights_only=False)
-    model = HistoryProcess(c, arm).cuda().eval(); model.load_state_dict(saved['model'])
+    model = model_factory(c, arm).cuda().eval(); model.load_state_dict(saved['model'])
     return model, saved
 
 
-def evaluate(c, arm, deadline):
+def evaluate(c, arm, deadline, *, model_factory=HistoryProcess, family=FAMILY):
     folder = root(c)/'analyses'/arm['name']/'technical'
     if (folder/'evaluation-complete.json').exists():
         return True
-    model, saved = fitted(c, arm)
+    model, saved = fitted(c, arm, model_factory=model_factory)
     p, records, state, tangent, history = load(c, 'test')
     norm = {k: v.cuda() for k, v in saved['normalization'].items()}
     predictions = []; responses = []; latent = []
@@ -99,7 +99,7 @@ def evaluate(c, arm, deadline):
         state=state.cpu(), tangent=tangent.cpu(), metrics=all_metrics,
         rows=[dict(job=r['job']['key'], source=r['source'], ancestor=r['ancestor'], atom_ids=r['atom_ids']) for r in records]))
     for name, values in [('prediction', rows), ('measurements', measurement_rows), ('latent_transport', latent)]:
-        write_metric_rows(values, folder.parent, family=FAMILY, name=name)
+        write_metric_rows(values, folder.parent, family=family, name=name)
     figures(folder, prediction, state, records)
     summary = {f'evaluation/{r["metric"]}/{r["horizon_fs"]}fs': r['value'] for r in rows if r['model'] == 'neural'}
     summary['evaluation/jvp_secant_error'] = numerical
@@ -125,16 +125,23 @@ def controls(c, p):
     write_json(root(c)/'technical/birth-controls-complete.json', dict(state='complete'))
 
 
-def births(c, p, arm, deadline):
+def births(c, p, arm, deadline, *, model_factory=HistoryProcess, family=FAMILY,
+           extract=None, extra_spaces=None):
     folder = root(c)/'analyses'/arm['name']/'technical'
     if (folder/'birth-evaluation-complete.json').exists():
         return True
-    model, saved = fitted(c, arm); ec = birth_config(c)
+    model, saved = fitted(c, arm, model_factory=model_factory); ec = birth_config(c)
     data = torch.load(cache(c)/'births.pt', map_location='cpu', weights_only=False)
     measurement = torch.load(cache(ec)/'measurements.pt', map_location='cpu', weights_only=False).numpy().reshape(len(data['state']), 4, 244)
     metadata = dict(plan=p['identity'], checkpoint=sha(folder/'final.pt'))
     pool = RetainedCache(cache(c)/'features', 6)
     with pool.lease(digest(metadata), deadline=deadline, metadata=metadata) as bank:
+        if not (bank/'complete.json').exists() and extract is not None:
+            value = extract(model, data, ec['batch_size'])
+            if not all(np.isfinite(v).all() for v in value.values()):
+                raise FloatingPointError('Nonfinite extracted birth features')
+            atomic_save(bank/'features.pt', value)
+            write_json(bank/'complete.json', dict(sha256=sha(bank/'features.pt')))
         if not (bank/'complete.json').exists():
             first = []; path = []
             with torch.no_grad():
@@ -158,7 +165,9 @@ def births(c, p, arm, deadline):
         spaces = dict(phi=value['phi'], path=value['path'],
             measurements_path=np.concatenate((measurement[:, -1], value['path']), -1),
             history_measurements_path=np.concatenate((measurement.reshape(len(measurement), -1), value['path']), -1))
-        failures = fit_spaces(ec, p, data, arm['name'], spaces, family=FAMILY)
+        if extra_spaces is not None:
+            spaces.update(extra_spaces(value, measurement))
+        failures = fit_spaces(ec, p, data, arm['name'], spaces, family=family)
     if failures:
         raise RuntimeError(f'Independent birth fits failed: {failures}')
     fields = {}
@@ -171,7 +180,7 @@ def births(c, p, arm, deadline):
     return True
 
 
-def compare(c):
+def compare(c, *, family=FAMILY):
     individual = []; paired = []
     complete = {}
     for arm in c['arms']:
@@ -196,19 +205,19 @@ def compare(c):
                         difference=float(means[:, index].mean()), lower95=lo, upper95=hi, ancestors=len(groups)))
     out = root(c)/'analyses/comparison'
     if paired:
-        write_metric_rows(paired, out, family=FAMILY, name='physical_paired')
+        write_metric_rows(paired, out, family=family, name='physical_paired')
     ec = birth_config(c)
     for f in root(ec).glob('analyses/*/*/*/lead-*/tables/scores.csv'):
         with f.open() as stream:
             individual.extend(csv.DictReader(stream))
     if individual:
-        write_metric_rows(individual, out, family=FAMILY, name='birth_individual')
+        write_metric_rows(individual, out, family=family, name='birth_individual')
         groups = defaultdict(list)
         for r in individual:
             groups[r['model'].split('-s')[0], r['space'], r['task'], r['lead_ps'], r['metric']].append(float(r['value']))
         summary = [dict(treatment=k[0], space=k[1], task=k[2], lead_ps=k[3], metric=k[4],
             value=float(np.mean(v)), seed_sd=float(np.std(v)), seeds=len(v)) for k, v in groups.items()]
-        write_metric_rows(summary, out, family=FAMILY, name='birth_summary')
+        write_metric_rows(summary, out, family=family, name='birth_summary')
     pairs = []
     for task in ec['tasks']:
         for lead in ec['leads_ps']:
@@ -219,9 +228,9 @@ def compare(c):
                     boot, _ = bootstrap_scores(z['label'][te], z['probability'][te], z['weight'][te], slots, draws, None)
                     name, space = f.parts[-6:-4]
                     bundles[name, space] = (z['id'][te].copy(), scores(z['label'][te], z['probability'][te], z['weight'][te]), boot)
-            for space in ['phi', 'path', 'measurements_path', 'history_measurements_path']:
+            for space in c.get('birth_spaces', ['phi', 'path', 'measurements_path', 'history_measurements_path']):
                 contrasts = [(a, space, b, space) for a, b in c['comparisons']]
-                if space.endswith('measurements_path'):
+                if space in ['measurements_path', 'history_measurements_path', 'history_measurements_decoded_path']:
                     baseline = 'history_measurements' if space.startswith('history_') else 'measurements'
                     contrasts += [(a['name'].split('-s')[0], space, 'controls', baseline) for a in c['arms'] if a['seed'] == c['seed']]
                 for left, ls, right, rs in contrasts:
@@ -238,4 +247,4 @@ def compare(c):
                         pairs.append(dict(left=left, left_space=ls, right=right, right_space=rs, task=task,
                             lead_ps=lead, metric=metric, difference=float(np.mean(v)), lo=lo, hi=hi, seeds=len(v)))
     if pairs:
-        write_metric_rows(pairs, out, family=FAMILY, name='birth_paired')
+        write_metric_rows(pairs, out, family=family, name='birth_paired')

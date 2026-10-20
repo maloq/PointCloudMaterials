@@ -1,0 +1,905 @@
+{
+  "dataset_id": "ni-kinetic-measurements-20261015",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt06/complete.json",
+      "relative_path": "annotations/ni-T1000-melt06/complete.json",
+      "sha256": "8526a3930820a44246adf67a8a000d4b555ab8fd3591d1d91a836b4405576e6f",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt07/complete.json",
+      "relative_path": "annotations/ni-T1000-melt07/complete.json",
+      "sha256": "68d13810ffa0535dbf1fb84ddfa94e14d2d8aec95944e752f72e2d459d83962c",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt08/complete.json",
+      "relative_path": "annotations/ni-T1000-melt08/complete.json",
+      "sha256": "8e48029faf46659da24859ac2422febfe7609536447f944736e223bdc437546a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt09/complete.json",
+      "relative_path": "annotations/ni-T1000-melt09/complete.json",
+      "sha256": "dd2b4567f82f9382cb2255d017378e60293a9dac93372422f7ed698a0df22ab5",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt10/complete.json",
+      "relative_path": "annotations/ni-T1000-melt10/complete.json",
+      "sha256": "d5a257963df16080820fd8c853791a1b4818ccea7fd808bd78714f2010e0a1bc",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1000-melt11/complete.json",
+      "relative_path": "annotations/ni-T1000-melt11/complete.json",
+      "sha256": "9f5f2b82c5bd25943ff25412b662bb39444788d3115023e1d9c8b64dcd142325",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt06/complete.json",
+      "relative_path": "annotations/ni-T1050-melt06/complete.json",
+      "sha256": "69c7faae282ffa1536aaff119f5c459d3bbf7dcb553fcbc00ff54dcd04bea8bc",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt07/complete.json",
+      "relative_path": "annotations/ni-T1050-melt07/complete.json",
+      "sha256": "3835ea68fb23cb884476886a6899a455c2a1042b103bbcef8ecb304f853c6286",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt08/complete.json",
+      "relative_path": "annotations/ni-T1050-melt08/complete.json",
+      "sha256": "0b6ae5005df7906ff35a3f435d466463c667f732c8c04bfd91603357c1876142",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt09/complete.json",
+      "relative_path": "annotations/ni-T1050-melt09/complete.json",
+      "sha256": "3d08a117f7ed548c5d59d62f4e850e18fba0452812422dfd670d6340ae90ce64",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt10/complete.json",
+      "relative_path": "annotations/ni-T1050-melt10/complete.json",
+      "sha256": "c618c084869fc0420a6f0778ff5066e13d63b4fd2dc2f2e5ba59247534efabbf",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1050-melt11/complete.json",
+      "relative_path": "annotations/ni-T1050-melt11/complete.json",
+      "sha256": "cb28c1a5ae5af3eb3b5043d02c896a726fba8f366a3de7a983b28e94f3cd7343",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt00/complete.json",
+      "relative_path": "annotations/ni-T1100-melt00/complete.json",
+      "sha256": "b9a271763d53c067ce091d0a248269f5179dc2cf5554981a54f6c0d31178dbbd",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt01/complete.json",
+      "relative_path": "annotations/ni-T1100-melt01/complete.json",
+      "sha256": "d168a10187ccf6fb846aeee23fd7a2d20c1f6808a7f80bcd2bce863405b60eea",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt02/complete.json",
+      "relative_path": "annotations/ni-T1100-melt02/complete.json",
+      "sha256": "f3441cce2d431ae17b985ecdacffd48fdb84c82176e41148625769c90632a054",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt03/complete.json",
+      "relative_path": "annotations/ni-T1100-melt03/complete.json",
+      "sha256": "9074097448a4dd2e7baf1249de022605de59ecf9493e9db688727092103ac8f9",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt04/complete.json",
+      "relative_path": "annotations/ni-T1100-melt04/complete.json",
+      "sha256": "fe8306ca5b2f09385ee2c97f2ad342225218ce36886580b0460082dd0a3cc451",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt05/complete.json",
+      "relative_path": "annotations/ni-T1100-melt05/complete.json",
+      "sha256": "0d3b5a07f164ece7d94e68f8e9239fb3b06502eeef858b949f64299ec7b9688a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt06/complete.json",
+      "relative_path": "annotations/ni-T1100-melt06/complete.json",
+      "sha256": "fefca5014b74ae66d7ef182c3c141e24d8a9955381005e5b8c476baeda62e8e1",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt07/complete.json",
+      "relative_path": "annotations/ni-T1100-melt07/complete.json",
+      "sha256": "dc613969b7a9da6a6f5a6276487a32cb93a97fdac436fb5962b2248ecc17bef4",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt08/complete.json",
+      "relative_path": "annotations/ni-T1100-melt08/complete.json",
+      "sha256": "697b9652a67894a3dc663a0e49e21c860c968feefb1ac42b6ff3b478e284bd35",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt09/complete.json",
+      "relative_path": "annotations/ni-T1100-melt09/complete.json",
+      "sha256": "6100eab82d37f376edf0d48850efde521d3810964c89e165775c65f4a3545db8",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt10/complete.json",
+      "relative_path": "annotations/ni-T1100-melt10/complete.json",
+      "sha256": "1d7113072a9419b466fcbe15b1120d40bb049ef8e465b1e65e45e956fb746b17",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1100-melt11/complete.json",
+      "relative_path": "annotations/ni-T1100-melt11/complete.json",
+      "sha256": "396bc727d7b96d36ba547b585828f536e478105932ffb933a3e438b3524c6096",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt06/complete.json",
+      "relative_path": "annotations/ni-T1125-melt06/complete.json",
+      "sha256": "1f3273f0777b1f9c1027e2563efdfe726237d18b883def321beee52563d8562a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt07/complete.json",
+      "relative_path": "annotations/ni-T1125-melt07/complete.json",
+      "sha256": "621dc4103efb618ab45b6731be3e5d71880d29e29cc85e695f4863b39b05fbe0",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt08/complete.json",
+      "relative_path": "annotations/ni-T1125-melt08/complete.json",
+      "sha256": "b8829acb5847559115dda633a68e70cd04c0169ce2c85151e1d304c5a74b8ec3",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt09/complete.json",
+      "relative_path": "annotations/ni-T1125-melt09/complete.json",
+      "sha256": "2fdcc1f60148929027eaf15e4b1bc874ca47dc8158733dde972ad3383ba97eae",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt10/complete.json",
+      "relative_path": "annotations/ni-T1125-melt10/complete.json",
+      "sha256": "f26481ea4f60e5e9c340c8eaaa6e8603cd4b82ac8addbd8f41aa06d4d9b34b3c",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1125-melt11/complete.json",
+      "relative_path": "annotations/ni-T1125-melt11/complete.json",
+      "sha256": "16c11ba89f12f1fd6049a903a37d6aa79114baed9bf59cd73d720b0d23668ff3",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt06/complete.json",
+      "relative_path": "annotations/ni-T1150-melt06/complete.json",
+      "sha256": "50b6f42cc9ed92369f0343f7a2536c3e7f156e074017a3a490d67745619dbbe1",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt07/complete.json",
+      "relative_path": "annotations/ni-T1150-melt07/complete.json",
+      "sha256": "0f30f14783334c766a59a88bcd76f3ec76f7b24943be4f1590c26cbb6f1b0f35",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt08/complete.json",
+      "relative_path": "annotations/ni-T1150-melt08/complete.json",
+      "sha256": "a8e4b99fcb2564d05c344d046163f9371b64273c94265ddecc5be172c51ec02e",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt09/complete.json",
+      "relative_path": "annotations/ni-T1150-melt09/complete.json",
+      "sha256": "bdccc30209cf52fdfb16d2b828636628ed63a2884f320ac87be4ac6db7253c30",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt10/complete.json",
+      "relative_path": "annotations/ni-T1150-melt10/complete.json",
+      "sha256": "4ea911c81fad6ce32d1ce01dd1cb12b38a4cebdd72214d0f10bb108f76bd7389",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1150-melt11/complete.json",
+      "relative_path": "annotations/ni-T1150-melt11/complete.json",
+      "sha256": "250fb8c2746f26991245d874ec703ceed8b3b25a044032ef85df3cb656ab9d63",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt00/complete.json",
+      "relative_path": "annotations/ni-T1200-melt00/complete.json",
+      "sha256": "ab8e5a9b5dea7ebfd7173adbb4caa56debea83e35fc4b0c0b0d337dfa26deb25",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt01/complete.json",
+      "relative_path": "annotations/ni-T1200-melt01/complete.json",
+      "sha256": "e0489234061d254b988d06ea1944aebaf610df3603486a2d9fc9db5738940cb8",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt02/complete.json",
+      "relative_path": "annotations/ni-T1200-melt02/complete.json",
+      "sha256": "8c256ef7ba8b877194182e003f053133996a7b8fc8d79b7025de8904ec90e1f2",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt03/complete.json",
+      "relative_path": "annotations/ni-T1200-melt03/complete.json",
+      "sha256": "544583da776fa8e69409fd32cf5f4d68c287523463f806d661f8661b4be9e099",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt04/complete.json",
+      "relative_path": "annotations/ni-T1200-melt04/complete.json",
+      "sha256": "1fed341512857336e124fe0b87f178213af71bf41d9357bd5d8b4613acc0a044",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1200-melt05/complete.json",
+      "relative_path": "annotations/ni-T1200-melt05/complete.json",
+      "sha256": "50647bd8d28aa37561028d6edaeea2b7299fe836fd941efbd47cd401084654e9",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt00/complete.json",
+      "relative_path": "annotations/ni-T1300-melt00/complete.json",
+      "sha256": "c9d513a65ec06446eda3780e0166b2aa9b503bbdbda7546df6732e8667d4d27d",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt01/complete.json",
+      "relative_path": "annotations/ni-T1300-melt01/complete.json",
+      "sha256": "d8e9ae9ced165facfa5ac8624c95409040d9a7d5517887ba56bd86ae0d4add6b",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt02/complete.json",
+      "relative_path": "annotations/ni-T1300-melt02/complete.json",
+      "sha256": "f69810be052b91bb5b736b05d2146b239b813bdbb8cf4bc2af9ab5dfeb2fde4e",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt03/complete.json",
+      "relative_path": "annotations/ni-T1300-melt03/complete.json",
+      "sha256": "8ac0fe0e0a676cb08566d330602654cb1e7267db045f6ea4df23dd9140d8093a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt04/complete.json",
+      "relative_path": "annotations/ni-T1300-melt04/complete.json",
+      "sha256": "5f5fca1e7737096ae09cbc4b1f81f742719c34abd0c00895d61ea3a50e256276",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1300-melt05/complete.json",
+      "relative_path": "annotations/ni-T1300-melt05/complete.json",
+      "sha256": "7866f09e8ce4fcbaadc7ad36dfa6d6e1fef323c511d51e93748f61df5b683780",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt00/complete.json",
+      "relative_path": "annotations/ni-T1400-melt00/complete.json",
+      "sha256": "827c3678907ed0d9f9ac0b03a396272a665d635937898fdd5ff71d4bb61c29cf",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt01/complete.json",
+      "relative_path": "annotations/ni-T1400-melt01/complete.json",
+      "sha256": "5e1936a98a796763f3a892f063d2d4204263647ee893f22e028e20681e69f14e",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt02/complete.json",
+      "relative_path": "annotations/ni-T1400-melt02/complete.json",
+      "sha256": "368d254747bb364d2afdafe644f29ef3de3a9479576f5e7085e82bb6de313533",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt03/complete.json",
+      "relative_path": "annotations/ni-T1400-melt03/complete.json",
+      "sha256": "7ce83d36d3f5e2b5a84f92537055c3057203d91a897f06ddd51109ad79703558",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt04/complete.json",
+      "relative_path": "annotations/ni-T1400-melt04/complete.json",
+      "sha256": "72ca94b2d5bda9d5857856530539b007351df4422746fc5d3f4e623e536862eb",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T1400-melt05/complete.json",
+      "relative_path": "annotations/ni-T1400-melt05/complete.json",
+      "sha256": "9ecab8d7a501a478973890c074c37bba2a256752493904233ab6ff46da0f8649",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt06/complete.json",
+      "relative_path": "annotations/ni-T950-melt06/complete.json",
+      "sha256": "17776d8c513acb5b3b81a009e440fbb78d6e8b310158afe9a0a62ce87478304a",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt07/complete.json",
+      "relative_path": "annotations/ni-T950-melt07/complete.json",
+      "sha256": "a2d6a10f72477487ecdf724e0b793d6f6f7d6fcef300fb1f6ea43f5bd414e80c",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt08/complete.json",
+      "relative_path": "annotations/ni-T950-melt08/complete.json",
+      "sha256": "89e6aedf1d22f3875f949459d4963782353db09232928a177c53a43fd8df640e",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt09/complete.json",
+      "relative_path": "annotations/ni-T950-melt09/complete.json",
+      "sha256": "fff2c845b93c18d0b7450ef7c8401a96381912922ff554c5d599f9a654c27087",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt10/complete.json",
+      "relative_path": "annotations/ni-T950-melt10/complete.json",
+      "sha256": "7d83827349b853d2f2b2130789141664adc0b73eabd55f6050eedb0f23658f70",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-kinetic-latent/native-20261015-v1/annotations/ni-T950-melt11/complete.json",
+      "relative_path": "annotations/ni-T950-melt11/complete.json",
+      "sha256": "21c252158dbee8333401e7a952c8143c00fb1e104d7cff5fba7b2c7af5237afa",
+      "kind": "metadata",
+      "keys": [
+        "identity",
+        "provenance",
+        "rows",
+        "sha256"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

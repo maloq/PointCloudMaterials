@@ -20,13 +20,14 @@ def loss_for(model, state, tangent, history, ids, length, k, norm, arm, c):
     return objective(bound, *args, norm, arm, c)
 
 
-def fit(c, arm, deadline):
+def fit(c, arm, deadline, *, model_factory=HistoryProcess, loss_function=loss_for,
+        family=FAMILY, run_prefix='phasehist'):
     folder = root(c)/'analyses'/arm['name']/'technical'; folder.mkdir(parents=True, exist_ok=True)
     if (folder/'complete.json').exists():
         return True
     p, records, state, tangent, history = load(c, 'train'); norm = normalization(state, tangent)
     settings = c['training']; total = settings['updates']; n = len(state)
-    torch.manual_seed(arm['seed']); model = HistoryProcess(c, arm).cuda()
+    torch.manual_seed(arm['seed']); model = model_factory(c, arm).cuda()
     optimizer = torch.optim.AdamW(model.parameters(), lr=settings['lr'], weight_decay=1e-5)
     rng = np.random.default_rng(arm['seed']); identity = digest([p['identity'], arm]); rows = []; start = 0
     if (folder/'last.pt').exists():
@@ -45,13 +46,14 @@ def fit(c, arm, deadline):
         parameters=sum(v.numel() for v in model.parameters()), train_states=n,
         train_ancestors=len({r['ancestor'] for r in records}), precision='FP32 neural state, attention, JVP, loss',
         checkpoint_rule='Final fixed8000; no test selection', arm=arm))
-    with online_training(c['wandb'], run_id='phasehist-'+identity[:16], name=arm['name'],
+    with online_training(c['wandb'], run_id=run_prefix+'-'+identity[:16], name=arm['name'],
             config=dict(c, arm=arm), folder=folder, receipt_path=folder/'wandb.json',
             job_type='predictor', group=c['protocol'], receipt_fields=dict(identity=identity)) as tracking:
         for update in range(start+1, total+1):
             if time.time() > deadline-360:
                 save(update-1); return False
             begin = time.monotonic(); optimizer.zero_grad(set_to_none=True)
+            model.fit_update = update
             warm = min(update/settings['warmup'], 1.)
             cosine = .01+.99*.5*(1+math.cos(math.pi*max(0, update-settings['warmup'])/(total-settings['warmup'])))
             for group in optimizer.param_groups:
@@ -61,7 +63,7 @@ def fit(c, arm, deadline):
             size = settings['batch_size']; ids = rng.integers(n, size=size); totals = {}
             for offset in range(0, size, settings['microbatch']):
                 chosen = ids[offset:offset+settings['microbatch']]; weight = len(chosen)/size
-                loss, scores = loss_for(model, state, tangent, history, chosen, length, k, norm, arm, c)
+                loss, scores = loss_function(model, state, tangent, history, chosen, length, k, norm, arm, c)
                 (weight*loss).backward()
                 for key, value in scores.items():
                     totals[key] = totals.get(key, 0.)+weight*float(value.detach())
@@ -78,7 +80,7 @@ def fit(c, arm, deadline):
                 print(arm['name'], row, flush=True)
         tracking.summary.update(dict(final_update=total, checkpoint_rule='fixed_final'))
     save(total); save(total, final=True)
-    write_metric_rows(rows, folder.parent, family=FAMILY, name='learning')
+    write_metric_rows(rows, folder.parent, family=family, name='learning')
     write_json(folder/'complete.json', dict(identity=identity, updates=total, checkpoint_sha256=sha(folder/'final.pt')))
     return True
 

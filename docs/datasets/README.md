@@ -2,7 +2,7 @@
 
 [Open the searchable browser](index.html) · [Potentials](potentials.md) · [Registry JSON](registry.json) · [CSV](datasets.csv) · [How to refresh](GUIDE.md)
 
-Observed: 2026-10-11T23:09:08.376791+00:00
+Observed: 2026-10-18T23:47:27.639076+00:00
 
 Non-atomic filesystem inventory. Current binary headers override historical precision declarations. Metadata and small potential files are hashed; large coordinate arrays are not rehashed. Counts include descendants, converted copies and diagnostics, and are not independent samples. Registered nested roots are excluded from parent storage counts. Recorded producer states do not establish scheduler liveness.
 
@@ -415,19 +415,32 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 | [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-010-20261007-2b2f8b9f.md) | Ni | planned | yes | 1121 | Mendelev et al. 2012 Ni EAM/FS |
 | [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-010-20261007-extension01-488f4e50.md) | Ni | planned | yes | 12 | Mendelev et al. 2012 Ni EAM/FS |
 | [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-lowT-010-20261008-716c9ef3.md) | Ni | running | yes | 98 | Mendelev et al. 2012 Ni EAM/FS |
+| [Independent Ni NPT nucleus-birth sources, 0.10 ps Q/V](cards/ni-births-lowT-010-20261012-f431456a.md) | Ni | complete | yes | 30 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni100-fs paths with5-fs analytic response observations](cards/ni-dense-path-response-20261011-5003b20d.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Direct244 Ni trajectories with74 initial density rates](cards/ni-density-rates-measurements-20261013-49af5790.md) | Ni | preparing | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni expanded100-fs physical teachers for density-rate conditioning](cards/ni-density-rates-response-20261013-cc129257.md) | Ni | preparing | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni direct BO/TDA/density/velocity motion measurements](cards/ni-direct-measurements-20261011-b3469d2e.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni native kinetic-latent measurements and exact local phase annotations](cards/ni-kinetic-measurements-20261015-44749a3e.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni empirical decoder physical continuations](cards/ni-latent-lifting-20261010-3828dfaa.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni exact0.1ps compact latent simulator sequences](cards/ni-latent-sequences-20261010-b66f68c2.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni fixed-atom motion sequences: original, liquid persistence and advancing fronts](cards/ni-latent-sequences-regimes3x-20261010-86fef16a.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni low-temperature GPU birth search, 400-ps hold window](cards/ni-lowT-20261008-gpu-400ps-v1-be4982a5.md) | Ni | superseded_planned | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni low-temperature GPU birth search, all saved history](cards/ni-lowT-20261008-gpu-full-v1-8dc0c735.md) | Ni | queued | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni low-temperature GPU nucleus-birth search](cards/ni-lowT-20261008-gpu-v1-77963de7.md) | Ni | superseded_planned | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Additional 30 Ni melts: GPU birth search over full saved histories](cards/ni-lowT-20261012-gpu-full-v1-c3f97f0c.md) | Ni | queued | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni outcome-blind native windows from thirty additional source histories](cards/ni-native-expansion-20261018-4e340fef.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni small-velocity-perturbation NPT continuation pilot](cards/ni-ordering-branches-20261019-15d0d768.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni matched1.2ps observed histories and12A context](cards/ni-ordering-histories-20261019-880b1cbd.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Matched phase-model Ni nucleus readout observations](cards/ni-phase-birth-probes-20261013-f183d69c.md) | Ni | complete | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Native four-frame Ni phase-model histories](cards/ni-phase-history-native4-20261013-b3a17c52.md) | Ni | complete | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Dense Ni structural and velocity measurements with physical tangents](cards/ni-phase-measurements-20261014-69820675.md) | Ni | complete | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Dense deterministic Ni phase-space and tangent teachers](cards/ni-phase-nve-20261013-51d6909f.md) | Ni | complete | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni full-cell quench repeatability and input-sensitivity diagnostics](cards/ni-quench-repeatability-20261009-0e4acda7.md) | Ni | research | yes | 89 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni matched minimizer speed and structural fidelity pilot](cards/ni-relaxation-speed-20261011-aa1399ae.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Ni matched 0.01/0.03/0.05 force-tolerance diagnostic](cards/ni-relaxation-tolerance005-20261011-fad364cf.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Unrelaxed Ni eSEN motion and threshold-birth assays](cards/ni-response-esen-20261009-f63e9f86.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [Matched relaxed Ni encoder observations of original MD](cards/ni-response-esen-relaxed-20261009-78113947.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
+| [Ni regional density and motion context at three spatial scales](cards/ni-spatial-context-20261015-55a2300f.md) | Ni | research | yes | 0 | Mendelev et al. 2012 Ni EAM/FS |
 | [nonshooting float32 migration 20260901](cards/nonshooting_float32_migration_20260901-88986f1b.md) | Unknown | administrative | yes | 0 | Unknown / not applicable |
 | [Al regional-emergence training-source harvest audit](cards/nucleus-harvest-train-audit-20260926-532438ed.md) | Al | derived | yes | 0 | Lee–Shim–Baskes 2003 Al 2NN-MEAM |
 | [polycrystalline balanced geometries](cards/polycrystalline_balanced_geometries-612b5caf.md) | Unknown | research | yes | 0 | Unknown / not applicable |
@@ -505,4 +518,4 @@ Non-atomic filesystem inventory. Current binary headers override historical prec
 
 ## Discovery and other machines
 
-98 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.
+109 unregistered directories are listed in [registry.json](registry.json) and the browser. Remote holdings are reported separately; they are not reverified or counted as new independent data.

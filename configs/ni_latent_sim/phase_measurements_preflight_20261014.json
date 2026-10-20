@@ -1,0 +1,286 @@
+{
+  "protocol": "ni-phase-measurements-20261014-v1",
+  "seed": 20261023,
+  "output": "${storage:training_storage}/ni_phase_measurements/preflight-20261014-v1",
+  "cache": "${storage:cache}/ni-phase-measurements/observable-20261014-v1",
+  "model": {
+    "channels": 8,
+    "width": 64
+  },
+  "training": {
+    "updates": 8000,
+    "batch_size": 256,
+    "microbatch": 128,
+    "lr": 0.001,
+    "warmup": 400,
+    "save_every": 50,
+    "unroll_steps": [
+      1,
+      4,
+      10,
+      20
+    ],
+    "unroll_probabilities": [
+      0.2,
+      0.2,
+      0.3,
+      0.3
+    ],
+    "loss_weights": {
+      "path": 1.0,
+      "kinematic": 0.1,
+      "reconstruction": 1.0,
+      "latent_value": 0.1,
+      "physical_response": 1.0,
+      "latent_response": 0.1,
+      "measurement_present": 0.25,
+      "measurement_future": 0.25,
+      "measurement_increments": 0.1,
+      "measurement_response": 0.25
+    }
+  },
+  "evaluation": {
+    "batch_size": 8,
+    "bootstrap": 1000
+  },
+  "runtime": {
+    "hours": 12,
+    "workers": 6,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S"
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "observable-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023,
+      "future_measurements": true,
+      "observable_response": true,
+      "multi_transport": false
+    },
+    {
+      "name": "transport-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": true
+    },
+    {
+      "name": "future-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": false
+    },
+    {
+      "name": "present-s20261023",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261023,
+      "future_measurements": false,
+      "observable_response": false,
+      "multi_transport": false
+    },
+    {
+      "name": "observable-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024,
+      "future_measurements": true,
+      "observable_response": true,
+      "multi_transport": false
+    },
+    {
+      "name": "transport-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": true
+    },
+    {
+      "name": "future-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": false
+    },
+    {
+      "name": "present-s20261024",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261024,
+      "future_measurements": false,
+      "observable_response": false,
+      "multi_transport": false
+    },
+    {
+      "name": "observable-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025,
+      "future_measurements": true,
+      "observable_response": true,
+      "multi_transport": false
+    },
+    {
+      "name": "transport-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": true
+    },
+    {
+      "name": "future-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025,
+      "future_measurements": true,
+      "observable_response": false,
+      "multi_transport": false
+    },
+    {
+      "name": "present-s20261025",
+      "architecture": "attention",
+      "history_frames": 4,
+      "response": true,
+      "latent_response": true,
+      "seed": 20261025,
+      "future_measurements": false,
+      "observable_response": false,
+      "multi_transport": false
+    }
+  ],
+  "length_factor": 1.1085850758932345,
+  "split": {
+    "policy": "train-test-only",
+    "selection": false,
+    "checkpoint": "fixed_final_8000",
+    "original_roles_retained": true
+  },
+  "phase_run": "/store/PERSO/vmorozov/experiments/ni_phase_sim/dense-20261013-v2",
+  "phase_plan_sha256": "fe23c185ac115e6f265ee189c2ff24b097fee43216a9a9a6414a6eb10171cd0c",
+  "phase_archive": "/store/PERSO/vmorozov/simulations/ni-phase-nve-20261013-v2",
+  "birth_run": "/store/PERSO/vmorozov/experiments/ni_phase_births/90sources-20261013-v1",
+  "birth_plan_sha256": "8ef9abfc99f7a72275b96d0dec702f3a32fa34161c410f9fb45b06ec82514596",
+  "model_seeds": [
+    20261023,
+    20261024,
+    20261025
+  ],
+  "birth_probe": {
+    "seed": 20261023,
+    "tasks": [
+      "nucleus32",
+      "nucleus64"
+    ],
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "model_seeds": [
+      20261023,
+      20261024,
+      20261025
+    ],
+    "batch_size": 128,
+    "threads": 2,
+    "fit_workers": 2,
+    "fit_threads": 2,
+    "bootstrap": 1000,
+    "probe": {
+      "iterations": 600,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "CPU"
+    }
+  },
+  "comparisons": [
+    [
+      "future",
+      "present"
+    ],
+    [
+      "observable",
+      "future"
+    ],
+    [
+      "transport",
+      "future"
+    ],
+    [
+      "observable",
+      "present"
+    ],
+    [
+      "transport",
+      "present"
+    ]
+  ],
+  "history_run": "/store/PERSO/vmorozov/experiments/ni_phase_history/attention-20261013-v1",
+  "history_plan_sha256": "122296aa06f638acc8a4224eaf9335b15f51ef11216afed03a455bc4c70756c8",
+  "measurement_head": {
+    "width": 64
+  },
+  "diagnostic": {
+    "updates": 2000,
+    "batch_size": 256,
+    "microbatch": 128,
+    "lr": 0.001,
+    "warmup": 100,
+    "seeds": [
+      20261023,
+      20261024,
+      20261025
+    ]
+  },
+  "birth_spaces": [
+    "phi",
+    "path",
+    "measurements_path",
+    "history_measurements_path",
+    "decoded_present",
+    "decoded_path",
+    "history_measurements_decoded_path"
+  ]
+}

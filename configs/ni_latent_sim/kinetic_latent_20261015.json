@@ -1,0 +1,209 @@
+{
+  "protocol": "ni-kinetic-latent-20261015-v1",
+  "seed": 20261025,
+  "model_seeds": [
+    20261025,
+    20261026,
+    20261027
+  ],
+  "output": "${storage:training_storage}/ni_kinetic_latent/native-20261015-v1",
+  "cache": "${storage:cache}/ni-kinetic-latent/native-20261015-v1",
+  "source_run": "/store/PERSO/vmorozov/experiments/measurement_sim/direct-20261011-v1",
+  "source_plan_sha256": "91812d6d7ab012b1a24221cf9b40d90ccdb8105389097b7c242f39adcc2ca5d8",
+  "birth_history_run": "/store/PERSO/vmorozov/experiments/ni_phase_history/attention-20261013-v1",
+  "birth_history_plan_sha256": "122296aa06f638acc8a4224eaf9335b15f51ef11216afed03a455bc4c70756c8",
+  "model": {
+    "latent": 32,
+    "width": 256,
+    "mixtures": 8,
+    "history": 4
+  },
+  "representation": {
+    "lags": [
+      5,
+      10
+    ],
+    "ridge": 0.001,
+    "beta": 0.001
+  },
+  "training": {
+    "repr_epochs": 12,
+    "decoder_epochs": 12,
+    "dynamics_epochs": 12,
+    "batch_size": 1024,
+    "microbatch": 1024,
+    "lr": 0.001,
+    "warmup_epochs": 1,
+    "save_every": 100
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 64,
+    "per_source_regime": 4,
+    "bootstrap": 1000
+  },
+  "runtime": {
+    "hours": 12,
+    "workers": 4,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S",
+    "annotation_workers": 4
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "arms": [
+    {
+      "name": "pca-s20261025",
+      "kind": "pca",
+      "seed": 20261025
+    },
+    {
+      "name": "linear_vamp-s20261025",
+      "kind": "linear_vamp",
+      "seed": 20261025
+    },
+    {
+      "name": "vae-s20261025",
+      "kind": "vae",
+      "seed": 20261025
+    },
+    {
+      "name": "vamp-s20261025",
+      "kind": "vamp",
+      "seed": 20261025
+    },
+    {
+      "name": "hybrid-s20261025",
+      "kind": "hybrid",
+      "seed": 20261025
+    },
+    {
+      "name": "shuffle-s20261025",
+      "kind": "shuffle",
+      "seed": 20261025
+    },
+    {
+      "name": "pca-s20261026",
+      "kind": "pca",
+      "seed": 20261026
+    },
+    {
+      "name": "linear_vamp-s20261026",
+      "kind": "linear_vamp",
+      "seed": 20261026
+    },
+    {
+      "name": "vae-s20261026",
+      "kind": "vae",
+      "seed": 20261026
+    },
+    {
+      "name": "vamp-s20261026",
+      "kind": "vamp",
+      "seed": 20261026
+    },
+    {
+      "name": "hybrid-s20261026",
+      "kind": "hybrid",
+      "seed": 20261026
+    },
+    {
+      "name": "shuffle-s20261026",
+      "kind": "shuffle",
+      "seed": 20261026
+    },
+    {
+      "name": "pca-s20261027",
+      "kind": "pca",
+      "seed": 20261027
+    },
+    {
+      "name": "linear_vamp-s20261027",
+      "kind": "linear_vamp",
+      "seed": 20261027
+    },
+    {
+      "name": "vae-s20261027",
+      "kind": "vae",
+      "seed": 20261027
+    },
+    {
+      "name": "vamp-s20261027",
+      "kind": "vamp",
+      "seed": 20261027
+    },
+    {
+      "name": "hybrid-s20261027",
+      "kind": "hybrid",
+      "seed": 20261027
+    },
+    {
+      "name": "shuffle-s20261027",
+      "kind": "shuffle",
+      "seed": 20261027
+    }
+  ],
+  "birth_probe": {
+    "seed": 20261025,
+    "tasks": [
+      "nucleus32",
+      "nucleus64"
+    ],
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "batch_size": 512,
+    "threads": 2,
+    "fit_workers": 2,
+    "fit_threads": 2,
+    "bootstrap": 1000,
+    "probe": {
+      "iterations": 600,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "CPU"
+    }
+  },
+  "comparisons": [
+    [
+      "hybrid",
+      "vae"
+    ],
+    [
+      "hybrid",
+      "vamp"
+    ],
+    [
+      "vamp",
+      "linear_vamp"
+    ],
+    [
+      "vamp",
+      "shuffle"
+    ],
+    [
+      "hybrid",
+      "pca"
+    ]
+  ],
+  "split": {
+    "policy": "train-test-only",
+    "original_roles_retained": true,
+    "checkpoint": "fixed_final_epochs",
+    "selection": false
+  },
+  "scope": {
+    "native": "fixed central atom, nearest80 reselected per native observation",
+    "birth": "present measurements only enter learned encoder; original fixed-membership observed history appears only in explicit controls",
+    "teacher": "native NPT 0.1ps; no reuse of short NVE tangents as long-time ground truth",
+    "conditions": "no temperature, absolute time, simulation age, box, species, phase or birth labels in representation or propagator",
+    "generative": "local ordering through6ps; not global connected nucleus creation or natural incidence"
+  }
+}

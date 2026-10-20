@@ -1,5 +1,35 @@
 # Dense Ni coordinate/velocity learning
 
+## Measurement-supervision workflow
+
+`python -m src.research.ni_phase_sim.measurement_queue launch --config
+configs/ni_latent_sim/phase_measurements_20261014.json` starts the twelve-model
+follow-up described in [its protocol](../experiments/ni_phase_measurements_20261014/README.md).
+The `collect` stage computes measurements and smooth JVPs from sealed teachers;
+`prepare` pins data, parent checkpoints, source and metric contracts. They are
+complete before launch. The separate preflight recipe is local only.
+
+Launch starts one detached worker on the current allocation and requests five
+single-GPU workers with RTX6000PRO/A100/A40/L40S as alternatives. All workers
+share one absolute 12-hour deadline. A shorter local allocation can submit one
+handoff within that same deadline. Stage subprocesses have a hard timeout as a
+backstop to checkpoint-aware stopping. Only the launched stage's process group
+can be terminated. Other chat jobs and simulation campaigns are untouched.
+
+Stages are train, evaluate, births and diagnose, claimed with shared file locks.
+Each has two bounded attempts and visible failure receipts. Checkpoints retain
+optimizer and sampling state. Evaluation failure does not block independent
+fits. No scheduled chat task is needed. Scientific W&B IDs use `phasemeas-`;
+frozen diagnostic heads and CatBoost probes remain local. A shared feature pool
+retains six generated caches and protects active leases.
+
+Watch `technical/submission.json`, `lane-*.json`, `worker-start-*.json`, and each
+`analyses/<arm>/technical/progress.json`. Frozen diagnostics write
+`diagnostics/seed-*/technical/progress.json`. The submission receipt records the
+absolute deadline; completion requires all twelve fits, their evaluations and
+three diagnostic bundles. Partial checkpoints and failure receipts remain
+available when the deadline expires.
+
 Entry point: `python -m src.research.ni_phase_sim STAGE --config CONFIG`.
 Recipe: `configs/ni_latent_sim/phase_space_20261013.json`.
 Scientific protocol: [phase-space prediction](../experiments/ni_phase_sim_20261013/README.md).

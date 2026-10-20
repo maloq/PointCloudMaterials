@@ -1,0 +1,1571 @@
+{
+  "dataset_id": "ni-spatial-context-20261015",
+  "records": [
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt06/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt06/complete.json",
+      "sha256": "5d7f9b67879d8f550e57d177b710c69f518c6e2f1e9e8151c24892301752e2a8",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt07/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt07/complete.json",
+      "sha256": "9f07ef02bc08fb506c50b1f09b433ce769f9971b03933fd96d8344583692e631",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt08/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt08/complete.json",
+      "sha256": "2f33f8240bdc327099657316eb059bd44ee1bbcbb0ce00387da0a1961f538241",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt09/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt09/complete.json",
+      "sha256": "d75f5f622aef00f4058ce631c9ef88d663c70fe8e9dcf6aa38fc275a09899fd7",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt10/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt10/complete.json",
+      "sha256": "735dc383f264d7fa0d1627c5397f921415b38f0374993027322235e8d1040848",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt11/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt11/complete.json",
+      "sha256": "ada275ae659b8dc65d1eb160dd834a2d9d421d09e91fb43874feb7603f19bb35",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt12/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt12/complete.json",
+      "sha256": "0a6485962646c05f289e1c8d1656d539421264f4754fc81c4a9fe6a5170a8400",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt13/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt13/complete.json",
+      "sha256": "ac75c22d623aade6ad72a75a6302dc716d4843c1ec6ffff29ae187d46ea5927a",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt14/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt14/complete.json",
+      "sha256": "492cb96351510e3709b1aaddd44cfb9bacf28a0357b7ac5222787db166d90d26",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt15/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt15/complete.json",
+      "sha256": "03cc5c8ebd106ae97ce9223153ad22dbe051f2f26d59112014b9135017e8edbf",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1000-melt16/complete.json",
+      "relative_path": "context-sources/ni-T1000-melt16/complete.json",
+      "sha256": "0963e8ae73287eb36dd0058bb029d0b11eb24cbdadec638a7aa758899d11a38a",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt06/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt06/complete.json",
+      "sha256": "9e498cf1157bcfc12710bafd4cba3135bbc80ed30114ec2b26145ef9caef8957",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt07/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt07/complete.json",
+      "sha256": "a21ab05a0c072973aeab9b9fd5b0e76d6f1fba0fbf3ba3aed6ec8b6bcd5a310f",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt08/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt08/complete.json",
+      "sha256": "b4a28138a2d0a6b07b5db56405720620912052df38d4b1f1c26529c69cb0865a",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt09/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt09/complete.json",
+      "sha256": "8df022872ea8f72335952d689fad13aa29c677eb7b9f5cc4ab9a3c76b7456669",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt10/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt10/complete.json",
+      "sha256": "7bfc36ac1e26bd812d4a8d9de50cdc5c92e0463c8275f46a11c89987ea6b3a04",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt11/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt11/complete.json",
+      "sha256": "55d89eb7b1d689644ca9d36fb6b82a008cab792fa22599de2c67274be70dbcde",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt12/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt12/complete.json",
+      "sha256": "faa9666605e2fce2b78b179ca179b1cc82a9284fa57a64f88750bd9a7292f88d",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt13/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt13/complete.json",
+      "sha256": "af6fe139a653bfd59355fdb010ed87179e1e6800358c53548e701a71a98c3ab7",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt14/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt14/complete.json",
+      "sha256": "af27f1c22c881342bbdc663ce80b56740e201d09b589461d3c3b80dbe08a5195",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt15/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt15/complete.json",
+      "sha256": "90d6c962a3cc4dafe2ac8666c0f48c90e5ef3631c9dc6e8ae212d86ee35f6141",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1050-melt16/complete.json",
+      "relative_path": "context-sources/ni-T1050-melt16/complete.json",
+      "sha256": "65609fd946b276bcaa1b846688a7a4cf3a130711850c652c82cb019a53f454ac",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt00/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt00/complete.json",
+      "sha256": "8129ce8bba93ae029544c0dae2fc7c052499ebaced693d2919d317890c1a390b",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt01/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt01/complete.json",
+      "sha256": "957a341566c1b6168cc6b764639e82bdc8e566b6fb59a7a5cf2294f6e6363734",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt02/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt02/complete.json",
+      "sha256": "765f771fcd4484d79b0d7b357e8b68d8047eed3b6f96148636e056aaa26e8ffd",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt03/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt03/complete.json",
+      "sha256": "c211dd404c52988a72595876a970dbcb642128dfc4fa99a7f4b5959f20380db1",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt04/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt04/complete.json",
+      "sha256": "2c722ab3c84375d4d197d1ed7767539d96244a4dd0a349ed16de15b07b369297",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt05/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt05/complete.json",
+      "sha256": "66545b1de8daf9fd2b9a5d539ad6d00e2c38d9567f80c2c23007fc5c0cd0241d",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt06/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt06/complete.json",
+      "sha256": "d88a46878a900f5d7c6437491af0d349a6dc78af08385b406ca090362f0a4e10",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt07/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt07/complete.json",
+      "sha256": "df23cfa639284efa75185e84cd38494eb4adfa1f52b1b65c77f2252f431122d2",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt08/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt08/complete.json",
+      "sha256": "faecb1557975457f84c5410acef522580b22881af838b65b192db85295a50137",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt09/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt09/complete.json",
+      "sha256": "409f80446fe688c2dca0904fed0c06cab17c95a104c5e3e702282bac407c69c5",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt10/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt10/complete.json",
+      "sha256": "fbf94b42ff4ce53cf23ef9e093ae94afcd98eefcadd141a16e76448b9af4d5e3",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt11/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt11/complete.json",
+      "sha256": "9cbc992ba7f0890dceab904a0c66bb725a7f85eee9e721df75cb755839926c7e",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt12/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt12/complete.json",
+      "sha256": "95381fd83e25f95520437d32b152cb70d13f02ac5cc88a2df30d2ab0be6f08cd",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt13/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt13/complete.json",
+      "sha256": "6da00728c4e110a6c8c955134c1c1d64bbed2242c2e54fbb0fe2beeaabeaa402",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt14/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt14/complete.json",
+      "sha256": "037ba99622e8a1ee1977e585f51fa212fe630452c2899909f8b93e22cd6f58f1",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt15/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt15/complete.json",
+      "sha256": "e3f5c1de2e280cad764efcce09cca2d433ffcd38791cace5989fb1486b88a46f",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1100-melt16/complete.json",
+      "relative_path": "context-sources/ni-T1100-melt16/complete.json",
+      "sha256": "51378769913bba852b7a71198700732115711093eda495768ce4ac01bd84fc30",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt06/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt06/complete.json",
+      "sha256": "23ed54da4bc428856133687b5e4f0eb45158993f44a8c44d441f4571fa15409c",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt07/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt07/complete.json",
+      "sha256": "5d8f7d6dd6fdfd2d444e590d9b7e0461cf59e0043183406876a9b07a127b643c",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt08/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt08/complete.json",
+      "sha256": "f1536fe86161e8643d6d0e9e0bb9211f3e4a5d40f522b013e1515c26ba3f7540",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt09/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt09/complete.json",
+      "sha256": "49ec434b92fc8b10db24fe4946d53d7400bb630b7b2f7886fd85938fb4fdd407",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt10/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt10/complete.json",
+      "sha256": "effbce5bbe465bfbc94c6cf72aa65c7c25ca3a15548902d8efaaecfd2bb3bde5",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt11/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt11/complete.json",
+      "sha256": "a740caa4c4fc98ff0e883a55179ec46472e0c86deed1115152bb577a8cdf6c95",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt12/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt12/complete.json",
+      "sha256": "172bd88cd9badaf3859d93a35f87de9e844394f43a8fcd68472ed6920471937a",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt13/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt13/complete.json",
+      "sha256": "22d0d9ffd53345548ddacb2e340e7e5f64ee3dd5af50fe42a2f4f3ac89d1059c",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt14/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt14/complete.json",
+      "sha256": "83118509eb97ab0eccd719d10d1c28945bb17e6087ee4534c6a288d890b72a8f",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1125-melt15/complete.json",
+      "relative_path": "context-sources/ni-T1125-melt15/complete.json",
+      "sha256": "88eba9afc9b4f4663d22629ce5c15ea625a234cbf08148f2328de90c47e48378",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt06/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt06/complete.json",
+      "sha256": "25df2da872c1c392384b3ece9fff450db823aaaafc0e64c151023b1bfd0a3120",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt07/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt07/complete.json",
+      "sha256": "d3eb93a9def583963e22683f69afb1c9179ea0f3adaa944b3873f7f97536ef05",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt08/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt08/complete.json",
+      "sha256": "9a35ef7b55a49b18a3f8c200a0d5a4c649396c400d7e629e7295e050d34bf7e8",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt09/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt09/complete.json",
+      "sha256": "5232bfa54e6458420b34a763d826524d5a4d8485b2d7ffc45cd3ce09c8b17d40",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt10/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt10/complete.json",
+      "sha256": "5d8496c44e8ea05fac2478161faa0f19b21c5386d6457810b933f25820c95bf8",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt11/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt11/complete.json",
+      "sha256": "379e4544b495fb54affc0abf3b1e2ed385f9a3da38b9b11463a979c6fa29f635",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt12/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt12/complete.json",
+      "sha256": "837646cdeafad9b42ead2cc0fcb8bdad4afb031fd809bea4f519b27e2c5ae1b5",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt13/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt13/complete.json",
+      "sha256": "b8481fab9074c37e778bf2fd0139396c0a5ddd35d51684aa40a5e9da77929bdd",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1150-melt16/complete.json",
+      "relative_path": "context-sources/ni-T1150-melt16/complete.json",
+      "sha256": "8fb630af4c71bbb2d692968f83402b6f691ed60de51f30e9d0f58e25b483e54b",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt00/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt00/complete.json",
+      "sha256": "3c98603483c22f20a2acbd65af4c3b4851c2a173504d22548d7108207db4f1ac",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt01/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt01/complete.json",
+      "sha256": "d573f808714110b4efa85d8ce09ab8286163676b7789f454a26b0b63948e391d",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt02/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt02/complete.json",
+      "sha256": "01a085d4bc17526d083981da80074a9dbdcfb5e5d0f4c31729e00d23403064fb",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt03/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt03/complete.json",
+      "sha256": "dd45125ad45dbed3f05fed36900456f19bdab6411dcf921927d17a739237830f",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt04/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt04/complete.json",
+      "sha256": "b91651e1cb186515ed8c9b3e407bdf35f793bd809aff069c75700d461dd8a87e",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1200-melt05/complete.json",
+      "relative_path": "context-sources/ni-T1200-melt05/complete.json",
+      "sha256": "70c1ba842820536a1642b7273117d9140c5f9f84d8857c4ad2b55b9cb50503a9",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt00/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt00/complete.json",
+      "sha256": "c117eed57b7b8c9855ecd72ea5d1fdba6bde795afa9edf1a911289df8804a70b",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt01/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt01/complete.json",
+      "sha256": "41d8598f3e7ddca414c50c004c8d9f407565ac434e78eb9ff300b17f26419863",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt02/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt02/complete.json",
+      "sha256": "a03df7b6b57c0b8f752d618f0480df8d7ba15ea3951aeedf7c3e3056deda42d4",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt03/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt03/complete.json",
+      "sha256": "44cbd56618b18b372abb5534bec02f8c870a6b4b43dc5597804825a20bb5f702",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt04/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt04/complete.json",
+      "sha256": "afe648213d54010e47f2dc1a1d5bc3b49e592e3f22f9ce75d271b1615c219622",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1300-melt05/complete.json",
+      "relative_path": "context-sources/ni-T1300-melt05/complete.json",
+      "sha256": "a2bddc9dffa241dc56a60a0ab8f50ab56e0964415900c46dc98dbe7d7dfc23a9",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt00/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt00/complete.json",
+      "sha256": "73b416ab70aa935d69fb4cacf006dfc30a2d903168c2baa00b5fa7e95542833e",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt01/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt01/complete.json",
+      "sha256": "162b7e4d4e795d08886a338f0f315974239d7d26ffb97e635b90be85bf88c455",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt02/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt02/complete.json",
+      "sha256": "6ce9d1e93f8d1e2e8190f26600d0f5139be9d3a2a37a8aa85a844873e7f1e985",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt03/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt03/complete.json",
+      "sha256": "61ad1aae4543564505c2e0e5c788331d99fe15038b76cb5e68492703eed44145",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt04/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt04/complete.json",
+      "sha256": "58f0073881d9d604e2db7aa98087640bd3b819bc3568075e6a9dde956b39058a",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T1400-melt05/complete.json",
+      "relative_path": "context-sources/ni-T1400-melt05/complete.json",
+      "sha256": "0b7d818053c0c5004a76e91371c5c663e0324cdb4cf9023a8d55650c65f371e2",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt06/complete.json",
+      "relative_path": "context-sources/ni-T950-melt06/complete.json",
+      "sha256": "2b5ec0f93dfdd80fb730faaaa5fc454d73aaa00128f57c583256c44dffb74f20",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt07/complete.json",
+      "relative_path": "context-sources/ni-T950-melt07/complete.json",
+      "sha256": "709be629d0c3c1aae8637ff92524db016b5e47e090e92c7b1626e32d3dce4e17",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt08/complete.json",
+      "relative_path": "context-sources/ni-T950-melt08/complete.json",
+      "sha256": "5121a62dfb20bd2390967f3afdacf4e2b190228cb97de3a496df92ba7066af40",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt09/complete.json",
+      "relative_path": "context-sources/ni-T950-melt09/complete.json",
+      "sha256": "0d687800cb8bfbc442112347157709aea562d9a7407c03b0976ec19222783718",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt10/complete.json",
+      "relative_path": "context-sources/ni-T950-melt10/complete.json",
+      "sha256": "ba9176b583b1bc229e5cec85c798c62b9162a97e2b7eb66365b6d7695cb51968",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt11/complete.json",
+      "relative_path": "context-sources/ni-T950-melt11/complete.json",
+      "sha256": "0d21828a48f22846fffa9e61b6b5e419bf5141dda3be7870ab9c9552ef2c6b9e",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt12/complete.json",
+      "relative_path": "context-sources/ni-T950-melt12/complete.json",
+      "sha256": "61dbf343a737b96dc0195681a2eaec05ee5f25b82fcc637b78d7a9ea557a1113",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt13/complete.json",
+      "relative_path": "context-sources/ni-T950-melt13/complete.json",
+      "sha256": "91937a915279b0f70af382237daf30a8d6805eab8911c0cce168063d538c45b0",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt14/complete.json",
+      "relative_path": "context-sources/ni-T950-melt14/complete.json",
+      "sha256": "0c079113c09a7a38af5311377e9094ee6e447b206140279779e900c5e52a2c5d",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt15/complete.json",
+      "relative_path": "context-sources/ni-T950-melt15/complete.json",
+      "sha256": "d837f32c75c261abd00fe80b3f955640ae58e6e27656878a5dae568dc7bf84ea",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    },
+    {
+      "path": "/home/ids/vmorozov/training-cache/ni-spatial-scales/radius-20261015-v1/context-sources/ni-T950-melt16/complete.json",
+      "relative_path": "context-sources/ni-T950-melt16/complete.json",
+      "sha256": "e4b5b7c80c62fce9994729b793b62f3ab793941fe356c2baa4fc809fb4ee74d1",
+      "kind": "metadata",
+      "keys": [
+        "completed_frames",
+        "identity",
+        "mean_atoms",
+        "measured_centers",
+        "sha256",
+        "source",
+        "timing"
+      ],
+      "recorded_state": null,
+      "facts": {},
+      "provenance": {}
+    }
+  ]
+}

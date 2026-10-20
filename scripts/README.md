@@ -1,5 +1,13 @@
 # Maintained commands
 
+`python -m src.research.ni_latent_flow.queue prepare|launch|train|evaluate|kinetics|diagnostics|compare --config configs/ni_latent_sim/validation_20261018.json`
+runs the expanded Ni validation follow-up; [workflow](../docs/ni_latent_validation.md).
+
+`python -m src.research.ni_latent_flow.queue prepare|launch|train|evaluate|births|compare --config configs/ni_latent_sim/flow_20261018.json`
+runs the fixed native Ni trajectory-method comparison; [workflow](../docs/ni_latent_flow.md).
+`launch` detaches both allocated GPUs plus independent descriptor controls. Inspect
+the existing launch receipt before resubmitting.
+
 Use `python -m src.postprocessing --help` for the unified descriptor, search,
 dataset, history and visualization commands; [module guide](../docs/postprocessing.md).
 
@@ -1223,3 +1231,7 @@ audits paired structure and thermodynamics with common observation precision.
 `python -m src.research.nucleus_controls.calibration prepare|launch|summarize --config configs/simulation/nucleus_rate_calibration_20261005.json`
 runs the present-selected birth-rate check; [workflow](../docs/simulations/nucleus_continuation_bias_20261005.md).
 `assist --frozen-code FROZEN_CODE --gpus 4` adds leased workers within that same deadline; scheduler partitions and excluded nodes are explicit optional arguments.
+
+`python -m src.research.ni_ordering_flow.queue launch --config configs/ni_latent_sim/ordering_20261019.json` runs the matched overnight history/context queue.
+
+`python -m src.simulation.campaigns.ni_ordering_branches launch --config configs/simulation/ni_ordering_branches_20261019.json` starts the separate Ni continuation pilot.

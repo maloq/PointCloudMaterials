@@ -1,0 +1,16 @@
+{
+  "seed": 20261019,
+  "protocol": "ni-ordering-velocity-branches-20261019-v1",
+  "output": "${storage:training_storage}/ni_ordering_branches/pilot-20261019-v1",
+  "ordering_run": "${storage:training_storage}/ni_ordering_flow/history-context-20261019-v1",
+  "scratch": "${storage:simulation_runs}/ni-ordering-branches-20261019-v1",
+  "archive": "${storage:archive}/simulations/ni-ordering-branches-20261019-v1",
+  "potential": "${dataset:potential-ni-mendelev2012}/Ni1_Mendelev_2012.eam.fs",
+  "potential_sha256": "acc8bd87f61dd67ecd8f72a6f181d6aafe52ca45b29fe6c15cec7c39c0bf76df",
+  "length_factor": 1.1085850758932345,
+  "runtime": {
+    "workers": 2,
+    "max_attempts": 2,
+    "partitions": "RTX6000PRO,A100,A40,L40S"
+  }
+}

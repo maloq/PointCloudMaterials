@@ -1,6 +1,6 @@
 # Literature, implementation precedents, and transfer limits
 
-**Research refresh:** 11 October 2026. **Repository basis:** main at `05e3e8ca57f42ea95f63f7f11c0aa05426fa5896`. This is the current integrated literature review. Read [evidence](evidence.md) for completed repository findings, [methods](methods.md) for proposed calculation changes, and the [experiment plan](experiment_plan.md) for E0–E9 and their gates.
+**Research refresh:** 11 October 2026. **Repository basis:** main at `05e3e8ca57f42ea95f63f7f11c0aa05426fa5896`. This is the integrated October 11 literature review. The [October 18 primary-source follow-up](latent_simulation_literature_20261018.md) selects recent latent-simulation methods against the completed October 15 Ni results. Read [evidence](evidence.md) for completed repository findings, [methods](methods.md) for proposed calculation changes, and the [experiment plan](experiment_plan.md) for E0–E9 and their gates.
 
 This review and its reading-depth labels were imported from the supplied October 11 documentation bundle. Documentation integration verified local navigation and reconciled repository execution status; it did not repeat the external paper/code review or reproduce those methods. New repository findings are kept in the [evidence update](evidence.md#ni-methods-diagnostics).
 

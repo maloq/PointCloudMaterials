@@ -1,0 +1,305 @@
+{
+  "model_seeds": [
+    20261025,
+    20261026,
+    20261027
+  ],
+  "seed": 20261025,
+  "birth_probe": {
+    "seed": 20261025,
+    "tasks": [
+      "nucleus32",
+      "nucleus64"
+    ],
+    "leads_ps": [
+      1.0,
+      3.0,
+      6.0
+    ],
+    "batch_size": 512,
+    "threads": 2,
+    "fit_workers": 2,
+    "fit_threads": 2,
+    "bootstrap": 1000,
+    "probe": {
+      "iterations": 600,
+      "depth": 4,
+      "learning_rate": 0.04,
+      "l2_leaf_reg": 10,
+      "border_count": 64,
+      "task_type": "CPU"
+    }
+  },
+  "wandb": {
+    "entity": "teshbek",
+    "project": "PointCloudMaterials",
+    "mode": "online"
+  },
+  "flow": {
+    "history": 4,
+    "horizon": 60,
+    "width": 128,
+    "layers": 4,
+    "heads": 4,
+    "flow_steps": 32,
+    "decoded_weight": 0.25,
+    "ema_decay": 0.999
+  },
+  "protocol": "ni-ordering-history-context-20261019-v1",
+  "output": "${storage:training_storage}/ni_ordering_flow/history-context-20261019-v1",
+  "cache": "${storage:cache}/ni-ordering-flow/history-context-20261019-v1",
+  "parent_run": "${storage:training_storage}/ni_latent_flow/validation-20261018-v2",
+  "parent_plan_sha256": "6aeb7f1bfa6a2ab382cef2a22ac362b104a64700c919a2b6b0c7ef2fddf028ef",
+  "teacher_config": "configs/ni_latent_sim/phase_measurements_20261014.json",
+  "length_factor": 1.1085850758932345,
+  "training": {
+    "updates": 32000,
+    "warmup": 1600,
+    "batch_size": 256,
+    "microbatch": 256,
+    "lr": 0.001,
+    "weight_decay": 1e-05,
+    "save_every": 250,
+    "teacher_batch": 32,
+    "teacher_every": 4
+  },
+  "evaluation": {
+    "particles": 32,
+    "batch_size": 16,
+    "bootstrap": 1000,
+    "rare_particles": 256,
+    "rare_per_source_regime": 2
+  },
+  "runtime": {
+    "hours": 9,
+    "remote_workers": 5,
+    "partitions": "RTX6000PRO,A100,A40,L40S",
+    "max_attempts": 2,
+    "local_devices": [
+      1
+    ]
+  },
+  "arms": [
+    {
+      "name": "local4-s20261025",
+      "treatment": "local4",
+      "seed": 20261025,
+      "history_frames": 4,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "local13-s20261025",
+      "treatment": "local13",
+      "seed": 20261025,
+      "history_frames": 13,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional4-s20261025",
+      "treatment": "regional4",
+      "seed": 20261025,
+      "history_frames": 4,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional13-s20261025",
+      "treatment": "regional13",
+      "seed": 20261025,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "bottleneck128-s20261025",
+      "treatment": "bottleneck128",
+      "seed": 20261025,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": true,
+      "teacher": "none"
+    },
+    {
+      "name": "dense_value-s20261025",
+      "treatment": "dense_value",
+      "seed": 20261025,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "value"
+    },
+    {
+      "name": "dense_derivative-s20261025",
+      "treatment": "dense_derivative",
+      "seed": 20261025,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "derivative"
+    },
+    {
+      "name": "local4-s20261026",
+      "treatment": "local4",
+      "seed": 20261026,
+      "history_frames": 4,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "local13-s20261026",
+      "treatment": "local13",
+      "seed": 20261026,
+      "history_frames": 13,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional4-s20261026",
+      "treatment": "regional4",
+      "seed": 20261026,
+      "history_frames": 4,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional13-s20261026",
+      "treatment": "regional13",
+      "seed": 20261026,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "bottleneck128-s20261026",
+      "treatment": "bottleneck128",
+      "seed": 20261026,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": true,
+      "teacher": "none"
+    },
+    {
+      "name": "dense_value-s20261026",
+      "treatment": "dense_value",
+      "seed": 20261026,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "value"
+    },
+    {
+      "name": "dense_derivative-s20261026",
+      "treatment": "dense_derivative",
+      "seed": 20261026,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "derivative"
+    },
+    {
+      "name": "local4-s20261027",
+      "treatment": "local4",
+      "seed": 20261027,
+      "history_frames": 4,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "local13-s20261027",
+      "treatment": "local13",
+      "seed": 20261027,
+      "history_frames": 13,
+      "regional": false,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional4-s20261027",
+      "treatment": "regional4",
+      "seed": 20261027,
+      "history_frames": 4,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "regional13-s20261027",
+      "treatment": "regional13",
+      "seed": 20261027,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "none"
+    },
+    {
+      "name": "bottleneck128-s20261027",
+      "treatment": "bottleneck128",
+      "seed": 20261027,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": true,
+      "teacher": "none"
+    },
+    {
+      "name": "dense_value-s20261027",
+      "treatment": "dense_value",
+      "seed": 20261027,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "value"
+    },
+    {
+      "name": "dense_derivative-s20261027",
+      "treatment": "dense_derivative",
+      "seed": 20261027,
+      "history_frames": 13,
+      "regional": true,
+      "bottleneck": false,
+      "teacher": "derivative"
+    }
+  ],
+  "comparisons": [
+    [
+      "local13",
+      "local4"
+    ],
+    [
+      "regional4",
+      "local4"
+    ],
+    [
+      "regional13",
+      "local13"
+    ],
+    [
+      "regional13",
+      "regional4"
+    ],
+    [
+      "bottleneck128",
+      "regional13"
+    ],
+    [
+      "dense_value",
+      "regional13"
+    ],
+    [
+      "dense_derivative",
+      "dense_value"
+    ]
+  ],
+  "diagnostic_path": "/store/PERSO/vmorozov/experiments/ni_latent_flow/validation-20261018-v2/analyses/raw_direct_block-s20261025/technical/frozen-diagnostics.pt",
+  "diagnostic_sha256": "2dda1b043c9b66e08b841a832f0938fadfa5e0576584757e0321bac08ccae797"
+}
