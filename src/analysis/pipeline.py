@@ -73,7 +73,6 @@ from .temporal_real import (
     resolve_temporal_real_snapshot_subset,
     temporal_real_analysis_enabled,
 )
-from .swav_eval import run_swav_prototype_evaluation
 from .utils import _sample_indices
 
 
@@ -1105,29 +1104,6 @@ class _AnalysisRun:
         )
         if connected_regime_metrics:
             self.all_metrics["connected_regimes"] = connected_regime_metrics
-
-
-        swav_prototype_metrics = run_swav_prototype_evaluation(
-            model=self.model,
-            cache=self.cache,
-            out_dir=self.out_dir,
-            analysis_cfg=self.analysis_cfg,
-            cluster_labels_by_k=self.cluster_labels_by_k,
-            cluster_color_maps_by_k=self.shared_cluster_color_maps_by_k,
-            primary_k=int(self.primary_k),
-            frame_groups=self.snapshot_source_groups,
-            proportion_frame_groups=(
-                None if self.temporal_bundle is None else self.snapshot_layout_inference.source_groups
-            ),
-            figure_settings=self.figure_settings,
-            figure_set_run_kwargs=self._build_figure_set_run_kwargs(self.figure_settings),
-            figure_dataloader=self.dl,
-            figure_snapshot_layout=self.figure_snapshot_layout_for_outputs,
-            figure_analysis_source_names=self.figure_analysis_source_names_for_outputs,
-            step=self.step,
-        )
-        if swav_prototype_metrics:
-            self.all_metrics["swav_prototypes"] = swav_prototype_metrics
 
     def render_cluster_figures(self):
         self.real_md_enabled = bool(OmegaConf.select(self.analysis_cfg, "real_md.enabled", default=True))

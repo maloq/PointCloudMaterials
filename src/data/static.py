@@ -768,8 +768,6 @@ class PointCloudDataset(Dataset):
                     sample_path=sample_path,
                     coords_path=coords_path,
                     radius=source_radius,
-                    source_name=source_name,
-                    file_name=str(file_name),
                 )
                 del samples
 
@@ -820,8 +818,6 @@ class PointCloudDataset(Dataset):
         sample_path: Path,
         coords_path: Path | None,
         radius: float,
-        source_name: str,
-        file_name: str,
     ) -> int:
         sample_count = len(samples)
         sample_array = np.lib.format.open_memmap(
@@ -832,11 +828,6 @@ class PointCloudDataset(Dataset):
         )
         coords_array = None
         if self.return_coords:
-            if coords_path is None:
-                raise RuntimeError(
-                    "coords_path must be provided when return_coords=True"
-                    " while writing sample cache."
-                )
             coords_array = np.lib.format.open_memmap(
                 coords_path,
                 mode="w+",
@@ -850,28 +841,13 @@ class PointCloudDataset(Dataset):
             else:
                 sample_points, coords = item, None
             sample_np = np.asarray(sample_points, dtype=np.float32)
-            if sample_np.shape != (self.num_points, 3):
-                raise ValueError(
-                    "Static sample cache expected each sample to have shape"
-                    f" ({self.num_points}, 3), got {sample_np.shape}."
-                    f" source={source_name!r}, file={file_name!r},"
-                    f" sample_index={sample_index}."
-                )
             if self.normalize:
                 sample_np = pc_normalize(sample_np, radius).astype(
                     np.float32, copy=False
                 )
             sample_array[sample_index] = sample_np
             if coords_array is not None:
-                coords_np = np.asarray(coords, dtype=np.float32)
-                if coords_np.shape != (3,):
-                    raise ValueError(
-                        "Static sample cache expected coords to have shape"
-                        f" (3,), got {coords_np.shape}."
-                        f" source={source_name!r}, file={file_name!r},"
-                        f" sample_index={sample_index}."
-                    )
-                coords_array[sample_index] = coords_np
+                coords_array[sample_index] = coords
 
         sample_array.flush()
         del sample_array
@@ -1082,12 +1058,6 @@ class PointCloudDataset(Dataset):
             sample = {"points": torch.tensor(point_set, dtype=torch.float32)}
             if self.return_coords:
                 coord_array = self._cache_coord_arrays[shard_idx]
-                if coord_array is None:
-                    raise RuntimeError(
-                        "Cached PointCloudDataset was requested with"
-                        f" return_coords=True, but shard {shard_idx} has no"
-                        " coords array."
-                    )
                 sample["coords"] = torch.tensor(
                     coord_array[local_idx], dtype=torch.float32
                 )
@@ -1155,12 +1125,6 @@ class PointCloudDataset(Dataset):
             ][sorted_local_indices]
             if coord_batch is not None:
                 coord_array = self._cache_coord_arrays[shard_idx]
-                if coord_array is None:
-                    raise RuntimeError(
-                        "Cached PointCloudDataset was requested with"
-                        f" return_coords=True, but shard {shard_idx} has no"
-                        " coords array."
-                    )
                 coord_batch[sorted_output_positions] = coord_array[
                     sorted_local_indices
                 ]

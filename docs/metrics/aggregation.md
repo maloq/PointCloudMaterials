@@ -16,6 +16,14 @@ training epochs for an extremum. Missing values are displayed as `-`, never zero
 | Ungrouped global summary rows | Mean/std of all available collected values, including values from unsuccessful runs. Use grouped tables for completed-repeat comparisons. |
 | Display rounding | Values ≥1 use three decimal places; smaller magnitudes use two significant digits. JSON retains original numeric precision. |
 
+Feature collection and rotation live in `supervised_features.py`, numerical
+evaluation in `supervised_metrics.py`, and epoch cache ownership/logging in
+`supervised_cache.py`. The evaluator returns metric groups without logging.
+Clustering calculations are shared with descriptor baselines through
+`src/utils/evaluation_metrics.py`: repeated-run encoder statistics retain float64
+aggregation and descriptor statistics retain their historical float32 aggregation.
+A single evaluator run retains its unrounded result in both paths.
+
 Training supervised-cache metrics have the following definitions:
 
 - ARI: sklearn adjusted Rand agreement of ground-truth labels and KMeans assignments.

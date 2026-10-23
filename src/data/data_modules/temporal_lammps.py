@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader, SequentialSampler
 
 from src.data.static_sources import resolve_auto_cutoff_config
 from src.data.data_modules.common import (
-    _cfg_get,
     _resolve_split_seed,
     _resolve_temporal_window_start_frames,
     _split_temporal_window_start_frames,
@@ -57,35 +56,16 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
 
     def _build_datasets(self):
         data_cfg = self.cfg.data
-        ctx = "TemporalLAMMPSDataModule.data"
-        dump_file = _cfg_get(data_cfg, "dump_file", context=ctx)
-        if dump_file is None or str(dump_file).strip() == "":
-            raise ValueError(
-                "Temporal LAMMPS data configuration must provide"
-                " data.dump_file"
-            )
-        cache_dir = _cfg_get(data_cfg, "cache_dir", default=None, context=ctx)
+        dump_file = data_cfg.dump_file
+        cache_dir = data_cfg.get("cache_dir", None)
 
-        sequence_length = int(
-            _cfg_get(data_cfg, "sequence_length", context=ctx)
-        )
-        num_points = int(_cfg_get(data_cfg, "num_points", context=ctx))
-        frame_stride = int(
-            _cfg_get(data_cfg, "frame_stride", default=1, context=ctx)
-        )
-        window_stride = int(
-            _cfg_get(data_cfg, "window_stride", default=1, context=ctx)
-        )
-        frame_start = int(
-            _cfg_get(data_cfg, "frame_start", default=0, context=ctx)
-        )
-        frame_stop_raw = _cfg_get(
-            data_cfg, "frame_stop", default=None, context=ctx
-        )
+        sequence_length = int(data_cfg.sequence_length)
+        num_points = int(data_cfg.num_points)
+        frame_stride = int(data_cfg.get("frame_stride", 1))
+        window_stride = int(data_cfg.get("window_stride", 1))
+        frame_start = int(data_cfg.get("frame_start", 0))
+        frame_stop_raw = data_cfg.get("frame_stop", None)
         frame_stop = None if frame_stop_raw is None else int(frame_stop_raw)
-
-        # Scalar invariants (sequence_length>0, num_points>0, frame_start>=0, stride>0) are
-        # validated inside `TemporalLAMMPSDumpDataset.__init__` / `_resolve_temporal_window_start_frames`.
 
         scan = TemporalLAMMPSDumpDataset.scan_dump_file(
             dump_file, cache_dir=cache_dir
@@ -107,9 +87,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         train_anchor_frames, val_anchor_frames = (
             _split_temporal_window_start_frames(
                 anchor_frames,
-                train_ratio=float(
-                    _cfg_get(data_cfg, "train_ratio", context=ctx)
-                ),
+                train_ratio=float(data_cfg.train_ratio),
                 seed=self.split_seed,
                 context="TemporalLAMMPSDataModule._build_datasets",
             )
@@ -123,80 +101,35 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             window_stride=window_stride,
             frame_start=frame_start,
             frame_stop=frame_stop,
-            center_selection_mode=_cfg_get(
-                data_cfg, "center_selection_mode", context=ctx
-            ),
+            center_selection_mode=data_cfg.center_selection_mode,
             center_atom_ids=_to_container(
-                _cfg_get(
-                    data_cfg, "center_atom_ids", default=None, context=ctx
-                )
+                data_cfg.get("center_atom_ids", None)
             ),
-            center_atom_stride=_cfg_get(
-                data_cfg, "center_atom_stride", default=None, context=ctx
-            ),
-            max_center_atoms=_cfg_get(
-                data_cfg, "max_center_atoms", default=None, context=ctx
-            ),
+            center_atom_stride=data_cfg.get("center_atom_stride", None),
+            max_center_atoms=data_cfg.get("max_center_atoms", None),
             center_selection_seed=int(
-                _cfg_get(
-                    data_cfg, "center_selection_seed", default=0, context=ctx
-                )
+                data_cfg.get("center_selection_seed", 0)
             ),
-            center_grid_overlap=_cfg_get(
-                data_cfg, "center_grid_overlap", default=None, context=ctx
+            center_grid_overlap=data_cfg.get("center_grid_overlap", None),
+            center_grid_reference_frame_index=data_cfg.get(
+                "center_grid_reference_frame_index", None
             ),
-            center_grid_reference_frame_index=_cfg_get(
-                data_cfg,
-                "center_grid_reference_frame_index",
-                default=None,
-                context=ctx,
-            ),
-            normalize=bool(
-                _cfg_get(data_cfg, "normalize", default=True, context=ctx)
-            ),
+            normalize=bool(data_cfg.get("normalize", True)),
             center_neighborhoods=bool(
-                _cfg_get(
-                    data_cfg, "center_neighborhoods", default=True, context=ctx
-                )
+                data_cfg.get("center_neighborhoods", True)
             ),
-            selection_method=str(
-                _cfg_get(
-                    data_cfg,
-                    "selection_method",
-                    default="closest",
-                    context=ctx,
-                )
-            ),
+            selection_method=str(data_cfg.get("selection_method", "closest")),
             cache_dir=cache_dir,
-            rebuild_cache=bool(
-                _cfg_get(data_cfg, "rebuild_cache", default=False, context=ctx)
-            ),
-            tree_cache_size=int(
-                _cfg_get(data_cfg, "tree_cache_size", default=4, context=ctx)
-            ),
+            rebuild_cache=bool(data_cfg.get("rebuild_cache", False)),
+            tree_cache_size=int(data_cfg.get("tree_cache_size", 4)),
             precompute_neighbor_indices=bool(
-                _cfg_get(
-                    data_cfg,
-                    "precompute_neighbor_indices",
-                    default=False,
-                    context=ctx,
-                )
+                data_cfg.get("precompute_neighbor_indices", False)
             ),
             build_lock_timeout_sec=float(
-                _cfg_get(
-                    data_cfg,
-                    "build_lock_timeout_sec",
-                    default=7200.0,
-                    context=ctx,
-                )
+                data_cfg.get("build_lock_timeout_sec", 7200.0)
             ),
             build_lock_stale_sec=float(
-                _cfg_get(
-                    data_cfg,
-                    "build_lock_stale_sec",
-                    default=86400.0,
-                    context=ctx,
-                )
+                data_cfg.get("build_lock_stale_sec", 86400.0)
             ),
         )
 
@@ -213,12 +146,9 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
     def _resolve_radius(
         self, *, dump_file, data_cfg, frame_start: int, num_points: int
     ) -> float:
-        ctx = "TemporalLAMMPSDataModule.data"
-        radius_raw = _cfg_get(data_cfg, "radius", default=None, context=ctx)
+        radius_raw = data_cfg.get("radius", None)
         auto_cutoff_cfg = resolve_auto_cutoff_config(
-            _to_container(
-                _cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)
-            ),
+            _to_container(data_cfg.get("auto_cutoff", None)),
         )
         if auto_cutoff_cfg is not None:
             if radius_raw is not None:
@@ -265,8 +195,6 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
             )
 
         radius_value = float(radius_raw)
-        if radius_value <= 0.0:
-            raise ValueError(f"data.radius must be > 0, got {radius_value}.")
         logger.print(
             f"Temporal LAMMPS radius: {radius_value:.6f} (source=data.radius)"
         )
@@ -303,18 +231,7 @@ class TemporalLAMMPSDataModule(pl.LightningDataModule):
         )
         prefetch_factor = getattr(self.cfg, "temporal_prefetch_factor", None)
         if prefetch_factor is not None:
-            resolved_prefetch_factor = int(prefetch_factor)
-            if resolved_prefetch_factor <= 0:
-                raise ValueError(
-                    "temporal_prefetch_factor must be > 0 when provided, "
-                    f"got {resolved_prefetch_factor}."
-                )
-            if self.num_workers <= 0:
-                raise ValueError(
-                    "temporal_prefetch_factor requires num_workers > 0, "
-                    f"got num_workers={self.num_workers}."
-                )
-            loader_kwargs["prefetch_factor"] = resolved_prefetch_factor
+            loader_kwargs["prefetch_factor"] = int(prefetch_factor)
         return DataLoader(
             dataset,
             **loader_kwargs,

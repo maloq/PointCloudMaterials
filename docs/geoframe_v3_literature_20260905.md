@@ -340,9 +340,11 @@ the backbone's grouping and outer-neighborhood discontinuities.
 
 ## 6. Concrete reuse and required changes
 
-The repository already contains
+At the time of this review, the repository contained
 [MACE](../src/models/encoders/mace_encoder.py) and
-[NequIP](../src/models/encoders/nequip_encoder.py) adapters. Their current
+NequIP adapters. NequIP was later
+[retired](src_refactor.md#code-retirement--2026-10-23); its source is available
+in Git revision `79f5ea6e`. Their reviewed
 radius-graph builders select up to max_neighbors using torch.topk. For example,
 [the temporal MACE configuration](/store/PERSO/vmorozov/projects/PointCloudMaterials-retention-20260913/configs/temporal_vicreg_lammps_mace.yaml)
 uses max_neighbors=16. When that cap binds, two neighbors can exchange inclusion

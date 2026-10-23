@@ -1,9 +1,24 @@
 """Explicit, exact-source continuation for execution-only optimizations."""
+import importlib.metadata
 import json
 from pathlib import Path
 
 from src.data.structural_pretraining.prepare import digest, file_hash, save_json
 from src.project_runtime.paths import resolve_path
+
+def implementation():
+    paths=[p for folder in ('src/data/structural_pretraining','src/training_methods/structural_pretraining')
+           for p in Path(folder).glob('*.py')]
+    paths += [Path(p) for p in ('src/models/encoders/structural.py','src/models/encoders/mace_causal.py',
+        'src/models/encoders/axial_gatr.py','src/models/encoders/mace_backend.py','src/models/encoders/structural_precision.py',
+        'src/models/encoders/compensated_bf16.py','src/models/encoders/equivariant_bond.py',
+        'src/training_methods/shared_pretraining/normalization.py','src/training_methods/shared_pretraining/resume.py',
+        'src/training_methods/shared/gradient_cache.py')]
+    return dict(files={str(p):file_hash(p) for p in paths},
+        versions={name:importlib.metadata.version(name) for name in ('torch','triton','mace-torch','cuequivariance',
+            'cuequivariance-torch','cuequivariance-ops-torch-cu13','GATr','lejepa')},
+        dependencies={name:json.loads(importlib.metadata.distribution(name).read_text('direct_url.json')) for name in ('GATr','lejepa')})
+
 
 EXECUTION_FILES = {
     'src/training_methods/shared_pretraining/runtime.py',

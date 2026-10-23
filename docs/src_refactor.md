@@ -688,3 +688,118 @@ Further candidates require separate semantic review: JSON writers differ in
 NaN/temporary-file policies; relocation workflows differ in rollback/deletion
 order; static/synthetic datamodules share loader setup but differ in preparation
 and augmentation. Similar-looking code alone is insufficient to merge these.
+
+## Code retirement — 2026-10-23
+
+The user approved the six deletion groups from the follow-up review, retaining
+VN and MLP. This removes 34 Python files and 14,449 Python lines, including
+their live caller registrations:
+
+- The unused `simulation/visualization.py` synthetic renderer. The active
+  `simulation/atomistic/visualization.py` remains.
+- `analysis/swav_eval.py` and its analysis-pipeline stage. SwAV training,
+  checkpoint loading and historical reports remain; disabled evaluator settings
+  were removed from the three maintained analysis templates.
+- The historical research packages `liquid_sro_benchmark`, `factor_vae`,
+  `mace_diagnosis`, `mace_vicreg_audit`, `mace_bf16_training` and
+  `predictive_encoder_training`. Current FactorVAE and BF16 support remain.
+- The completed `dense_al_gpu_transfer` driver and the separate historical
+  `predictive_dynamics`, `predictive_dynamics_15ps` and
+  `nested_fixed_horizon_compatibility` campaign drivers.
+- DGCNN, EGNN and NequIP implementations and their factory imports. Every VN
+  variant and MLP remains registered, with unchanged source and checkpoint state.
+
+Git revision `79f5ea6e22fd9a0b02337f93bdf0e80d90827e94` preserves the complete
+pre-removal checkout. A local source/configuration archive was verified against
+every deleted file before removal. Receipts and integration checks are under
+`output/maintenance/code-retirement-20261023/technical/`. No datasets, scientific
+results, checkpoints, original recipes or run-local frozen sources were deleted.
+Older STORE archive paths were unavailable on this host; this pass does not
+certify their availability. Historical reproduction uses each run's original
+producer and recipe, rather than treating this maintenance snapshot as its source.
+
+`configs/analysis/response_pacmap_20261002.json` retains its original source pins,
+including retired encoders. Use its frozen producer for reproduction; its audit
+must not be bypassed or its pins silently updated to this checkout.
+
+Read-only Slurm inspection found two interactive shell allocations and no
+campaign jobs. The active allocation is this host, node53; its process inspection
+found no campaign consumers. Other-host SSH inspection was unavailable and is
+recorded in the receipt. No jobs were submitted, stopped or changed.
+
+All six VN variants and MLP retain exact CPU forward outputs, parameter/buffer
+states and strict checkpoint restoration. SwAV training loss, metrics, gradients
+and reload agree exactly. The analysis pipeline imports, and its AST changes
+only by removing SwAV evaluation. All 13 surviving campaign help outputs match
+the baseline; retired dispatcher commands reject cleanly. Full scientific
+analysis, GPU kernels and training were not run.
+
+All 1,423 remaining Python files parse, with no imports of deleted modules.
+The updated analysis metric contract passes; the full audit retains exactly its
+20 pre-existing mismatches across 12 other families. Frozen exported contracts
+and scientific metric formulas were not rewritten.
+
+## Closed-loop simplification — 2026-10-23
+
+The next pass removes 1,721 net Python lines across 24 files by using the actual
+repository producer contracts. It removes repeated scalar/shape checks, config
+access/coercion wrappers, disabled-option warnings and duplicate encoder-output
+handling. FactorVAE retains its objective and checkpoint structure; all VN and
+MLP variants remain. Plan parsing uses its existing dataclasses directly.
+
+The data loaders preserve source selection, sample ordering and RNG behavior.
+Shooting-frame lookup now searches the validated sorted timeline instead of
+rebuilding a full dictionary. Full-size crops reuse the input, VN pooling uses
+`gather` instead of meshgrids, and PointNet identities broadcast. Duplicate
+per-batch scans and repeated graph constants were removed.
+
+Local before/after evidence is in
+`output/maintenance/closed-loop-20261023/technical/`: 21 training cases (including
+Lightning checkpoint/resume), 13 encoder variants with exact outputs/gradients/
+state/RNG, 451 data fields, 176 rendered command pairs and shared augmentation/
+metric comparisons. The CPU repository check and complete reference pipeline pass.
+No scientific training or GPU performance validation was run.
+
+On a synthetic 10,000-frame, four-atom fixture, three-frame loading decreased from
+1.666 ms to 0.0415 ms. A full-size 256-by-160-point crop avoids a roughly 0.23-ms
+CPU copy. These are isolated operations, not end-to-end training speedups.
+Frozen recipes, historical hashes and exported results remain unchanged.
+
+## Shared training and evaluation paths — 2026-10-23
+
+The six follow-up changes remove another 696 net Python lines across 38 files:
+
+- VICReg now consumes explicit projected features. Static and temporal training
+  share view creation and encoding in `BaseSSLModule`, preserving their different
+  cropping rules and projector grouping. The callback-based loss path is gone.
+- Structural and shared pretraining use one 28-line gradient-cache implementation
+  for tensor/RNG capture and replay. Batch helpers belong to the existing data
+  module; the shared runtime no longer imports another trainer.
+- Descriptor and encoder clustering use one KMeans/Hungarian implementation.
+  Historical descriptor float32 and encoder float64 repeated-run reductions
+  remain explicit; single-run scores retain their original precision.
+- Supervised evaluation separates cache/logging, feature collection and numerical
+  metrics. RealMD separates orchestration, flicker tables and plotting. The
+  [saved-table renderer](metrics/analysis.md) regenerates figures without model
+  inference or recalculating metrics; the old `ComputedTable` wrapper is removed.
+- Potential-benchmark config loading uses its dataclasses directly, removing
+  482 lines of validation scaffolding while retaining coupled timestep and
+  qualification rules. Numerical routines are unchanged.
+- Undefined-name lint now covers all maintained Python sources. Verbose OFF
+  reading works, unused coordinate scans and unreachable plotting code are gone,
+  and paired loop state is explicit. Scoped annotations preserve GPU closure
+  lifetimes where Ruff misreads a later `del`; no runtime workaround was added.
+
+Before/after evidence is in
+`output/maintenance/code-quality-six-20261023/technical/`: 22 exact training
+cases, 20 clustering cases, 78 evaluation logs, nine identical CSVs, ten identical
+PNGs, actual feature collection and saved-table rendering, historical simulation
+config parsing and tiny ASE/EMT EOS/NVE/force comparisons. Four integration checks
+cover the lint fixes, including neighborhood/PTM preparation and loading two
+forecast checkpoints. The repository check covers 1,428 Python files, 681 configs,
+90 rendered commands and the complete CPU reference example with exact resume.
+
+All checks ran locally without scientific training, online tracking or GPU jobs.
+CUDA execution and full MACE qualification remain unverified. Historical runs
+with protected source identities still require their frozen checkout for exact
+continuation; checkpoint tensor compatibility does not bypass those identities.

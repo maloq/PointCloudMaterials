@@ -13,13 +13,6 @@ def get_optimizers_and_scheduler(hparams, parameters):
 
     learning_rate = float(hparams.learning_rate)
     minimum_lr = float(hparams.scheduler_min_lr)
-    if learning_rate <= 0.0:
-        raise ValueError(f"learning_rate must be > 0, got {learning_rate}.")
-    if not 0.0 <= minimum_lr <= learning_rate:
-        raise ValueError(
-            "scheduler_min_lr must be between zero and learning_rate; got"
-            f" scheduler_min_lr={minimum_lr}, learning_rate={learning_rate}."
-        )
 
     optimizer = torch.optim.AdamW(
         parameters,
@@ -29,25 +22,8 @@ def get_optimizers_and_scheduler(hparams, parameters):
     epochs_before_swa = int(
         hparams.swa_epoch_start + 1 if hparams.enable_swa else hparams.epochs
     )
-    if epochs_before_swa < 1:
-        raise ValueError(
-            "Cosine scheduler requires at least one epoch, got"
-            f" {epochs_before_swa}."
-        )
 
     warmup_epochs = int(hparams.warmup_epochs) if hparams.warmup_enabled else 0
-    if hparams.warmup_enabled:
-        if not 0 < warmup_epochs < epochs_before_swa:
-            raise ValueError(
-                "warmup_epochs must leave at least one epoch for cosine"
-                f" decay; got warmup_epochs={warmup_epochs},"
-                f" scheduled_epochs={epochs_before_swa}."
-            )
-        if not 0.0 < hparams.warmup_start_factor <= 1.0:
-            raise ValueError(
-                "warmup_start_factor must be in (0, 1], "
-                f"got {hparams.warmup_start_factor}."
-            )
 
     cosine_epochs = epochs_before_swa - warmup_epochs
     scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(

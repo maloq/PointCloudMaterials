@@ -25,7 +25,6 @@ class STN3d(nn.Module):
         self.bn5 = nn.BatchNorm1d(128)
 
     def forward(self, x):
-        batchsize = x.size()[0]
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
@@ -36,10 +35,7 @@ class STN3d(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        iden = torch.eye(3, device=x.device, dtype=x.dtype).view(1, 9).repeat(batchsize, 1)
-        x = x + iden
-        x = x.view(-1, 3, 3)
-        return x
+        return x.view(-1, 3, 3) + torch.eye(3, device=x.device, dtype=x.dtype)
 
 
 class STNkd(nn.Module):
@@ -62,9 +58,7 @@ class STNkd(nn.Module):
         self.k = k
 
     def forward(self, x):
-        batchsize = x.size()[0]
-        x_orig_device = x.device
-        x_orig_dtype = x.dtype
+        identity = torch.eye(self.k, device=x.device, dtype=x.dtype)
         x = F.relu(self.bn1(self.conv1(x)))
         x = F.relu(self.bn2(self.conv2(x)))
         x = F.relu(self.bn3(self.conv3(x)))
@@ -75,18 +69,7 @@ class STNkd(nn.Module):
         x = F.relu(self.bn5(self.fc2(x)))
         x = self.fc3(x)
 
-        # iden = Variable(torch.from_numpy(np.eye(self.k).flatten().astype(np.float32))).view(1, self.k * self.k).repeat(
-        #     batchsize, 1)
-        # if x.is_cuda: # x is on x_orig_device
-        #     iden = iden.cuda()
-        
-        # Modernized identity matrix creation
-        iden_matrix = torch.eye(self.k, device=x_orig_device, dtype=x_orig_dtype)
-        iden = iden_matrix.view(1, self.k * self.k).repeat(batchsize, 1)
-        
-        x = x + iden
-        x = x.view(-1, self.k, self.k)
-        return x
+        return x.view(-1, self.k, self.k) + identity
 
 
 
@@ -108,9 +91,6 @@ class _PointNetBackbone(nn.Module):
             self.fstn = STNkd(k=c1)
 
     def forward(self, x: torch.Tensor):
-        B, D, N = x.size()
-        if D != 3:
-            raise ValueError(f"PointNet encoder expects input shape (B,3,N), got {tuple(x.shape)}.")
         trans = self.stn(x)
 
         x = x.transpose(2, 1)                       # (B,N,C)

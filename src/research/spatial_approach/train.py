@@ -142,7 +142,8 @@ def fit(s, variant, corpus, targets, records, descriptor_stats, device):
         best, first_epoch, update = last['best'], last['epoch'], last['update']
     def save(path, epoch):
         temporary = path.with_suffix('.building.pt')
-        torch.save(dict(identity=s.identity, model=model.state_dict(), optimizer=optimizer.state_dict(),
+        # Called before the captured objects are explicitly released below.
+        torch.save(dict(identity=s.identity, model=model.state_dict(), optimizer=optimizer.state_dict(),  # noqa: F821
                         best=best, epoch=epoch, update=update, scalers=corpus.scalers,
                         descriptor_stats=descriptor_stats, config=c, variant=variant), temporary)
         temporary.replace(path)

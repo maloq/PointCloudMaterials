@@ -31,10 +31,7 @@ class VNLinear(nn.Module):
 class VNLeakyReLU(nn.Module):
     def __init__(self, in_channels: int, share_nonlinearity: bool = False, negative_slope: float = 0.2):
         super().__init__()
-        if share_nonlinearity:
-            self.map_to_dir = nn.Linear(in_channels, 1, bias=False)
-        else:
-            self.map_to_dir = nn.Linear(in_channels, in_channels, bias=False)
+        self.map_to_dir = nn.Linear(in_channels, 1 if share_nonlinearity else in_channels, bias=False)
         self.negative_slope = negative_slope
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
@@ -81,10 +78,7 @@ class VNLinearLeakyReLU(nn.Module):
         self.use_batchnorm = use_batchnorm
         if use_batchnorm:
             self.batchnorm = VNBatchNorm(out_channels, dim=dim)
-        if share_nonlinearity:
-            self.map_to_dir = nn.Linear(in_channels, 1, bias=False)
-        else:
-            self.map_to_dir = nn.Linear(in_channels, out_channels, bias=False)
+        self.map_to_dir = nn.Linear(in_channels, 1 if share_nonlinearity else out_channels, bias=False)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         p = self.map_to_feat(x.transpose(1, -1)).transpose(1, -1)
@@ -107,9 +101,8 @@ class VNMaxPool(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         d = self.map_to_dir(x.transpose(1, -1)).transpose(1, -1)
         dotprod = (x * d).sum(2, keepdim=True)
-        idx = dotprod.max(dim=-1, keepdim=False)[1]
-        index_tuple = torch.meshgrid([torch.arange(j, device=x.device) for j in x.size()[:-1]], indexing='ij') + (idx,)
-        return x[index_tuple]
+        idx = dotprod.argmax(dim=-1, keepdim=True).expand(*x.shape[:-1], 1)
+        return x.gather(-1, idx).squeeze(-1)
 
 
 def mean_pool(x: torch.Tensor, dim: int = -1, keepdim: bool = False) -> torch.Tensor:
@@ -275,8 +268,6 @@ class PointNetEncoderVN(Encoder):
             negative_slope=0.0,
             hidden_dims=std_feature_hidden_dims,
         )
-        if latent_size % 3 != 0:
-            raise ValueError(f"latent_size must be divisible by 3, got {latent_size}")
         # Map pooled equivariant VN features (B, c3, 3) -> (B, latent_size, 3)
         self.out_eq_mlp = VNLinearLeakyReLU(c3, latent_size, dim=3, use_batchnorm=False)
         # Map invariant feature vector (B, 2*c3*3) -> (B, latent_size)
@@ -288,10 +279,6 @@ class PointNetEncoderVN(Encoder):
             self.pool = mean_pool
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(
-                f"PointNetEncoderVN expects repository input shape (B,N,3), got {tuple(x.shape)}."
-            )
         if x.dtype in (torch.float16, torch.bfloat16):
             raise TypeError(
                 "PointNetEncoderVN requires float32 inputs because low precision loses "
@@ -351,8 +338,6 @@ class VNDGCNNEncoder(Encoder):
         use_cross_product: bool = False,
     ):
         super().__init__()
-        if len(feature_dims) != 5:
-            raise ValueError(f"feature_dims must provide five entries (got {feature_dims})")
 
         self.invariant_dim = int(latent_size)
         self.equivariant_dim = int(latent_size)
@@ -440,8 +425,6 @@ class VNDGCNNEncoder(Encoder):
             self.pool4 = mean_pool
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(f"VNDGCNNEncoder expects input shape (B,N,3), got {tuple(x.shape)}")
         center_loc = x.mean(dim=1)
         x = x.permute(0, 2, 1).contiguous()
         batch_size, _, num_points = x.size()
@@ -657,9 +640,6 @@ class VNDGCNNEncoderRefined(Encoder):
             self.pool_layer = mean_pool
 
         # Projection for Z_eq (B, latent, 3)
-        # latent_size must be divisible by 3 to map from VN channels
-        if latent_size % 3 != 0:
-            raise ValueError(f"latent_size must be divisible by 3, got {latent_size}")
         self.eq_projector = VNLinear(c5, latent_size)
         # Initialize with larger gain to produce useful equivariant outputs
         nn.init.xavier_uniform_(self.eq_projector.map_to_feat.weight, gain=2.0)
@@ -678,10 +658,6 @@ class VNDGCNNEncoderRefined(Encoder):
         # Shape required for get_graph_feature: (B, C, 3, N).
         
         # Input x: (B, N, 3) -> (B, 3, N)
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(
-                f"VNDGCNNEncoderRefined expects repository input shape (B,N,3), got {tuple(x.shape)}."
-            )
         center = x.mean(dim=1)
         x = x.permute(0, 2, 1)
         
@@ -771,11 +747,7 @@ class VNZCALayerNorm(nn.Module):
             self.register_buffer("gamma", torch.ones(1, channels, 1, 1), persistent=False)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        if x.dim() < 3:
-            raise ValueError(f"Expected VN tensor with >=3 dims, got shape {tuple(x.shape)}")
         B, C = x.shape[:2]
-        if x.shape[2] != 3:
-            raise ValueError(f"VNZCALayerNorm expects vector-dim=3, got {x.shape[2]}")
 
         x_flat = x.reshape(B, C, 3, -1).permute(0, 2, 1, 3).reshape(B, 3, -1)
         # Whitening in float32 avoids bf16 eigh/rsqrt issues and improves stability.
@@ -1047,8 +1019,6 @@ class VNRevnetBackboneEncoder(Encoder):
         super().__init__()
         self.invariant_dim = int(latent_size)
         self.equivariant_dim = int(latent_size)
-        if len(sa_channels) != 2 or len(sa_npoints) != 2 or len(sa_knn) != 2:
-            raise ValueError("This encoder currently expects 2-stage SA: sa_channels/npoints/knn must be length 2.")
 
         self.dropout_rate = dropout_rate
         self.k_embed = int(k_embed)
@@ -1135,8 +1105,6 @@ class VNRevnetBackboneEncoder(Encoder):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # x: (B, N, 3) expected
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
 
         B, N, _ = x.shape
         center = x.mean(dim=1)  # (B, 3)
@@ -1145,8 +1113,6 @@ class VNRevnetBackboneEncoder(Encoder):
         x_vn = x.permute(0, 2, 1).unsqueeze(1)
 
         # VN-EdgeConv style neighbor lifting on coordinates (kNN in coord space)
-        if self.k_embed > N:
-            raise ValueError(f"k_embed={self.k_embed} exceeds input point count N={N}.")
         k0 = self.k_embed
         edge = get_graph_feature(x_vn, k=k0)  # (B, 2, 3, N, k)
         feat = self.embed(edge).mean(dim=-1)                   # (B, Cembed, 3, N)
@@ -1262,8 +1228,6 @@ class AtomicGeometricInvariantHead(nn.Module):
         return tr, anis, vol
 
     def forward(self, xyz: torch.Tensor, idx_knn_max: torch.Tensor) -> torch.Tensor:
-        if xyz.dim() != 3 or xyz.size(-1) != 3:
-            raise ValueError(f"Expected xyz (B, N, 3), got {tuple(xyz.shape)}")
         B, N, _ = xyz.shape
 
         # float32 for stable invariants (tiny overhead for N<=256)
@@ -1482,18 +1446,12 @@ class VNAtomicRevnetBackboneEncoder(Encoder):
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         # x: (B, N, 3)
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
 
         B, N, _ = x.shape
         center = x.mean(dim=1)  # (B, 3)
 
         # Precompute kNN once (max_k across embed, edgeconv, geom (+1 for self-drop))
         max_k = max(self.k_embed, max(self.k_list), self.geom_head.k_geom + 1)
-        if max_k > N:
-            raise ValueError(
-                f"VN_REVNET_Atomic requires at least {max_k} points, got N={N}."
-            )
 
         x_coord = x.permute(0, 2, 1)          # (B, 3, N)
         idx_knn_max = knn(x_coord, k=max_k)   # (B, N, max_k), includes self
@@ -1563,14 +1521,6 @@ class InvariantEdgeConv(nn.Module):
         )
 
     def forward(self, feat: torch.Tensor, xyz_centered: torch.Tensor, idx_knn: torch.Tensor) -> torch.Tensor:
-        if feat.dim() != 3:
-            raise ValueError(f"InvariantEdgeConv expects feat (B,N,C), got {tuple(feat.shape)}")
-        if xyz_centered.dim() != 3 or xyz_centered.shape[-1] != 3:
-            raise ValueError(
-                "InvariantEdgeConv expects xyz_centered with shape (B,N,3), "
-                f"got {tuple(xyz_centered.shape)}"
-            )
-
         neigh_feat = index_points(feat, idx_knn)                       # (B,N,k,C)
         center_feat = feat.unsqueeze(2).expand_as(neigh_feat)          # (B,N,k,C)
 
@@ -1634,19 +1584,8 @@ class REVNETInvariantFastEncoder(Encoder):
         eq_channels = latent_size
         eq_temperature = float(eq_softmax_temperature)
 
-        if latent_size <= 0:
-            raise ValueError(f"latent_size must be > 0, got {latent_size}")
-        if n_knn <= 0:
-            raise ValueError(f"n_knn must be > 0, got {n_knn}")
-        if len(feature_dims) == 0 or min(feature_dims) <= 0:
-            raise ValueError(f"feature_dims must contain positive channel sizes, got {feature_dims}")
         if pooling not in {"mean", "max"}:
             raise ValueError(f"Unsupported pooling={pooling!r}")
-        if eq_temperature <= 0.0:
-            raise ValueError(
-                "eq_softmax_temperature must be > 0 so the cheap equivariant head remains well-defined, "
-                f"got {eq_temperature}"
-            )
         self.n_knn = n_knn
         self.pooling = pooling
         self.use_geom_head = bool(use_geom_head)
@@ -1717,15 +1656,10 @@ class REVNETInvariantFastEncoder(Encoder):
             self.register_buffer("eq_z_scale", torch.tensor(1.0), persistent=False)
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor | None, torch.Tensor]:
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(f"Expected input (B, N, 3), got {tuple(x.shape)}")
-
         B, N, _ = x.shape
         center = x.mean(dim=1)
         x_centered = x - center.unsqueeze(1)
 
-        if self.n_knn > N:
-            raise ValueError(f"n_knn={self.n_knn} exceeds input point count N={N}.")
         k = self.n_knn
         x_coord = x.permute(0, 2, 1).contiguous()
         idx_knn = knn(x_coord, k=k)

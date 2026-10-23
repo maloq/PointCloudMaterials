@@ -212,21 +212,10 @@ class TemporalSSLModule(BaseSSLModule):
                 use_neighbor=False,
                 apply_occlusion=False,
             )
-            return {"anchor": anchor_view, "pair": pair_view}
+            return {"y_a": anchor_view, "y_b": pair_view}
 
         # Anchor='center': reuse the VICReg temporal view builder.
-        vicreg_views = self._build_vicreg_temporal_views(center_pc, prev_pc, next_pc)
-        return {"anchor": vicreg_views["y_a"], "pair": vicreg_views["y_b"]}
-
-    def _encode_fused_contrastive_views(
-        self,
-        views: dict[str, torch.Tensor],
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        """Single encoder forward over ``[anchor ; pair]`` -> (anchor_feat, pair_feat)."""
-        fused_input = torch.cat([views["anchor"], views["pair"]], dim=0)
-        encoded = self.encoder_io.encode(fused_input)
-        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
-        return features.chunk(2, dim=0)
+        return self._build_vicreg_temporal_views(center_pc, prev_pc, next_pc)
 
     def _build_vicreg_temporal_views(
         self,
@@ -358,7 +347,7 @@ class TemporalSSLModule(BaseSSLModule):
 
         if use_fused:
             fused_views = self._build_fused_contrastive_views(pc_raw, prev_pc, next_pc)
-            anchor_feat, pair_feat = self._encode_fused_contrastive_views(fused_views)
+            anchor_feat, pair_feat = self._encode_contrastive_view_pair(fused_views)
 
             vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
                 z_a_feat=anchor_feat,
@@ -383,16 +372,13 @@ class TemporalSSLModule(BaseSSLModule):
                 vicreg_views = (
                     self._build_vicreg_temporal_views(pc_raw, prev_pc, next_pc)
                     if self.use_temporal_vicreg_views
-                    else None
+                    else self._build_contrastive_view_pair(
+                        vicreg_pc_raw, view_points=self.vicreg.view_points, shared_crop=False,
+                    )
                 )
-                vicreg_loss, vicreg_metrics = self.vicreg.compute_loss(
-                    pc=vicreg_pc_raw,
-                    encoder=self.encoder,
-                    prepare_input=self.encoder_io.prepare_input,
-                    split_output=self.encoder_io.split_output,
-                    current_epoch=int(self.current_epoch),
-                    views=vicreg_views,
-                    invariant_transform=self._shared_invariant,
+                z_a, z_b = self._encode_contrastive_view_pair(vicreg_views)
+                vicreg_loss, vicreg_metrics = self.vicreg.compute_loss_from_features(
+                    z_a_feat=z_a, z_b_feat=z_b, current_epoch=int(self.current_epoch),
                 )
                 if vicreg_loss is not None:
                     losses["vicreg"] = vicreg_loss

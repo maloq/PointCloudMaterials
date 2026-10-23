@@ -1,6 +1,8 @@
 """Project setup and explicitly selected storage transfer commands."""
 
 import argparse
+from contextlib import redirect_stdout
+import importlib
 import importlib.metadata
 import json
 import os
@@ -9,14 +11,66 @@ import shutil
 import subprocess
 import sys
 
-from .paths import catalog, load_json, machine
+from .paths import REPO, catalog, load_json, machine
 
 
-def doctor(lammps=False):
+def _environment_profile(profile):
+    """Check the maintained requirements and import the scientific runtime."""
+    from packaging.requirements import Requirement
+
+    report = dict(profile=profile, packages={}, imports={}, errors=[])
+    files = [REPO / 'environments' / f'requirements-{profile}.txt']
+    while files:
+        path = files.pop()
+        for line in path.read_text().splitlines():
+            line = line.split('#', 1)[0].strip()
+            if line.startswith('-r '):
+                files.append(path.parent / line[3:].strip())
+            elif line and not line.startswith('-'):
+                requirement = Requirement(line)
+                try:
+                    version = importlib.metadata.version(requirement.name)
+                except importlib.metadata.PackageNotFoundError:
+                    version = None
+                report['packages'][requirement.name] = version
+                if version is None or version not in requirement.specifier:
+                    report['errors'].append(f'{requirement}: installed {version or "missing"}')
+    modules = ['numpy', 'torch', 'pytorch_lightning', 'mace.calculators', 'e3nn', 'ase.md.langevin']
+    if profile == 'gpu':
+        modules += ['torchvision', 'cuequivariance_torch', 'openequivariance']
+    for name in modules:
+        try:
+            with redirect_stdout(sys.stderr):
+                importlib.import_module(name)
+            report['imports'][name] = 'ok'
+        except Exception as error:
+            report['imports'][name] = f'{type(error).__name__}: {error}'
+            report['errors'].append(f'{name} import failed: {error}')
+    if report['imports']['torch'] == 'ok':
+        import torch
+
+        available = torch.cuda.is_available()
+        report['cuda'] = dict(build=torch.version.cuda, available=available)
+        if profile == 'gpu' and not available:
+            report['errors'].append('GPU profile requires a visible CUDA device; run inside a GPU allocation.')
+        if profile == 'cpu' or available:
+            try:
+                device = 'cuda' if profile == 'gpu' else 'cpu'
+                value = torch.ones((2, 2), device=device) @ torch.ones((2, 2), device=device)
+                report['tensor_check'] = dict(device=device, sum=value.sum().item())
+            except Exception as error:
+                report['errors'].append(f'{device} tensor operation failed: {error}')
+    report['ok'] = not report['errors']
+    return report
+
+
+def doctor(lammps=False, profile=None):
     settings = machine()
     report = dict(python=sys.version, executable=sys.executable, roots=settings['roots'],
                   execution=settings['execution'], packages={name: importlib.metadata.version(name)
                   for name in ('numpy', 'omegaconf', 'PyYAML')})
+    if profile:
+        report['environment'] = _environment_profile(profile)
     if lammps:
         executable = settings['execution']['lammps']
         found = shutil.which(executable)
@@ -39,6 +93,12 @@ def main(argv=None):
     parser.add_argument('--machine', type=Path, help='Machine YAML; otherwise use PCM_MACHINE_CONFIG, machine.local.yaml or portable defaults.')
     sub = parser.add_subparsers(dest='command', required=True)
     p = sub.add_parser('doctor'); p.add_argument('--lammps', action='store_true')
+    p.add_argument('--profile', choices=('cpu', 'gpu'), help='Check pinned package versions, scientific imports, and CPU/CUDA execution.')
+    p = sub.add_parser('check', help='Run lightweight local development integration checks.')
+    p.add_argument('--output', type=Path, help='Parent for fresh check receipt directories; defaults to output/maintenance/checks/.')
+    p = sub.add_parser('example', help='Run the small CPU preparation/training/resume/evaluation example.')
+    p.add_argument('--output', type=Path, required=True, help='New directory for the local example.')
+    p.add_argument('--config', type=Path, help='Example recipe; defaults to configs/examples/cpu_pipeline.json.')
     sub.add_parser('paths')
     p = sub.add_parser('datasets')
     p.add_argument('--refresh', action='store_true', help='Build the evidence-backed dataset browser, cards, JSON and CSV.')
@@ -57,7 +117,13 @@ def main(argv=None):
     if args.machine:
         os.environ['PCM_MACHINE_CONFIG'] = str(args.machine.absolute())
     if args.command == 'doctor':
-        result = doctor(args.lammps)
+        result = doctor(args.lammps, args.profile)
+    elif args.command == 'check':
+        from .checks import run
+        result = run(args.output)
+    elif args.command == 'example':
+        from .example import run
+        result = run(args.output, args.config)
     elif args.command == 'paths':
         result = machine()
     elif args.command == 'datasets':
@@ -97,3 +163,5 @@ def main(argv=None):
             result = publish_simulation(args.source, identifier=args.id, move=args.move)
             result = {key: value for key, value in result.items() if key != 'files'}
     print(json.dumps(result, indent=2))
+    if args.command == 'doctor' and args.profile and not result['environment']['ok']:
+        raise SystemExit(1)

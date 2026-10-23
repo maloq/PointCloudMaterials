@@ -71,7 +71,8 @@ def diagnose(c, p, seed, deadline):
                 model.load_state_dict(saved['model']); optimizer.load_state_dict(saved['optimizer']); start = saved['update']
                 rng.bit_generator.state = saved['rng']; learning = saved['learning']
             def save(update):
-                atomic_save(folder/'last.pt', dict(model=model.state_dict(), optimizer=optimizer.state_dict(),
+                # Called before the captured objects are explicitly released below.
+                atomic_save(folder/'last.pt', dict(model=model.state_dict(), optimizer=optimizer.state_dict(),  # noqa: F821
                     update=update, rng=rng.bit_generator.state, learning=learning, mean=mean, scale=scale,
                     input_transform=input_transform))
             for update in range(start+1, settings['updates']+1):

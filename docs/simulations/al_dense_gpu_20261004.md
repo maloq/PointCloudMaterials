@@ -129,8 +129,10 @@ submits one source per job, eligible only for `A100,L40S,A40`. Replacement array
 **1020942** received two separate A100-PCIE-40GB GPUs on node05. Each job records
 its actual architecture, builds the extension for that architecture and runs a
 100-step full-cell native-versus-GPU NPT check before production. The separately
-frozen [transfer driver](../../src/simulation/campaigns/dense_al_gpu_transfer.py)
-executes the original campaign's frozen scientific code.
+frozen `src/simulation/campaigns/dense_al_gpu_transfer.py` driver executes the
+original campaign's frozen scientific code. Its live command was
+[retired on October 23](../src_refactor.md#code-retirement--2026-10-23);
+the captured transfer sources and receipts remain historical evidence.
 
 Both A100 gates passed, and both native production runs started at15:43 CEST.
 Force RMS errors were1.040e-5 and1.028e-5 eV/angstrom, maximum normal-pressure

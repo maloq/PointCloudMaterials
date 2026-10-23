@@ -1333,30 +1333,6 @@ def _exact_final_parent_bootstrap(
         "bootstrap_enumeration_count": int(values.size),
     }
 
-    names = list(predictions)
-    final_brier = [
-        metrics["models"][name]["final_validation_transition"]["branch_brier"]
-        for name in names
-    ]
-    final_nll = [
-        metrics["models"][name]["final_validation_transition"][
-            "negative_log_likelihood"
-        ]
-        for name in names
-    ]
-    x = np.arange(len(names))
-    figure, axes = plt.subplots(1, 2, figsize=(11.0, 4.5))
-    axes[0].bar(x, final_brier)
-    axes[0].set_ylabel("final transition branch Brier")
-    axes[1].bar(x, final_nll)
-    axes[1].set_ylabel("final transition negative log likelihood")
-    for axis in axes:
-        axis.set_xticks(x, names, rotation=25, ha="right")
-    figure.tight_layout()
-    figure.savefig(plots / "final_transition_model_comparison.png", dpi=180)
-    plt.close(figure)
-
-
 def fit_nested_committor_models(
     snapshot: NestedShootingSnapshot,
     cache: NestedFeatureCache,

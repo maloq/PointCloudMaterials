@@ -128,7 +128,8 @@ def benchmark(c):
         h = history[:1]; x = state[:1, 0]; u = tangent[:1, 0, ..., 0]
         with torch.no_grad():
             bound = model.condition(h)
-            _, jvp = torch.func.jvp(lambda y: bound(y, 4), (x,), (u,))
+            # Called before the captured objects are explicitly released below.
+            _, jvp = torch.func.jvp(lambda y: bound(y, 4), (x,), (u,))  # noqa: F821
             secant = (bound(x+.1*u, 4)-bound(x-.1*u, 4))/.2
             error = float((jvp-secant).norm()/jvp.norm().clamp_min(1e-8))
             rotation = torch.linalg.qr(torch.randn(3, 3, device='cuda'))[0]

@@ -6,7 +6,25 @@ order, sample caps, seed restoration and blocking CPU copies; BF16 exports use
 float32 storage. Closed-loop tensor/table producers supply their native schema.
 Scientific checks for source identity, temporal ordering and invalid latent
 values remain. Numerical reruns use new outputs; rendering/publication preserves
-existing exported definitions. Blender Cycles, HDBSCAN and SwAV remain supported.
+existing exported definitions. Blender Cycles and HDBSCAN remain supported.
+The optional SwAV prototype evaluator was retired on October 23; SwAV training
+and checkpoint support remain. Existing prototype reports retain their original
+producer and definitions. Other analysis calculations are unchanged.
+
+Temporal flicker calculation and CSV export live in `src/analysis/real_md_flicker.py`;
+rendering lives in `src/vis_tools/real_md_flicker_vis.py`. To regenerate figures
+without inference or metric recomputation:
+
+```python
+from src.vis_tools.real_md_flicker_vis import render_saved_flicker_metrics
+
+render_saved_flicker_metrics("output/my_analysis/real_md/flicker")
+```
+
+Pass `cluster_color_map` and `cluster_display_map` to preserve or change styling.
+The function reads the existing CSVs and `flicker_summary.json`; it leaves tables
+and scientific summaries unchanged. The main analysis still renders directly
+from the computed tables without rereading them.
 
 TMF snapshot flows use evenly spaced retained frame indices. Each pair counts
 only source/atom tracks observed at both endpoints, through the same transition

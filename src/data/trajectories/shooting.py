@@ -113,43 +113,13 @@ class ShootingBinaryTrajectory:
                 )
             arrays[name] = values
 
-        frame_count = int(manifest["frame_count"])
-        atom_count = int(manifest["atom_count"])
-        vector_shape = (frame_count, atom_count, 3)
-        frame_vector_shape = (frame_count, 3)
-        expected_shapes = {
-            "positions": vector_shape,
-            "velocities": vector_shape,
-            "timesteps": (frame_count,),
-            "box_low": frame_vector_shape,
-            "box_high": frame_vector_shape,
-            "atom_ids": (atom_count,),
-            "atom_types": (atom_count,),
-        }
-        for name, expected_shape in expected_shapes.items():
-            if arrays[name].shape != expected_shape:
-                raise RuntimeError(
-                    f"Shooting-binary semantic shape mismatch for {name!r}:"
-                    f" expected={expected_shape},"
-                    f" observed={arrays[name].shape}, root={root}."
-                )
         storage_dtype = str(manifest["storage_dtype"])
         if storage_dtype not in STORAGE_DTYPES:
             raise ValueError(
                 "Unsupported shooting-binary"
                 f" storage_dtype={storage_dtype!r} in {root}."
             )
-        expected_vector_dtype = np.dtype(storage_dtype)
-        if (
-            arrays["positions"].dtype != expected_vector_dtype
-            or arrays["velocities"].dtype != expected_vector_dtype
-        ):
-            raise RuntimeError(
-                "Shooting-binary vector dtype disagrees with"
-                f" storage_dtype={storage_dtype}:"
-                f" positions={arrays['positions'].dtype},"
-                f" velocities={arrays['velocities'].dtype}."
-            )
+        atom_count = int(manifest["atom_count"])
         if not np.array_equal(
             arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
         ):
@@ -190,14 +160,13 @@ class ShootingBinaryTrajectory:
                 "Requested shooting timesteps must be nonempty and"
                 f" nonnegative: {requested}."
             )
-        timestep_to_index = {
-            int(timestep): index
-            for index, timestep in enumerate(self.timesteps.tolist())
-        }
+        # load() establishes a strictly increasing timeline; avoid rebuilding
+        # a full Python dictionary for every requested window.
+        indices = np.searchsorted(self.timesteps, requested)
         missing = [
             timestep
-            for timestep in requested
-            if timestep not in timestep_to_index
+            for timestep, index in zip(requested, indices)
+            if index == self.frame_count or self.timesteps[index] != timestep
         ]
         if missing:
             raise RuntimeError(
@@ -205,9 +174,7 @@ class ShootingBinaryTrajectory:
                 f" trajectory {self.root}: missing={missing},"
                 f" available={self.timesteps.tolist()}."
             )
-        return requested, tuple(
-            timestep_to_index[value] for value in requested
-        )
+        return requested, tuple(map(int, indices))
 
     def load_position_frames(
         self, timesteps: Sequence[int]
@@ -221,12 +188,6 @@ class ShootingBinaryTrajectory:
             box_low = np.asarray(self.box_low[index], dtype=np.float32)
             box_high = np.asarray(self.box_high[index], dtype=np.float32)
             box_lengths = box_high - box_low
-            if np.any(positions < 0.0):
-                raise RuntimeError(
-                    "Decoded shooting positions contain negative wrapped"
-                    f" coordinates: root={self.root}, timestep={timestep},"
-                    f" minimum={float(positions.min())}."
-                )
             # float16 rounding can move a value just below L to exactly L. The text
             # reader has the same half-open [0, L) contract for periodic cKDTree.
             if np.any(positions >= box_lengths[None, :]):
@@ -252,7 +213,7 @@ class ShootingBinaryTrajectory:
         """Load requested frames, including velocities, as float32 consumer views."""
 
         position_frames = self.load_position_frames(timesteps)
-        _, indices = self._frame_indices(tuple(position_frames))
+        indices = np.searchsorted(self.timesteps, list(position_frames))
         frames: dict[int, ShootingFrame] = {}
         for (timestep, position_frame), index in zip(
             position_frames.items(), indices

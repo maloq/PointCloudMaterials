@@ -16,7 +16,6 @@ def gather_indices(offsets, lengths, indices):
 
 @dataclass(frozen=True)
 class BatchPlan:
-    owner: object
     nodes: torch.Tensor
     edges: torch.Tensor
     shifts: torch.Tensor
@@ -49,14 +48,9 @@ class GraphBank:
         self.edge_offsets = arrays['edge_offsets']
         self.node_lengths = np.diff(self.offsets)
         self.edge_lengths = np.diff(self.edge_offsets)
-        if node_capacity is not None and (not isinstance(node_capacity, int) or node_capacity < 1):
-            raise ValueError('node_capacity must be a positive integer or None')
         self.node_capacity = node_capacity
         self.plan_cache_bytes = int(plan_cache_bytes)
-        if self.plan_cache_bytes < 0:
-            raise ValueError('Plan cache budget must be nonnegative')
         self._plans = OrderedDict()
-        self._plan_identity = object()
         self.cached_plan_bytes = 0
         positions = torch.as_tensor(arrays['positions'], device=device)
         edge = torch.as_tensor(arrays['edges'], device=device, dtype=torch.long)
@@ -83,21 +77,15 @@ class GraphBank:
 
     def plan(self, indices):
         indices = np.asarray(indices, dtype=np.int64)
-        if indices.ndim != 1 or not len(indices) or indices.min() < 0 or indices.max() >= len(self.node_lengths):
-            raise ValueError('Batch IDs must be a nonempty vector of valid graph indices')
         nodes, ptr, lengths = gather_indices(self.offsets, self.node_lengths, indices)
         edges, _, edge_lengths = gather_indices(self.edge_offsets, self.edge_lengths, indices)
         tensor = lambda a: torch.as_tensor(a, device=self.device, dtype=torch.long)
-        return BatchPlan(self._plan_identity, tensor(nodes), tensor(edges), tensor(np.repeat(ptr[:-1], edge_lengths)),
+        return BatchPlan(tensor(nodes), tensor(edges), tensor(np.repeat(ptr[:-1], edge_lengths)),
             tensor(np.repeat(np.arange(len(indices)), lengths)), tensor(ptr[:-1]), len(indices))
 
     def prepare(self, indices, chunk):
         """Retain plans for a declared repeated pass, bounded by a byte budget."""
-        if chunk < 1:
-            raise ValueError('Positive chunk size required')
         indices = np.asarray(indices, dtype=np.int64)
-        if indices.ndim != 1 or not len(indices) or indices.min() < 0 or indices.max() >= len(self.node_lengths):
-            raise ValueError('Batch IDs must be a nonempty vector of valid graph indices')
         required = 8*(2*self.node_lengths[indices].sum()+2*self.edge_lengths[indices].sum()+len(indices))
         if required > self.plan_cache_bytes:
             return  # Avoid building and evicting the entire pass before use.
@@ -117,8 +105,6 @@ class GraphBank:
             self.cached_plan_bytes += plan.nbytes
 
     def materialize(self, plan):
-        if plan.owner is not self._plan_identity:
-            raise ValueError('Batch plan belongs to a different geometry bank')
         ni, ei = plan.nodes, plan.edges
         padding = 0 if self.node_capacity is None else self.node_capacity - ni.numel()
         if padding < 0:
@@ -140,8 +126,6 @@ class GraphBank:
 
     def batch(self, indices):
         rows = np.asarray(indices, dtype=np.int64)
-        if rows.ndim != 1:
-            raise ValueError('Batch IDs must be a vector')
         key = rows.tobytes()
         plan = self._plans.get(key)
         if plan is None:

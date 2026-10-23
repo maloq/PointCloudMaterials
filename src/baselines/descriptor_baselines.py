@@ -12,12 +12,10 @@ from typing import Any, Sequence
 import numpy as np
 import torch
 from scipy.spatial import cKDTree
-from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
-from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 
 from src.utils.evaluation_metrics import (
-    _hungarian_cluster_accuracy,
+    compute_cluster_metrics as _cluster_metrics,
     ensure_kmeansplusplus,
     finite_float,
     normalize_cluster_method_name,
@@ -163,25 +161,6 @@ def _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method) -> dict[str, int
     return runs_by_method
 
 
-def _compute_cluster_assignments_for_acc(
-    latents: np.ndarray,
-    n_clusters: int,
-    method: str,
-    *,
-    seed: int,
-) -> np.ndarray:
-    if method == "kmeans++":
-        model = KMeans(n_clusters=n_clusters, init="k-means++", n_init=10, random_state=seed)
-        return model.fit_predict(latents)
-    raise ValueError(f"Unsupported ACC evaluator method: {method}")
-
-
-def _acc_metric_prefix(method: str, k_eval: int) -> str:
-    if method == "kmeans++":
-        return f"ACC_KMEANS_PLUSPLUS_HUNGARIAN_K{k_eval}"
-    raise ValueError(f"Unsupported ACC evaluator method: {method}")
-
-
 def compute_cluster_metrics(
     latents: np.ndarray,
     labels: np.ndarray,
@@ -193,42 +172,19 @@ def compute_cluster_metrics(
     acc_eval_runs_by_method=None,
     acc_random_seed: int = 0,
 ) -> dict[str, float] | None:
-    metrics: dict[str, float] = {}
-    unique = np.unique(labels)
-    if unique.size >= 2 and latents.shape[0] >= unique.size:
-        assignments = KMeans(n_clusters=unique.size, n_init=10, random_state=0).fit_predict(latents)
-        metrics["ARI"] = float(adjusted_rand_score(labels, assignments))
-        metrics["NMI"] = float(normalized_mutual_info_score(labels, assignments))
-
-    stage_l = str(stage).lower()
+    """Apply descriptor config conventions and historical float32 aggregation."""
     k_eval = int(hungarian_eval_k) if hungarian_eval_k is not None else None
-    if stage_l in {"val", "test"} and k_eval is not None and k_eval >= 2 and latents.shape[0] >= k_eval:
-        methods = _normalize_acc_eval_methods(acc_eval_methods)
-        runs = max(1, int(acc_eval_runs))
-        runs_by_method = _normalize_acc_eval_runs_by_method(acc_eval_runs_by_method)
-        base_seed = int(acc_random_seed)
-        for method in methods:
-            method_runs = runs_by_method.get(method, runs)
-            acc_values: list[float] = []
-            for run_idx in range(method_runs):
-                pred_labels = _compute_cluster_assignments_for_acc(
-                    latents,
-                    k_eval,
-                    method,
-                    seed=base_seed + run_idx,
-                )
-                acc_values.append(_hungarian_cluster_accuracy(labels, pred_labels))
-            prefix = _acc_metric_prefix(method, k_eval)
-            if len(acc_values) == 1:
-                metrics[prefix] = float(acc_values[0])
-            else:
-                acc_arr = np.asarray(acc_values, dtype=np.float32)
-                metrics[prefix] = float(acc_arr.mean())
-                metrics[f"{prefix}_MEAN"] = float(acc_arr.mean())
-                metrics[f"{prefix}_STD"] = float(acc_arr.std())
-                metrics[f"{prefix}_BEST"] = float(acc_arr.max())
-                metrics[f"{prefix}_RUNS"] = float(acc_arr.size)
-
+    if k_eval is not None and not 2 <= k_eval <= len(latents):
+        k_eval = None
+    metrics = _cluster_metrics(
+        latents, labels, str(stage).lower(),
+        hungarian_eval_k=k_eval,
+        acc_eval_methods=_normalize_acc_eval_methods(acc_eval_methods),
+        acc_eval_runs=max(1, int(acc_eval_runs)),
+        acc_eval_runs_by_method=_normalize_acc_eval_runs_by_method(acc_eval_runs_by_method),
+        acc_random_seed=int(acc_random_seed),
+        aggregation_dtype=np.float32,
+    )
     return metrics or None
 
 

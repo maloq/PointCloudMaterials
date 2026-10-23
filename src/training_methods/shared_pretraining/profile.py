@@ -12,7 +12,8 @@ from src.data.structural_pretraining.prepare import save_json
 from src.models.encoders.structural import StructuralModel,ARCHITECTURE_REVISION
 from src.project_runtime.paths import resolve_path
 from src.training_methods.structural_pretraining.objective import Objective
-from src.training_methods.structural_pretraining.train import prepare_batch,implementation
+from src.data.structural_pretraining.batches import prepare_batch
+from .resume import implementation
 from src.training_methods.shared_pretraining.runtime import cached_update
 from src.training_methods.shared_pretraining.compilation import compile_encoder as enable_compile,compilation_counters
 

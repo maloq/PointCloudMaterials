@@ -74,14 +74,14 @@ def read_off_file(filename: str, verbose=True, cache=True) -> np.ndarray:
 
     points = np.array(points)
 
-    min_coords = points.min(axis=0)
-    max_coords = points.max(axis=0)
-    space_size = max_coords - min_coords
     if verbose:
-        logger.print(f"Read {len(points)} points")
-        logger.print(f"Size of space: {space_size}")
-        logger.print(f"Min coords: {min_coords}")
-        logger.print(f"Max coords: {max_coords}")
+        min_coords = points.min(axis=0)
+        max_coords = points.max(axis=0)
+        space_size = max_coords - min_coords
+        print(f"Read {len(points)} points")
+        print(f"Size of space: {space_size}")
+        print(f"Min coords: {min_coords}")
+        print(f"Max coords: {max_coords}")
 
     # Cache the data to disk for faster future loading
     if cache:

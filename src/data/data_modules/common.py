@@ -1,64 +1,17 @@
-from typing import Any
-
 import torch
 from torch.utils.data import random_split
-from omegaconf import MISSING, OmegaConf
+from omegaconf import OmegaConf
 
 from src.utils.logging_config import setup_logging
 
 logger = setup_logging()
 
 
-# Sentinel used by `_cfg_get` to distinguish "no default provided" (strict required) from
-# any real default value the caller might want to pass (including `None`).
-_REQUIRED = object()
-
-
-def _cfg_has(cfg: Any, key: str) -> bool:
-    """Return True if ``cfg`` defines ``key`` and the value is not the OmegaConf MISSING sentinel."""
-    return (
-        key in cfg
-        and OmegaConf.select(cfg, key, default=MISSING) is not MISSING
-    )
-
-
-def _cfg_get(
-    cfg: Any,
-    key: str,
-    *,
-    default: Any = _REQUIRED,
-    context: str = "data config",
-) -> Any:
-    """Strictly fetch ``key`` from ``cfg``.
-
-    - If ``default`` is not provided, a missing key raises ``KeyError`` with ``context``
-      in the message — this is the "strict" path used for semantically important keys.
-    - If ``default`` is provided, the caller is opting into a safe fallback; the default
-      is returned when the key is absent.
-    """
-    if _cfg_has(cfg, key):
-        return cfg[key]
-    if default is _REQUIRED:
-        raise KeyError(
-            f"{context}: required key {key!r} is missing. Set it explicitly in"
-            " the config; unclear defaults are not allowed."
-        )
-    return default
-
-
 def _resolve_split_seed(cfg, *, default: int = 42) -> int:
     raw_seed = OmegaConf.select(cfg, "data.split_seed", default=None)
     if raw_seed is None:
         raw_seed = OmegaConf.select(cfg, "split_seed", default=default)
-    try:
-        seed = int(raw_seed)
-    except (TypeError, ValueError) as exc:
-        raise ValueError(
-            f"split_seed must be an integer >= 0, got {raw_seed!r}"
-        ) from exc
-    if seed < 0:
-        raise ValueError(f"split_seed must be >= 0, got {seed}")
-    return seed
+    return int(raw_seed)
 
 
 def _seeded_random_split(dataset, lengths: list[int], *, seed: int):

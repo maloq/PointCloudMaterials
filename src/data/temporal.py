@@ -387,7 +387,6 @@ class TemporalLAMMPSDumpDataset(Dataset):
         self._precomputed_neighbor_indices: np.ndarray | None = None
         self._precomputed_neighbor_cache_path: Path | None = None
         self._center_atom_indices = self._resolve_center_atom_indices(
-            center_selection_mode=self.center_selection_mode,
             center_atom_ids=center_atom_ids,
             center_atom_stride=center_atom_stride,
             max_center_atoms=max_center_atoms,
@@ -1294,17 +1293,11 @@ class TemporalLAMMPSDumpDataset(Dataset):
     def _resolve_center_atom_indices(
         self,
         *,
-        center_selection_mode: str,
         center_atom_ids: Sequence[int] | None,
         center_atom_stride: int | None,
         max_center_atoms: int | None,
     ) -> np.ndarray:
-        mode = self._resolve_center_selection_mode(
-            center_selection_mode=center_selection_mode,
-            center_atom_ids=center_atom_ids,
-            center_atom_stride=center_atom_stride,
-            max_center_atoms=max_center_atoms,
-        )
+        mode = self.center_selection_mode
 
         if mode == "atom_ids":
             requested = np.asarray(center_atom_ids, dtype=np.int64)
@@ -1334,101 +1327,18 @@ class TemporalLAMMPSDumpDataset(Dataset):
             return positions.astype(np.int64, copy=False)
 
         if mode == "atom_stride":
-            stride = int(center_atom_stride)
-            if stride <= 0:
-                raise ValueError(
-                    f"center_atom_stride must be > 0, got {stride}"
-                )
-            return np.arange(0, self.num_atoms, stride, dtype=np.int64)
+            return np.arange(0, self.num_atoms, int(center_atom_stride), dtype=np.int64)
 
         if mode == "regular_grid":
             return self._resolve_regular_grid_center_atom_indices()
 
-        count = int(max_center_atoms)
-        if count <= 0:
-            raise ValueError(f"max_center_atoms must be > 0, got {count}")
-        count = min(count, self.num_atoms)
-        rng = np.random.default_rng(self.center_selection_seed)
-        picked = rng.choice(self.num_atoms, size=count, replace=False)
-        return np.sort(picked.astype(np.int64, copy=False))
+        if mode == "random_subset":
+            count = min(int(max_center_atoms), self.num_atoms)
+            rng = np.random.default_rng(self.center_selection_seed)
+            picked = rng.choice(self.num_atoms, size=count, replace=False)
+            return np.sort(picked.astype(np.int64, copy=False))
 
-    def _resolve_center_selection_mode(
-        self,
-        *,
-        center_selection_mode: str,
-        center_atom_ids: Sequence[int] | None,
-        center_atom_stride: int | None,
-        max_center_atoms: int | None,
-    ) -> str:
-        mode = center_selection_mode.strip().lower()
-        if mode not in {
-            "atom_ids",
-            "atom_stride",
-            "random_subset",
-            "regular_grid",
-        }:
-            raise ValueError(
-                "center_selection_mode must be one of ['atom_ids',"
-                " 'atom_stride', 'random_subset', 'regular_grid'], got"
-                f" {center_selection_mode!r}."
-            )
-        if mode == "atom_ids":
-            if center_atom_ids is None:
-                raise ValueError(
-                    "center_selection_mode='atom_ids' requires center_atom_ids"
-                    " to be set."
-                )
-            if center_atom_stride is not None or max_center_atoms is not None:
-                raise ValueError(
-                    "center_selection_mode='atom_ids' is incompatible with"
-                    " center_atom_stride, and max_center_atoms."
-                )
-        elif mode == "atom_stride":
-            if center_atom_stride is None:
-                raise ValueError(
-                    "center_selection_mode='atom_stride' requires"
-                    " center_atom_stride to be set."
-                )
-            if center_atom_ids is not None or max_center_atoms is not None:
-                raise ValueError(
-                    "center_selection_mode='atom_stride' is incompatible with"
-                    " center_atom_ids, and max_center_atoms."
-                )
-        elif mode == "random_subset":
-            if max_center_atoms is None:
-                raise ValueError(
-                    "center_selection_mode='random_subset' requires"
-                    " max_center_atoms to be set."
-                )
-            if center_atom_ids is not None or center_atom_stride is not None:
-                raise ValueError(
-                    "center_selection_mode='random_subset' is incompatible"
-                    " with center_atom_ids, and center_atom_stride."
-                )
-        else:
-            if center_atom_ids is not None or center_atom_stride is not None:
-                raise ValueError(
-                    "center_selection_mode='regular_grid' is incompatible with"
-                    " center_atom_ids and center_atom_stride."
-                )
-            if max_center_atoms is not None:
-                raise ValueError(
-                    "center_selection_mode='regular_grid' is incompatible with"
-                    " max_center_atoms. Use center_grid_overlap to control"
-                    " temporal regular-grid density."
-                )
-            if self.radius is None:
-                raise ValueError(
-                    "center_selection_mode='regular_grid' requires radius to"
-                    " be set so the grid spacing can be derived from"
-                    " local-structure size."
-                )
-            if self.center_grid_overlap is None:
-                raise ValueError(
-                    "center_selection_mode='regular_grid' requires"
-                    " center_grid_overlap to be set."
-                )
-        return mode
+        raise ValueError(f"Unknown center_selection_mode: {mode!r}")
 
     def _resolve_regular_grid_center_atom_indices(
         self,

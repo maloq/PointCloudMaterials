@@ -1,0 +1,6 @@
+[tool.ruff]
+target-version = "py312"
+
+[tool.ruff.lint]
+# Lightweight correctness checks across the whole repository.
+select = ["E9", "F63", "F7", "F82"]

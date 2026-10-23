@@ -5,7 +5,6 @@ from torch.func import functional_call
 
 from src.data.kinds import normalize_data_kind
 from src.training_methods.shared.base_ssl_module import BaseSSLModule
-from src.utils.pointcloud_ops import crop_to_num_points
 from src.training_methods.shared.optimizers import get_optimizers_and_scheduler
 
 
@@ -50,109 +49,19 @@ class FactorVAELoss(nn.Module):
         self.discriminator_warmup_epochs = int(discriminator_warmup_epochs)
         self.gamma_warmup_epochs = int(gamma_warmup_epochs)
 
-        if self.enabled and self.gamma <= 0.0:
-            raise ValueError(
-                "factor_vae_gamma must be > 0 when factor_vae_enabled=true, "
-                f"got {self.gamma}."
-            )
-        if self.enabled and self.input_dim <= 0:
-            raise ValueError(
-                "FactorVAE requires a positive projected latent dimension, "
-                f"got {self.input_dim}."
-            )
-        if self.enabled and self.hidden_dim <= 0:
-            raise ValueError(
-                "factor_vae_discriminator_hidden_dim must be > 0, "
-                f"got {self.hidden_dim}."
-            )
-        if self.enabled and self.num_hidden_layers <= 0:
-            raise ValueError(
-                "factor_vae_discriminator_num_hidden_layers must be > 0, "
-                f"got {self.num_hidden_layers}."
-            )
-        if self.enabled and not (
-            2 <= self.discriminator_coordinate_group_size <= self.input_dim
-        ):
-            raise ValueError(
-                "factor_vae_discriminator_coordinate_group_size must be 0 (all "
-                "coordinates) or between 2 and factor_vae input_dim inclusive; "
-                f"got group_size={self.discriminator_coordinate_group_size}, "
-                f"input_dim={self.input_dim}."
-            )
-        if (
-            self.enabled
-            and self.input_dim % self.discriminator_coordinate_group_size != 0
-        ):
-            raise ValueError(
-                "factor_vae_discriminator_coordinate_group_size must divide the "
-                "projected latent dimension so every coordinate is used exactly once; "
-                f"got input_dim={self.input_dim}, "
-                f"group_size={self.discriminator_coordinate_group_size}."
-            )
-        if self.enabled and self.discriminator_bottleneck_dim < 0:
-            raise ValueError(
-                "factor_vae_discriminator_bottleneck_dim must be >= 0, "
-                f"got {self.discriminator_bottleneck_dim}."
-            )
-        if (
-            self.enabled
-            and self.discriminator_bottleneck_dim
-            >= self.discriminator_coordinate_group_size
-        ):
-            raise ValueError(
-                "factor_vae_discriminator_bottleneck_dim must be 0 (disabled) or "
-                "strictly smaller than the discriminator coordinate-group size; "
-                f"got bottleneck_dim={self.discriminator_bottleneck_dim}, "
-                f"group_size={self.discriminator_coordinate_group_size}."
-            )
-        if self.enabled and self.latent_noise_std < 0.0:
-            raise ValueError(
-                "factor_vae_latent_noise_std must be >= 0, "
-                f"got {self.latent_noise_std}."
-            )
-        if self.enabled and self.start_epoch < 0:
-            raise ValueError(
-                "factor_vae_start_epoch must be >= 0, "
-                f"got {self.start_epoch}."
-            )
-        if self.enabled and self.discriminator_warmup_epochs < 0:
-            raise ValueError(
-                "factor_vae_discriminator_warmup_epochs must be >= 0, "
-                f"got {self.discriminator_warmup_epochs}."
-            )
-        if self.enabled and self.gamma_warmup_epochs < 0:
-            raise ValueError(
-                "factor_vae_gamma_warmup_epochs must be >= 0, "
-                f"got {self.gamma_warmup_epochs}."
-            )
-
         self.discriminator: nn.Sequential | None = None
         if self.enabled:
             layers: list[nn.Module] = []
-            layer_input_dim = self.discriminator_coordinate_group_size
+            widths = [self.discriminator_coordinate_group_size]
             if self.discriminator_bottleneck_dim > 0:
-                layers.extend(
-                    [
-                        self._make_discriminator_linear(
-                            layer_input_dim,
-                            self.discriminator_bottleneck_dim,
-                        ),
-                        nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                    ]
-                )
-                layer_input_dim = self.discriminator_bottleneck_dim
-            for _ in range(self.num_hidden_layers):
-                layers.extend(
-                    [
-                        self._make_discriminator_linear(
-                            layer_input_dim,
-                            self.hidden_dim,
-                        ),
-                        nn.LeakyReLU(negative_slope=0.2, inplace=True),
-                    ]
-                )
-                layer_input_dim = self.hidden_dim
-            layers.append(self._make_discriminator_linear(layer_input_dim, 2))
+                widths.append(self.discriminator_bottleneck_dim)
+            widths.extend([self.hidden_dim] * self.num_hidden_layers)
+            for in_features, out_features in zip(widths, widths[1:]):
+                layers.extend([
+                    self._make_discriminator_linear(in_features, out_features),
+                    nn.LeakyReLU(negative_slope=0.2, inplace=True),
+                ])
+            layers.append(self._make_discriminator_linear(widths[-1], 2))
             self.discriminator = nn.Sequential(*layers)
 
     def _make_discriminator_linear(
@@ -168,36 +77,18 @@ class FactorVAELoss(nn.Module):
     @classmethod
     def from_config(cls, cfg, *, input_dim: int) -> "FactorVAELoss":
         return cls(
-            enabled=bool(getattr(cfg, "factor_vae_enabled", False)),
-            gamma=float(getattr(cfg, "factor_vae_gamma", 10.0)),
+            enabled=getattr(cfg, "factor_vae_enabled", False),
+            gamma=getattr(cfg, "factor_vae_gamma", 10.0),
             input_dim=input_dim,
-            hidden_dim=int(getattr(cfg, "factor_vae_discriminator_hidden_dim", 1000)),
-            num_hidden_layers=int(
-                getattr(cfg, "factor_vae_discriminator_num_hidden_layers", 6)
-            ),
-            discriminator_spectral_norm=bool(
-                getattr(cfg, "factor_vae_discriminator_spectral_norm", False)
-            ),
-            discriminator_coordinate_group_size=int(
-                getattr(
-                    cfg,
-                    "factor_vae_discriminator_coordinate_group_size",
-                    0,
-                )
-            ),
-            discriminator_bottleneck_dim=int(
-                getattr(cfg, "factor_vae_discriminator_bottleneck_dim", 0)
-            ),
-            latent_noise_std=float(
-                getattr(cfg, "factor_vae_latent_noise_std", 0.0)
-            ),
-            start_epoch=int(getattr(cfg, "factor_vae_start_epoch", 0)),
-            discriminator_warmup_epochs=int(
-                getattr(cfg, "factor_vae_discriminator_warmup_epochs", 0)
-            ),
-            gamma_warmup_epochs=int(
-                getattr(cfg, "factor_vae_gamma_warmup_epochs", 0)
-            ),
+            hidden_dim=getattr(cfg, "factor_vae_discriminator_hidden_dim", 1000),
+            num_hidden_layers=getattr(cfg, "factor_vae_discriminator_num_hidden_layers", 6),
+            discriminator_spectral_norm=getattr(cfg, "factor_vae_discriminator_spectral_norm", False),
+            discriminator_coordinate_group_size=getattr(cfg, "factor_vae_discriminator_coordinate_group_size", 0),
+            discriminator_bottleneck_dim=getattr(cfg, "factor_vae_discriminator_bottleneck_dim", 0),
+            latent_noise_std=getattr(cfg, "factor_vae_latent_noise_std", 0.0),
+            start_epoch=getattr(cfg, "factor_vae_start_epoch", 0),
+            discriminator_warmup_epochs=getattr(cfg, "factor_vae_discriminator_warmup_epochs", 0),
+            gamma_warmup_epochs=getattr(cfg, "factor_vae_gamma_warmup_epochs", 0),
         )
 
     def should_run(self, *, current_epoch: int) -> bool:
@@ -215,39 +106,7 @@ class FactorVAELoss(nn.Module):
         fraction = min(1.0, warmup_epoch / float(self.gamma_warmup_epochs))
         return self.gamma * fraction
 
-    def _require_discriminator(self) -> nn.Sequential:
-        if self.discriminator is None:
-            raise RuntimeError(
-                "FactorVAE loss was requested while factor_vae_enabled=false; "
-                "enable it before computing the total-correlation objective."
-            )
-        return self.discriminator
 
-    def _validate_embeddings(
-        self,
-        z_a: torch.Tensor,
-        z_b: torch.Tensor,
-    ) -> None:
-        if z_a.dim() != 2 or z_b.dim() != 2:
-            raise ValueError(
-                "FactorVAE expects two projected embedding matrices with shape (B, D); "
-                f"got z_a={tuple(z_a.shape)}, z_b={tuple(z_b.shape)}."
-            )
-        if z_a.shape != z_b.shape:
-            raise ValueError(
-                "FactorVAE view embeddings must have identical shapes; "
-                f"got z_a={tuple(z_a.shape)}, z_b={tuple(z_b.shape)}."
-            )
-        if z_a.shape[0] < 2:
-            raise ValueError(
-                "FactorVAE dimension permutation requires at least two samples per batch; "
-                f"got batch size {z_a.shape[0]}."
-            )
-        if z_a.shape[1] != self.input_dim:
-            raise ValueError(
-                "FactorVAE projected embedding dimension does not match its discriminator; "
-                f"got D={z_a.shape[1]}, expected {self.input_dim}."
-            )
 
     @staticmethod
     def permute_dimensions(z: torch.Tensor) -> torch.Tensor:
@@ -282,7 +141,7 @@ class FactorVAELoss(nn.Module):
         *,
         train_discriminator: bool,
     ) -> torch.Tensor:
-        discriminator = self._require_discriminator()
+        discriminator = self.discriminator
         discriminator_dtype = next(discriminator.parameters()).dtype
         discriminator_input = z.to(dtype=discriminator_dtype)
         if train_discriminator:
@@ -314,9 +173,6 @@ class FactorVAELoss(nn.Module):
         z_a: torch.Tensor,
         z_b: torch.Tensor,
     ) -> torch.Tensor:
-        self._require_discriminator()
-        self._validate_embeddings(z_a, z_b)
-
         coordinate_groups = self._sample_coordinate_groups(device=z_a.device)
         joint = self._select_coordinate_groups(
             self._add_latent_noise(torch.cat([z_a, z_b], dim=0)),
@@ -331,9 +187,6 @@ class FactorVAELoss(nn.Module):
         z_a: torch.Tensor,
         z_b: torch.Tensor,
     ) -> tuple[torch.Tensor, dict[str, torch.Tensor]]:
-        self._require_discriminator()
-        self._validate_embeddings(z_a, z_b)
-
         split_index = z_a.shape[0] // 2
         if split_index < 2 or z_a.shape[0] - split_index < 2:
             raise ValueError(
@@ -461,8 +314,6 @@ class VICRegModule(BaseSSLModule):
             if self.factor_vae.enabled or self.swav.enabled or not self.vicreg.enabled:
                 raise ValueError("The three-view objective requires VICReg enabled and FactorVAE/SwAV disabled.")
             self.temporal_weight = float(cfg.vicreg_temporal_weight)
-            if self.temporal_weight <= 0:
-                raise ValueError("vicreg_temporal_weight must be positive.")
 
         self.tda_head = None
         tda_cfg = getattr(cfg, 'tda', None)
@@ -488,24 +339,6 @@ class VICRegModule(BaseSSLModule):
             float(value)
             for value in getattr(cfg, "factor_vae_discriminator_betas", (0.5, 0.9))
         )
-        if self.factor_vae.enabled:
-            if self.factor_vae_discriminator_learning_rate <= 0.0:
-                raise ValueError(
-                    "factor_vae_discriminator_learning_rate must be > 0, "
-                    f"got {self.factor_vae_discriminator_learning_rate}."
-                )
-            if self.factor_vae_discriminator_update_interval < 1:
-                raise ValueError(
-                    "factor_vae_discriminator_update_interval must be >= 1, "
-                    f"got {self.factor_vae_discriminator_update_interval}."
-                )
-            if len(discriminator_betas) != 2 or not all(
-                0.0 <= beta < 1.0 for beta in discriminator_betas
-            ):
-                raise ValueError(
-                    "factor_vae_discriminator_betas must contain two values in [0, 1), "
-                    f"got {discriminator_betas}."
-                )
         self.factor_vae_discriminator_betas = discriminator_betas
         default_gradient_clip = float(getattr(cfg, "gradient_clip_val", 0.0))
         self.factor_vae_model_gradient_clip_val = float(
@@ -522,17 +355,6 @@ class VICRegModule(BaseSSLModule):
                 default_gradient_clip,
             )
         )
-        if self.factor_vae.enabled:
-            if self.factor_vae_model_gradient_clip_val < 0.0:
-                raise ValueError(
-                    "factor_vae_model_gradient_clip_val must be >= 0, "
-                    f"got {self.factor_vae_model_gradient_clip_val}."
-                )
-            if self.factor_vae_discriminator_gradient_clip_val < 0.0:
-                raise ValueError(
-                    "factor_vae_discriminator_gradient_clip_val must be >= 0, "
-                    f"got {self.factor_vae_discriminator_gradient_clip_val}."
-                )
         self._factor_vae_discriminator_embeddings: (
             tuple[torch.Tensor, torch.Tensor] | None
         ) = None
@@ -547,7 +369,7 @@ class VICRegModule(BaseSSLModule):
         if not self.factor_vae.enabled:
             return super().configure_optimizers()
 
-        discriminator = self.factor_vae._require_discriminator()
+        discriminator = self.factor_vae.discriminator
         discriminator_parameters = list(discriminator.parameters())
         discriminator_parameter_ids = {
             id(parameter) for parameter in discriminator_parameters
@@ -576,11 +398,6 @@ class VICRegModule(BaseSSLModule):
             for parameter in parameter_group["params"]
             if parameter.grad is not None
         ]
-        if not gradient_norms:
-            raise RuntimeError(
-                "Cannot measure FactorVAE optimizer gradient norm because no "
-                "parameter gradients were produced."
-            )
         return torch.stack(gradient_norms).norm(2)
 
     def _weighted_total_loss(self, losses: dict[str, torch.Tensor]) -> torch.Tensor:
@@ -595,9 +412,7 @@ class VICRegModule(BaseSSLModule):
         return total_loss
 
     def _unpack_batch(self, batch):
-        if self.data_kind in ("spatiotemporal_binary", "relaxed_histories"):
-            return batch["points"], {}
-        if self.data_kind == "static":
+        if self.data_kind in ("static", "spatiotemporal_binary", "relaxed_histories"):
             return batch["points"], {}
         if self.data_kind == "synthetic":
             return batch["points"], {
@@ -609,52 +424,6 @@ class VICRegModule(BaseSSLModule):
             "VICRegModule only consumes the repository's static or synthetic batches, "
             f"got data.kind={self.data_kind!r}."
         )
-
-    def _build_contrastive_view_pair(
-        self,
-        pc: torch.Tensor,
-        *,
-        view_points: int | None,
-    ) -> dict[str, torch.Tensor]:
-        use_neighbor_a, use_neighbor_b = self.vicreg._resolve_neighbor_flags(device=pc.device)
-        apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
-            use_neighbor_a=use_neighbor_a,
-            use_neighbor_b=use_neighbor_b,
-            device=pc.device,
-        )
-        shared_pc = pc
-        augment_view_points = view_points
-        if view_points is not None and not use_neighbor_a and not use_neighbor_b:
-            shared_pc = crop_to_num_points(pc, int(view_points))
-            augment_view_points = None
-        return {
-            "y_a": self.vicreg._augment(
-                shared_pc,
-                use_neighbor=use_neighbor_a,
-                apply_occlusion=apply_occlusion_a,
-                view_points=augment_view_points,
-            ),
-            "y_b": self.vicreg._augment(
-                shared_pc,
-                use_neighbor=use_neighbor_b,
-                apply_occlusion=apply_occlusion_b,
-                view_points=augment_view_points,
-            ),
-        }
-
-    def _encode_contrastive_view_pair(
-        self,
-        views: dict[str, torch.Tensor],
-    ) -> tuple[torch.Tensor, torch.Tensor]:
-        y_a = views["y_a"]
-        y_b = views["y_b"]
-        batch_size = int(y_a.shape[0])
-
-        fused_input = torch.cat([y_a, y_b], dim=0)
-        encoded = self.encoder_io.encode(fused_input)
-        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
-
-        return features.chunk(2, dim=0)
 
     def forward(self, pc: torch.Tensor, include_ssl_heads: bool = False):
         pc = self._prepare_model_input(pc).to(device=self.device, dtype=self.dtype)
@@ -928,14 +697,6 @@ class VICRegModule(BaseSSLModule):
     def on_train_epoch_end(self) -> None:
         super().on_train_epoch_end()
         if self.factor_vae.enabled:
-            scheduler = self.lr_schedulers()
-            if isinstance(scheduler, list):
-                if len(scheduler) != 1:
-                    raise RuntimeError(
-                        "FactorVAE manual optimization expects exactly one model scheduler, "
-                        f"got {len(scheduler)}."
-                    )
-                scheduler = scheduler[0]
-            scheduler.step()
+            self.lr_schedulers().step()
 
 __all__ = ["FactorVAELoss", "VICRegModule"]

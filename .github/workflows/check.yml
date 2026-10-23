@@ -1,0 +1,41 @@
+name: Repository checks
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CUDA_VISIBLE_DEVICES: ""
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            environments/requirements-check.txt
+            environments/requirements-core.txt
+      - run: python -m pip install -r environments/requirements-check.txt
+      - run: python -m pip check
+      - run: python scripts/project.py check
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cpu-check-receipts
+          path: output/maintenance/checks/
+          if-no-files-found: ignore

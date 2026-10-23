@@ -3,7 +3,6 @@ import argparse
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime,timezone
 import fcntl
-import importlib.metadata
 import json
 import os
 from pathlib import Path
@@ -13,53 +12,14 @@ import time
 import numpy as np
 import torch
 
-from src.data.structural_pretraining.prepare import save_json,file_hash,digest
-from src.data.structural_pretraining.batches import Release,collate,move
+from src.data.structural_pretraining.prepare import save_json
+from src.data.structural_pretraining.batches import Release,collate,move,selection_rows,prepare_batch,target_batch
+from src.training_methods.shared.gradient_cache import cache_encoder,backward_cached
+from src.training_methods.shared_pretraining.resume import implementation
 from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS,ARCHITECTURE_REVISION
 from src.project_runtime.paths import resolve_path
 from src.experiment_runner.metric_docs import write_metric_table
 from .objective import Objective,PHYSICAL_BLOCKS,TDA_BLOCKS
-
-
-def implementation():
-    paths=[p for folder in ('src/data/structural_pretraining','src/training_methods/structural_pretraining')
-           for p in Path(folder).glob('*.py')]
-    paths += [Path(p) for p in ('src/models/encoders/structural.py','src/models/encoders/mace_causal.py',
-        'src/models/encoders/axial_gatr.py','src/models/encoders/mace_backend.py','src/models/encoders/structural_precision.py',
-        'src/models/encoders/compensated_bf16.py','src/models/encoders/equivariant_bond.py','src/training_methods/shared_pretraining/normalization.py')]
-    return dict(files={str(p):file_hash(p) for p in paths},
-        versions={name:importlib.metadata.version(name) for name in ('torch','triton','mace-torch','cuequivariance',
-            'cuequivariance-torch','cuequivariance-ops-torch-cu13','GATr','lejepa')},
-        dependencies={name:json.loads(importlib.metadata.distribution(name).read_text('direct_url.json')) for name in ('GATr','lejepa')})
-
-
-def selection_rows(release,step,config):
-    rng=np.random.default_rng(np.random.SeedSequence([config['seed'],step]))
-    group=release.group_keys[int(rng.choice(len(release.group_keys),p=release.group_weights))]
-    rows=release.groups[group]
-    if len(rows)<config['batch_size']:raise ValueError(f'Group too small for full statistical batch: {group}')
-    indices=rng.choice(rows,config['batch_size'],replace=False).tolist()
-    temporal=not group[2] and (config['method']=='lejepa' or bool(rng.integers(2)))
-    delta=[0. if group[2] else float(release.arrays[release.rows[i][0]]['times'][3]) for i in indices]
-    return indices,temporal,delta,group
-
-
-def prepare_batch(release,indices,temporal,delta,config):
-    architecture=config['architecture']; history=config['history_frames']>1; mace=architecture=='mace'
-    partner='future' if temporal else 'spatial'
-    observations=[release.observation(i,'anchor',history,mace) for i in indices]
-    observations += [release.observation(i,partner,False,mace) for i in indices]
-    micro=config['microbatch_size']; batches=[]
-    # Keep the two endpoints separate: causal inputs can have T=3, targets T=1.
-    for base in (0,len(indices)):
-        for start in range(base,base+len(indices),micro):
-            batch=collate(observations[start:min(start+micro,base+len(indices))],architecture)
-            batches.append({k:v.pin_memory() for k,v in batch.items()})
-    return batches,temporal,delta,indices
-
-
-def target_batch(batches,device):
-    return {k:torch.cat([b[k] for b in batches]).to(device) for k in ('physical','tda','tda_valid')}
 
 
 def cached_update(model,objective,batches,optimizer,temporal,delta):
@@ -70,26 +30,14 @@ def cached_update(model,objective,batches,optimizer,temporal,delta):
     """
     device=next(model.parameters()).device;optimizer.zero_grad(set_to_none=True)
     resident=[move(b,device) for b in batches]
-    states=[];rngs=[]
-    with torch.no_grad():
-        for batch in resident:
-            rngs.append((torch.get_rng_state(),torch.cuda.get_rng_state(device) if device.type=='cuda' else None))
-            states.append(model.encoder(batch))
-    z=torch.cat(states).detach().requires_grad_(True)
+    z,rngs=cache_encoder(model.encoder,resident,device)
     target=target_batch(resident,device)
     dt=torch.as_tensor(delta,dtype=z.dtype,device=device)
     if dt.shape!=(len(z)//2,):raise ValueError('Expected one actual time delta per pair')
     loss,terms=objective(model,z,target,temporal,dt)
     if not bool(torch.isfinite(loss)):raise FloatingPointError(f'Nonfinite full-batch loss: {terms}')
-    loss.backward();derivative=z.grad.detach();offset=0
-    for batch,(cpu_rng,cuda_rng),original in zip(resident,rngs,states,strict=True):
-        devices=[device.index] if device.type=='cuda' else []
-        with torch.random.fork_rng(devices=devices):
-            torch.set_rng_state(cpu_rng)
-            if cuda_rng is not None:torch.cuda.set_rng_state(cuda_rng,device)
-            current=model.encoder(batch)
-            current.backward(derivative[offset:offset+len(current)])
-            offset+=len(current)
+    loss.backward()
+    backward_cached(model.encoder,resident,z,rngs)
     norm=torch.nn.utils.clip_grad_norm_(model.parameters(),5.,error_if_nonfinite=True)
     optimizer.step()
     return {k:float(v.detach()) for k,v in terms.items()}|dict(gradient_norm=float(norm))

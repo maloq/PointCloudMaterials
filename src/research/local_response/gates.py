@@ -54,7 +54,8 @@ def run(c):
     atoms=Atoms('Al'+str(len(q)//3),positions=q.reshape(-1,3).cpu().numpy(),pbc=False)
     template=teacher.calculator._atoms_to_batch(atoms).to_dict()
     def ase_energy(x):
-        return teacher.model(dict(template,positions=x.reshape(-1,3)),training=True,compute_force=False)['energy'].sum()
+        # Called before the captured objects are explicitly released below.
+        return teacher.model(dict(template,positions=x.reshape(-1,3)),training=True,compute_force=False)['energy'].sum()  # noqa: F821
     f,h=force_and_tangent(oracle.potential,q,v);af,ah=force_and_tangent(ase_energy,q,v)
     graph=dict(force=error(f,af),hvp=error(h,ah))
     if max(x['relative'] for x in graph.values())>.001:raise ValueError(f'GPU/ASE graph mismatch: {graph}')

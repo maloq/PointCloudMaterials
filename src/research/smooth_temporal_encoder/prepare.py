@@ -108,7 +108,7 @@ def prepare_branch(source, config, index):
             if previous is None:
                 past = anchor
             else:
-                past = local_offsets(previous, previous_lengths, rows, current_ids, radius)
+                past = local_offsets(*previous, rows, current_ids, radius)
             r0, r1 = np.linalg.norm(past, axis=-1), np.linalg.norm(anchor, axis=-1)
             u0, u1 = np.clip((r0-.8)/.2, 0, 1), np.clip((r1-.8)/.2, 0, 1)
             weights = (1-u0**3*(10-u0*(15-6*u0))) * (1-u1**3*(10-u1*(15-6*u1)))
@@ -119,7 +119,7 @@ def prepare_branch(source, config, index):
             residual = y - x @ affine.transpose(0, 2, 1)
             nonaffine[:, t] = (np.einsum("bni,bni,bn->b", residual, residual, w)/w.sum(1))*radius**2
             cross[:, t] = c / config["density"]["density_scale"]
-            previous, previous_lengths = points, lengths
+            previous = (points, lengths)
             if t % 20 == 0 or t == len(frames)-1:
                 print(f"{stem}/{split_name}: frame {frame}, {t+1}/{len(frames)}", flush=True)
         clouds.flush()

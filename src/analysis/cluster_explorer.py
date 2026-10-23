@@ -24,7 +24,7 @@ def table(root, name, rows):
     pd.DataFrame(rows).to_csv(target,index=False)
     write_json(root/'technical/table-contracts'/f'{name}.json',dict(table=f'tables/{name}.csv',
         sha256=file_hash(target),family='cluster_explorer',contract=str(contract.relative_to(root)),
-        definitions='tables/metric-definitions/cluster_explorer.md'))
+        definitions=json.loads(contract.read_text())['definitions']))
 
 
 def local_order(points, tree, centers):

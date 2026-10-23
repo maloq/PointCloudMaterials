@@ -221,7 +221,8 @@ def fit(config, data, kind, objective, variant, *, diagnostic=False, stop_step=N
     microbatch = config['microbatch'][kind][variant]
     started = time.monotonic(); torch.cuda.reset_peak_memory_stats()
     def save(path):
-        save_checkpoint(path, model, optimizer, sampler, step, expected,
+        # Called before the captured objects are explicitly released below.
+        save_checkpoint(path, model, optimizer, sampler, step, expected,  # noqa: F821
             dict(stage=stage, best=best, elapsed_seconds=elapsed+time.monotonic()-started,
                  input_wait_seconds=fit_wait+inputs.wait_seconds))
     result = None

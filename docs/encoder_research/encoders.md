@@ -343,7 +343,9 @@ encoder replications. The [forecast records](../../experiments/README.md) and
 catalogue family `frozen_forecast` retain those results because they tell us what
 the representation makes accessible.
 
-The code also registers PointNet, DGCNN, VN, EGNN, NequIP, RI-MAE and MLP options.
+The code also registers PointNet, VN, RI-MAE and MLP options. DGCNN, EGNN and
+NequIP were [retired on October 23](../src_refactor.md#code-retirement--2026-10-23);
+their historical checkpoints require their original producer.
 Registration alone is not evidence of a completed experiment. The catalogue
 includes older `output/experiments` tables as `legacy_controls`; the main handbook
 starts with GeoFrame as requested. Exact initialization/checkpoint dependencies

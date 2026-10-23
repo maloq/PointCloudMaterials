@@ -19,7 +19,8 @@ from src.data.structural_pretraining.prepare import save_json,file_hash,digest
 from src.models.encoders.structural import StructuralModel,ATOMIC_NUMBERS,normalized_readout,ARCHITECTURE_REVISION
 from src.project_runtime.paths import resolve_path
 from src.training_methods.structural_pretraining.objective import Objective,PHYSICAL_BLOCKS,TDA_BLOCKS,block_errors
-from src.training_methods.structural_pretraining.train import implementation,selection_rows,prepare_batch,target_batch
+from src.data.structural_pretraining.batches import selection_rows,prepare_batch,target_batch
+from src.training_methods.shared.gradient_cache import cache_encoder,backward_cached
 from src.experiment_runner.metric_docs import write_metric_table
 from .data import CausalRelease
 from .health import spread,training_means,check_learning,check_regression
@@ -27,7 +28,7 @@ from .compilation import compile_encoder,compilation_counters
 from .normalization import calibrate_heads
 from .initialization import initialize_structural,require_complete_tda
 from .tracking import Dashboard
-from .resume import check_resume
+from .resume import check_resume,implementation
 from src.data.structural_pretraining.support import SUPPORT
 from . import mixed as mixed_training
 from src.models.encoders.mixed_gatr import MixedSnapshotGATr,MixedBondGATr,MIXED_ARCHITECTURE_REVISION,GATR_BOND_REVISION
@@ -100,26 +101,19 @@ class CausalObjective(Objective):
 
 def cached_update(model,objective,batches,optimizer,temporal,delta,extra=None,precision='float32'):
     device=next(model.parameters()).device;optimizer.zero_grad(set_to_none=True)
-    resident=[move(b,device) for b in batches];states=[];rngs=[]
-    with torch.no_grad():
-        for batch in resident:
-            rngs.append((torch.get_rng_state(),torch.cuda.get_rng_state(device) if device.type=='cuda' else None))
-            with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
-                states.append(training_encode(model,batch).float())
-    z=torch.cat(states).detach().requires_grad_(True);target=target_batch(resident,device)
+    resident=[move(b,device) for b in batches]
+    def encode(batch):
+        with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
+            return training_encode(model,batch).float()
+    z,rngs=cache_encoder(encode,resident,device)
+    target=target_batch(resident,device)
     if isinstance(model,(MixedSnapshotMACE,MixedBondGATr)):target['bond_order']=torch.cat([b['bond_order'] for b in resident])
     if extra is not None:target.update({k:torch.as_tensor(v,device=device) for k,v in extra.items()})
     with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
         loss,terms=objective(model,z,target,temporal,torch.as_tensor(delta,dtype=z.dtype,device=device))
     if not torch.isfinite(loss):raise FloatingPointError(f'Nonfinite shared loss: {terms}')
-    loss.backward();derivative=z.grad.detach();offset=0
-    for batch,(cpu,cuda) in zip(resident,rngs,strict=True):
-        with torch.random.fork_rng(devices=[device.index] if device.type=='cuda' else []):
-            torch.set_rng_state(cpu)
-            if cuda is not None:torch.cuda.set_rng_state(cuda,device)
-            with torch.autocast(device.type,dtype=torch.bfloat16,enabled=precision=='bf16'):
-                current=training_encode(model,batch).float()
-            current.backward(derivative[offset:offset+len(current)]);offset+=len(current)
+    loss.backward()
+    backward_cached(encode,resident,z,rngs)
     norm=torch.nn.utils.clip_grad_norm_(model.parameters(),5.,error_if_nonfinite=True);optimizer.step()
     return {k:float(v.detach()) for k,v in terms.items()}|dict(gradient_norm=float(norm))
 

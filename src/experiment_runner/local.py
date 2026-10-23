@@ -5,6 +5,7 @@ from __future__ import annotations
 import sys
 import subprocess
 import time
+from collections.abc import Iterator
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from dataclasses import dataclass
 from pathlib import Path
@@ -113,9 +114,8 @@ def run_stage_local(
     parallel: int = 1,
     dry_run: bool = False,
     continue_on_error: bool = False,
-) -> List[LocalJob]:
-    """Run all experiments in a stage locally. Returns list of LocalJob."""
-    jobs: List[LocalJob] = []
+) -> Iterator[LocalJob]:
+    """Yield each finished job before propagating a stop-on-error failure."""
 
     tasks = []
     for exp in stage.experiments:
@@ -132,11 +132,11 @@ def run_stage_local(
             run_dir.mkdir(parents=True, exist_ok=True)
             (run_dir / "command.txt").write_text(" ".join(cmd) + "\n")
             print(f"  [DRY-RUN] {exp.name}: {' '.join(cmd[:6])} ...")
-            jobs.append(LocalJob(
+            yield LocalJob(
                 experiment=exp, stage=stage.name,
                 run_dir=str(run_dir), status="dry_run",
-            ))
-        return jobs
+            )
+        return
 
     if parallel <= 1:
         for cmd, run_dir, exp in tasks:
@@ -144,7 +144,7 @@ def run_stage_local(
                 command=cmd, run_dir=run_dir, experiment=exp,
                 stage_name=stage.name, repo_root=repo_root,
             )
-            jobs.append(job)
+            yield job
             if job.status == "failed" and not continue_on_error:
                 raise RuntimeError(
                     f"Experiment {exp.name!r} failed: {job.error}. "
@@ -176,12 +176,10 @@ def run_stage_local(
                         status="failed", error=str(exc),
                     )
                     print(f"  [ERROR] {exp.name}: {exc}")
-                jobs.append(job)
+                yield job
                 if job.status == "failed" and not continue_on_error:
                     pool.shutdown(wait=False, cancel_futures=True)
                     raise RuntimeError(
                         f"Experiment {exp.name!r} failed: {job.error}. "
                         "Use --continue-on-error to proceed."
                     )
-
-    return jobs

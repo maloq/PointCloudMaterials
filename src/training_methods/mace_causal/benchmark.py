@@ -70,15 +70,16 @@ def run(config, args):
                                               weight_decay=config['training']['weight_decay'])
 
                 def step(update=True):
-                    optimizer.zero_grad(set_to_none=True)
-                    z = encode(model, batch, args.device) if runtime is None else runtime.encode(model, batch)
-                    y = targets(batch, norm, args.device) if runtime is None else runtime.target(batch)
-                    loss, _ = task_objective(heads(z, y['temperature']), y, **config['loss'])
+                    # Called before the captured objects are explicitly released below.
+                    optimizer.zero_grad(set_to_none=True)  # noqa: F821
+                    z = encode(model, batch, args.device) if runtime is None else runtime.encode(model, batch)  # noqa: F821
+                    y = targets(batch, norm, args.device) if runtime is None else runtime.target(batch)  # noqa: F821
+                    loss, _ = task_objective(heads(z, y['temperature']), y, **config['loss'])  # noqa: F821
                     loss.backward()
                     if update:
-                        torch.nn.utils.clip_grad_norm_(parameters, config['training']['gradient_clip'],
+                        torch.nn.utils.clip_grad_norm_(parameters, config['training']['gradient_clip'],  # noqa: F821
                                                        error_if_nonfinite=True)
-                        optimizer.step()
+                        optimizer.step()  # noqa: F821
                     return z.detach()
 
                 z = step(update=False)

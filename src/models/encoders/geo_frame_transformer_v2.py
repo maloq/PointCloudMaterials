@@ -14,7 +14,7 @@ from .geo_frame_transformer import (
     _relative_frame_products,
 )
 from .registry import register_encoder
-from .ri_mae_encoder import Group, PositionEmbeddingCoordsSine, RIMAEBackbone, _to_bn3
+from .ri_mae_encoder import Group, PositionEmbeddingCoordsSine, RIMAEBackbone
 
 
 _LOCAL_SHAPE_DIM = 8
@@ -110,19 +110,6 @@ class RichPairwiseGeometry(nn.Module):
         self.rbf_max_distance = float(rbf_max_distance)
         self.parity_mode = str(parity_mode)
         self.use_signed_chirality = bool(use_signed_chirality)
-        if self.edge_dim <= 0:
-            raise ValueError(
-                f"GeoFrameTransformerV2 edge_dim must be > 0, got {self.edge_dim}."
-            )
-        if self.num_rbf < 2:
-            raise ValueError(
-                f"GeoFrameTransformerV2 num_rbf must be >= 2, got {self.num_rbf}."
-            )
-        if self.rbf_max_distance <= 0.0:
-            raise ValueError(
-                "GeoFrameTransformerV2 rbf_max_distance must be > 0, "
-                f"got {self.rbf_max_distance}."
-            )
         if self.parity_mode not in {"invariant", "sensitive"}:
             raise ValueError(
                 "GeoFrameTransformerV2 parity_mode must be 'invariant' or "
@@ -345,16 +332,6 @@ class GeometryConditionedAttentionBlock(nn.Module):
         self.embed_dim = int(embed_dim)
         self.num_heads = int(num_heads)
         self.edge_value_rank = int(edge_value_rank)
-        if self.num_heads <= 0 or self.embed_dim % self.num_heads != 0:
-            raise ValueError(
-                "GeoFrameTransformerV2 attention requires embed_dim divisible by "
-                f"num_heads, got embed_dim={self.embed_dim}, num_heads={self.num_heads}."
-            )
-        if self.edge_value_rank <= 0:
-            raise ValueError(
-                "GeoFrameTransformerV2 edge_value_rank must be > 0, "
-                f"got {self.edge_value_rank}."
-            )
         self.head_dim = self.embed_dim // self.num_heads
         self.scale = 1.0 / math.sqrt(float(self.head_dim))
         self.norm1 = nn.LayerNorm(self.embed_dim)
@@ -546,29 +523,10 @@ class GeoFrameTokenEncoderV2(nn.Module):
         self.use_frame_gating = bool(use_frame_gating)
         self.frame_confidence_floor = float(frame_confidence_floor)
         self.parity_mode = str(parity_mode)
-        if not self.patch_sizes or any(size < 3 for size in self.patch_sizes):
-            raise ValueError(
-                "GeoFrameTransformerV2 patch_sizes must contain integers >= 3, "
-                f"got {self.patch_sizes}."
-            )
-        if tuple(sorted(set(self.patch_sizes))) != self.patch_sizes:
-            raise ValueError(
-                "GeoFrameTransformerV2 patch_sizes must be strictly increasing, "
-                f"got {self.patch_sizes}."
-            )
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
                 "GeoFrameTransformerV2 frame_builder must be 'triad' or 'pca', "
                 f"got {self.frame_builder!r}."
-            )
-        if self.frame_eps <= 0.0:
-            raise ValueError(
-                f"GeoFrameTransformerV2 frame_eps must be > 0, got {self.frame_eps}."
-            )
-        if not (0.0 <= self.frame_confidence_floor <= 1.0):
-            raise ValueError(
-                "GeoFrameTransformerV2 frame_confidence_floor must be in [0, 1], "
-                f"got {self.frame_confidence_floor}."
             )
         if self.parity_mode not in {"invariant", "sensitive"}:
             raise ValueError(
@@ -962,15 +920,6 @@ class GeoFrameTransformerV2Encoder(Encoder):
         self.center_input = bool(center_input)
         self.pooling_mode = str(pooling_mode)
         self.parity_mode = str(parity_mode)
-        if self.latent_size <= 0:
-            raise ValueError(
-                f"GeoFrameTransformerV2 latent_size must be > 0, got {self.latent_size}."
-            )
-        if self.trans_dim <= 0 or self.trans_dim % int(num_heads) != 0:
-            raise ValueError(
-                "GeoFrameTransformerV2 trans_dim must be positive and divisible by "
-                f"num_heads, got trans_dim={self.trans_dim}, num_heads={int(num_heads)}."
-            )
         if self.pooling_mode not in {"attention", "max_mean"}:
             raise ValueError(
                 "GeoFrameTransformerV2 pooling_mode must be 'attention' or "
@@ -1019,7 +968,6 @@ class GeoFrameTransformerV2Encoder(Encoder):
         )
 
     def _center_points(self, points: torch.Tensor) -> torch.Tensor:
-        points = _to_bn3(points)
         if self.center_input:
             points = points - points.mean(dim=1, keepdim=True)
         return points

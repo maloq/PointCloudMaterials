@@ -9,6 +9,7 @@ Start with the [research guide](encoder_research/README.md) for scientific findi
 | Task | Start here |
 | --- | --- |
 | Install or move to another machine | [Portable setup](portability.md) · [Environments](../environments/README.md) |
+| Change code and check it locally | [Development workflow](development.md): CPU checks, reference example and provenance |
 | Train, resume or evaluate | [Workflows](workflows.md) · [Maintained commands](../scripts/README.md) · [Recipes](../configs/README.md) |
 | Analyze saved observations | [Analysis and visualization](analysis_visualization.md) · [Postprocessing](postprocessing.md) |
 | Find or publish existing results | [Results system](research_results_system.md) · [Result layout](research_layout.md) |

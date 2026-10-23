@@ -186,6 +186,52 @@ class BaseSSLModule(pl.LightningModule):
     def _shared_invariant(self, z_inv_model, eq_z):
         return self.vicreg._invariant(z_inv_model, eq_z)
 
+    def _build_contrastive_view_pair(
+        self,
+        pc: torch.Tensor,
+        *,
+        view_points: int | None,
+        shared_crop: bool = True,
+    ) -> dict[str, torch.Tensor]:
+        use_neighbor_a, use_neighbor_b = self.vicreg._resolve_neighbor_flags(device=pc.device)
+        apply_occlusion_a, apply_occlusion_b = self.vicreg._resolve_pair_occlusion_flags(
+            use_neighbor_a=use_neighbor_a,
+            use_neighbor_b=use_neighbor_b,
+            device=pc.device,
+        )
+        # Static SSL shares one crop; temporal spatial pairs retain independent crops.
+        shared_pc = pc
+        augment_view_points = view_points
+        if shared_crop and view_points is not None and not use_neighbor_a and not use_neighbor_b:
+            shared_pc = crop_to_num_points(pc, int(view_points))
+            augment_view_points = None
+        return {
+            "y_a": self.vicreg._augment(
+                shared_pc,
+                use_neighbor=use_neighbor_a,
+                apply_occlusion=apply_occlusion_a,
+                view_points=augment_view_points,
+            ),
+            "y_b": self.vicreg._augment(
+                shared_pc,
+                use_neighbor=use_neighbor_b,
+                apply_occlusion=apply_occlusion_b,
+                view_points=augment_view_points,
+            ),
+        }
+
+    def _encode_contrastive_view_pair(
+        self,
+        views: dict[str, torch.Tensor],
+    ) -> tuple[torch.Tensor, torch.Tensor]:
+        y_a = views["y_a"]
+        y_b = views["y_b"]
+        fused_input = torch.cat([y_a, y_b], dim=0)
+        encoded = self.encoder_io.encode(fused_input)
+        features = self._shared_invariant(encoded.invariant, encoded.equivariant)
+
+        return features.chunk(2, dim=0)
+
     def _forward_ssl_heads_for_summary(
         self, features: torch.Tensor | None
     ) -> dict[str, torch.Tensor]:

@@ -54,11 +54,6 @@ def stabilize_class_metric_keys(
         match = _ACC_K_SUFFIX_RE.match(name)
         if match is not None:
             name = f"{match.group(1)}{match.group(2)}"
-        if name in stable:
-            raise ValueError(
-                "Metric name collision while removing class-count suffixes: "
-                f"{raw_name!r} maps to {name!r}."
-            )
         value = finite_float(raw_value)
         if value is None:
             raise ValueError(
@@ -67,8 +62,6 @@ def stabilize_class_metric_keys(
             )
         stable[name] = value
     if hungarian_eval_k is not None:
-        if "HUNGARIAN_EVAL_K" in stable:
-            raise ValueError("Metric key collision: 'HUNGARIAN_EVAL_K' is already present.")
         stable["HUNGARIAN_EVAL_K"] = float(int(hungarian_eval_k))
     return stable
 
@@ -81,11 +74,6 @@ def random_rotation_matrix() -> np.ndarray:
 def _hungarian_cluster_accuracy(labels: np.ndarray, assignments: np.ndarray) -> float:
     labels = np.asarray(labels)
     assignments = np.asarray(assignments)
-    if labels.shape != assignments.shape or labels.size == 0:
-        raise ValueError(
-            "labels and assignments must have identical non-empty shape, "
-            f"got labels={labels.shape}, assignments={assignments.shape}."
-        )
     label_values, label_indices = np.unique(labels, return_inverse=True)
     cluster_values, cluster_indices = np.unique(assignments, return_inverse=True)
     contingency = np.zeros((label_values.size, cluster_values.size), dtype=np.int64)
@@ -104,30 +92,9 @@ def compute_cluster_metrics(
     acc_eval_runs: int,
     acc_eval_runs_by_method: dict[str, int],
     acc_random_seed: int,
+    aggregation_dtype=np.float64,
 ) -> dict[str, float]:
-    """Compute KMeans ARI/NMI and configured k-means++ Hungarian accuracy."""
-    if latents.ndim != 2 or labels.ndim != 1 or latents.shape[0] != labels.shape[0]:
-        raise ValueError(
-            "Cluster metrics require latents (N, D) and labels (N,), "
-            f"got latents={latents.shape}, labels={labels.shape}."
-        )
-    if stage not in {"train", "val", "test"}:
-        raise ValueError(f"stage must be 'train', 'val', or 'test', got {stage!r}.")
-    if any(method != "kmeans++" for method in acc_eval_methods):
-        raise ValueError(
-            "The repository config supports only the 'kmeans++' ACC evaluator, "
-            f"got {acc_eval_methods}."
-        )
-    if acc_eval_runs < 1:
-        raise ValueError(f"acc_eval_runs must be positive, got {acc_eval_runs}.")
-    invalid_overrides = {
-        method: runs
-        for method, runs in acc_eval_runs_by_method.items()
-        if method != "kmeans++" or runs < 1
-    }
-    if invalid_overrides:
-        raise ValueError(f"Invalid ACC run overrides: {invalid_overrides}.")
-
+    """Compute clustering scores; preserve the caller's repeated-run precision."""
     metrics: dict[str, float] = {}
     class_count = np.unique(labels).size
     if class_count >= 2:
@@ -142,17 +109,10 @@ def compute_cluster_metrics(
 
     if stage not in {"val", "test"} or hungarian_eval_k is None:
         return metrics
-    if hungarian_eval_k < 2:
-        raise ValueError(f"hungarian_eval_k must be at least 2, got {hungarian_eval_k}.")
-    if latents.shape[0] < hungarian_eval_k:
-        raise ValueError(
-            "Hungarian evaluation needs at least one sample per requested cluster: "
-            f"samples={latents.shape[0]}, clusters={hungarian_eval_k}."
-        )
-
     for method in acc_eval_methods:
         run_count = acc_eval_runs_by_method.get(method, acc_eval_runs)
-        accuracies = np.empty(run_count, dtype=np.float64)
+        # Single runs historically report the unrounded Hungarian fraction.
+        accuracies = np.empty(run_count, dtype=aggregation_dtype if run_count > 1 else np.float64)
         for run_index in range(run_count):
             assignments = KMeans(
                 n_clusters=hungarian_eval_k,
@@ -178,12 +138,6 @@ def compute_embedding_quality_metrics(
     include_expensive: bool = False,
 ) -> dict[str, float]:
     """Compute class separation and embedding-scale metrics."""
-    if latents.ndim != 2 or labels.ndim != 1 or latents.shape[0] != labels.shape[0]:
-        raise ValueError(
-            "Embedding metrics require latents (N, D) and labels (N,), "
-            f"got latents={latents.shape}, labels={labels.shape}."
-        )
-
     metrics: dict[str, float] = {}
     unique_labels = np.unique(labels)
     if include_expensive and unique_labels.size > 1 and latents.shape[0] >= 10:

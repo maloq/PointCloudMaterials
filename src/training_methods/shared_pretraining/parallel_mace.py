@@ -11,7 +11,7 @@ import torch
 from src.data.structural_pretraining.batches import move
 from src.models.encoders.structural import StructuralMACE
 from src.models.encoders.mixed_mace import MixedSnapshotMACE
-from src.training_methods.structural_pretraining.train import target_batch
+from src.data.structural_pretraining.batches import target_batch
 from .compilation import compile_encoder
 
 

@@ -157,6 +157,7 @@ def prepare(config, output):
     weight = difference[:-1]/probe['std'].double()
     bias = difference[-1]-probe['mean'].double()@weight
     models = {}
+    normalization = None
     for run in runs:
         fit = Path(run['fit'])/'technical'
         if inputs.json(fit/'status.json')['state'] != 'complete':
@@ -172,16 +173,17 @@ def prepare(config, output):
             if name in payload['implementation_sha256']:
                 inputs.record(Path(__file__).parents[2]/'training_methods/embedding_forecast'/name,
                               payload['implementation_sha256'][name])
-        if models:
-            torch.testing.assert_close(payload['mean'], mean, rtol=0, atol=0)
-            torch.testing.assert_close(payload['scale'], scale, rtol=0, atol=0)
-        mean, scale = payload['mean'], payload['scale']
+        current = (payload['mean'], payload['scale'])
+        if normalization is not None:
+            torch.testing.assert_close(current, normalization, rtol=0, atol=0)
+        normalization = current
         past = round(payload['config']['history_ps']/plan['cadence_ps'])
         model = build_forecaster(256, past+1, .75, plan['horizons_ps'], payload['variant'])
         model.load_state_dict(payload['model'], strict=True)
         models[run['name']] = (model.eval(), past, run, pred)
     if spatial_manifest['base_cache_manifest_sha256'] != inputs.hashes[str(cache/'manifest.json')]:
         raise ValueError('Spatial cache and embedding manifest differ.')
+    mean, scale = normalization
     training_projection(cache, manifest, mean.numpy(), scale.numpy(), config, output, inputs)
     from .trajectory_projection import readout_parameters
     np.savez(output/'technical/crystal-readout.npz', **readout_parameters(probe, mean, scale))

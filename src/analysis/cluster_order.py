@@ -29,7 +29,7 @@ def export_rows(root, name, rows):
     pd.DataFrame(rows).to_csv(path,index=False)
     write_json(root/'technical/table-contracts'/f'{name}.json', dict(
         table=f'tables/{name}.csv',sha256=file_hash(path),family='cluster_order',
-        contract=str(contract.relative_to(root)),definitions='tables/metric-definitions/cluster_order.md'))
+        contract=str(contract.relative_to(root)),definitions=json.loads(contract.read_text())['definitions']))
 
 
 def compute(config, config_path):

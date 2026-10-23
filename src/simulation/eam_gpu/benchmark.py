@@ -165,8 +165,9 @@ def comparison(c,out):
         dq=torch.tensor(rng.normal(size=(*q.shape,2)),device='cuda');dq/=dq.square().mean().sqrt()
         m=FastAl(files,n,box=a.cell.lengths(),dtype=torch.float32,skin=c['skin_A'])
         print(f'Compiling/warming FastAl force and two tangents, {n} atoms',flush=True)
-        force=timing(lambda:m.force(x),repeats=20)
-        tangent=timing(lambda:m.force_tangent(x,dq),repeats=10)
+        # Called before the captured objects are explicitly released below.
+        force=timing(lambda:m.force(x),repeats=20)  # noqa: F821
+        tangent=timing(lambda:m.force_tangent(x,dq),repeats=10)  # noqa: F821
         row=dict(atoms=n,material='Al',potential='Lee2003 2NN MEAM',force_seconds=force,force_two_tangents_seconds=tangent)
         rows.append(row);print(row,flush=True);write(out/'technical/fastal-comparison.json',rows)
         del m

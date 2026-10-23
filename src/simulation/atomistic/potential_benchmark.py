@@ -114,575 +114,93 @@ def _write_json_atomic(path: Path, value: dict[str, Any]) -> None:
     temporary_path.replace(path)
 
 
-def _repo_path(value: Any) -> Path:
-    path = Path(str(value)).expanduser()
-    if not path.is_absolute():
-        path = REPOSITORY_ROOT / path
-    return path.resolve()
+def _repo_path(value: str) -> Path:
+    return (REPOSITORY_ROOT / Path(value).expanduser()).resolve()
 
 
-def _mapping(parent: dict[str, Any], key: str, path: Path) -> dict[str, Any]:
-    value = parent.get(key)
-    if not isinstance(value, dict):
-        raise TypeError(
-            f"{path}: {key!r} must be a mapping, got {type(value).__name__}."
-        )
-    return value
-
-
-def _reject_unknown(
-    mapping: dict[str, Any], allowed: set[str], context: str, path: Path
-) -> None:
-    unknown = sorted(set(mapping) - allowed)
-    if unknown:
-        raise KeyError(f"{path}: unsupported keys in {context}: {unknown}.")
-
-
-def _positive_float(value: Any, context: str, path: Path) -> float:
-    result = float(value)
-    if not np.isfinite(result) or result <= 0.0:
-        raise ValueError(
-            f"{path}: {context} must be finite and > 0, got {result}."
-        )
-    return result
-
-
-def _positive_int(value: Any, context: str, path: Path) -> int:
-    if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
-        raise ValueError(
-            f"{path}: {context} must be a positive integer, got {value!r}."
-        )
-    return value
-
-
-def _float_list(value: Any, context: str, path: Path) -> tuple[float, ...]:
-    if not isinstance(value, list) or not value:
-        raise TypeError(
-            f"{path}: {context} must be a non-empty list, got {value!r}."
-        )
-    result = tuple(float(item) for item in value)
-    if not np.isfinite(result).all():
-        raise ValueError(
-            f"{path}: {context} contains non-finite values: {result}."
-        )
-    return result
-
-
-def load_potential_benchmark_config(
-    path: str | Path,
-) -> PotentialBenchmarkConfig:
+def load_potential_benchmark_config(path: str | Path) -> PotentialBenchmarkConfig:
     config_path = Path(path).expanduser().resolve()
-    with config_path.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle)
-    if not isinstance(raw, dict):
-        raise TypeError(
-            f"{config_path}: root must be a mapping, got {type(raw).__name__}."
-        )
-    _reject_unknown(
-        raw,
-        {
-            "model_configs",
-            "chemical_symbol",
-            "reference_fcc_lattice_constant_A",
-            "equation_of_state",
-            "nve",
-            "application_structures",
-            "dft_reference",
-            "required_dft_states",
-            "qualification_scope",
-            "melting_reference",
-            "melting_scan_summaries",
-            "thresholds",
-            "output_json",
-        },
-        "root",
-        config_path,
-    )
-    eos_raw = _mapping(raw, "equation_of_state", config_path)
-    nve_raw = _mapping(raw, "nve", config_path)
-    scope_raw = _mapping(raw, "qualification_scope", config_path)
-    melting_reference_raw = _mapping(raw, "melting_reference", config_path)
-    thresholds_raw = _mapping(raw, "thresholds", config_path)
-    _reject_unknown(
-        eos_raw,
-        {"volume_scales", "supercell_repetitions"},
-        "equation_of_state",
-        config_path,
-    )
-    _reject_unknown(
-        nve_raw,
-        {
-            "temperature_K",
-            "timesteps_fs",
-            "duration_ps",
-            "sample_interval_fs",
-            "random_seed",
-        },
-        "nve",
-        config_path,
-    )
-    _reject_unknown(
-        scope_raw,
-        {
-            "pressure_range_GPa",
-            "state_temperature_ranges_K",
-            "maximum_timestep_fs",
-            "authorized_claims",
-        },
-        "qualification_scope",
-        config_path,
-    )
-    _reject_unknown(
-        melting_reference_raw,
-        {
-            "temperature_K",
-            "source_url",
-            "maximum_absolute_error_K",
-            "minimum_protocol_count",
-            "minimum_replicas_per_temperature",
-            "minimum_production_duration_ps",
-            "maximum_protocol_spread_K",
-        },
-        "melting_reference",
-        config_path,
-    )
-    _reject_unknown(
-        thresholds_raw,
-        {
-            "maximum_nve_drift_meV_per_atom_ps",
-            "maximum_nve_excursion_meV_per_atom",
-            "maximum_nve_detrended_rms_meV_per_atom",
-            "maximum_nve_drift_difference_meV_per_atom_ps",
-            "maximum_cache_energy_difference_meV_per_atom",
-            "maximum_cache_force_rmse_eV_per_A",
-            "maximum_cache_stress_difference_GPa",
-            "maximum_dft_energy_rmse_meV_per_atom",
-            "maximum_dft_force_rmse_eV_per_A",
-            "maximum_dft_stress_rmse_GPa",
-        },
-        "thresholds",
-        config_path,
-    )
+    raw = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    eos = raw["equation_of_state"]
+    nve = raw["nve"]
+    scope = raw["qualification_scope"]
+    melting = raw["melting_reference"]
+    dft = raw.get("dft_reference")
+    timesteps = tuple(map(float, nve["timesteps_fs"]))
+    sample_interval = float(nve["sample_interval_fs"])
 
-    model_configs_raw = raw.get("model_configs")
-    if not isinstance(model_configs_raw, list) or len(model_configs_raw) < 2:
-        raise ValueError(
-            f"{config_path}: model_configs must list at least two generator"
-            f" configs for a comparison, got {model_configs_raw!r}."
-        )
-    model_configs = tuple(_repo_path(item) for item in model_configs_raw)
-    for model_config in model_configs:
-        if not model_config.is_file():
-            raise FileNotFoundError(
-                f"{config_path}: model generator config does not exist:"
-                f" {model_config}."
-            )
-
-    scales = _float_list(
-        eos_raw.get("volume_scales"),
-        "equation_of_state.volume_scales",
-        config_path,
-    )
-    if len(scales) < 5 or any(scale <= 0.0 for scale in scales):
-        raise ValueError(
-            f"{config_path}: equation_of_state.volume_scales must contain at"
-            f" least five positive values bracketing 1.0, got {scales}."
-        )
-    if not min(scales) < 1.0 < max(scales):
-        raise ValueError(
-            f"{config_path}: equation_of_state.volume_scales must bracket 1.0,"
-            f" got {scales}."
-        )
-    repetitions_raw = eos_raw.get("supercell_repetitions")
-    if (
-        not isinstance(repetitions_raw, list)
-        or len(repetitions_raw) != 3
-        or any(
-            not isinstance(item, int) or isinstance(item, bool)
-            for item in repetitions_raw
-        )
-        or min(repetitions_raw) < 2
-    ):
-        raise ValueError(
-            f"{config_path}: equation_of_state.supercell_repetitions must be"
-            f" three integers >= 2, got {repetitions_raw!r}."
-        )
-
-    timesteps = _float_list(
-        nve_raw.get("timesteps_fs"), "nve.timesteps_fs", config_path
-    )
-    if len(timesteps) < 2 or any(timestep <= 0.0 for timestep in timesteps):
-        raise ValueError(
-            f"{config_path}: nve.timesteps_fs must contain at least two"
-            f" positive values for a convergence check, got {timesteps}."
-        )
-    sample_interval_fs = _positive_float(
-        nve_raw.get("sample_interval_fs"),
-        "nve.sample_interval_fs",
-        config_path,
-    )
+    # Sampling rounds to whole steps; qualification must cover the stated timestep.
     for timestep in timesteps:
-        ratio = sample_interval_fs / timestep
+        ratio = sample_interval / timestep
         if not np.isclose(ratio, round(ratio), rtol=0.0, atol=1.0e-12):
             raise ValueError(
-                f"{config_path}:"
-                f" nve.sample_interval_fs={sample_interval_fs} must be an"
-                f" integer multiple of every timestep; {timestep} fs gives"
-                f" ratio {ratio}."
+                f"{config_path}: sample interval {sample_interval} fs is not an "
+                f"integer multiple of timestep {timestep} fs."
             )
-
-    application_raw = raw.get("application_structures", {})
-    if not isinstance(application_raw, dict):
-        raise TypeError(
-            f"{config_path}: application_structures must map labels to extxyz"
-            f" paths, got {type(application_raw).__name__}."
-        )
-    application_structures = {
-        str(label): _repo_path(structure_path)
-        for label, structure_path in application_raw.items()
-    }
-    for label, structure_path in application_structures.items():
-        if not structure_path.is_file():
-            raise FileNotFoundError(
-                f"{config_path}: application structure {label!r} does not"
-                f" exist: {structure_path}."
-            )
-
-    dft_raw = raw.get("dft_reference")
-    dft_reference: DFTReferenceConfig | None
-    if dft_raw is None:
-        dft_reference = None
-    else:
-        if not isinstance(dft_raw, dict):
-            raise TypeError(
-                f"{config_path}: dft_reference must be null or a provenance"
-                f" mapping, got {type(dft_raw).__name__}."
-            )
-        _reject_unknown(
-            dft_raw,
-            {
-                "extxyz",
-                "code",
-                "level_of_theory",
-                "pseudopotential",
-                "plane_wave_cutoff_eV",
-                "kpoint_spacing_per_A",
-                "source_url",
-                "minimum_frames_per_state",
-            },
-            "dft_reference",
-            config_path,
-        )
-        extxyz_path = _repo_path(dft_raw.get("extxyz"))
-        if not extxyz_path.is_file():
-            raise FileNotFoundError(
-                f"{config_path}: dft_reference.extxyz does not exist:"
-                f" {extxyz_path}."
-            )
-        string_values = {
-            key: str(dft_raw.get(key, "")).strip()
-            for key in (
-                "code",
-                "level_of_theory",
-                "pseudopotential",
-                "source_url",
-            )
-        }
-        empty_fields = sorted(
-            key for key, value in string_values.items() if not value
-        )
-        if empty_fields:
-            raise ValueError(
-                f"{config_path}: dft_reference fields must be non-empty:"
-                f" {empty_fields}."
-            )
-        minimum_frames_per_state = _positive_int(
-            dft_raw.get("minimum_frames_per_state"),
-            "dft_reference.minimum_frames_per_state",
-            config_path,
-        )
-        if minimum_frames_per_state < 5:
-            raise ValueError(
-                f"{config_path}: dft_reference.minimum_frames_per_state must"
-                " be >= 5 independent configurations for every state, got"
-                f" {minimum_frames_per_state}."
-            )
-        dft_reference = DFTReferenceConfig(
-            extxyz=extxyz_path,
-            code=string_values["code"],
-            level_of_theory=string_values["level_of_theory"],
-            pseudopotential=string_values["pseudopotential"],
-            plane_wave_cutoff_eV=_positive_float(
-                dft_raw.get("plane_wave_cutoff_eV"),
-                "dft_reference.plane_wave_cutoff_eV",
-                config_path,
-            ),
-            kpoint_spacing_per_A=_positive_float(
-                dft_raw.get("kpoint_spacing_per_A"),
-                "dft_reference.kpoint_spacing_per_A",
-                config_path,
-            ),
-            source_url=string_values["source_url"],
-            minimum_frames_per_state=minimum_frames_per_state,
-        )
-    states_raw = raw.get("required_dft_states")
-    if (
-        not isinstance(states_raw, list)
-        or not states_raw
-        or any(not isinstance(item, str) or not item for item in states_raw)
-    ):
-        raise TypeError(
-            f"{config_path}: required_dft_states must be a non-empty list of"
-            f" names, got {states_raw!r}."
-        )
-    if len(set(states_raw)) != len(states_raw):
+    if scope["maximum_timestep_fs"] not in timesteps:
         raise ValueError(
-            f"{config_path}: required_dft_states contains duplicates:"
-            f" {states_raw!r}."
+            f"{config_path}: qualification maximum_timestep_fs must be included "
+            "in nve.timesteps_fs."
+        )
+    if scope["authorized_claims"]["kinetics"]:
+        raise ValueError(
+            f"{config_path}: this benchmark has no transport or kinetic-time "
+            "validation and cannot authorize kinetics."
         )
 
-    pressure_range = _float_list(
-        scope_raw.get("pressure_range_GPa"),
-        "qualification_scope.pressure_range_GPa",
-        config_path,
-    )
-    if len(pressure_range) != 2 or pressure_range[0] > pressure_range[1]:
-        raise ValueError(
-            f"{config_path}: qualification_scope.pressure_range_GPa must be"
-            f" [lower, upper], got {pressure_range}."
-        )
-    state_ranges_raw = scope_raw.get("state_temperature_ranges_K")
-    if not isinstance(state_ranges_raw, dict):
-        raise TypeError(
-            f"{config_path}: qualification_scope.state_temperature_ranges_K"
-            " must map every required DFT state to [lower, upper], got"
-            f" {type(state_ranges_raw).__name__}."
-        )
-    if set(state_ranges_raw) != set(states_raw):
-        raise ValueError(
-            f"{config_path}: qualification scope states must exactly match "
-            f"required_dft_states; scope={sorted(state_ranges_raw)}, "
-            f"required={sorted(states_raw)}."
-        )
-    state_temperature_ranges: dict[str, tuple[float, float]] = {}
-    for state, state_range_raw in state_ranges_raw.items():
-        state_range = _float_list(
-            state_range_raw,
-            f"qualification_scope.state_temperature_ranges_K.{state}",
-            config_path,
-        )
-        if (
-            len(state_range) != 2
-            or state_range[0] <= 0.0
-            or state_range[0] > state_range[1]
-        ):
-            raise ValueError(
-                f"{config_path}: qualification temperature range for"
-                f" {state!r} must be positive [lower, upper], got"
-                f" {state_range}."
-            )
-        state_temperature_ranges[str(state)] = (state_range[0], state_range[1])
-
-    authorized_claims_raw = scope_raw.get("authorized_claims")
-    if not isinstance(authorized_claims_raw, dict):
-        raise TypeError(
-            f"{config_path}: qualification_scope.authorized_claims must be a"
-            f" mapping with exactly {list(POTENTIAL_CLAIM_NAMES)}, got"
-            f" {type(authorized_claims_raw).__name__}."
-        )
-    missing_claims = sorted(
-        set(POTENTIAL_CLAIM_NAMES) - set(authorized_claims_raw)
-    )
-    unknown_claims = sorted(
-        set(authorized_claims_raw) - set(POTENTIAL_CLAIM_NAMES)
-    )
-    if missing_claims or unknown_claims:
-        raise KeyError(
-            f"{config_path}: qualification_scope.authorized_claims must"
-            f" contain exactly {list(POTENTIAL_CLAIM_NAMES)};"
-            f" missing={missing_claims}, unknown={unknown_claims}."
-        )
-    if any(
-        type(authorized_claims_raw[claim]) is not bool
-        for claim in POTENTIAL_CLAIM_NAMES
-    ):
-        raise TypeError(
-            f"{config_path}: every qualification_scope.authorized_claims value"
-            f" must be an exact boolean, got {authorized_claims_raw!r}."
-        )
-    authorized_claims = {
-        claim: authorized_claims_raw[claim] for claim in POTENTIAL_CLAIM_NAMES
-    }
-    if authorized_claims["kinetics"]:
-        raise ValueError(
-            f"{config_path}: this benchmark cannot authorize kinetics because"
-            " it does not validate liquid transport coefficients or"
-            " kinetic-time rescaling; set"
-            " qualification_scope.authorized_claims.kinetics=false."
-        )
-    maximum_timestep_fs = _positive_float(
-        scope_raw.get("maximum_timestep_fs"),
-        "qualification_scope.maximum_timestep_fs",
-        config_path,
-    )
-    if maximum_timestep_fs not in timesteps:
-        raise ValueError(
-            f"{config_path}:"
-            f" qualification_scope.maximum_timestep_fs={maximum_timestep_fs} must"
-            f" be explicitly included in nve.timesteps_fs={list(timesteps)}."
-        )
-
-    melting_raw = raw.get("melting_scan_summaries")
-    if not isinstance(melting_raw, dict):
-        raise TypeError(
-            f"{config_path}: melting_scan_summaries must map model_name to a"
-            " list of velocity_summary.json paths, got"
-            f" {type(melting_raw).__name__}."
-        )
-    melting_summaries: dict[str, tuple[Path, ...]] = {}
-    for model_name, summary_paths_raw in melting_raw.items():
-        if not isinstance(summary_paths_raw, list) or not summary_paths_raw:
-            raise TypeError(
-                f"{config_path}: melting_scan_summaries.{model_name} must be a"
-                f" non-empty list of paths, got {summary_paths_raw!r}."
-            )
-        summary_paths = tuple(_repo_path(item) for item in summary_paths_raw)
-        for summary_path in summary_paths:
-            if not summary_path.is_file():
-                raise FileNotFoundError(
-                    f"{config_path}: melting scan for model"
-                    f" {model_name!r} does not exist: {summary_path}."
-                )
-        melting_summaries[str(model_name)] = summary_paths
-    output_json = _repo_path(raw.get("output_json"))
-
-    random_seed = nve_raw.get("random_seed")
-    if not isinstance(random_seed, int) or isinstance(random_seed, bool):
-        raise TypeError(
-            f"{config_path}: nve.random_seed must be an integer, got"
-            f" {random_seed!r}."
-        )
-    melting_source_url = str(
-        melting_reference_raw.get("source_url", "")
-    ).strip()
-    if not melting_source_url:
-        raise ValueError(
-            f"{config_path}: melting_reference.source_url must identify the"
-            " physical reference used to judge the model melting point."
-        )
     return PotentialBenchmarkConfig(
-        model_configs=model_configs,
-        chemical_symbol=str(raw.get("chemical_symbol")),
-        reference_fcc_lattice_constant_A=_positive_float(
-            raw.get("reference_fcc_lattice_constant_A"),
-            "reference_fcc_lattice_constant_A",
-            config_path,
-        ),
-        eos_volume_scales=scales,
-        supercell_repetitions=tuple(repetitions_raw),
-        nve_temperature_K=_positive_float(
-            nve_raw.get("temperature_K"), "nve.temperature_K", config_path
-        ),
+        model_configs=tuple(_repo_path(item) for item in raw["model_configs"]),
+        chemical_symbol=raw["chemical_symbol"],
+        reference_fcc_lattice_constant_A=float(raw["reference_fcc_lattice_constant_A"]),
+        eos_volume_scales=tuple(map(float, eos["volume_scales"])),
+        supercell_repetitions=tuple(eos["supercell_repetitions"]),
+        nve_temperature_K=float(nve["temperature_K"]),
         nve_timesteps_fs=timesteps,
-        nve_duration_ps=_positive_float(
-            nve_raw.get("duration_ps"), "nve.duration_ps", config_path
+        nve_duration_ps=float(nve["duration_ps"]),
+        nve_sample_interval_fs=sample_interval,
+        nve_random_seed=nve["random_seed"],
+        application_structures={
+            label: _repo_path(item)
+            for label, item in raw.get("application_structures", {}).items()
+        },
+        dft_reference=None if dft is None else DFTReferenceConfig(
+            extxyz=_repo_path(dft["extxyz"]),
+            code=dft["code"].strip(),
+            level_of_theory=dft["level_of_theory"].strip(),
+            pseudopotential=dft["pseudopotential"].strip(),
+            plane_wave_cutoff_eV=float(dft["plane_wave_cutoff_eV"]),
+            kpoint_spacing_per_A=float(dft["kpoint_spacing_per_A"]),
+            source_url=dft["source_url"].strip(),
+            minimum_frames_per_state=dft["minimum_frames_per_state"],
         ),
-        nve_sample_interval_fs=sample_interval_fs,
-        nve_random_seed=random_seed,
-        application_structures=application_structures,
-        dft_reference=dft_reference,
-        required_dft_states=tuple(states_raw),
+        required_dft_states=tuple(raw["required_dft_states"]),
         qualification_scope=QualificationScopeConfig(
-            pressure_range_GPa=(pressure_range[0], pressure_range[1]),
-            state_temperature_ranges_K=state_temperature_ranges,
-            maximum_timestep_fs=maximum_timestep_fs,
-            authorized_claims=authorized_claims,
+            pressure_range_GPa=tuple(map(float, scope["pressure_range_GPa"])),
+            state_temperature_ranges_K={
+                state: tuple(map(float, limits))
+                for state, limits in scope["state_temperature_ranges_K"].items()
+            },
+            maximum_timestep_fs=float(scope["maximum_timestep_fs"]),
+            authorized_claims={
+                claim: scope["authorized_claims"][claim]
+                for claim in POTENTIAL_CLAIM_NAMES
+            },
         ),
         melting_reference=MeltingReferenceConfig(
-            temperature_K=_positive_float(
-                melting_reference_raw.get("temperature_K"),
-                "melting_reference.temperature_K",
-                config_path,
-            ),
-            source_url=melting_source_url,
-            maximum_absolute_error_K=_positive_float(
-                melting_reference_raw.get("maximum_absolute_error_K"),
-                "melting_reference.maximum_absolute_error_K",
-                config_path,
-            ),
-            minimum_protocol_count=_positive_int(
-                melting_reference_raw.get("minimum_protocol_count"),
-                "melting_reference.minimum_protocol_count",
-                config_path,
-            ),
-            minimum_replicas_per_temperature=_positive_int(
-                melting_reference_raw.get("minimum_replicas_per_temperature"),
-                "melting_reference.minimum_replicas_per_temperature",
-                config_path,
-            ),
-            minimum_production_duration_ps=_positive_float(
-                melting_reference_raw.get("minimum_production_duration_ps"),
-                "melting_reference.minimum_production_duration_ps",
-                config_path,
-            ),
-            maximum_protocol_spread_K=_positive_float(
-                melting_reference_raw.get("maximum_protocol_spread_K"),
-                "melting_reference.maximum_protocol_spread_K",
-                config_path,
-            ),
+            temperature_K=float(melting["temperature_K"]),
+            source_url=melting["source_url"].strip(),
+            maximum_absolute_error_K=float(melting["maximum_absolute_error_K"]),
+            minimum_protocol_count=melting["minimum_protocol_count"],
+            minimum_replicas_per_temperature=melting["minimum_replicas_per_temperature"],
+            minimum_production_duration_ps=float(melting["minimum_production_duration_ps"]),
+            maximum_protocol_spread_K=float(melting["maximum_protocol_spread_K"]),
         ),
-        melting_scan_summaries=melting_summaries,
-        maximum_nve_drift_meV_per_atom_ps=_positive_float(
-            thresholds_raw.get("maximum_nve_drift_meV_per_atom_ps"),
-            "thresholds.maximum_nve_drift_meV_per_atom_ps",
-            config_path,
-        ),
-        maximum_nve_excursion_meV_per_atom=_positive_float(
-            thresholds_raw.get("maximum_nve_excursion_meV_per_atom"),
-            "thresholds.maximum_nve_excursion_meV_per_atom",
-            config_path,
-        ),
-        maximum_nve_detrended_rms_meV_per_atom=_positive_float(
-            thresholds_raw.get("maximum_nve_detrended_rms_meV_per_atom"),
-            "thresholds.maximum_nve_detrended_rms_meV_per_atom",
-            config_path,
-        ),
-        maximum_nve_drift_difference_meV_per_atom_ps=_positive_float(
-            thresholds_raw.get("maximum_nve_drift_difference_meV_per_atom_ps"),
-            "thresholds.maximum_nve_drift_difference_meV_per_atom_ps",
-            config_path,
-        ),
-        maximum_cache_energy_difference_meV_per_atom=_positive_float(
-            thresholds_raw.get("maximum_cache_energy_difference_meV_per_atom"),
-            "thresholds.maximum_cache_energy_difference_meV_per_atom",
-            config_path,
-        ),
-        maximum_cache_force_rmse_eV_per_A=_positive_float(
-            thresholds_raw.get("maximum_cache_force_rmse_eV_per_A"),
-            "thresholds.maximum_cache_force_rmse_eV_per_A",
-            config_path,
-        ),
-        maximum_cache_stress_difference_GPa=_positive_float(
-            thresholds_raw.get("maximum_cache_stress_difference_GPa"),
-            "thresholds.maximum_cache_stress_difference_GPa",
-            config_path,
-        ),
-        maximum_dft_energy_rmse_meV_per_atom=_positive_float(
-            thresholds_raw.get("maximum_dft_energy_rmse_meV_per_atom"),
-            "thresholds.maximum_dft_energy_rmse_meV_per_atom",
-            config_path,
-        ),
-        maximum_dft_force_rmse_eV_per_A=_positive_float(
-            thresholds_raw.get("maximum_dft_force_rmse_eV_per_A"),
-            "thresholds.maximum_dft_force_rmse_eV_per_A",
-            config_path,
-        ),
-        maximum_dft_stress_rmse_GPa=_positive_float(
-            thresholds_raw.get("maximum_dft_stress_rmse_GPa"),
-            "thresholds.maximum_dft_stress_rmse_GPa",
-            config_path,
-        ),
-        output_json=output_json,
+        melting_scan_summaries={
+            name: tuple(_repo_path(item) for item in paths)
+            for name, paths in raw["melting_scan_summaries"].items()
+        },
+        **{key: float(value) for key, value in raw["thresholds"].items()},
+        output_json=_repo_path(raw["output_json"]),
         config_path=config_path,
     )
 

@@ -122,7 +122,7 @@ def table(root,name,rows):
     p = root/'tables'/f'{name}.csv'
     pd.DataFrame(rows).to_csv(p,index=False)
     write_json(root/'technical/table-contracts'/f'{name}.json',dict(table=str(p.relative_to(root)),
-        sha256=fingerprint(p),family=FAMILY,contract=str(contract.relative_to(root)),definitions=f'tables/metric-definitions/{FAMILY}.md'))
+        sha256=fingerprint(p),family=FAMILY,contract=str(contract.relative_to(root)),definitions=json.loads(contract.read_text())['definitions']))
 
 
 def crossing(frame,column,threshold):

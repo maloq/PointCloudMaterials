@@ -13,7 +13,6 @@ from .ri_mae_encoder import (
     PositionEmbeddingCoordsSine,
     RIMAEBackbone,
     RITransformer,
-    _to_bn3,
 )
 
 
@@ -132,8 +131,6 @@ class PairwisePatchGeometryBias(nn.Module):
         super().__init__()
         self.num_heads = int(num_heads)
         self.num_rbf = int(num_rbf)
-        if self.num_rbf < 2:
-            raise ValueError(f"GeoFrameTransformer num_rbf must be >= 2, got {self.num_rbf}.")
         self.register_buffer(
             "rbf_centers",
             torch.linspace(0.0, 3.0, self.num_rbf),
@@ -234,10 +231,6 @@ class MultiQueryAttentionPool(nn.Module):
         super().__init__()
         self.num_queries = int(num_queries)
         self.token_dim = int(token_dim)
-        if self.num_queries < 1:
-            raise ValueError(
-                f"GeoFrameTransformer pool_queries must be >= 1, got {self.num_queries}."
-            )
         self.queries = nn.Parameter(torch.empty(1, self.num_queries, self.token_dim))
         nn.init.trunc_normal_(self.queries, std=0.02)
         self.attention = nn.MultiheadAttention(
@@ -289,29 +282,10 @@ class GeoFrameTokenEncoder(nn.Module):
         self.use_frame_gating = bool(use_frame_gating)
         self.frame_confidence_floor = float(frame_confidence_floor)
         self.geometry_bias_mode = geometry_bias_mode
-        if not self.patch_sizes or any(size < 3 for size in self.patch_sizes):
-            raise ValueError(
-                "GeoFrameTransformer patch_sizes must contain integers >= 3, "
-                f"got {self.patch_sizes}."
-            )
-        if tuple(sorted(set(self.patch_sizes))) != self.patch_sizes:
-            raise ValueError(
-                "GeoFrameTransformer patch_sizes must be strictly increasing with no duplicates, "
-                f"got {self.patch_sizes}."
-            )
         if self.frame_builder not in {"triad", "pca"}:
             raise ValueError(
                 "GeoFrameTransformer frame_builder must be 'triad' or 'pca', "
                 f"got {frame_builder!r}."
-            )
-        if self.frame_eps <= 0.0:
-            raise ValueError(
-                f"GeoFrameTransformer frame_eps must be > 0, got {self.frame_eps}."
-            )
-        if not (0.0 <= self.frame_confidence_floor <= 1.0):
-            raise ValueError(
-                "GeoFrameTransformer frame_confidence_floor must be in [0, 1], "
-                f"got {self.frame_confidence_floor}."
             )
         if self.geometry_bias_mode not in {"pairwise", "orientation", "none"}:
             raise ValueError(
@@ -600,30 +574,6 @@ class GeoFrameTransformerEncoder(Encoder):
         self.mask_ratio = float(mask_ratio)
         self.ema_decay = float(ema_decay)
         self.pooling_mode = pooling_mode
-        if self.latent_size <= 0:
-            raise ValueError(
-                f"GeoFrameTransformer latent_size must be > 0, got {self.latent_size}."
-            )
-        if self.trans_dim <= 0 or self.trans_dim % int(num_heads) != 0:
-            raise ValueError(
-                "GeoFrameTransformer trans_dim must be positive and divisible by num_heads. "
-                f"Got trans_dim={self.trans_dim}, num_heads={int(num_heads)}."
-            )
-        if self.enable_ray_head and self.directional_feature_dim <= 0:
-            raise ValueError(
-                "GeoFrameTransformer ray_feature_dim must be > 0 when enable_ray_head=true, "
-                f"got {self.directional_feature_dim}."
-            )
-        if self.enable_masked_token_objective and not (0.0 < self.mask_ratio < 1.0):
-            raise ValueError(
-                "GeoFrameTransformer mask_ratio must be in (0, 1) when "
-                f"enable_masked_token_objective=true, got {self.mask_ratio}."
-            )
-        if self.enable_masked_token_objective and not (0.0 <= self.ema_decay < 1.0):
-            raise ValueError(
-                "GeoFrameTransformer ema_decay must be in [0, 1) when "
-                f"enable_masked_token_objective=true, got {self.ema_decay}."
-            )
         if self.pooling_mode not in {"attention", "max_mean"}:
             raise ValueError(
                 "GeoFrameTransformer pooling_mode must be 'attention' or 'max_mean', "
@@ -742,7 +692,6 @@ class GeoFrameTransformerEncoder(Encoder):
         self.enforce_frozen_teacher()
 
     def _center_points(self, points: torch.Tensor) -> torch.Tensor:
-        points = _to_bn3(points)
         if self.center_input:
             points = points - points.mean(dim=1, keepdim=True)
         return points
@@ -788,22 +737,10 @@ class GeoFrameTransformerEncoder(Encoder):
                 "GeoFrameTransformer ray head is disabled. Set "
                 "encoder.kwargs.enable_ray_head=true to compute directional features."
             )
-        required = {"tokens", "centers", "frames", "confidence"}
-        missing = sorted(required.difference(state))
-        if missing:
-            raise ValueError(
-                "GeoFrameTransformer directional state is missing tensors: "
-                f"{missing}. Available keys={sorted(state)}."
-            )
         tokens = state["tokens"]
         centers = state["centers"]
         frames = state["frames"]
         confidence = state["confidence"]
-        if ray_direction.shape != (tokens.shape[0], 3):
-            raise ValueError(
-                "GeoFrameTransformer ray_direction must have shape (B, 3) aligned with tokens. "
-                f"Got ray_direction={tuple(ray_direction.shape)}, tokens={tuple(tokens.shape)}."
-            )
         ray = F.normalize(ray_direction.float(), dim=-1, eps=1.0e-6)
         ray_local = torch.einsum("bc,bgcd->bgd", ray, frames.float())
         longitudinal = torch.einsum("bgc,bc->bg", centers.float(), ray)
@@ -887,31 +824,11 @@ class GeoFrameTransformerEncoder(Encoder):
 
     @torch.no_grad()
     def update_mask_teacher(self) -> None:
-        if not self.enable_masked_token_objective or self.mask_teacher is None:
-            raise RuntimeError(
-                "GeoFrameTransformer EMA teacher is disabled. Set "
-                "encoder.kwargs.enable_masked_token_objective=true before updating it."
-            )
-        student_parameters = dict(self.token_encoder.named_parameters())
-        teacher_parameters = dict(self.mask_teacher.named_parameters())
-        if student_parameters.keys() != teacher_parameters.keys():
-            raise RuntimeError(
-                "GeoFrameTransformer EMA teacher parameter structure no longer matches the student."
-            )
-        for name, teacher_parameter in teacher_parameters.items():
-            teacher_parameter.mul_(self.ema_decay).add_(
-                student_parameters[name],
-                alpha=1.0 - self.ema_decay,
-            )
-
-        student_buffers = dict(self.token_encoder.named_buffers())
-        teacher_buffers = dict(self.mask_teacher.named_buffers())
-        if student_buffers.keys() != teacher_buffers.keys():
-            raise RuntimeError(
-                "GeoFrameTransformer EMA teacher buffer structure no longer matches the student."
-            )
-        for name, teacher_buffer in teacher_buffers.items():
-            teacher_buffer.copy_(student_buffers[name])
+        # The teacher is a deepcopy of token_encoder, with identical ordering.
+        for student, teacher in zip(self.token_encoder.parameters(), self.mask_teacher.parameters()):
+            teacher.mul_(self.ema_decay).add_(student, alpha=1.0 - self.ema_decay)
+        for student, teacher in zip(self.token_encoder.buffers(), self.mask_teacher.buffers()):
+            teacher.copy_(student)
 
 
 __all__ = ["GeoFrameTransformerEncoder"]

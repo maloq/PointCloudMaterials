@@ -65,31 +65,19 @@ def _radius_graph(
     src to dst. This matches the convention used internally by MACE's
     InteractionBlock (it indexes `node_feats[edge_index[0]]` as the sender).
     """
-    if points.dim() != 3 or points.shape[-1] != 3:
-        raise ValueError(f"Expected points shape [B, N, 3], got {tuple(points.shape)}")
-    if float(r_max) <= 0.0:
-        raise ValueError(f"r_max must be > 0, got {r_max}")
-
     batch_size, num_points, _ = points.shape
-    if num_points < 2:
-        raise ValueError(
-            f"MACE_Backbone requires at least 2 points per cloud to build edges, got {num_points}."
-        )
-    if max_neighbors <= 0 or max_neighbors >= num_points:
-        raise ValueError(
-            f"max_neighbors must be in [1, N - 1], got {max_neighbors} for N={num_points}."
-        )
 
     edge_dst_parts: list[torch.Tensor] = []
     edge_src_parts: list[torch.Tensor] = []
     batch_index = torch.arange(batch_size, device=points.device, dtype=torch.long).repeat_interleave(
         num_points
     )
+    eye = torch.eye(num_points, dtype=torch.bool, device=points.device)
+    node_ids = torch.arange(num_points, device=points.device, dtype=torch.long).unsqueeze(1)
 
     for batch_idx in range(batch_size):
         pos = points[batch_idx]
         dist = torch.cdist(pos.float(), pos.float(), p=2.0)
-        eye = torch.eye(num_points, dtype=torch.bool, device=points.device)
         valid = (dist < float(r_max)) & (~eye)
 
         masked = dist.masked_fill(~valid, float("inf"))
@@ -97,11 +85,7 @@ def _radius_graph(
             masked, k=max_neighbors, dim=-1, largest=False, sorted=False
         )
         keep = torch.isfinite(values)
-        dst_local = (
-            torch.arange(num_points, device=points.device, dtype=torch.long)
-            .unsqueeze(1)
-            .expand_as(indices)[keep]
-        )
+        dst_local = node_ids.expand_as(indices)[keep]
         src_local = indices[keep]
 
         if dst_local.numel() == 0:
@@ -124,18 +108,9 @@ def _radius_graph(
     return edge_src, edge_dst, edge_vec, edge_len, batch_index
 
 
-def _scatter_sum(src: torch.Tensor, index: torch.Tensor, dim_size: int) -> torch.Tensor:
-    if src.dim() != 2:
-        raise ValueError(f"Expected src with shape [N, F], got {tuple(src.shape)}")
-    if index.dim() != 1:
-        raise ValueError(f"Expected index with shape [N], got {tuple(index.shape)}")
-    out = src.new_zeros((int(dim_size), src.shape[1]))
-    out.index_add_(0, index, src)
-    return out
-
-
 def _batch_mean_pool(x: torch.Tensor, batch: torch.Tensor, num_graphs: int) -> torch.Tensor:
-    pooled = _scatter_sum(x, batch, dim_size=num_graphs)
+    pooled = x.new_zeros((num_graphs, x.shape[1]))
+    pooled.index_add_(0, batch, x)
     counts = torch.bincount(batch, minlength=num_graphs).to(dtype=x.dtype).unsqueeze(-1)
     return pooled / counts
 
@@ -154,11 +129,6 @@ def _build_hidden_irreps(
     the standard MACE choice `False` is what the reference foundation
     models use.
     """
-    _require_backends()
-    if int(num_features) <= 0:
-        raise ValueError(f"num_features must be > 0, got {num_features}")
-    if int(max_ell) < 0:
-        raise ValueError(f"max_ell must be >= 0, got {max_ell}")
     parts = []
     for l in range(int(max_ell) + 1):
         p = 1 if l % 2 == 0 else -1
@@ -218,20 +188,6 @@ class MACEBackboneEncoder(Encoder):
         super().__init__()
         _require_backends()
 
-        if int(latent_size) <= 0:
-            raise ValueError(f"latent_size must be > 0, got {latent_size}")
-        if float(r_max) <= 0.0:
-            raise ValueError(f"r_max must be > 0, got {r_max}")
-        if int(num_interactions) < 2:
-            raise ValueError(
-                "MACE_Backbone requires num_interactions >= 2 so that the last layer "
-                "can be a residual MACE layer that retains both scalars and vectors. "
-                f"Got num_interactions={num_interactions}."
-            )
-        if int(max_ell) < 1:
-            raise ValueError(
-                f"max_ell must be >= 1 to produce vector (l=1) latents, got {max_ell}."
-            )
         if int(num_types) != 1:
             raise ValueError(
                 "MACE_Backbone currently supports num_types=1 only because the encoder "
@@ -240,10 +196,6 @@ class MACEBackboneEncoder(Encoder):
 
         if pool != "mean":
             raise ValueError(f"MACE_Backbone is configured for pool='mean', got {pool!r}.")
-        if int(correlation) < 1:
-            raise ValueError(f"correlation must be >= 1, got {correlation}.")
-        if float(avg_num_neighbors) <= 0.0:
-            raise ValueError(f"avg_num_neighbors must be > 0, got {avg_num_neighbors}")
 
         correlation_list = [int(correlation)] * int(num_interactions)
 
@@ -274,17 +226,6 @@ class MACEBackboneEncoder(Encoder):
         self.sh_irreps = sh_irreps
         self.interaction_irreps = interaction_irreps
         self.hidden_irreps = hidden_irreps
-
-        if not any(ir == o3.Irrep("0e") for _, ir in hidden_irreps):
-            raise ValueError(
-                "Final MACE hidden irreps do not contain 0e scalars, so inv_z cannot be produced. "
-                f"hidden_irreps={hidden_irreps}."
-            )
-        if not any(ir == o3.Irrep("1o") for _, ir in hidden_irreps):
-            raise ValueError(
-                "Final MACE hidden irreps do not contain 1o vectors, so eq_z cannot be produced. "
-                f"hidden_irreps={hidden_irreps}."
-            )
 
         self.node_embedding = LinearNodeEmbeddingBlock(
             irreps_in=node_attrs_irreps, irreps_out=node_feats_irreps
@@ -366,37 +307,12 @@ class MACEBackboneEncoder(Encoder):
 
     @staticmethod
     def _irreps_slice_for(irreps, target_irrep) -> tuple[int, int]:
-        """Return the (start, stop) slice in the flat irreps layout for the
-        contiguous block that matches `target_irrep`. Raises if no or multiple
-        blocks match, which should never happen for the simplified hidden
-        irreps we construct internally."""
-        start = 0
-        matches: list[tuple[int, int]] = []
-        for mul, ir in irreps:
-            block_dim = mul * ir.dim
-            if ir == target_irrep:
-                matches.append((start, start + block_dim))
-            start += block_dim
-        if len(matches) != 1:
-            raise RuntimeError(
-                f"Expected exactly one contiguous block of {target_irrep} in "
-                f"irreps={irreps}, found {len(matches)}."
-            )
-        return matches[0]
+        """Locate one block in the unique irreps built by _build_hidden_irreps."""
+        block = next(s for (_, ir), s in zip(irreps, irreps.slices()) if ir == target_irrep)
+        return block.start, block.stop
 
     def forward(self, x: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
-        if x.dim() != 3 or x.shape[-1] != 3:
-            raise ValueError(f"Expected input shape [B, N, 3], got {tuple(x.shape)}")
-        if not x.is_floating_point():
-            raise TypeError(
-                f"Expected floating-point input for MACE_Backbone, got dtype={x.dtype}."
-            )
-
         batch_size, num_points, _ = x.shape
-        if num_points < 2:
-            raise ValueError(
-                f"MACE_Backbone requires at least 2 points per cloud, got {num_points}."
-            )
 
         center = x.mean(dim=1)
         compute_dtype = self.node_embedding.linear.weight.dtype
@@ -408,11 +324,7 @@ class MACEBackboneEncoder(Encoder):
         edge_index = torch.stack([edge_src, edge_dst], dim=0)
 
         node_count = batch_size * num_points
-        atom_types = torch.zeros(node_count, dtype=torch.long, device=x.device)
-        node_attrs = torch.zeros(
-            (node_count, self.num_types), dtype=compute_dtype, device=x.device
-        )
-        node_attrs[torch.arange(node_count, device=x.device), atom_types] = 1.0
+        node_attrs = torch.ones((node_count, 1), dtype=compute_dtype, device=x.device)
 
         node_feats = self.node_embedding(node_attrs)
         edge_attrs = self.spherical_harmonics(edge_vec)
@@ -448,16 +360,5 @@ class MACEBackboneEncoder(Encoder):
         # Channel-mix the equivariant vectors with a single scalar linear;
         # this preserves the O(3) equivariance of the 1o block.
         eq_z = self.eq_head(pooled_vectors.transpose(-1, -2)).transpose(-1, -2).contiguous()
-
-        expected_inv_shape = (batch_size, self.latent_size)
-        if tuple(inv_z.shape) != expected_inv_shape:
-            raise RuntimeError(
-                f"Unexpected inv_z shape {tuple(inv_z.shape)}, expected {expected_inv_shape}."
-            )
-        expected_eq_shape = (batch_size, self.latent_size, 3)
-        if tuple(eq_z.shape) != expected_eq_shape:
-            raise RuntimeError(
-                f"Unexpected eq_z shape {tuple(eq_z.shape)}, expected {expected_eq_shape}."
-            )
 
         return inv_z, eq_z, center

@@ -468,6 +468,8 @@ def pack_logs(repo: Path, before: str, apply: bool) -> list[dict]:
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('command', choices=['build', 'encoders', 'results', 'publish', 'verify-results', 'storage', 'clean', 'metrics-docs', 'prune', 'relocate-caches', 'pack-logs', 'run', 'status', 'idea'])
+    parser.add_argument('--family', help='For metrics-docs: audit one declared metric family.')
+    parser.add_argument('--strict', action='store_true', help='For metrics-docs: exit with failure when the audit reports drift.')
     parser.add_argument('--root', action='append', help='Local output/ or outputs/ subtree; repeat to select several.')
     parser.add_argument('--inactive', action='store_true', help='Confirm the selected runs have no active readers, writers or queued jobs.')
     parser.add_argument('--min-mib', type=float, default=100, help='Large-file report threshold (allocated MiB).')
@@ -529,8 +531,11 @@ def main(argv=None):
         from .storage import clean_caches
         clean_caches(repo, args.root, apply=args.apply, inactive=args.inactive)
     elif args.command == 'metrics-docs':
-        from .metric_docs import check_metric_docs
-        print('Verified metric documentation: ' + ', '.join(check_metric_docs()))
+        from .metric_docs import audit_metric_docs
+        report = audit_metric_docs(family=args.family)
+        print(json.dumps(report, indent=2))
+        if args.strict and not report['ok']:
+            raise SystemExit(1)
     elif args.command == 'relocate-caches':
         if args.plan is None:
             parser.error('relocate-caches requires --plan PATH')

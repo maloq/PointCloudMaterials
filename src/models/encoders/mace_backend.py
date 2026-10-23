@@ -14,7 +14,7 @@ def mace_backend_config(backend, *, layout='mul_ir', conv_fusion=False):
     if backend != 'cueq':
         raise ValueError(f'Unknown MACE backend {backend!r}; choose e3nn or cueq')
     try:
-        import cuequivariance_ops_torch  # noqa: F401: require the compiled CUDA extension
+        import cuequivariance_ops_torch  # noqa: F401 — require the compiled CUDA extension
         from mace.modules.wrapper_ops import CUET_AVAILABLE, CuEquivarianceConfig
     except ImportError as error:
         raise RuntimeError('The cueq backend requires cuequivariance, cuequivariance-torch '

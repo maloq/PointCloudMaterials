@@ -18,7 +18,7 @@ import sqlite3
 from urllib.parse import quote
 
 from src.project_runtime.paths import resolve_path
-from .metric_docs import snapshot_metric_docs
+from .metric_docs import snapshot_metric_docs, write_metric_rows
 
 REPO = Path(__file__).resolve().parents[2]
 DOCS = REPO / 'docs/encoder_research'
@@ -334,8 +334,7 @@ def build(repo=REPO, *, manifest_path=None, output=None, highlights_path=None):
              'index_only_artifacts':sum(a['import_status'].startswith('index_only:') for a in artifacts),
              'warning':'Records include duplicate exports, diagnostics and historical evidence. Counts are not numbers of fits or independent observations.'}
     for name, rows in [('artifacts',artifacts), ('headlines',headlines), ('studies',manifest['studies'])]:
-        with (output / f'tables/{name}.csv').open('w',newline='') as handle:
-            writer=csv.DictWriter(handle,fieldnames=list(rows[0])); writer.writeheader(); writer.writerows(rows)
+        write_metric_rows(rows, output, family='encoder_research', name=name)
     write_json(output / 'technical/coverage.json',stats)
     write_json(output / 'technical/catalogue-snapshot.json',manifest)
     render_dashboard(manifest,artifacts,headlines,stats,output)

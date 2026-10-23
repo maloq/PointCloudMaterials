@@ -100,8 +100,9 @@ def train_fit(config,sources,selection,norm,fit,root,device,identity,deadline,st
     started=time.monotonic();seen=set();observed=set();last_step=0
     def save(filename,step):
         atomic_checkpoint(folder/filename,dict(protocol=config['protocol'],config=config,fit=fit,step=step,
-            encoder_state=model.state_dict(),head_state=heads.state_dict(),direction_state=directions.state_dict(),
-            optimizer_state=optimizer.state_dict(),normalization=norm,identity=identity,
+            # Called before the captured objects are explicitly released below.
+            encoder_state=model.state_dict(),head_state=heads.state_dict(),direction_state=directions.state_dict(),  # noqa: F821
+            optimizer_state=optimizer.state_dict(),normalization=norm,identity=identity,  # noqa: F821
             numpy_rng_state=rng.bit_generator.state,torch_rng_state=torch.get_rng_state(),
             cuda_rng_state=torch.cuda.get_rng_state(device),history=history,best_validation=best,best_step=best_step,
             representation='Native pooled MACE 256 structure + 32 activity + 16 flow; no fitted embedding map'))

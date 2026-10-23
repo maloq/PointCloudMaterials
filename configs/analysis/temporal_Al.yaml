@@ -302,17 +302,3 @@ dynamic_motif:
 equivariance:
   enabled: false
   max_batches: 2
-swav:
-  enabled: false
-  assignment_method: sinkhorn
-  sinkhorn_iterations: 20
-  batch_size: 8192
-  export_assignment_csv: true
-  max_assignment_csv_rows: 100000
-  representative_top_k: 12
-  frame_proportions: true
-  transitions: true
-  compare_to_clustering: true
-  md_outputs: true
-  md_max_points: 0
-  plots: true

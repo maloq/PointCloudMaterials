@@ -69,20 +69,6 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Only collect and aggregate results from an existing output directory.",
     )
     parser.add_argument(
-        "--nan-restart-max-retries", type=int, default=1,
-        help=(
-            "If a run fails due to NaN/non-finite loss, retry it up to this many "
-            "times with reduced learning rate (default: 1, set 0 to disable)."
-        ),
-    )
-    parser.add_argument(
-        "--nan-restart-lr-factor", type=float, default=0.7,
-        help=(
-            "Learning-rate multiplier applied on each NaN-loss retry "
-            "(must be between 0 and 1, default: 0.7)."
-        ),
-    )
-    parser.add_argument(
         "--repeat-each", type=int, default=None,
         help=(
             "Run each experiment this many times. If omitted, uses plan.repeat_each "
@@ -103,18 +89,6 @@ def main(argv: list[str] | None = None) -> int:
     plan_path = args.plan.resolve()
     plan = load_plan(plan_path)
 
-    if args.nan_restart_max_retries < 0:
-        print(
-            "Error: --nan-restart-max-retries must be >= 0.",
-            file=sys.stderr,
-        )
-        return 1
-    if not (0.0 < args.nan_restart_lr_factor < 1.0):
-        print(
-            "Error: --nan-restart-lr-factor must be in (0, 1).",
-            file=sys.stderr,
-        )
-        return 1
     if args.repeat_each is not None and args.repeat_each < 1:
         print(
             "Error: --repeat-each must be >= 1.",
@@ -175,8 +149,6 @@ def main(argv: list[str] | None = None) -> int:
                 dry_run=args.dry_run,
                 continue_on_error=args.continue_on_error,
                 resume_state=resume_state,
-                nan_restart_max_retries=args.nan_restart_max_retries,
-                nan_restart_lr_factor=args.nan_restart_lr_factor,
             )
     except RuntimeError as exc:
         print(f"\nError: {exc}", file=sys.stderr)

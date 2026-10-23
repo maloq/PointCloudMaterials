@@ -76,7 +76,8 @@ def benchmark(c):
             report.append(row); print(row, flush=True)
         with torch.no_grad():
             h = history[:2]; x = state[:2, 0]; u = tangent[:2, 0, ..., 0]; bound = model.condition(h)
-            query = lambda y: model.measured_path(bound, y, 4)
+            # Called before the captured objects are explicitly released below.
+            query = lambda y: model.measured_path(bound, y, 4)  # noqa: F821
             _, jvp = torch.func.jvp(query, (x,), (u,))
             secant = (query(x+.1*u)-query(x-.1*u))/.2
             error = float((jvp-secant).norm()/jvp.norm().clamp_min(1e-8))

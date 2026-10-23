@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import csv
 import json
 import re
 import statistics
@@ -614,8 +613,6 @@ def write_csv_tables(
     metrics_cfg: MetricsConfig,
 ) -> List[Path]:
     """Write aggregated CSV tables. Returns paths of files written."""
-    from .metric_docs import snapshot_metric_docs
-    snapshot_metric_docs(output_dir, "aggregation")
     output_dir = output_dir / "tables"
     written: List[Path] = []
     ordered_groups = _ordered_result_groups(results)
@@ -679,8 +676,6 @@ def write_grouped_csv_tables(
     if not aggregated_results:
         return []
 
-    from .metric_docs import snapshot_metric_docs
-    snapshot_metric_docs(output_dir, "aggregation")
     output_dir = output_dir / "tables"
     written: List[Path] = []
 
@@ -980,11 +975,6 @@ def _format_aggregate_mean_std(stats: MetricAggregate) -> str:
 
 
 def _write_csv_file(path: Path, rows: Sequence[Dict[str, Any]]) -> None:
-    if not rows:
-        path.touch()
-        return
-    fieldnames = list(rows[0].keys())
-    with path.open("w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
-        writer.writeheader()
-        writer.writerows(rows)
+    from .metric_docs import write_metric_rows
+
+    write_metric_rows(rows, path.parent.parent, family='aggregation', name=path.stem)

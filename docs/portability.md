@@ -15,13 +15,17 @@ For a fresh Linux CPU installation:
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --extra-index-url https://download.pytorch.org/whl/cpu -r environments/requirements-cpu.lock.txt
-python scripts/project.py doctor
+python scripts/project.py doctor --profile cpu
 ```
 
 `requirements-cpu.txt` records the direct requirements; the CPU lock also pins
 transitive dependencies. `requirements-gpu.txt` selects the cluster's PyTorch
-2.14.0 / CUDA 13.0 implementation and optional equivariance kernels. Install it
-instead for a compatible NVIDIA machine. A matching GPU driver and a LAMMPS build
+2.14.0 / CUDA 13.0 implementation and optional equivariance kernels; root
+`requirements.txt` includes this profile. The captured GPU dependency closure is
+`environments/requirements-gpu.lock.txt`; see its
+[validation limits](../environments/README.md) before a fresh installation.
+Use `project.py doctor --profile gpu` inside an available GPU allocation.
+A matching GPU driver and a LAMMPS build
 with the requested potentials/MPI are separate system dependencies.
 
 Configuration precedence is `PCM_MACHINE_CONFIG`, then ignored

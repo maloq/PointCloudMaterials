@@ -449,6 +449,11 @@ See [portability](../docs/portability.md) and the
 
 ## Retired recipes (September 13, 2026)
 
+The [October 23 source retirement](../docs/src_refactor.md#code-retirement--2026-10-23)
+also removes DGCNN/EGNN/NequIP, the SwAV analysis stage and selected historical
+workflow commands. VN, MLP and SwAV training remain supported. Frozen source
+pins and historical recipes remain unchanged; use their recorded producers.
+
 The cleanup reduced this tree from 129 to 31 files (123 to 26 YAML/JSON configs).
 All seven analysis configs and all eight retained root YAMLs are byte-identical to
 the pre-cleanup copy; Hydra parent compositions remain intact.

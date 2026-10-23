@@ -65,31 +65,35 @@ research is in [the STORE archive](archived_research.md); the
 
 ## Metrics and their definitions
 
-The maintained standard-analysis, topology-comparison, forecast and experiment-plan
-exporters save a CSV with `tables/METRICS.md`. Definitions include weighting, target
-normalization, train/test separation, seed spread and the source bootstrap. Raw JSON
-stays available under `technical/`. Each export saves the exact source/doc hashes in
-`technical/metric-contract.json`; old exports retain their old documents.
+The maintained exporters save CSVs with captured metric definitions and source
+hashes. Definitions include weighting, target normalization, train/test separation,
+seed spread and the source bootstrap. Raw JSON remains under `technical/`.
 
-An export validates only its requested metric family's declared files. An
-unrelated hardware-benchmark edit must not block a training-result export.
-The separate `experiment_registry.py metrics-docs` audit validates every family.
-Changes to an export's own dependencies remain errors.
+Source/doc hash drift is informational: it must not crash training or export.
+`check_metric_docs()` loads the declared maps without validating hashes, preserving
+historical plans that use those maps. For an explicit review, run:
 
-When changing a metric, update its description in `docs/metrics/` in the same change.
-Update the matching SHA-256 entries in `docs/metrics/contracts.json` after reviewing
-both code and documentation (e.g. compute each with `sha256sum PATH`). The
-`experiment_registry.py metrics-docs` command rejects unreviewed drift.
-Analysis/aggregation include topology definitions; update those
-copies when changing topology. Preserve old exported docs; do not rewrite historical
-results to imply they were evaluated under a new formula. Retired workflows retain
-their dated methods descriptions and source snapshots rather than invented glossaries.
+```bash
+python scripts/experiment_registry.py metrics-docs
+python scripts/experiment_registry.py metrics-docs --family analysis --strict
+```
 
-Metric descriptions/contracts are scoped by family, with exact table-to-contract
-bindings for `write_metric_table()` exports. A scientific contract change requires
-a new output revision; publication-only rendering never snapshots today's
-definitions onto old numbers. See the [contract paths and generated-catalogue
-exception](research_results_system.md#producers-and-metric-contracts).
+The default audit reports differences; only `--strict` requests a failing status.
+Update `docs/metrics/` when formulas change. Registry hash changes should follow
+review, not automatic regeneration merely to clear warnings.
+
+Shared CSV writers capture the actual current source/doc hashes, label receipts
+as captured rather than reviewed, and record unavailable dependencies. Each table
+binding points to immutable `<family>.<digest>` receipt and definition files.
+Historical `tables/METRICS.md`, `technical/metric-contract.json` and unsuffixed
+family files retain their first-export content. A later implementation creates a
+new receipt and archives previous tables with their provenance before replacement;
+`tables/METRIC_INDEX.md` lists the captured versions.
+
+This bookkeeping does not replace scientific validity checks, permit reuse of
+retired families for new numbers, or change frozen experimental protocols.
+Publication-only rendering retains the definitions exported with the numbers.
+See [capture, archive and compatibility details](research_results_system.md#producers-and-metric-contracts).
 
 ## Publishing compact output to GitHub
 

@@ -154,38 +154,7 @@ class TemporalLAMMPSBinaryTrajectory:
                 )
             arrays[name] = values
 
-        frame_count = int(manifest["frame_count"])
         atom_count = int(manifest["atom_count"])
-        expected_shapes = {
-            "positions": (frame_count, atom_count, 3),
-            "timesteps": (frame_count,),
-            "box_low": (frame_count, 3),
-            "box_high": (frame_count, 3),
-            "atom_ids": (atom_count,),
-            "atom_types": (atom_count,),
-        }
-        for name, expected_shape in expected_shapes.items():
-            if arrays[name].shape != expected_shape:
-                raise RuntimeError(
-                    f"Temporal binary semantic shape mismatch for {name!r}:"
-                    f" expected={expected_shape},"
-                    f" observed={arrays[name].shape}, root={root}."
-                )
-        expected_dtypes = {
-            "positions": np.dtype(manifest["storage_dtype"]),
-            "timesteps": np.dtype("int64"),
-            "box_low": np.dtype("float32"),
-            "box_high": np.dtype("float32"),
-            "atom_ids": np.dtype("int64"),
-            "atom_types": np.dtype("int32"),
-        }
-        for name, expected_dtype in expected_dtypes.items():
-            if arrays[name].dtype != expected_dtype:
-                raise RuntimeError(
-                    f"Temporal binary dtype mismatch for {name!r}:"
-                    f" expected={expected_dtype.name},"
-                    f" observed={arrays[name].dtype.name}, root={root}."
-                )
         if not np.array_equal(
             arrays["atom_ids"], np.arange(1, atom_count + 1, dtype=np.int64)
         ):

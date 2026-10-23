@@ -6,7 +6,6 @@ from torch.utils.data import DataLoader
 
 from src.data.static import PointCloudDataset
 from src.data.data_modules.common import (
-    _cfg_get,
     _resolve_split_seed,
     _seeded_random_split,
     _to_container,
@@ -59,87 +58,31 @@ class StaticPointCloudDataModule(pl.LightningDataModule):
 
     def _setup_static_dataset(self):
         data_cfg = self.cfg.data
-        ctx = "StaticPointCloudDataModule.data"
 
-        data_sources_raw = _cfg_get(
-            data_cfg, "data_sources", default=None, context=ctx
-        )
-        data_files_raw = _cfg_get(
-            data_cfg, "data_files", default=None, context=ctx
-        )
-        auto_cutoff_cfg = _to_container(
-            _cfg_get(data_cfg, "auto_cutoff", default=None, context=ctx)
-        )
-        sample_cache_cfg = _to_container(
-            _cfg_get(data_cfg, "sample_cache", default=None, context=ctx)
-        )
-        dataset_common_kwargs = dict(
-            radius=_cfg_get(data_cfg, "radius", context=ctx),
-            sample_type=_cfg_get(data_cfg, "sample_type", context=ctx),
-            overlap_fraction=_cfg_get(
-                data_cfg, "overlap_fraction", default=0.0, context=ctx
-            ),
-            n_samples=_cfg_get(
-                data_cfg, "n_samples", default=1000, context=ctx
-            ),
-            num_points=_cfg_get(data_cfg, "num_points", context=ctx),
+        data_sources = _to_container(data_cfg.get("data_sources"))
+        full_dataset = PointCloudDataset(
+            data_sources=data_sources,
+            root=data_cfg.data_path if data_sources is None else "",
+            data_files=_to_container(data_cfg.data_files)
+            if data_sources is None
+            else None,
+            radius=data_cfg.radius,
+            sample_type=data_cfg.sample_type,
+            overlap_fraction=data_cfg.get("overlap_fraction", 0.0),
+            n_samples=data_cfg.get("n_samples", 1000),
+            num_points=data_cfg.num_points,
             return_coords=self.return_coords,
-            drop_edge_samples=bool(
-                _cfg_get(
-                    data_cfg, "drop_edge_samples", default=True, context=ctx
-                )
-            ),
-            edge_drop_layers=_cfg_get(
-                data_cfg, "edge_drop_layers", default=None, context=ctx
-            ),
-            pre_normalize=bool(
-                _cfg_get(data_cfg, "pre_normalize", default=True, context=ctx)
-            ),
-            normalize=bool(
-                _cfg_get(data_cfg, "normalize", default=True, context=ctx)
-            ),
-            sampling_method=_cfg_get(
-                data_cfg,
-                "sampling_method",
-                default="drop_farthest",
-                context=ctx,
-            ),
-            auto_cutoff_config=auto_cutoff_cfg,
-            sample_cache_config=sample_cache_cfg,
-            atomic_context=_to_container(
-                _cfg_get(data_cfg, "atomic_context", default=None, context=ctx)
-            ),
+            drop_edge_samples=bool(data_cfg.get("drop_edge_samples", True)),
+            edge_drop_layers=data_cfg.get("edge_drop_layers", None),
+            pre_normalize=bool(data_cfg.get("pre_normalize", True)),
+            normalize=bool(data_cfg.get("normalize", True)),
+            sampling_method=data_cfg.get("sampling_method", "drop_farthest"),
+            auto_cutoff_config=_to_container(data_cfg.get("auto_cutoff")),
+            sample_cache_config=_to_container(data_cfg.get("sample_cache")),
+            atomic_context=_to_container(data_cfg.get("atomic_context", None)),
         )
 
-        if data_sources_raw is not None:
-            data_sources = _to_container(data_sources_raw)
-            full_dataset = PointCloudDataset(
-                data_sources=data_sources,
-                **dataset_common_kwargs,
-            )
-        elif data_files_raw is not None:
-            file_list = _to_container(data_files_raw)
-            data_path = _cfg_get(data_cfg, "data_path", context=ctx)
-            if not data_path:
-                raise ValueError(
-                    "data_path is required when using data_files"
-                    " (single-source mode)"
-                )
-            full_dataset = PointCloudDataset(
-                root=data_path,
-                data_files=file_list,
-                **dataset_common_kwargs,
-            )
-        else:
-            raise ValueError(
-                "Data config must provide either 'data_sources'"
-                " (multi-material) or 'data_files' + 'data_path'"
-                " (single-material)"
-            )
-
-        train_ratio = float(
-            _cfg_get(data_cfg, "train_ratio", default=0.8, context=ctx)
-        )
+        train_ratio = float(data_cfg.get("train_ratio", 0.8))
         train_size = int(train_ratio * len(full_dataset))
         val_size = len(full_dataset) - train_size
         if train_size <= 0 or val_size <= 0:

@@ -179,7 +179,8 @@ def fit(s,variant,corpus,labels,records):
         best,epoch_start,update=last['best'],last['epoch'],last['update']
     def save(path,epoch):
         temporary=path.with_suffix('.building.pt')
-        torch.save(dict(identity=s.identity,model=model.state_dict(),optimizer=optimizer.state_dict(),best=best,
+        # Called before the captured objects are explicitly released below.
+        torch.save(dict(identity=s.identity,model=model.state_dict(),optimizer=optimizer.state_dict(),best=best,  # noqa: F821
             epoch=epoch,update=update,scalers=corpus.scalers,variant=variant,config=c),temporary)
         temporary.replace(path)
     inputs=dict(encoder=dict(trainable=False,checkpoint_sha256=s.pointer['encoder_sha256'],geometry='nearest 80 atoms cropped at 8 A; 5 A edges; 2 interaction blocks; constant atom channel',

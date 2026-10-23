@@ -1,15 +1,17 @@
 # Workflow details
 
-Run commands from the repository root with the `pointnet` environment:
+Run commands from the repository root with the `pointnet-torch214` environment.
+Exact historical resumes retain their recorded environment and source revision.
 
 ```bash
-conda run -n pointnet python scripts/run_shooting_ablation.py --help
-conda run -n pointnet python scripts/run_shooting_ablation.py geometry --help
+conda run -n pointnet-torch214 python scripts/run_shooting_ablation.py --help
+conda run -n pointnet-torch214 python scripts/run_shooting_ablation.py geometry --help
 ```
 
 Each family lists explicit workflows; `WORKFLOW --help` describes that workflow's
 arguments. Changing a run's settings should use configuration or those arguments.
-Scientific implementations belong in `src/`. Experiment-specific recipes live in
+Scientific implementations belong in `src/`. Active recipes live in
+[`configs/`](../configs/README.md), with protocols and findings in
 [`experiments/`](../experiments/README.md); new generated results stay in `output/`;
 `outputs/` is retained for historical runs. See the [old-to-new command map](../docs/script_cleanup_20260905.md).
 
@@ -41,10 +43,11 @@ See [the source, precision and resume contract](relaxed_tda_targets.md).
 | `inspect_temporal_lammps_dataset.py` | Inspect a temporal dump and optionally build its cache |
 | `run_optimized_al_homogeneous_campaign.sh` | Resume the selected optimized Aluminum campaign; requires `PYTHON`, accepts `DEVICES` |
 
-The `predictive-dynamics` (48 ps Langevin) and `predictive-dynamics-15ps` (CSLD,
-exact continuation) workflows preserve separate protocol contracts. The shared
-campaign readers retain their original 70,304-atom Aluminum input contract.
-Specialized 510/520 K and Ta recipes live under `experiments/`.
+The historical `predictive-dynamics`, `predictive-dynamics-15ps` and
+`nested-fixed-horizon-compatibility` launchers were
+[retired on October 23](src_refactor.md#code-retirement--2026-10-23).
+Reproduction uses the recorded producer and recipe; shared readers retain their
+original 70,304-atom Aluminum input contract.
 
 The `elemental run --config CONFIG` workflow provides explicit Al/FCC and Ti/BCC
 source-then-branches and Ta archived-position protocols, implemented in
@@ -86,6 +89,32 @@ Set the queue plan's `preparation_job_id` to reuse an already-submitted shared
 preparation job. Setting `epochs_per_invocation` equal to the training epoch budget
 submits exactly one training job per variant/seed.
 See the [enlarged full-trajectory run](../experiments/embedding_forecast_20260911/SCALE_RUN.md).
+
+Forecast runtime settings use `--runtime-config RUNTIME.json`, separately from
+the scientific recipe. `loader: resident` retains stored embeddings on the
+compute device; the default is `mmap`. Spatial forecasting requires the resident
+loader. Prepare neighbor indices with `python -m
+src.training_methods.embedding_forecast.spatial --config CONFIG`; use
+`--stage geometry` for individual-neighbor attention sidecars. The existing
+`prepool_embeddings` option stores same-frame neighbor means in the cache dtype.
+See [runtime residency and batching](forecast_performance.md),
+[spatial forecasts](../experiments/forecast_spatial_mixture_20260913/README.md)
+and [attention](../experiments/forecast_spatial_attention_20260914/README.md).
+
+`python -m src.training_methods.embedding_forecast.allocation --plan PLAN` runs
+explicit module commands serially in an existing allocation. Its plan records
+job/node identities, prerequisites, exact arguments, completion states and an
+allocation deadline; it never submits or implicitly resumes jobs. Optional
+`status_path` publishes progress at an existing dependency's location only after
+the previous controller is retired and its status archived. The paired collector
+accepts `comparison_pairs` and `reference_runs` with retained `local_directory`
+paths for the [short-history comparison](../experiments/forecast_spatial_mixture_20260913/SHORT_HISTORY.md).
+
+Exact forecast recovery across an explicitly reviewed implementation change uses
+`--resume-transition TRANSITION.json`; the separate `embedding_forecast.handoff`
+command replaces only the receipt-owned process. See the
+[historical GPU restart](../experiments/embedding_forecast_20260911/GPU_RESIDENT_RESTART_20260913.md)
+for the bound source identities, plan schema and checkpoint safeguards.
 
 `experiment_registry.py build` refreshes the shared experiment/simulation dashboard
 and ideas view. `run --spec SPEC.json` tracks an explicit maintained command;

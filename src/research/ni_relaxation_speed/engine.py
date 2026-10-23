@@ -103,7 +103,8 @@ write_dump all custom relaxed.dump id type x y z modify sort id format line "%d 
     cls = RawForces if profile['name'] == 'raw_fire' else SortedForces
     def factory(*args):
         callback = cls(*args)
-        callbacks.append(callback)
+        # Called before the captured objects are explicitly released below.
+        callbacks.append(callback)  # noqa: F821
         return callback
     previous = relaxation_fast.FixedBoxCallback
     relaxation_fast.FixedBoxCallback = factory

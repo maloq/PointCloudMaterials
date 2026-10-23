@@ -11,16 +11,7 @@ def make_model_summary_point_cloud(
     num_points: int,
     sequence_length: int | None = None,
 ) -> torch.Tensor:
-    if batch_size < 1:
-        raise ValueError(f"Summary point-cloud batch_size must be >= 1, got {batch_size}.")
-    if num_points < 1:
-        raise ValueError(f"Summary point-cloud num_points must be >= 1, got {num_points}.")
-    if sequence_length is not None and sequence_length < 1:
-        raise ValueError(
-            "Summary temporal sequence_length must be >= 1 when provided, "
-            f"got {sequence_length}."
-        )
-
+    """Deterministic geometry for the configured encoder's model summary."""
     idx = torch.arange(num_points, dtype=torch.float32)
     z = torch.linspace(-0.75, 0.75, num_points, dtype=torch.float32)
     theta = idx * (math.pi * (3.0 - math.sqrt(5.0)))

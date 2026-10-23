@@ -16,8 +16,7 @@ init_from_checkpoint: null  # Old l512 checkpoint does not match the latent-128 
 
 resume_from_checkpoint: null
 # Any registered encoder can be used here (e.g. RI_MAE_Invariant, VN_REVNET_Atomic,
-# VN_REVNET_Backbone, REVNET_InvariantFast, PnE_VN, VN_DGCNN, DGCNN,
-# EGNN_Encoder, PnE_L, PnE_S, MLP).
+# VN_REVNET_Backbone, REVNET_InvariantFast, PnE_VN, VN_DGCNN, PnE_L, PnE_S, MLP).
 encoder:
   name: RI_MAE_Invariant
   kwargs:

@@ -191,10 +191,11 @@ def run(settings, device_name):
                                       weight_decay=1e-2, foreach=False, fused=False)
 
         def step():
-            optimizer.zero_grad(set_to_none=True)
-            loss = loss_fn()
+            # Called before the captured objects are explicitly released below.
+            optimizer.zero_grad(set_to_none=True)  # noqa: F821
+            loss = loss_fn()  # noqa: F821
             loss.backward()
-            optimizer.step()
+            optimizer.step()  # noqa: F821
             return loss.detach()
 
         torch.cuda.synchronize(device)

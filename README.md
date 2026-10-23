@@ -6,6 +6,7 @@ Research tools for structural representations, atomistic dynamics and crystalliz
 | --- | --- |
 | [Research guide](docs/encoder_research/README.md) | Evidence, methods, open hypotheses and the next experiments |
 | [Documentation](docs/README.md) | Setup, execution, analysis and reference contracts |
+| [Development workflow](docs/development.md) | CPU integration checks, complete example and metric provenance |
 | [Dataset registry](DATASETS.md) | Available collections, exact protocols, provenance and source roles |
 | [Scientific studies](experiments/README.md) | Questions and detailed source protocols, grouped by topic |
 | [Results system](docs/research_results_system.md) | Recorded experiments, simulations, analysis artifacts and the generated local dashboard |

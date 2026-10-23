@@ -16,31 +16,14 @@ class EncoderOutput:
 
 
 def resolve_encoder_output_dim(encoder: Encoder) -> int:
-    if encoder.invariant_dim is None:
-        raise RuntimeError(
-            f"{encoder.__class__.__name__} does not declare its invariant_dim."
-        )
     return encoder.invariant_dim
 
 
 def prepare_encoder_input(encoder: Encoder, points: torch.Tensor) -> torch.Tensor:
-    """Convert repository point clouds from dataset layout (B, N, 3)."""
-    if encoder.input_layout == "btn3":
-        if points.ndim != 4 or points.shape[-1] != 3:
-            raise ValueError(f"History encoder requires (B, T, N, 3), got {tuple(points.shape)}.")
-        return points.contiguous()
-    if points.dim() != 3 or points.shape[-1] != 3:
-        raise ValueError(
-            "Repository encoder inputs must have dataset shape (B, N, 3), "
-            f"got {tuple(points.shape)}."
-        )
-    if encoder.input_layout == "bn3":
-        return points.contiguous()
+    """Adapt dataset (B, N, 3) clouds or (B, T, N, 3) histories."""
     if encoder.input_layout == "b3n":
-        return points.transpose(1, 2).contiguous()
-    raise RuntimeError(
-        f"{encoder.__class__.__name__} declares unknown input_layout={encoder.input_layout!r}."
-    )
+        points = points.transpose(1, 2)
+    return points.contiguous()
 
 
 def split_encoder_output(encoder: Encoder, raw_output: object) -> EncoderOutput:

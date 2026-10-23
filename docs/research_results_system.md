@@ -73,7 +73,7 @@ output/<question>/<run>/
     plots/snapshots/<frame>/...          original hierarchy, no flat filename catalogue
     tables/scores.csv                   newly calculated standard-analysis scores
     tables/METRICS.md                    frozen calculation description
-    technical/metric-contract.json      frozen verified calculation dependencies
+    technical/metric-contract.json      first-export source identity (compatibility alias)
     technical/rendering.json            rendering producer identity
     data/                               new standard producer's native artifact tree
 ```
@@ -139,8 +139,10 @@ python scripts/experiment_registry.py build --from-snapshot
 # Existing full filesystem discovery, including configured external roots.
 python scripts/experiment_registry.py build
 
-# Verify actual source/doc bytes against every declared metric dependency.
+# Report source/doc drift without blocking experiments.
 python scripts/experiment_registry.py metrics-docs
+# Optional scoped review gate, used explicitly rather than in training.
+python scripts/experiment_registry.py metrics-docs --family analysis --strict
 ```
 
 Publication is repeatable when its numerical evidence has not changed. If the
@@ -173,31 +175,50 @@ diagnostics require a new output, with their own recorded inputs and definitions
 The legacy numerical discovery receipt remains available to the
 maintained topology collector; flat plot aliases are not recreated.
 
-`check_metric_docs()` now checks files and SHA-256 values, rejects unknown
-families and missing required descriptions, and validates only the requested
-family during export. Scientific contract changes require a new analysis
-revision. The original `METRICS.md` and root contract remain preserved.
-Multiple families in one result root have separate definitions and contracts:
+Metric provenance is captured during export; registry hash drift does not stop
+training or export. `check_metric_docs()` only loads declared dependency maps for
+existing callers and frozen plans. `audit_metric_docs()` compares current bytes
+with those declarations. The `metrics-docs` command reports changed/missing files
+and returns success by default; `--family NAME` scopes it and `--strict` explicitly
+requests a failing exit status. The registry is not automatically reapproved.
+
+Exports hash the source and description files actually present on disk. Receipts
+say `verification: captured`, not scientifically validated, and record missing
+files plus the declared hashes separately. Capturing hashes cannot establish that
+a metric formula is correct. Existing cadence, ancestry, identity and numerical
+checks still apply; retired metric families cannot export new calculations.
+
+Each implementation/description identity receives immutable files:
 
 ```text
-tables/metric-definitions/<family>.md
-technical/metric-contracts/<family>.json
+tables/metric-definitions/<family>.<digest>.md
+technical/metric-contracts/<family>.<digest>.json
 technical/table-contracts/<table>.json
 tables/METRIC_INDEX.md
 ```
 
-`write_metric_table()` records the exact CSV hash and its family-specific
-contract/description. The evidence catalogue resolves that explicit binding
-before using historical nearest-document lookup. New summary tables use
-`scores.csv`; training histories remain separate. Git permits compact named
-analysis receipts and definitions while keeping images, models, logs and arrays
-local. Historical flat `tables/metrics.csv` exclusions remain unchanged.
+`write_metric_table()` and `write_metric_rows()` bind each CSV's hash to its exact
+receipt and definitions. The generic runner and generated catalogue use these
+writers. Historical `METRICS.md`, root contracts and unsuffixed family files remain
+unchanged as first-export compatibility aliases; use the table binding or metric
+index to find later versions. Existing publication and evidence-catalogue readers
+follow explicit bindings before their historical nearest-document lookup.
 
-The generated encoder catalogue is a special case: it is a refreshable index,
-not a scientific recalculation. When its own collector contract changes, the
-previous exported tables and definitions are hash-verified into
-`technical/catalogue-revisions/` before replacement. Underlying scientific
-exports and their original definitions are never rewritten by this refresh.
+When implementation identity changes in an existing output, the previous tables,
+bindings and definitions are copied together into content-addressed
+`technical/metric-revisions/` before replacement. Repeated exports under the same
+identity reuse their receipt. Legacy direct exporters are archived at snapshot
+capture; new exporters should use the shared writers. This permits harmless code
+refactors without halting a run while retaining earlier evidence. Scientific
+protocols may still require separate analysis directories, and publication-only
+rendering never attaches current definitions to historical numbers.
+
+The generated encoder catalogue retains its grouped
+`technical/catalogue-revisions/` archives, including coverage and bindings. It is
+a refreshable index and does not recalculate underlying scientific results.
+New summary tables use `scores.csv`; training histories remain separate. Git
+permits compact named analysis receipts and definitions while keeping images,
+models, logs and arrays local.
 
 The maintained supervised-onset collector now emits named evaluation bundles
 and campaign/component records after its existing numerical export. It uses

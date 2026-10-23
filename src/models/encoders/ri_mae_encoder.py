@@ -15,17 +15,8 @@ from .registry import register_encoder
 # Point-cloud grouping helpers (originally from pointgpt)
 # ---------------------------------------------------------------------------
 
-def _to_bn3(points: torch.Tensor) -> torch.Tensor:
-    if points.dim() != 3 or points.shape[-1] != 3:
-        raise ValueError(f"Expected point cloud with shape (B, N, 3), got {tuple(points.shape)}")
-    return points
-
-
 def _farthest_point_sample(xyz: torch.Tensor, npoint: int, *, deterministic: bool = False) -> torch.Tensor:
-    xyz = _to_bn3(xyz)
     bsz, n_pts, _ = xyz.shape
-    if npoint > n_pts:
-        raise ValueError(f"npoint ({npoint}) cannot exceed number of points ({n_pts})")
     device = xyz.device
     xyz_f = xyz.to(torch.float32)
     centroids = torch.zeros((bsz, npoint), dtype=torch.long, device=device)
@@ -45,7 +36,6 @@ def _farthest_point_sample(xyz: torch.Tensor, npoint: int, *, deterministic: boo
 
 
 def _index_points(points: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
-    points = _to_bn3(points)
     bsz = points.shape[0]
     idx_flat = idx.reshape(bsz, -1)
     gathered = points.gather(1, idx_flat.unsqueeze(-1).expand(-1, -1, points.shape[-1]))
@@ -53,12 +43,6 @@ def _index_points(points: torch.Tensor, idx: torch.Tensor) -> torch.Tensor:
 
 
 def _knn_point(k: int, xyz: torch.Tensor, new_xyz: torch.Tensor) -> torch.Tensor:
-    xyz = _to_bn3(xyz)
-    new_xyz = _to_bn3(new_xyz)
-    if k <= 0 or k > xyz.shape[1]:
-        raise ValueError(
-            f"k must satisfy 1 <= k <= number of points, got k={k}, points={xyz.shape[1]}."
-        )
     dist = torch.cdist(new_xyz.to(torch.float32), xyz.to(torch.float32))
     return dist.topk(k=k, dim=-1, largest=False).indices
 
@@ -100,11 +84,6 @@ class Group(nn.Module):
     @staticmethod
     def _random_group_indices(xyz: torch.Tensor, num_group: int) -> torch.Tensor:
         bsz, n_pts, _ = xyz.shape
-        if num_group > n_pts:
-            raise ValueError(
-                f"num_group ({num_group}) cannot exceed number of points ({n_pts}) "
-                "when using random group sampling."
-            )
         scores = torch.rand((bsz, n_pts), device=xyz.device, dtype=torch.float32)
         return scores.topk(num_group, dim=1, largest=True, sorted=False).indices
 
@@ -130,7 +109,6 @@ class Group(nn.Module):
         return order
 
     def forward(self, xyz: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
-        xyz = _to_bn3(xyz)
         if self.group_sampling == "random" and self.training:
             center_idx = self._random_group_indices(xyz, self.num_group)
         else:
@@ -226,14 +204,6 @@ class RIAttentionBlock(nn.Module):
         super().__init__()
         self.embed_dim = int(embed_dim)
         self.num_heads = int(num_heads)
-        if self.num_heads <= 0:
-            raise ValueError(f"num_heads must be positive, got {self.num_heads}.")
-        if self.embed_dim % self.num_heads != 0:
-            raise ValueError(
-                "RIAttentionBlock requires embed_dim to be divisible by num_heads. "
-                f"Got embed_dim={self.embed_dim}, num_heads={self.num_heads}, "
-                f"remainder={self.embed_dim % self.num_heads}."
-            )
         self.head_dim = self.embed_dim // self.num_heads
         self.scale = 1.0 / math.sqrt(float(self.head_dim))
         self.norm1 = nn.LayerNorm(self.embed_dim)
@@ -344,8 +314,6 @@ class RIMAEBackbone(nn.Module):
                 "RIMAEBackbone frame_builder must be 'triad' or 'pca', "
                 f"got {frame_builder!r}."
             )
-        if self.frame_eps <= 0.0:
-            raise ValueError(f"frame_eps must be > 0, got {self.frame_eps}.")
 
         self.group_divider = Group(
             num_group=self.num_group,
@@ -590,17 +558,16 @@ class RIMAEInvariantEncoderForContrastive(nn.Module):
         return bias * self.orientation_scale.to(dtype=bias.dtype)
 
     def forward(self, points: torch.Tensor):
-        bn3_points = _to_bn3(points)
         if self.center_input:
-            bn3_points = bn3_points - bn3_points.mean(dim=1, keepdim=True)
-        neighborhood, center = self.group_divider(bn3_points)
+            points = points - points.mean(dim=1, keepdim=True)
+        neighborhood, center = self.group_divider(points)
         with torch.no_grad():
             frames = RIMAEBackbone._estimate_patch_frames(
                 neighborhood,
                 frame_builder=self.frame_builder,
                 frame_eps=self.frame_eps,
             )
-        frames = frames.to(dtype=bn3_points.dtype, device=bn3_points.device)
+        frames = frames.to(dtype=points.dtype, device=points.device)
         canonical = torch.einsum("bgsc,bgcd->bgsd", neighborhood, frames)
         patch_tokens = self.input_proj(self.patch_encoder(canonical))
         ri_pos = torch.einsum("bgc,bgcd->bgd", center, frames)

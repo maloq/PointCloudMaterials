@@ -161,3 +161,32 @@ def collate(samples,architecture,bond_order=False):
 
 def move(batch,device):
     return {k:v.to(device,non_blocking=True) for k,v in batch.items()}
+
+
+def selection_rows(release,step,config):
+    rng=np.random.default_rng(np.random.SeedSequence([config['seed'],step]))
+    group=release.group_keys[int(rng.choice(len(release.group_keys),p=release.group_weights))]
+    rows=release.groups[group]
+    if len(rows)<config['batch_size']:raise ValueError(f'Group too small for full statistical batch: {group}')
+    indices=rng.choice(rows,config['batch_size'],replace=False).tolist()
+    temporal=not group[2] and (config['method']=='lejepa' or bool(rng.integers(2)))
+    delta=[0. if group[2] else float(release.arrays[release.rows[i][0]]['times'][3]) for i in indices]
+    return indices,temporal,delta,group
+
+
+def prepare_batch(release,indices,temporal,delta,config):
+    architecture=config['architecture']; history=config['history_frames']>1; mace=architecture=='mace'
+    partner='future' if temporal else 'spatial'
+    observations=[release.observation(i,'anchor',history,mace) for i in indices]
+    observations += [release.observation(i,partner,False,mace) for i in indices]
+    micro=config['microbatch_size']; batches=[]
+    # Keep the two endpoints separate: causal inputs can have T=3, targets T=1.
+    for base in (0,len(indices)):
+        for start in range(base,base+len(indices),micro):
+            batch=collate(observations[start:min(start+micro,base+len(indices))],architecture)
+            batches.append({k:v.pin_memory() for k,v in batch.items()})
+    return batches,temporal,delta,indices
+
+
+def target_batch(batches,device):
+    return {k:torch.cat([b[k] for b in batches]).to(device) for k in ('physical','tda','tda_valid')}
