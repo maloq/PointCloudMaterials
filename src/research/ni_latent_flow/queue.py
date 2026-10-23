@@ -14,7 +14,7 @@ import torch
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.research.ni_phase_sim.campaign import environment
-from src.research.ni_phase_sim.history import stage
+from src.experiment_runner.stages import run_stage
 from .data import FAMILY, prepare, root, read, sha, write_json
 
 MODULE = 'src.research.ni_latent_flow.queue'
@@ -141,8 +141,9 @@ def worker(c, bundle, lane):
             folder = root(c)/'analyses'/arm['name']/'technical'
             if prerequisite and not (folder/prerequisite).exists():
                 continue
-            result = stage(c, bundle, lane, deadline, arm, name, marker,
-                           module=MODULE, hard_deadline=True)
+            result = run_stage(
+                root(c), bundle, lane, deadline, arm['name'], name, marker,
+                module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
             if result == 'paused':
                 paused = True
                 break
@@ -209,9 +210,10 @@ def main():
     elif args.stage == 'control-worker':
         deadline = min(read(root(c)/'technical/submission.json')['deadline'],
                        allocation_deadline(reserve_seconds=180))
-        stage(c, ExecutionBundle(Path(args.config).resolve().parent), 'controls', deadline,
-              dict(name='controls'), 'controls', 'controls-complete.json', module=MODULE,
-              hard_deadline=True)
+        run_stage(
+            root(c), ExecutionBundle(Path(args.config).resolve().parent), 'controls', deadline,
+            'controls', 'controls', 'controls-complete.json',
+            module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
     elif args.stage == 'compare':
         if c.get('workflow') == 'validation':
             from .validation import compare

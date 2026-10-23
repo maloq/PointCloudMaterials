@@ -5,6 +5,11 @@ Mathematical formulation, including the proposed evolving-memory extension:
 [PDF](../../output/ni_phase_measurements/observable-20261014-v1/analyses/formalization-20261018/data/method.pdf).
 The frozen experiments and results below retain their original architecture.
 
+Standalone formulation of the implemented October 14 model, with compact time and
+response notation throughout, revised TikZ figures, and loss normalizers in an appendix:
+[LaTeX](method_implemented.tex) ·
+[PDF](../../output/ni_phase_measurements/paper-style-20261021/analyses/compact-method-20261022/data/method_implemented.pdf).
+
 The previous history model improved short atomic forecasts, but actual structural
 and velocity measurements remained much stronger nucleus predictors than its
 pooled latent features. This study separates inadequate readout from inadequate

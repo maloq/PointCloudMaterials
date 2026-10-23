@@ -11,14 +11,22 @@ import numpy as np
 import torch
 from ase import units
 from src.research.meam_gpu.potential import FastAl
-from .data import Source, read, root, cache, digest, sha, write_json, atomic_save, resolve_path
+from .data import Source, read, digest, sha, write_json, atomic_save, resolve_path
 
 
 def archive(c, job):
     return resolve_path(c['simulation_archive'])/job['key']
 
 
-def collect(c, plan, job, deadline):
+def _potential(c, atoms, box):
+    files = {k: resolve_path(path) for k, path in c['meam_files'].items()}
+    potential = FastAl(files, atoms, box=torch.tensor(box, device='cuda', dtype=torch.float64),
+                       dtype=torch.float32)
+    return potential, files
+
+
+def collect(c, plan, job, deadline, *, mass=26.9815385, potential_factory=_potential):
+    """Collect a sealed response bank; material adapters supply mass and potential."""
     final = archive(c, job)
     identity = digest([plan['identity'], job, c['teacher']])
     if (final/'complete.json').exists():
@@ -49,13 +57,12 @@ def collect(c, plan, job, deadline):
     dq[indices] = local_basis[:,:3]; dv[indices] = local_basis[:,3:]
     # Input geometry is centered, so its input perturbation is centered too.
     local_basis[:,:3] -= local_basis[:1,:3]
-    shots = settings['shots']; mass = 26.9815385
+    shots = settings['shots']
     x = torch.tensor(q,device='cuda',dtype=torch.float64).flatten()[None].repeat(shots,1)
     momentum = torch.tensor(v,device='cuda',dtype=torch.float64).flatten()[None].repeat(shots,1)*mass/(1000*units.fs)
     dx = torch.tensor(dq,device='cuda',dtype=torch.float64).reshape(1,-1,2).repeat(shots,1,1)
     dp = torch.tensor(dv,device='cuda',dtype=torch.float64).reshape(1,-1,2).repeat(shots,1,1)*mass/(1000*units.fs)
-    files = {k:resolve_path(path) for k,path in c['meam_files'].items()}
-    potential = FastAl(files,len(q),box=torch.tensor(box,device='cuda',dtype=torch.float64),dtype=torch.float32)
+    potential, files = potential_factory(c, len(q), box)
     generators = [torch.Generator(device='cuda').manual_seed(seed+i+1) for i in range(shots)]
     dt = settings['timestep_fs']*units.fs
     decay = math.exp(-settings['timestep_fs']/settings['friction_fs'])

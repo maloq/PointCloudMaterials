@@ -635,3 +635,56 @@ and restored recipes. Update `scripts/README.md` and this checklist in the remov
 commit, then run relevant command/import tests. Any later artifact cleanup must
 use the documented storage/clean preview and verified archive procedure; this
 source cleanup does not authorize deleting outputs.
+
+## Repository readability pass — 2026-10-23
+
+This pass broadened the [active Ni review](active_ni_architecture.md) to shared
+training, baselines, data conversion, postprocessing, simulation and execution.
+It removes 209 net Python lines across 28 additional source files. The purpose
+is fewer duplicate implementations and clearer ownership; historical commands,
+saved formats, scientific recipes and results remain intact.
+
+| Repeated code | Maintained owner and change |
+| --- | --- |
+| Local/Slurm experiment names and ordered Hydra overrides | `experiment_runner.plan.resolve_experiment_overrides`; both backends use the same builder. |
+| Registry, dataset inventory and cache file digests | Existing `experiment_runner.artifacts.file_hash`; established imported names remain aliases. |
+| Temporal/shooting array digests and conversion/postprocessing imports through the shooting reader | `data.trajectories.array_sha256`; distinct formats remain separate, with one bounded-memory raw-byte digest. Spatial-cache provenance now names the actual checksum source. |
+| Al/Ni stochastic response collection | `research.continuous_motion.teacher.collect`; Ni supplies its mass and potential constructor. Both retain the existing collection/archive/load interfaces. |
+| Descriptor/learned-feature clustering method settings | `utils.evaluation_metrics`; shared method normalization/default insertion, with one stage-settings path in `training_methods.shared.supervised_cache`. |
+| MTK checkpoint capture | Existing `simulation.atomistic.homogeneous_resumable.capture_mtk_state`, also exported by the transition module. |
+| Unused scheduler helper | Removed `build_step_cosine_scheduler` after repository code/config/command/document reference searches found no consumers. The actual Lightning scheduler remains unchanged. |
+
+Verification used `pointnet-torch214` and local integration checks, without
+training jobs or online W&B runs:
+
+- 276 exact local-command/Slurm-script comparisons across all seven YAML plans.
+- 27 file-digest comparisons, 13 inventory entries and six invalid-path errors.
+- Eight binary conversion outputs and manifests, 43 array layouts/dtypes and
+  two corruption cases; producer bytes and scientific metadata agree exactly.
+- Al and Ni response pipelines each pass ten before/after scenarios, including
+  exact saved tensors, force/tangent inputs, checksum receipts and errors, using
+  a deterministic CPU force fixture. Actual CUDA force kernels were not run.
+- Eight settings variants through descriptor/cache consumers, two clustering
+  metric pipelines, four scheduler traces and two real ASE CPU steps followed by
+  checkpoint capture all agree exactly before/after.
+- Changed Python compiles; affected command help/import checks and
+  `git diff --check` pass.
+
+Main receipts are in `output/maintenance/repo-readability-20261023/technical/`;
+conversion evidence is in `output/maintenance/readability-20261023/technical/data-integration/`,
+and response evidence in `output/maintenance/repository-readability-20261023/technical/teacher-integration/`.
+The source/count receipt is `scope.json`; `metric-contracts-review.json` records
+33 updated active families: 29 pass, four retain pre-existing failures. The full
+audit has exactly the same 20 pre-existing mismatch entries in 12 families.
+Only reviewed source hashes and new shared dependencies were updated; retired
+and exported contracts remain untouched.
+
+The historical `ni_births_validation.json` recipe pins its shooting-reader
+review. That config and `ni_validation_reader_review_20261012.json` were not
+rewritten. Reproduction must use the frozen producer, or a new explicitly
+reviewed execution revision; the source-hash gate was not bypassed.
+
+Further candidates require separate semantic review: JSON writers differ in
+NaN/temporary-file policies; relocation workflows differ in rollback/deletion
+order; static/synthetic datamodules share loader setup but differ in preparation
+and augmentation. Similar-looking code alone is insufficient to merge these.

@@ -12,7 +12,7 @@ import torch
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, allocation_deadline
 from .campaign import environment
 from .data import read, root, cache, sha, write_json
-from .history import stage
+from src.experiment_runner.stages import run_stage
 from .measurement_data import prepare, collect
 
 MODULE = 'src.research.ni_phase_sim.measurement_queue'
@@ -84,7 +84,9 @@ def worker(c, bundle, lane):
             folder = root(c)/'analyses'/arm['name']/'technical'
             if prerequisite is not None and not (folder/prerequisite).exists():
                 continue
-            result = stage(c, bundle, lane, deadline, arm, name, marker, module=MODULE, hard_deadline=True)
+            result = run_stage(
+                root(c), bundle, lane, deadline, arm['name'], name, marker,
+                module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
             if result == 'paused':
                 paused = True; break
             if result is not None:

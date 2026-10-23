@@ -5,7 +5,7 @@ import torch
 from src.experiment_runner.execution import ExecutionBundle,SlurmQueue,allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.research.ni_phase_sim.campaign import environment
-from src.research.ni_phase_sim.history import stage
+from src.experiment_runner.stages import run_stage
 from .data import prepare,read,root,sha,write_json,FAMILY
 MODULE='src.research.ni_ordering_flow.queue'
 REPO=Path(__file__).resolve().parents[3]
@@ -60,7 +60,9 @@ def worker(c,bundle,lane):
             if (folder/marker).exists() or (folder/(name+'-failed.json')).exists():continue
             pending=True
             if not ready:continue
-            result=stage(c,bundle,lane,deadline,arm,name,marker,module=MODULE,hard_deadline=True)
+            result = run_stage(
+                root(c), bundle, lane, deadline, arm['name'], name, marker,
+                module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
             if result=='paused':paused=True;break
             if result is not None:progress=True;break
         if paused:break

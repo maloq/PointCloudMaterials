@@ -12,6 +12,7 @@ from typing import Any, Sequence
 
 import numpy as np
 from numpy.lib.format import open_memmap
+from src.data.trajectories import array_sha256 as _array_sha256
 from src.experiment_runner.artifacts import read_json_object as _load_json_object
 from src.project_runtime.paths import resolve_path
 
@@ -35,16 +36,6 @@ _ARRAY_FILES = {
     "atom_ids": "atom_ids.npy",
     "atom_types": "atom_types.npy",
 }
-
-
-def _array_sha256(values: np.ndarray) -> str:
-    digest = hashlib.sha256()
-    if values.ndim <= 1:
-        digest.update(np.ascontiguousarray(values).tobytes())
-    else:
-        for index in range(values.shape[0]):
-            digest.update(np.ascontiguousarray(values[index]).tobytes())
-    return digest.hexdigest()
 
 
 def _array_description(

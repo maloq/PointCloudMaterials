@@ -12,6 +12,19 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 from sklearn.model_selection import cross_val_score
 
 
+def normalize_cluster_method_name(method) -> str:
+    return str(method).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
+
+
+def ensure_kmeansplusplus(methods: list[str]) -> list[str]:
+    """Keep requested method names/order and append the default only if absent."""
+    methods = list(methods)
+    aliases = {"kmeans++", "kmeansplusplus", "kmeanspp"}
+    if not any(normalize_cluster_method_name(method) in aliases for method in methods):
+        methods.append("kmeans++")
+    return methods
+
+
 def finite_float(value) -> float | None:
     try:
         result = float(value)

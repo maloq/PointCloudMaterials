@@ -48,11 +48,11 @@ def extract(p,task):
             if verified.exists():
                 if read(verified)['input_identity']!=s['input_identity']:raise ValueError('Input identity changed')
             else:
-                from src.data.trajectories.shooting import _array_sha256
+                from src.data.trajectories import array_sha256
                 for part in s['parts']:
                     a=arrays(part['path'],part['manifest_sha256'])
                     for k,v in a.items():
-                        if _array_sha256(v)!=part['array_sha256'][k]:raise ValueError(f'Changed input array {part["path"]}/{k}')
+                        if array_sha256(v)!=part['array_sha256'][k]:raise ValueError(f'Changed input array {part["path"]}/{k}')
                 write_json(verified,dict(input_identity=s['input_identity'],parts=s['parts']))
         values=[];counts=[];hist=[];types=[]
         selected=s['sampled_frames'][task['start']:task['stop']]

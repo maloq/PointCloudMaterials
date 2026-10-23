@@ -10,7 +10,7 @@ from scipy.sparse.csgraph import connected_components
 from scipy.spatial import cKDTree
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
-from src.data.trajectories.shooting import _array_sha256
+from src.data.trajectories import array_sha256
 from src.postprocessing.protocols import ancestry, fates, external_data as data, external_audit as audit
 from src.postprocessing.protocols.shooting_data import read
 
@@ -177,7 +177,7 @@ def process(plan, item):
         for part in item['parts']:
             a = data.arrays(part['path'], part['manifest_sha256'])
             for name, array in a.items():
-                if _array_sha256(array) != part['array_sha256'][name]:
+                if array_sha256(array) != part['array_sha256'][name]:
                     raise ValueError(f'Changed trajectory array: {part["path"]}/{name}')
         write_json(out / 'input-verified.json', dict(identity=identity, parts=item['parts']))
         tasks = [t for t in plan['tasks'] if t['source'] == item['id']]

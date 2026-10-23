@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import sys
@@ -19,6 +18,7 @@ if str(REPOSITORY_ROOT) not in sys.path:
     sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from src.experiment_runner.artifacts import file_hash, read_json_object  # noqa: E402
+from src.data.trajectories import array_sha256 as _array_sha256  # noqa: E402
 from src.data.trajectories.lammps import (  # noqa: E402
     FORMAT_NAME,
     TemporalLAMMPSBinaryTrajectory,
@@ -59,13 +59,6 @@ def _fsync_directory(path: Path) -> None:
         os.fsync(descriptor)
     finally:
         os.close(descriptor)
-
-
-def _array_sha256(values: np.ndarray) -> str:
-    digest = hashlib.sha256()
-    for frame_index in range(int(values.shape[0])):
-        digest.update(np.ascontiguousarray(values[frame_index]).tobytes())
-    return digest.hexdigest()
 
 
 def _load_unarchived_prefix_positions(

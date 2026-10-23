@@ -82,9 +82,6 @@ class Model(BlockFlow):
         generator=torch.Generator(device=history.device).manual_seed(seed)
         generated=history.new_zeros(len(expanded),self.history+self.horizon,244)
         if not deterministic:generated=_noise_like(generated,generator)
-        step=.998/(self.flow_steps-1)
-        for index in range(self.flow_steps-1):
-            t=torch.full((len(expanded),),.001+index*step,device=history.device)
-            generated=generated+step*self._velocity(generated,t,context)
+        generated=self._integrate(generated,context)
         result=self.location+self.scale*generated[:,self.history:self.history+steps]
         return result.reshape(len(history),particles,steps,244)

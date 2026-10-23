@@ -14,7 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from src.experiment_runner.artifacts import file_hash as sha256
-from src.data.trajectories import shooting, lammps
+from src.data.trajectories import array_sha256, shooting, lammps
 from src.project_runtime.transfer import write_json
 
 MARKER = b'ITEM: TIMESTEP\n'
@@ -158,7 +158,7 @@ def convert(source, *, output=None, delete_source=False, positions_binary=None, 
         descriptions={}
         for p in building.glob('*.npy'):
             with p.open('rb') as handle:os.fsync(handle.fileno())
-            a=np.load(p,mmap_mode='r');digest=shooting._array_sha256(a)
+            a=np.load(p,mmap_mode='r');digest=array_sha256(a)
             if p.stem in expected and digest!=expected[p.stem].hexdigest():raise ValueError(f'Persisted rounded values differ: {p}')
             descriptions[p.stem]=dict(file=p.name,dtype=str(a.dtype),shape=list(a.shape),sha256=digest)
         tail_record=None

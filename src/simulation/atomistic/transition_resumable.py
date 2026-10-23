@@ -13,7 +13,7 @@ from ase.io import read, write
 from ase.md.nose_hoover_chain import IsotropicMTKNPT
 
 from src.experiment_runner.artifacts import file_hash as _sha256
-from .homogeneous_resumable import MTKState
+from .homogeneous_resumable import MTKState, capture_mtk_state
 from .provenance import ExecutionProvenance
 from .simulation import ThermodynamicTrace, validate_thermodynamic_trace
 from .transition_campaign_config import TransitionCampaignConfig
@@ -365,27 +365,3 @@ def build_transition_mtk_dynamics(
     barostat._p_xi = state.barostat_p_xi.copy()
     dynamics._update_atoms()
     return dynamics
-
-
-def capture_mtk_state(dynamics: IsotropicMTKNPT) -> MTKState:
-    return MTKState(
-        nsteps=int(dynamics.nsteps),
-        q=np.asarray(dynamics._q, dtype=np.float64).copy(),
-        p=np.asarray(dynamics._p, dtype=np.float64).copy(),
-        eps=float(dynamics._eps),
-        p_eps=float(dynamics._p_eps),
-        cell0=np.asarray(dynamics._cell0, dtype=np.float64).copy(),
-        volume0=float(dynamics._volume0),
-        thermostat_eta=np.asarray(
-            dynamics._thermostat._eta, dtype=np.float64
-        ).copy(),
-        thermostat_p_eta=np.asarray(
-            dynamics._thermostat._p_eta, dtype=np.float64
-        ).copy(),
-        barostat_xi=np.asarray(
-            dynamics._barostat._xi, dtype=np.float64
-        ).copy(),
-        barostat_p_xi=np.asarray(
-            dynamics._barostat._p_xi, dtype=np.float64
-        ).copy(),
-    )

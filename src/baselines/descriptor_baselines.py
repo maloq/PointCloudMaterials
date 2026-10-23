@@ -18,7 +18,9 @@ from sklearn.metrics import adjusted_rand_score, normalized_mutual_info_score
 
 from src.utils.evaluation_metrics import (
     _hungarian_cluster_accuracy,
+    ensure_kmeansplusplus,
     finite_float,
+    normalize_cluster_method_name,
     primary_kmeansplusplus_hungarian_key,
     stabilize_class_metric_keys,
 )
@@ -118,21 +120,6 @@ def _parse_optional_eval_k(value, *, field_name: str) -> int | None:
     return k
 
 
-def _normalize_method_name(method) -> str:
-    return str(method).strip().lower().replace(" ", "").replace("_", "").replace("-", "")
-
-
-def _is_kmeans_plus_plus_method(method) -> bool:
-    return _normalize_method_name(method) in {"kmeans++", "kmeansplusplus", "kmeanspp"}
-
-
-def _ensure_kmeans_plus_plus_method(methods: list[str]) -> list[str]:
-    out = list(methods)
-    if not any(_is_kmeans_plus_plus_method(method) for method in out):
-        out.append("kmeans++")
-    return out
-
-
 def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
     if acc_eval_methods is None:
         raw_methods = ["kmeans++"]
@@ -144,7 +131,7 @@ def _normalize_acc_eval_methods(acc_eval_methods) -> list[str]:
     methods: list[str] = []
     seen: set[str] = set()
     for raw in raw_methods:
-        key = _normalize_method_name(raw)
+        key = normalize_cluster_method_name(raw)
         method = None
         if key in {"kmeans", "kmeansrandom"}:
             continue
@@ -246,10 +233,10 @@ def compute_cluster_metrics(
 
 
 def load_eval_settings_from_cfg(cfg) -> EvalSettings:
-    val_methods = _ensure_kmeans_plus_plus_method(
+    val_methods = ensure_kmeansplusplus(
         _as_string_list(getattr(cfg, "val_cluster_acc_methods", None), default=["kmeans++"])
     )
-    test_methods = _ensure_kmeans_plus_plus_method(
+    test_methods = ensure_kmeansplusplus(
         _as_string_list(getattr(cfg, "test_cluster_acc_methods", None), default=["kmeans++"])
     )
     rotation_runs = int(

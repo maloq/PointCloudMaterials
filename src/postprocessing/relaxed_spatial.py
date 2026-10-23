@@ -49,10 +49,10 @@ def verify_pair(t):
 
 def original_checksum(source):
     """Once per source and preparation lane, verify the manifest's actual arrays."""
-    from src.data.trajectories.shooting import _array_sha256
+    from src.data.trajectories import array_sha256
     arrays=source_arrays(source);m=read(Path(source['path'])/'manifest.json')
     for name,value in arrays.items():
-        if _array_sha256(value)!=m['arrays'][name]['sha256']:
+        if array_sha256(value)!=m['arrays'][name]['sha256']:
             raise ValueError(f'Original array changed: {source["path"]}/{name}')
     return source['manifest_sha256']
 

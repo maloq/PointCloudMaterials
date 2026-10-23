@@ -1,5 +1,10 @@
 # Implementations of recorded research protocols
 
+For the latest Ni workflows, see the [architecture map](../../docs/active_ni_architecture.md)
+for entry points, data contracts, shared components and extension boundaries.
+
+- `ni_ordering_flow`: observed-history/context encoders with joint measured-path flows and separate native, rare-entry, response and birth evaluations; [workflow](../../docs/ni_ordering_flow.md).
+
 - `ni_latent_flow` validation workflow: native objective/readout diagnostics, saved Ni history expansion and constrained measurement trajectories; [workflow](../../docs/ni_latent_validation.md).
 
 - `ni_latent_flow`: native Ni joint trajectory generation, exact SelfTICA/FMRC objectives, matched memory controls and independent path/nucleus diagnostics; [workflow](../../docs/ni_latent_flow.md).

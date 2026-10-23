@@ -14,6 +14,7 @@ import zipfile
 
 import numpy as np
 
+from src.experiment_runner.artifacts import file_hash as sha
 from .paths import REPO, machine
 
 
@@ -41,11 +42,6 @@ FACT_KEYS.update({'radius_A','radius','cutoff_A','r_max','history_ps','frame_off
 PROVENANCE_KEYS = {'potential', 'potentials', 'potential_files', 'potential_hashes', 'potential_sha256',
     'potential_citation', 'pair_commands', 'scientific_scope', 'scientific_contract',
     'protocol_provenance', 'protocol_source', 'quantization', 'precision_audit', 'zr_removal'}
-
-
-def sha(path):
-    with Path(path).open('rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
 
 
 def write_json(path, value):

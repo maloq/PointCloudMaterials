@@ -12,7 +12,7 @@ import numpy as np
 from src.data.fixed_cohort.protocol import centered, digest, sha, write_json
 from src.data.structural_pretraining.native import frames_at_spacing
 from src.data.structural_pretraining.prepare import source_arrays, chart
-from src.data.trajectories.shooting import _array_sha256
+from src.data.trajectories import array_sha256
 from src.experiment_runner.preparation import PreparationShard
 from src.project_runtime.paths import REPO, resolve_path
 from src.research.liquid_predictability.descriptors import descriptor_options, patch_descriptor_batch
@@ -25,10 +25,9 @@ def root(c):return resolve_path(c['cache'])
 
 def implementation():
     from src.data.structural_pretraining import prepare, native
-    from src.data.trajectories import shooting
     return dict(descriptor_implementation(), spatial_dataset=sha(Path(__file__)),
                 extraction=sha(Path(prepare.__file__)), spacing=sha(Path(native.__file__)),
-                array_checksum=sha(Path(shooting.__file__)))
+                array_checksum=sha(Path(array_sha256.__code__.co_filename)))
 
 
 def discover(c):
@@ -188,7 +187,7 @@ def prepare_task(task):
         manifest=read(resolve_path(source['path'])/'manifest.json')
         for name in ('positions','atom_ids','timesteps','box_low','box_high'):
             spec=manifest['arrays'][name]
-            if _array_sha256(raw[name])!=spec['sha256']:raise ValueError(f'Changed Ni input: {source["id"]}/{name}')
+            if array_sha256(raw[name])!=spec['sha256']:raise ValueError(f'Changed Ni input: {source["id"]}/{name}')
         samples=root(c)/task['samples']
         if sha(samples)!=task['samples_sha256']:raise ValueError('Changed Ni sampling')
         selected=np.load(samples);center_rows=np.searchsorted(raw['atom_ids'],source['center_ids'])

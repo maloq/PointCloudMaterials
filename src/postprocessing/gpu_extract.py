@@ -79,10 +79,10 @@ def extract(source, frames, config, output, *, chunk_frames=16, prefetch=2, comp
                     raise ValueError(f'Input verification receipt does not match source: {receipt}')
                 provenance = dict(reused_receipt=str(receipt.resolve()), receipt_sha256=file_hash(receipt))
             else:
-                from src.data.trajectories.shooting import _array_sha256
+                from src.data.trajectories import array_sha256
                 for part in source['parts']:
                     for key, value in arrays(part['path'],part['manifest_sha256']).items():
-                        if _array_sha256(value) != part['array_sha256'][key]:
+                        if array_sha256(value) != part['array_sha256'][key]:
                             raise ValueError(f'Changed input array: {part["path"]}/{key}')
                 provenance = dict(verified_raw_arrays=True)
             write_json(verified, dict(input_identity=source['input_identity'], **provenance))

@@ -14,6 +14,7 @@ from torch.utils.data import DataLoader
 from src.utils.evaluation_metrics import (
     compute_cluster_metrics,
     compute_embedding_quality_metrics,
+    ensure_kmeansplusplus,
     finite_float,
     primary_kmeansplusplus_hungarian_key,
     stabilize_class_metric_keys,
@@ -37,32 +38,6 @@ def _as_int_mapping(value, default: dict[str, int]) -> dict[str, int]:
 
 def _parse_optional_eval_k(value, *, field_name: str) -> int | None:
     return int(value) if value is not None else None
-
-
-def _normalize_method_name(method) -> str:
-    return (
-        str(method)
-        .strip()
-        .lower()
-        .replace(" ", "")
-        .replace("_", "")
-        .replace("-", "")
-    )
-
-
-def _is_kmeans_plus_plus_method(method) -> bool:
-    return _normalize_method_name(method) in {
-        "kmeans++",
-        "kmeansplusplus",
-        "kmeanspp",
-    }
-
-
-def _ensure_kmeans_plus_plus_method(methods: list[str]) -> list[str]:
-    out = list(methods)
-    if not any(_is_kmeans_plus_plus_method(m) for m in out):
-        out.append("kmeans++")
-    return out
 
 
 def _format_label_histogram(
@@ -991,33 +966,14 @@ def _infer_stage_acc_settings(
     cfg, stage: str
 ) -> tuple[list[str], int, dict[str, int]]:
     stage_l = str(stage).lower()
-    if stage_l == "val":
-        methods = _as_string_list(
-            getattr(cfg, "val_cluster_acc_methods", None),
-            default=["kmeans++"],
-        )
-        methods = _ensure_kmeans_plus_plus_method(methods)
-        runs = int(getattr(cfg, "val_cluster_acc_runs", 1))
-        runs_by_method = _as_int_mapping(
-            getattr(cfg, "val_cluster_acc_runs_by_method", None),
-            default={},
-        )
-        return methods, max(1, runs), runs_by_method
-
-    if stage_l == "test":
-        methods = _as_string_list(
-            getattr(cfg, "test_cluster_acc_methods", None),
-            default=["kmeans++"],
-        )
-        methods = _ensure_kmeans_plus_plus_method(methods)
-        runs = int(getattr(cfg, "test_cluster_acc_runs", 1))
-        runs_by_method = _as_int_mapping(
-            getattr(cfg, "test_cluster_acc_runs_by_method", None),
-            default={},
-        )
-        return methods, max(1, runs), runs_by_method
-
-    return [], 1, {}
+    if stage_l not in {"val", "test"}:
+        return [], 1, {}
+    methods = _as_string_list(
+        getattr(cfg, f"{stage_l}_cluster_acc_methods", None), default=["kmeans++"])
+    runs = int(getattr(cfg, f"{stage_l}_cluster_acc_runs", 1))
+    runs_by_method = _as_int_mapping(
+        getattr(cfg, f"{stage_l}_cluster_acc_runs_by_method", None), default={})
+    return ensure_kmeansplusplus(methods), max(1, runs), runs_by_method
 
 
 def _infer_label_cluster_count(labels: np.ndarray) -> int | None:
@@ -1476,7 +1432,7 @@ def log_supervised_metrics(module, stage: str) -> None:
 
     if wants_supervised_metrics and labels is not None:
         if stage_l == "val":
-            acc_methods = _ensure_kmeans_plus_plus_method(
+            acc_methods = ensure_kmeansplusplus(
                 list(getattr(module, "val_cluster_acc_methods", []))
             )
             acc_runs = int(getattr(module, "val_cluster_acc_runs", 1))
@@ -1484,7 +1440,7 @@ def log_supervised_metrics(module, stage: str) -> None:
                 module, "val_cluster_acc_runs_by_method", {}
             )
         elif stage_l == "test":
-            acc_methods = _ensure_kmeans_plus_plus_method(
+            acc_methods = ensure_kmeansplusplus(
                 list(getattr(module, "test_cluster_acc_methods", ["kmeans++"]))
             )
             acc_runs = int(getattr(module, "test_cluster_acc_runs", 1))

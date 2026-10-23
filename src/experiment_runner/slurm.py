@@ -14,6 +14,7 @@ from .plan import (
     ExperimentPlan,
     StageSpec,
     resolve_experiment_config_name,
+    resolve_experiment_overrides,
     resolve_experiment_train_script,
 )
 
@@ -56,18 +57,7 @@ def generate_sbatch_script(
         job_name = job_name[:77] + "..."
     status_file = run_dir / JOB_STATUS_FILENAME
 
-    all_overrides: List[str] = []
-    all_overrides.extend(stage.base_overrides)
-    all_overrides.extend(experiment.overrides)
-    all_overrides.append(f'hydra.run.dir="{run_dir}"')
-    all_overrides.append(
-        'experiment_name="'
-        f'{_safe_experiment_name(plan.name, stage.name, experiment.name)}'
-        '"'
-    )
-    if extra_overrides:
-        all_overrides.extend(extra_overrides)
-
+    all_overrides = resolve_experiment_overrides(experiment, stage, plan, run_dir, extra_overrides)
     overrides_str = " \\\n    ".join(f"'{ov}'" for ov in all_overrides)
 
     sbatch_lines = [
@@ -148,11 +138,6 @@ python {train_script} \\
 echo "Finished: $(date)"
 """
     return script
-
-
-def _safe_experiment_name(plan_name: str, stage_name: str, exp_name: str) -> str:
-    raw = f"{plan_name}_{stage_name}_{exp_name}"
-    return re.sub(r"[^A-Za-z0-9_.-]", "_", raw)[:120]
 
 
 def submit_sbatch(script_content: str, script_path: Path) -> str:

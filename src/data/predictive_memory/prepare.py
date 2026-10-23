@@ -11,7 +11,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-from src.data.trajectories.shooting import ShootingBinaryTrajectory, _array_sha256
+from src.data.trajectories import array_sha256
+from src.data.trajectories.shooting import ShootingBinaryTrajectory
 from src.project_runtime.paths import load_json, portable_config
 from .observations import frame_observation
 from .targets import physical_packet
@@ -40,7 +41,7 @@ def prepare_source(record, config):
         raise RuntimeError(f"Source {s['id']}: manifest changed")
     raw = ShootingBinaryTrajectory.load(root)
     for name, description in raw.manifest['arrays'].items():
-        if _array_sha256(getattr(raw, name)) != description['sha256']:
+        if array_sha256(getattr(raw, name)) != description['sha256']:
             raise RuntimeError(f"Source {s['id']}: array checksum mismatch for {name}")
     if not np.all(raw.atom_types == 1) or raw.manifest['velocity_units'] != 'angstrom_per_ps':
         raise ValueError(f"Source {s['id']}: expected single-species Al with A/ps velocities")

@@ -9,8 +9,9 @@ import numpy as np
 from numpy.lib import format as npformat
 
 from src.data.conversion.shooting_text import iter_lammps_shooting_frames_for_conversion
+from src.data.trajectories import array_sha256
 from src.data.trajectories.shooting import (FORMAT_NAME, SCHEMA_VERSION, ShootingBinaryTrajectory,
-                                          _array_description, _array_sha256)
+                                          _array_description)
 from src.project_runtime.transfer import write_json
 from src.simulation.campaigns.birth_sources import now, sha256
 
@@ -147,7 +148,7 @@ def convert_streaming_pair(root, metadata, steps, *, chunk_frames=32, delete_sou
         persisted=np.load(building/f'{name}.npy',allow_pickle=False)
         if not np.array_equal(values,persisted):
             raise ValueError(f'Stored exact identity/timeline/box array changed: {name}')
-        arrays[name]=_array_description(values,f'{name}.npy',sha256=_array_sha256(persisted))
+        arrays[name]=_array_description(values,f'{name}.npy',sha256=array_sha256(persisted))
     quantization = {name:dict(max_abs=e['max_abs'],rms=(e['square_sum']/e['coordinate_count'])**.5,
         coordinate_count=e['coordinate_count'],units='angstrom' if name=='positions' else 'angstrom_per_ps',
         periodic_minimum_image=name=='positions') for name,e in errors.items()}

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import itertools
+import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Sequence
@@ -239,6 +240,25 @@ def resolve_experiment_config_name(
             f"No config_name for experiment {experiment.name!r} in stage {stage.name!r}."
         )
     return config_name
+
+
+def resolve_experiment_overrides(
+    experiment: Experiment,
+    stage: StageSpec,
+    plan: ExperimentPlan,
+    run_dir: Path,
+    extra_overrides: Optional[Sequence[str]] = None,
+) -> List[str]:
+    """Keep Hydra precedence and run identity identical across execution backends."""
+    name = f"{plan.name}_{stage.name}_{experiment.name}"
+    name = re.sub(r"[^A-Za-z0-9_.-]", "_", name)[:120]
+    return [
+        *stage.base_overrides,
+        *experiment.overrides,
+        f'hydra.run.dir="{run_dir}"',
+        f'experiment_name="{name}"',
+        *(extra_overrides or []),
+    ]
 
 
 def _format_override_value(val: Any) -> str:

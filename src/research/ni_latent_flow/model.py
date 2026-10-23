@@ -163,6 +163,18 @@ class BlockFlow(nn.Module):
         _, loss, metrics = self.training_prediction(history, target, weights)
         return loss, metrics
 
+    def _integrate(self, generated, context):
+        """Euler flow in normalized coordinates, with the supplied fixed context.
+
+        Callers own noise initialization, dtype, conditioning and output slicing.
+        ``flow_steps`` counts grid points, so there are one fewer evaluations.
+        """
+        step = .998 / (self.flow_steps - 1)
+        for index in range(self.flow_steps - 1):
+            flow_time = torch.full((len(generated),), .001 + index * step, device=generated.device)
+            generated = generated + step * self._velocity(generated, flow_time, context)
+        return generated
+
     @torch.no_grad()
     def sample(self, history, particles, seed, deterministic=False):
         """Future-only states [B,P,T,D], without resets or state clipping.
@@ -178,10 +190,7 @@ class BlockFlow(nn.Module):
         generated = torch.zeros(shape, device=history.device, dtype=torch.float32)
         if not deterministic:
             generated = _noise_like(generated, generator)
-        step = .998 / (self.flow_steps - 1)
-        for index in range(self.flow_steps - 1):
-            flow_time = torch.full((len(expanded),), .001 + index * step, device=history.device)
-            generated = generated + step * self._velocity(generated, flow_time, context)
+        generated = self._integrate(generated, context)
         future = self.location + self.scale * generated[:, self.history:]
         return future.reshape(batch, particles, self.horizon, self.dimension)
 

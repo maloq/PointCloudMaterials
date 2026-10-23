@@ -14,7 +14,7 @@ import torch
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.research.ni_phase_sim.campaign import environment
-from src.research.ni_phase_sim.history import stage
+from src.experiment_runner.stages import run_stage
 from .data import FAMILY, prepare, root, cache, read, sha, write_json, resolve_path
 
 MODULE = 'src.research.ni_spatial_scales.queue'
@@ -172,8 +172,10 @@ def worker(c, bundle, lane):
         for arm, name, marker, folder, ready in tasks(c, p):
             if not ready:
                 continue
-            result = stage(c, bundle, lane, deadline, arm, name, marker,
-                           module=MODULE, hard_deadline=True, folder=folder)
+            result = run_stage(
+                root(c), bundle, lane, deadline, arm['name'], name, marker,
+                module=MODULE, hard_deadline=True, folder=folder,
+                max_attempts=c['runtime']['max_attempts'])
             if result == 'paused':
                 paused = True
                 break

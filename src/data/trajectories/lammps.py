@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import os
 from dataclasses import dataclass
@@ -12,6 +11,7 @@ from typing import Any
 
 import numpy as np
 from numpy.lib.format import open_memmap
+from src.data.trajectories import array_sha256 as _array_sha256
 from src.project_runtime.paths import resolve_path
 
 FORMAT_NAME = "pointcloudmaterials.temporal_lammps_trajectory"
@@ -71,16 +71,6 @@ def resolve_temporal_lammps_artifact(path: str | Path) -> Path:
     raise FileNotFoundError(
         f"Temporal LAMMPS trajectory artifact is missing: {requested}"
     )
-
-
-def _array_sha256(values: np.ndarray) -> str:
-    digest = hashlib.sha256()
-    if values.ndim <= 1:
-        digest.update(np.ascontiguousarray(values).tobytes())
-    else:
-        for index in range(int(values.shape[0])):
-            digest.update(np.ascontiguousarray(values[index]).tobytes())
-    return digest.hexdigest()
 
 
 def _array_description(values: np.ndarray, filename: str) -> dict[str, Any]:

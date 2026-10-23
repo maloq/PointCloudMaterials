@@ -9,7 +9,7 @@ from scipy.sparse.csgraph import connected_components
 from src.research.continuous_motion.data import Source,read,root,cache,resolve_path,sha,digest,write_json,atomic_save
 from src.experiment_runner.execution import ExecutionBundle,SlurmQueue,allocation_deadline
 from src.research.ni_phase_sim.campaign import environment
-from src.research.ni_phase_sim.history import stage
+from src.experiment_runner.stages import run_stage
 from src.research.meam_md.dynamics import archive_file
 from src.project_runtime.paths import machine
 MODULE='src.simulation.campaigns.ni_ordering_branches'
@@ -176,7 +176,9 @@ def worker(c,bundle,lane):
         progress=False
         # Interleave origins: even a partial night covers all present-order bins.
         for job in sorted(p['jobs'],key=lambda j:(j['branch'],j['origin'])):
-            result=stage(c,bundle,lane,deadline,job,'run','complete.json',module=MODULE,hard_deadline=True)
+            result = run_stage(
+                root(c), bundle, lane, deadline, job['name'], 'run', 'complete.json',
+                module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
             if result=='paused':return
             if result is not None:progress=True;break
         if not progress:break

@@ -8,7 +8,7 @@ import time
 import numpy as np
 
 from src.data.fixed_cohort.protocol import digest, sha, write_json
-from src.data.trajectories.shooting import _array_sha256
+from src.data.trajectories import array_sha256
 from src.postprocessing.protocols import ancestry, external_audit as audit, external_data as data, fates, shooting_fates
 from src.postprocessing.descriptors.ptm import full_labels
 from src.postprocessing.protocols.shooting_data import read
@@ -20,7 +20,7 @@ def verify_inputs(plan, item):
     for part in item['parts']:
         arrays=data.arrays(part['path'],part['manifest_sha256'])
         for name,a in arrays.items():
-            if _array_sha256(a)!=part['array_sha256'][name]:
+            if array_sha256(a)!=part['array_sha256'][name]:
                 raise ValueError(f'Changed Ta input: {part["path"]}/{name}')
     write_json(out/'input-verified.json',dict(plan_identity=plan['identity'],parts=item['parts']))
 

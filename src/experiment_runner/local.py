@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 import sys
 import subprocess
 import time
@@ -16,6 +15,7 @@ from .plan import (
     ExperimentPlan,
     StageSpec,
     resolve_experiment_config_name,
+    resolve_experiment_overrides,
     resolve_experiment_train_script,
 )
 
@@ -43,28 +43,12 @@ def build_command(
     train_script = resolve_experiment_train_script(experiment, stage, plan)
     config_name = resolve_experiment_config_name(experiment, stage, plan)
 
-    exp_name = _safe_experiment_name(plan.name, stage.name, experiment.name)
-
-    cmd = [
+    return [
         sys.executable,
         train_script,
         "--config-name", config_name,
+        *resolve_experiment_overrides(experiment, stage, plan, run_dir, extra_overrides),
     ]
-    for ov in stage.base_overrides:
-        cmd.append(ov)
-    for ov in experiment.overrides:
-        cmd.append(ov)
-    cmd.append(f'hydra.run.dir="{run_dir}"')
-    cmd.append(f'experiment_name="{exp_name}"')
-    if extra_overrides:
-        cmd.extend(extra_overrides)
-
-    return cmd
-
-
-def _safe_experiment_name(plan_name: str, stage_name: str, exp_name: str) -> str:
-    raw = f"{plan_name}_{stage_name}_{exp_name}"
-    return re.sub(r"[^A-Za-z0-9_.-]", "_", raw)[:120]
 
 
 def _run_one(

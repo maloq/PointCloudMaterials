@@ -17,14 +17,7 @@ import tarfile
 from urllib.parse import quote
 
 from src.project_runtime.paths import load_json
-
-
-def sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open('rb') as handle:
-        for block in iter(lambda: handle.read(8 * 1024 * 1024), b''):
-            digest.update(block)
-    return digest.hexdigest()
+from .artifacts import file_hash as sha256
 
 
 def write_json(path: Path, value: object) -> None:

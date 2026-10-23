@@ -259,12 +259,6 @@ def prepare_source(c, source_key, device='cuda', deadline=float('inf')):
     return True
 
 
-def _regional_transform(raw, normalization):
-    mean, scale, raw_mean, raw_scale = [normalization[k].to(raw) for k in
-                                      ('mean', 'scale', 'raw_mean', 'raw_scale')]
-    return (torch.asinh((raw-raw_mean)/raw_scale)-mean)/scale
-
-
 def assemble(c):
     p = read(root(c)/'technical/plan.json')
     marker = cache(c)/'context.json'; destination = cache(c)/'context.pt'
@@ -293,7 +287,7 @@ def assemble(c):
     normal = dict(raw_mean=raw_mean.float(), raw_scale=raw_scale.float(),
                   mean=u.mean(0).float(), scale=u.std(0).clamp_min(1e-4).float(), active=std>1e-8)
     del raw, u
-    payload = dict(native=_regional_transform(native, normal), birth=_regional_transform(birth, normal),
+    payload = dict(native=transform(native, normal), birth=transform(birth, normal),
                    normalization=normal, radii_A=p['context']['radii_A'], columns=p['context_columns'])
     if not torch.isfinite(payload['native']).all() or not torch.isfinite(payload['birth']).all():
         raise FloatingPointError('Nonfinite normalized regional context')

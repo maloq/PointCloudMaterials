@@ -14,7 +14,7 @@ import torch
 from src.experiment_runner.execution import ExecutionBundle, SlurmQueue, allocation_deadline
 from src.experiment_runner.metric_docs import check_metric_docs
 from src.research.ni_phase_sim.campaign import environment
-from src.research.ni_phase_sim.history import stage
+from src.experiment_runner.stages import run_stage
 from .data import FAMILY, prepare, root, read, sha, write_json
 
 MODULE = 'src.research.ni_kinetic_latent.queue'
@@ -106,8 +106,10 @@ def continuation(c, bundle, lane, deadline, annotation=False):
 def annotation_worker(c, bundle):
     global_deadline = read(root(c)/'technical/submission.json')['deadline']
     deadline = min(global_deadline, allocation_deadline(reserve_seconds=180))
-    result = stage(c, bundle, 'annotations', deadline, dict(name='annotations'),
-        'annotate', 'annotation-complete.json', module=MODULE, hard_deadline=True)
+    result = run_stage(
+        root(c), bundle, 'annotations', deadline, 'annotations', 'annotate',
+        'annotation-complete.json', module=MODULE, hard_deadline=True,
+        max_attempts=c['runtime']['max_attempts'])
     if result == 'paused' and deadline < global_deadline-600:
         continuation(c, bundle, 'annotations', global_deadline, annotation=True)
 
@@ -160,7 +162,9 @@ def worker(c, bundle, lane):
                 continue
             if name == 'evaluate' and not (technical/'labels-complete.json').exists():
                 continue
-            result = stage(c, bundle, lane, deadline, arm, name, marker, module=MODULE, hard_deadline=True)
+            result = run_stage(
+                root(c), bundle, lane, deadline, arm['name'], name, marker,
+                module=MODULE, hard_deadline=True, max_attempts=c['runtime']['max_attempts'])
             if result == 'paused':
                 paused = True
                 break

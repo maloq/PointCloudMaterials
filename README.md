@@ -14,6 +14,9 @@ The [evidence summary](docs/encoder_research/evidence.md) is the main reading pa
 
 Maintained commands are indexed in [scripts/README.md](scripts/README.md). Research recipes live in [experiments](experiments/README.md); simulation campaigns, storage and data conversion have their [operating guides](docs/README.md).
 
+Shared implementation ownership and recent simplifications are recorded in the
+[source maintenance notes](docs/src_refactor.md#repository-readability-pass--2026-10-23).
+
 ## Installation
 
 Use the maintained conda environment `pointnet-torch214`. Fresh-machine setup,

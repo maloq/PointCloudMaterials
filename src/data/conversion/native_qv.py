@@ -5,8 +5,9 @@ import json
 from pathlib import Path
 import numpy as np
 from src.experiment_runner.artifacts import file_hash,write_json
+from src.data.trajectories import array_sha256
 from src.data.trajectories.shooting import (FORMAT_NAME,SCHEMA_VERSION,ShootingBinaryTrajectory,
-                                           _array_description,_array_sha256)
+                                           _array_description)
 
 
 def convert(source,target,*,delete_source=False):
@@ -47,14 +48,14 @@ def convert(source,target,*,delete_source=False):
             if key=='positions':difference-=box[:,None,:]*np.rint(difference/box[:,None,:])
             errors[key]=dict(max_abs=float(abs(difference).max()),rms=float(np.sqrt(np.mean(difference**2))),
                              reference_dtype='float64',units='angstrom' if key=='positions' else 'angstrom_per_ps')
-            semantic[key]=_array_sha256(original);arrays[key]=encoded
+            semantic[key]=array_sha256(original);arrays[key]=encoded
         building=target.with_name('.'+target.name+'.building');building.mkdir(parents=True)
         descriptions={}
         for key,values in arrays.items():
             np.save(building/(key+'.npy'),values,allow_pickle=False)
             observed=np.load(building/(key+'.npy'),allow_pickle=False)
             if not np.array_equal(values,observed):raise IOError(f'Write mismatch {key}')
-            descriptions[key]=_array_description(values,key+'.npy',sha256=_array_sha256(values))
+            descriptions[key]=_array_description(values,key+'.npy',sha256=array_sha256(values))
         manifest=dict(format=FORMAT_NAME,schema_version=SCHEMA_VERSION,state='complete',
             created_at=datetime.now(timezone.utc).isoformat(),storage_dtype='float16',
             coordinate_convention='Wrapped Cartesian coordinates relative to box_low; decode and wrap against float32 box',

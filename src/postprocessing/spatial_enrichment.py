@@ -15,7 +15,7 @@ from src.postprocessing import spatial_dataset as base
 from src.postprocessing.descriptors import ptm
 from src.data.fixed_cohort.protocol import centered, digest, sha, write_json
 from src.data.structural_pretraining.prepare import source_arrays, chart
-from src.data.trajectories.shooting import _array_sha256
+from src.data.trajectories import array_sha256
 from src.experiment_runner.preparation import PreparationShard
 from src.project_runtime.paths import REPO, resolve_path
 
@@ -93,7 +93,7 @@ def scan_source(args):
     if shard.verified(source=s) is not None:return dict(source=s['id'],reused=True)
     raw=source_arrays(s);manifest=read(resolve_path(s['path'])/'manifest.json')
     for name in ('positions','atom_ids','timesteps','box_low','box_high'):
-        if _array_sha256(raw[name])!=manifest['arrays'][name]['sha256']:raise ValueError(f'Changed Ni input {s["id"]}/{name}')
+        if array_sha256(raw[name])!=manifest['arrays'][name]['sha256']:raise ValueError(f'Changed Ni input {s["id"]}/{name}')
     old=resolve_path(c['parent_cache']);m=read(old/'manifest.json')
     prior=[t for t in m['shards'] if t['task']['source']==s['id'] and t['task']['role']==s['role']]
     if len(prior)!=1:raise ValueError(f'Expected one original Ni shard: {s["id"]}')

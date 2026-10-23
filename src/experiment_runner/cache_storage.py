@@ -1,10 +1,11 @@
 """Verified relocation of explicit, immutable repository training caches."""
 
-import hashlib
 import json
 import os
 from pathlib import Path
 import shutil
+
+from .artifacts import file_hash
 
 
 def _inventory(root):
@@ -14,8 +15,7 @@ def _inventory(root):
         if path.is_symlink():
             records[name] = {'link': os.readlink(path)}
         elif path.is_file():
-            with path.open('rb') as stream:
-                digest = hashlib.file_digest(stream, 'sha256').hexdigest()
+            digest = file_hash(path)
             records[name] = {'bytes': path.stat().st_size, 'sha256': digest}
     return records
 
